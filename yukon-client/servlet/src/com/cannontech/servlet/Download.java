@@ -46,45 +46,23 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		}
 			
 		localBean.updateCurrentPane();
-
-		String extension = req.getParameter("ext");
 		javax.servlet.ServletOutputStream out = null;
 
 		try
 		{
+			String extension = localBean.getFormat();
 			out = resp.getOutputStream();
 			com.cannontech.graph.Graph graph = localBean.getGraph();
 			
-			int viewType = localBean.getViewType();
-			//Extra code that needs to be done somewhere else.  Done here for craps sake now...
-//			int tab = 0;
-//			if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.GRAPH_PANE_STRING))
-//				tab = com.cannontech.graph.GraphDefines.GRAPH_PANE;
-//			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.TABULAR_PANE_STRING))
-//				tab = com.cannontech.graph.GraphDefines.TABULAR_PANE;
-//			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.SUMMARY_PANE_STRING))
-//				tab = com.cannontech.graph.GraphDefines.SUMMARY_PANE;
-			
+			String fileName = graph.getTrendModel().getChartName().toString();
+			fileName += fileNameFormat.format(graph.getTrendModel().getStartDate());
+			fileName += "." + extension;
+
+			resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 			if (extension.equalsIgnoreCase("csv"))
 			{
-				resp.setContentType("text/comma-separated-values");
-				String fileName = graph.getTrendModel().getChartName().toString();
-				fileName += fileNameFormat.format(graph.getTrendModel().getStartDate());
-				fileName += ".csv";
-				resp.addHeader("Content-Disposition", "filename=" + fileName);
 				resp.setContentType("text/x-comma-separated-values");
-				
-				ExportDataFile eDataFile = new ExportDataFile(
-				viewType,
-				graph.getFreeChart(), 
-				graph.getTrendModel().getChartName(), 
-				graph.getTrendModel());
-
-				eDataFile.setExtension(extension);
-				String[] data = eDataFile.createCSVFormat();
-				if( data != null)
-					for (int i = 0; i < data.length; i++)
-						out.write(data[i].getBytes());
+				graph.encodeCSV(out);
 			}
 			else if (extension.equalsIgnoreCase("pdf"))
 			{
@@ -101,20 +79,39 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 				resp.setContentType("image/x-png");
 				graph.encodePng(out);
 			}
+			else if (extension.equalsIgnoreCase("html"))
+			{
+				resp.setContentType("text/html");
+				if( graph.getViewType() == com.cannontech.graph.model.TrendModelType.TABULAR_VIEW)
+					graph.encodeTabularHTML(out);
+				else if (graph.getViewType() == com.cannontech.graph.model.TrendModelType.SUMMARY_VIEW)
+					graph.encodeSummmaryHTML(out);
+			}
 			else if (extension.equalsIgnoreCase(""))
 			{
 				resp.setContentType("image/x-png");
 				graph.encodePng(out);
 			}
-
-
-			out.flush();
-			System.out.println("*** Just tried to flush the out!");
 		}
 		catch (java.io.IOException ioe)
 		{
 			ioe.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				if( out != null )
+				{
+					out.flush();
+					out.close();
+				}
+			} 
+			catch( java.io.IOException ioe )
+			{
+				ioe.printStackTrace();
+			}
+		}//end finally
 	}
 	catch (Throwable t)
 	{
