@@ -53,8 +53,8 @@ public HCurtailProgramActivity[] getCurtailProgramActivities() {
 	
 		return ret;
 	}
-	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+	catch (java.sql.SQLException e) {
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return new HCurtailProgramActivity[0];
 	}
 }
@@ -86,8 +86,8 @@ public HCurtailProgram[] getCurtailPrograms() {
 	
 		return ret;
 	}
-	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+	catch (java.sql.SQLException e) {
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return new HCurtailProgram[0];
 	}
 }

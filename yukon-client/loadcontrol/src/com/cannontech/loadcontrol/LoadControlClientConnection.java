@@ -334,7 +334,7 @@ public synchronized void removeClient(Object client)
 	}
 	catch( java.io.IOException e )
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 }

@@ -1086,7 +1086,7 @@ private void handleException(java.lang.Throwable exception)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 
 	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, "The following exception occured : " + exception.getMessage(), com.cannontech.common.util.MessageEvent.ERROR_MESSAGE) );
 }
@@ -1110,7 +1110,7 @@ private void initClientConnection()
 	}
 	catch (Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	//hex value representing the privelages of the user on this machine
@@ -1134,7 +1134,7 @@ private void initClientConnection()
 	}
 	catch( java.io.IOException i )
    {
-	   i.printStackTrace(System.out);
+	   com.cannontech.clientutils.CTILogger.error( i.getMessage(), i );
    }
    
 }
@@ -1410,7 +1410,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

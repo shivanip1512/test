@@ -139,11 +139,11 @@ public static PropertyPanel createEditorPanel(EditorPanel o)
 	  }
 	  catch (InstantiationException ie)
 	  {
-		 ie.printStackTrace();
+		 com.cannontech.clientutils.CTILogger.error( ie.getMessage(), ie );
 	  }
 	  catch (IllegalAccessException iae)
 	  {
-		 iae.printStackTrace();
+		 com.cannontech.clientutils.CTILogger.error( iae.getMessage(), iae );
 	  }
    }
    

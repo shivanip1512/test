@@ -122,7 +122,7 @@ com.cannontech.clientutils.CTILogger.info("				" + ((java.io.File)files.get(i)).
 				}				
 				catch( IllegalArgumentException r )
 				{
-					r.printStackTrace(System.out); 
+					com.cannontech.clientutils.CTILogger.error( r.getMessage(), r );
 				};
 				
 				//obj.getMethod( "retrieve", null ).invoke( obj, null);
@@ -152,7 +152,7 @@ com.cannontech.clientutils.CTILogger.info("				" + ((java.io.File)files.get(i)).
    }
    catch (Exception e)
    {
-	  e.printStackTrace(System.out);
+	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
    }
 	finally
 	{
@@ -166,7 +166,7 @@ com.cannontech.clientutils.CTILogger.info("				" + ((java.io.File)files.get(i)).
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 	}

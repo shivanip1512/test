@@ -53,7 +53,7 @@ public HCurtailProgram getCurtailProgram() {
 		}
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return null;
@@ -97,7 +97,7 @@ public int getProgramState() {
 			programState = rset.getInt(1);
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 		
 	return programState;

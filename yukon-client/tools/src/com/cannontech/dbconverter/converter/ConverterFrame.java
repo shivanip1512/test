@@ -437,7 +437,7 @@ private javax.swing.JButton getStartButton()
 private void handleException(java.lang.Throwable exception) 
 {
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -505,7 +505,7 @@ public static void main(java.lang.String[] args)
 	catch (Throwable exception) 
 	{
 		System.err.println("Exception occurred in main() of javax.swing.JFrame");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 //=====================================================================================

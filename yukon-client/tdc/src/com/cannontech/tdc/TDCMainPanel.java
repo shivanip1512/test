@@ -821,9 +821,9 @@ public void fireBookMarkSelected( Object source )
 				}
 				
 			}
-			catch( IllegalArgumentException ex )
+			catch( IllegalArgumentException e )
 			{
-				ex.printStackTrace(System.out);
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				com.cannontech.clientutils.CTILogger.info("*****************************************************");
 				com.cannontech.clientutils.CTILogger.info("  Most likely cause is an invalid database.");
 				com.cannontech.clientutils.CTILogger.info("*****************************************************");
@@ -1858,7 +1858,7 @@ private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION in TDCMainPanel() ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
 }
@@ -2237,9 +2237,9 @@ private void initializeParameters()
 				getJComboCurrentDisplay().setSelectedIndex(0); // just set the DisplayCombo to the first display				
 				setUpTable();
 			}
-			catch( Exception ex )
+			catch( Exception e )
 			{
-				ex.printStackTrace(System.out);
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				com.cannontech.clientutils.CTILogger.info("*****************************************************");
 				com.cannontech.clientutils.CTILogger.info("*** Most likely cause is an invalid database.  ******");
 				com.cannontech.clientutils.CTILogger.info("*****************************************************");
@@ -2909,7 +2909,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of javax.swing.JPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

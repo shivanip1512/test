@@ -97,7 +97,7 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -112,7 +112,7 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 		}
 		catch(java.sql.SQLException e )
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	return (PtUnitRets[])list.toArray();
@@ -1231,7 +1231,7 @@ public boolean processPortFile()
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		//set our unique own portID
@@ -2047,7 +2047,7 @@ private java.util.ArrayList readFile(String fileName)
 		}
 		catch( java.io.IOException e)
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			return null;
 		}
 	}
@@ -2086,7 +2086,7 @@ private boolean writeToSQLDatabase(com.cannontech.database.data.multi.MultiDBPer
 	}
 	catch( com.cannontech.database.TransactionException t )
 	{
-		t.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 		return false;
 	}
 }

@@ -941,7 +941,7 @@ public Object getValue(Object val) {
 		}
 		catch( NumberFormatException n2 )
 		{
-			n2.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( n2.getMessage(), n2 );
 		}
 	
 		try
@@ -950,7 +950,7 @@ public Object getValue(Object val) {
 		}
 		catch( NumberFormatException n3 )
 		{
-			n3.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( n3.getMessage(), n3 );
 		}
 
 		limits.addElement( new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
@@ -969,7 +969,7 @@ public Object getValue(Object val) {
 		}
 		catch( NumberFormatException n4 )
 		{
-			n4.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( n4.getMessage(), n4 );
 		}
 
 		try
@@ -978,7 +978,7 @@ public Object getValue(Object val) {
 		}
 		catch( NumberFormatException n5 )
 		{
-			n5.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( n5.getMessage(), n5 );
 		}
 		
 		limits.addElement( new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
@@ -997,7 +997,7 @@ public Object getValue(Object val) {
 	}
 	catch( NumberFormatException n5 )
 	{
-		n5.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( n5.getMessage(), n5 );
 	}
 
 	try
@@ -1009,7 +1009,7 @@ public Object getValue(Object val) {
 	}
 	catch( NumberFormatException n5 )
 	{
-		n5.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( n5.getMessage(), n5 );
 	}
 
 	return point;
@@ -1022,7 +1022,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -1224,7 +1224,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

@@ -54,7 +54,7 @@ public HEnergyExchangeOfferRevision[] getEnergyExchangeOfferRevisions() {
 		return ret;
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 		return new HEnergyExchangeOfferRevision[0];
 	}
 }
@@ -78,7 +78,7 @@ public HEnergyExchangeProgram getEnergyExchangeProgram() {
 		}
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return null;

@@ -84,9 +84,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			if (editPointIDString.equals("true"))
 				editPointID = true;
 		}
-		catch (java.util.MissingResourceException mse)
+		catch (java.util.MissingResourceException e)
 		{
-			mse.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		if (editPointID)
@@ -140,9 +140,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			if (editPointIDString.equals("true"))
 				editPointID = true;
 		}
-		catch (java.util.MissingResourceException mse)
+		catch (java.util.MissingResourceException e )
 		{
-			mse.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		if (editPointID)
@@ -168,9 +168,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			if (editPointIDString.equals("true"))
 				editPointID = true;
 		}
-		catch (java.util.MissingResourceException mse)
+		catch (java.util.MissingResourceException e)
 		{
-			mse.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		if (editPointID)
 			getPointPhysicalSettingsPanel().reinitialize(
@@ -193,9 +193,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			if (editPointIDString.equals("true"))
 				editPointID = true;
 		}
-		catch (java.util.MissingResourceException mse)
+		catch (java.util.MissingResourceException e)
 		{
-			mse.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		if (editPointID)
 			getPointStatusPhysicalSettingsPanel().reinitialize(
@@ -332,7 +332,7 @@ public static void main(String args[]) {
 }
 catch( Throwable t)
 {
-	t.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 }
 }
 }

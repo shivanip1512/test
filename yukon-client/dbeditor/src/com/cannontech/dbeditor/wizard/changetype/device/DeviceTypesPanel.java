@@ -313,7 +313,7 @@ public Object getValue(Object val)
 		catch (com.cannontech.database.TransactionException e)
 		{
 
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		try
 		{
@@ -322,7 +322,7 @@ public Object getValue(Object val)
 		}
 		catch (java.sql.SQLException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		val = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) );
@@ -357,7 +357,7 @@ public Object getValue(Object val)
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
 		}
 
@@ -390,7 +390,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// exception.printStackTrace(System.out);
+	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initialize the class.
@@ -438,7 +438,7 @@ public static void main(java.lang.String[] args)
 	catch (Throwable exception)
 	{
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

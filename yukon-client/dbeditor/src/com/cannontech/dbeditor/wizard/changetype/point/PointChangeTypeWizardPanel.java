@@ -112,7 +112,7 @@ public void setChangeObject(com.cannontech.database.db.DBPersistent newObject)
  	}
  	catch (java.sql.SQLException e) 
  	{
-	 	e.printStackTrace();
+	 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
  	}
  	finally
  	{
@@ -125,7 +125,7 @@ public void setChangeObject(com.cannontech.database.db.DBPersistent newObject)
 	 		}
 	 		catch (java.sql.SQLException e)
 	 		{
-		 		e.printStackTrace();
+		 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	 		}
 	 	}
  	}

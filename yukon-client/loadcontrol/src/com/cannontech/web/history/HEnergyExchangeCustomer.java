@@ -97,7 +97,7 @@ public HEnergyExchangeCustomerReply[] getEnergyExchangeCustomerReplies() {
 		return ret;
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 		return new HEnergyExchangeCustomerReply[0];
 	}
 }
@@ -127,7 +127,7 @@ public HEnergyExchangeCustomerReply getEnergyExchangeCustomerReply(long offerId,
 		}
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return null;
@@ -165,7 +165,7 @@ public HEnergyExchangeHourlyCustomer[] getEnergyExchangeHourlyCustomers(long off
 		return ret;
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 		return new HEnergyExchangeHourlyCustomer[0];
 	}
 }

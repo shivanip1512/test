@@ -136,7 +136,7 @@ private boolean checkMCTAddresses( int address )
 	}
 	catch( java.sql.SQLException sq )
 	{
-		sq.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( sq.getMessage(), sq );
 		return false;
 	}
 
@@ -1302,7 +1302,7 @@ public Object getValue(Object val)
 		}
 		catch(NumberFormatException n )
 		{
-			n.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( n.getMessage(), n );
 		}
 	}
 
@@ -1416,7 +1416,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -1568,7 +1568,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

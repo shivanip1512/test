@@ -100,7 +100,7 @@ public void readExternal(java.io.ObjectInput oIn)
 	}
 	catch( Exception e)
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 }
@@ -156,7 +156,7 @@ public void writeExternal(java.io.ObjectOutput oOut)
 	}
 	catch( Exception e)
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 }

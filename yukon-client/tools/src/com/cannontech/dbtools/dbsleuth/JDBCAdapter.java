@@ -51,9 +51,9 @@ public class JDBCAdapter extends AbstractTableModel {
 			System.err.println("Cannot connect to this database.");
 			System.err.println(ex);
 		}
-		catch( Exception ex )
+		catch( Exception e )
 		{
-			ex.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 	 } 
@@ -258,7 +258,7 @@ public void setValueAt(Object value, int row, int column)
    }
    catch (SQLException e)
    {
-	  //     e.printStackTrace();
+	  //     com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	  System.err.println("Update failed");
    }
    Vector dataRow = (Vector) rows.elementAt(row);

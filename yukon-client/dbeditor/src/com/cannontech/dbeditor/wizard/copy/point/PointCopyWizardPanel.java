@@ -207,7 +207,7 @@ public static void main(String args[]) {
 }
 catch( Throwable t)
 {
-	t.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 }
 }
 /**
@@ -227,7 +227,7 @@ public void setCopyObject(com.cannontech.database.db.DBPersistent newObject)
  	}
  	catch (com.cannontech.database.TransactionException e) 
  	{
-	 	e.printStackTrace();
+	 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
  	}
 
 }

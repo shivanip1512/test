@@ -45,7 +45,7 @@ public double getAmountCommitted() {
 			return rset.getDouble(1);
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return 0;
@@ -66,7 +66,7 @@ public double getAmountRequested() {
 			return rset.getDouble(1);
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return 0;
@@ -107,7 +107,7 @@ public HEnergyExchangeHourlyOffer[] getEnergyExchangeHourlyOffers() {
 		return ret;
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 		return new HEnergyExchangeHourlyOffer[0];
 	}
 }
@@ -133,7 +133,7 @@ public double[] getHourlyPrices() {
 		}	
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return ret;

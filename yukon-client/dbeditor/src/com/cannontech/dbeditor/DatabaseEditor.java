@@ -159,7 +159,7 @@ public void actionPerformed(ActionEvent event)
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -183,7 +183,7 @@ public void actionPerformed(ActionEvent event)
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -207,7 +207,7 @@ public void actionPerformed(ActionEvent event)
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -231,7 +231,7 @@ public void actionPerformed(ActionEvent event)
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -303,7 +303,7 @@ public void actionPerformed(ActionEvent event)
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -615,7 +615,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	}
 	catch (Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	boolean changeType = true;
@@ -703,7 +703,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
 			String messageString =
 				"Error Changing Type of " + selectedObject + " in the database.  Error received was:  " + e.getMessage();
@@ -738,7 +738,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 	  }
 	  catch (Exception e)
 	  {
-		 e.printStackTrace();
+		 com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	  }
 
 	  if( (userObject instanceof com.cannontech.database.data.device.DeviceBase)
@@ -786,7 +786,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 		 }
 		 catch (java.sql.SQLException e)
 		 {
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			confirm =
 			   javax.swing.JOptionPane.showConfirmDialog(
 				  getParentFrame(),
@@ -1015,7 +1015,7 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 		}
 		catch (java.sql.SQLException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			confirm =
 				javax.swing.JOptionPane.showConfirmDialog(
 					getParentFrame(),
@@ -1089,7 +1089,7 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			fireMessage(
 				new MessageEvent(
 					this,
@@ -1155,7 +1155,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         }
 	         catch (Exception e)
 	         {
-	            e.printStackTrace();
+	            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	         }
 
 	         PropertyPanel panel = EditorPanelFactory.createEditorPanel( userObject );
@@ -1181,7 +1181,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         }
 	         catch (java.beans.PropertyVetoException e)
 	         {
-	            e.printStackTrace(); //when does this happen??
+	            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e ); //when does this happen??
 	         }
 
 			}
@@ -1309,7 +1309,7 @@ private void exit()
 	}
 	catch ( java.io.IOException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	System.exit(0);
@@ -1446,15 +1446,15 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 			port = (new Integer(bundle.getString("dispatch_port"))).intValue();
 			
 		}
-		catch( java.util.MissingResourceException mre)
+		catch( java.util.MissingResourceException e)
 		{
-			mre.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			host = "127.0.0.1";
 			port = 1510;
 		}
 		catch(NumberFormatException nfe)
 		{
-			nfe.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( nfe.getMessage(), nfe );
 			port = 1510;
 		}
 
@@ -1477,7 +1477,7 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 		}
 		catch( Exception e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 	}
@@ -2084,7 +2084,7 @@ private void handleException(Throwable exception)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Insert the method's description here.
@@ -2250,7 +2250,7 @@ public void itemStateChanged(ItemEvent event)
 			}
 			catch( Exception e )
 			{
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		 
 			PropertyPanel panel = userObject.getEditorPanel();
@@ -2269,7 +2269,7 @@ public void itemStateChanged(ItemEvent event)
 			}
 			catch( java.beans.PropertyVetoException e )
 			{
-				e.printStackTrace(); //when does this happen??
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e ); //when does this happen??
 			}
 		
 			getEditorFrame().setVisible(true);	
@@ -2301,7 +2301,7 @@ public void itemStateChanged(ItemEvent event)
 	}
 	catch(Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -2355,7 +2355,7 @@ com.cannontech.clientutils.CTILogger.info(
 	}
 	catch( Throwable t )
 	{
-		t.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 	}
 }
 /**
@@ -2415,7 +2415,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		decimalPlaces = 3;
 	}
 
@@ -2429,7 +2429,7 @@ private void readConfigParameters()
 
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 		
 	if( !activateBilling )
@@ -2448,7 +2448,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	try
@@ -2458,7 +2458,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	try
@@ -2468,7 +2468,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	try
@@ -2478,7 +2478,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	
@@ -2667,7 +2667,7 @@ public void selectionPerformed(WizardPanelEvent event)
 			}
 			catch (com.cannontech.database.TransactionException e)
 			{
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
 				String messageString =
 					"Error Inserting " + newItem + " into the database.  Error received was:  " + e.getMessage().trim();
@@ -2850,7 +2850,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	
@@ -2889,7 +2889,7 @@ public void showEditorSelectedObject()
 	}
 	catch (Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -2991,7 +2991,7 @@ private boolean updateObject(com.cannontech.database.db.DBPersistent object)
 	}
 	catch( com.cannontech.database.TransactionException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		String messageString = " Error updating " + object + " in the database.  Error received was: " + e.getMessage() ;
 		fireMessage( new MessageEvent( this, messageString, MessageEvent.ERROR_MESSAGE) );
 		return false;
@@ -3098,7 +3098,7 @@ public void valueChanged(TreeSelectionEvent event) {
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		 
 		PropertyPanel panel = userObject.getEditorPanel();
@@ -3117,7 +3117,7 @@ public void valueChanged(TreeSelectionEvent event) {
 		}
 		catch( java.beans.PropertyVetoException e )
 		{
-			e.printStackTrace();//when does this happen??
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );//when does this happen??
 		}
 		
 		getEditorFrame().setVisible(true);
@@ -3125,7 +3125,7 @@ public void valueChanged(TreeSelectionEvent event) {
 	}
 	catch(Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{

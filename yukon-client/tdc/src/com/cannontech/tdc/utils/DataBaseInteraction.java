@@ -113,9 +113,9 @@ public static Object[][] queryResults( String query, Object[] parameters )
 
 		return rowData; //success			
 	}
-	catch (Exception ex) // must catch any and all exceptions
+	catch (Exception e) // must catch any and all exceptions
 	{
-		ex.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return new Object[0][0]; // just return a zero length 2D Object, not NULL!!
 	}
 	finally
@@ -127,7 +127,7 @@ public static Object[][] queryResults( String query, Object[] parameters )
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace( System.out );
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		try
@@ -137,7 +137,7 @@ public static Object[][] queryResults( String query, Object[] parameters )
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace( System.out );
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		try
@@ -147,7 +147,7 @@ public static Object[][] queryResults( String query, Object[] parameters )
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace( System.out );
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 }
@@ -225,9 +225,9 @@ public static int updateDataBase( String query, Object[] parameters )
 		return prepStmt.executeUpdate();
 		
 	}
-	catch (Exception ex) // must catch any and all exceptions
+	catch (Exception e) // must catch any and all exceptions
 	{
-		ex.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return -1;
 	}
 	finally
@@ -247,7 +247,7 @@ public static int updateDataBase( String query, Object[] parameters )
 		}
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace( System.out );
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 }

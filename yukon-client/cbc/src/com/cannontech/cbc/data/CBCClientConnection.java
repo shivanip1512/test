@@ -296,11 +296,11 @@ com.cannontech.clientutils.CTILogger.info(new com.cannontech.clientutils.commonu
  * Version: <version>
  * @param exc java.lang.Exception
  */
-private void handleException(Throwable exc)
+private void handleException(Throwable e)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("---------------- EXCEPTION CBCClientConnection() ----------------");
-	exc.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 }
 /**
  * Insert the method's description here.
@@ -360,7 +360,7 @@ com.cannontech.clientutils.CTILogger.info("*** HI***");
 	}
 	catch( Exception e )
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	com.cannontech.clientutils.CTILogger.info("exiting main" );

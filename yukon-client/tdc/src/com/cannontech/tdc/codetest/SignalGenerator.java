@@ -51,7 +51,7 @@ public static void main(String[] args)
 	}
 	catch( java.io.IOException e )
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		System.exit(0);
 	}
 
@@ -111,7 +111,7 @@ public static void main(String[] args)
 		}
 		catch( InterruptedException e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 

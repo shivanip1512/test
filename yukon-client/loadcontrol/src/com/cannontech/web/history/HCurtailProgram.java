@@ -47,7 +47,7 @@ public HCurtailCustomer[] getCurtailCustomers() {
 		return ret;
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 		return new HCurtailCustomer[0];
 	}
 }

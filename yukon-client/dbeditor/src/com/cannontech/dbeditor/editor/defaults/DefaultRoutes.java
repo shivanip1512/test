@@ -171,7 +171,7 @@ public static final java.util.Vector getAllRoutes()
 		}
 		catch (com.cannontech.database.TransactionException t)
 		{
-			t.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 			return null;
 		}
 	}
@@ -244,7 +244,7 @@ public final static void updateRouteDefaults(Vector routes) {
 	}   
 
         } catch (com.cannontech.database.TransactionException t) {
-            t.printStackTrace(System.out);
+            com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 
         }
 	

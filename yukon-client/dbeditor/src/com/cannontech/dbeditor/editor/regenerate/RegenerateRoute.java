@@ -54,7 +54,7 @@ public class RegenerateRoute
 			}
 			catch (com.cannontech.database.TransactionException t)
 			{
-				t.printStackTrace(System.out);
+				com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 				return null;
 			}
 		}
@@ -288,7 +288,7 @@ public class RegenerateRoute
 		}
 		catch (com.cannontech.database.TransactionException t)
 		{
-			t.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 		}
 	}
 }

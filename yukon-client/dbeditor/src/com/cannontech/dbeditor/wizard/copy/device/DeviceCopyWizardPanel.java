@@ -256,9 +256,9 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 		if( editPointIDString.equals("true") )
 			editPointID = true;
 	}
-	catch( java.util.MissingResourceException mse )
+	catch( java.util.MissingResourceException se )
 	{
-		mse.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 
 
@@ -308,7 +308,7 @@ public void setCopyObject(com.cannontech.database.db.DBPersistent newObject)
  	}
  	catch (com.cannontech.database.TransactionException e) 
  	{
-	 	e.printStackTrace();
+	 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
  	}
  	
 }  

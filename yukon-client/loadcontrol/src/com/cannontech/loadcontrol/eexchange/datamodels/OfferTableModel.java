@@ -261,7 +261,7 @@ public Object getValueAt(int row, int col)
 			return ("[Invalid Cell - See Debug Info]");
 		}
 		else
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
 		return null;
 	}

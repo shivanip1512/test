@@ -33,7 +33,7 @@ public void gc() {
 		com.cannontech.clientutils.CTILogger.info("Connection closed");
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 }
 /**
@@ -48,13 +48,13 @@ public void getConnection(String dbAlias) {
 		com.cannontech.clientutils.CTILogger.info("Connected with the datebase");
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 		try {
 			if (conn != null) conn.close();
 			if (stmt != null) stmt.close();
 		}
 		catch (java.sql.SQLException se2) {
-			se2.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( se2.getMessage(), se2 );
 		}
 	}
 }

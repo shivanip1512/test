@@ -68,9 +68,9 @@ public void destroy()
 		if( connection != null )
 			connection.disconnect();
 	}
-	catch( java.io.IOException ex )
+	catch( java.io.IOException e )
 	{
-		ex.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	mainPanel = null;
@@ -121,7 +121,7 @@ public void executeRefreshButton()
 	}
 	catch( java.io.IOException e )
 	{
-		e.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 }
@@ -325,7 +325,7 @@ private void initConnection()
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		//hex value representing the privelages of the user on this machine
@@ -334,7 +334,7 @@ private void initConnection()
 	}
    catch (java.util.MissingResourceException e)
    {
-	  e.printStackTrace();
+	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
    }
 
    getConnection().setHost(host);
@@ -346,9 +346,9 @@ private void initConnection()
    {
   		getConnection().connectWithoutWait();
 	}
-	catch( java.io.IOException i )
+	catch( java.io.IOException e )
    {
-	   i.printStackTrace(System.out);
+	   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
    }
    
 }
@@ -415,7 +415,7 @@ public static void main(String args[]) {
 	}
 	catch( Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 } 
 /**

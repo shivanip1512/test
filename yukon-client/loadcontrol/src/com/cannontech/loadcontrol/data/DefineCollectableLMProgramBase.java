@@ -43,7 +43,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 public int getCxxClassId()
 {
 	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getCxxClassId() should Never be called");
-	e.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	return -1;
 }
 /**
@@ -52,7 +52,7 @@ public int getCxxClassId()
 public String getCxxStringId()
 {
 	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getCxxStringId() should Never be called");
-	e.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	return DefineCollectable.NO_STRINGID;
 }
 /**
@@ -61,7 +61,7 @@ public String getCxxStringId()
 public Class getJavaClass()
 {
 	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getJavaClass() should Never be called");
-	e.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	return LMProgramBase.class;
 }
 /**

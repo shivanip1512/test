@@ -40,7 +40,7 @@ public void addRouteButton_ActionPerformed(java.awt.event.ActionEvent actionEven
 	}
 	catch(Throwable t )
 	{
-		t.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 		throw t;
 	}
 	*/
@@ -242,7 +242,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// exception.printStackTrace(System.out);
+	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initialize the class.
@@ -288,7 +288,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

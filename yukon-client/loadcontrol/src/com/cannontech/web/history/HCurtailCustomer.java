@@ -42,7 +42,7 @@ public HCurtailCustomerActivity getCurtailCustomerActivity(long curtailReference
 		}
 	}
 	catch (java.sql.SQLException se) {
-		se.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
 	}
 	
 	return null;

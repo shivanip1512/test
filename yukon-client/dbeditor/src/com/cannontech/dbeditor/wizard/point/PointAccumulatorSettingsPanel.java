@@ -355,7 +355,7 @@ public Object getValue(Object val)
 	}
 	catch (NumberFormatException n)
 	{
-		n.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( n.getMessage(), n );
 		multiplier = new Double(1.0);
 	}
 
@@ -365,7 +365,7 @@ public Object getValue(Object val)
 	}
 	catch (NumberFormatException n)
 	{
-		n.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( n.getMessage(), n );
 		dataOffset = new Double(0.0);
 	}
 
@@ -389,7 +389,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// exception.printStackTrace(System.out);
+	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initialize the class.
@@ -490,7 +490,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

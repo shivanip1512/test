@@ -2494,7 +2494,7 @@ private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION TDCMainFrame() ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );
 }
@@ -2965,10 +2965,10 @@ public void jMenuItemFindNext_ActionPerformed(java.awt.event.ActionEvent actionE
 	{
 		((com.cannontech.tdc.search.TextSearchJPanel)getTextSearchDialog().getContentPane()).findNextOccurence();
 	}
-	catch( ClassCastException c )
+	catch( ClassCastException e )
 	{
 		//should not get here ever!!!!
-		c.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	return;
@@ -3359,10 +3359,10 @@ public void jMenuItemSearch_ActionPerformed(java.awt.event.ActionEvent actionEve
 		((com.cannontech.tdc.search.TextSearchJPanel)getTextSearchDialog().getContentPane()).setColumnNames( columnNames );
 		getTextSearchDialog().show();
 	}
-	catch( ClassCastException c )
+	catch( ClassCastException e )
 	{
 		//should not get here ever!!!!
-		c.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 	
 	return;
@@ -3514,7 +3514,7 @@ public static void main(java.lang.String[] args)
 	catch (Throwable exception)
 	{
 		System.err.println("Exception occurred in main() of javax.swing.JFrame");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**

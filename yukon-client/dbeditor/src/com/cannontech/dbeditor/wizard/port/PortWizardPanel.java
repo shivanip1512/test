@@ -198,7 +198,7 @@ try
 }
 catch( Throwable t)
 {
-	t.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 }
 }
 }

@@ -50,7 +50,7 @@ public static void main(String[] args)
 	}
 	catch( Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}	
 }
 }

@@ -65,9 +65,9 @@ public void destroy()
 		if( mainPanel != null )
 			mainPanel.destroy();
 	}
-	catch( java.io.IOException ex )
+	catch( java.io.IOException e )
 	{
-		ex.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 	mainPanel = null;
@@ -105,7 +105,7 @@ public void executeRefreshButton()
 	}
 	catch( java.io.IOException e )
 	{
-		e.printStackTrace( System.out );
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
 }
@@ -174,7 +174,7 @@ private CBCClientConnection getConnectionWrapper()
 		}
 		catch( Exception e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}	
 	}
 	
@@ -324,7 +324,7 @@ public static void main(String args[])
 	}
 	catch( Exception e)
 	{
-		e.printStackTrace();
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 } 
 /**

@@ -484,7 +484,7 @@ private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// exception.printStackTrace(System.out);
+	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Gets the jButtonDismiss_ActionPerformed(java.awt.event.ActionEvent) method descriptor.

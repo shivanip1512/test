@@ -111,7 +111,7 @@ public void actionPerformed(ActionEvent event)
 			}
 			catch(Exception e )
 			{
-				e.printStackTrace();
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
 		}*/
 		else if( event.getSource() == getDeleteScheduleButton() )
@@ -369,7 +369,7 @@ public String getConnectionState()
 		}
 		catch( java.io.IOException e )
 		{
-			e.printStackTrace(System.out);
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 	}
 	else if( !validConn && lastConnectionStatus )
@@ -615,7 +615,7 @@ private void handleException(Throwable exception)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	exception.printStackTrace(System.out);
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /* This method was created in VisualAge.
  * @param event com.cannontech.common.util.MessageEvent
@@ -915,7 +915,7 @@ public void selectionPerformed(WizardPanelEvent event)
 		catch( java.io.IOException e )
 		{
 			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Unable to create schedule '" + ((Schedule)newItem).getScheduleName() + "'", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
-			e.printStackTrace( System.out );
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
 	}

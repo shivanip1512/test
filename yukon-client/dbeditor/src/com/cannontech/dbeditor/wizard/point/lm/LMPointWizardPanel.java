@@ -207,7 +207,7 @@ public static void main(String args[]) {
 }
 catch( Throwable t)
 {
-	t.printStackTrace();
+	com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 }
 }
 /**

@@ -366,7 +366,7 @@ public Object getValue(Object val)
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		val = com.cannontech.database.data.point.PointFactory.createPoint(type);
@@ -440,7 +440,7 @@ public Object getValue(Object val)
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 
 		return val;
@@ -454,7 +454,7 @@ private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// exception.printStackTrace(System.out);
+	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -544,7 +544,7 @@ public static void main(java.lang.String[] args) {
 		frame.setVisible(true);
 	} catch (Throwable exception) {
 		System.err.println("Exception occurred in main() of com.ibm.uvm.abt.edit.DeletedClassView");
-		exception.printStackTrace(System.out);
+		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
 /**
