@@ -4335,25 +4335,25 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
     CtiLMProgramBase::saveGuts( ostrm );
 
     // Only send active master/subordinate programs
-    RWOrdered* active_masters = new RWOrdered();
+    vector<CtiLMProgramDirect*> active_masters(_master_programs.size());
     for(set<CtiLMProgramDirect*>::const_iterator m_iter = _master_programs.begin();
         m_iter != _master_programs.end();
         m_iter++)
     {
         if((*m_iter)->getProgramState() != CtiLMProgramBase::InactiveState)
         {
-            active_masters->insert(*m_iter);
+            active_masters.push_back(*m_iter);
         }
     }
     
-    RWOrdered* active_subordinates = new RWOrdered();
+    vector<CtiLMProgramDirect*> active_subordinates(_subordinate_programs.size());
     for(set<CtiLMProgramDirect*>::const_iterator s_iter = _subordinate_programs.begin();
         s_iter != _subordinate_programs.end();
         s_iter++)
     {
         if((*s_iter)->getProgramState() != CtiLMProgramBase::InactiveState)
         {
-            active_subordinates->insert(*s_iter);
+            active_subordinates.push_back(*s_iter);
         }
     }
     
@@ -4374,15 +4374,24 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
         ostrm << lm_group.get();
     }    
 
-    ostrm << active_masters
-          << active_subordinates;
+    // send all the active master programs
+    ostrm << active_masters.size();
+    for(vector<CtiLMProgramDirect*>::const_iterator m2_iter = active_masters.begin();
+	m2_iter != active_masters.end();
+	m2_iter++)
+    {
+	ostrm << *m2_iter;
+    }
 
-     active_masters->clear();
-     delete active_masters;
-
-     active_subordinates->clear();
-     delete active_subordinates;
-
+    // send all the active subordinate programs
+    ostrm << active_subordinates.size();
+    for(vector<CtiLMProgramDirect*>::const_iterator s2_iter = active_subordinates.begin();
+	s2_iter != active_subordinates.end();
+	s2_iter++)
+    {
+	ostrm << *s2_iter;
+    }
+    
     return;
 }
 
