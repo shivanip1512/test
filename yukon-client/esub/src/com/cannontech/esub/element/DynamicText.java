@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.element.persist.PersistDynamicText;
@@ -133,9 +134,11 @@ public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
  * Creation date: (12/18/2001 12:47:22 PM)
  * @param newPointID int
  */
-public void setPointID(int newPointID) 
-{
-	point = PointFuncs.getLitePoint( newPointID );
+public void setPointID(int newPointID)  {
+	LitePoint lp = PointFuncs.getLitePoint( newPointID ); 
+	if(lp != null) {
+		point = lp;
+	}
 }
 
 	/**
