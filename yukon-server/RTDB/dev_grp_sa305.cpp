@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/23 18:36:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/23 18:44:13 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.5  2004/06/23 18:44:13  cplender
+* Try that last checkin again... it builds right now.
+*
 * Revision 1.4  2004/06/23 18:36:56  cplender
 * Added control_interval and control_reduction to the grp so the protocol doesn't need to set it.
 *
@@ -146,7 +149,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             parse.setValue("control_reduction", 100 );
         }
         else
-            status = BADPARAM;
+            nRet = BADPARAM;
 
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)

@@ -11,12 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/06/23 18:36:56 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/23 18:44:13 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "cmdparse.h"
+#include "cparms.h"
 #include "dev_grp_sa105.h"
 #include "expresscom.h"
 #include "logger.h"
@@ -167,7 +168,7 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             parse.setValue("control_reduction", 100 );
         }
         else
-            status = BADPARAM;
+            nRet = BADPARAM;
 
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
