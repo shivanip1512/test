@@ -86,9 +86,8 @@ function MM_popupMsg(msg) { //v1.0
 					<input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
 <%
-	StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse) user.getAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS);
-	for (int i = 0; i < questions.getStarsExitInterviewQuestionCount(); i++) {
-		StarsExitInterviewQuestion question = questions.getStarsExitInterviewQuestion(i);
+	for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {
+		StarsExitInterviewQuestion question = exitQuestions.getStarsExitInterviewQuestion(i);
 %>
 					<input type="hidden" name="QID" value="<%= question.getQuestionID() %>">
                     <tr> 

@@ -38,10 +38,14 @@
 		actions.parse(reqMsg, respMsg, session);
 	}
 	
-	StarsEnergyCompany energyCompany = (StarsEnergyCompany) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY );
-	StarsWebConfig ecWebSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
-	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
-	StarsCustomerFAQs customerFAQs = (StarsCustomerFAQs) user.getAttribute( ServletUtils.ATT_CUSTOMER_FAQS );
+	StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+			user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
+	StarsWebConfig ecWebSettings = ecSettings.getStarsWebConfig();
+	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
+	StarsCustomerFAQs customerFAQs = ecSettings.getStarsCustomerFAQs();
+	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
+	StarsDefaultThermostatSettings dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -52,7 +56,6 @@
 	
 	StarsLMPrograms programs = null;
 	StarsThermostatSettings thermoSettings = null;
-	StarsDefaultThermostatSettings dftThermoSettings = null;
 	StarsUser userLogin = null;
 	
 	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
@@ -65,7 +68,6 @@
 		
 		programs = accountInfo.getStarsLMPrograms();
 		thermoSettings = accountInfo.getStarsThermostatSettings();
-		dftThermoSettings = accountInfo.getStarsDefaultThermostatSettings();
 		
 		userLogin = accountInfo.getStarsUser();
 		if (userLogin == null) {

@@ -10,11 +10,25 @@
 
 <script language="JavaScript">
 function copyAddress(form) {
-	form.BAddr1.value = form.SAddr1.value;
-	form.BAddr2.value = form.SAddr2.value;
-	form.BCity.value = form.SCity.value;
-	form.BState.value = form.SState.value;
-	form.BZip.value = form.SZip.value;
+	if (form.SameAsAbove.checked) {
+		form.BAddr1.value = form.SAddr1.value;
+		form.BAddr2.value = form.SAddr2.value;
+		form.BCity.value = form.SCity.value;
+		form.BState.value = form.SState.value;
+		form.BZip.value = form.SZip.value;
+		form.BAddr1.disabled = true;
+		form.BAddr2.disabled = true;
+		form.BCity.disabled = true;
+		form.BState.disabled = true;
+		form.BZip.disabled = true;
+	}
+	else {
+		form.BAddr1.disabled = false;
+		form.BAddr2.disabled = false;
+		form.BCity.disabled = false;
+		form.BState.disabled = false;
+		form.BZip.disabled = false;
+	}
 }
 
 function checkPassword(form) {
@@ -23,6 +37,11 @@ function checkPassword(form) {
 		return false;
 	}
 	return true;
+}
+
+function confirmCancel() {
+	if (confirm('Are you sure you want to cancel and discard all the changes you made?'))
+		location = "../Operations.jsp";
 }
 </script>
 </head>
@@ -69,19 +88,21 @@ function checkPassword(form) {
           <td width="101" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
           <td width="657" bgcolor="#000000" height="1"></td>
-		  <td width="1" bgcolor="#000000" height="1"></td>
+          <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
           <td valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
-           <% String header = "NEW SIGNUP"; %><%@ include file="SearchBar.jsp" %><br>
-		   <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-		   
-		   <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkPassword(this)">
-			<input type="hidden" name="action" value="NewCustAccount">
-            <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
-              <tr> 
+            <% String header = "NEW SIGNUP"; %>
+            <%@ include file="SearchBar.jsp" %>
+            <br>
+            <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+            <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return checkPassword(this)">
+              <input type="hidden" name="action" value="NewCustAccount">
+			  <input type="hidden" name="Wizard" value="false">
+              <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
+                <tr> 
                   <td width="300" valign="top"><span class="MainHeader"><b>CUSTOMER 
                     CONTACT</b></span> 
                     <hr>
@@ -153,7 +174,7 @@ function checkPassword(form) {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
-                        <td width="210">
+                        <td width="210"> 
                           <input type="checkbox" name="NotifyControl" value="true">
                           <span class="TableCell">Notify day of control</span></td>
                       </tr>
@@ -291,7 +312,7 @@ function checkPassword(form) {
                           <input type="text" name="SCity" maxlength="30" size="24">
                         </td>
                       </tr>
-					  <tr> 
+                      <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">County:</div>
                         </td>
@@ -299,7 +320,7 @@ function checkPassword(form) {
                           <input type="text" name="SCounty" maxlength="30" size="24">
                         </td>
                       </tr>
-					  <tr> 
+                      <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">County:</div>
                         </td>
@@ -345,10 +366,10 @@ function checkPassword(form) {
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                       <tr> 
-                        <td width="90" class="TableCell">&nbsp;</td>
-                        <td width="210"> 
-                          <input type="button" name="Same" value="Same as Above" onclick="copyAddress(this.form)">
-                        </td>
+                        <td width="90" class="TableCell" height="2">&nbsp;</td>
+                        <td width="210" height="2" class="TableCell"> 
+                          <input type="checkbox" name="SameAsAbove" value="Same as Above" onClick="copyAddress(this.form)">
+                          Same as above</td>
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
@@ -383,10 +404,10 @@ function checkPassword(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="90" class="TableCell"> 
+                        <td width="90" class="TableCell" height="2"> 
                           <div align="right">Zip:</div>
                         </td>
-                        <td width="210"> 
+                        <td width="210" height="2"> 
                           <input type="text" name="BZip" maxlength="12" size="14">
                         </td>
                       </tr>
@@ -401,16 +422,16 @@ function checkPassword(form) {
                         </td>
                         <td width="210"> 
                           <select name="Substation">
-<%
+                            <%
 	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
 	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);
 %>
-							<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                            <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                            <%
 	}
 %>
-						  </select>
+                          </select>
                         </td>
                       </tr>
                       <tr> 
@@ -448,163 +469,38 @@ function checkPassword(form) {
                     </table>
                     <br>
                   </td>
-              </tr>
-            </table>
-<!--
-            <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
-              <tr> 
-                <td class="MainHeader"><b>PROGRAMS</b> 
-                  <hr>
-                  <table width="610" border="1" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
-                    <tr valign="top"> 
-                        <td> 
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="23"> 
-                                <input type="checkbox" name="checkbox2" value="checkbox">
-                              </td>
-                              <td width="84" class="TableCell">Cycle AC</td>
-                            </tr>
-                          </table>
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell">Medium</td>
-                            </tr>
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell"> Light</td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td> 
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="23"> 
-                                <input type="checkbox" name="checkbox22" value="checkbox">
-                              </td>
-                              <td width="84" class="TableCell">Water Heater</td>
-                            </tr>
-                          </table>
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell">8 Hours</td>
-                            </tr>
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell">4 Hours </td>
-                            </tr>
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell">ETS </td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td> 
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="23"> 
-                                <input type="checkbox" name="checkbox23" value="checkbox">
-                              </td>
-                              <td width="84" class="TableCell">Duel Fuel</td>
-                            </tr>
-                          </table>
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell">Unlimited</td>
-                            </tr>
-                            <tr> 
-                              <td width="37"> 
-                                <div align="right"> 
-                                  <input type="radio" name="radiobutton" value="radiobutton">
-                                </div>
-                              </td>
-                              <td width="70" class="TableCell"> Limited </td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td> 
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="23"> 
-                                <input type="checkbox" name="checkbox24" value="checkbox">
-                              </td>
-                              <td width="84" class="TableCell">Electrical Heat 
-                                ETS</td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td> 
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="23"> 
-                                <input type="checkbox" name="checkbox25" value="checkbox">
-                              </td>
-                              <td width="84" class="TableCell">Hot Tub</td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td> 
-                          <table width="95" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="23"> 
-                                <input type="checkbox" name="checkbox26" value="checkbox">
-                              </td>
-                              <td width="84" class="TableCell">Pool Pump</td>
-                            </tr>
-                          </table>
-                        </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
--->
+                </tr>
+              </table>
               <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
-              <tr> 
-                  <td width="191"> 
+                <tr> 
+                  <td width="190"> 
                     <div align="right"> 
+<cti:checkNoRole roleid="<%= RoleTypes.NEW_ACCOUNT_WIZARD %>">
                       <input type="submit" name="Save" value="Save">
+</cti:checkNoRole>
+<cti:checkRole roleid="<%= RoleTypes.NEW_ACCOUNT_WIZARD %>">
+                      <input type="submit" name="Next" value="Next" onclick="this.form.Wizard.value='true'">
+</cti:checkRole>
                     </div>
                   </td>
-                  <td width="189"> 
+                  <td width="190"> 
                     <div align="left"> 
-                      <input type="button" name="Cancel" value="Cancel" onclick="location='../Operations.jsp'">
+                      <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
                     </div>
                   </td>
-              </tr>
-            </table>
-		   </form>
+                </tr>
+              </table>
+            </form>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        </tr>
+        <tr>
+          <td valign="top" width="101">&nbsp;</td>
+          <td width="1" bgcolor="#000000">&nbsp;</td>
+          <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center">&nbsp;</td>
+          <td width="1" bgcolor="#000000">&nbsp;</td>
+        </tr>
       </table>
     </td>
 	</tr>

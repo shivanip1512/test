@@ -167,7 +167,7 @@ function deleteHardware(form) {
                                   <div align="right">Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getReceiveDate(), datePart) %>">
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getReceiveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -175,7 +175,7 @@ function deleteHardware(form) {
                                   <div align="right">Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getRemoveDate(), datePart) %>">
+                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getRemoveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -239,7 +239,7 @@ function deleteHardware(form) {
                                     <div align="right">Date Installed: </div>
                                   </td>
                                   <td width="200"> 
-                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.getDateFormat(hardware.getInstallDate(), datePart) %>">
+                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getInstallDate(), datePart) %>">
                                   </td>
                                 </tr>
                                 <tr> 
@@ -460,7 +460,7 @@ function deleteHardware(form) {
 		}
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
-                  <td width="104" class="TableCell"> <%= starsApps[i].getCategoryName() %></td>
+                  <td width="104" class="TableCell"> <%= starsApps[i].getDescription() %></td>
                   <td width="100" class="TableCell"><%= program.getStatus() %></td>
                   <td width="120"> 
                     <div align="center"> <img src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>

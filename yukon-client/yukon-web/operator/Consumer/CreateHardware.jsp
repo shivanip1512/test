@@ -8,6 +8,17 @@
 	<script language="JavaScript">document.getElementById("CssLink").href = "../<%= ecWebSettings.getURL() %>";</script>
 <% } %>
 
+<script language="JavaScript">
+function confirmCancel() {
+	if (confirm('Are you sure you want to stop the process? (You can make changes to the account later)'))
+		location = "../Operations.jsp";
+}
+
+function changeAppSelection(chkBox) {
+	var grpList = document.getElementById('Group_App' + chkBox.value);
+	grpList.disabled = !chkBox.checked;
+}
+</script>
 </head>
 <body class="Background" leftmargin="0" topmargin="0" >
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -54,7 +65,11 @@
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"><% String pageName = "CreateHardware.jsp"; %><%@ include file="Nav.jsp" %></td>
+          <td  valign="top" width="101">
+<% if (request.getParameter("Wizard") == null) { %>
+		    <% String pageName = "CreateHardware.jsp"; %><%@ include file="Nav.jsp" %>
+<% } else out.print("&nbsp;"); %>
+		  </td>
           <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "Main" align="center">
@@ -65,6 +80,7 @@
               <form name="MForm" method="post" action="/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvNo" value="<%= inventories.getStarsLMHardwareCount() %>">
+				<input type="hidden" name="Wizard" value="false">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -233,21 +249,82 @@
                           </td>
                         </tr>
                       </table>
-                      <div align="center"><br>
-                        <br>
-                      </div>
-                      
+                      <br>
+                      <span class="Main">Select appliances connected with 
+                      this hardware:</span><br>
+                      <table width="300" border="1" cellspacing="0" cellpadding="3">
+                        <tr> 
+                          <td width="10%" class="HeaderCell">&nbsp; </td>
+                          <td width="40%" class="HeaderCell">Appliance</td>
+                          <td width="50%" class="HeaderCell">Assigned Group</td>
+                        </tr>
+                        <%
+	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+		StarsAppliance appliance = appliances.getStarsAppliance(i);
+		if (appliance.getInventoryID() == 0 && appliance.getLmProgramID() > 0) {
+			StarsEnrLMProgram program = null;
+			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+				StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+				if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+						StarsEnrLMProgram prog = category.getStarsEnrLMProgram(k);
+						if (prog.getProgramID() == appliance.getLmProgramID()) {
+							program = prog;
+							break;
+						}
+					}
+					break;
+				}
+			}
+%>
+                        <tr> 
+                          <td width="27" height="2"> 
+                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onclick="changeAppSelection(this)">
+                          </td>
+                          <td width="73" class="TableCell" height="2"><%= appliance.getDescription() %></td>
+                          <td width="89" height="2"> 
+                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
+                              <%
+			if (program == null || program.getAddressingGroupCount() == 0) {
+%>
+                              <option value="0">(none)</option>
+                              <%
+			} else {
+				for (int j = 0; j < program.getAddressingGroupCount(); j++) {
+					AddressingGroup group = program.getAddressingGroup(j);
+%>
+                              <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
+                              <%
+				}
+			}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <%
+		}
+	}
+%>
+                      </table>
                     </td>
                   </tr>
                 </table>
                 <br>
-                <table width="150" border="0">
+                <table width="400" border="0">
                 <tr>
-                  <td align = "center" width = "50%"> 
+                  <td align ="right" width = "50%"> 
+<% if (request.getParameter("Wizard") == null) { %>
                     <input type="submit" name="Submit" value="Save">
+<% } else { %>
+                    <input type="submit" name="Done" value="Done" onclick="this.form.Wizard.value='true'">
+<% } %>
                   </td>
                   <td> 
+<% if (request.getParameter("Wizard") == null) { %>
                     <input type="reset" name="Cancel" value="Cancel">
+<% } else { %>
+                    <input type="button" name="Cancel2" value="Cancel" onclick="confirmCancel()">
+<% } %>
                   </td>
                 </tr>
               </table><br>

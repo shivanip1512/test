@@ -43,11 +43,14 @@
 		actions.parse(reqMsg, respMsg, session);
 	}
 	
-	StarsEnergyCompany energyCompany = (StarsEnergyCompany) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY );
-	StarsWebConfig ecWebSettings = (StarsWebConfig) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_WEB_CONFIG );
+	StarsGetEnergyCompanySettingsResponse ecSettings = (StarsGetEnergyCompanySettingsResponse)
+			user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
+	StarsWebConfig ecWebSettings = ecSettings.getStarsWebConfig();
+	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
+	StarsServiceCompanies companies = ecSettings.getStarsServiceCompanies();
+	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
-	StarsEnrollmentPrograms categories = (StarsEnrollmentPrograms) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
-	StarsServiceCompanies companies = (StarsServiceCompanies) user.getAttribute( ServletUtils.ATT_SERVICE_COMPANIES );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;

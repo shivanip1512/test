@@ -141,7 +141,7 @@ function deleteAppliance(form) {
                             <div align="right">Description: </div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="Category" maxlength="40" size="24" value="<%= appliance.getCategoryName() %>">
+                            <input type="text" name="Category" maxlength="40" size="24" value="<%= appliance.getDescription() %>">
                           </td>
                         </tr>
                         <tr> 

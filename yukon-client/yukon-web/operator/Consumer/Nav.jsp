@@ -34,7 +34,7 @@
 	
     for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
         StarsAppliance app = appliances.getStarsAppliance(i);
-		String linkText = app.getCategoryName();
+		String linkText = app.getDescription();
 		
 		if (app.getApplianceCategoryID() != lastItemType) {
 			lastItemType = app.getApplianceCategoryID();

@@ -82,11 +82,6 @@ function doReenable(form) {
 	form.submit();
 }
 
-function MM_popupMsg(msg) { //v1.0
-  alert(msg);
-}
-//-->
-
 
 function changeCategory(checkbox, index) {
 	form = checkbox.form;
@@ -115,11 +110,15 @@ function changeProgram(radioBtn, index) {
 	form.ProgID[index].value = radioBtn.value;
 	form.SignUpChanged.value = "true";
 }
+
+function confirmCancel() {
+	if (confirm('Are you sure you want to stop the process? (You can make changes to the account later)'))
+		location = "../Operations.jsp";
+}
 </script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
-<div id = "tool" class = "tooltip" style="width: 1003px; height: 20px"></div>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -165,8 +164,10 @@ function changeProgram(radioBtn, index) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
+<% if (request.getParameter("Wizard") == null) { %>
 		  <% String pageName = "Programs.jsp"; %>
           <%@ include file="Nav.jsp" %>
+<% } else out.print("&nbsp;"); %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -185,6 +186,7 @@ function changeProgram(radioBtn, index) {
 			  <input type="hidden" name="SignUpChanged" value="false">
 			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
+			  <input type="hidden" name="Wizard" value="false">
               <table border="1" cellspacing="0" cellpadding="3" width="366">
                 <tr>
                   <td width="83" class="HeaderCell" align = "center">Description</td>
@@ -268,12 +270,20 @@ function changeProgram(radioBtn, index) {
                   <tr> 
                     <td width="186"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit" value="Submit" onClick="MM_popupMsg('Are you sure you would like to modify these program options?')">
+<% if (request.getParameter("Wizard") == null) { %>
+                        <input type="submit" name="Submit" value="Submit" onclick="return confirm('Are you sure you would like to modify these program options?')">
+<% } else { %>
+                        <input type="submit" name="Next" value="Next" onclick="this.form.Wizard.value='true'">
+<% } %>
                       </div>
                     </td>
                     <td width="194"> 
                       <div align="left"> 
-                        <input type="reset" name="Cancel2" value="Cancel">
+<% if (request.getParameter("Wizard") == null) { %>
+                        <input type="reset" name="Cancel" value="Cancel">
+<% } else { %>
+                        <input type="button" name="Cancel2" value="Cancel" onclick="confirmCancel()">
+<% } %>
                       </div>
                     </td>
                   </tr>
