@@ -7,8 +7,10 @@ package com.cannontech.loadcontrol.data;
  */
 public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData
 {
+	//constants that must match values in lmprogrambase.h/lmprogrambase.cpp
 	//control types
 	public static final String CONTROL_AUTOMATIC = "Automatic";
+	public static final String CONTROL_TIMED = "Timed";
 	public static final String CONTROL_MANUAL = "ManualOnly";
 
 	//status of a LMProgramBase, programStatus values
