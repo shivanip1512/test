@@ -58,8 +58,8 @@ public class SVGGenerator {
 		
 		writer.write(svgHeader);
 				 
-		writer.write("<svg width=\"" + width + ".0px\" height=\"" + height + ".0px\" >\n");		
-	 	
+		writer.write("<svg width=\"" + width + ".0px\" height=\"" + height + ".0px\" onload=\"refresh(evt)\">\n");		
+	 	writer.write("<script type=\"text/ecmascript\" xlink:href=\"refresh.js\"/>");
 		// Force the background black, perhaps pick up the views background color in the future
 		writer.write("<rect width=\"100%\" height=\"100%\" color=\"#000000\" />\n");
 		
@@ -149,7 +149,7 @@ public class SVGGenerator {
 		
 		float opacity = text.getStyle().getTransparency();
 		
-		writer.write("<text id=\"" + text.getName() + "\" x=\"" + x + "\" y=\"" + y + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" >" + text.getText() + "</text>\n");		
+		writer.write("<text id=\"" + text.getPointID() + "\" dattrib = \"" + text.getDisplayAttribs() + "\" x=\"" + x + "\" y=\"" + y + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" >" + text.getText() + "</text>\n");		
 	}
 	/**
 	 * Writes out an svg path given an LxLine
