@@ -31,7 +31,7 @@ public class TagManager implements MessageListener {
 	 
 	//Store all the tags from dispatch
 	//HashMap< Integer(pointid), Set< Tag >>
-	private HashMap _allTags;
+	private HashMap _allTags = new HashMap();
 	
 	// The clientmessageID used in TagMsg, used to identify responses
 	private int _clientMessageID;
@@ -107,6 +107,36 @@ public class TagManager implements MessageListener {
 	 * @return
 	 */
 	public Set getTags(int pointID) {
+		HashSet ts = new HashSet(getTagSet(pointID));
+		return ts;
+	}
+	
+	/**
+	 * Returns a Set with all the points that current have tags.
+	 * @return
+	 */
+	public Set getPointIDs() {
+		HashSet ptSet = new HashSet();
+		
+		Iterator i =_allTags.keySet().iterator();
+		while(i.hasNext()) {
+			Integer pID = (Integer) i.next();
+			Set tSet = getTagSet(pID.intValue());
+			if(tSet.size() > 0) {
+				ptSet.add(pID);
+			}
+		}
+		return ptSet;
+	}
+	
+	/**
+	 * Returns the internal tag set for a given point id.
+	 * Do not give this out.
+	 * @param pointID
+	 * @return
+	 */
+	private Set getTagSet(int pointID) {
+
 		Integer tagKey = new Integer(pointID);
 		synchronized(_allTags) {
 			Set ts =  (Set) _allTags.get(tagKey);
@@ -114,6 +144,7 @@ public class TagManager implements MessageListener {
 				ts = new HashSet();
 				_allTags.put(tagKey, ts);	
 			}
+
 			return ts;
 		}
 	}
@@ -168,16 +199,17 @@ public class TagManager implements MessageListener {
 			Integer tagKey = new Integer(t.getPointID());
 			
 			synchronized(_allTags) {
-				if(tMsg.getAction() == TagMsg.ADD_TAG_ACTION ||
-					tMsg.getAction() == TagMsg.UPDATE_TAG_ACTION) {
-					CTILogger.debug("Adding tag: " + t.toString());
-					Set ts = getTags(tagKey.intValue());
+				if(tMsg.getAction() == TagMsg.ADD_TAG_ACTION 	 ||
+					tMsg.getAction() == TagMsg.UPDATE_TAG_ACTION ||
+					tMsg.getAction() == TagMsg.REPORT_TAG_ACTION ) {
+					CTILogger.debug("Adding/Updating/Reporting tag: " + t.getInstanceID());
+					Set ts = getTagSet(tagKey.intValue());
 					ts.add(t);
 				}
 				else 
 				if(tMsg.getAction() == TagMsg.REMOVE_TAG_ACTION){
-					CTILogger.debug("Removing tag: " + t.toString());
-					Set ts = getTags(tagKey.intValue());
+					CTILogger.debug("Removing tag: " + t.getInstanceID());
+					Set ts = getTagSet(tagKey.intValue());
 					ts.remove(t);
 				}
 			} 
@@ -200,6 +232,8 @@ public class TagManager implements MessageListener {
 	private TagManager() {
 		//TODO: BAD!
 		PointChangeCache.getPointChangeCache().getDispatchConnection().addMessageListener(this);
+		PointChangeCache.getPointChangeCache().getDispatchConnection().write(PointChangeCache.getPointChangeCache().getDispatchConnection().getRegistrationMsg());
+		
 	}
 	/**
 	 * Generate the next client message id
