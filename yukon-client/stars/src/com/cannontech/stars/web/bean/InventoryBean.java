@@ -380,17 +380,14 @@ public class InventoryBean {
 		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
 		boolean showEnergyCompany = false;
-		if (AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-			&& (getEnergyCompany().getChildren().size() > 0))
-		{
-			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0
-				|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
+		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) {
+			if (inventorySet != null && inventorySet.size() > 0 && inventorySet.get(0) instanceof Pair)
 				showEnergyCompany = true;
-			}
-			else if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) {
-				if (inventorySet != null && inventorySet.size() > 0 && inventorySet.get(0) instanceof Pair)
-					showEnergyCompany = true;
-			}
+		}
+		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0 || (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
+			if (AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+				&& (getEnergyCompany().getChildren().size() > 0))
+				showEnergyCompany = true;
 		}
 		
 		ArrayList hwList = getHardwareList( showEnergyCompany );
@@ -499,10 +496,13 @@ public class InventoryBean {
 		for (int i = minInvNo; i <= maxInvNo; i++) {
 			LiteInventoryBase liteInv = null;
 			LiteStarsEnergyCompany member = null;
+			boolean isManagable = false;
 			
 			if (showEnergyCompany) {
 				liteInv = (LiteInventoryBase) ((Pair)hwList.get(i-1)).getFirst();
 				member = (LiteStarsEnergyCompany) ((Pair)hwList.get(i-1)).getSecond();
+				isManagable = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+						&& ECUtils.isDescendantOf( member, energyCompany );
 			}
 			else {
 				liteInv = (LiteInventoryBase) hwList.get(i-1);
@@ -541,10 +541,12 @@ public class InventoryBean {
 			}
 	        
 			htmlBuf.append("          <td class='TableCell' width='17%'>");
-			if (showEnergyCompany)
+			if (!showEnergyCompany || member.equals(energyCompany))
+				htmlBuf.append("<a href='").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID()).append(srcStr).append("'>").append(deviceName).append("</a>");
+			else if (isManagable)
 				htmlBuf.append("<a href='' onclick='selectMemberInventory(").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append("); return false;'>").append(deviceName).append("</a>");
 			else
-				htmlBuf.append("<a href='").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID()).append(srcStr).append("'>").append(deviceName).append("</a>");
+				htmlBuf.append(deviceName);
 			htmlBuf.append("</td>").append(LINE_SEPARATOR);
             
 			htmlBuf.append("          <td class='TableCell' width='17%'>").append(deviceType).append("</td>").append(LINE_SEPARATOR);
@@ -564,11 +566,14 @@ public class InventoryBean {
 				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
 				String address = ServletUtils.getOneLineAddress( starsAddr );
             	
-				if (showEnergyCompany)
-					htmlBuf.append("<a href='' class='Link1' onclick='selectMemberAccount(").append(liteAcctInfo.getAccountID()).append(",").append(member.getLiteID()).append("); return false;'>");
+            	if (!showEnergyCompany || member.equals(energyCompany))
+					htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>")
+							.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
+				else if (isManagable)
+					htmlBuf.append("<a href='' class='Link1' onclick='selectMemberAccount(").append(liteAcctInfo.getAccountID()).append(",").append(member.getLiteID()).append("); return false;'>")
+							.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
 				else
-					htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
-				htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
+					htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber());
 				if (name.length() > 0)
 					htmlBuf.append(" ").append(name);
 				if (address.length() > 0)

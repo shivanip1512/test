@@ -16,13 +16,11 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -120,29 +118,19 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
-		boolean showEnergyCompany = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-				&& (energyCompany.getChildren().size() > 0);
-		
 		for (int sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
 			try {
 				LiteStarsLMHardware existingHw = energyCompany.searchForLMHardware( devTypeID.intValue(), serialNo );
 				if (existingHw != null) {
-					if (showEnergyCompany)
-						hardwareSet.add( new Pair(existingHw, energyCompany) );
-					else
-						hardwareSet.add( existingHw );
+					hardwareSet.add( existingHw );
 					numFailure++;
 					continue;
 				}
 			}
 			catch (ObjectInOtherEnergyCompanyException e) {
-				if (showEnergyCompany && descendants.contains( e.getEnergyCompany() ))
-					hardwareSet.add( new Pair(e.getObject(), e.getEnergyCompany()) );
-				else
-					serialNoSet.add( serialNo );
+				hardwareSet.add( new Pair(e.getObject(), e.getEnergyCompany()) );
 				numFailure++;
 				continue;
 			}
@@ -158,7 +146,6 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				if (recvDate != null)
 					invDB.setReceiveDate( recvDate );
 				invDB.setVoltageID( voltageID );
-				invDB.setDeviceLabel( serialNo );
 				hwDB.setManufacturerSerialNumber( serialNo );
 				hwDB.setLMHardwareTypeID( devTypeID );
 				hwDB.setRouteID( routeID );
@@ -204,10 +191,9 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				resultDesc += "</table><br>";
 			}
 			
-			if (hardwareSet.size() > 0) {
-				session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
+			session.setAttribute(InventoryManager.INVENTORY_SET_DESC, resultDesc);
+			if (hardwareSet.size() > 0)
 				session.setAttribute(InventoryManager.INVENTORY_SET, hardwareSet);
-			}
 			
 			session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");

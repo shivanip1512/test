@@ -1222,10 +1222,10 @@ public class InventoryManager extends HttpServlet {
 				LiteInventoryBase existingHw = energyCompany.searchForLMHardware(
 						createHw.getDeviceType().getEntryID(), createHw.getLMHardware().getManufacturerSerialNumber() );
 				if (existingHw != null)
-					throw new WebClientException("Cannot create hardware: serial # already exists");
+					throw new WebClientException("Cannot create hardware: serial # already exists.");
 			}
 			catch (ObjectInOtherEnergyCompanyException e) {
-				throw new WebClientException("Cannot create hardware: serial # is found in another energy company");
+				throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>.");
 			}
 			
 			LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, energyCompany );
