@@ -421,9 +421,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('LMConfigurationSimple')
+           where  id = object_id('LMConfigurationSASimple')
             and   type = 'U')
-   drop table LMConfigurationSimple
+   drop table LMConfigurationSASimple
 go
 
 
@@ -1376,17 +1376,17 @@ create table WorkOrderBase (
 go
 
 /*==============================================================*/
-/* Table: LMConfigurationSimple                                 */
+/* Table: LMConfigurationSASimple                                 */
 /*==============================================================*/
-create table LMConfigurationSimple (
+create table LMConfigurationSASimple (
    ConfigurationID      numeric              not null,
    OperationalAddress   numeric              not null
 )
 go
 
 
-alter table LMConfigurationSimple
-   add constraint PK_LMCONFIGURATIONSIMPLE primary key  (ConfigurationID)
+alter table LMConfigurationSASimple
+   add constraint PK_LMCONFIGURATIONSASIMPLE primary key  (ConfigurationID)
 go
 
 
@@ -2102,7 +2102,7 @@ alter table WorkOrderBase
       references ServiceCompany (CompanyID)
 go
 
-alter table LMConfigurationSimple
+alter table LMConfigurationSASimple
    add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID)
 go

@@ -104,7 +104,7 @@ drop table Substation cascade constraints;
 
 drop table WorkOrderBase cascade constraints;
 
-drop table LMConfigurationSimple cascade constraints;
+drop table LMConfigurationSASimple cascade constraints;
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -877,15 +877,15 @@ alter table WorkOrderBase
    add constraint PK_WORKORDERBASE primary key (OrderID);
 
 /*==============================================================*/
-/* Table: LMConfigurationSimple                                 */
+/* Table: LMConfigurationSASimple                                 */
 /*==============================================================*/
-create table LMConfigurationSimple  (
+create table LMConfigurationSASimple  (
    ConfigurationID      NUMBER                          not null,
    OperationalAddress   NUMBER                          not null
 );
 
-alter table LMConfigurationSimple
-   add constraint PK_LMCONFIGURATIONSIMPLE primary key (ConfigurationID);
+alter table LMConfigurationSASimple
+   add constraint PK_LMCONFIGURATIONSASIMPLE primary key (ConfigurationID);
 
 alter table AccountSite
    add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)
@@ -1359,6 +1359,6 @@ alter table WorkOrderBase
    add constraint FK_WrkOr_SrvC foreign key (ServiceCompanyID)
       references ServiceCompany (CompanyID);
 
-alter table LMConfigurationSimple
+alter table LMConfigurationSASimple
    add constraint FK_LMCfgS_LMCfgB foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID);
