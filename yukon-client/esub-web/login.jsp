@@ -94,7 +94,7 @@
  		  }
 		%>
           <tr>
-          <FORM METHOD="POST" ACTION="esub-demo/mec.svg"> 
+          <FORM METHOD="POST" ACTION="esub-demo/sublist.jsp"> 
             <td width="40%" height="20"> 
               <p align=RIGHT>&nbsp;<font size="-1" face="Arial">User Name:</font>
             </td>
