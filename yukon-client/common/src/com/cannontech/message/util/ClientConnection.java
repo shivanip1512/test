@@ -21,7 +21,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 
 	private Socket sock = null;
 	
-	private String host;
+	private String host = "127.0.0.1";
 	private int port;
  
 	private InThread inThread;
@@ -58,9 +58,8 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
  */
 public ClientConnection() {
 	super();
-
-	this.host = null;	
 }
+
 /**
  * ClientConnection constructor comment.
  */
