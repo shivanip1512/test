@@ -885,7 +885,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return entry;
 		}
 		
-		return null;
+		return new YukonListEntry();
 	}
 	
 	public YukonListEntry getYukonListEntry(int yukonDefID) {
