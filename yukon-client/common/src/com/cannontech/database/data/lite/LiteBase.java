@@ -43,10 +43,20 @@ public abstract class LiteBase implements java.io.Serializable, Comparable
 	/**
 	 * keep this consistent with .equals() pleez
 	 * o1.equals(o2) => o1.hashCode() == o2.hashCode()
+	 * 
+	 * unique most of the time! No real way to form a unique hash 
+	 * with 2 32bit ints and return them in a 32bit value
+	 * 
+	 * "That is a manly hash code!" 
+	 * 			--MFisher
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
-		return liteID;
+	public int hashCode() 
+	{
+		// liteType will be less than 2^8 = 256
+		// liteID  will be less than 2^24 = 16,777,216
+		return ( ((liteType << 2) | (liteType >> 6)) << 24) ^ liteID;
 	}
 		
 	/**
