@@ -30,8 +30,10 @@ function MM_popupMsg(msg) { //v1.0
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                  <form name="logoutForm"  action="/servlet/LoginController">
+                    <input type="hidden" name="ACTION" value="LOGOUT">
+                  </form>
+                  <div align="left"><span class="Main"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>

@@ -30,9 +30,10 @@
                 <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td width="253" valign="middle"></td>
                 <td width="57" valign="middle">
-                  <div align="left">
-                    <span class="Main"><a href="../login.jsp?logout=true" class="Link3">Log Off</a></span>
-                  </div>
+                <form name="logoutForm"  action="/servlet/LoginController">
+                    <input type="hidden" name="ACTION" value="LOGOUT">
+                </form>
+                <div align="left"><span class="Main"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -51,11 +52,14 @@
           <td width="608" bgcolor="#000000" height="0"></td>
           <td width="1" bgcolor="#000000" height="0"></td>
         </tr>
-        <tr>
-          <%@include file="nav.jsp"%>
+        <tr> 
+          <td  valign="top" width="150"> 
+            <%@ include file="nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"></td>
-          <td width="608" valign="top" bgcolor="#FFFFFF">
-            <%@include file="../trending_options.jsp"%>
+          <td width="608" valign="top" bgcolor="#FFFFFF" > 
+          
+			<%@include file="../trending_options.jsp"%>
             <table width="575" border="0" cellspacing="0" cellpadding="0" align="center" height="46" class="Main">
               <tr>
                 <td>
