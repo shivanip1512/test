@@ -87,7 +87,8 @@ function confirmSubmit(form) { //v1.0
                   </td>
                 </tr>
               </table>
-           
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+		   
               <p><table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="Main"><div align="center">If you would like to temporarily 

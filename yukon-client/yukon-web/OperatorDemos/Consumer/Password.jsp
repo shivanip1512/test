@@ -64,12 +64,7 @@ function checkPasswords(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "ADMINISTRATION - CHANGE PASSWORD"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
-              <br>
-<%
-	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
-	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
-%>
+              <%@ include file="InfoSearchBar.jsp" %><br>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			
             <form method="POST" action="/servlet/SOAPClient">
@@ -80,7 +75,7 @@ function checkPasswords(form) {
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Username" maxlength="14" size="14" value="<%= userLogin.getUsername() %>">
+                    <input type="text" name="Username" maxlength="20" size="20" value="<%= userLogin.getUsername() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -88,7 +83,7 @@ function checkPasswords(form) {
                     <div align="right">Old Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="OldPassword" maxlength="14" size="14" value="<%= userLogin.getPassword() %>">
+                    <input type="text" name="OldPassword" maxlength="20" size="20" value="<%= userLogin.getPassword() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -96,7 +91,7 @@ function checkPasswords(form) {
                     <div align="right">New Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password" maxlength="14" size="14">
+                    <input type="text" name="Password" maxlength="20" size="20">
                   </td>
                 </tr>
                 <tr> 
@@ -104,7 +99,7 @@ function checkPasswords(form) {
                     <div align="right">Confirm Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password2" maxlength="14" size="14">
+                    <input type="text" name="Password2" maxlength="20" size="20">
                   </td>
                 </tr>
               </table>

@@ -68,7 +68,8 @@ function selectAccount(accountID) {
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
               
-            <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %></div> 
+            <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %><br>
+			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) operator.getAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS );
 	if (resp.getStarsFailure() != null) {

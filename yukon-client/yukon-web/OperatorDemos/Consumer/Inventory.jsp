@@ -100,7 +100,9 @@ function sendCommand(cmd) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "HARDWARE"; %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <%@ include file="InfoSearchBar.jsp" %><br>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  
 			  <form name="invForm" method="POST" action="/servlet/SOAPClient">
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">

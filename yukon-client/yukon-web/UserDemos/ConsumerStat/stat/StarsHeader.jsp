@@ -41,4 +41,7 @@
 		programs = accountInfo.getStarsLMPrograms();
 		categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	}
+	
+	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 %>

@@ -55,6 +55,9 @@
 		userLogin = accountInfo.getStarsUser();
 		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	}
+	
+	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 %>
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>

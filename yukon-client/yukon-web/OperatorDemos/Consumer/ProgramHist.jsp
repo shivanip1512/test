@@ -55,6 +55,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "PROGRAMS - CONTROL HISTORY"; %><%@ include file="InfoSearchBar.jsp" %><br>
+			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <br>
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -168,7 +169,7 @@
 					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
 					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/ContHist.jsp?prog=<%= i %>">
-					<input type="hidden" name="REFERRER" value="ProgramHist.jsp">
+					<input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/ProgramHist.jsp">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
 					    <td width="180" valign="top" align="center"> 

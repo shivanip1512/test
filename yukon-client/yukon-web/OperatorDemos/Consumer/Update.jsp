@@ -63,8 +63,9 @@ function copyAddress(form) {
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "ACCOUNT - GENERAL"; %><%@ include file="InfoSearchBar.jsp" %>
-            </div>
+            <div align="center"><% String header = "ACCOUNT - GENERAL"; %><%@ include file="InfoSearchBar.jsp" %><br>
+			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
+			
 			<form method="POST" action="/servlet/SOAPClient">
 			<input type="hidden" name="action" value="UpdateCustAccount">
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">

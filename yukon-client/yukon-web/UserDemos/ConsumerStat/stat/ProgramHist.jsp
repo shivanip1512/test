@@ -89,6 +89,7 @@ function setRedirect(form, progNo) {
                   </td>
                 </tr>
               </table>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <br>
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr bgcolor="#FFFFFF"> 
@@ -159,8 +160,8 @@ function setRedirect(form, progNo) {
 				Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                       <tr> 
-                        <td width="61" class="TableCell"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
-                        <td width="61" class="TableCell"><%= histDateFormat.format(stopTime) %></td>
+                        <td width="61" class="TableCell"><%= timePart.format(hist.getStartDateTime()) %></td>
+                        <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
                         <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
                       </tr>
                       <%
@@ -188,7 +189,7 @@ function setRedirect(form, progNo) {
                       <input type="hidden" name="action" value="GetLMCtrlHist">
                       <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
                       <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
-                      <input type="hidden" name="REFERRER" value="ProgramHist.jsp">
+                      <input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/stat/ProgramHist.jsp">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="180" valign="top" align="center"> 
