@@ -1,5 +1,6 @@
 package com.cannontech.yukon.concrete;
 
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.yukon.IYukon;
 
 /**
@@ -24,8 +25,11 @@ public class ResourceFactory
 
       try
       {
-         //check for ther server yukon (only server for now)
-         if( false )
+         //check for ther server yukon
+         String mode = CtiProperties.getInstance().getProperty(
+         						CtiProperties.KEY_MODE, "server" ).toLowerCase();
+
+         if( "client".equalsIgnoreCase(mode) )
          {
             o = Class.forName(YUKON_CLIENT).newInstance();
          }
@@ -33,7 +37,6 @@ public class ResourceFactory
          {
          	o = Class.forName(YUKON_SERVER).newInstance();            
          }
-
 
       }
       catch( Exception e )
