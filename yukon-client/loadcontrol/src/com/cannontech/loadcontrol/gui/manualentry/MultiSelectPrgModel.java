@@ -74,10 +74,12 @@ public class MultiSelectPrgModel extends AbstractTableModel implements IMultiSel
 
 			case COL_GEAR:
 			{
+/*                
 				if( prg.hasDirectGears() )
 					return prg.getGearNum();
 				else
 					return new Integer(1);
+*/
 			}
 
 			case COL_STATE:
@@ -148,9 +150,16 @@ public class MultiSelectPrgModel extends AbstractTableModel implements IMultiSel
 		{
 			MultiSelectRow ms = (MultiSelectRow)getRowAt(row);
 			
-			((MultiSelectProg)ms.getObject()).setGearNum(
-							(Integer)val );
-			
+            if( val instanceof LMProgramDirectGear )
+            {
+                ((MultiSelectProg)ms.getObject()).setGearNum(
+							((LMProgramDirectGear)val).getGearNumber() );
+            }			
+            else if( val instanceof Integer )
+            {
+                ((MultiSelectProg)ms.getObject()).setGearNum( (Integer)val );
+            }
+            
 		}
 
 		

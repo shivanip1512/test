@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.IMultiSelectModel;
+import com.cannontech.common.gui.table.MultiJComboCellEditor;
+import com.cannontech.common.gui.table.MultiJComboCellRenderer;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.LMFuncs;
@@ -242,7 +246,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 
 			
 			MultiSelectProg[] progArray = new MultiSelectProg[ selPrgs.size() ];
-			setMultiSelectScenario( (MultiSelectProg[])selPrgs.toArray(progArray) );
+            setMultiSelectObject( (MultiSelectProg[])selPrgs.toArray(progArray), true );
 		}
 
 
@@ -890,26 +894,28 @@ private javax.swing.JLabel getJLabelScenario() {
 				javax.swing.table.TableColumn gearColumn = 
 						getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
 			
-				gearColumn.setMaxWidth(45);
-				gearColumn.setWidth(45);
-				gearColumn.setPreferredWidth(45);
+				//gearColumn.setMaxWidth(45);
+				//gearColumn.setWidth(45);
+				gearColumn.setPreferredWidth(90);
+                gearColumn.setCellEditor( new DefaultCellEditor(new JComboBox()) );
+                gearColumn.setCellRenderer( new ComboBoxTableRenderer() );
 				
 				// Create and add the column renderers	
-				ComboBoxTableRenderer comboBxRender = new ComboBoxTableRenderer();
+//				ComboBoxTableRenderer comboBxRender = new ComboBoxTableRenderer();
 				//comboBxRender.setBackground( Color.WHITE );	
-				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-					comboBxRender.addItem( new Integer(i+1) );
-				
-				gearColumn.setCellRenderer( comboBxRender );
+//				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
+//					comboBxRender.addItem( new Integer(i+1) );
+//				
+//				gearColumn.setCellRenderer( comboBxRender );
 				
 				
 				// Create and add the column editors
-			 	javax.swing.JComboBox combo = new javax.swing.JComboBox();
+//			 	javax.swing.JComboBox combo = new javax.swing.JComboBox();
 				//combo.setBackground( Color.WHITE );
-				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-					combo.addItem( new Integer(i+1) );
-			
-				gearColumn.setCellEditor( new DefaultCellEditor(combo) );				
+//				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
+//					combo.addItem( new Integer(i+1) );
+//			
+//				gearColumn.setCellEditor( new DefaultCellEditor(combo) );				
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1518,35 +1524,69 @@ private void initialize()
 			prgs[i] = new MultiSelectProg( (LMProgramBase)rows[i] );
 	
 			
-		return setMultiSelectObject( prgs );
+		return setMultiSelectObject( prgs, false );
 	}
 
-	private boolean setMultiSelectObject( MultiSelectProg[] rows ) 
+	private boolean setMultiSelectObject( MultiSelectProg[] rows, boolean isScenario ) 
 	{
 		if( rows == null )
 			return false;
-	
-	
-		//get all the programs and copy the needed values into a different object
-		MultiSelectProg[] prgs = new MultiSelectProg[ rows.length ]; 
-		for( int i = 0; i < rows.length; i++ )
-			prgs[i] = new MultiSelectProg( (LMProgramBase)rows[i].getBaseProgram() );
-	
-			
-		getJPanelMultiSelect().setSelectableData( prgs );
-		boolean showMulti = rows.length > 1;
-	
 
-		//set our width and visibilty by how many programs we have
-		setParentWidth( showMulti ? 285 : 0 ); //300, 250
-		getJPanelMultiSelect().setVisible( showMulti );		
-		getJComboBoxGear().removeAllItems();
-	
+        boolean showMulti = rows.length > 1;
+        
+        if( isScenario )
+        {
+            getJPanelMultiSelect().setSelectableData( rows );            
+        }
+        else
+        {
+            //get all the programs and copy the needed values into a different object
+    		MultiSelectProg[] prgs = new MultiSelectProg[ rows.length ]; 
+    		for( int i = 0; i < rows.length; i++ )
+    			prgs[i] = new MultiSelectProg( (LMProgramBase)rows[i].getBaseProgram() );
+    				
+    		getJPanelMultiSelect().setSelectableData( prgs );
+            setParentWidth( showMulti ? 285 : 0 ); //300, 250
+            getJPanelMultiSelect().setVisible( showMulti );     
+        }
 
+        getJComboBoxGear().removeAllItems();
+        
 		if( showMulti )
 		{
 			for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-				getJComboBoxGear().addItem( "Gear " + (i+1) ); //all gear nums start at 1
+			    getJComboBoxGear().addItem( "Gear " + (i+1) ); //all gear nums start at 1
+                                
+			//Do any column specific initialization here               
+            javax.swing.table.TableColumn gearColumn = 
+                    getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
+        
+            DefaultComboBoxModel[] models = new DefaultComboBoxModel[ rows.length ];
+            for( int i = 0; i < rows.length; i++ )
+            {
+                if( rows[i].getBaseProgram() instanceof IGearProgram )
+                {
+                    IGearProgram progGear =
+                        (IGearProgram)rows[i].getBaseProgram();
+
+                    DefaultComboBoxModel combModel = new DefaultComboBoxModel();
+                    for( int j = 0; j < progGear.getDirectGearVector().size(); j++ )
+                    {
+                        combModel.addElement( 
+                                progGear.getDirectGearVector().get(j) );
+
+                        if( progGear.getCurrentGearNumber().intValue() == (j+1) )
+                            combModel.setSelectedItem(
+                                    progGear.getDirectGearVector().get(j) );
+                    }
+                    
+                    models[i] = combModel;
+                }
+
+            }
+            
+            gearColumn.setCellRenderer( new MultiJComboCellRenderer(models) );
+            gearColumn.setCellEditor( new MultiJComboCellEditor(models) );
 		}
 		else if( rows.length == 1 && rows[0].getBaseProgram() instanceof IGearProgram )
 		{
@@ -1554,24 +1594,8 @@ private void initialize()
 			setGearList( ((IGearProgram)rows[0].getBaseProgram()).getDirectGearVector() );
 		}
 	
-		getJPanelMultiSelect().doClickSelectAll();
+        getJPanelMultiSelect().selectAllSelected( true );
 	
-		return ( rows.length > 0 );
-	}
-
-	private boolean setMultiSelectScenario( MultiSelectProg[] rows )
-	{
-		if( rows == null )
-			return false;
-
-
-		getJComboBoxGear().removeAllItems();
-		for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-			getJComboBoxGear().addItem( "Gear " + (i+1) ); //all gear nums start at 1
-	
-		getJPanelMultiSelect().selectAllSelected( true );
-		getJPanelMultiSelect().setSelectableData( rows );
-		
 		return ( rows.length > 0 );
 	}
 

@@ -169,9 +169,6 @@ private void showDirectManualEntry( final int panelMode )
 		? "Start Program(s)"
 		: "Stop Program(s)" );
 		
-	panel.setMode( panelMode );
-	
-	
 	d.setModal(true);
 	d.setContentPane(panel);
 	d.setSize(300,250);
@@ -186,7 +183,8 @@ private void showDirectManualEntry( final int panelMode )
 	
 	if( panel.setMultiSelectObject( prgArray ) )
 	{
-		d.show();
+        panel.setMode( panelMode );
+        d.show();
 	
 		//destroy the JDialog
 		d.dispose();

@@ -5,8 +5,6 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
-import javax.swing.SwingUtilities;
-
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
@@ -236,10 +234,7 @@ private void showDirectManualEntry( final int panelMode )
 		panelMode == DirectControlJPanel.MODE_START_STOP 
 		? "Start Program"
 		: "Stop Program" );
-		
-	panel.setMode( panelMode );
-	
-	
+
 	d.setModal(true);
 	d.setContentPane(panel);
 	d.setSize(300,250);
@@ -248,7 +243,8 @@ private void showDirectManualEntry( final int panelMode )
 
 	if( panel.setMultiSelectObject( new LMProgramBase[] { getLoadControlProgram() } ) )
 	{
-		d.show();
+        panel.setMode( panelMode );
+        d.show();
 
 		//destroy the JDialog
 		d.dispose();
