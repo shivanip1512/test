@@ -160,6 +160,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private ArrayList interviewQuestions = null;	// List of LiteInterviewQuestion
 	private ArrayList customerFAQs = null;		// List of LiteCustomerFAQ
 	
+	// List of operator login IDs (Integer)
+	private ArrayList operatorLoginIDs = null;
+	
 	// Map of hardware type yukondefid (Integer) to LiteStarsLMHardware
 	private Hashtable dftLMHardwares = null;
 	
@@ -170,6 +173,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	private int dftRouteID = CtiUtilities.NONE_ID;
 	private TimeZone dftTimeZone = null;
+	private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
+	
 	private OptOutEventQueue optOutEventQueue = null;
 	private SwitchCommandQueue switchCommandQueue = null;
 	private ArrayList accountsWithGatewayEndDevice = null;	// List of LiteStarsCustAccountInformation
@@ -414,6 +419,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		selectionLists = null;
 		interviewQuestions = null;
 		customerFAQs = null;
+		operatorLoginIDs = null;
 		dftLMHardwares = null;
 		
 		nextCallNo = 0;
@@ -423,6 +429,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		dftRouteID = CtiUtilities.NONE_ID;
 		dftTimeZone = null;
+		operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
+		
 		optOutEventQueue = null;
 		switchCommandQueue = null;
 		accountsWithGatewayEndDevice = null;
@@ -461,6 +469,26 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public LiteYukonGroup getWebClientOperatorGroup() {
 		String operatorGroupName = getEnergyCompanySetting( EnergyCompanyRole.OPERATOR_GROUP_NAME );
 		return AuthFuncs.getGroup( operatorGroupName );
+	}
+	
+	public LiteYukonGroup getOperatorDefaultGroup() {
+		if (operDftGroupID < com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID) {
+			LiteYukonUser dftUser = YukonUserFuncs.getLiteYukonUser( getUserID() );
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			
+			synchronized (cache) {
+				java.util.List groups = (java.util.List) cache.getYukonUserGroupMap().get( dftUser );
+				for (int i = 0; i < groups.size(); i++) {
+					LiteYukonGroup group = (LiteYukonGroup) groups.get(i);
+					if (AuthFuncs.getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
+						operDftGroupID = group.getGroupID();
+						return group;
+					}
+				}
+			}
+		}
+		
+		return AuthFuncs.getGroup( operDftGroupID );
 	}
     
 	public synchronized ArrayList getAllLMPrograms() {
@@ -892,6 +920,31 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		}
 		
 		return serviceCompanies;
+	}
+	
+	public synchronized ArrayList getOperatorLoginIDs() {
+		if (operatorLoginIDs == null) {
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					"SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + getEnergyCompanyID(),
+					CtiUtilities.getDatabaseAlias() );
+			
+			try {
+				stmt.execute();
+				
+				operatorLoginIDs = new ArrayList( stmt.getRowCount() );
+				for (int i = 0; i < stmt.getRowCount(); i++) {
+					int userID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+					operatorLoginIDs.add( new Integer(userID) );
+				}
+				
+				CTILogger.info( "All operator logins loaded for energy company #" + getEnergyCompanyID() );
+			}
+			catch (com.cannontech.common.util.CommandExecutionException e) {
+				CTILogger.error(e.getMessage(), e);
+			}
+		}
+		
+		return operatorLoginIDs;
 	}
 	
 	public synchronized LiteStarsLMHardware getDefaultLMHardware(int hwTypeDefID) {
