@@ -28,7 +28,7 @@ public interface ResidentialCustomerRole {
 	public static final int HIDE_OPT_OUT_BOX = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 31;
 	public static final int CUSTOMIZED_FAQ_LINK= ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 32;
 	public static final int CUSTOMIZED_UTIL_EMAIL_LINK = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 33;
-	public static final int DISABLE_RPOGRAM_SIGNUP = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 34;
+	public static final int DISABLE_PROGRAM_SIGNUP = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 34;
 	
 	public static final int WEB_LINK_FAQ = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 40;
 	public static final int WEB_LINK_UTIL_EMAIL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 41;
@@ -46,7 +46,7 @@ public interface ResidentialCustomerRole {
 	public static final int WEB_LABEL_OPT_OUT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 67;
 	public static final int WEB_LABEL_THERM_SCHED = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 68;
 	public static final int WEB_LABEL_THERM_MANUAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 69;
-	public static final int WEB_TITLE_GENERAL_TITLE = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 75;
+	public static final int WEB_TITLE_GENERAL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 75;
 	public static final int WEB_TITLE_CONTROL_HISTORY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 76;
 	public static final int WEB_TITLE_PROGRAM_CTRL_HIST = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 77;
 	public static final int WEB_TITLE_PROGRAM_CTRL_SUM = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 78;
