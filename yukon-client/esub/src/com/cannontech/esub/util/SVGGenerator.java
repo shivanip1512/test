@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.DrawingElement;
@@ -286,7 +287,7 @@ public class SVGGenerator {
 						pathStr += "Z ";
 						break;
 					default: 
-						System.out.println("unknown path type");
+						CTILogger.info("unknown path type");
 				}	
 			
 				pi.next();

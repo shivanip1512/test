@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
@@ -103,7 +104,7 @@ public int getPointID() {
 private void initialize() {
 	setText("N/A");
 	setFont(DEFAULT_FONT);
-	System.out.println(DEFAULT_FONT.getFontName());
+	CTILogger.info(DEFAULT_FONT.getFontName());
 	setPaint(DEFAULT_COLOR);
 
 	point = new com.cannontech.database.data.lite.LitePoint(INVALID_POINT);

@@ -5,6 +5,7 @@ import java.io.File;
 import javax.swing.SwingUtilities;
 import javax.swing.event.*;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.*;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
@@ -60,7 +61,7 @@ private void changeStateImageTable(StateImage stateImage, com.cannontech.databas
 					img = StateImage.INVALID_STATE_IMAGE_NAME;
 				
 				getStateImageTableModel().addState(stateText, img);
-				System.out.println("added a state: " + stateText + "-" + img);
+				CTILogger.info("added a state: " + stateText + "-" + img);
 			}
 
 			getStatusImageTable().tableChanged(new TableModelEvent(getStateImageTableModel()));
@@ -325,7 +326,7 @@ public Object getValue(Object o) {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**

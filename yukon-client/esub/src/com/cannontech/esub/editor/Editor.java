@@ -26,6 +26,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
@@ -386,7 +387,7 @@ public class Editor extends JPanel {
 		if (args.length == 1) {
 			String file = args[0];
 
-			System.out.println("Loading " + file);
+			CTILogger.info("Loading " + file);
 			editor.loadDrawing(file);
 		}
 

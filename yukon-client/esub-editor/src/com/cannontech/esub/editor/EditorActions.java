@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxComponent;
@@ -364,7 +365,7 @@ class EditorActions {
 		public void processAction(ActionEvent e) {
 			Object[] o = editor.getDrawing().getLxGraph().getSelectedObjects();
 			for (int i = 0; i < o.length; i++) {
-				System.out.println(o.getClass());
+				CTILogger.info(o.getClass());
 			}
 		}
 	};
