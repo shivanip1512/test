@@ -251,7 +251,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			
 			graph.setDatabaseAlias(CtiUtilities.getDatabaseAlias());
 			graph.setSize((int) getWidth(), (int) getHeight());
-			graph.setCurrentGraphDefinition(gDef);
+			graph.setGraphDefinition(gDef);
 			//graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 
 			graph.setViewType(getTrendType());
