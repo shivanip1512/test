@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/03 22:55:03 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/18 16:24:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,7 +76,7 @@ public:
 
     CtiStatistics(long id = 0);
     CtiStatistics(const CtiStatistics& aRef);
-    virtual ~CtiStatistics() {}
+    virtual ~CtiStatistics();
 
     bool operator<( const CtiStatistics &rhs ) const;
     bool operator==( const CtiStatistics &rhs ) const;
@@ -139,6 +139,7 @@ private:
 
     bool _restoreworked;
     bool _updateOnNextCompletion;     // If set, the next completion causes an update
+    bool _dirty;
 
     RWTime _previoustime;
 

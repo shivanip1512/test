@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/07 21:43:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/18 16:24:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@ using namespace std;
 
 CtiStatistics::CtiStatistics(long id) :
     _restoreworked(false),
+    _dirty(false),
     _updateOnNextCompletion(false),
     _pid(id)
 {
@@ -70,15 +71,30 @@ CtiStatistics::CtiStatistics(long id) :
     computeLastMonthInterval(_startStopTimePairs[ LastMonth ]);
 }
 
-CtiStatistics::CtiStatistics(const CtiStatistics& aRef)
+CtiStatistics::CtiStatistics(const CtiStatistics& aRef) :
+_dirty(false)
 {
     *this = aRef;
 }
+
+CtiStatistics::~CtiStatistics()
+{
+    if(_dirty)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        Update();
+    }
+}
+
 
 void CtiStatistics::incrementRequest(const RWTime &stattime)
 {
     CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Requests);
+    _dirty = true;
 
     _counter[ HourNo ].inc( Requests );
     _counter[ Daily ].inc( Requests );
@@ -89,6 +105,7 @@ void CtiStatistics::decrementRequest(const RWTime &stattime)        // This is a
 {
     CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Attempts);
+    _dirty = true;
 
     _counter[HourNo].dec( Requests );
     _counter[ Daily ].dec( Requests );
@@ -99,6 +116,7 @@ void CtiStatistics::incrementAttempts(const RWTime &stattime, int CompletionStat
 {
     CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Attempts);
+    _dirty = true;
 
     if(CompletionStatus != NORMAL)
     {
@@ -141,6 +159,8 @@ void CtiStatistics::incrementFail(const RWTime &stattime, CtiStatisticsCounters_
     CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, failtype);
 
+    _dirty = true;
+
     _counter[HourNo].inc( failtype );
     _counter[ Daily ].inc( failtype );
     _counter[ Monthly ].inc( failtype );
@@ -151,6 +171,7 @@ void CtiStatistics::incrementSuccess(const RWTime &stattime)
     CtiLockGuard<CtiMutex> guard(_statMux);
     int HourNo = newHour(stattime, Completions);
 
+    _dirty = true;
     _counter[HourNo].inc( Completions );
     _counter[ Daily ].inc( Completions );
     _counter[ Monthly ].inc( Completions );
@@ -253,6 +274,8 @@ CtiStatistics& CtiStatistics::operator=(const CtiStatistics& aRef)
         CtiLockGuard<CtiMutex> arefguard(aRef._statMux);
         CtiLockGuard<CtiMutex> guard(_statMux);
         int i;
+
+        _dirty = true;
 
         setID(aRef.getID());
         _previoustime = aRef._previoustime;
@@ -480,6 +503,7 @@ RWDBStatus::ErrorCode CtiStatistics::Restore()
             dbstat = rdr.status();
 
             _restoreworked = true;
+            _dirty = false;
         }
     }
 
@@ -531,6 +555,8 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn)
         }
     }
 
+    _dirty = false;
+
     return stat.errorCode();
 }
 
@@ -576,6 +602,11 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << "Error Code = " << stat.errorCode() << endl;
         }
+    }
+
+    if( stat.errorCode() == RWDBStatus::ok )
+    {
+        _dirty = false;
     }
 
     return stat.errorCode();
