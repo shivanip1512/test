@@ -92,18 +92,15 @@ public class ProgramOptOutAction implements ActionBase {
             	optOut.setPeriod( Math.abs(period) );
             }
             else {	// This is a special entry, e.g. "Today"
+            	String optOutPrdListName = (selectionLists.get(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) != null)?
+						YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD : YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS;
+				
             	StarsCustListEntry entryTomorrow = ServletUtils.getStarsCustListEntry(
-            			selectionLists,
-            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW );
+            			selectionLists, optOutPrdListName, YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TOMORROW );
             	StarsCustListEntry entryToday = ServletUtils.getStarsCustListEntry(
-            			selectionLists,
-            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY );
+            			selectionLists, optOutPrdListName, YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_TODAY );
             	StarsCustListEntry entryRepeatLast = ServletUtils.getStarsCustListEntry(
-            			selectionLists,
-            			YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD,
-            			YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST );
+            			selectionLists, optOutPrdListName, YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST );
             			
             	if (entryTomorrow != null && period == entryTomorrow.getEntryID() )
             	{
