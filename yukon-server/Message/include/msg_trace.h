@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_trace.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:27 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/04/29 13:43:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@ class IM_EX_MSG CtiTraceMsg : public CtiMessage
 {
 protected:
 
+    bool _end;
     INT _attributes;        // FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED default
     RWCString _trace;
 
@@ -51,7 +52,7 @@ public:
     INT getAttributes() const;
     RWCString getTrace() const;
     RWCString& getTrace();
-    
+
     CtiTraceMsg& setAttributes(const INT& attr);
     CtiTraceMsg& setTrace(const RWCString& str);
 
@@ -64,6 +65,10 @@ public:
 
 
     CtiTraceMsg& resetAttributes();
+    CtiTraceMsg& setEnd(bool nd = true);
+    CtiTraceMsg& clearEnd();
+    bool isEnd() const;
+
     CtiTraceMsg& setBright();   // Always apply this attribute last.
     CtiTraceMsg& setRed();
     CtiTraceMsg& setGreen();
@@ -105,6 +110,10 @@ inline CtiTraceMsg& CtiTraceMsg::setBrightYellow()     { return setYellow().setB
 inline CtiTraceMsg& CtiTraceMsg::setBrightCyan()       { return setCyan().setBright(); }
 inline CtiTraceMsg& CtiTraceMsg::setBrightMagenta()    { return setMagenta().setBright(); }
 inline CtiTraceMsg& CtiTraceMsg::setBrightWhite()      { return setWhite().setBright();  }
+
+inline CtiTraceMsg& CtiTraceMsg::clearEnd()            { _end = false; return *this; }
+inline bool CtiTraceMsg::isEnd() const                 { return _end; }
+
 
 
 

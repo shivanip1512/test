@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_trace.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/12 01:03:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/04/29 13:43:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@ RWDEFINE_COLLECTABLE( CtiTraceMsg, MSG_TRACE );
 
 
 CtiTraceMsg::CtiTraceMsg() :
+    _end(true),
     _attributes( FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED )
 {}
 
@@ -49,6 +50,7 @@ CtiTraceMsg& CtiTraceMsg::operator=(const CtiTraceMsg& aRef)
 {
     if(this != &aRef)
     {
+        setEnd(aRef.isEnd());
         setAttributes(aRef.getAttributes());
         setTrace(aRef.getTrace());
     }
@@ -67,15 +69,22 @@ CtiMessage* CtiTraceMsg::replicateMessage() const
 void
 CtiTraceMsg::restoreGuts(RWvistream& aStream)
 {
-   Inherited::restoreGuts( aStream );
-   aStream >> _attributes >> _trace;
+    int end = FALSE;                    // stupid RWVistream cant do bool...
+
+    Inherited::restoreGuts( aStream );
+
+   aStream >> end >> _attributes >> _trace;
+
+   _end = end ? true : false;
 }
 
 void
 CtiTraceMsg::saveGuts(RWvostream &aStream) const
 {
-   Inherited::saveGuts( aStream );
-   aStream << _attributes << _trace;
+    int end = _end ? TRUE : FALSE;      // stupid RWVistream cant do bool...
+
+    Inherited::saveGuts( aStream );
+    aStream << end << _attributes << _trace;
 }
 
 void
@@ -93,6 +102,7 @@ void CtiTraceMsg::dump() const
 
    CtiLockGuard<CtiLogger> doubt_guard(dout);
    dout << " Message Attributes            " << _attributes << endl;
+   dout << " Message End                   " << (_end ? "TRUE" : "FALSE") << endl;
    dout << " Message Trace                 " << _trace << endl;
 }
 
@@ -131,4 +141,9 @@ CtiTraceMsg& CtiTraceMsg::setTrace(const RWCString& str)
     return *this;
 }
 
+CtiTraceMsg& CtiTraceMsg::setEnd(bool nd)
+{
+    _end = nd;
+    return *this;
+}
 
