@@ -41,14 +41,14 @@
 
 	<target name="clean">
 		<delete dir="build"/>
-		<delete>
+	<!--	<delete>
 			<fileset dir="${stars-web}/WEB-INF/lib">
 				<include name="**/*.properties"/>
 				<include name="**/*.jar"/>
 				<exclude name="**/web.jar"/>
 				<exclude name="**/struts.jar"/>
 			</fileset>
-		</delete>
+		</delete>-->
    </target>
    
 </project>
