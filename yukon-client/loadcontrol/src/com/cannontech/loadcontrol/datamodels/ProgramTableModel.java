@@ -31,7 +31,11 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	public static final int START_TIME				= 2;
 	public static final int STOP_TIME				= 3;
   	public static final int CURRENT_GEAR			= 4;
-  	public static final int REDUCTION				= 5;
+  	public static final int PRIORITY					= 5;
+
+  	public static final int REDUCTION				= 6;
+  	
+  	
   	
 	//The column names based on their column index
 	public static String[] columnNames =
@@ -41,6 +45,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 		"Start Date/Time",
 		"Stop Date/Time",
 		"Current Gear",
+		"Priority",
 		
 		//optional column to show (keep this column last!)
 		"Reduction"
@@ -358,6 +363,12 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 							return new com.cannontech.clientutils.commonutils.ModifiedDate( prg.getStopTime().getTime().getTime() );
 					}
 				
+				case PRIORITY:
+					return 
+						( prg.getDefaultPriority().intValue() <= 0
+						? new Integer(1)
+						: prg.getDefaultPriority() );
+
 				case REDUCTION:
 					return prg.getReductionTotal();
 					
