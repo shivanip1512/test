@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/08/18 22:04:49 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/08/18 22:10:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -847,7 +847,7 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
     selector.where( selector.where() &&
                     keyTable["activerestore"] == LMAR_NEWCONTROL &&
                     !anXpr.in(RWDBExpr("(select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T' or activerestore='S')", FALSE)) &&
-                    stdtXpr.in(RWDBExpr("(select max(startdatetime) from lmcontrolhistory group by paobjectid)", FALSE)) );
+                    stdtXpr.in(RWDBExpr("(select max(startdatetime) from lmcontrolhistory where activerestore='N' group by paobjectid)", FALSE)) );
 
 }
 
