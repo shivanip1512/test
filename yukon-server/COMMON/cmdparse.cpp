@@ -84,6 +84,8 @@ void  CtiCommandParser::parse()
     RWCString       strnum;
     INT             _num = 0;
 
+    _actionItems.clear();   // 20050125 CGP.  Getting duplicate actionItems when I reparse in the groups.  This should be benign.
+
     if(!CmdStr.match("^pil ").isNull() || !CmdStr.match("^command ").isNull())
     {
         CmdStr = CmdStr.replace("^pil ", "");
@@ -2724,6 +2726,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
             _snprintf(tbuf, sizeof(tbuf), "OVUV %s", op_name);
             _actionItems.insert(tbuf);
+        }
+
+        if(!(token = CmdStr.match(" sync|filler")).isNull())
+        {
+            _cmd["vcfiller"] = TRUE;
         }
     }
     else
