@@ -390,7 +390,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 				}
 			}
 			
-			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			if (ECUtils.isOperator( user ))
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
+			else
+				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Thermostat name updated successfully" );
 		}
 	}
 

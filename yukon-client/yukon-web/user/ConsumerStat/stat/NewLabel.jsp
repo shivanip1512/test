@@ -38,8 +38,6 @@
             <div align="center"><br>
               <% String header = "THERMOSTAT - CHANGE LABEL"; %>
               <%@ include file="include/InfoBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
@@ -47,6 +45,8 @@
                   </td>
                 </tr>
               </table>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="UpdateLMHardware">
