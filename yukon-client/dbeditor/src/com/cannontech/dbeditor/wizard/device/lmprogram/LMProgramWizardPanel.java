@@ -187,6 +187,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	else if( currentInputPanel == getLmProgramTypePanel() )
 	{
+		getLmProgramBasePanel().setIsAWizardOp(true);
 		return getLmProgramBasePanel();
 	}
 	else if( currentInputPanel == getLmProgramBasePanel() )
@@ -206,6 +207,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	// Direct program begin
 	else if( currentInputPanel == getLmProgramDirectPanel() )
 	{
+		getLMProgramControlWindowPanel().setTimedOperationalStateCondition(getLmProgramBasePanel().isTimedOperationalState());
 		return getLMProgramControlWindowPanel();
 	}
 	else if( currentInputPanel == getLMProgramControlWindowPanel() )

@@ -6,9 +6,12 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramBase;
+import com.cannontech.common.editor.PropertyPanelEvent;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;
+	//This is for the timed operational state
+	private boolean isAWizardOp = false; 
 	//Control Methods
 	public static final String TIME_REFRESH_CONTROL = "TimeRefresh";
 	public static final String SMART_CYCLE_CONTROL = "SmartCycle";
@@ -79,6 +82,26 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
+		if(!isAWizardOp)
+		{
+			/*java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+   
+			//This makes sure that the user applies the Timed state before going to the control window tab
+			StringBuffer message = new StringBuffer("You have selected a Timed operational state.  Please click \n" + 
+													 "the Apply button before specifying your control times or \n" + 
+													 "the control window panel will not reflect the current operational state");
+			int optional = 
+						 javax.swing.JOptionPane.showConfirmDialog(
+								 this, 
+								 message,
+							  "Changes should be applied.",
+							  JOptionPane.OK_OPTION,
+							  JOptionPane.WARNING_MESSAGE);*/
+							  
+				fireInputDataPanelEvent( new PropertyPanelEvent(
+										this, 
+										PropertyPanelEvent.EVENT_FORCE_APPLY));
+		}
 		// user code end
 		this.fireInputUpdate();
 		// user code begin {2}
@@ -591,6 +614,20 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
 {
 }
 
+public boolean isTimedOperationalState()
+{
+	return getJComboBoxOperationalState().getSelectedItem().toString().compareTo("Timed") == 0;
+}
+
+public boolean getIsAWizardOp()
+{
+	return isAWizardOp;
+}
+
+public void setIsAWizardOp(boolean wizard)
+{
+	isAWizardOp = wizard;
+}
 /**
  * 
  */

@@ -626,6 +626,54 @@ public void setValue(Object o)
 	}
 
 }
+
+public void setTimedOperationalStateCondition(boolean timedOrNot)
+{
+	if(timedOrNot)
+	{
+		com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
+		ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
+		ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjLocalBorder.setTitle("Control Times #1");
+		getJPanelOptionalWindow1().setBorder(ivjLocalBorder);
+		
+		getJCheckBoxUse2().setText("Use 2nd Control Time");
+		
+		com.cannontech.common.gui.util.TitleBorder ivjLocalBorder2;
+		ivjLocalBorder2 = new com.cannontech.common.gui.util.TitleBorder();
+		ivjLocalBorder2.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjLocalBorder2.setTitle("Control Times #2");
+		getJPanelOptionalWindow2().setBorder(ivjLocalBorder2);
+		
+	}
+	else
+	{
+		com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
+		ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
+		ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjLocalBorder.setTitle("Optional Available For Control Window #1");
+		getJPanelOptionalWindow1().setBorder(ivjLocalBorder);
+		
+		getJCheckBoxUse2().setText("Use Window 2");
+		
+		com.cannontech.common.gui.util.TitleBorder ivjLocalBorder2;
+		ivjLocalBorder2 = new com.cannontech.common.gui.util.TitleBorder();
+		ivjLocalBorder2.setTitleFont(new java.awt.Font("Arial", 1, 14));
+		ivjLocalBorder2.setTitle("Optional Available For Control Window #2");
+		getJPanelOptionalWindow2().setBorder(ivjLocalBorder2);
+		
+		if(getJCheckBoxUse2().isSelected())
+			getJCheckBoxUse2().doClick();
+	}
+	
+	//fire it off to enable that window
+	getJCheckBoxUse1().setSelected(!timedOrNot);
+	getJCheckBoxUse1().doClick();
+	
+	getJCheckBoxUse1().setVisible(!timedOrNot);
+
+
+}
 /**
  * 
  */

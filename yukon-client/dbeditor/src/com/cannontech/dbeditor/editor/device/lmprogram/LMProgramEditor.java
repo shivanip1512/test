@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.editor.device.lmprogram;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel;
+import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel;
 /**
  * This type was created in VisualAge.
  */
@@ -206,8 +208,12 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
+	//do what is necessary for Timed operational state
+	checkTimedOpStatus();
+	
 	boolean retVal = super.isInputValid();
-
+	boolean isTimedOpState = false;
+	
 	boolean isLatching = false;
 	boolean hasLMGroupPoint = false;
 	String errTitle = null;
@@ -229,8 +235,11 @@ public boolean isInputValid()
 					
 				errTitle = getTabNames()[i];
 			}
+			
 		}
 
+			
+		
 		if( !isLatching && hasLMGroupPoint )
 		{
 			setErrorString("The '" + errTitle + "' panel had the following error(s): \n   -> " +
@@ -282,6 +291,9 @@ public void setValue(Object val)
 	
 	//Allow super to do whatever it needs to
 	super.setValue( val );
+	
+	//check for special Timed Operational State case
+	checkTimedOpStatus();
 }
 /**
  * This method was created in VisualAge.
@@ -290,6 +302,26 @@ public void setValue(Object val)
 public String toString() {
 	return "LMProgram Editor";
 }
+
+public void checkTimedOpStatus()
+{
+
+	boolean isTimedOpState = false;
+	
+	for( int i = 0; i < getInputPanels().length; i++ )
+	{
+		if(getInputPanels()[i] instanceof LMProgramBasePanel )
+		{
+			isTimedOpState = ((LMProgramBasePanel)getInputPanels()[i]).isTimedOperationalState(); 
+		}
+			
+		if(getInputPanels()[i] instanceof LMProgramControlWindowPanel)
+		{
+			((LMProgramControlWindowPanel)getInputPanels()[i]).setTimedOperationalStateCondition(isTimedOpState); 
+		}
+	}
+}
+
 /**
  * 
  */
