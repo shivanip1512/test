@@ -19,6 +19,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -632,12 +633,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			int port = 1510;
 			try
 			{
-				host = ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.DISPATCH_MACHINE, "127.0.0.1" );
+				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
 	            
-				port = (new Integer(
-					ClientSession.getInstance().getRolePropertyValue(
-						SystemRole.DISPATCH_PORT, "1510"))).intValue();			
+				port = Integer.parseInt(
+							RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
 			}
 			catch( Exception e)
 			{

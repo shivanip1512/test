@@ -144,20 +144,23 @@ public class CTILogger
 		for( int i = 0; i < ALL_NAMES.length; i++ )
 			if( logger_.getName().equalsIgnoreCase(ALL_NAMES[i][0].toString()) )
 			{
-				level = RoleFuncs.getGlobalPropertyValue( 
-						((Integer)ALL_NAMES[i][1]).intValue() );
+//				level = RoleFuncs.getGlobalPropertyValue( 
+//						((Integer)ALL_NAMES[i][1]).intValue() );
+
+				level = "ALL";
 			}
 			
 		//just in case we can not find the name above
 		if( level == null )
-		{
-			LiteYukonRoleProperty p =
-				AuthFuncs.getRoleProperty( LoggingRole.GENERAL_LEVEL );
-			
+		{			
+//			LiteYukonRoleProperty p =
+//				AuthFuncs.getRoleProperty( LoggingRole.GENERAL_LEVEL );
+
+
 			//extra special case since we may not be inited yet with out properties
-			if( p != null )
-				level = RoleFuncs.getGlobalPropertyValue( LoggingRole.GENERAL_LEVEL );
-			else
+//			if( p != null )
+//				level = RoleFuncs.getGlobalPropertyValue( LoggingRole.GENERAL_LEVEL );
+//			else
 				level = "ALL";
 		}				
 
@@ -175,12 +178,15 @@ public class CTILogger
    {
    	Logger log = getLogger();
 		setLogLevel( getLoggerLevel(log) );
-		
-		String writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
 
-//System.out.println( "   USR = " + ClientSession.getInstance().getUser() +
-//",  " + log.getLevel() +  
-//",  " + writeToFile );
+
+//		LiteYukonRoleProperty lToFile =
+//			AuthFuncs.getRoleProperty( LoggingRole.LOG_TO_FILE );
+
+		String writeToFile = "false";
+//		if( lToFile != null )
+//			writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
+
 
 		if( Boolean.valueOf(writeToFile).booleanValue() )
 		{

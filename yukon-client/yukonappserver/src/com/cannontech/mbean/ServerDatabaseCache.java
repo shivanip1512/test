@@ -963,8 +963,8 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRolePropertyMap()
 	 */
-	public Map getYukonUserRolePropertyMap() {
-		
+	public Map getYukonUserRolePropertyMap() 
+	{
 		if(allYukonUserRoleProperties == null) {
 			allYukonUserRoleProperties = new java.util.HashMap();
 		    final YukonUserRoleLoader l = 
@@ -977,8 +977,10 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
 	 */
-	public Map getYukonGroupRolePropertyMap() {
-		if(allYukonGroupRoleProperties == null) {
+	public Map getYukonGroupRolePropertyMap() 
+	{
+		if(allYukonGroupRoleProperties == null) 
+		{
 			allYukonGroupRoleProperties = new java.util.HashMap();
 			final YukonGroupRoleLoader l = 
 				new YukonGroupRoleLoader(allYukonGroupRoleProperties, getAllYukonGroups(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
@@ -990,7 +992,8 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserGroupMap()
 	 */
-	public Map getYukonUserGroupMap() {
+	public Map getYukonUserGroupMap() 
+	{
 		if(allYukonUserGroups == null) {
 			loadUsersAndGroups();
 		}
@@ -1000,14 +1003,16 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupUserMap()
 	 */
-	public Map getYukonGroupUserMap() {
+	public Map getYukonGroupUserMap()
+	{
 		if(allYukonUserGroups == null) {
 			loadUsersAndGroups();
 		}
 		return allYukonGroupUsers;				
 	}
 
-	private void loadUsersAndGroups() {
+	private void loadUsersAndGroups() 
+	{
 		allYukonUserGroups = new HashMap();
 		allYukonGroupUsers = new HashMap();
 		YukonUserGroupLoader l = 
@@ -1018,14 +1023,16 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRoleIDLookupMap()
 	 */
-	public Map getYukonUserRoleIDLookupMap() {
+	public Map getYukonUserRoleIDLookupMap() 
+	{
 		if(allYukonUserLookupRoleIDs == null) {
 			loadRoleLookupMaps();
 		}
 		return allYukonUserLookupRoleIDs;
 	}
 	
-	public Map getYukonUserRolePropertyIDLookupMap() {
+	public Map getYukonUserRolePropertyIDLookupMap() 
+	{
 		if(allYukonUserLookupRolePropertyIDs == null) {
 			loadRoleLookupMaps();
 		}
@@ -1036,7 +1043,7 @@ public synchronized java.util.List getAllYukonPAObjects()
 	 * Fill in allYukonUserLookupRoleIDs and allYukonUserLookupRolePropertyIDs
 	 */	
 	private void loadRoleLookupMaps() 
-	{
+	{		
 		allYukonUserLookupRoleIDs = new HashMap();
 		allYukonUserLookupRolePropertyIDs = new HashMap();
 		
@@ -1149,7 +1156,6 @@ public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
 	{
 		cache = new ServerDatabaseCache();
 		cache.setDbChangeListener( new CacheDBChangeListener() );
-		com.cannontech.clientutils.CTILogger.info("CACHE: CREATED NEW CACHE REFERENCE OBJECT");
 	}
 
 	return cache;

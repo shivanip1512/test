@@ -11,11 +11,11 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpSessionBindingEvent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -340,12 +340,10 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		int port = 1510;
 		try
 		{
-			host = ClientSession.getInstance().getRolePropertyValue(
-						SystemRole.PORTER_MACHINE, "127.0.0.1" );
-			
-			port = (new Integer( 
-						ClientSession.getInstance().getRolePropertyValue(SystemRole.PORTER_MACHINE, 
-                  "1510"))).intValue();
+			host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
+
+			port = Integer.parseInt( 
+				RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
 		}
 		catch( Exception e)
 		{

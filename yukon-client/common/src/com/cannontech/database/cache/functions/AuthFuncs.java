@@ -1,9 +1,11 @@
 package com.cannontech.database.cache.functions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
@@ -117,7 +119,20 @@ public class AuthFuncs {
 		synchronized(cache) 
 		{
 			Map lookupMap = cache.getYukonGroupRolePropertyMap();
-			Map roleMap = (Map) lookupMap.get( group_ );
+			
+//Set s = lookupMap.keySet();
+//Iterator it = s.iterator();
+//while( it.hasNext() )
+//System.out.println("  " + it.next() );
+//
+//System.out.println("     Vals" );
+//Collection c = lookupMap.values();
+//it = c.iterator();
+//while( it.hasNext() )
+//System.out.println("  " + it.next() );
+
+
+			Map roleMap = (Map) lookupMap.get( group_ );			
 			
 			if(roleMap != null) {			
 				Iterator rIter = roleMap.entrySet().iterator(); 

@@ -24,7 +24,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
 
 /**
@@ -230,8 +230,7 @@ public class EmailMessage
 	{
 		if( from == null)
 		{
-			from = ClientSession.getInstance().getRolePropertyValue(
-						SystemRole.MAIL_FROM_ADDRESS);
+			from = RoleFuncs.getGlobalPropertyValue( SystemRole.MAIL_FROM_ADDRESS );
 
 			//still dont have a value, nothing will work then!
 			if( from == null )
@@ -250,8 +249,8 @@ public class EmailMessage
 	{
 		if( smtpServer == null)
 		{
-			smtpServer = ClientSession.getInstance().getRolePropertyValue(
-								SystemRole.SMTP_HOST);
+			smtpServer = RoleFuncs.getGlobalPropertyValue( SystemRole.SMTP_HOST );
+
 
 			//still dont have a value, nothing will work then!
 			if( smtpServer == null )
