@@ -320,12 +320,19 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
  */
 INT EstablishOutMessagePriority(OUTMESS *Out, INT priority)
 {
-    if(Out->Priority <= 0)
+    INT pri = 0;
+
+    if(Out)
     {
-        Out->Priority = priority;
+        if(Out->Priority <= 0)
+        {
+            Out->Priority = priority;
+        }
+
+        pri = Out->Priority;
     }
 
-    return Out->Priority;
+    return pri;
 }
 
 /*
@@ -333,7 +340,13 @@ INT EstablishOutMessagePriority(OUTMESS *Out, INT priority)
  */
 INT OverrideOutMessagePriority(OUTMESS *Out, INT priority)
 {
-    return Out->Priority = priority;
+    INT pri = 0;
+
+    if(Out)
+    {
+        pri = Out->Priority = priority;
+    }
+    return pri;
 }
 
 
