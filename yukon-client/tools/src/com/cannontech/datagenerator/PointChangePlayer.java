@@ -8,9 +8,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
@@ -44,13 +44,10 @@ public class PointChangePlayer {
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
 		ClientConnection conn = new ClientConnection();
-		conn.setHost(
-			ClientSession.getInstance().getRolePropertyValue(
-				SystemRole.DISPATCH_MACHINE).toString());
-				
+		conn.setHost( RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE ) );
 		conn.setPort(Integer.parseInt
-				(ClientSession.getInstance().getRolePropertyValue(
-					SystemRole.DISPATCH_PORT).toString()));
+				(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT).toString()));
+				
 		try {
 			conn.connect();
 		} catch (IOException e) {

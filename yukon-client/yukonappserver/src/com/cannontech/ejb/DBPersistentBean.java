@@ -11,9 +11,9 @@ import com.cannontech.yukon.IDBPersistent;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.RoleFuncs;
 
 /* Add this to DBPersistentHome class */
 //public com.cannontech.ejb.DBPersistent create() throws javax.ejb.CreateException, java.rmi.RemoteException;
@@ -694,8 +694,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
    public static boolean isPrintSQL() 
    {
 		//some other startup init properties
-		String printSQLfile = ClientSession.getInstance().getRolePropertyValue(
-										SystemRole.PRINT_INSERTS_SQL, CtiUtilities.STRING_NONE );
+		String printSQLfile = RoleFuncs.getGlobalPropertyValue( SystemRole.PRINT_INSERTS_SQL );
 
 		try
 		{

@@ -2,8 +2,8 @@ package com.cannontech.yukon.connections;
 
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IConnectionBase;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.ClientConnection;
@@ -54,20 +54,18 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	private void initConnection()
 	{
 		String host = "127.0.0.1";
-		Integer port = new Integer("1900");
+		int port = 1900;
 		String portStr = "1900";
 		String readOnly = "0";
 	
 	   try
 	   {
-			host = ClientSession.getInstance().getRolePropertyValue(
-						SystemRole.MACS_MACHINE, "127.0.0.1" );
+			host = RoleFuncs.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
 	
 			try
 			{
-				portStr = ClientSession.getInstance().getRolePropertyValue(
-								SystemRole.MACS_PORT, "1900");
-				port = new Integer(portStr);
+				port = Integer.parseInt(
+						RoleFuncs.getGlobalPropertyValue( SystemRole.MACS_PORT ) );
 			}
 			catch (Exception e)
 			{
@@ -81,7 +79,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	   }
 	
 	   setHost(host);
-	   setPort(port.intValue());
+	   setPort(port);
 	   setAutoReconnect(true);
 	   setTimeToReconnect(5);
 	

@@ -11,8 +11,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -99,7 +99,7 @@ public class SOAPClient extends HttpServlet {
 		// If "stars_soap_server" is not (none), it means SOAPServer is running remotely
 		// For now, always consider SOAPServer is running locally
 		SOAP_SERVER_URL =
-			ClientSession.getInstance().getRolePropertyValue( SystemRole.STARS_SOAP_SERVER );
+			RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_SOAP_SERVER );
 		
 		//keep the URL string null if it is not set
 		if( SOAP_SERVER_URL.equals(CtiUtilities.STRING_NONE) )

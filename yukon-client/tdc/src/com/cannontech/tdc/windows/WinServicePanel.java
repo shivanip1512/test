@@ -2,7 +2,7 @@ package com.cannontech.tdc.windows;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
 
 /**
@@ -351,8 +351,7 @@ private void initialize() {
 		// user code begin {1}
       
       JNTServices.getInstance().setMachineName(
-         ClientSession.getInstance().getRolePropertyValue(
-            SystemRole.DISPATCH_MACHINE, "localhost") );
+			RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE ) );
       
       getServicePopUpMenu().addPropertyChangeListener( "PopUpChange", getJTableModel() );
       
