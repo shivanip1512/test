@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/id_vgdll.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/16 15:58:28 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/04/16 17:50:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 
 #define MAJORREVISION   2
 #define MINORREVISION   16
-#define BUILDNUMBER     2
+#define BUILDNUMBER     4
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
