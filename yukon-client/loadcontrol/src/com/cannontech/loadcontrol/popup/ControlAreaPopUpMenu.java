@@ -21,6 +21,7 @@ import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.message.dispatch.message.Multi;
 
 
 public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJPopupMenu implements java.awt.event.ActionListener
@@ -31,6 +32,8 @@ public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJ
 	private javax.swing.JMenuItem jMenuItemDisable = null;
 	private javax.swing.JMenuItem jMenuItemStart = null;
 	private javax.swing.JMenuItem jMenuItemStop = null;
+	private javax.swing.JMenuItem jMenuItemEnableProgs = null;
+	private javax.swing.JMenuItem jMenuItemDisableProgs = null;
 
 /**
  * ProgramPopUpMenu constructor comment.
@@ -61,7 +64,67 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 	if( e.getSource() == getJMenuItemStop() )
 		jMenuItemStop_ActionPerformed(e);
 
+	if( e.getSource() == getJMenuItemEnableProgs() )
+		jMenuItemEnableProgs_ActionPerformed(e);
+
+	if( e.getSource() == getJMenuItemDisableProgs() )
+		jMenuItemDisableProgs_ActionPerformed(e);
+
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemEnableProgs() 
+{
+	if( jMenuItemEnableProgs == null) 
+	{
+		try 
+		{
+			jMenuItemEnableProgs = new javax.swing.JMenuItem();
+			jMenuItemEnableProgs.setName("JMenuItemEnableProgs");
+			jMenuItemEnableProgs.setMnemonic('n');
+			jMenuItemEnableProgs.setText("Enable Program(s)...");
+			jMenuItemEnableProgs.setActionCommand("jMenuItemEnableProgs");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jMenuItemEnableProgs;
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemDisableProgs() 
+{
+	if( jMenuItemDisableProgs == null) 
+	{
+		try 
+		{
+			jMenuItemDisableProgs = new javax.swing.JMenuItem();
+			jMenuItemDisableProgs.setName("jMenuItemDisableProgs");
+			jMenuItemDisableProgs.setMnemonic('b');
+			jMenuItemDisableProgs.setText("Disable Program(s)...");
+			jMenuItemDisableProgs.setActionCommand("jMenuItemDisableProgs");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	
+	return jMenuItemDisableProgs;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 9:20:50 AM)
@@ -265,6 +328,99 @@ private void showDirectManualEntry( final int panelMode )
 	
 }
 
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/16/2001 5:05:29 PM)
+ */
+private void showProgramAblementPanel( final int cmd ) 
+{
+	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this.getInvoker()) );
+	DirectControlJPanel panel = new DirectControlJPanel()
+	{
+		public void exit()
+		{
+			d.dispose();
+		}
+
+		public void setParentWidth( int x )
+		{
+			d.setSize( d.getWidth() + x, d.getHeight() );
+		}
+	};
+
+
+	d.setTitle(
+		cmd == LMCommand.ENABLE_PROGRAM 
+		? "Enable Program(s)"
+		: "Disable Program(s)" );
+
+		
+	d.setModal(true);
+	d.setContentPane(panel);
+	d.setSize(300,250);
+	d.pack();
+	d.setLocationRelativeTo(this);
+
+	//get an array of LMProgramBase to use later 
+	// (only copies the references into the new array, not a full instance copy!!)
+	LMProgramBase[] prgArray = new LMProgramBase[ getLoadControlArea().getLmProgramVector().size() ]; 
+	prgArray = (LMProgramBase[])getLoadControlArea().getLmProgramVector().toArray( prgArray );
+
+	
+	if( panel.setMultiSelectObject( prgArray ) )
+	{
+		panel.setMode( DirectControlJPanel.MODE_MULTI_SELECT_ONLY );
+		d.show();
+	
+		//destroy the JDialog
+		d.dispose();
+
+		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
+		{
+			MultiSelectProg[] selected = panel.getMultiSelectObject();			
+				
+			if( selected != null )
+			{
+				Multi multiCmd = new Multi();
+				for( int i = 0; i < selected.length; i++ )
+				{
+					//only add the operate the program if it's state is opposite of the command
+					if( (cmd == LMCommand.ENABLE_PROGRAM && selected[i].getBaseProgram().getDisableFlag().booleanValue())
+						|| (cmd == LMCommand.DISABLE_PROGRAM && !selected[i].getBaseProgram().getDisableFlag().booleanValue()) )
+					{
+						multiCmd.getVector().add(
+							new LMCommand( cmd,
+								selected[i].getBaseProgram().getYukonID().intValue(),
+								0, 0.0) );
+					}
+				}
+
+				//write the multi of commands to the server
+				LoadControlClientConnection.getInstance().write( multiCmd );
+				
+				fireObservedRowChanged(
+					"Control area '" + getLoadControlArea().getYukonName() +
+					"' has issued a '" + d.getTitle() + "' command successfully." );
+			}
+	
+	
+		}
+	
+	}
+	else
+	{
+		JOptionPane.showMessageDialog(
+			this,
+			"There are no programs attached to the control area '" + getLoadControlArea().getYukonName() + "'",
+			"Unable to Enable/Disable Programs",
+			JOptionPane.WARNING_MESSAGE );
+		
+	}
+	
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 9:20:50 AM)
@@ -346,7 +502,11 @@ private void initConnections()
 
 	getJMenuItemStart().addActionListener(this);
 	getJMenuItemStop().addActionListener(this);
+	
+	getJMenuItemEnableProgs().addActionListener(this);
+	getJMenuItemDisableProgs().addActionListener(this);
 }
+
 /**
  * Initialize the class.
  */
@@ -360,6 +520,8 @@ private void initialize()
 
 		add(getJMenuItemStart(), getJMenuItemStart().getName());
 		add(getJMenuItemStop(), getJMenuItemStop().getName());
+		add(getJMenuItemEnableProgs(), getJMenuItemEnableProgs().getName());
+		add(getJMenuItemDisableProgs(), getJMenuItemDisableProgs().getName());
 
 		add(getJMenuItemTriggers(), getJMenuItemTriggers().getName());
 		add(getJMenuItemDialyTime(), getJMenuItemDialyTime().getName());
@@ -375,6 +537,15 @@ private void initialize()
 	
 }
 
+private void jMenuItemEnableProgs_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+	showProgramAblementPanel( LMCommand.ENABLE_PROGRAM );
+}
+private void jMenuItemDisableProgs_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+	showProgramAblementPanel( LMCommand.DISABLE_PROGRAM );
+}
+
 private void jMenuItemStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
 	showDirectManualEntry( DirectControlJPanel.MODE_START_STOP );
@@ -384,7 +555,6 @@ private void jMenuItemStop_ActionPerformed(java.awt.event.ActionEvent actionEven
 {
 	showDirectManualEntry( DirectControlJPanel.MODE_STOP );
 }
-
 
 /**
  * Comment
