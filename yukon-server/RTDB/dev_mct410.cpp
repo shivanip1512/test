@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/10/26 21:18:03 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/12/07 18:54:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@
 
 using namespace std;
 
-CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
+const CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
 CtiDeviceMCT410::QualityMap    CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
@@ -51,19 +51,27 @@ CtiDeviceMCT410::CtiDeviceMCT410( ) :
 
 CtiDeviceMCT410::CtiDeviceMCT410( const CtiDeviceMCT410 &aRef )
 {
-   *this = aRef;
+    *this = aRef;
 }
 
-CtiDeviceMCT410::~CtiDeviceMCT410( ) { }
+CtiDeviceMCT410::~CtiDeviceMCT410( )
+{
+}
 
 CtiDeviceMCT410 &CtiDeviceMCT410::operator=( const CtiDeviceMCT410 &aRef )
 {
-   if( this != &aRef )
-   {
-      Inherited::operator=( aRef );
-   }
+    if( this != &aRef )
+    {
+        Inherited::operator=( aRef );
+    }
 
-   return *this;
+    return *this;
+}
+
+
+void CtiDeviceMCT410::setDisconnectAddress( unsigned long address )
+{
+    _disconnectAddress = address;
 }
 
 
@@ -127,8 +135,47 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT410_FuncReadLPStatusPos,
-                             (int)MCT410_FuncReadLPStatusLen );
+    cs._funcLen = make_pair((int)MCT410_FuncReadLPStatusPos,
+                            (int)MCT410_FuncReadLPStatusLen);
+    s.insert(cs);
+
+    //  These need to be duplicated from DeviceMCT because the 400 doesn't need the ARML.
+    cs._cmd     = CtiProtocolEmetcon::Control_Close;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT410_CommandConnect, 0 );
+    s.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::Control_Open;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT410_CommandDisconnect, 0 );
+    s.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::Control_Conn;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT410_CommandConnect, 0 );
+    s.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::Control_Disc;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT410_CommandDisconnect, 0 );
+    s.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::GetStatus_Disconnect;
+    cs._io      = IO_FCT_READ;
+    cs._funcLen = make_pair((int)MCT410_FuncReadDisconnectStatusPos,
+                            (int)MCT410_FuncReadDisconnectStatusLen);
+    s.insert(cs);
+
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_Disconnect;
+    cs._io      = IO_FCT_READ;
+    cs._funcLen = make_pair((int)MCT410_FuncReadDisconnectConfigPos,
+                            (int)MCT410_FuncReadDisconnectConfigLen);
+    s.insert(cs);
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Disconnect;
+    cs._io      = IO_FCT_WRITE;
+    cs._funcLen = make_pair((int)MCT410_FuncWriteDisconnectConfigPos,
+                            (int)MCT410_FuncWriteDisconnectConfigLen);
     s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
@@ -184,12 +231,22 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT4XX_FreezeOne, 0);
+    cs._funcLen = make_pair((int)MCT4XX_CommandFreezeOne, 0);
     s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT4XX_FreezeTwo, 0);
+    cs._funcLen = make_pair((int)MCT4XX_CommandFreezeTwo, 0);
+    s.insert(cs);
+
+    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeVoltageOne;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT4XX_CommandFreezeVoltageOne, 0);
+    s.insert(cs);
+
+    cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeVoltageTwo;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT4XX_CommandFreezeVoltageTwo, 0);
     s.insert(cs);
 
     return s;
@@ -251,11 +308,12 @@ bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &l
         CtiDeviceMCT410::initCommandStore( );
     }
     */
-    DLCCommandSet::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
+    DLCCommandSet::const_iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
 
     if( itr != _commandStore.end( ) )
     {
-        CtiDLCCommandStore &cs = *itr;
+        const CtiDLCCommandStore &cs = *itr;
+
         function = cs._funcLen.first;   //  Copy the relevant bits from the commandStore
         length   = cs._funcLen.second;  //
         io       = cs._io;              //
@@ -633,6 +691,18 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
+        case CtiProtocolEmetcon::GetStatus_Disconnect:
+        {
+            status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case CtiProtocolEmetcon::GetConfig_Disconnect:
+        {
+            status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         case CtiProtocolEmetcon::GetConfig_DemandInterval:
         case CtiProtocolEmetcon::GetConfig_LoadProfileInterval:
         {
@@ -650,6 +720,37 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case (CtiProtocolEmetcon::GetConfig_TSync):
         {
             status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (CtiProtocolEmetcon::Control_Conn):
+        case (CtiProtocolEmetcon::Control_Disc):
+        {
+            CtiReturnMsg *ReturnMsg;
+/*
+            if( ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr) )
+            {
+                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                ReturnMsg->setResultString("Control sent");
+
+                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, true );
+            }
+*/
+            //  this is distasteful, but it works...
+            //  we need to allow downtime for the MCT to transmit to its disconnect collar
+            CTISleep(3000);
+
+            CtiRequestMsg newReq(getID(),
+                                 "getstatus disconnect noqueue",
+                                 InMessage->Return.UserID,
+                                 0,
+                                 InMessage->Return.RouteID,
+                                 InMessage->Return.MacroOffset);
+
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+            CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+
             break;
         }
 
@@ -745,7 +846,7 @@ CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - demand value " << value << " resolution " << resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - demand value " << value << " resolution " << (int)resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
 
@@ -1914,6 +2015,78 @@ INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, RWTime &TimeNow, RWT
         ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    RWCString resultStr;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+        resultStr  = getName() + " / Disconnect Config:\n";
+
+        resultStr += "Load limit ";
+        resultStr += (DSt->Message[0] & 0x04)?"active\n":"inactive\n";
+
+        resultStr += "Disconnect status: ";
+
+        switch( DSt->Message[0] & 0x03 )
+        {
+            case MCT410_StatusConnected:                resultStr += "connected\n";                 break;
+            case MCT410_StatusConnectArmed:             resultStr += "connect armed\n";             break;
+            case MCT410_StatusDisconnected:             resultStr += "disconnected\n";              break;
+            case MCT410_StatusDisconnectedConfirmed:    resultStr += "confirmed disconnected\n";    break;
+        }
+
+        if( DSt->Message[1] & 0x02 )
+        {
+            resultStr += "Disconnect error - nonzero demand detected after disconnect command sent to collar\n";
+        }
+
+        long disconnectaddress = DSt->Message[2] << 16 |
+                                 DSt->Message[3] <<  8 |
+                                 DSt->Message[4];
+
+        resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + "\n";
+
+        int demandlimit = DSt->Message[5] << 8 |
+                          DSt->Message[6];
+
+        resultStr += "Disconnect demand threshold: ";
+        resultStr += demandlimit?RWCString(CtiNumStr(demandlimit)):RWCString("disabled");
+        resultStr += "\n";
+
+        resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + " minutes\n";
+
+        resultStr += "Disconnect load limit count: " + CtiNumStr(DSt->Message[8]) + "\n";
+
+        if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
+        {
+            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            ReturnMsg->setResultString(resultStr);
+
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            status = MEMORY;
+        }
     }
 
     return status;
