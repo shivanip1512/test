@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/30 22:16:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/15 20:35:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -563,7 +563,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     if(ScannerDebugLevel & 0x00000020)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Looking at " << Device->getName() << endl;
+                        dout << RWTime() << " Looking at " << pBase->getName() << endl;
                     }
 
                     if(pBase->isSingle())
@@ -655,7 +655,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                     if(ScannerDebugLevel & 0x00000020)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Looking at " << Device->getName() << endl;
+                        dout << RWTime() << " Looking at " << pBase->getName() << endl;
                     }
 
                     //  only MCTs do DLC load profile scans
