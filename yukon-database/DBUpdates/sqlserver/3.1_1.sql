@@ -1572,7 +1572,9 @@ insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
 update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePropertyID=-10805;
 
 alter table MACSchedule add template numeric null;
+go
 update macschedule set template = 0 where commandfile is not null;
+go
 
 delete from YukonListEntry where ListID in
 (select ListID from YukonSelectionList where ListName like 'OptOutPeriod%');
