@@ -227,7 +227,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * Returns the graph.
 	 * @return Graph
 	 */
-	private Graph getCTIGraph() {
+	public Graph getCTIGraph() {
 		if( ctiGraph == null ) {
 			ctiGraph = new Graph();
 		}
@@ -390,6 +390,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			
 			case YESTERDAY:
 				setCurrentStartDate(ServletUtil.getYesterday());
+				setCurrentEndDate(ServletUtil.getToday());
 			break;
 			
 			case PREV2DAYS:

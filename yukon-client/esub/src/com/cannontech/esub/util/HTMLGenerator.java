@@ -24,10 +24,11 @@ public class HTMLGenerator {
 	public void generate(Writer w, Drawing d) throws IOException {
 		String svgFile = new File(d.getFileName().replaceAll("jlx", "svg")).getName();
 		
+		String width = Integer.toString(d.getMetaElement().getDrawingWidth());
+		String height = Integer.toString(d.getMetaElement().getDrawingHeight());
+		
 		w.write(header);
-//		generateEmbedString(w, d);
-		//w.write("<script language=\"JavaScript\"><!--\nemitSVG('src=\"" + svgFile + "\" name=\"SVGEmbed\" height=\"800\" width=\"600\" type=\"image/svg-xml\"');\n// -->\n</script>\n<noscript>\n<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"1024\" height=\"768\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />\n</noscript>");
-		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"1024\" height=\"768\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
+		w.write("<embed src=\"" + svgFile + "\" name=\"SVGEmbed\" width=\"" + width + "\" height=\"" + height + "\" type=\"image/svg-xml\" pluginspage=\"http://www.adobe.com/svg/viewer/install\" wmode=\"transparent\" />");
 		w.write(footer);
 	}
 

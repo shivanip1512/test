@@ -6,22 +6,18 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Date;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.w3c.dom.svg.SVGDocument;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -32,8 +28,6 @@ import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
-import com.cannontech.graph.Graph;
-import com.cannontech.graph.model.TrendModel;
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -51,34 +45,32 @@ public class SVGGenerator {
 		
 	public SVGGenerator() {
 	} 
-	
-	public void generate(Writer writer, Drawing d) throws IOException {
-		generate(writer, d.getLxGraph());
-	}
+		
 	/**  
 	 * Writes an svg document to the given write based on the graph passed.
 	 * @param writer
 	 * @param graph
 	 * @throws IOException
 	 */
-	public void generate(Writer writer, LxGraph graph) throws IOException {
+	public void generate(Writer writer, Drawing d) throws IOException {
+	 	LxGraph graph = d.getLxGraph();
 	 	
 	 	DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
 	 	SVGDocument doc = (SVGDocument) impl.createDocument(svgNS, "svg", null);
 	 	
 	 	// get the root element (the svg element)
 		Element svgRoot = doc.getDocumentElement();
-		
-		svgRoot.setAttributeNS(null, "width", "1024");
-		svgRoot.setAttributeNS(null, "height", "768");
+System.out.println(d.getMetaElement().getDrawingWidth());
+System.out.println(d.getMetaElement().getDrawingHeight());	
+		svgRoot.setAttributeNS(null, "width", Integer.toString(d.getMetaElement().getDrawingWidth()));
+		svgRoot.setAttributeNS(null, "height", Integer.toString(d.getMetaElement().getDrawingHeight()));
 	 	svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
 	 	
 		Element scriptElem = doc.createElementNS(null, "script");
 		scriptElem.setAttributeNS(null, "type", "text/ecmascript");
 		scriptElem.setAttributeNS(null, "xlink:href", "refresh.js");
 		svgRoot.appendChild(scriptElem);
-		 
-		
+		 		
 		Element backRect = doc.createElementNS(svgNS, "rect");
 		backRect.setAttributeNS(null, "width", "100%");
 		backRect.setAttributeNS(null, "height", "100%");
@@ -87,13 +79,7 @@ public class SVGGenerator {
 
 		LxComponent[] c	= graph.getComponents();
 		for( int i = 0; i < c.length; i++ ) {
-			/*if( c[i] instanceof DrawingElement &&
-				((DrawingElement) c[i]).getLinkTo() != null &&
-				((DrawingElement) c[i]).getLinkTo().length() > 0 ) {
-				
-				generateStartLink(writer, (DrawingElement) c[i]);
-			}*/
-			
+						
 			Element elem = null;
 			
 			if( c[i] instanceof LxLine ) {
@@ -142,50 +128,7 @@ public class SVGGenerator {
 		com.cannontech.esub.xml.Writer domWriter = new com.cannontech.esub.xml.Writer();
 		domWriter.setOutput(writer);
 		domWriter.write(doc);
-		writer.flush();
-		
-/*		for( int i = 0; i < c.length; i++ ) {
-			if( c[i] instanceof DrawingElement &&
-				((DrawingElement) c[i]).getLinkTo() != null &&
-				((DrawingElement) c[i]).getLinkTo().length() > 0 ) {
-				
-				generateStartLink(writer, (DrawingElement) c[i]);
-			}
-			 
-			if( c[i] instanceof LxLine ) {
-				generateLine(writer, (LxLine) c[i]);
-			}
-			
-			if( c[i] instanceof LxRectangle ) {
-				generateRect(writer, (LxRectangle) c[i]);
-			}
-			
-			if( c[i] instanceof StaticImage ) {
-				generateImage(writer, (StaticImage) c[i]);
-			}
-			
-			if( c[i] instanceof StaticText ) {
-				generateStaticText(writer, (StaticText) c[i]);
-			}
-			
-			if( c[i] instanceof DynamicText ) {
-				generateDynamicText(writer, (DynamicText) c[i]);
-			}
-			
-			if( c[i] instanceof StateImage ) {
-				generateStateImage(writer, (StateImage) c[i]);
-			}
-			
-			if( c[i] instanceof DrawingElement &&
-				((DrawingElement) c[i]).getLinkTo() != null &&
-				((DrawingElement) c[i]).getLinkTo().length() > 0 ) {
-				generateEndLink(writer);
-			}
-		}
-		
-		writer.write(svgFooter);
-		
-		writer.flush();*/
+		writer.flush();	
 	}
 	
 	private Element createLink(SVGDocument doc, DrawingElement elem) {
@@ -193,31 +136,13 @@ public class SVGGenerator {
 		linkElem.setAttributeNS(null, "xlink:href", elem.getLinkTo());
 		return linkElem;		
 	}
-	/**
-	 * Writes the opening tag for a hyperlink
-	 * @param writer
-	 * @param elem
-	 * @throws IOException
-	 */
-	private void generateStartLink(Writer writer, DrawingElement elem) throws IOException {		
-			writer.write("<a xlink:href=\"" + elem.getLinkTo() + "\">\n");
-	}
-	
-	/**
-	 * Writes an end link tag.
-	 * @param writer
-	 * @throws IOException
-	 */
-	private void generateEndLink(Writer writer) throws IOException {
-		writer.write("</a>\n");
-	}
 	
 	private Element createDynamicText(SVGDocument doc, DynamicText text) throws IOException {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
 		int x = (int) r.getMinX();
-		int y = (int) r.getMaxY();// + (int) ((r.getMaxY() - r.getMinY()) / 2);
+		int y = (int) r.getMaxY();
 
 		LxAbstractStyle style = text.getStyle();
 		
@@ -245,8 +170,7 @@ public class SVGGenerator {
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
 		
-		return textElem;
-					
+		return textElem;					
 	}
 
 	private Element createRectangle(SVGDocument doc, LxRectangle rect) {
@@ -375,7 +299,7 @@ public class SVGGenerator {
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
 		int x = (int) r.getMinX();		
-		int y = (int) r.getMaxY();// + (int) ((r.getMaxY() - r.getMinY()) / 2);
+		int y = (int) r.getMaxY();
 
 		LxAbstractStyle style = text.getStyle();
 		
@@ -401,8 +325,7 @@ public class SVGGenerator {
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
 		
-		return textElem;
-		
+		return textElem;		
 	}
 	
 	/**

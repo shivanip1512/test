@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import com.cannontech.esub.editor.element.DrawingElement;
+import com.cannontech.esub.editor.element.DrawingMetaElement;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
 import com.loox.jloox.LxComponent;
@@ -56,6 +57,11 @@ public class Drawing implements Serializable {
 		}
 
 		setFileName(jlxFileName);
+		
+		// make sure meta info reflects our saving width, height
+		getMetaElement().setDrawingWidth( getLxView().getWidth() );
+		getMetaElement().setDrawingHeight( getLxView().getHeight() );
+		
 		getLxGraph().save(jlxFileName);
 
 		String svgFileName = fileName;
@@ -69,7 +75,7 @@ public class Drawing implements Serializable {
 			SVGGenerator gen2 = new SVGGenerator();
 			FileWriter fw = new FileWriter(svgFileName);
 
-			gen2.generate(fw, lxGraph);
+			gen2.generate(fw, this);
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -112,8 +118,12 @@ public class Drawing implements Serializable {
 	 */
 	public LxGraph getLxGraph() {
 		if (lxGraph == null) {
-			lxGraph = new LxGraph();
+			lxGraph = new LxGraph();			
 			lxGraph.setDefaultLineColor(java.awt.Color.white);
+			
+			//Add meta information
+			DrawingMetaElement metaInfo = new DrawingMetaElement();
+			lxGraph.add(metaInfo);
 		}
 
 		return lxGraph;
@@ -186,6 +196,17 @@ public class Drawing implements Serializable {
 	 */
 	public void setModified(boolean modified) {
 		getLxGraph().setModified(modified);
+	}
+	
+	public DrawingMetaElement getMetaElement() {
+		// Fix up each element so they know who their drawing is
+		LxComponent[] comps = lxGraph.getComponents();
+		for (int i = 0; i < comps.length; i++) {
+			if (comps[i] instanceof DrawingMetaElement)
+				return (DrawingMetaElement) comps[i];
+			}
+		
+		return null;									
 	}
 
 }

@@ -373,4 +373,12 @@ public LiteGraphDefinition getSelectedGraphDefinition() {
 
 		return null;	
 }
+	/**
+	 * Returns the ivjGraphDefinitionJTree.
+	 * @return javax.swing.JTree
+	 */
+	javax.swing.JTree getIvjGraphDefinitionJTree() {
+		return ivjGraphDefinitionJTree;
+	}
+
 }

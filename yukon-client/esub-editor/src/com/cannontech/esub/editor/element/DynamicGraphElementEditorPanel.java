@@ -667,6 +667,7 @@ private void initialize() {
 	getDisplayRangeButtonGroup().add(getPrevious3DaysRadioButton());
 	getDisplayRangeButtonGroup().add(getPrevious7DaysRadioButton());
 	
+	getGraphDefinitionSelectionPanel().getIvjGraphDefinitionJTree().addTreeSelectionListener(this);
 	// user code end
 }
 /**
@@ -675,9 +676,9 @@ private void initialize() {
  * @return boolean
  */
 public boolean isInputValid() {
-	return true;
+	return (getGraphDefinitionSelectionPanel().getSelectedGraphDefinition() != null);
 }
-/**
+/** 
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
  */
@@ -771,5 +772,7 @@ public void setValue(Object o) {
 	  * Called whenever the value of the selection changes.
 	  * @param e the event that characterizes the change.
 	  */
-public void valueChanged(javax.swing.event.TreeSelectionEvent e) {}
+public void valueChanged(javax.swing.event.TreeSelectionEvent e) {
+	fireInputUpdate();
+}
 }
