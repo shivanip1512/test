@@ -11,6 +11,7 @@ import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT310;
 import com.cannontech.database.data.device.MCT310ID;
+import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
@@ -149,8 +150,11 @@ public class DeviceRoutePanel
 		}
 
 		Integer deviceID = ((RouteBase) chosenRoute).getDeviceID();
-		//MCT 310 & 310IL are special case
-		if (val instanceof MCT310 || val instanceof MCT310IL || val instanceof MCT310ID) {
+		//special cases for some MCTs
+		if( val instanceof MCT310 
+			 || val instanceof MCT310IL 
+			 || val instanceof MCT310ID
+			 || val instanceof MCT310IDL ) {
 
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 			((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
@@ -174,8 +178,10 @@ public class DeviceRoutePanel
                com.cannontech.database.data.point.PointUnits.UOMID_KWH,
                .01) );
 
-			//only MCT310IL get the DemandAccum point auto created
-			if( val instanceof MCT310IL )	
+			//only certain devices get the DemandAccum point auto created
+			if( val instanceof MCT310IL
+				 || val instanceof MCT310IDL ) {
+	
 	         newVal.getDBPersistentVector().add( 
 	            PointFactory.createDmdAccumPoint(
 	               "KW-LP",
@@ -184,16 +190,19 @@ public class DeviceRoutePanel
 	               PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 	               com.cannontech.database.data.point.PointUnits.UOMID_KW,
 	               .01) );
+				 }
 
 
 
-			if (val instanceof MCT310ID) {
-				//an automatic status point is created for 310ID
+			if (val instanceof MCT310ID
+				 || val instanceof MCT310IDL ) {
+				 	
+				//an automatic status point is created for certain devices
 				com.cannontech.database.data.point.PointBase newPoint2 =
 					com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
 
 				//set default for point tables
-				newPoint2 =com.cannontech.database.data.point.PointBase.createNewPoint(
+				newPoint2 = PointFactory.createNewPoint(
 	               new Integer(++pointID),
 						com.cannontech.database.data.point.PointTypes.STATUS_POINT,"DISCONNECT STATUS",((DeviceBase) val).getDevice().getDeviceID(),new Integer(1));
 

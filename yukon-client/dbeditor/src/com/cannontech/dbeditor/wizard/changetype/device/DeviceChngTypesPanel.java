@@ -41,6 +41,7 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 			PAOGroups.STRING_MCT_318[0],
          PAOGroups.STRING_MCT_310CT[0],
 			PAOGroups.STRING_MCT_310ID[0],
+			PAOGroups.STRING_MCT_310IDL[0],
 			PAOGroups.STRING_MCT_310IL[0],
          PAOGroups.STRING_MCT_310IM[0],
 			PAOGroups.STRING_MCT_310[0],

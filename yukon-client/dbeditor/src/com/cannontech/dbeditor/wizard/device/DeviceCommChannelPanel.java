@@ -236,7 +236,7 @@ public Object getValue(Object val)
 		Integer pointID = new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
 
 		//A status point is automatically added to each transmitter
-		com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(
+		com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
 				pointID,
 				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 				"COMM STATUS",
@@ -276,7 +276,7 @@ public Object getValue(Object val)
                new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
          
          //A status point is automatically added to each transmitter
-         com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(
+         com.cannontech.database.data.point.PointBase newPoint = PointFactory.createNewPoint(
                pointID,
                com.cannontech.database.data.point.PointTypes.STATUS_POINT,
                "COMM STATUS",

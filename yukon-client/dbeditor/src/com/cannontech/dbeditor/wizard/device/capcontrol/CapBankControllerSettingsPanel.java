@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.point.PointFactory;
 
 /**
  * This type was created in VisualAge.
@@ -421,7 +422,7 @@ public Object getValue(Object val)
 	Integer pointID = new Integer( newPoint.getPoint().getNextPointID() );
 
 	//set default for point tables
-	newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
+	newPoint = PointFactory.createNewPoint(		
 			pointID,
 			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 			"BANK STATUS",

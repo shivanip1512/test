@@ -150,7 +150,7 @@ private static void createBankStatusPt(
 	Integer pointID = null;
 
 	//defaults point
-	newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
+	newPoint = PointFactory.createNewPoint(		
 			pointID,
 			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 			"BANK STATUS",

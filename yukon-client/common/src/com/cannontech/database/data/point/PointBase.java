@@ -62,43 +62,7 @@ public void addPartial() throws java.sql.SQLException {
 	setPointID(getPoint().getPointID());
 
 }
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-public final static PointBase createNewPoint( Integer pointID, int pointType, String pointName, Integer paoID, Integer offset )
-{	
-	//A point is automatically created here
-	PointBase newPoint =
-		com.cannontech.database.data.point.PointFactory.createPoint( pointType );
 
-	
-	//set default point values for point tables		
-	newPoint.setPoint(
-		new com.cannontech.database.db.point.Point(
-			pointID,
-			PointTypes.getType(pointType),
-			pointName,
-			paoID,
-			"Default",
-			new Integer(0),
-			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
-			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
-			offset,
-			"None",
-			new Integer(0)));
-
-	newPoint.setPointAlarming(
-		new com.cannontech.database.db.point.PointAlarming(
-			pointID,
-			com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES,
-			com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY,
-			"N",
-			new Integer(com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID),
-			new Integer(CtiUtilities.NONE_ID)) );
-
-	return newPoint;
-}
 /**
  * delete method comment.
  */

@@ -29,6 +29,7 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 									PAOGroups.STRING_MCT_318[0],
                            PAOGroups.STRING_MCT_310CT[0],
 									PAOGroups.STRING_MCT_310ID[0],
+									PAOGroups.STRING_MCT_310IDL[0],
 									PAOGroups.STRING_MCT_310IL[0],                           
                            PAOGroups.STRING_MCT_310IM[0],
 									PAOGroups.STRING_MCT_310[0],
@@ -71,6 +72,7 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 								},								
 								{	//RTUs
                            PAOGroups.STRING_DAVIS_WEATHER[0],
+                           PAOGroups.STRING_RTU_DART[0],
                            PAOGroups.STRING_RTU_DNP[0],
 									PAOGroups.STRING_RTU_ILEX[0],
 									PAOGroups.STRING_RTU_WELCO[0]

@@ -153,6 +153,8 @@ public final static int getDeviceType(String typeString)
      return MCT310IM;
    else if (isStringDevice(compareString, STRING_MCT_310ID))
 	  return MCT310ID;
+   else if (isStringDevice(compareString, STRING_MCT_310IDL))
+	  return MCT310IDL;
    else if (isStringDevice(compareString, STRING_MCT_310))
 	  return MCT310;
    else if (isStringDevice(compareString, STRING_MCT_318))
@@ -175,6 +177,8 @@ public final static int getDeviceType(String typeString)
 	  return REPEATER;
    else if (isStringDevice(compareString, STRING_RTU_DNP))
      return RTU_DNP;
+   else if (isStringDevice(compareString, STRING_RTU_DART))
+     return RTU_DART;
    else if (isStringDevice(compareString, STRING_ION_7700))
      return ION_7700;
    else if (isStringDevice(compareString, STRING_ION_7330))
@@ -288,6 +292,8 @@ public final static String getDeviceTypeString(int type)
         return STRING_MCT_310IM[0];
 	  case MCT310ID:
 		  return STRING_MCT_310ID[0];
+	  case MCT310IDL:
+		  return STRING_MCT_310IDL[0];
 	  case MCT310:
 		  return STRING_MCT_310[0];
 	  case MCT318:
@@ -309,6 +315,8 @@ public final static String getDeviceTypeString(int type)
 		  return STRING_REPEATER[0];
      case RTU_DNP:
         return STRING_RTU_DNP[0];
+     case RTU_DART:
+        return STRING_RTU_DART[0];
      case ION_7700:
         return STRING_ION_7700[0];
      case ION_7330:

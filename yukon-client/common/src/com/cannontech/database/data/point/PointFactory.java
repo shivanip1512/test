@@ -1,5 +1,6 @@
 package com.cannontech.database.data.point;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 
 /**
@@ -105,7 +106,7 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
 	com.cannontech.database.data.point.PointBase point =
 		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
 	
-	point = com.cannontech.database.data.point.PointBase.createNewPoint(		
+	point = PointFactory.createNewPoint(		
 			pointID,
 			com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
 			pointName,
@@ -145,7 +146,7 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
       com.cannontech.database.data.point.PointFactory.createPoint(
             com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT );
    
-   point = com.cannontech.database.data.point.PointBase.createNewPoint(    
+   point = PointFactory.createNewPoint(    
          pointID,
          com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT,
          pointName,
@@ -174,11 +175,48 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
    return point;  
 }
 
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static PointBase createNewPoint( Integer pointID, int pointType, String pointName, Integer paoID, Integer offset )
+{	
+	//A point is automatically created here
+	PointBase newPoint =
+		com.cannontech.database.data.point.PointFactory.createPoint( pointType );
+
+	
+	//set default point values for point tables		
+	newPoint.setPoint(
+		new com.cannontech.database.db.point.Point(
+			pointID,
+			PointTypes.getType(pointType),
+			pointName,
+			paoID,
+			"Default",
+			new Integer(0),
+			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
+			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
+			offset,
+			"None",
+			new Integer(0)));
+
+	newPoint.setPointAlarming(
+		new com.cannontech.database.db.point.PointAlarming(
+			pointID,
+			com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES,
+			com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY,
+			"N",
+			new Integer(com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID),
+			new Integer(CtiUtilities.NONE_ID)) );
+
+	return newPoint;
+}
 
 public static PointBase createPulseAccumPoint( String pointName, Integer paoID, 
       Integer pointID, int pointOffset, int pointUnit, double multiplier )
 {
-   PointBase point = PointBase.createNewPoint(  
+   PointBase point = PointFactory.createNewPoint(  
          pointID,
          PointTypes.PULSE_ACCUMULATOR_POINT,
          pointName,

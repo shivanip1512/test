@@ -1882,6 +1882,7 @@ public void setDeviceType(int type)
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");
 		}		
 		else if( type == PAOGroups.RTU_DNP
+					 || type == PAOGroups.RTU_DART
                 || type == PAOGroups.DNP_CBC_6510 )
       {
 			getPeriodicHealthCheckBox().setText("Class 1,2,3 Scan");
@@ -1907,7 +1908,6 @@ public void setDeviceType(int type)
       setIntegrityObjectsVisible(
          !(type == PAOGroups.LMT_2
           || type == PAOGroups.RTUILEX
-          //|| type == PAOGroups.RTU_DNP
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
@@ -1919,6 +1919,7 @@ public void setDeviceType(int type)
 				!(type == PAOGroups.DCT_501 
                || type == PAOGroups.DNP_CBC_6510
 	            || type == PAOGroups.RTU_DNP
+	            || type == PAOGroups.RTU_DART
 	            || type == PAOGroups.ION_7700
 				   || type == PAOGroups.ION_7330
 				   || type == PAOGroups.ION_8300               

@@ -51,6 +51,7 @@ public final static boolean hasMasterAddress(int intType)
    switch( intType )
    {
       case RTU_DNP:
+      case RTU_DART:
          return true;
       default:
          return false;
@@ -114,6 +115,7 @@ public final static boolean isCarrier(int deviceType)
 		case MCT250:
 		case MCT310:
 		case MCT310ID:
+		case MCT310IDL:
 		case MCT310IL:
       case MCT310CT:
       case MCT310IM:      
@@ -268,6 +270,7 @@ public final static boolean isLoadProfile1Channel(int deviceType)
 		case MCT248:
 		case MCT250:
       case MCT310IL:
+      case MCT310IDL:
 		case LMT_2:
 			return true;
 	
@@ -332,8 +335,9 @@ public final static boolean isMCTOnly(int deviceType)
 		case MCT250:
 		case MCT210:
 		case MCT310ID:
+		case MCT310IDL:
 		case MCT310IL:
-	    case MCT310CT:
+		case MCT310CT:
     	case MCT310IM:
 		case MCT318L:
 			return true;
@@ -365,6 +369,7 @@ public final static boolean isMCT(int deviceType)
 		case LMT_2:
 		case DCT_501:
 		case MCT310ID:
+		case MCT310IDL:
 		case MCT310IL:
       case MCT310CT:
       case MCT310IM:
@@ -390,6 +395,7 @@ public final static boolean isMCT3xx(int deviceType)
 		case MCT360:
 		case MCT370:
 		case MCT310ID:
+		case MCT310IDL:
 		case MCT310IL:
       case MCT310CT:
       case MCT310IM:      
@@ -417,6 +423,7 @@ public static boolean isMCTiORMCT2XX( int type )
 		case MCT250 :
 		case MCT310 :
 		case MCT310ID :
+		case MCT310IDL:
 		case MCT310IL :
       case MCT310CT:
       case MCT310IM:      
@@ -506,6 +513,7 @@ public final static boolean isRTU(int deviceType)
       case ION_7330:
       case ION_8300:
       case RTU_DNP:
+      case RTU_DART:
 		case RTUILEX:
 		case RTUWELCO:
 			return true;

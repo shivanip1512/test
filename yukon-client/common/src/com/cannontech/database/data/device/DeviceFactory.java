@@ -48,6 +48,7 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new LCUER();
 			break;
       case PAOGroups.RTU_DNP:
+      case PAOGroups.RTU_DART:
          returnDevice = new DNPBase();
          returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
          break;
@@ -102,6 +103,9 @@ public final static DeviceBase createDevice(int deviceType) {
 			break;
 		case PAOGroups.MCT310ID:
 			returnDevice = new MCT310ID();
+			break;
+		case PAOGroups.MCT310IDL:
+			returnDevice = new MCT310IDL();
 			break;
 		case PAOGroups.MCT310IL:
 			returnDevice = new MCT310IL();

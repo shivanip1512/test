@@ -301,7 +301,7 @@ private void createExtraObjects( com.cannontech.database.data.multi.SmartMultiDB
 		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(5);
 		
 		//set default for point tables
-		historyPoint = com.cannontech.database.data.point.PointBase.createNewPoint(
+		historyPoint = PointFactory.createNewPoint(
 				new Integer(ids[0]),
 				com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 				"CONTROL STATUS",

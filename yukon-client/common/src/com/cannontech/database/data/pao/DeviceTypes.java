@@ -70,6 +70,8 @@ public interface DeviceTypes extends TypeBase
    public final static int ION_8300                     = DEVICE_OFFSET + 60;
    public final static int ION_7330                     = DEVICE_OFFSET + 61;
 
+   public final static int RTU_DART                     = DEVICE_OFFSET + 62;
+   public final static int MCT310IDL                    = DEVICE_OFFSET + 63;
 
 
 	//all the possible text representation of each device type.
@@ -92,6 +94,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_DAVIS_WEATHER = {"DAVIS WEATHER", "DAVISWEATHER"};
 	public static final String[] STRING_MCT_318L = {"MCT-318L", "MCT318L"};
 	public static final String[] STRING_MCT_310ID = {"MCT-310ID", "MCT310ID"};
+	public static final String[] STRING_MCT_310IDL = {"MCT-310IDL", "MCT310IDL"};
 	public static final String[] STRING_MCT_310IL = {"MCT-310IL", "MCT310IL"};   
    public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
    public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
@@ -108,6 +111,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
    public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
+   public static final String[] STRING_RTU_DART = {"RTU-DART", "RTUDART"};
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
 	public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};

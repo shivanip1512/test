@@ -110,7 +110,7 @@ public static PointBase createStatusControlPoint( int cbcDeviceID )
 
 
 	//set default for point tables
-	newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(		
+	newPoint = PointFactory.createNewPoint(		
 			pointID,
 			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 			"BANK STATUS",
