@@ -35,7 +35,7 @@ INCLPATHS+= \
 LIBS=\
 advapi32.lib \
 $(COMPILEBASE)\lib\service.lib \
-$(COMPILEBASE)\lib\cparms.lib \
+$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\proclog.lib \
