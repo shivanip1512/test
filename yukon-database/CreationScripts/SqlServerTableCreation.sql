@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/4/2003 1:42:19 PM                          */
+/* Created on:     2/13/2003 11:50:15 AM                        */
 /*==============================================================*/
 
 
@@ -1293,7 +1293,7 @@ constraint PK_ADDRESS primary key  (AddressID)
 go
 
 
-insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' )
+insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
 
 /*==============================================================*/
 /* Table : AlarmCategory                                        */
@@ -2803,10 +2803,10 @@ go
 /* Table : LMEnergyExchangeCustomerList                         */
 /*==============================================================*/
 create table LMEnergyExchangeCustomerList (
-DeviceID             numeric              not null,
-LMCustomerDeviceID   numeric              not null,
+ProgramID            numeric              not null,
+CustomerID           numeric              not null,
 CustomerOrder        numeric              not null,
-constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key  (DeviceID, LMCustomerDeviceID)
+constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key  (ProgramID, CustomerID)
 )
 go
 
@@ -3052,11 +3052,11 @@ go
 /* Table : LMProgramCurtailCustomerList                         */
 /*==============================================================*/
 create table LMProgramCurtailCustomerList (
-DeviceID             numeric              not null,
-LMCustomerDeviceID   numeric              not null,
+ProgramID            numeric              not null,
+CustomerID           numeric              not null,
 CustomerOrder        numeric              not null,
 RequireAck           char(1)              not null,
-constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key  (LMCustomerDeviceID, DeviceID)
+constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key  (CustomerID, ProgramID)
 )
 go
 
@@ -3906,6 +3906,13 @@ insert into YukonGroup values(-1,'default users');
 insert into YukonGroup values(-2,'web users');
 insert into YukonGroup values(-3,'web operators');
 
+insert into yukongroup values(-210,'Web Demo Operators');
+insert into yukongroup values(-211,'Web Demo Residential Customers');
+insert into yukongroup values(-212,'Web Demo CICustomers');
+
+insert into yukongroup values(-200,'Esub Users');
+insert into yukongroup values(-201,'Esub Operators');
+
 
 /*==============================================================*/
 /* Table : YukonGroupRole                                       */
@@ -3957,6 +3964,53 @@ insert into YukonGroupRole values(-2,-101,'(none)');
 insert into YukonGroupRole values(-3,-102,'(none)');
 insert into YukonGroupRole values(-2,-100,'/user/user_trending.jsp?tab=graph');
 insert into YukonGroupRole values(-3,-100,'/operator/oper_trending.jsp?tab=graph');
+
+insert into yukongrouprole values(-200,-200,'(none)');
+insert into yukongrouprole values(-201,-200,'(none)');
+insert into yukongrouprole values(-201,-201,'(none)');
+insert into yukongrouprole values(-201,-202,'(none)');
+insert into yukongrouprole values(-210,-100,'/operator/Operations.jsp');
+insert into yukongrouprole values(-210,-101,'(none)');
+insert into yukongrouprole values(-210,-120,'(none)');
+insert into yukongrouprole values(-210,-121,'(none)');
+insert into yukongrouprole values(-210,-122,'(none)');
+insert into yukongrouprole values(-210,-123,'(none)');
+insert into yukongrouprole values(-210,-124,'(none)');
+insert into yukongrouprole values(-210,-125,'(none)');
+insert into yukongrouprole values(-210,-160,'(none)');
+insert into yukongrouprole values(-210,-161,'(none)');
+insert into yukongrouprole values(-210,-162,'(none)');
+insert into yukongrouprole values(-210,-163,'(none)');
+insert into yukongrouprole values(-210,-164,'(none)');
+insert into yukongrouprole values(-210,-165,'(none)');
+insert into yukongrouprole values(-210,-166,'(none)');
+insert into yukongrouprole values(-210,-167,'(none)');
+insert into yukongrouprole values(-210,-168,'(none)');
+insert into yukongrouprole values(-210,-169,'(none)');
+insert into yukongrouprole values(-210,-170,'(none)');
+insert into yukongrouprole values(-210,-171,'(none)');
+insert into yukongrouprole values(-210,-172,'(none)');
+insert into yukongrouprole values(-210,-173,'(none)');
+insert into yukongrouprole values(-210,-174,'(none)');
+insert into yukongrouprole values(-210,-175,'(none)');
+insert into yukongrouprole values(-210,-176,'(none)');
+insert into yukongrouprole values(-211,-100,'/user/ConsumerStat/stat/General.jsp');
+insert into yukongrouprole values(-211,-102,'(none)');
+insert into yukongrouprole values(-211,-177,'(none)');
+insert into yukongrouprole values(-211,-160,'(none)');
+insert into yukongrouprole values(-211,-161,'(none)');
+insert into yukongrouprole values(-211,-163,'(none)');
+insert into yukongrouprole values(-211,-165,'(none)');
+insert into yukongrouprole values(-211,-166,'(none)');
+insert into yukongrouprole values(-211,-167,'(none)');
+insert into yukongrouprole values(-211,-168,'(none)');
+insert into yukongrouprole values(-211,-169,'(none)');
+insert into yukongrouprole values(-211,-178,'(none)');
+insert into yukongrouprole values(-212,-100,'/user/CILC/user_trending.jsp');
+insert into yukongrouprole values(-212,-103,'(none)');
+insert into yukongrouprole values(-212,-140,'(none)');
+insert into yukongrouprole values(-212,-141,'(none)');
+insert into yukongrouprole values(-212,-142,'(none)');
 
 /*==============================================================*/
 /* Table : YukonImage                                           */
@@ -4041,6 +4095,7 @@ RoleID               numeric              not null,
 RoleName             varchar(120)         not null,
 Category             varchar(60)          not null,
 DefaultValue         varchar(1000)        not null,
+RoleDescription      varchar(200)         not null,
 constraint PK_YUKONROLE primary key  (RoleID)
 )
 go
@@ -4083,7 +4138,43 @@ insert into YukonRole values(-34,'client_log_file','Client','false');
 
 insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp');
 insert into YukonRole values(-101,'WEB_USER','WebClient','(none)');
-insert into YukonRole values(-102,'WEB_OPERATOR','WebClient','(none)');
+insert into YukonRole values(-102,'WEB_RESIDENTIAL_CUSTOMER','WebClient','(none)');
+insert into YukonRole values(-103,'WEB_CICUSTOMER','WebClient','(none)');
+
+insert into YukonRole values(-120,'OPERATOR_CONSUMER_INFO','WebClient','(none)');
+insert into YukonRole values(-121,'OPERATOR_COMMERCIAL_METERING','WebClient','(none)');
+insert into YukonRole values(-122,'OPERATOR_LOADCONTROL','WebClient','(none)');
+insert into YukonRole values(-123,'OPERATOR_HARDWARE_INVENTORY','WebClient','(none)');
+insert into YukonRole values(-124,'OPERATOR_WORK_ORDERS','WebClient','(none)');
+insert into YukonRole values(-125,'OPERATOR_ADMINISTRATION','WebClient','(none)');
+
+insert into YukonRole values(-140,'CICUSTOMER_DIRECT_CONTROL','WebClient','(none)');
+insert into YukonRole values(-141,'CICUSTOMER_CURTAILMENT','WebClient','(none)');
+insert into YukonRole values(-142,'CICUSTOMER_ENERGY_EXCHANGE','WebClient','(none)');
+
+insert into YukonRole values(-160,'CONSUMERINFO_ACCOUNT','ConsumerInfo','(none)');
+insert into YukonRole values(-161,'CONSUMERINFO_ACCOUNT_GENERAL','ConsumerInfo','(none)');
+insert into YukonRole values(-162,'CONSUMERINFO_ACCOUNT_CALL_TRACKING','ConsumerInfo','(none)');
+insert into YukonRole values(-163,'CONSUMERINFO_METERING','ConsumerInfo','(none)');
+insert into YukonRole values(-164,'CONSUMERINFO_METERING_INTERVAL_DATA','ConsumerInfo','(none)');
+insert into YukonRole values(-165,'CONSUMERINFO_METERING_USAGE','ConsumerInfo','(none)');
+insert into YukonRole values(-166,'CONSUMERINFO_PROGRAMS','ConsumerInfo','(none)');
+insert into YukonRole values(-167,'CONSUMERINFO_PROGRAMS_CONTROL_HISTORY','ConsumerInfo','(none)');
+insert into YukonRole values(-168,'CONSUMERINFO_PROGRAMS_ENROLLMENT','ConsumerInfo','(none)');
+insert into YukonRole values(-169,'CONSUMERINFO_PROGRAMS_OPTOUT','ConsumerInfo','(none)');
+insert into YukonRole values(-170,'CONSUMERINFO_APPLIANCES','ConsumerInfo','(none)');
+insert into YukonRole values(-171,'CONSUMERINFO_APPLIANCES_CREATE','ConsumerInfo','(none)');
+insert into YukonRole values(-172,'CONSUMERINFO_HARDWARE','ConsumerInfo','(none)');
+insert into YukonRole values(-173,'CONSUMERINFO_HARDWARE_CREATE','ConsumerInfo','(none)');
+insert into YukonRole values(-174,'CONSUMERINFO_WORKORDERS','ConsumerInfo','(none)');
+insert into YukonRole values(-175,'CONSUMERINFO_ADMIN','ConsumerInfo','(none)');
+insert into YukonRole values(-176,'CONSUMERINFO_ADMIN_CHANGE_PASSWORD','ConsumerInfo','(none)');
+insert into YukonRole values(-177,'CONSUMERINFO_THERMOSTAT','ConsumerInfo','(none)');
+insert into YukonRole values(-178,'CONSUMERINFO_QUESTIONS','ConsumerInfo','(none)');
+
+insert into yukonrole values(-200,'ESUBVIEW','Esub','true');
+insert into yukonrole values(-201,'ESUBEDIT','Esub','true');
+insert into yukonrole values(-202,'ESUBCONTROL','Esub','true');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
@@ -4383,7 +4474,7 @@ go
 
 
 alter table LMProgramCurtailCustomerList
-   add constraint FK_CICstBase_LMProgCList foreign key (LMCustomerDeviceID)
+   add constraint FK_CICstBase_LMProgCList foreign key (CustomerID)
       references CICustomerBase (CustomerID)
 go
 
@@ -4437,13 +4528,13 @@ go
 
 
 alter table LMEnergyExchangeCustomerList
-   add constraint FK_ExCsLs_CstBs foreign key (LMCustomerDeviceID)
+   add constraint FK_ExCsLs_CstBs foreign key (CustomerID)
       references CICustomerBase (CustomerID)
 go
 
 
 alter table LMEnergyExchangeCustomerList
-   add constraint FK_ExCsLs_PrEx foreign key (DeviceID)
+   add constraint FK_ExCsLs_PrEx foreign key (ProgramID)
       references LMProgramEnergyExchange (DeviceID)
 go
 
@@ -4545,7 +4636,7 @@ go
 
 
 alter table LMProgramCurtailCustomerList
-   add constraint FK_LMPrgCrt_LMPrCstLst foreign key (DeviceID)
+   add constraint FK_LMPrgCrt_LMPrCstLst foreign key (ProgramID)
       references LMProgramCurtailment (DeviceID)
 go
 
