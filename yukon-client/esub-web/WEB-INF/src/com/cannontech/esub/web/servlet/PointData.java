@@ -22,8 +22,8 @@ public class PointData extends HttpServlet {
 	 */
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
-
-		resp.getWriter().write(randomGen.nextInt());		
+		
+		resp.getWriter().write(Integer.toString(randomGen.nextInt(999)));		
 	}
 
 	/**
