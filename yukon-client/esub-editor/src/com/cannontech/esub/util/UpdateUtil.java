@@ -12,6 +12,7 @@ import com.cannontech.database.cache.functions.UnitMeasureFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
+import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -33,10 +34,11 @@ public class UpdateUtil {
 		boolean prev = false;	
 		if( (displayAttrib & PointAttributes.VALUE) != 0 ) {			
 			PointData pData = pcc.getValue(pointID);
-	
-			if (pData != null) {
+			LitePointUnit lpu = PointFuncs.getPointUnit(pointID);
+			
+			if (pData != null && lpu != null ) {				
 				DecimalFormat f = new DecimalFormat();
-				f.setMaximumFractionDigits(2);
+				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
 				text = f.format(pData.getValue());
 				prev = true;
 			}

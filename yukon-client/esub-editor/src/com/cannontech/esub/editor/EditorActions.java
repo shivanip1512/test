@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
 import com.cannontech.esub.util.Util;
+import com.cannontech.message.dispatch.ClientConnection;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -157,8 +158,25 @@ class EditorActions {
 			true) {
 		public void processAction(ActionEvent evt) {
 			int r = editor.saveOption();
-			if (r != JOptionPane.CANCEL_OPTION)
+			if (r != JOptionPane.CANCEL_OPTION) {
+				try {	
+				ClientConnection conn = Util.getConnToDispatch();
+				if ( conn != null && conn.isValid() ) {  // free up Dispatchs resources		
+					com.cannontech.message.dispatch.message.Command comm = new com.cannontech.message.dispatch.message.Command();
+					comm.setPriority(15);				
+					comm.setOperation( 
+						com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
+
+					conn.write( comm );
+					conn.disconnect();
+				}
+				}
+				catch ( java.io.IOException e ) {
+					CTILogger.error( e.getMessage(), e );
+				}
+
 				System.exit(0);
+			}
 		}
 	};
 
