@@ -12,6 +12,7 @@ yukon-client/commander/bin
 yukon-client/commander/build
 yukon-client/common/.cvsignore
 yukon-client/common/bin
+yukon-client/common/build
 yukon-client/custom/.cvsignore
 yukon-client/custom/bin
 yukon-client/custom/build
@@ -45,6 +46,7 @@ yukon-client/servlet/.cvsignore
 yukon-client/servlet/bin
 yukon-client/servlet/build
 yukon-client/stars/bin
+yukon-client/stars/build
 yukon-client/tdc/.cvsignore
 yukon-client/tdc/bin
 yukon-client/tdc/build
