@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/05/20 22:37:42 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/07/19 16:35:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -389,8 +389,10 @@ bool CtiTablePointAlarming::isAutoAcked( int alarm) const
 
 CtiTablePointAlarming::CtiTablePointAlarming( LONG pid) :
 _pointID( pid ),
-_excludeNotifyStates( UINT_MAX ),
+_excludeNotifyStates( 0 ),
+_autoAckStates( 0 ),
 _notifyOnAcknowledge(FALSE),
+_notifyOnClear(FALSE),
 _recipientID(0),
 _notificationGroupID( 0 )
 {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2004/06/30 15:15:55 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2004/07/19 16:35:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -776,7 +776,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                     if(pFailSig->getSignalCategory() > SignalEvent)
                                     {
-                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(pFailSig->getSignalCategory()) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
                                         pFailSig->setLogType(AlarmCategoryLogType);
                                     }
                                     pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -2124,7 +2124,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 if(pFailSig->getSignalCategory() > SignalEvent)
                 {
-                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(pFailSig->getSignalCategory()) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | (pPoint->getAlarming().isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
                     pFailSig->setLogType(AlarmCategoryLogType);
                 }
                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
@@ -3529,7 +3529,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
         {
             pointname = point->getName();
             devicetext = resolveDeviceName( *point );
-            excluded = point->getAlarming().isNotifyExcluded(sig.getSignalCategory());
+            excluded = point->getAlarming().isNotifyExcluded( sig.getCondition() ); // sig.getSignalCategory());
             paodescription = resolveDeviceDescription( point->getDeviceID() );
         }
 
@@ -6651,7 +6651,10 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointBase &point, CtiSignalMsg *&pSig, int
             CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point.getDynamic();
 
             if(pDyn)
-                pDyn->getDispatch().setTags(TAG_ACTIVE_ALARM | (point.getAlarming().isAutoAcked(pSig->getSignalCategory()) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+            {
+                pDyn->getDispatch().resetTags(MASK_ANY_ALARM);
+                pDyn->getDispatch().setTags(TAG_ACTIVE_ALARM | (point.getAlarming().isAutoAcked(alarm) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+            }
 
             pSig->setTags(pDyn->getDispatch().getTags());   // They are equal here!
             pSig->setLogType(AlarmCategoryLogType);
