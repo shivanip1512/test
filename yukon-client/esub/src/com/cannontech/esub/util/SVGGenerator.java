@@ -168,12 +168,10 @@ public class SVGGenerator {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
-		int x = (int) r.getMinX();
-		int y = (int) r.getMaxY();
 		
-//		int x =(int) Math.round(text.getBaseLinePoint1().getX());
-//		int y = (int) Math.round(text.getBaseLinePoint1().getY());
-
+		int x = (int) Math.round(text.getBaseLinePoint1().getX());
+		int y = (int) Math.round(text.getBaseLinePoint1().getY());
+		
 		LxAbstractStyle style = text.getStyle();
 		
 		Color fillColor = (Color) style.getPaint();
@@ -321,11 +319,9 @@ public class SVGGenerator {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
-//		int x = (int) r.getMinX();		
-//		int y = (int) r.getMaxY();
 
-int x = (int) Math.round(text.getBaseLinePoint1().getX());
-int y = (int) Math.round(text.getBaseLinePoint1().getY());
+		int x = (int) Math.round(text.getBaseLinePoint1().getX());
+		int y = (int) Math.round(text.getBaseLinePoint1().getY());
 
 		LxAbstractStyle style = text.getStyle();
 		
