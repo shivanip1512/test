@@ -162,15 +162,18 @@ public GraphDataSeries createGDS(com.cannontech.database.data.lite.LitePoint poi
 {
 	GraphDataSeries gds = new GraphDataSeries();
 	gds.setPointID(new Integer( point.getPointID() ));
-	
+
 	String gdsLabel = point.getPointName();
 	if( deviceName == null)
 	{
 		gds.setDeviceName( "System Device" );
 	}
 	else
+	{
+		gds.setDeviceName( deviceName );
 		gdsLabel += " / " + deviceName;
-	
+	}
+
 	if (gdsLabel.length() > 40)
 		gdsLabel = gdsLabel.substring(0, 39);
 	gds.setLabel(gdsLabel);
