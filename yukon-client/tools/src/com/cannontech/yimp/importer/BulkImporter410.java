@@ -204,7 +204,7 @@ public void start()
 			
 			do
 			{
-				ImportFuncs.changeLog(logger);
+				logger = ImportFuncs.changeLog(logger);
 				figureNextImportTime();
 			
 				CTILogger.info("410 Importer holding until next import.");

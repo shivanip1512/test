@@ -10,7 +10,6 @@ import java.util.Vector;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Calendar;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
@@ -220,7 +219,7 @@ public class ImportFuncs
 				cal.setTime(now);
 				file.mkdirs();
 			
-				String opName = "import" + cal.get(Calendar.DAY_OF_MONTH);
+				String opName = "import" + cal.get(GregorianCalendar.DAY_OF_MONTH);
 				//+ GregorianCalendar.getInstance().getTime()
 				String filename = dataDir + opName  + ".log";
 				java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
@@ -263,17 +262,16 @@ public class ImportFuncs
 		Date now = new Date();
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTime(now);
-		int day = cal.get(Calendar.DAY_OF_MONTH);
+		int day = cal.get(GregorianCalendar.DAY_OF_MONTH);
 		
 		if (logger != null)
 		{
 			try
 			{
 				String dataDir = "../log/";
-				java.io.File file = new java.io.File( dataDir );
-				String opName = "import" + cal.get(day);
-				java.io.File file2 = new java.io.File( dataDir + opName);
-				if(! file2.exists())
+				String opName = "import" + day;
+				java.io.File file = new java.io.File( dataDir + opName);
+				if(! file.exists())
 				{
 					String filename = dataDir + opName  + ".log";
 					java.io.FileOutputStream out = new java.io.FileOutputStream(filename, true);
