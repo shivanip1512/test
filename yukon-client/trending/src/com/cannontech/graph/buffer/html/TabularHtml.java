@@ -109,7 +109,7 @@ public StringBuffer getHtml(StringBuffer buf)
 				 			tree.put(new Double(d.doubleValue()),objectValues);
 		 				}
 			 		}
-//			if( objectValues != null)	//MAY NEED THIS AGAIN
+			if( objectValues != null)	//MAY NEED THIS AGAIN
 					objectValues[validIndex] = new Double(values[j]);
 	 			}
 	 			validIndex++;
