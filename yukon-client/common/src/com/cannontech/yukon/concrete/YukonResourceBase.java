@@ -15,11 +15,11 @@ import com.cannontech.yukon.IYukon;
  */
 public abstract class YukonResourceBase implements IYukon
 {	
-   protected static IDatabaseCache dbCache = null;
-   protected static ITimedDatabaseCache timedDBCache = null;
-   protected static IDBPersistent dbPersistent = null;
-   protected static ISQLStatement sqlStatement = null;
-   protected static IMACSConnection macsConnection = null;
+   protected IDatabaseCache dbCache = null;
+   protected ITimedDatabaseCache timedDBCache = null;
+   protected IDBPersistent dbPersistent = null;
+   protected ISQLStatement sqlStatement = null;
+   protected IMACSConnection macsConnection = null;
 
 
 
