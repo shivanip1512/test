@@ -180,6 +180,14 @@ public final class LiteComparators
 			{
 				thisVal = ((LiteContact)o1).getContLastName();
 				anotherVal = ((LiteContact)o2).getContLastName();
+				
+				if( thisVal.equalsIgnoreCase(anotherVal) )
+				{				
+					//if the Last Names are equal, we need to sort by First Names
+					thisVal = ((LiteContact)o1).getContFirstName();
+					anotherVal = ((LiteContact)o2).getContFirstName();
+				}				
+				
 			}
 			else if(o1 instanceof LiteDeviceMeterNumber && o2 instanceof LiteDeviceMeterNumber )
 			{
