@@ -106,10 +106,19 @@ public class YukonGroup extends DBPersistent implements com.cannontech.database.
 		
 		//first delete the current userRoles
 		delete( YukonGroupRole.TABLE_NAME, "GroupID", getYukonGroup().getGroupID() );		
+		
+		// Insert the old entries (entries with ID set) first to avoid primary key conflict
+		Vector grpRolesNoID = new Vector();		
 		for (int i = 0; i < getYukonGroupRoles().size(); i++) 
 		{
-			((DBPersistent)getYukonGroupRoles().get(i)).add();
+			YukonGroupRole grpRole = (YukonGroupRole) getYukonGroupRoles().get(i);
+			if (grpRole.getGroupRoleID() != null)
+				grpRole.add();
+			else
+				grpRolesNoID.addElement( grpRole );
 		}
+		for (int i = 0; i < grpRolesNoID.size(); i++)
+			((YukonGroupRole) grpRolesNoID.get(i)).add();
 	}
 
 
