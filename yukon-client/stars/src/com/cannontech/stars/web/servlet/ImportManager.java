@@ -2399,16 +2399,16 @@ public class ImportManager extends HttpServlet {
 		strBuf.reverse();
 		
 		while (strBuf.length() > 0) {
-			if (Character.isDigit(strBuf.charAt(0)) ||
-				strBuf.charAt(0) == 'A' ||
-				strBuf.charAt(0) == 'P' ||
-				strBuf.charAt(0) == 'M')
+			if (Character.isDigit(strBuf.charAt(0)) || strBuf.charAt(0) == 'M')
 				break;
+			
+			if (strBuf.charAt(0) == 'A' || strBuf.charAt(0) == 'P') {
+				strBuf.insert(0, 'M');
+				break;
+			}
+			
 			strBuf.deleteCharAt(0);
 		}
-		
-		if (strBuf.charAt(0) == 'A' || strBuf.charAt(0) == 'P')
-			strBuf.insert(0, 'M');
 		
 		return strBuf.reverse().toString();
 	}
