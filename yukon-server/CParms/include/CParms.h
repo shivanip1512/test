@@ -28,6 +28,7 @@ private:
    int               RefreshRate;
    RWTime            LastRefresh;
    RWCString         FileName;
+   RWCString         BaseDir;
    RWRecursiveLock<RWMutexLock> mutex;
    RWHashDictionary  mHash;
 
@@ -38,6 +39,8 @@ public:
    virtual ~CtiConfigParameters();
 
    CtiConfigParameters& setConfigFile(RWCString strName = DefaultMasterConfigFileName);
+
+   RWCString getYukonBaseDir() const;
 
    BOOL              isOpt(RWCString key);
 

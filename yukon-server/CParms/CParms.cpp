@@ -29,6 +29,28 @@ CtiConfigParameters& CtiConfigParameters::setConfigFile(RWCString strName)
    return *this;
 }
 
+RWCString CtiConfigParameters::getYukonBaseDir() const 
+{
+  char buf[1000] = "c:\\yukon";
+  char* pos;
+
+  //Assume the master.cfg is in the normal place
+  //x:\\yukon\\server\\config\\master.cfg
+  int n = GetFullPathName(FileName, 1000, buf, &pos);
+  if(n != 0 && n < 1000) 
+    {
+      for(int i = 0; i < 3; i++) 
+	{
+	  if((pos = strrchr(buf, '\\')) != NULL)
+	    *pos = NULL;
+	  else
+	    break;
+	}
+    }
+
+  return RWCString(buf);
+}
+
 int CtiConfigParameters::RefreshConfigParameters()
 {
 
