@@ -2,6 +2,7 @@ package com.cannontech.graph.model;
 
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.graph.GraphDefines;
 
 /**
  * Properties for a Trend.
@@ -24,8 +25,10 @@ public class TrendProperties
 	private final String RESOLUTION_KEY = "RESOLUTION";
 	private final String GDEF_NAME_KEY = "NAME";
 
-	private static String rangeLabel1 = "Reading";
-	private static String rangeLabel2 = "Reading";
+	//currently limited to only 2 range axis.
+	private static String[] rangeLabel = new String[]{
+		"Reading", "Reading"
+	};
 	private String domainLabel = "Date/Time";
 	private String domainLabel_LD = "Percentage";
 
@@ -59,8 +62,8 @@ public class TrendProperties
 		super();
 		setDomainLabel(domainLabel_);
 		setDomainLabel_LD(domainLabel_LD_);
-		setPrimaryRangeLabel(primaryRangeLabel_);
-		setSecondaryRangeLabel(secondaryRangeLabel_);
+		setRangeLabel(primaryRangeLabel_, GraphDefines.PRIMARY_AXIS);
+		setRangeLabel(secondaryRangeLabel_, GraphDefines.SECONDARY_AXIS);
 		setOptionsMaskSettings(optionsMask_);
 		setViewType(viewType_);
 		setResolutionInMillis(resolution_);
@@ -69,32 +72,22 @@ public class TrendProperties
 	/**
 	 * @param newLabel
 	 */
-	public void setPrimaryRangeLabel(String newLabel)
+	public void setRangeLabel(String newLabel, int axisIndex)
 	{
-		rangeLabel1 = newLabel;
+		if(axisIndex >= 0 && axisIndex < rangeLabel.length)
+			rangeLabel[axisIndex] = newLabel;
 	}
-	/**
-	 * @param newLabel
-	 */
-	public void setSecondaryRangeLabel(String newLabel)
-	{
-		rangeLabel2 = newLabel;
-	}
+	
 	/**
 	 * The label used for the Primary (left by default) Range axis.
 	 * @return rangeLabel1
 	 */
-	public String getPrimaryRangeLabel()
+	public String getRangeLabel(int axisIndex)
 	{
-		return rangeLabel1;
-	}
-	/**
-	 * The label used for the Secondary (right by default) Range axis. 
-	 * @return
-	 */
-	public String getSecondaryRangeLabel()
-	{
-		return rangeLabel2;
+		if(axisIndex >= 0 && axisIndex < rangeLabel.length)
+			return rangeLabel[GraphDefines.PRIMARY_AXIS];
+		
+		return rangeLabel[axisIndex];
 	}
 
 	/**
@@ -280,11 +273,11 @@ public class TrendProperties
 				}
 				else if( keys[i].equalsIgnoreCase(RANGE_LEFT_KEY))
 				{
-					setPrimaryRangeLabel(values[i].toString());
+					setRangeLabel(values[i].toString(), GraphDefines.PRIMARY_AXIS);
 				}
 				else if( keys[i].equalsIgnoreCase(RANGE_RIGHT_KEY))
 				{
-					setSecondaryRangeLabel(values[i].toString());
+					setRangeLabel(values[i].toString(), GraphDefines.SECONDARY_AXIS);
 				}
 				else if( keys[i].equalsIgnoreCase(OPTIONS_KEY))
 				{
@@ -324,10 +317,10 @@ public class TrendProperties
 		values.add(getDomainLabel_LD());
 
 		keys.add(RANGE_LEFT_KEY); 
-		values.add(getPrimaryRangeLabel());
+		values.add(getRangeLabel(GraphDefines.PRIMARY_AXIS));
 
 		keys.add(RANGE_RIGHT_KEY); 
-		values.add(getSecondaryRangeLabel());
+		values.add(getRangeLabel(GraphDefines.SECONDARY_AXIS));
 
 		keys.add(OPTIONS_KEY); 
 		values.add(String.valueOf(getOptionsMaskSettings()));
