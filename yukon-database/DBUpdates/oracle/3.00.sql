@@ -576,6 +576,155 @@ create table ActivityLog  (
 alter table ActivityLog
    add constraint PK_ACTIVITYLOG primary key (ActivityLogID);
 
+insert into display values(15, 'Priority 11 Alarms', 'Alarms and Events', 'Priority 11 Alarm Viewer', 'This display will recieve all priority 11 alarm events as they happen in the system.');
+insert into display values(16, 'Priority 12 Alarms', 'Alarms and Events', 'Priority 12 Alarm Viewer', 'This display will recieve all priority 12 alarm events as they happen in the system.');
+insert into display values(17, 'Priority 13 Alarms', 'Alarms and Events', 'Priority 13 Alarm Viewer', 'This display will recieve all priority 13 alarm events as they happen in the system.');
+insert into display values(18, 'Priority 14 Alarms', 'Alarms and Events', 'Priority 14 Alarm Viewer', 'This display will recieve all priority 14 alarm events as they happen in the system.');
+insert into display values(19, 'Priority 15 Alarms', 'Alarms and Events', 'Priority 15 Alarm Viewer', 'This display will recieve all priority 15 alarm events as they happen in the system.');
+insert into display values(20, 'Priority 16 Alarms', 'Alarms and Events', 'Priority 16 Alarm Viewer', 'This display will recieve all priority 16 alarm events as they happen in the system.');
+insert into display values(21, 'Priority 17 Alarms', 'Alarms and Events', 'Priority 17 Alarm Viewer', 'This display will recieve all priority 17 alarm events as they happen in the system.');
+insert into display values(22, 'Priority 18 Alarms', 'Alarms and Events', 'Priority 18 Alarm Viewer', 'This display will recieve all priority 18 alarm events as they happen in the system.');
+insert into display values(23, 'Priority 19 Alarms', 'Alarms and Events', 'Priority 19 Alarm Viewer', 'This display will recieve all priority 19 alarm events as they happen in the system.');
+insert into display values(24, 'Priority 20 Alarms', 'Alarms and Events', 'Priority 20 Alarm Viewer', 'This display will recieve all priority 20 alarm events as they happen in the system.');
+insert into display values(25, 'Priority 21 Alarms', 'Alarms and Events', 'Priority 21 Alarm Viewer', 'This display will recieve all priority 21 alarm events as they happen in the system.');
+insert into display values(26, 'Priority 22 Alarms', 'Alarms and Events', 'Priority 22 Alarm Viewer', 'This display will recieve all priority 22 alarm events as they happen in the system.');
+insert into display values(27, 'Priority 23 Alarms', 'Alarms and Events', 'Priority 23 Alarm Viewer', 'This display will recieve all priority 23 alarm events as they happen in the system.');
+insert into display values(28, 'Priority 24 Alarms', 'Alarms and Events', 'Priority 24 Alarm Viewer', 'This display will recieve all priority 24 alarm events as they happen in the system.');
+insert into display values(29, 'Priority 25 Alarms', 'Alarms and Events', 'Priority 25 Alarm Viewer', 'This display will recieve all priority 25 alarm events as they happen in the system.');
+insert into display values(30, 'Priority 26 Alarms', 'Alarms and Events', 'Priority 26 Alarm Viewer', 'This display will recieve all priority 26 alarm events as they happen in the system.');
+insert into display values(31, 'Priority 27 Alarms', 'Alarms and Events', 'Priority 27 Alarm Viewer', 'This display will recieve all priority 27 alarm events as they happen in the system.');
+insert into display values(32, 'Priority 28 Alarms', 'Alarms and Events', 'Priority 28 Alarm Viewer', 'This display will recieve all priority 28 alarm events as they happen in the system.');
+insert into display values(33, 'Priority 29 Alarms', 'Alarms and Events', 'Priority 29 Alarm Viewer', 'This display will recieve all priority 29 alarm events as they happen in the system.');
+insert into display values(34, 'Priority 30 Alarms', 'Alarms and Events', 'Priority 30 Alarm Viewer', 'This display will recieve all priority 30 alarm events as they happen in the system.');
+insert into display values(35, 'Priority 31 Alarms', 'Alarms and Events', 'Priority 31 Alarm Viewer', 'This display will recieve all priority 31 alarm events as they happen in the system.');
+
+insert into displaycolumns values(15, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(15, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(15, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(15, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(15, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(16, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(16, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(16, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(16, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(16, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(17, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(17, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(17, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(17, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(17, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(18, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(18, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(18, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(18, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(18, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(19, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(19, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(19, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(19, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(19, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(20, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(20, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(20, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(20, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(20, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(21, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(21, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(21, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(21, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(21, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(22, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(22, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(22, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(22, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(22, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(23, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(23, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(23, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(23, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(23, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(24, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(24, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(24, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(24, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(24, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(25, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(25, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(25, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(25, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(25, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(26, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(26, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(26, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(26, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(26, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(27, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(27, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(27, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(27, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(27, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(28, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(28, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(28, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(28, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(28, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(29, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(29, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(29, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(29, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(29, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(30, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(30, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(30, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(30, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(30, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(31, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(31, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(31, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(31, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(31, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(32, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(32, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(32, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(32, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(32, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(33, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(33, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(33, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(33, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(33, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(34, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(34, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(34, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(34, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(34, 'User Name', 8, 5, 50 );
+
+insert into displaycolumns values(35, 'Time Stamp', 11, 1, 90 );
+insert into displaycolumns values(35, 'Device Name', 5, 2, 90 );
+insert into displaycolumns values(35, 'Point Name', 2, 3, 90 );
+insert into displaycolumns values(35, 'Text Message', 12, 4, 200 );
+insert into displaycolumns values(35, 'User Name', 8, 5, 50 );
+
+update graphdataseries set moredata = '01-JAN-2004' where moredata = '(none)' and type = 17;
 
 
 
@@ -590,11 +739,9 @@ alter table ActivityLog
 
 
 
+update YukonGroupRole set grouproleid=grouproleid * -1 where grouproleid > 0;
 
-
-update YukonGroupRole set grouproleid=grouproleid * -1;
-
-update YukonUserRole set userroleid=userroleid * -1;
+update YukonUserRole set userroleid=userroleid * -1 where userroleid > 0;
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
