@@ -1,5 +1,10 @@
 @include /custom/ExpresscomSerial.txt
-Reset CopCount = putconfig raw 0x10 0x05
-Cold Load Pickup (load, time x 0.5 sec) = putconfig raw 0x10 0x01 0x0258
-Protocol Mode (01 Versacom, 02 Expresscom ) = putconfig raw 0x10 0x01 0x01
+Cold Load Pickup (load, time x 0.5 sec) = putconfig xcom raw 0x30 0x00 0x02 0x58
+Increment Prop Counter = putstatus xcom prop inc
+Reset CopCount = putconfig xcom raw 0x05 0x00
+Clear Prop Counter = putconfig xcom main 0x01 0x40
+Clear Comm Loss Counter = putconfig xcom main 0x01 0x80
+Temp Out Of Service (hours)= putconfig xcom serv out temp 24
+In Service = putconfig xcom serv out temp
+
 
