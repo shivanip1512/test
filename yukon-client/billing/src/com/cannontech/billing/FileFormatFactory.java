@@ -64,6 +64,10 @@ public final static FileFormatBase createFileFormat(int type)
 			retFFB =  new NISC_NCDCFormat();
 			break;
 
+		case FileFormatTypes.NCDC_HANDHELD:
+			retFFB =  new NCDC_HandheldFormat();
+			break;
+
 /*		case FileFormatTypes.MVRS:
 			retFFB =  new MVRSFormat();
 			break;
