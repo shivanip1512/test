@@ -92,9 +92,7 @@
                 <tr> 
                   <td> <table width="290" border="0" cellspacing="5" cellpadding="3" align="center">
                       <tr class="Main"> 
-                        <td width="139"> <div align="center"> 
-                            <p><img src="EnrolledButton.gif"></p>
-                          </div></td>
+                        <td width="139"> <div align="center"><img src="EnrolledButton.gif"></div></td>
                         <td width="134"> <div align="center"><img src="ControlButton.gif"></div></td>
                       </tr>
 					  
@@ -102,6 +100,7 @@
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
+		StarsLMControlHistory todayCtrlHist = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
 		
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
@@ -115,13 +114,28 @@
                         <td width="139"> <div align="center"> <span class="TableCell"><img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br> 
                             <%= program.getProgramName() %></span> <br>
                           </div></td>
-                        <td width="134" class="Main"> <div align="center"><b>You have not<br>
-                            been controlled</b>
-							<!--<b>You have<br>
-                            been controlled</b>-->
+                        <td width="134" class="Main"> <div align="center">
+<%
+		if (todayCtrlHist.getControlHistoryCount() == 0) {
+%>
+							<b>You have not<br>
+							been controlled</b>
+<%
+		}
+		else {
+%>
+							<b>You have<br>
+							been controlled</b>
+<%
+		}
+%>
 							<!--<b>Currently<br>
 							controlling</b>-->
 							</div></td>
+					  </tr>
+<%
+	}
+%>
                     </table></td>
                 </tr>
               </table>
