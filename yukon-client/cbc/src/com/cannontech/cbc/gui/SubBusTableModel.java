@@ -40,12 +40,12 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	public static final int SUB_NAME_COLUMN = 1;
 	public static final int CURRENT_STATE_COLUMN  = 2;
   	public static final int TARGET_COLUMN  = 3;
-  	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
-  	public static final int ESTIMATED_VARS_COLUMN  = 5;
-  	public static final int WATTS_COLUMN  = 6;
-	public static final int POWER_FACTOR_COLUMN = 7;
-  	public static final int TIME_STAMP_COLUMN  = 8;
-  	public static final int DAILY_OPERATIONS_COLUMN  = 9;
+  	public static final int VAR_LOAD_COLUMN  = 4;
+  	//public static final int ESTIMATED_VARS_COLUMN  = 5;
+  	public static final int WATTS_COLUMN  = 5;
+	public static final int POWER_FACTOR_COLUMN = 6;
+  	public static final int TIME_STAMP_COLUMN  = 7;
+  	public static final int DAILY_OPERATIONS_COLUMN  = 8;
 
    public static final String DASH_LINE = "  ----";
 	
@@ -56,10 +56,9 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		"Sub Name",
 		"State",
 		"Target",
-		"VAR Load",
-		"Estimated VARS",
+		"VAR Load / Est.",
 		"Watts",
-      "PFactor/Estimated",
+      "PFactor / Est.",
 		"Date/Time",		
 		"Daily/Max Ops"
 	};
@@ -370,33 +369,37 @@ public Object getValueAt(int row, int col)
 					? "NA" 
 					: sub.getMaxDailyOperation().toString()) );
 		
-		case CURRENT_VAR_LOAD_COLUMN:
+		case VAR_LOAD_COLUMN:
       {
+      	String retVal = DASH_LINE; //default just in case
+
          if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-            return DASH_LINE;
-         else {                        
+            retVal = DASH_LINE;
+         else 
+         {                        
          	if( sub.getDecimalPlaces().intValue() == 0 )
-					return new Integer( CommonUtils.formatDecimalPlaces( 
-	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );         	
+					retVal =  CommonUtils.formatDecimalPlaces( 
+	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );         	
          	else
-					return new Double( CommonUtils.formatDecimalPlaces( 
-	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+					retVal = CommonUtils.formatDecimalPlaces( 
+	               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
          }
          
-      }
-      	
-		case ESTIMATED_VARS_COLUMN:
-      {
+			retVal += " / ";
+
          if( sub.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-            return DASH_LINE;
-         else {               
+				retVal += DASH_LINE;
+         else 
+         {               
          	if( sub.getDecimalPlaces().intValue() == 0 )
-					return new Integer( CommonUtils.formatDecimalPlaces( 
-	               sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );         	
+					retVal += CommonUtils.formatDecimalPlaces( 
+	               sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );         	
          	else
-					return CommonUtils.formatDecimalPlaces( 
+					retVal += CommonUtils.formatDecimalPlaces( 
 						sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
       	}
+      	
+      	return retVal;
       }
       
 		case POWER_FACTOR_COLUMN:
@@ -532,33 +535,39 @@ public synchronized void setFilter(java.lang.String newFilter)
 {
    filter = newFilter;
 
-	int start = -1, stop = getAllSubBuses().size();
-	for( int i = 0; i < getAllSubBuses().size(); i++ )
+	if( !ALL_FILTER.equalsIgnoreCase(getFilter()) )
 	{
-		SubBus realBus = (SubBus)getAllSubBuses().get(i);
-		if( start <= -1 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
-		{
-			start = i;
-		}
-		else if( start >= 0 
-					 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
-		{
-			stop = i;
-			break;
-		}
+		int start = -1, stop = getAllSubBuses().size();
 
-	}
-
+		for( int i = 0; i < getAllSubBuses().size(); i++ )
+		{
+			SubBus realBus = (SubBus)getAllSubBuses().get(i);
+			if( start <= -1 
+				 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
+			{
+				start = i;
+			}
+			else if( start >= 0 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
+			{
+				stop = i;
+				break;
+			}
 	
-	if( start < 0 ) //should not occur
-	{
-		currentSubBuses = getAllSubBuses();
-		com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
+		}
+		
+		if( start < 0 ) //should not occur
+		{
+			currentSubBuses = getAllSubBuses();
+			com.cannontech.clientutils.CTILogger.info("*** Could not find SubBus with the area = " + getFilter() );
+		}
+		else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
+			currentSubBuses = getAllSubBuses().subList(
+										start, 
+										(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );		
 	}
-	else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
-		currentSubBuses = getAllSubBuses().subList(
-									start, 
-									(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );
+	else
+		 currentSubBuses = getAllSubBuses();  //case for ALL subbuses
+	
 				
 
 	javax.swing.SwingUtilities.invokeLater( new Runnable()

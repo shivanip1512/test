@@ -19,6 +19,7 @@ import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.util.ClientConnection;
+import com.cannontech.message.util.Message;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -66,10 +67,25 @@ public class CBCClientConnection extends java.util.Observable implements java.ut
  */
 public CBCClientConnection() 
 {
-	super();
-
-	initialize();
+	this( "127.0.0.1", 1910 );
 }
+
+/**
+ * ClientConnection constructor comment.
+ * @param host java.lang.String
+ * @param port int
+ */
+public CBCClientConnection( Message registrationMsg_ ) 
+{
+	super();
+	
+	initialize();
+	getConnection().setRegistrationMsg( registrationMsg_ );
+	
+	// the following method will attempt the connection in another thread
+	startInThread();
+}
+
 /**
  * ClientConnection constructor comment.
  * @param host java.lang.String
@@ -77,11 +93,18 @@ public CBCClientConnection()
  */
 public CBCClientConnection(String hostStr, int portInt)
 {
+	super();
+
 	host = hostStr;
-	port = portInt;
-	
+	port = portInt;	
+
 	initialize();
+
+	// the following method will attempt the connection in another thread
+	startInThread();
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param listener com.cannontech.common.util.MessageEventListener
@@ -168,6 +191,7 @@ public java.util.Hashtable getAreaNames()
 
 	return areaNames;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/22/00 10:35:17 AM)
@@ -187,8 +211,9 @@ protected com.cannontech.message.util.ClientConnection getConnection()
 				for( int i = 0; i < mappings.length; i++ )
 					streamer.register( mappings[i] );
 			}
-		};
-			
+		};			
+
+
 		connection.setHost( getHost() );
 		connection.setPort( getPort() );
 		
@@ -196,9 +221,9 @@ protected com.cannontech.message.util.ClientConnection getConnection()
 		connection.setTimeToReconnect( 10 );
 
 		// the following method will attempt the connection in another thread
-		startInThread();
+		//startInThread();
 	}
-	
+
 	return connection;
 }
 /**
@@ -319,8 +344,9 @@ private void initialize()
 {
 	getExternalResources();
 	
-	getConnection().addObserver( this );
+	getConnection().addObserver( this );	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/5/2001 11:23:42 AM)

@@ -26,16 +26,15 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	/* END --- ROW SPECIFIC DATA */
 
 	//The columns and their column index	
-//	public static final int AREA_NAME_COLUMN  = 0;
 	public static final int NAME_COLUMN					= 0;
 	public static final int CURRENT_STATE_COLUMN		= 1;
   	public static final int TARGET_COLUMN				= 2;
-  	public static final int CURRENT_VAR_LOAD_COLUMN	= 3;
-  	public static final int ESTIMATED_VARS_COLUMN	= 4;
-  	public static final int WATTS_COLUMN				= 5;
-   public static final int POWER_FACTOR_COLUMN		= 6;
-  	public static final int TIME_STAMP_COLUMN			= 7;
-  	public static final int DAILY_OPERATIONS_COLUMN	= 8;
+  	public static final int VAR_LOAD_COLUMN			= 3;
+  	//public static final int ESTIMATED_VARS_COLUMN	= 4;
+  	public static final int WATTS_COLUMN				= 4;
+   public static final int POWER_FACTOR_COLUMN		= 5;
+  	public static final int TIME_STAMP_COLUMN			= 6;
+  	public static final int DAILY_OPERATIONS_COLUMN	= 7;
 
 
    public static final String DASH_LINE = "  ----";
@@ -43,14 +42,13 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
 	{
-		//"Area Name",
 		"Feeder Name",		
 		"State",
 		"Target",
-		"VAR Load",
-		"Estimated VARS",
+		"VAR Load / Est.",
+		//"Estimated VARS",
 		"Watts",		
-      "PFactor/Estimated",
+      "PFactor / Est.",
 		"Date/Time",
 		"Daily Ops"
 	};
@@ -321,22 +319,25 @@ public Object getValueAt(int row, int col)
 			case DAILY_OPERATIONS_COLUMN:
 				return feeder.getCurrentDailyOperations();
 				
-			case CURRENT_VAR_LOAD_COLUMN:
+			case VAR_LOAD_COLUMN:
          {
+				String retVal = DASH_LINE; //default just in case
+         	
             if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-               return DASH_LINE;
+               retVal = DASH_LINE;
             else
-					return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+					retVal = com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 							feeder.getCurrentVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
-         }
-				
-			case ESTIMATED_VARS_COLUMN:
-         {
+
+				retVal += " / ";
+
             if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-               return DASH_LINE;
+					retVal += DASH_LINE;
             else
-					return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+					retVal += com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 							feeder.getEstimatedVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
+         
+         	return retVal;
          }
          
 			case WATTS_COLUMN:

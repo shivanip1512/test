@@ -751,22 +751,12 @@ public void setRowUnAlarmed( Integer rowNumber )
  * Creation date: (1/11/2001 3:52:13 PM)
  * @param newCellColors java.awt.Color[][]
  */
-private static void setStateColors(java.awt.Color[][] newStateColors) 
+public static synchronized void setStates(Color[][] newStateColors, String[] newStateNames ) 
 {
-	synchronized( stateColors )
-	{
-		stateColors = newStateColors;
-	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/11/2001 4:01:26 PM)
- * @param newStateNames java.lang.String[]
- */
-private static void setStateNames(java.lang.String[] newStateNames) 
-{
+	stateColors = newStateColors;
 	stateNames = newStateNames;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (10/31/00 3:39:45 PM)
@@ -813,8 +803,7 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 				colors[i][1] = com.cannontech.common.gui.util.Colors.getColor( states[i].getBackgroundColor().intValue() );
 			}
 
-			setStateColors( colors );
-			setStateNames( stateNames );
+			setStates( colors, stateNames );
 		}
 		
 		//fireTableDataChanged();
