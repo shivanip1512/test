@@ -790,8 +790,8 @@ private javax.swing.JPanel getJPanelOperations() {
 
 			java.awt.GridBagConstraints constraintsUsePointCheckBox = new java.awt.GridBagConstraints();
 			constraintsUsePointCheckBox.gridx = 1; constraintsUsePointCheckBox.gridy = 3;
-			constraintsUsePointCheckBox.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsUsePointCheckBox.insets = new java.awt.Insets(7, 5, 8, 50);
+			constraintsUsePointCheckBox.ipadx = 45;
+			constraintsUsePointCheckBox.insets = new java.awt.Insets(7, 5, 8, 5);
 			getJPanelOperations().add(getUsePointCheckBox(), constraintsUsePointCheckBox);
 			// user code begin {1}
 			getSelectBaselineComboBox().setVisible(false);
