@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 21:42:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@ protected:
 
     LONG        _deviceID;
     RWCString   _name;
+    RWCString   _description;
     RWCString   _objectType;
     RWCString   _disableFlag;
     RWCString   _controlInhibitFlag;
@@ -56,9 +57,11 @@ protected:
     CtiDeviceBaseLite& operator=(const CtiDeviceBaseLite& aRef);
     LONG getID() const;
     RWCString getName() const;
+    RWCString getDescription() const;
 
     CtiDeviceBaseLite& setID( LONG id );
     CtiDeviceBaseLite& setName( const RWCString &str );
+    CtiDeviceBaseLite& setDescription( const RWCString &str );
     CtiDeviceBaseLite& setDisableFlag( const RWCString &str );
     CtiDeviceBaseLite& setControlInhibitFlag( const RWCString &str );
 
@@ -75,9 +78,5 @@ protected:
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual RWDBStatus Restore();
-    //virtual RWDBStatus Insert();
-    //virtual RWDBStatus Update();
-    //virtual RWDBStatus Delete();
-
 };
 #endif // #ifndef __DEV_BASE_LITE_H__
