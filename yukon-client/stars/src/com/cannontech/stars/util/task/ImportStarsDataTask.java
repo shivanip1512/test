@@ -104,8 +104,10 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
 	 */
 	public void cancel() {
-		isCanceled = true;
-		status = STATUS_CANCELING;
+		if (status == STATUS_RUNNING) {
+			isCanceled = true;
+			status = STATUS_CANCELING;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -344,7 +346,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				if (liteAcctInfo != null) {
 					// If load groups for relays are specified, automatically add appliances through program enrollment
 					ArrayList appCats = energyCompany.getAllApplianceCategories();
-					ArrayList programs = new ArrayList();
+					ArrayList progList = new ArrayList();
 					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
 					
 					for (int i = 0; i < 3; i++) {
@@ -375,10 +377,12 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						if (progID == 0)
 							throw new WebClientException( "Cannot find LM program for load group id = " + groupID );
 						
-						programs.add( new int[] {progID, appCatID, groupID} );
+						progList.add( new int[] {progID, appCatID, groupID} );
 					}
 					
-					if (programs.size() > 0) {
+					if (progList.size() > 0) {
+						int[][] programs = new int[ progList.size() ][];
+						progList.toArray( programs );
 						ImportManager.programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany );
 						
 						int[] appIDs = new int[3];
@@ -400,7 +404,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 						appIDMap.put( Integer.valueOf(fields[ImportManager.IDX_INV_ID]), appIDs );
 						fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
 						
-						numAppAdded += programs.size();
+						numAppAdded += programs.length;
 					}
 				}
 				
@@ -680,7 +684,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		logFile = new File(path, logFileName);
 		
 		try {
-			ServerUtils.writeFile(logFile, logMsg);
+			String[] log = new String[ logMsg.size() ];
+			logMsg.toArray( log );
+			ServerUtils.writeFile( logFile, log );
 		}
 		catch (IOException e) {
 			logFile = null;

@@ -44,8 +44,10 @@ public class DeleteCustAccountsTask implements TimeConsumingTask {
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
 	 */
 	public void cancel() {
-		isCanceled = true;
-		status = STATUS_CANCELING;
+		if (status == STATUS_RUNNING) {
+			isCanceled = true;
+			status = STATUS_CANCELING;
+		}
 	}
 
 	/* (non-Javadoc)
