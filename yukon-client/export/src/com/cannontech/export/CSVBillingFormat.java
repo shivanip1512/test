@@ -7,6 +7,7 @@ package com.cannontech.export;
  */
 public class CSVBillingFormat extends ExportFormatBase
 {
+
 	private java.util.Vector billingVector = null;
 
 	private java.util.Hashtable customerHashtable = null;
@@ -20,8 +21,16 @@ public class CSVBillingFormat extends ExportFormatBase
 	private String filePrefix = "OfferBill";
 	private String fileExtension = ".csv";
 
+	private String energyFileName = "C:/yukon/client/config/EnergyNumbers.txt";
 	private java.text.SimpleDateFormat COMMAND_LINE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	private java.text.SimpleDateFormat FILENAME_FORMAT = new java.text.SimpleDateFormat("-MM-dd-yyyy");
+	
+	private class EnergyNumbers
+	{
+		private String energyDebtor = "DebtorNumber";
+		private String energyPremise = "PremiseNumber";
+	}
+
 
 /**
  * CommaDeleimited constructor comment.
@@ -458,16 +467,14 @@ public void retrieveCustomerData()
 	int rowCount = 0;
 		
 	StringBuffer sql = new StringBuffer	("SELECT PAO.PAONAME, PAO.PAOBJECTID");
-	sql.append(", CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER, CEN.ENERGYDEBTOR, CEN.ENERGYPREMISE ");
+	sql.append(", CC.POINTID, CC.COMPONENTPOINTID, DMG.METERNUMBER ");
 	sql.append("FROM YUKONPAOBJECT PAO, ");
 	sql.append("CUSTOMERBASELINEPOINT CBP, ");
 	sql.append("CALCCOMPONENT CC, ");
 	sql.append("POINT PT, ");
-	sql.append("DEVICEMETERGROUP DMG, ");
-	sql.append("CUSTOMERENERGYNUMBERS CEN ");
+	sql.append("DEVICEMETERGROUP DMG ");
 
 	sql.append(" WHERE PAO.PAOBJECTID = CBP.CUSTOMERID");
-	sql.append(" AND CBP.CUSTOMERID = CEN.CUSTOMERID");
 	sql.append(" AND CBP.POINTID = CC.POINTID");
 	sql.append(" AND CC.POINTID = PT.POINTID");
 	sql.append(" AND PT.PAOBJECTID = DMG.DEVICEID");
@@ -476,6 +483,7 @@ public void retrieveCustomerData()
 	java.sql.PreparedStatement stmt = null;
 	java.sql.ResultSet rset = null;
 
+	java.util.Hashtable energyNumbersHashTable = retrieveEnergyNumbers("yukon");
 	customerHashtable = new java.util.Hashtable(10);
 	
 	try
@@ -499,8 +507,11 @@ public void retrieveCustomerData()
 				Integer baselinePtId = new Integer(rset.getInt(3));
 				Integer curatailPtId = new Integer(rset.getInt(4));
 				String meterLoc = rset.getString(5);
-				String energyDebtor = rset.getString(6);
-				String energyPremise = rset.getString(7);
+				
+				EnergyNumbers nums = (EnergyNumbers)energyNumbersHashTable.get(paoName);
+								
+				String energyDebtor = nums.energyDebtor;
+				String energyPremise = nums.energyPremise;
 
 				com.cannontech.export.record.CSVBillingCustomerRecord csvBillingCust = new com.cannontech.export.record.CSVBillingCustomerRecord(
 					paoName, meterLoc, energyDebtor, energyPremise, baselinePtId, curatailPtId);
@@ -531,6 +542,74 @@ public void retrieveCustomerData()
 	logEvent("...CUSOTMER DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + 
 					" millis.", com.cannontech.common.util.LogWriter.INFO);
 	return;
+}
+	/**
+// This method creates a hash table of MeterNumbers (keys) and AccountNumbers(values).
+ */
+public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
+{
+	java.util.Vector linesInFile = new java.util.Vector();
+	java.util.Hashtable energyNumberHashTable = null;
+	
+	if (dbAlias == null)
+		dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
+		
+	try
+	{
+		java.io.FileReader energyNumbersFileReader = new java.io.FileReader(energyFileName);
+		java.io.BufferedReader readBuffer = new java.io.BufferedReader(energyNumbersFileReader);
+
+		try
+		{
+			String tempLineString = readBuffer.readLine();
+						
+			while(tempLineString != null)
+			{
+				linesInFile.add(new String(tempLineString));
+				tempLineString = readBuffer.readLine();	
+			}
+		}
+		catch(java.io.IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
+	}
+	catch(java.io.FileNotFoundException fnfe)
+	{
+		//fnfe.printStackTrace();
+		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+		com.cannontech.clientutils.CTILogger.info("Cannot find " + energyFileName + ", aborting.");
+		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+		return null;	//with null return, meternumbers will be used in place of accountnumbers
+	}
+
+	if(linesInFile != null)
+	{	
+		java.util.Collections.sort(linesInFile);
+		int hashCapacity = (linesInFile.size() + 1);
+		energyNumberHashTable = new java.util.Hashtable(hashCapacity);
+
+		for (int i = 0; i < linesInFile.size(); i++)
+		{
+			String line = (String)linesInFile.get(i);
+			int commaIndex = line.indexOf(",");
+
+			java.util.StringTokenizer t = new java.util.StringTokenizer( line, (new Character('|')).toString(), false );
+			EnergyNumbers nums = new EnergyNumbers();
+			String custName = "";
+			if( t.countTokens() != 3 )
+				return null;	//bad line should we be more wrathfull?
+
+			custName = t.nextToken().trim();
+			nums.energyDebtor = t.nextToken().trim();
+			nums.energyPremise = t.nextToken().trim();
+							
+//			String keyMeterNumber = line.substring(0, commaIndex);
+//			String valueAccountNumber = line.substring(commaIndex + 1);
+			energyNumberHashTable.put(custName, nums);
+		}
+	}
+	return energyNumberHashTable;
 }
 /**
  * Insert the method's description here.
@@ -621,6 +700,10 @@ public void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel)
 			String delTemp = advOptsPanel.getDelimiterTextBox().getText().toString();
 			if( delTemp.length() > 0)
 				setDelimiter(new Character(delTemp.charAt(0)));
+				
+			String fileNameTemp = advOptsPanel.getFileDirectoryTextField().getText().toString();
+			energyFileName = fileNameTemp.trim();
+			
 			
 	}
 	else
