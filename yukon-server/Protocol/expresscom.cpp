@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/05/09 16:08:20 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/06/10 21:03:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -845,6 +845,12 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
         }
     }
 
+    // Set any concatenated messages' priority!
+    if(parse.isKeyValid("xcpriority"))
+    {
+        status = priority((BYTE)parse.getiValue("xcpriority"));
+    }
+
     switch(parse.getCommand())
     {
     case ControlRequest:
@@ -1045,6 +1051,19 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     int relaymask  = parse.getiValue("relaymask", 0);
 
 
+    // Service should be first parse to ensure a device which is awake and listening to us if so directed.
+    if(parse.isKeyValid("xcpservice"))
+    {
+        status = service((BYTE)parse.getiValue("xcpservice"));
+    }
+    else if(parse.isKeyValid("xctservicecancel"))
+    {
+        status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
+                                   (bool)parse.getiValue("xctservicecancel"),
+                                   (bool)parse.getiValue("xctservicebitp"),
+                                   (bool)parse.getiValue("xctservicebitl") );
+    }
+
     if(serial != 0 && parse.isKeyValid("xcaddress"))
     {
         configureGeoAddressing(parse);
@@ -1088,18 +1107,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         status = data(parse.getsValue("xcdata"));
     }
 
-    if(parse.isKeyValid("xcpservice"))
-    {
-        status = service((BYTE)parse.getiValue("xcpservice"));
-    }
-    else if(parse.isKeyValid("xctservicecancel"))
-    {
-        status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
-                                   (bool)parse.getiValue("xctservicecancel"),
-                                   (bool)parse.getiValue("xctservicebitp"),
-                                   (bool)parse.getiValue("xctservicebitl") );
-    }
-    else if(parse.isKeyValid("xcschedule"))
+    if(parse.isKeyValid("xcschedule"))
     {
         status = parseSchedule(parse);
     }
@@ -1287,20 +1295,25 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     BYTE length = 1;
     BYTE raw[8];
 
-    BYTE prog       = (BYTE)parse.getiValue("xca_program", 0);
-    BYTE splinter   = (BYTE)parse.getiValue("xca_splinter", 0);
+    RWCString progStr       = parse.getsValue("xca_program");
+    RWCString splinterStr   = parse.getsValue("xca_splinter");
+    RWCString tStr;
+
+    BYTE prog       = (BYTE)0; // parse.getiValue("xca_program", 0);
+    BYTE splinter   = (BYTE)0; // parse.getiValue("xca_splinter", 0);
     BYTE loadmask   = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
     BYTE load;
+
+    RWTokenizer ptok(progStr);
+    RWTokenizer rtok(splinterStr);
 
     for(load = 0; load < 15; load++)
     {
         if(loadmask & (0x01 << load))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Load " << load + 1 << "found" << endl;
-            }
+            prog        = ( !(tStr = ptok(",")).isNull() ? atoi(tStr.data()) : prog);
+            splinter    = ( !(tStr = rtok(",")).isNull() ? atoi(tStr.data()) : splinter);
+
             length = 1;
             raw[0] = (prog ? 0x20 : 0x00) | (splinter ? 0x10 : 0x00) | (load+1);
 
@@ -1393,3 +1406,17 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
 
     return status;
 }
+
+INT CtiProtocolExpresscom::priority(BYTE priority)
+{
+    INT status = NoError;
+
+    if(priority > 3) priority = 3;
+
+    _message.push_back( mtPriority );
+    _message.push_back( priority );
+
+    _messageCount++;
+    return status;
+}
+

@@ -105,38 +105,16 @@ void  CtiCommandParser::doParse(RWCString Cmd)
             CmdStr.replace(regexp, "");
         }
     }
-#if 0  // 103102
-    else if(CmdStr.contains(" address"))
-    {
-        RWCRExpr regexp("address[= ]+[0-9a-f]+");
-
-        if(!(token = CmdStr.match(regexp)).isNull())
-        {
-            if(!(strnum = token.match(re_hexnum)).isNull())
-            {
-                _num = strtol(strnum.data(), &p, 16);
-            }
-            else if(!(strnum = token.match(re_num)).isNull())
-            {
-                // dout << __LINE__ << " " << strnum << endl;
-                _num = strtol(strnum.data(), &p, 10);
-            }
-            _cmd["serial"] = CtiParseValue( _num );
-            CmdStr.replace(regexp, "");
-        }
-    }
-#endif
-
 
     if(CmdStr.contains(" select"))
     {
         RWCRExpr re_name("select[ ]+name[ ]+((\"|')[^\"']+(\"|'))");
-        RWCRExpr re_id("select +id +[0-9]+");
+        RWCRExpr re_id("select +(device)?id +[0-9]+");
         RWCRExpr re_grp("select +group +((\"|')[^\"']+(\"|'))");
         RWCRExpr re_altg("select +altgroup +((\"|')[^\"']+(\"|'))");
-        RWCRExpr re_rtename("select +route +name +((\"|')[^\"']+(\"|'))");
+        RWCRExpr re_rtename("select +route *name +((\"|')[^\"']+(\"|'))");
         RWCRExpr re_rteid("select +route *id +[0-9]+");
-        RWCRExpr re_ptname("select +point +name +((\"|')[^\"']+(\"|'))");
+        RWCRExpr re_ptname("select +point *name +((\"|')[^\"']+(\"|'))");
         RWCRExpr re_ptid("select +point *id +[0-9]+");
 
         if(!(token = CmdStr.match(re_name)).isNull())
@@ -213,11 +191,9 @@ void  CtiCommandParser::doParse(RWCString Cmd)
         }
         else if(!(token = CmdStr.match(re_rteid)).isNull())
         {
-            RWCTokenizer ntok(token);
-            ntok();  //  pull the select keyword
-            ntok();  //  pull the route keyword
-            ntok();  //  pull the id keyword
-            if(!(token = ntok()).isNull())   // get the value
+            token.replace( RWCRExpr("select +route *id +"), "");
+
+            if(!token.isNull())   // get the value
             {
                 _cmd["route"] = CtiParseValue( atoi(token.data()) );
             }
@@ -240,12 +216,9 @@ void  CtiCommandParser::doParse(RWCString Cmd)
         }
         else if( !(token = CmdStr.match(re_ptid)).isNull())
         {
-            RWCTokenizer ntok(token);
-            ntok();  // pull the select keyword
-            RWCString str = ntok();  // pull the pointid keyword
-            if(str != RWCString("pointid"))  ntok();     // Grab one more then
+            token.replace(RWCRExpr("select +point *id +"),"");
 
-            if(!(token = ntok()).isNull())   // get the value
+            if(!token.isNull())   // get the value
             {
                 _cmd["point"] = CtiParseValue( atoi(token.data()) );
             }
@@ -274,6 +247,13 @@ void  CtiCommandParser::doParse(RWCString Cmd)
     if(CmdStr.contains(" noqueue"))
     {
         _cmd["noqueue"] = CtiParseValue("true");
+    }
+    if(!(token = CmdStr.match(" priority +[0-9]+")).isNull())
+    {
+        if(!(strnum = token.match("[0-9]+")).isNull())
+        {
+            _cmd["xcpriority"] = CtiParseValue( atoi(strnum.data()) );            // Expresscom only supports a 0 - 3 priority 0 highest.
+        }
     }
 
     if(!(cmdstr = tok()).isNull())
@@ -1216,6 +1196,30 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             _cmd["timesync"] = CtiParseValue("TRUE");
         }
 
+        // Template should be global.
+        if(!(token = CmdStr.match("template +((\"|')[^\"']+(\"|'))")).isNull())
+        {
+            size_t nstart;
+            size_t nstop;
+            nstart = token.index("template +", &nstop);
+
+            nstop += nstart;
+
+            if(!(token = token.match("(\"|')[^\"']+(\"|')", nstop)).isNull())   // get the template name...
+            {
+                token = token((size_t)1, (size_t)token.length() - 2);
+                _cmd["template"] = CtiParseValue( token );
+            }
+
+            RWCString sistr;
+
+            if(CmdStr.contains(" service in"))
+            {
+                sistr = "service in";
+            }
+            _cmd["templateinservice"] = CtiParseValue( sistr );
+        }
+
         switch( type )
         {
         case ProtocolVersacomType:              // For putconfig, we may not know who we are talking to.  Decode for both.
@@ -1659,21 +1663,6 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             _cmd["vdata"] = CtiParseValue( rawData );
         }
 
-        if(!(token = CmdStr.match("template +((\"|')[^\"']+(\"|'))")).isNull())
-        {
-            size_t nstart;
-            size_t nstop;
-            nstart = token.index("template +", &nstop);
-
-            nstop += nstart;
-
-            if(!(token = token.match("(\"|')[^\"']+(\"|')", nstop)).isNull())   // get the template name...
-            {
-                token = token((size_t)1, (size_t)token.length() - 2);
-                _cmd["template"] = CtiParseValue( token );
-            }
-        }
-
         if(!(token = CmdStr.match(" util(ity)?[ =]*([ =]+0x)?[0-9a-f]+")).isNull())
         {
             if(!(temp = token.match(re_hexnum)).isNull())
@@ -1961,7 +1950,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
         if(!(token = CmdStr.match("assign")).isNull())
         {
             if(!(token = CmdStr.match("assign"\
-                                      "((( +[uascd][ =]*(0x)?[0-9a-f]+)|( cin)|( cout)|( tin)|( tout))*)+")).isNull())
+                                      "(( +[uascd][ =]*(0x)?[0-9a-f]+)*)+")).isNull())
             {
                 // dout << token << endl;
                 _cmd["vcassign"] = CtiParseValue( TRUE );
@@ -2062,23 +2051,23 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                  *  serviceflag == VC_SERVICE_MASK  == 0x0f is a mask
                  *-------------------------------------------------------------------------*/
 
-                if(token.contains(" cin"))
+                if(CmdStr.contains(" service in"))
                 {
                     serviceflag |= (0x08 | 0x02); // (VC_SERVICE_C_IN | VC_SERVICE_T_IN);
                     _actionItems.insert("SERVICE ENABLE");
                 }
-                else if( token.contains(" cout"))
+                else if( CmdStr.contains(" service out"))
                 {
                     serviceflag |= 0x04;
                     _actionItems.insert("SERVICE DISABLE");
                 }
 
-                if(token.contains(" tin"))
+                if(CmdStr.contains(" service tin"))
                 {
                     serviceflag |= 0x02;
                     _actionItems.insert("SERVICE ENABLE TEMPORARY");
                 }
-                else if(token.contains(" tout"))
+                else if(CmdStr.contains(" service tout"))
                 {
                     serviceflag |= 0x01;
                     _actionItems.insert("SERVICE DISABLE TEMPORARY");
@@ -3305,21 +3294,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
 
     }
 
-    if(!(token = CmdStr.match("template +((\"|')[^\"']+(\"|'))")).isNull())
-    {
-        size_t nstart;
-        size_t nstop;
-        nstart = token.index("template +", &nstop);
-
-        nstop += nstart;
-
-        if(!(token = token.match("(\"|')[^\"']+(\"|')", nstop)).isNull())   // get the template name...
-        {
-            token = token((size_t)1, (size_t)token.length() - 2);
-            _cmd["template"] = CtiParseValue( token );
-        }
-    }
-
     if(!(token = CmdStr.match(" raw( +(0x)?[0-9a-f]+)+")).isNull())
     {
         if(!(str = token.match("( +(0x)?[0-9a-f]+)+")).isNull())
@@ -3348,20 +3322,10 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
 
     if(!(token = CmdStr.match("((assign)|(address))")).isNull())
     {
-        if(!(token = CmdStr.match("((assign)|(address))"\
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?" \
-                                  "( +[sgbfzupr][ =]*(0x)?[0-9a-f]+)?")).isNull())
         {
             _cmd["xcaddress"] = TRUE;
 
-
-            if(!(valStr = token.match(" s[ =]*(0x)?[0-9a-f]+")).isNull())
+            if(!(valStr = CmdStr.match(" s[ =]*(0x)?[0-9a-f]+")).isNull())
             {
                 _num = strtol(valStr.match(re_anynum).data(), &p, 0);
 
@@ -3370,7 +3334,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SPID = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = token.match(" +g[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" +g[ =]*[0-9]+")).isNull())
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 10);
                 _cmd["xca_geo"] = CtiParseValue( _num );
@@ -3378,7 +3342,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG GEO = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = token.match(" +b[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" +b[ =]*[0-9]+")).isNull())
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 10);
                 _cmd["xca_sub"] = CtiParseValue( _num );
@@ -3386,7 +3350,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = token.match(" +f[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" +f[ =]*[0-9]+")).isNull())
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 10);
                 _cmd["xca_feeder"] = CtiParseValue( _num );
@@ -3394,7 +3358,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG FEEDER = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = token.match(" +z[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" +z[ =]*[0-9]+")).isNull())
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 10);
                 _cmd["xca_zip"] = CtiParseValue( _num );
@@ -3402,7 +3366,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG ZIP = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = token.match(" +u[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" +u[ =]*[0-9]+")).isNull())
             {
                 _num = strtol(valStr.match(re_num).data(), &p, 10);
                 _cmd["xca_uda"] = CtiParseValue( _num );
@@ -3410,35 +3374,33 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG UDA = %d", _num);
                 _actionItems.insert(tbuf);
             }
-            if(!(valStr = token.match(" +p[ =]*[0-9]+")).isNull())
-            {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
-                _cmd["xca_program"] = CtiParseValue( _num );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG PROGRAM = %d", _num);
-                _actionItems.insert(tbuf);
+            RWCString programtemp;
+            RWCString splintertemp;
+
+            if(!(valStr = CmdStr.match(" +p[ =]*[0-9]+( *, *[0-9]+)*")).isNull())
+            {
+                valStr.replace(RWCRExpr(" +p[ =]*"),"");
+                _cmd["xca_program"] = CtiParseValue( valStr );
+                programtemp = valStr;
             }
-            if(!(valStr = token.match(" +r[ =]*[0-9]+")).isNull())
+            if(!(valStr = CmdStr.match(" +r[ =]*[0-9]+( *, *[0-9]+)*")).isNull())
             {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
-                _cmd["xca_splinter"] = CtiParseValue( _num );
+                valStr.replace(RWCRExpr(" +r[ =]*"),"");
+                _cmd["xca_splinter"] = CtiParseValue( valStr );
 
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG SPLINTER = %d", _num);
-                _actionItems.insert(tbuf);
-            }
-            if(!(valStr = token.match(" +r[ =]*[0-9]+")).isNull())
-            {
-                _num = strtol(valStr.match(re_num).data(), &p, 10);
-                _cmd["xca_splinter"] = CtiParseValue( _num );
-
-                _snprintf(tbuf, sizeof(tbuf), "CONFIG SPLINTER = %d", _num);
-                _actionItems.insert(tbuf);
+                splintertemp = valStr;
             }
 
             if(!(token = CmdStr.match("((relay)|(load)) +[0-9]+( *, *[0-9]+)*")).isNull())
             {
                 INT i;
                 INT mask = 0;
+                RWTokenizer ptok(programtemp);
+                RWTokenizer rtok(splintertemp);
+                RWCString tempstr;
+                RWCString ptemp;
+                RWCString rtemp;
 
                 for(i = 0; i < 15; i++)
                 {
@@ -3446,6 +3408,26 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                     if(!(temp = token.match(numstr)).isNull())
                     {
                         mask |= (0x01 << i);
+
+                        {
+                            tempstr = ptok(",");
+                            if(!tempstr.isNull()) ptemp = tempstr;
+
+                            tempstr = rtok(",");
+                            if(!tempstr.isNull()) rtemp = tempstr;
+
+                            if(!ptemp.isNull())
+                            {
+                                _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to PROGRAM = %s", i+1, ptemp);
+                                _actionItems.insert(tbuf);
+                            }
+
+                            if(!rtemp.isNull())
+                            {
+                                _snprintf(tbuf, sizeof(tbuf), "CONFIG LOAD %d to SPLINTER = %s", i+1, rtemp);
+                                _actionItems.insert(tbuf);
+                            }
+                        }
                     }
                 }
 
@@ -3781,4 +3763,3 @@ void CtiCommandParser::doParsePutConfigExpresscomScheduleDOW(RWTokenizer &tok, I
         }
     }
 }
-

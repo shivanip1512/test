@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2003/05/22 20:30:45 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2003/06/10 21:03:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1311,13 +1311,14 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              */
 
             RWCString lmgroup = parse.getsValue("template");
-            char newparse[128];
+            RWCString service = parse.getsValue("templateinservice");
+            char newparse[256];
 
             Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
             CtiDevice *GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev != NULL)
             {
-                sprintf(newparse, "PutConfig serial %d %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment());
+                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(), service.data());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1334,13 +1335,13 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              *  This indicates the user wants to put the devices defined by group addressing defined in the "fromxxx"
              *  keys into the selected versacom group.
              */
-            char newparse[128];
+            char newparse[256];
 
             CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev;
             // Dev = DeviceManager->RemoteGetEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
-                _snprintf(newparse, 127, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
+                _snprintf(newparse, 255, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

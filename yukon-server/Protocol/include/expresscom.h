@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/04/09 22:46:27 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/06/10 21:03:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,7 @@ public:
         mtReserved                  = 0x00,
         mtSync                      = 0x01,
         mtTimeSync                  = 0x02,
+        mtPriority                  = 0x03,
         mtSignalTest                = 0x05,
         mtTimedLoadControl          = 0x08,
         mtRestoreLoadControl        = 0x09,
@@ -181,6 +182,7 @@ private:
 
     INT configureGeoAddressing(CtiCommandParser &parse);
     INT configureLoadAddressing(CtiCommandParser &parse);
+    INT priority(BYTE priority);
 
 public:
 
