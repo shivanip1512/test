@@ -475,7 +475,7 @@ void CtiLMControlAreaStore::reset()
                             CtiLMProgramDirect* newDirProg = new CtiLMProgramDirect(rdr);
                             RWOrdered& directGroups = newDirProg->getLMProgramDirectGroups();
                             //Inserting this program's groups
-                            while( allGroupList.entries() > 0 && newDirProg->getPAOId() == ((CtiLMGroupBase*)allGroupList[0])->getPAOId() )
+                            while( allGroupList.entries() > 0 && newDirProg->getPAOId() == ((CtiLMGroupBase*)allGroupList[0])->getLMProgramId() )
                             {
                                 directGroups.insert(allGroupList.removeAt(0));
                             }
@@ -651,32 +651,27 @@ void CtiLMControlAreaStore::reset()
                         {
                             CtiLMProgramCurtailment* currentLMProgramCurtailment = (CtiLMProgramCurtailment*)itr.value();
 
-                            RWDBTable lmProgramCurtailCustomerListTable = db.table("lmprogramcurtailcustomerlist");
-                            RWDBTable customerTable = db.table("customer");
                             RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
+                            RWDBTable customerTable = db.table("customer");
+                            RWDBTable lmProgramCurtailCustomerListTable = db.table("lmprogramcurtailcustomerlist");
 
                             RWDBSelector selector = db.selector();
-                            selector << yukonPAObjectTable["paobjectid"]
-                                     << yukonPAObjectTable["category"]
-                                     << yukonPAObjectTable["paoclass"]
-                                     << yukonPAObjectTable["paoname"]
-                                     << yukonPAObjectTable["type"]
-                                     << yukonPAObjectTable["description"]
-                                     << yukonPAObjectTable["disableflag"]
-                                     << lmProgramCurtailCustomerListTable["customerorder"]
-                                     << lmProgramCurtailCustomerListTable["requireack"]
+                            selector << ciCustomerBaseTable["customerid"]
+                                     << ciCustomerBaseTable["companyname"]
+                                     << ciCustomerBaseTable["customerdemandlevel"]
+                                     << ciCustomerBaseTable["curtailamount"]
+                                     << ciCustomerBaseTable["curtailmentagreement"]
                                      << customerTable["timezone"]
-                                     << ciCustomerBaseTable["customerdemandlevel"];
+                                     << lmProgramCurtailCustomerListTable["customerorder"]
+                                     << lmProgramCurtailCustomerListTable["requireack"];
 
-                            selector.from(yukonPAObjectTable);
-                            selector.from(lmProgramCurtailCustomerListTable);
-                            selector.from(customerTable);
                             selector.from(ciCustomerBaseTable);
+                            selector.from(customerTable);
+                            selector.from(lmProgramCurtailCustomerListTable);
 
-                            selector.where( lmProgramCurtailCustomerListTable["deviceid"]==currentLMProgramCurtailment->getPAOId() &&
-                                            yukonPAObjectTable["paobjectid"]==lmProgramCurtailCustomerListTable["lmcustomerdeviceid"] &&
-                                            customerTable["customerid"]==yukonPAObjectTable["paobjectid"] &&
-                                            ciCustomerBaseTable["customerid"]==yukonPAObjectTable["paobjectid"] );
+                            selector.where( lmProgramCurtailCustomerListTable["programid"]==currentLMProgramCurtailment->getPAOId() &&
+                                            ciCustomerBaseTable["customerid"]==lmProgramCurtailCustomerListTable["customerid"] &&
+                                            customerTable["customerid"]==ciCustomerBaseTable["customerid"] );
 
                             selector.orderBy( lmProgramCurtailCustomerListTable["customerorder"] );
 
@@ -879,27 +874,26 @@ void CtiLMControlAreaStore::reset()
                             }
 
                             {
-                                RWDBTable lmEnergyExchangeCustomerListTable = db.table("lmenergyexchangecustomerlist");
+                                RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
                                 RWDBTable customerTable = db.table("customer");
+                                RWDBTable lmEnergyExchangeCustomerListTable = db.table("lmenergyexchangecustomerlist");
 
                                 RWDBSelector selector = db.selector();
-                                selector << yukonPAObjectTable["paobjectid"]
-                                         << yukonPAObjectTable["category"]
-                                         << yukonPAObjectTable["paoclass"]
-                                         << yukonPAObjectTable["paoname"]
-                                         << yukonPAObjectTable["type"]
-                                         << yukonPAObjectTable["description"]
-                                         << yukonPAObjectTable["disableflag"]
-                                         << lmEnergyExchangeCustomerListTable["customerorder"]
-                                         << customerTable["timezone"];
+                                selector << ciCustomerBaseTable["customerid"]
+                                         << ciCustomerBaseTable["companyname"]
+                                         << ciCustomerBaseTable["customerdemandlevel"]
+                                         << ciCustomerBaseTable["curtailamount"]
+                                         << ciCustomerBaseTable["curtailmentagreement"]
+                                         << customerTable["timezone"]
+                                         << lmEnergyExchangeCustomerListTable["customerorder"];
 
-                                selector.from(yukonPAObjectTable);
-                                selector.from(lmEnergyExchangeCustomerListTable);
+                                selector.from(ciCustomerBaseTable);
                                 selector.from(customerTable);
+                                selector.from(lmEnergyExchangeCustomerListTable);
 
-                                selector.where( lmEnergyExchangeCustomerListTable["deviceid"]==currentLMProgramEnergyExchange->getPAOId() &&
-                                                yukonPAObjectTable["paobjectid"]==lmEnergyExchangeCustomerListTable["lmcustomerdeviceid"] &&
-                                                customerTable["customerid"]==yukonPAObjectTable["paobjectid"] );
+                                selector.where( lmEnergyExchangeCustomerListTable["programid"]==currentLMProgramEnergyExchange->getPAOId() &&
+                                                ciCustomerBaseTable["customerid"]==lmEnergyExchangeCustomerListTable["customerid"] &&
+                                                customerTable["customerid"]==ciCustomerBaseTable["customerid"] );
 
                                 selector.orderBy( lmEnergyExchangeCustomerListTable["customerorder"] );
 
@@ -940,7 +934,7 @@ void CtiLMControlAreaStore::reset()
                                         selector.from(lmEnergyExchangeCustomerReplyTable);
                                         selector.from(lmEnergyExchangeProgramOfferTable);
 
-                                        selector.where(lmEnergyExchangeCustomerReplyTable["customerid"]==currentLMEnergyExchangeCustomer->getPAOId() &&
+                                        selector.where(lmEnergyExchangeCustomerReplyTable["customerid"]==currentLMEnergyExchangeCustomer->getCustomerId() &&
                                                        lmEnergyExchangeCustomerReplyTable["offerid"]==lmEnergyExchangeProgramOfferTable["offerid"] &&
                                                        lmEnergyExchangeProgramOfferTable["offerdate"]>=compareDateTime);
 
