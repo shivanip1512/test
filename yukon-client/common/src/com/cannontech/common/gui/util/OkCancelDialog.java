@@ -370,6 +370,28 @@ private void setDisplayPanel(javax.swing.JPanel displayPanel)
 
 	((DataInputPanel)getJPanelSlot()).fireInputUpdate();
 }
+
+/**
+ * Sets the OK to visible or not
+ * Creation date: (3/6/2003 11:46:11 AM)
+ * @param booelan visible
+ */
+public void setOKButtonVisible( boolean visible ) 
+{
+	getJButtonOk().setVisible( visible );
+}
+
+/**
+ * Sets the CANCEL to visible or not
+ * Creation date: (3/6/2003 11:46:11 AM)
+ * @param booelan visible
+ */
+public void setCancelButtonVisible( boolean visible ) 
+{
+	getJButtonCancel().setVisible( visible );
+}
+
+
 /**
  * 
  */
