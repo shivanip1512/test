@@ -147,7 +147,7 @@ public class GraphClient extends javax.swing.JPanel implements com.cannontech.da
 	private int currentWeek = NO_WEEK;	//used when more than one week is selected.
 	private java.util.Date[] sliderValuesArray = null;
 	private javax.swing.ButtonGroup dataViewButtonGroup;
-	private boolean timeToUpdate = true;	//true, update button was pushed, initial is ture also
+	private boolean timeToUpdateSlider = true;	//true, update button was pushed, initial is ture also
 	private CreateGraphPanel createPanel =  null;
 	//Menu Bar and Items
 	private javax.swing.JMenuBar menuBar = null;
@@ -636,7 +636,7 @@ public void refresh( )
 			return;
 		}
 
-		timeToUpdate = true; //flags that update button was selected
+		timeToUpdateSlider = true; //flags that update button was selected
 		updateCurrentPane();
 
 	}
@@ -649,7 +649,7 @@ public void refresh( )
 	{
 		getGraphParentFrame().setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new java.util.Date( System.currentTimeMillis() ) )+ " )" );
 		this.setCursor(savedCursor);
-		timeToUpdate = false; //reset flag
+//		timeToUpdate = false; //reset flag
 	}
 }
 /**
@@ -899,7 +899,7 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 	}
 	else
 	{
-		if(timeToUpdate == true)	//update button pushed ("new start date selected")
+		if(timeToUpdateSlider == true)	//update button pushed ("new start date selected")
 		{
 			// SET SLIDER LABELS
 			if( valuesCount > 7)	//More than one week.
@@ -917,7 +917,7 @@ private int formatDateRangeSlider(TrendModel model, TabularHtml htmlData)
 				getTabularSlider().getModel().setValue( 0 );
 			}
 				
-			timeToUpdate = false;
+			timeToUpdateSlider = false;
 		}
 
 		// Set up the Slider labels and size, this method also calls setSliderLabels
