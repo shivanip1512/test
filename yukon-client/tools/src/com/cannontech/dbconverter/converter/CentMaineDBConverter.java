@@ -90,7 +90,6 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	
 	boolean add;
 
-	int num = 0;
 	
 	/**
 	 * CentMaineDBConverter constructor comment.
@@ -1010,7 +1009,6 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 					new Integer(300));
 					
 				if (active.equalsIgnoreCase("T")) {
-					num++;
 					device.setDisableFlag(new Character('Y'));
 				}
 				multi.getDBPersistentVector().add(device);
@@ -1021,7 +1019,6 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 		}
 
 		boolean success = writeToSQLDatabase(multi);
-		System.out.println("Num " +num);
 
 		if (success) {
 			CTILogger.info(
