@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2003/11/05 16:44:35 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/04/29 20:06:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1936,7 +1936,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
     }
 
     RWDBNullIndicator isNull;
-    rdr["windowtype"] >> isNull;        // 'windowtype' is the alias used for devicewindow.type to avoid a collision with yukonpaobject.type.
+    rdr["type"] >> isNull;        // 'windowtype' is the alias used for devicewindow.type to avoid a collision with yukonpaobject.type.
 
     if(!isNull)
     {
