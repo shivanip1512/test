@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2002/04/15 15:18:58 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2002/04/16 15:58:37 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsinglesocket.cpp,v $
+      Revision 1.3  2002/04/16 15:58:37  softwarebuild
+      20020416_1031_2_16
+
       Revision 1.2  2002/04/15 15:18:58  cplender
 
       This is an update due to the freezing of PVCS on 4/13/2002

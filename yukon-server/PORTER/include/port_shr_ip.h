@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:19:27 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/16 15:59:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:18:28 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/16 15:57:57 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

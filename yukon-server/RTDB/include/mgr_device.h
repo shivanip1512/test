@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_device.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:19:55 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/16 16:00:29 $
 *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
