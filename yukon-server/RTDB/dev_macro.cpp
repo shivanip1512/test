@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:03 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/17 14:52:50 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                 }
                 else
                 {
-                    pBase->initTrxID( OutMessage->TrxID, vgList );      // Must init the non-participants so they count too.
+                    pBase->initTrxID( OutMessage->TrxID, parse, vgList );      // Must init the non-participants so they count too.
                 }
 
                 // It is our job to clean up after any Execute chain which does not consume the new message.
@@ -165,6 +165,9 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
         {
             if(newvglistsize > vglistsize)
             {
+                /*
+                 *  We claim all generated messages as having come from the device macro and not heir causal device object here.
+                 */
                 for(int i = newvglistsize; i > vglistsize; i-- )
                 {
                     CtiMessage *&pMsg = vgList[i-1];
@@ -178,13 +181,37 @@ INT CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse
                 }
             }
 
+#if 0
+            CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( getID(),
+                                                                        pPoint->getPointID(),
+                                                                        parse.getControlled(),
+                                                                        RWTime(),
+                                                                        (parse.getControlled() == CONTROLLED ? parse.getiValue("control_interval") : RESTORE_DURATION),
+                                                                        parse.getiValue("control_reduction"));
+
+            hist->setControlType( "Device Macro Controlled" );      // Could be the state group name ????
+            hist->setActiveRestore( parse.getiValue("control_interval") > 0 ? LMAR_TIMED : LMAR_RESTORE);
+            hist->setMessagePriority( hist->getMessagePriority() + 1 );
+            vgList.insert( hist );
+
             if(pPoint->isPseudoPoint())
             {
                 // There is no physical point to observe and respect.  We lie to the control point.
-                CtiPointDataMsg *pData = new CtiPointDataMsg(pPoint->getID(), (DOUBLE)parse.getControlled(), NormalQuality, StatusPointType, RWCString("This point has been controlled"));
-                pData->setUser( pReq->getUser() );
+                CtiPointDataMsg *pData = new CtiPointDataMsg( pPoint->getPointID(), (DOUBLE)parse.getControlled(), NormalQuality, StatusPointType, (parse.getControlled() == CONTROLLED ? RWCString(getName() + " controlling") : RWCString(getName() + " restoring")));
+                pData->setMessagePriority( pData->getMessagePriority() + 1 );
                 vgList.insert(pData);
             }
+
+            if(parse.getControlled() == CONTROLLED && parse.getiValue("control_interval") > 0)
+            {
+                // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
+                CtiPointDataMsg *pData = new CtiPointDataMsg( pPoint->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, RWCString(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
+                pData->setTime( RWTime() + parse.getiValue("control_interval") );
+                pData->setMessagePriority( pData->getMessagePriority() - 1 );
+                vgList.insert(pData);
+            }
+#endif
+
         }
     }
     else
@@ -287,7 +314,7 @@ bool CtiDeviceMacro::executeOnSubGroupRoute( const CtiDeviceBase *&pBase, set< L
 }
 
 
-INT CtiDeviceMacro::initTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList)
+INT CtiDeviceMacro::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList)
 {
     CtiPoint *pPoint = NULL;
 
@@ -377,7 +404,7 @@ INT CtiDeviceMacro::analyzeWhiteRabbits( CtiRequestMsg *pReq, CtiCommandParser &
         {
             setOutMessageLMGID( OutMessage->DeviceIDofLMGroup);     // This is the LM Group which started this mess
             setOutMessageTrxID( OutMessage->TrxID );                // This is the LM Group which started this mess
-            initTrxID( OutMessage->TrxID, vgList );
+            initTrxID( OutMessage->TrxID, parse, vgList );
         }
     }
 

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:23 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/17 14:54:37 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@ public:
 
         if(pControlStatus != 0)
         {
-            CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( pControlStatus->getDeviceID(),
+            CtiLMControlHistoryMsg *hist = new CtiLMControlHistoryMsg ( getID(),
                                                                         pControlStatus->getPointID(),
                                                                         isshed,
                                                                         RWTime(),

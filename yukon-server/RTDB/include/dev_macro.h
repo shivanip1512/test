@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/17 14:54:37 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ public:
     static void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector );
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     virtual INT processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList );
-    virtual INT initTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList );
+    virtual INT initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList );
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
 };
 

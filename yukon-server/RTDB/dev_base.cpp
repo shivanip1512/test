@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:58 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/17 14:52:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -708,7 +708,7 @@ inline INT CtiDeviceBase::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
     return 0;
 }
 
-inline INT CtiDeviceBase::initTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList )
+inline INT CtiDeviceBase::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList )
 {
     setResponsesOnTrxID(0);
     setTrxID(trx);

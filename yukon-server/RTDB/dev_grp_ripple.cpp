@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:00 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/17 14:52:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,14 +101,12 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
     CHAR  Temp[80];
     CtiRoute *Route = NULL;
 
-    _isShed = parse.getControlled();
-
     if( (Route = getRoute( getRouteID() )) != NULL )            // This is "this's" route
     {
         setOutMessageTargetID( OutMessage->TargetID );          // This is the Device which is targeted.
         setOutMessageLMGID( OutMessage->DeviceIDofLMGroup );    // This is the LM Group which started this mess
         setOutMessageTrxID( OutMessage->TrxID );                // This is the LM Group which started this mess
-        initTrxID( OutMessage->TrxID, vgList );                 // Be sure to accept, or create a new TrxID.
+        initTrxID( OutMessage->TrxID, parse, vgList );                 // Be sure to accept, or create a new TrxID.
 
         OutMessage->RouteID     = getRouteID();
         OutMessage->EventCode   = RIPPLE | NORESULT;
@@ -125,12 +123,10 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
          */
         if(parse.getActionItems().entries())
         {
-            for( ; parse.getActionItems().entries(); )
+            for(size_t i = 0; i < parse.getActionItems().entries(); i++)
             {
-                RWCString actn = parse.getActionItems().removeFirst();
+                RWCString actn = parse.getActionItems()[i];
                 RWCString desc = getDescription(parse);
-
-                _lastCommand = actn;    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
 
                 CtiPointStatus *pControlStatus = (CtiPointStatus*)getDeviceControlPointOffsetEqual( GRP_CONTROL_STATUS );
                 LONG pid = ( (pControlStatus != 0) ? pControlStatus->getPointID() : SYS_PID_LOADMANAGEMENT );
@@ -239,12 +235,18 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
     return count;
 }
 
-INT CtiDeviceGroupRipple::initTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgList )
+INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, RWTPtrSlist< CtiMessage >  &vgList )
 {
     CtiPoint *pPoint = NULL;
 
     setResponsesOnTrxID(0);
     setTrxID(trx);
+
+    _isShed = parse.getControlled();
+    if(parse.getActionItems().entries() > 0 )
+    {
+        _lastCommand = parse.getActionItems()[0];    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
+    }
 
     if ((pPoint = (CtiPoint*)getDevicePointOffsetTypeEqual(1, AnalogPointType)) != NULL)
     {

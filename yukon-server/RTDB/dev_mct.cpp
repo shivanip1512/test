@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:03 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/17 14:54:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -603,10 +603,9 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                  */
                 if(parse.getActionItems().entries())
                 {
-                    for( ; parse.getActionItems().entries(); )
+                    for(size_t offset = offset; offset < parse.getActionItems().entries(); offset++)
                     {
-
-                        RWCString actn = parse.getActionItems().removeFirst();
+                        RWCString actn = parse.getActionItems()[offset];
                         RWCString desc = getDescription(parse);
 
                         vgList.insert(new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
