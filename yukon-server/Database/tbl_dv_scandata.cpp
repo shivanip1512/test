@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/28 18:16:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,15 +71,13 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::setNextScan(INT a, const RWTime 
     return *this;
 }
 
-RWTime CtiTableDeviceScanData::nextNearestTime() const
+RWTime CtiTableDeviceScanData::nextNearestTime(int maxrate) const
 {
     RWDBDateTime Win = RWDBDateTime( RWTime(YUKONEOT) );
 
+    for(int i = 0; i < maxrate; i++)
     {
-        for(int i = 0; i < ScanRateInvalid; i++)
-        {
-            if(_nextScan[i] < Win) Win = _nextScan[i];
-        }
+        if(_nextScan[i] < Win) Win = _nextScan[i];
     }
 
     return Win.rwtime();
