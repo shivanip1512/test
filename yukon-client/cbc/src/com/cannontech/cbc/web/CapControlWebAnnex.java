@@ -10,42 +10,45 @@ package com.cannontech.cbc.web;
 import java.awt.Color;
 import java.util.Vector;
 
-import javax.swing.Timer;
-
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.gui.FeederTableModel;
 import com.cannontech.cbc.gui.SubBusTableModel;
+import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.WeakObserver;
 import com.cannontech.database.db.state.State;
 import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.util.ServletUtil;
 
-public class CapControlWebAnnex implements java.util.Observer, java.awt.event.ActionListener 
+public class CapControlWebAnnex implements java.util.Observer 
 {
-	public static final String REFRESH_SECONDS = "60";
-
-	public static final int CMD_SUB			= 1;
-	public static final int CMD_FEEDER		= 2;
-	public static final int CMD_CAPBANK		= 3;
+	public static final String REF_SECONDS_DEF = "60";
+	public static final String REF_SECONDS_PEND = "5";
 
 
+	public static final String CMD_SUB			= "SUB_CNTRL";
+	public static final String CMD_FEEDER		= "FEEDER_CNTRL";
+	public static final String CMD_CAPBANK		= "CAPBANK_CNTRL";
 
-	private static int startupRefreshRate = 15 * 1000;
-	private static int normalRefreshRate = 60 * 5 * 1000; //5 minutes
 
-	//insure only 1 connection for the servlet
+	//insures only 1 connection for the servlet
 	private static CBCClientConnection conn = null;
 
-	private Timer refreshTimer = new javax.swing.Timer(startupRefreshRate, this );
-	private CBCCommandExec cbcExecutor = null;
+	//insures only 1 set of these Strings for the servlet
+	private static final Vector areaNames = new Vector(32);
 
-	//contains Strings of all distinct areas
-	private Vector areaNames = null;
+	//the user this object was created for
+	private String userName = null;
+
+
+	//used to send commands to the connection
+	private CBCCommandExec cbcExecutor = null;
 
 
 	private SubBusTableModel subBusTableModel = null;
@@ -53,18 +56,21 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 	private CapBankTableModel capBankTableModel = null;
 
 
+	//allows us to manage memory a little better 
+	//  (GC this once it becomes a weak reference)
+	private final WeakObserver thisWeakObsrvr = new WeakObserver(this);
+	
+
 	/**
-	 * CapControlCache constructor comment.
+	 * CapControlWebAnnex constructor comment.
 	 */
 	public CapControlWebAnnex() 
 	{
 		super();
-		refreshTimer.setRepeats(true);
-		refreshTimer.start();
-		
+
 		//force the connection to connect
 		getConnection();
-		
+
 		initialize();
 	}
 
@@ -75,33 +81,17 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 	}
 
 
-	public static synchronized String convertColor( Color c )
+	public static String convertColor( Color c )
 	{
-		String r = Integer.toHexString(c.getRed());
-		String g = Integer.toHexString(c.getGreen());
-		String b = Integer.toHexString(c.getBlue());
-
-		return
-				"#" +
-				(r.length() <= 1 ? "0"+r : r) + 
-				(g.length() <= 1 ? "0"+g : g) +
-				(b.length() <= 1 ? "0"+b : b);
+		return "#" + ServletUtil.getHTMLColor(c);
 	}
-
-	/**
-	 * Invoked when an action occurs.
-	 */
-	public void actionPerformed(java.awt.event.ActionEvent e)
-	{
-		refresh();
-		
-	}
-
-
+	
+	
 	protected synchronized CBCClientConnection getConnection()
 	{
-		if( conn == null )
+		if( conn == null )  
 		{
+			//first time this app has been hit		
 			Registration reg = new Registration();
 			reg.setAppName("CBC_WEB_CACHE@" + CtiUtilities.getUserName() );
 			reg.setAppIsUnique(0);
@@ -111,15 +101,9 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 			//TODO:The CBC server does not take this registration for now, dont use it
 			//conn = new CBCClientConnection( reg );
 			conn = new CBCClientConnection();
-			
-			CTILogger.info("Will attempt to connect to CBC Server @" + conn.getHost() + ":" + conn.getPort());
 
-			//let us observe the connection
-			conn.addObserver( this );
-			
-			//add the table listener to the connection
-			getSubTableModel().setConnection( getConnection() );
-			getConnection().addObserver( getSubTableModel() );			
+
+			CTILogger.info("Will attempt to connect to CBC Server @" + conn.getHost() + ":" + conn.getPort());
 		}
 				
 		return conn;
@@ -149,6 +133,17 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 		return capBankTableModel;
 	}
 
+	protected void finalize() throws Throwable
+	{
+		getConnection().deleteObserver( getSubTableModel() );
+		getConnection().deleteObserver( thisWeakObsrvr );
+
+		super.finalize();
+		
+		CTILogger.debug("      finalized " + getClass().getName() ); 
+	}
+
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/25/00 9:33:17 AM)
@@ -157,109 +152,63 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 	{
 		//dont show the year on timestamp strings
 		ModifiedDate.setFormatPattern("MM-dd HH:mm:ss");
+		
+
+		//let us observe the connection
+		getConnection().addObserver( thisWeakObsrvr );
+
+
+		//add the table listener to the connection		
+		getSubTableModel().setConnection( getConnection() );
+		
+		getConnection().addObserver( getSubTableModel() );		
+
+
+		//remember, 2 observers per web client
+		CTILogger.debug("   Added new WebDataModel client (Total: " + 
+				(getConnection().countObservers()/2) + ")" );
+				
+		try
+		{
+			//we must tell our connection we want all the SUBs right away
+			// for our SubTableModel
+			getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_SUBS );
+		}
+		catch( Exception e ) {}
+
 	}
 
 
-	public void executeCommand( int cmdID_, int cmdType_, int rowID_ )
+	/**
+	 * 
+	 * Allows the execution of commands to the cbc server.
+	 * @param cmdID_ int : the id of the command from CBCCommand to be executed
+	 * @param cmdType_ String : type of command to execute ( CMD_SUB,CMD_FEEDER,CMD_CAPBANK ) 
+	 * @param rowID_ int : the row from a types data model to execute 
+	 * @param manChange_ Integer : the state index field for a capbank, null if not present
+	 */
+	public void executeCommand( int cmdID_, String cmdType_, int rowID_, Integer manChange_ )
 	{
 		if( cbcExecutor == null )		
 			cbcExecutor = new CBCCommandExec( this );
 			
-		if( cmdType_== CMD_SUB )
+		if( CMD_SUB.equals(cmdType_) )
 			cbcExecutor.execute_SubCmd( cmdID_, rowID_ );
 		
-		if( cmdType_== CMD_FEEDER )
+		if( CMD_FEEDER.equals(cmdType_) )
 			cbcExecutor.execute_FeederCmd( cmdID_, rowID_ );
 
-		if( cmdType_== CMD_CAPBANK )
-			cbcExecutor.execute_CapBankCmd( cmdID_, rowID_ );
+		if( CMD_CAPBANK.equals(cmdType_) )
+			cbcExecutor.execute_CapBankCmd( cmdID_, rowID_, manChange_ );
 	}
-	
-	/**
-	 * Renew the cache.
-	 * Creation date: (6/11/2001 3:36:24 PM)
-	 */
-	private synchronized void refresh()
-	{
-/*	
-		com.cannontech.clientutils.CTILogger.info("Refreshing customer-energycompany mappings");
-		
-		// Update energy company - customer mapping from db
-		energyCompanyCustomer.clear();
-		customerEnergyCompany.clear();
-		
-		long[] ids = com.cannontech.database.db.company.EnergyCompany.getAllEnergyCompanyIDs();
-	
-		for( int i = 0; i < ids.length; i++ )
-		{
-			long[] custIDs = com.cannontech.database.db.web.EnergyCompanyCustomerList.getCustomerIDs(ids[i], dbAlias);
-	
-			energyCompanyCustomer.put( new Integer( (int) ids[i]), custIDs );
-	
-			for( int j = 0; j < custIDs.length; j++ )
-			{
-				customerEnergyCompany.put( new Integer( (int) custIDs[j] ), new Integer( (int) ids[i] ) );
-			}
-		}
-	
-		
-		{
-			com.cannontech.clientutils.CTILogger.info("Refreshing customer baselines");
-			
-			java.sql.Connection conn = null;
-			java.sql.Statement stmt = null;
-			java.sql.ResultSet rset = null;
-		
-			try
-			{		
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-				stmt = conn.createStatement();
-				rset = stmt.executeQuery("SELECT CustomerID,PointID FROM CustomerBaseLinePoint");
-		
-				while( rset.next() )
-				{
-					int customerID = rset.getInt(1);
-					int pointID = rset.getInt(2);
-					customerBaseLine.put(new Integer(customerID), new Integer(pointID));			
-				}
-			}
-			catch(java.sql.SQLException e)
-			{
-				com.cannontech.clientutils.CTILogger.info("An error occured refreshing customerbaselines");			
-			}
-			finally
-			{
-				try {
-					if( rset != null ) rset.close();
-					if( stmt != null ) stmt.close();
-					if( conn != null ) conn.close();
-				} catch(java.sql.SQLException e2) {  }
-			}
-	
-			com.cannontech.clientutils.CTILogger.info("Loaded " + customerBaseLine.size() + " customer baselines.");
-		}
-		
-		com.cannontech.clientutils.CTILogger.info("Refreshing control areas");
-		
-		if( conn != null )
-		{		
-			com.cannontech.loadcontrol.messages.LMCommand c =
-				new com.cannontech.loadcontrol.messages.LMCommand();
-	
-			c.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
-			conn.write(c);
-	
-			refreshTimer.setDelay(normalRefreshRate);
-		}
-*/		
-	}
+
 
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/12/2002 1:53:27 PM)
 	 * @param areaNames com.cannontech.cbc.messages.CBCSubAreaNames
 	 */
-	private void updateAreaList(CBCSubAreaNames areaNames_) 
+	private synchronized void updateAreaList(CBCSubAreaNames areaNames_) 
 	{
 		// remove all the values in the JComboBox except the first one
 		getAreaNames().removeAllElements();
@@ -282,12 +231,12 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 	 */
 	public synchronized void update(java.util.Observable o, java.lang.Object arg) 
 	{
-		CTILogger.info( getClass() + ": received type: " + arg.getClass());
+		CTILogger.debug( getClass() + ": received type: " + arg.getClass());
 
 
 		if( arg instanceof SubBus[] )
 		{
-			//nothing for now
+			//nothing for now, the models will handle this stuff
 		}
 		else if( arg instanceof CBCSubAreaNames )
 		{
@@ -295,7 +244,6 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 		}
 		else if( arg instanceof State[] )
 		{
-			//handleStates( (State[])arg );
 			State[] states = (State[])arg;
 			Color[][] colors = new Color[states.length][2];
 			String[] stateNames = new String[states.length];
@@ -310,17 +258,41 @@ public class CapControlWebAnnex implements java.util.Observer, java.awt.event.Ac
 			CapBankTableModel.setStates( colors, stateNames );			
 		}
 
+
+		//Clear the list table of schedules if the connection isn't good
+		if ( !getConnection().isConnValid() )
+		{
+			getSubTableModel().clear();
+			getFeederTableModel().clear();
+			getCapBankTableModel().clear();
+			
+			getAreaNames().clear();
+		}
+
 	}
 
 	/**
 	 * @return
 	 */
-	public Vector getAreaNames()
+	public static Vector getAreaNames()
 	{
-		if( areaNames == null )
-			areaNames = new Vector(32);
-
 		return areaNames;
+	}
+
+	/**
+	 * @return
+	 */
+	protected String getUserName()
+	{
+		return userName;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setUserName(String string)
+	{
+		userName = string;
 	}
 
 }

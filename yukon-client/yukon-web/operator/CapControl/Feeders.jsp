@@ -15,6 +15,8 @@
 		
 		if( subRowID.intValue() >= 0 && subRowID.intValue() < subBusMdl.getRowCount() )
 		{
+			cbcSession.setLastSubName( subBusMdl.getRowAt(subRowID.intValue()).getCcName() );
+			
 			feederMdl.setCurrentSubBus( subBusMdl.getRowAt(subRowID.intValue()) );
 			
 			CTILogger.debug(request.getServletPath() + "	FdrRowCnt = " + feederMdl.getRowCount() );
@@ -81,9 +83,11 @@
                   </td>
                   
                 <td width="57" valign="middle"> 
-                  <div align="left"><span ><a href="../../login.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Log 
-                    Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
+                  <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">
+                  	<font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">
+                  	 Log Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
                   </td>
+                  
               </tr>
             </table>
           </td>
@@ -153,16 +157,20 @@
                     <tr> 
                       <td>
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
+
                           <tr bgcolor="#CCCCCC"> 
                               <td width="409"><span class="TableCell"></span><span class="HeaderCell">&nbsp;&nbsp;
                               	Single Substation Bus View for the Area : 
                                 <font color="##666699"> <%= cbcSession.getLastArea() %> </font></span></td>
-                              <td width="191"> 
-                                <div align="right">
 
-								<form name="SubBusForm" method="POST" >
-		                    <select name="subRowID" onchange="this.form.submit()" >
-			                  <%
+
+				    		  <form name="SubBusForm" method="POST" > 
+                            <td width="300" height="40"> 
+                              <div align="right"> <span class="HeaderCell">&nbsp;&nbsp;
+								    Other Subs in Area : </span> 
+
+                                <select name="subRowID" onchange="this.form.submit()" >
+                                  <%
 			                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
 			                  	{
 			                  		//String busName = cbcServlet.getAreaNames().get(i).toString();
@@ -170,17 +178,16 @@
 			                  		String s = ( subRowID.intValue() == i 
 			                  						? " selected" : "" ) ;
 			                  		%>
-											<option value="<%= i %>" <%= s %>> 
-												<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
-											</option>
-			                  <% } %>
-		
-		                    </select>
-					         </form>
-                                    
+                                  <option value="<%= i %>" <%= s %>> <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
+                                  </option>
+                                  <% } %>
+                                </select>
                                 </div>
-                              </td>
-                            </tr>
+									</td>
+								</form>
+
+
+                        </tr>
                         </table>
                       </td>
                     </tr>
@@ -266,7 +273,7 @@
 	                  %>         
                       <tr valign="top"> 
                         <td width="100" class="TableCell"><a href= "SingleFeeder.jsp?feederRowID=<%= i %>" >
-                          <div name = "sub" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'FeederMenu')" >
+                          <div name = "sub" align = "left" cursor:default;" >
 									<%= feederMdl.getValueAt(i, FeederTableModel.NAME_COLUMN) %> </div>
                           </a></td>
                         <td width="44" class="TableCell">
@@ -329,7 +336,7 @@
 	                  %>         
                       <tr valign="top"> 
                         <td width="130" class="TableCell">
-                          <div name = "sub" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'CapMenu')" > 
+                          <div name = "sub" align = "left" cursor:default;">
                           		<%= capBankMdl.getValueAt(i, CapBankTableModel.CB_NAME_COLUMN) %>
                           </div>
                         </td>

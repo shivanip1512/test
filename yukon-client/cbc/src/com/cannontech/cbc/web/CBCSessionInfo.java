@@ -6,6 +6,8 @@
  */
 package com.cannontech.cbc.web;
 
+import com.cannontech.cbc.gui.SubBusTableModel;
+
 /**
  * @author rneuharth
  *
@@ -15,6 +17,9 @@ package com.cannontech.cbc.web;
 public class CBCSessionInfo
 {
 	private String lastArea = null;
+	private String lastSubName = null;
+	
+	private String refreshRate = CapControlWebAnnex.REF_SECONDS_DEF;
 
 
 	public CBCSessionInfo()
@@ -35,9 +40,44 @@ public class CBCSessionInfo
 	/**
 	 * @param string
 	 */
-	public void setLastArea(String string)
+	public void setLastArea(String area_ )
 	{
-		lastArea = string;
+		if( area_ == null )
+			lastArea = SubBusTableModel.ALL_FILTER;
+		else
+			lastArea = area_;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getRefreshRate()
+	{
+		return refreshRate;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setRefreshRate(String string)
+	{
+		refreshRate = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getLastSubName()
+	{
+		return lastSubName;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setLastSubName(String string)
+	{
+		lastSubName = string;
 	}
 
 }

@@ -148,12 +148,15 @@
                         <table width="600" border="0" cellspacing="0" cellpadding="0">
                           <tr bgcolor="#CCCCCC"> 
                               <td width="409"><span class="TableCell"></span><span class="HeaderCell">&nbsp;&nbsp;
-                              	Single Feeder View for the Area : 
-                                <font color="##666699"> <%= cbcSession.getLastArea() %> </font></span></td>
-                              <td width="191"> 
-                                <div align="right">
+                              	Single Feeder View for the Sub: 
+                                <font color="##666699"> <%= cbcSession.getLastSubName() %> </font></span></td>
+                                
 
-								<form name="FeederForm" method="POST" >
+							<form name="FeederForm" method="POST" >
+                        <td width="300" height="40"> 
+                          <div align="right"> <span class="HeaderCell">&nbsp;&nbsp;
+							    Other Feeders on Sub : </span> 
+							    
 		                    <select name="feederRowID" onchange="this.form.submit()" >
 			                  <%
 			                  	for( int i = 0; i < feederMdl.getRowCount(); i++ )
@@ -165,12 +168,12 @@
 												<%= feederMdl.getValueAt(i, FeederTableModel.NAME_COLUMN) %> 
 											</option>
 			                  <% } %>
-		
-		                    </select>
-					         </form>
-                                    
-                                </div>
-                              </td>
+
+		                    </select>                            
+                        </div>
+                      </td>
+				         </form>
+                              
                             </tr>
                         </table>
                       </td>
@@ -192,10 +195,7 @@
                       </tr>
                       
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "SingleFeeder.jsp?feederRowID=<%= feederRowID %>" >
-                          <div name = "sub" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'FeederMenu')" >
-									<%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.NAME_COLUMN) %> </div>
-                          </a></td>
+                        <td width="100" class="TableCell"><%= feederMdl.getValueAt(feederRowID.intValue(), FeederTableModel.NAME_COLUMN) %></td>
 
                         <td width="44" class="TableCell">
                         	<a href= "capcontrols.jsp?rowID=<%= feederRowID.intValue() %>&controlType=<%= CapControlWebAnnex.CMD_FEEDER %>" >
@@ -256,7 +256,7 @@
 	                  %>         
                       <tr valign="top"> 
                         <td width="130" class="TableCell">
-                          <div name = "sub" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'CapMenu')" > 
+                          <div name = "sub" align = "left" cursor:default;" > 
                           		<%= capBankMdl.getValueAt(i, CapBankTableModel.CB_NAME_COLUMN) %>
                           </div>
                         </td>

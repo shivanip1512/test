@@ -10,8 +10,10 @@ import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.PointData;
 
 /**
  * @author rneuharth
@@ -61,8 +63,47 @@ class CBCCommandExec
 	}
 
 
-	public boolean execute_CapBankCmd( int cmdID_, int rowID_ )
+	public boolean execute_CapBankCmd( int cmdID_, int rowID_, Integer manChange_ )
 	{
+		if( cmdID_ == CBCCommand.CONFIRM_CLOSE 
+			 || cmdID_ == CBCCommand.CONFIRM_OPEN )
+		{
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getRowAt( rowID_ );
+			
+			if( CapBankDevice.isInAnyOpenState(bank) )
+			{
+				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_OPEN );
+			}
+			else if( CapBankDevice.isInAnyCloseState(bank) )
+			{
+				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
+			}
+		}
+		else if( cmdID_ == CBCCommand.CMD_MANUAL_ENTRY )
+		{
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getRowAt( rowID_ );
+			
+			// Send new point Here
+			PointData pt = new PointData();
+
+			pt.setId( bank.getStatusPointID().intValue() );
+			pt.setQuality( PointQualities.MANUAL_QUALITY );
+			pt.setStr("Manual change occured using CBC Web Client");
+			pt.setTime( new java.util.Date() );
+			pt.setTimeStamp( new java.util.Date() );
+			pt.setType( PointTypes.STATUS_POINT );
+			pt.setUserName( cbcCache.getUserName() );
+
+			//the actual new value for the selected state 
+			pt.setValue( (double)manChange_.intValue() );
+
+			cbcCache.getConnection().write( pt );
+		}
+		else
+			executeCommand( 
+				cbcCache.getCapBankTableModel().getRowAt(rowID_).getCcId().intValue(),
+				cmdID_ );			
+
 		return true;
 	}
 
@@ -116,17 +157,12 @@ class CBCCommandExec
 	 */
 	private void executeCommand(int paoID_, int cmdOperation_ )
 	{
-		try
-		{
-			cbcCache.getConnection().executeCommand( paoID_, cmdOperation_ );
-		}
-		catch( java.io.IOException ioe )
-		{
-			CTILogger.error( 
-					"A problem occured in the execution of a CBC command with and id = " + cmdOperation_ +
-					", paoID = " + paoID_, ioe );
-		}
-	
+		CBCCommand cmd = new CBCCommand();
+		cmd.setDeviceID( paoID_ );
+		cmd.setCommand( cmdOperation_ );
+		cmd.setUserName( cbcCache.getUserName() );
+		
+		cbcCache.getConnection().sendCommand( cmd );
 	}
 
 }

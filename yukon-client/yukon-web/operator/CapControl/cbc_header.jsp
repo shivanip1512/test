@@ -1,5 +1,4 @@
 <%@ page language="java" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
@@ -21,22 +20,24 @@
 	class="com.cannontech.cbc.web.CBCSessionInfo"
 />
 
+
+<cti:checklogin/>
+
+
 <%  
 	SubBusTableModel subBusMdl = cbcServlet.getSubTableModel(); 
 	FeederTableModel feederMdl = cbcServlet.getFeederTableModel(); 
 	CapBankTableModel capBankMdl = cbcServlet.getCapBankTableModel(); 
 	
+	cbcSession.setLastArea( 
+			request.getParameter("area") );
 	
-	String lastArea = request.getParameter("area");
-	if( lastArea == null )
-		lastArea = cbcSession.getLastArea();
-		
-	if( lastArea == null)
-		lastArea = SubBusTableModel.ALL_FILTER;
+	cbcSession.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF );
 	
-	
-	cbcSession.setLastArea( lastArea );
-	cbcSession.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF );	
+	cbcServlet.setUserName( 
+		(session.getAttribute("YUKON_USER") == null 
+		 ? "(null)"
+		 : session.getAttribute("YUKON_USER").toString()) );
 	
 	
 	//set the filter to the one we want
@@ -76,14 +77,6 @@
 			CTILogger.warn( "Command was attempted but failed for the following reason:", e );
 		}
 	}
-
-
 	
-//	 ADD THIS TO THE TOP LATER
-//<cti:checklogin/>
-//<jsp:useBean id="YUKON_USER" scope="session" class="com.cannontech.database.data.lite.LiteYukonUser"/>
-//
-  	// YUKON_USER is an ugly name, give it an alias
-//	LiteYukonUser user = YUKON_USER;	
-//
+	
 %>

@@ -135,7 +135,7 @@
 
 		<% if( CapControlWebAnnex.CMD_SUB.equals(controlType) )
 			{
-						label = subBusMdl.getValueAt(rowID.intValue(), SubBusTableModel.SUB_NAME_COLUMN).toString();
+						label = subBusMdl.getRowAt(rowID.intValue()).getCcName();
 %>                    
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
@@ -206,7 +206,7 @@
 		<% }
 			else if( CapControlWebAnnex.CMD_FEEDER.equals(controlType) )
 			{
-						label = feederMdl.getValueAt(rowID.intValue(), FeederTableModel.NAME_COLUMN).toString();
+						label = feederMdl.getRowAt(rowID.intValue()).getCcName();
 %>                    
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr>
@@ -238,7 +238,7 @@
                       
                       <tr valign="top"> 
                         <td width="100" class="TableCell">
-                          <div name = "sub" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'FeederMenu')" >
+                          <div name = "sub" align = "left" cursor:default;">
 									<%= feederMdl.getValueAt(rowID.intValue(), FeederTableModel.NAME_COLUMN) %> </div>
                           </td>
                         <td width="44" class="TableCell">
@@ -271,7 +271,7 @@
 		<% }
 			else if( CapControlWebAnnex.CMD_CAPBANK.equals(controlType) )
 			{
-						label = capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.CB_NAME_COLUMN).toString();
+						label = capBankMdl.getRowAt(rowID.intValue()).getCcName();
 %>                    
                   <table width="600" border="1" align="center" cellpadding="0" cellspacing="0">
                     <tr> 
@@ -298,7 +298,7 @@
                       
                       <tr valign="top"> 
                         <td width="130" class="TableCell">
-                          <div name = "sub" align = "left" cursor:default;" onMouseOver = "menuAppear(event, 'CapMenu')" > 
+                          <div name = "sub" align = "left" cursor:default;"> 
                           		<%= capBankMdl.getValueAt(rowID.intValue(), CapBankTableModel.CB_NAME_COLUMN) %>
                           </div>
                         </td>
@@ -378,7 +378,7 @@
                        { %>
                       <td width="16%" align="center"> 
 		                  <div align="left">
-                        <input type="radio" id="ManCh" name="cmdID" value="<%= CBCCommand.CMD_INVALID %>">
+                        <input type="radio" id="ManCh" name="cmdID" value="<%= CBCCommand.CMD_MANUAL_ENTRY %>">
                         Manual Change		                  
 			               <select name="manualChange" onchange="ManCh.checked=true" >
 <%	                  	for( int i = 0; i < CapBankTableModel.getStateNames().length; i++ )

@@ -39,9 +39,11 @@
                   </td>
                   
                 <td width="57" valign="middle"> 
-                  <div align="left"><span ><a href="../../login.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Log 
-                    Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
+                  <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">
+                  	<font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">
+                  	 Log Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
                   </td>
+                  
               </tr>
             </table>
           </td>
