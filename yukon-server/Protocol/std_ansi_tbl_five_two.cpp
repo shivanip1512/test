@@ -11,11 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_two.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/10 21:58:41 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_two.cpp,v $
+      Revision 1.5  2004/12/10 21:58:41  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.4  2004/09/30 21:37:17  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -39,22 +42,15 @@ CtiAnsiTableFiveTwo::CtiAnsiTableFiveTwo( int timefmat )
 
 CtiAnsiTableFiveTwo::CtiAnsiTableFiveTwo( BYTE *dataBlob, int timefmat )
 {
-    int offset, bytes = 0;
+    int bytes = 0;
     _timefmt = timefmat;
       
     // Clock Calendar - LTIME_DATE
     bytes = toUint32LTime( dataBlob, clock_table.clock_calendar, _timefmt );
     dataBlob += bytes;
-    offset += bytes;
-
+    
     memcpy( (void *)&clock_table.time_date_qual, dataBlob, sizeof( TIME_DATE_QUAL_BFLD ));
     dataBlob +=  sizeof( TIME_DATE_QUAL_BFLD );
-
-
-
-
-
-
 
 }
 

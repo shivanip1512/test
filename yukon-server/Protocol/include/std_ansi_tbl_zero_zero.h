@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_zero_zero.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:21 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/10 21:58:43 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.h,v $
+      Revision 1.5  2004/12/10 21:58:43  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.4  2004/09/30 21:37:21  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -124,7 +127,10 @@ public:
     RWCString getResolvedStdRevisionNo( void );
 
     unsigned char * getStdTblsUsed(void);
-    unsigned char getDimStdTblsUsed(void);
+    int getDimStdTblsUsed(void);
+    unsigned char * getMfgTblsUsed(void);
+    int getDimMfgTblsUsed(void);
+
 
     RWCString getNonIntegerFormat( int aFormat );
 

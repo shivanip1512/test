@@ -13,11 +13,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/09/30 21:37:22 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/10 21:58:43 $
 *
 *    History: 
       $Log: dev_kv2.h,v $
+      Revision 1.7  2004/12/10 21:58:43  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.6  2004/09/30 21:37:22  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -68,6 +71,7 @@ public:
    CtiProtocolANSI & getProtocol( void );
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
+   INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER
    {

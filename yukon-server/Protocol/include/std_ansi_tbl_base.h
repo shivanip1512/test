@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/12/10 21:58:42 $
 *    History: 
       $Log: std_ansi_tbl_base.h,v $
+      Revision 1.3  2004/12/10 21:58:42  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.2  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -47,6 +50,19 @@ typedef union
    UCHAR    ch[8];
    UINT64   u64;
 } BYTEUINT64;
+
+typedef union
+{
+   UCHAR    ch[8];
+   double   u64;
+} BYTEFLOAT64;
+
+typedef union
+{
+   UCHAR    ch[4];
+   long       u32;
+} BYTEFLOAT32;
+
 
 
 #define BCD                unsigned char

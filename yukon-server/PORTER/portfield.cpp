@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.124 $
-* DATE         :  $Date: 2004/12/07 18:06:20 $
+* REVISION     :  $Revision: 1.125 $
+* DATE         :  $Date: 2004/12/10 21:58:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1175,7 +1175,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     }
 
                 case TYPE_KV2:
+                case TYPE_ALPHA_A3:
                     {
+
+                        //extern CtiConnection VanGoghConnection;
                         BYTE  inBuffer[512];
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
@@ -1216,34 +1219,46 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 DisplayTraceList( Port, traceList, true );
                             }
 
+                            if (!ansi.isTransactionFailed())
+                            {
+                                Sleep(1000);
+                                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
+
+                                //send dispatch lp data directly
+                                kv2dev->processDispatchReturnMessage( retMsg );
+                                if( !retMsg->getData().isEmpty() )
+                                {
+                                    VanGoghConnection.WriteConnQue( retMsg );
+                                }
+                                else
+                                {
+                                    delete retMsg;
+                                }
+                            }
+                            else
+                            {
+                                Sleep(1000);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " ansi TransactionFailed.  ReadFailed. " << endl;
+                                }
+                            }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " KV2 loop exited  **********************************************" << endl;
                             }
-
-                            Sleep(1000);
-                            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
-
-                            //send dispatch lp data directly
-                            kv2dev->processDispatchReturnMessage( retMsg );
-                            if( !retMsg->getData().isEmpty() )
-                            {
-                                VanGoghConnection.WriteConnQue( retMsg );
-                            }
-                            else
-                            {
-                                delete retMsg;
-                            }
-
                         }
                         // return value to tell us if we are successful or not
                         //status = ansi.sendCommResult( InMessage );
+                        status = kv2dev->sendCommResult( InMessage );
 
                         ansi.reinitialize();
                         break;
                     }
                 case TYPE_SENTINEL:
                     {
+
+                       // extern CtiConnection VanGoghConnection;
                         BYTE  inBuffer[512];
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
@@ -1283,27 +1298,37 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 DisplayTraceList( Port, traceList, true );
                             }
+                            if (!ansi.isTransactionFailed())
+                            {
+                                Sleep(1000);
+                                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
+                                //send dispatch lp data directly
+                                sentinelDev->processDispatchReturnMessage( retMsg );
+                                if( !retMsg->getData().isEmpty() )
+                                {
+                                    VanGoghConnection.WriteConnQue( retMsg );
+                                }
+                                else
+                                {
+                                    delete retMsg;
+                                }
+                            }
+                            else
+                            {
+                                Sleep(1000);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " ansi TransactionFailed.  ReadFailed. " << endl;
+                                }
+                            }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " Sentinel loop exited  **********************************************" << endl;
                             }
-
-                            Sleep(1000);
-                            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
-
-                            //send dispatch lp data directly
-                            sentinelDev->processDispatchReturnMessage( retMsg );
-                            if( !retMsg->getData().isEmpty() )
-                            {
-                                VanGoghConnection.WriteConnQue( retMsg );
-                            }
-                            else
-                            {
-                                delete retMsg;
-                            }
-
                         }
+                        status = sentinelDev->sendCommResult( InMessage );
+
                         ansi.reinitialize();
                         break;
                     }
@@ -1882,6 +1907,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DR87:
                     case TYPE_LGS4:
                     case TYPE_KV2:
+                    case TYPE_ALPHA_A3:
+                    case TYPE_SENTINEL:
                     case TYPE_TDMARKV:
                     default:
                         {
@@ -1907,6 +1934,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DR87:
                     case TYPE_LGS4:
                     case TYPE_KV2:
+                    case TYPE_ALPHA_A3:
+                    case TYPE_SENTINEL:
                     case TYPE_TDMARKV:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -2944,6 +2973,7 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceS
       Device->getType() != TYPE_LGS4 &&
       Device->getType() != TYPE_DR87 &&
       Device->getType() != TYPE_KV2 &&
+      Device->getType() != TYPE_ALPHA_A3 &&
       Device->getType() != TYPE_SENTINEL &&
       Device->getType() != TYPE_ALPHA_A1 &&
       Device->getType() != TYPE_TDMARKV

@@ -18,7 +18,7 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, unsigned char dimStdTblsUsed )
+CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTblsUsed )
 {
     int x = 0;
     int lpTbl[] = {64, 65, 66, 67};
@@ -55,7 +55,7 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, unsigned cha
 }
 
 
-CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsUsed, unsigned char dimStdTblsUsed )
+CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed )
 {
     int x = 0;
     int offset = 0;

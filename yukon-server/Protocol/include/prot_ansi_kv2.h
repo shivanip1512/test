@@ -13,10 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi_kv2.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/12/10 21:58:42 $
 *    History: 
       $Log: prot_ansi_kv2.h,v $
+      Revision 1.3  2004/12/10 21:58:42  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.2  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -48,9 +51,13 @@ class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
         virtual void destroyManufacturerTables( void );
         virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID );
 
-        virtual void calculateLPDataBlockStartIndex(ULONG lastLPTime);
+        virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
         virtual int calculateLPDataBlockSize(int numChans);
         virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
+        virtual void setAnsiDeviceType();
+        virtual int snapshotData();
+
+
    private:
 
       CtiAnsiKV2ManufacturerTableZero                   *_tableZero;

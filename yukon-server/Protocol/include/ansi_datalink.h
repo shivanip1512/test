@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_datalink.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/10 21:58:42 $
 *    History: 
       $Log: ansi_datalink.h,v $
+      Revision 1.6  2004/12/10 21:58:42  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.5  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -74,9 +77,9 @@ class IM_EX_PROT CtiANSIDatalink
       void buildNegotiate( BYTE aServiceCode, CtiXfer &xfer );
       void buildTiming( BYTE aServiceCode, CtiXfer &xfer );
       void buildLogOn( BYTE aServiceCode, CtiXfer &xfer );
-      void buildSecure( BYTE aServiceCode, CtiXfer &xfer );
+      void buildSecure( BYTE aServiceCode, CtiXfer &xfer, BYTE *password );
       void buildAuthenticate( BYTE aServiceCode, CtiXfer &xfer );
-      void buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType );
+      void buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts );
       void buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aTableID, BYTE aOperation, TBL_IDB_BFLD aProc, BYTE *parmPtr, BYTE aSeqNbr );
       void buildWaitRequest(CtiXfer &xfer );
       void buildLogOff( BYTE aServiceCode, CtiXfer &xfer );
@@ -128,6 +131,9 @@ class IM_EX_PROT CtiANSIDatalink
       unsigned short crc16( unsigned char octet, unsigned short crc );
       unsigned short crc( int size, unsigned char *packet );
 
+      void setIdentityByte(BYTE identityByte);
+      BYTE getIdentityByte(void);
+
    protected:
 
    private:
@@ -145,6 +151,7 @@ class IM_EX_PROT CtiANSIDatalink
       bool        _multiPacketPart;
       bool        _multiPacketFirst;
       bool        _toggle;
+      BYTE        _identityByte;
 
  };
 

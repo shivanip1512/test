@@ -70,17 +70,6 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
     
     _lp_data_set1_tbl.lp_data_sets1 = new LP_BLK1_DAT_RCD[_nbrBlksSet1];
 
-    BYTE *temp;
-    temp = dataBlob;
-    {CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " temp ";}
-    for (int x = 0; x < 5; x++) 
-    {
-        {CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)*temp;}temp++;
-    }
-    {CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl;}
     for (index = 0; index < _nbrBlksSet1; index++) 
     {
 
@@ -534,13 +523,13 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
     bool retVal = false;
     ULONG blkEndTime = 0; 
     if (getBlkEndTime(blkSet,blkEndTime))
-    {
+    {   
         if (_closureStatusFlag) 
         {
             int totIntvls = _lp_data_set1_tbl.lp_data_sets1[blkSet].closure_status[0].nbr_valid_interval;
             if (blkIntvl <= totIntvls)
             {
-                blkIntvlTime = blkEndTime - ((totIntvls - blkIntvl) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
+                blkIntvlTime = blkEndTime - ((totIntvls - (blkIntvl+1)) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
                 retVal = true;
             }
             else 
@@ -551,16 +540,26 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
         else
         {
             //if (blkSet == (_nbrBlksSet1-1) && blkIntvl < _nbrValidInts) 
-            if (blkSet == (_nbrBlksSet1) && blkIntvl < _nbrValidInts) 
+            if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts) 
             {
-                blkIntvlTime = blkEndTime - ((_nbrValidInts - blkIntvl) * _maxIntvlTime * 60);
+                blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
+                {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << "    **blkIntvlTime: " << RWTime(blkIntvlTime)<<endl;
+        }
+        
+
                 retVal = true;
             }
             else
             {
                 if (blkIntvl < _nbrBlkIntsSet1)
                 {
-                    blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - blkIntvl) * _maxIntvlTime * 60);
+                    blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
+                    {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout << "    **blkIntvlTime: " << RWTime(blkIntvlTime)<<endl;
+            } 
                     retVal = true;
                 }
                 else

@@ -2106,6 +2106,13 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
               dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for kv2 implemented here" << endl;
               break;
           }
+      case TYPE_ALPHA_A3:
+          {
+
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for alpha a3 implemented here" << endl;
+              break;
+          }
 
       case TYPE_SENTINEL:
           {

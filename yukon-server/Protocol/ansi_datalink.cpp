@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $                                                198
-* DATE         :  $Date: 2004/09/30 21:37:16 $
+* REVISION     :  $Revision: 1.8 $                                                198
+* DATE         :  $Date: 2004/12/10 21:58:40 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.8  2004/12/10 21:58:40  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.7  2004/09/30 21:37:16  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -54,6 +57,7 @@ void CtiANSIDatalink::init( void )
    _currentPacket = CTIDBG_new BYTE[512];
    _toggle = false;
    _packetBytesReceived = 0;
+   _identityByte = ANsI_RESERVED;  //0x00 default
 
 }
 
@@ -71,6 +75,7 @@ void CtiANSIDatalink::reinitialize( void )
    _previousPos = ack;
    _toggle = false;
    _packetBytesReceived = 0;
+   _identityByte = ANsI_RESERVED;  //0x00 default
 }
 
 //=========================================================================================================================================
@@ -110,7 +115,9 @@ void CtiANSIDatalink::assemblePacket( BYTE *packetPtr, BYTE *dataPtr, USHORT cou
 
    //header + reserved
    packetPtr[0] = ANSI_STP;
-   packetPtr[1] = ANsI_RESERVED;
+   //packetPtr[1] = ANsI_RESERVED;
+   packetPtr[1] = getIdentityByte();
+
 
    //control field
    if( _toggle == true )
@@ -246,9 +253,11 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
           {
               // new number of bytes received for this packet
               _packetBytesReceived += xfer.getInCountActual();
+
+              if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
               {
-                            CtiLockGuard< CtiLogger > doubt_guard( dout );                              
-                            dout <<"  *******JULIE  getInCountActual "<<xfer.getInCountActual()<<"  _packetBytesReceived " <<_packetBytesReceived <<endl;
+                  CtiLockGuard< CtiLogger > doubt_guard( dout );                              
+                  dout <<"  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
               }
               if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
               {
@@ -381,18 +390,31 @@ void CtiANSIDatalink::buildNegotiate(BYTE aServiceCode, CtiXfer &xfer )
    //this is just for TESTING
    data[0] = aServiceCode;
    data[1] = 0x00;               //176 bytes in a packet max
+   data[2] = 0x80;
    data[2] = 0xb0;
+   data[3] = 0xff;
    data[3] = 0x03;
    data[4] = 0x06;
+   data[4] = 0x04;
+
 
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 5, 0 );
-
    flip.sh = crc( 5 + HEADER_LEN, xfer.getOutBuffer() );
    xfer.getOutBuffer()[5 + HEADER_LEN] = flip.ch[1];
    xfer.getOutBuffer()[5 + HEADER_LEN + 1] = flip.ch[0];
 
    xfer.setOutCount( 5 + HEADER_LEN + sizeof( USHORT ) );
+   
+   /*assemblePacket( xfer.getOutBuffer(), data, 4, 0 );
+
+
+   flip.sh = crc( 4 + HEADER_LEN, xfer.getOutBuffer() );
+   xfer.getOutBuffer()[4 + HEADER_LEN] = flip.ch[1];
+   xfer.getOutBuffer()[4 + HEADER_LEN + 1] = flip.ch[0];
+
+   xfer.setOutCount( 4 + HEADER_LEN + sizeof( USHORT ) );
+   */
 
    //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
    xfer.setInCountExpected( 1 );
@@ -448,24 +470,29 @@ void CtiANSIDatalink::buildLogOn(BYTE aServiceCode, CtiXfer &xfer )
    data[4] = 0x6f;
    data[5] = 0x6e;
    data[6] = 0x65;
-   data[7] = 0x20;
-   data[8] = 0x20;
-   data[9] = 0x20;
-   data[10] = 0x20;
-   data[11] = 0x20;
-   data[12] = 0x20;
+   data[7] = 0x00;
+   data[8] = 0x00;
+   data[9] = 0x00;
+   data[10] = 0x00;
+   data[11] = 0x00;
+   data[12] = 0x00;
 
-   /*
+   /*********/
    data[1] = 0x00;
-   data[2] = 0x32;   //userID?
+   //data[2] = 0x32;   //userID?
 
    data[8] = 0x41;   //Admin
    data[9] = 0x64;
    data[10] = 0x6d;
    data[11] = 0x69;
    data[12] = 0x6e;
-*/
+   /*********/
 
+  /* data[3] = 0x00;
+   data[4] = 0x00;
+   data[5] = 0x00;
+   data[6] = 0x00;
+   */ 
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, 13, 0 );
 
@@ -483,12 +510,11 @@ void CtiANSIDatalink::buildLogOn(BYTE aServiceCode, CtiXfer &xfer )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-void CtiANSIDatalink::buildSecure(BYTE aServiceCode, CtiXfer &xfer )
+void CtiANSIDatalink::buildSecure(BYTE aServiceCode, CtiXfer &xfer, BYTE *password )
 {
    BYTE        data[21];
    BYTEUSHORT  flip;
-   //BYTE        password[] = { 0xab, 0xc1, 0xab, 0xc2, 0xab, 0xc3, 0xab, 0xc4, 0xab, 0xc5, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
-   BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
 
    memset( data, NULL, 21 );
    data[0] = aServiceCode;
@@ -538,12 +564,14 @@ void CtiANSIDatalink::buildAuthenticate(BYTE aServiceCode, CtiXfer &xfer )
 //from all the tables have come in
 //=========================================================================================================================================
 
-void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType )
+void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOperation, int aOffset, BYTE aType, short maxPktSize, BYTE maxNbrPkts )
 {
    BYTE        data[10];
    BYTEUSHORT  flip;
    BYTEUSHORT  id;
+   BYTEUSHORT  pktSize;
    BYTEULONG    offset;
+   int dataSize = 0;
 
    // add the offset here
 
@@ -562,19 +590,33 @@ void CtiANSIDatalink::buildTableRequest( CtiXfer &xfer, int aTableID, BYTE aOper
 //      data[1] = 0x08;
   data[1] = id.ch[1];
   data[2] = id.ch[0];
-  data[3] = offset.ch[2];
-  data[4] = offset.ch[1];
-  data[5] = offset.ch[0];
-  data[7] = 0xaa;
+
+  if (data[0] != 0x30)
+  {
+      data[3] = offset.ch[2];
+      data[4] = offset.ch[1];
+      data[5] = offset.ch[0]; 
+      pktSize.sh = maxPktSize;
+      data[6] = pktSize.ch[1];
+      data[7] = pktSize.ch[0]; 
+      //data[6] = 0x00;
+     // data[7] = 0xa4;
+
+      dataSize = 8;
+  }
+  else
+  {
+      dataSize = 3;
+  }
 
   memset( xfer.getOutBuffer(), NULL, 100 );
-  assemblePacket( xfer.getOutBuffer(), data, 8, 0 );
+  assemblePacket( xfer.getOutBuffer(), data, dataSize, 0 );
 
-  flip.sh = crc( 8 + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
-  xfer.getOutBuffer()[8 + HEADER_LEN] = flip.ch[1];
-  xfer.getOutBuffer()[8 + HEADER_LEN + 1] = flip.ch[0];
+  flip.sh = crc( dataSize + HEADER_LEN, xfer.getOutBuffer() ); ///FIXME: this is stolen
+  xfer.getOutBuffer()[dataSize + HEADER_LEN] = flip.ch[1];
+  xfer.getOutBuffer()[dataSize + HEADER_LEN + 1] = flip.ch[0];
 
-  xfer.setOutCount( 8 + HEADER_LEN + sizeof( USHORT ) );
+  xfer.setOutCount( dataSize + HEADER_LEN + sizeof( USHORT ) );
 
   //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
   xfer.setInCountExpected( 1 );
@@ -633,6 +675,10 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aT
                data[10] = entries.ch[0];
                break;
            }
+       case 8:
+       {
+           break;
+       }
        case 9:
            {
                data[8] = *parmPtr;
@@ -657,23 +703,11 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, int aT
 
 
    data[5 + dataSize] = 0;
-   {
-           CtiLockGuard< CtiLogger > doubt_guard( dout );                              
-           dout <<" ***** Data  ";
-   }
    for (int xx = 0; xx < (5 + dataSize); xx++) 
    {
        data[5 + dataSize] += data[xx];    //2's complement cksm
-       {
-           CtiLockGuard< CtiLogger > doubt_guard( dout );                              
-           dout <<" * "<<(int)data[xx];
-       }
    }
-   {
-           CtiLockGuard< CtiLogger > doubt_guard( dout );                              
-           dout <<endl;
-   }
-
+   data[5 + dataSize] = 0xa4;
    memset( xfer.getOutBuffer(), NULL, 100 );
    assemblePacket( xfer.getOutBuffer(), data, arraySize, 0 );
 
@@ -985,5 +1019,16 @@ void CtiANSIDatalink::toggleToggle( void )
     else
         _toggle = true;
     return;
+}
+
+void CtiANSIDatalink::setIdentityByte(BYTE identityByte)
+{
+    _identityByte = identityByte;
+    return;
+}
+
+BYTE CtiANSIDatalink::getIdentityByte( void )
+{
+    return _identityByte;
 }
 

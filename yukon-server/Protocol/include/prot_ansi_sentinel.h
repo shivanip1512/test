@@ -37,8 +37,12 @@ class IM_EX_PROT CtiProtocolANSI_sentinel:public CtiProtocolANSI
         virtual void destroyManufacturerTables( void );
         virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID );
 
-        virtual void calculateLPDataBlockStartIndex(ULONG lastLPTime);
+        virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
         virtual int calculateLPDataBlockSize(int numChans);
+        virtual void setAnsiDeviceType();
+        virtual int snapshotData();
+
+
         int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
 
    private:

@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/10 21:58:42 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.7  2004/12/10 21:58:42  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.6  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -32,6 +35,8 @@
 
 #include <windows.h>
 #include <rw\cstring.h>
+#include <rw/ordcltn.h>
+#include <list>
 
 #include "ansi_application.h"
 #include "ansi_datalink.h"
@@ -65,11 +70,7 @@
 
 //converters
 //these aren't needed anymore
-typedef union
-{
-   UCHAR    ch[8];
-   double   u64;
-} BYTEFLOAT64;
+
 
 typedef union
 {
@@ -262,21 +263,24 @@ class IM_EX_PROT CtiProtocolANSI
       CtiProtocolANSI();
       virtual ~CtiProtocolANSI();
 
+      typedef enum
+      {
+          generalScan = 0,
+          demandReset,
+      } ANSI_SCAN_OPERATION;
+
       void reinitialize( void );
       void destroyMe( void );
-
-      int getTotalBillingSize( void );
 
       bool generate( CtiXfer &xfer );
       bool decode  ( CtiXfer &xfer, int status );
 
       bool isTransactionComplete( void );
-      int recvInbound( INMESS *InMessage );
+      bool isTransactionFailed( void );
       int recvOutbound( OUTMESS  *OutMessage );
 
       void convertToTable( );
 
-      void decipherInMessage( void );
       int sendCommResult( INMESS *InMessage );
         void receiveCommResult( INMESS *InMessage );
     void buildWantedTableList( BYTE *aPtr);
@@ -286,16 +290,18 @@ class IM_EX_PROT CtiProtocolANSI
     void updateBytesExpected( );
     int sizeOfNonIntegerFormat( int aFormat );
 
+    int sizeOfSTimeDate( void );
+    int sizeOfLTimeDate( void );
 
-      void processBillingTables( void );
-      void processLoadProfileTables( void );
-
-      // pure virtual functions
+    // pure virtual functions
     virtual void destroyManufacturerTables( void )=0;
     virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, int aTableID )=0;
-    virtual void calculateLPDataBlockStartIndex(ULONG lastLPTime) = 0;
+    virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime) = 0;
     virtual int calculateLPDataBlockSize(int numChans) = 0;
     virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock) = 0;
+    virtual void setAnsiDeviceType() = 0;
+    virtual int snapshotData() = 0;
+
 
     /**** JULIE *****/
     void retreiveKWHValue( int *value );
@@ -317,8 +323,7 @@ class IM_EX_PROT CtiProtocolANSI
     int getSizeOfLPIntFmtRcd(int dataSetNbr);
 
     unsigned short getTotalWantedLPBlockInts();
-    unsigned short getTotalWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
-    int getLastNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
+   /* int getLastNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
 
     int getFirstNbrWantedLPBlockInts(int dataSetNbr, ULONG timeSinceLastLP);
     int getTotalWantedLPDataBlocks(int dataSetNbr, ULONG timeSinceLastLP);
@@ -326,22 +331,39 @@ class IM_EX_PROT CtiProtocolANSI
     int getStartLPDataBlockSet(int dataSetNbr, ULONG timeSinceLastLP);
 
     int getLPDataBlkOffset(int dataSetNbr);
+     */
+    int getNbrValidIntvls();
+    int getNbrValidBlks();
+    int getMaxIntervalTime();
+    int getNbrIntervalsPerBlock();
+    int getLastBlockIndex();
+    int getNbrBlksSet();
 
 
-    int UpdateLastLPReadBlksProcedure(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
+  //  int UpdateLastLPReadBlksProcedure(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
 
-    int proc05UpdateLastLPBlkRead(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
-    int proc16StartLPRecording( void );
-    int proc17StopLPRecording( void ) ;
+   // int proc05UpdateLastLPBlkRead(int dataSetNbr, UINT8 tblList, UINT16 nbrEntriesRead);
+ //   int proc16StartLPRecording( void );
+ //   int proc17StopLPRecording( void ) ;
     int proc09RemoteReset(UINT8 actionFlag);
     int proc22LoadProfileStartBlock( void );
 
-    void setWriteProcedureInProgress(bool writeFlag);
-    void setPreviewTable64InProgress(bool previewFlag);
     void setCurrentAnsiWantsTableValues(int tableID,int tableOffset, unsigned short bytesExpected,BYTE  type, BYTE operation);
     int getWriteSequenceNbr( void );
 //bool isReturnMsgMaxSize(void);
    //void fillReturnMessage(BYTE *aBuffer);
+
+    unsigned long getlastLoadProfileTime(void);
+
+
+    void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed, 
+                            unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
+
+
+    list< int > getStdTblsAvailable(void);
+    list < int > getMfgTblsAvailable(void);
+    bool isStdTableAvailableInMeter(int tableNbr);
+    bool isMfgTableAvailableInMeter(int tableNbr);
 
 
    protected:
@@ -385,7 +407,8 @@ class IM_EX_PROT CtiProtocolANSI
 
       bool _validFlag;
       bool _previewTable64;
-      bool _entireTableFlag;  
+      bool _entireTableFlag;
+      bool _clearMfgTables;
       int _nbrLPDataBlksWanted;
       unsigned short _nbrLPDataBlkIntvlsWanted;
       int _nbrFirstLPDataBlkIntvlsWanted;
@@ -399,15 +422,24 @@ class IM_EX_PROT CtiProtocolANSI
 
      int _lpNbrLoadProfileChannels;
      int _lpNbrIntvlsLastBlock;
+     int _lpNbrValidBlks;
+     int _lpNbrIntvlsPerBlock;
+     int _lpNbrBlksSet;
      int _lpLastBlockIndex;
      int _lpStartBlockIndex;
+     int _lpMaxIntervalTime;
      int _lpBlockSize;
      int _lpOffset;
      int _lpNbrFullBlocks;
      int _lpLastBlockSize;
 
-     bool _writeProcedureInProgressFlag;
-     bool _previewTable64InProgressFlag;
+     list < int > _stdTblsAvailable;
+     list < int > _mfgTblsAvailable;
+
+     bool _currentTableNotAvailableFlag;
+
+     ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset, 
+
 };
 
 

@@ -48,8 +48,8 @@ void CtiProtocolANSI_sentinel::destroyManufacturerTables( void )
    {
       delete _tableSeventy;
       _tableSeventy = NULL;
-   }
-   */
+   } */
+   
    if( _table_110 != NULL )
    {
       delete _table_110;
@@ -99,9 +99,9 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
     }
 }
 
-void CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
+int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 {
-    setWriteProcedureInProgress(true);
+    //setWriteProcedureInProgress(true);
 
     setCurrentAnsiWantsTableValues(7,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
     getApplicationLayer().initializeTableRequest (7, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
@@ -120,14 +120,14 @@ void CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 
     reqData.u.pm22.time = lastLPTime - RWTime(RWDate(1,1,2000)).seconds();
 
-    UINT32 tempTime =  RWTime().seconds() - 60 - RWTime(RWDate(1,1,2000)).seconds();
-    //getApplicationLayer().populateParmPtr((BYTE *) &reqData.u.pm22.time, 4) ;
-    getApplicationLayer().populateParmPtr((BYTE *) &tempTime, 4) ;
+    //UINT32 tempTime =  RWTime().seconds() - 60 - RWTime(RWDate(1,1,2000)).seconds() - /*(26 * 3600 * 24) - */10800;
+    getApplicationLayer().populateParmPtr((BYTE *) &reqData.u.pm22.time, 4) ;
+    //getApplicationLayer().populateParmPtr((BYTE *) &tempTime, 4) ;
 
 
     getApplicationLayer().setProcDataSize( sizeof(TBL_IDB_BFLD) + sizeof(reqData.seq_nbr) + 4 );
 
-    return;
+    return -1;
 
 }
 
@@ -139,5 +139,17 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockSize(int numChans)
 
 int CtiProtocolANSI_sentinel::calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock)
 {
-    return 4+ (8*numChans) + (numIntvlsLastDataBlock * ((2 * numChans) +1));
+    return 4+ (8*numChans) + (numIntvlsLastDataBlock * ((2 * numChans) + 2));
 }
+
+void CtiProtocolANSI_sentinel::setAnsiDeviceType()
+{
+    // 2 = sentinel
+    getApplicationLayer().setAnsiDeviceType(2);
+    return;
+}
+int CtiProtocolANSI_sentinel::snapshotData()
+{
+    return 1;
+}
+

@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/09/30 21:37:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/12/10 21:58:41 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.4  2004/12/10 21:58:41  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.3  2004/09/30 21:37:17  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -67,7 +70,9 @@ CtiAnsiTableBase& CtiAnsiTableBase::operator=(const CtiAnsiTableBase& aRef)
 
 int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
 {
-   long     tempLong;
+   BYTEFLOAT32  float32;
+   BYTEFLOAT64 flipFloat;
+   long tempLong;
    double   tempDbl;
    double   multer = 1;
    int      offset = 0;
@@ -77,27 +82,34 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
    case ANSI_NI_FORMAT_FLOAT64:
       //float64
        {
-           if (1) 
-           {
-               tempDbl = ((double) source[7] * (0x100000000000000)) +
-                         ((double) source[6] * (0x1000000000000)) +
-                         ((double) source[5] * (0x10000000000)) +
-                         ((double) source[4] * (0x100000000)) +
-                         ((double) source[3] * (0x1000000)) +
-                         ((double) source[2] * (0x10000)) +
-                         ((double) source[1] * (0x100)) +
-                         (double) source[0];
+           if (1) //data order LSB
+           {    
+               flipFloat.ch[7] = source[7];
+               flipFloat.ch[6] = source[6];
+               flipFloat.ch[5] = source[5];
+               flipFloat.ch[4] = source[4];
+               flipFloat.ch[3] = source[3];
+               flipFloat.ch[2] = source[2];
+               flipFloat.ch[1] = source[1];
+               flipFloat.ch[0] = source[0];
+
+               tempDbl = flipFloat.u64;
+
+
            }
            else
            {
-               tempDbl = ((double)source[0] * (0x100000000000000)) +
-                         ((double)source[1] * (0x1000000000000)) +
-                         ((double)source[2] * (0x10000000000)) +
-                         ((double)source[3] * (0x100000000)) +
-                         ((double)source[4] * (0x1000000)) +
-                         ((double)source[5] * (0x10000)) +
-                         ((double)source[6] * (0x100)) +
-                         (double)source[7];
+
+               flipFloat.ch[7] = source[0];
+               flipFloat.ch[6] = source[1];
+               flipFloat.ch[5] = source[2];
+               flipFloat.ch[4] = source[3];
+               flipFloat.ch[3] = source[4];
+               flipFloat.ch[2] = source[5];
+               flipFloat.ch[1] = source[6];
+               flipFloat.ch[0] = source[7];
+
+               tempDbl = flipFloat.u64;
            }
            result = tempDbl;
            offset = sizeof( unsigned char )*8;
@@ -107,9 +119,27 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
    case ANSI_NI_FORMAT_FLOAT32:
        //float32
        {
-           memcpy( &tempLong, source, sizeof( long ));
-           result = tempLong;
-           offset = sizeof( long );
+
+            if (1) //data order LSB
+            {    
+               float32.ch[3] = source[3];
+               float32.ch[2] = source[2];
+               float32.ch[1] = source[1];
+               float32.ch[0] = source[0];
+            }
+            else
+            {
+               float32.ch[3] = source[0];
+               float32.ch[2] = source[1];
+               float32.ch[1] = source[2];
+               float32.ch[0] = source[3];
+            }
+
+           //memcpy( &tempLong, source, sizeof( long ));
+           result = (double)float32.u32;
+           offset = sizeof( unsigned char ) * 4;
+           
+
        }
        break;
 
@@ -227,8 +257,11 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
 
 int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format )
 {
-   long     tempLong;
+   BYTEFLOAT32  float32;
+   long tempLong;
    double   tempDbl;
+   BYTEFLOAT64 flipFloat;
+   //double   resultDbl;
    double   multer = 1;
    int      offset = 0;
 
@@ -239,40 +272,31 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
        
            tempDbl = source;
            if (1) 
-           {
-               result[7] = tempDbl / 0x100000000000000;
-               tempDbl =  tempDbl - (result[7] * 0x100000000000000);
-               result[6] = tempDbl / 0x1000000000000;
-               tempDbl =  tempDbl - (result[6] * 0x1000000000000);
-               result[5] = tempDbl / 0x10000000000;
-               tempDbl =  tempDbl - (result[5] * 0x10000000000);
-               result[4] = tempDbl / 0x100000000;
-               tempDbl =  tempDbl - (result[4] * 0x100000000);
-               result[3] = tempDbl / 0x1000000;
-               tempDbl =  tempDbl - (result[3] * 0x1000000);
-               result[2] = tempDbl / 0x10000;
-               tempDbl =  tempDbl - (result[2] * 0x10000);
-               result[1] = tempDbl / 0x100;
-               tempDbl =  tempDbl - (result[1] * 0x100);
-               result[0] = tempDbl;
+           {    
+               flipFloat.u64 = tempDbl;
+               result[0] = flipFloat.ch[0];
+               result[1] = flipFloat.ch[1];
+               result[2] = flipFloat.ch[2];
+               result[3] = flipFloat.ch[3];
+               result[4] = flipFloat.ch[4];
+               result[5] = flipFloat.ch[5];
+               result[6] = flipFloat.ch[6];
+               result[7] = flipFloat.ch[7];
+
+              
            }
            else
            {
-               result[0] = tempDbl / 0x100000000000000;
-               tempDbl =  tempDbl - (result[0] * 0x100000000000000);
-               result[1] = tempDbl / 0x1000000000000;
-               tempDbl =  tempDbl - (result[1] * 0x1000000000000);
-               result[2] = tempDbl / 0x10000000000;
-               tempDbl =  tempDbl - (result[2] * 0x10000000000);
-               result[3] = tempDbl / 0x100000000;
-               tempDbl =  tempDbl - (result[3] * 0x100000000);
-               result[4] = tempDbl / 0x1000000;
-               tempDbl =  tempDbl - (result[4] * 0x1000000);
-               result[5] = tempDbl / 0x10000;
-               tempDbl =  tempDbl - (result[5] * 0x10000);
-               result[6] = tempDbl / 0x100;
-               tempDbl =  tempDbl - (result[6] * 0x100);
-               result[7] = tempDbl;
+
+               flipFloat.u64 = tempDbl;
+               result[0] = flipFloat.ch[7];
+               result[1] = flipFloat.ch[6];
+               result[2] = flipFloat.ch[5];
+               result[3] = flipFloat.ch[4];
+               result[4] = flipFloat.ch[3];
+               result[5] = flipFloat.ch[2];
+               result[6] = flipFloat.ch[1];
+               result[7] = flipFloat.ch[0];
            }
            offset = sizeof( unsigned char )*8;
       }
@@ -280,6 +304,23 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
 
    case ANSI_NI_FORMAT_FLOAT32:
       //float32
+       float32.u32 = source;
+       if (1) 
+       {
+           result[0] = float32.ch[0];
+           result[1] = float32.ch[1];
+           result[2] = float32.ch[2];
+           result[3] = float32.ch[3];
+       }
+       else
+       {
+           result[0] = float32.ch[3];
+           result[1] = float32.ch[2];
+           result[2] = float32.ch[1];
+           result[3] = float32.ch[0];
+       }
+       offset = sizeof( unsigned char )*4;
+
       break;
 
    case ANSI_NI_FORMAT_ARRAY12_CHAR:
@@ -308,7 +349,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
 
    case ANSI_NI_FORMAT_INT32:
       //int32
-       tempLong = source;
+       tempLong = (long)source;
        if (1)
        {
            result[3] = tempLong / 0x1000000;
@@ -478,7 +519,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 
            temp = temp * 60;
 
-           result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() - 3600).seconds();
+           result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
            offset = 4;
 
        }
@@ -600,7 +641,7 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
            }
 
 
-           result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() - 3600).seconds();
+           result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
            {
                CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout <<endl<< "RWTime(result) "<<RWTime(result)<<endl;

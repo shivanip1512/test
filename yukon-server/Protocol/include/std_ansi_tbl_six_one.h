@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_two.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/10/01 17:54:27 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/12/10 21:58:43 $
 *    History: 
       $Log: std_ansi_tbl_six_one.h,v $
+      Revision 1.2  2004/12/10 21:58:43  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.1  2004/10/01 17:54:27  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.  New files!
 
@@ -104,8 +107,8 @@ private:
 
 public:
 
-   CtiAnsiTableSixOne( unsigned char *stdTblsUsed, unsigned char dimStdTblsUsed );
-   CtiAnsiTableSixOne(  BYTE *dataBlob,  unsigned char *stdTblsUsed, unsigned char dimStdTblsUsed );
+   CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTblsUsed );
+   CtiAnsiTableSixOne(  BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed );
    
    virtual ~CtiAnsiTableSixOne();
 

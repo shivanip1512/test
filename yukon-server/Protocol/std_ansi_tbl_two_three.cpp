@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/10 21:58:41 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.5  2004/12/10 21:58:41  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.4  2004/09/30 21:37:18  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -56,7 +59,6 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
    int      index;
    int      cnt;
    int      track;
-   BYTE     *ptr;
    int      bytes = 0;
    int      offset = 0;
 
@@ -99,23 +101,6 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
 
    _tot_data_block.demands = new DEMANDS_RCD[_demandNums];
    populateDemandsRecord(dataBlob, &_tot_data_block, offset);
-   ptr = dataBlob;
-   {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout <<endl<< " DEBUG PTR";
-   }
-   for (int xy = 0; xy < 20; xy++) 
-   {
-       {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout << "   "<<(int)*ptr;
-       }
-       ptr++;
-   }
-   {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout <<endl<< " END DEBUG PTR";
-   }
    dataBlob += offset;
    _totSize += offset;
    printDemands(_tot_data_block);
@@ -123,7 +108,7 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
    
    _tot_data_block.coincidents = new COINCIDENTS_RCD[_coinNums];
    populateCoincidentsRecord(dataBlob, &_tot_data_block, offset);
-  dataBlob += offset;
+   dataBlob += offset;
    _totSize += offset;
    
    _tier_data_block = new DATA_BLK_RCD[_tierNums];

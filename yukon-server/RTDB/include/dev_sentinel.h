@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/10/01 18:54:06 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/12/10 21:58:44 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -45,6 +45,14 @@ public:
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
+   virtual INT DemandReset( CtiRequestMsg *pReq, 
+                    CtiCommandParser &parse, 
+                    OUTMESS *&OutMessage, 
+                    RWTPtrSlist< CtiMessage > &vgList,
+                    RWTPtrSlist< CtiMessage > &retList, 
+                    RWTPtrSlist< OUTMESS > &outList, 
+                    INT ScanPriority = MAXPRIORITY-4);
+
 
    virtual INT ResultDecode(INMESS                    *InMessage,
                             RWTime                    &TimeNow,
@@ -58,9 +66,17 @@ public:
                            RWTPtrSlist< CtiMessage >  &retList,
                            RWTPtrSlist< OUTMESS >     &outList);
 
+   virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
+                       CtiCommandParser           &parse,
+                       OUTMESS                   *&OutMessage,
+                       RWTPtrSlist< CtiMessage >  &vgList,
+                       RWTPtrSlist< CtiMessage >  &retList,
+                       RWTPtrSlist< OUTMESS >     &outList );
+   
    CtiProtocolANSI & getProtocol( void );
    void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
    int buildScannerTableRequest (BYTE *ptr);
+   INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER
    {

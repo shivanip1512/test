@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/10 21:58:42 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.6  2004/12/10 21:58:42  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.5  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -123,6 +126,14 @@ class IM_EX_PROT CtiANSIApplication
        waitState
       } ANSI_STATES;
 
+      typedef enum
+      {
+          kv = 0,
+          kv2,
+          sentinel
+
+      } ANSI_DEVICE_TYPE;
+
 
       void init( void );
       void destroyMe( void );
@@ -156,6 +167,8 @@ class IM_EX_PROT CtiANSIApplication
     void setProcBfld( TBL_IDB_BFLD value);
     void setWriteSeqNbr( BYTE seqNbr );
     void setProcDataSize( USHORT dataSize );
+    void setPassword( BYTE *password);
+    void setAnsiDeviceType(BYTE devType);
 
    protected:
 
@@ -168,6 +181,7 @@ class IM_EX_PROT CtiANSIApplication
        int              _prot_version;
        BYTE              *_currentTable;
        int               _totalBytesInTable;
+       int               _initialOffset;
 
        /* JULIE TEMP */
        bool _lpMode;
@@ -201,7 +215,14 @@ class IM_EX_PROT CtiANSIApplication
        int         _retries;
 
        int _julieTest;
-};
 
+       BYTE _securityPassword[20];   
+       int _negotiateRetry;
+       ANSI_DEVICE_TYPE _ansiDeviceType;
+
+       BYTEUSHORT _maxPktSize;
+       BYTE _maxNbrPkts;
+       BYTE _negBaudRate;
+};
 
 #endif // #ifndef __ANSI_APPLICATION_H__

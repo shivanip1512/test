@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/10 21:58:41 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.cpp,v $
+      Revision 1.5  2004/12/10 21:58:41  jrichter
+      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
+
       Revision 1.4  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -231,7 +234,7 @@ void CtiAnsiTableZeroZero::printResult(  )
     string = getResolvedMfgSerialNumberFlag();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Mfg Serial Number Flag: " << string << " (" << integer <<")" << endl;
+        dout << "   Mfg Serial Number Flag: " << string << " (" << flag <<")" << endl;
     }
 
     integer = getRawTimeFormat();
@@ -662,8 +665,19 @@ unsigned char * CtiAnsiTableZeroZero::getStdTblsUsed(void)
     return _std_tbls_used;
 }
 
-unsigned char CtiAnsiTableZeroZero::getDimStdTblsUsed(void)
+int CtiAnsiTableZeroZero::getDimStdTblsUsed(void)
 {
     return _dim_std_tbls_used;
 }
+
+unsigned char * CtiAnsiTableZeroZero::getMfgTblsUsed(void)
+{
+    return _mfg_tbls_used;
+}
+
+int CtiAnsiTableZeroZero::getDimMfgTblsUsed(void)
+{
+    return _dim_mfg_tbls_used;
+}
+
 
