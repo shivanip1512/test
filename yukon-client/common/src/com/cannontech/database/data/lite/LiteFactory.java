@@ -7,6 +7,7 @@ import com.cannontech.database.data.notification.GroupNotification;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 /**
  * This type was created in VisualAge.
@@ -134,6 +135,11 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				returnObject = new com.cannontech.database.db.device.lm.LMProgramConstraint();
 				((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintID(new Integer(((LiteLMConstraint)liteObject).getConstraintID()));
 				((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintName(((LiteLMConstraint)liteObject).getConstraintName());
+				break;
+			case LiteTypes.GEAR:
+				returnObject = LMProgramDirectGear.createGearFactory(((LiteGear)liteObject).getGearType());
+				((LMProgramDirectGear)returnObject).setGearID(new Integer(liteObject.getLiteID()));
+				((LMProgramDirectGear)returnObject).setGearName(((LiteGear)liteObject).getGearName());
 				break;
 			/*case LiteTypes.LMSCENARIO:
 				returnObject = new com.cannontech.database.db.device.lm.LMControlScenarioProgram();
