@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/03/13 19:36:02 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/03/14 00:52:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -695,6 +695,83 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP/ION Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+                        RWDBSelector selector = db.selector();
+                        RWDBSelector tmpSelector;
+                        RWDBTable tblMeterGroup = db.table("devicemetergroup");
+                        RWDBTable tblPAObject = db.table("yukonpaobject");
+                        RWDBReader rdr;
+                        long tmpDeviceID;
+                        RWCString tmpCollectionGroup,
+                                  tmpTestCollectionGroup,
+                                  tmpMeterNumber,
+                                  tmpBillingGroup;
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for ION Meter Groups" << endl;
+                        }
+
+                        selector << tblMeterGroup["DeviceID"]
+                                 << tblMeterGroup["CollectionGroup"]
+                                 << tblMeterGroup["TestCollectionGroup"]
+                                 << tblMeterGroup["MeterNumber"]
+                                 << tblMeterGroup["BillingGroup"];
+                        selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) &&
+                                       (tblPAObject["Type"].like("ION%")));
+
+                        rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+
+                        if(rdr.status().errorCode() == RWDBStatus::ok)
+                        {
+                            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+                            {
+                                rdr["DeviceID"]            >> tmpDeviceID;
+                                rdr["CollectionGroup"]     >> tmpCollectionGroup;
+                                rdr["TestCollectionGroup"] >> tmpTestCollectionGroup;
+                                rdr["MeterNumber"]         >> tmpMeterNumber;
+                                rdr["BillingGroup"]        >> tmpBillingGroup;
+
+                                pTempCtiDevice = getEqual(tmpDeviceID);
+
+                                if(pTempCtiDevice)
+                                {
+                                    CtiDeviceION *tmpION = (CtiDeviceION *)pTempCtiDevice;
+
+                                    tmpION->setMeterGroupData(tmpCollectionGroup,
+                                                              tmpTestCollectionGroup,
+                                                              tmpMeterNumber,
+                                                              tmpBillingGroup);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "Error reading ION Meter Groups from database: " << rdr.status().errorCode() << endl;
+                        }
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for ION Meter Groups" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load ION Meter Groups" << endl;
                     }
 
 

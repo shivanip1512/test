@@ -60,20 +60,27 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
    return *this;
 }
 
-/*
-inline bool      CtiDeviceION::isMeter() const                      {   return true;    }
-inline RWCString CtiDeviceION::getMeterGroupName() const            {   return getMeterGroup().getCollectionGroup();    }
-inline RWCString CtiDeviceION::getAlternateMeterGroupName() const   {   return getMeterGroup().getTestCollectionGroup();    }
 
-CtiTableDeviceMeterGroup  CtiDeviceION::getMeterGroup() const       {  return MeterGroup;  }
-CtiTableDeviceMeterGroup& CtiDeviceION::getMeterGroup()             {  return MeterGroup;  }
-
-CtiDeviceION& CtiDeviceION::setMeterGroup( const CtiTableDeviceMeterGroup &aMeterGroup )
+RWCString CtiDeviceION::getMeterGroupName() const
 {
-    MeterGroup = aMeterGroup;
-    return *this;
+    return _collectionGroup;
 }
-*/
+
+
+RWCString CtiDeviceION::getAlternateMeterGroupName() const
+{
+    return _testCollectionGroup;
+}
+
+
+void CtiDeviceION::setMeterGroupData( const RWCString &collectionGroup, const RWCString &testCollectionGroup, const RWCString &meterNumber, const RWCString &billingGroup)
+{
+    _collectionGroup     = collectionGroup;
+    _testCollectionGroup = testCollectionGroup;
+    _meterNumber         = meterNumber;
+    _billingGroup        = billingGroup;
+}
+
 
 CtiProtocolBase *CtiDeviceION::getProtocol( void ) const
 {

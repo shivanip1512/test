@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2003/03/12 21:12:19 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2003/03/14 00:52:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1181,7 +1181,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             {
                 CtiDeviceBase &device = *(itr_dev.value());
 
-                if(device.isMeter())
+                if(device.isMeter() || isION(device.getType()))
                 {
                     RWCString mgname = device.getMeterGroupName();
 
@@ -1228,7 +1228,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             {
                 CtiDeviceBase &device = *(itr_dev.value());
 
-                if(device.isMeter())
+                if(device.isMeter() || isION(device.getType()))
                 {
                     RWCString mgname = device.getAlternateMeterGroupName();
 
@@ -1440,6 +1440,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
     return status;
 }
+
 
 void CtiPILServer::putQueue(CtiMessage *Msg)
 {

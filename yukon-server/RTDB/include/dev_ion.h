@@ -34,6 +34,11 @@ private:
     CtiProtocolION    _ion;
     CtiTableDeviceDNP _address;
 
+    RWCString _collectionGroup,
+              _testCollectionGroup,
+              _meterNumber,
+              _billingGroup;
+
 protected:
 
     CtiTableDeviceMeterGroup MeterGroup;
@@ -57,14 +62,17 @@ public:
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
-/*    virtual bool isMeter() const;
     virtual RWCString getMeterGroupName() const;
     virtual RWCString getAlternateMeterGroupName() const;
 
     CtiTableDeviceMeterGroup  getMeterGroup() const;
     CtiTableDeviceMeterGroup& getMeterGroup();
     CtiDeviceION& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
-*/    //-------
+    //----
+    void setMeterGroupData( const RWCString &collectionGroup,
+                            const RWCString &testCollectionGroup,
+                            const RWCString &meterNumber,
+                            const RWCString &billingGroup);
 
     //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
