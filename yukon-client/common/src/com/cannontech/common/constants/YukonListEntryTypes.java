@@ -27,6 +27,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_CUST_ACT_CONFIG			= 1108;
 	public static final int YUK_DEF_ID_CUST_ACT_PROGRAMMING		= 1109;
 	public static final int YUK_DEF_ID_CUST_ACT_MANUAL_OPTION	= 1110;
+	public static final int YUK_DEF_ID_CUST_ACT_UNINSTALL		= 1111;
 	public static final int YUK_DEF_ID_INV_CAT_ONEWAYREC			= 1201;
 	public static final int YUK_DEF_ID_INV_CAT_TWOWAYREC			= 1202;
 	public static final int YUK_DEF_ID_DEV_TYPE_THERMOSTAT		= 1301;
