@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/06 20:06:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/07 16:47:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1580,23 +1580,23 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
             {
                 switch(Device->getType())
                 {
-                    // none of these use the transfer struct defined in this function so it blows the thread
-                    case TYPE_SIXNET:
-                    case TYPE_TAPTERM:
-                    case TYPE_ALPHA_PPLUS:
-                    case TYPE_ALPHA_A1:
-                    case TYPE_FULCRUM:
-                    case TYPE_VECTRON:
-                    case TYPE_QUANTUM:
-                    case TYPE_DR87:
-                    case TYPE_LGS4:
-                        break;
-                    default:
-                        // There was an outbound error, the Xfer was not traced...
-                        if(trx.doTrace(i))
-                        {
-                            Port->traceXfer(trx, traceList, Device, i);
-                        }
+                // none of these use the transfer struct defined in this function so it blows the thread
+                case TYPE_SIXNET:
+                case TYPE_TAPTERM:
+                case TYPE_ALPHA_PPLUS:
+                case TYPE_ALPHA_A1:
+                case TYPE_FULCRUM:
+                case TYPE_VECTRON:
+                case TYPE_QUANTUM:
+                case TYPE_DR87:
+                case TYPE_LGS4:
+                    break;
+                default:
+                    // There was an outbound error, the Xfer was not traced...
+                    if(trx.doTrace(i))
+                    {
+                        Port->traceXfer(trx, traceList, Device, i);
+                    }
                 }
             }
 
@@ -2345,16 +2345,16 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
         {
             if(OutMessage->EventCode & VERSACOM)
             {
-                CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
-
                 if(VCUWait)
                 {
+                    CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
+
                     /* The assumption (for now) is overlapping coverage of VCU's on the
-                       same comm port (VCU's on another comm port better damn well not
-                       overlap this one!!!!!!!) and that we have exclusive use of the VHF
-                       channels (No paging or voice channels!!!).  Obviosly this is an
-                       extremely simplistic view of the world but will do till we can do
-                       otherwise... Queues and time tables etc.... */
+                           same comm port (VCU's on another comm port better damn well not
+                           overlap this one!!!!!!!) and that we have exclusive use of the VHF
+                           channels (No paging or voice channels!!!).  Obviosly this is an
+                           extremely simplistic view of the world but will do till we can do
+                           otherwise... Queues and time tables etc.... */
 
                     /* Another gotcha... we assume that the VCU is doing something even
                        if this command fails... Life's a bitch but thats the way
@@ -2402,7 +2402,35 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
                     /* Put it on the queue for this port */
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
-                        printf ("Error Requeing Command\n");
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Error Requeing Command" << endl;
+                    }
+                }
+            }
+            break;
+        }
+    case TYPE_TCU5000:
+        {
+            if(OutMessage->EventCode & VERSACOM)
+            {
+                /* Lets check if this command needs to be queued again */
+                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " TCU queue full.  Will resubmit." << endl;
+                    }
+                    /* Update the statistics for this TCU */
+                    UpdatePerformanceData(NORMAL, Port, Device);
+
+                    /* we need to reque this one  */
+                    status = MESSAGEREQUEUED;
+
+                    /* Put it on the queue for this port */
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Error Requeing Command" << endl;
                     }
                 }
             }
@@ -2422,7 +2450,6 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
     case TYPE_ILEXRTU:
     case TYPE_VTU:
     case TYPE_SES92RTU:
-    case TYPE_TCU5000:
     default:
         {
             break;
