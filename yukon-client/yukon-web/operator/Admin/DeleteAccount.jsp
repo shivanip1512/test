@@ -7,11 +7,11 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function validate(form) {
-	if (form.AcctNo.value == "") {	
-		alert("Account # cannot be empty");
+	if (form.From.value == "" && form.To.value == "") {	
+		alert("Account # range cannot be empty");
 		return false;
 	}
-	return true;
+	return confirm("Are you sure you want to delete all customer accounts in the specified range?");
 }
 </script>
 </head>
@@ -52,8 +52,10 @@ function validate(form) {
                   <td> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
                       <tr> 
-                        <td class="TableCell">Account #: 
-                          <input type="text" name="AcctNo" maxlength="40" size="24">
+                        <td class="TableCell">Account #: From 
+                          <input type="text" name="From" maxlength="40" size="14">
+                          To 
+                          <input type="text" name="To" size="14" maxlength="40">
                           <input type="submit" name="Submit" value="Delete">
                         </td>
                       </tr>
