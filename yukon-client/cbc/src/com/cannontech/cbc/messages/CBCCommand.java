@@ -8,6 +8,10 @@ package com.cannontech.cbc.messages;
 
 public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage 
 {
+	//server does not use this one
+	public static final int CMD_INVALID = -1;
+
+
 	//The following are the different commands that
 	//can be applied to strategies and map into the C++ side
 	public static final int ENABLE_SUBBUS = 0;
