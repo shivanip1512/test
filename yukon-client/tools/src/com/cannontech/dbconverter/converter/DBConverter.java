@@ -599,21 +599,21 @@ public boolean processAccumulatorPoints()
 		// set Point Units
 		String comparer = new String( tokenizer.nextElement().toString() );
 
-		if( comparer.compareTo( "KVA" ) == 0 )
+		if( comparer.compareTo( "kVA" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 2) );
-		else if( comparer.compareTo( "KVAR" ) == 0 )
+		else if( comparer.compareTo( "kVAr" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 3 ) );
-		else if( comparer.compareTo( "KVAH" ) == 0 )
+		else if( comparer.compareTo( "kVAh" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer (4) );
-		else if( comparer.compareTo( "KVARH" ) == 0 )
+		else if( comparer.compareTo( "kVArh" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 5 ) );
-		else if( comparer.compareTo( "KVAR" ) == 0 )
+		else if( comparer.compareTo( "kVAr" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 3 ) );
-		else if( comparer.compareTo( "KW" ) == 0 )
+		else if( comparer.compareTo( "kW" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 0 ) );
 		else if( comparer.compareTo( "MW" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 20 ) );
-		else if( comparer.compareTo( "MWH" ) == 0 )
+		else if( comparer.compareTo( "MWh" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 21 ) );
 		else if( comparer.compareTo( "KQ" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 7 ) );

@@ -16,7 +16,7 @@ public class CalcComponentTypes
 	public static final String DIVISION_OPERATION = "/";
 	public static final String PUSH_OPERATION = "PUSH";
 	
-	public static final String LABEL_KVAR = "KVAR";
+	public static final String LABEL_KVAR = "kVAr";
 	
 	
 	
@@ -29,19 +29,19 @@ public class CalcComponentTypes
 	public static final String DEMAND_AVG15_FUNCTION = "DemandAvg15";
 	public static final String DEMAND_AVG30_FUNCTION = "DemandAvg30";
 	public static final String DEMAND_AVG60_FUNCTION = "DemandAvg60";
-	public static final String PFACTOR_KW_KVAR_FUNCTION = "P-Factor KW/KVar";
-	public static final String PFACTOR_KW_KQ_FUNCTION = "P-Factor KW/KQ";
-	public static final String PFACTOR_KW_KVA_FUNCTION = "P-Factor KW/KVa";
+	public static final String PFACTOR_KW_KVAR_FUNCTION = "P-Factor kW/kVAr";
+	public static final String PFACTOR_KW_KQ_FUNCTION = "P-Factor kW/KQ";
+	public static final String PFACTOR_KW_KVA_FUNCTION = "P-Factor kW/kVA";
 	
-	public static final String KVAR_FROM_KWKQ_FUNCTION = "KVar from KW/KQ";
-	public static final String KVA_FROM_KWKVAR_FUNCTION = "KVa from KW/KVar";
-	public static final String KVA_FROM_KWKQ_FUNCTION = "KVa from KW/KQ";
+	public static final String KVAR_FROM_KWKQ_FUNCTION = "kVAr from kW/KQ";
+	public static final String KVA_FROM_KWKVAR_FUNCTION = "kVA from kW/kVAr";
+	public static final String KVA_FROM_KWKQ_FUNCTION = "kVA from kW/KQ";
 	public static final String COS_FROM_PQ_FUNCTION = "COS from P/Q";
 	public static final String SQUARED_FUNCTION = "Squared";
 	public static final String SQUARE_ROOT_FUNCTION = "Square Root";
 	public static final String ARCTAN_FUNCTION = "ArcTan";
    
-   public static final String KW_FROM_KVAKVAR_FUNCTION = "KW from KVa/KVAR";
+   public static final String KW_FROM_KVAKVAR_FUNCTION = "kW from kVA/kVAr";
 
    
 	//our operation function strings

@@ -372,7 +372,7 @@ private javax.swing.JLabel getJLabelKVAR() {
 			ivjJLabelKVAR = new javax.swing.JLabel();
 			ivjJLabelKVAR.setName("JLabelKVAR");
 			ivjJLabelKVAR.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelKVAR.setText("KVAR");
+			ivjJLabelKVAR.setText("kVAr");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
