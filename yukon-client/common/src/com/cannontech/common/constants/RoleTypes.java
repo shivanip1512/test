@@ -62,6 +62,7 @@ public interface RoleTypes {
 	public static final int CICUSTOMER_CURTAILMENT = -141;
 	public static final int CICUSTOMER_ENERGY_EXCHANGE = -142;
 
+	public static final int LOADCONTROL_CONTROL_ODDS = -150;
 	public static final int CONSUMERINFO_ACCOUNT = -160;
 	public static final int CONSUMERINFO_ACCOUNT_GENERAL = -161;
 	public static final int CONSUMERINFO_ACCOUNT_CALL_TRACKING = -162;
