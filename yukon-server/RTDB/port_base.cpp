@@ -495,7 +495,8 @@ _attemptCount(0),
 _attemptCommFailCount(0),
 _attemptOtherFailCount(0),
 _attemptSuccessCount(0),
-_queueSlot(0)
+_queueSlot(0),
+_simulated(0)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
@@ -556,6 +557,26 @@ CtiPort& CtiPort::setTAP(BOOL b)
 {
     _tapPort = b;
     return *this;
+}
+
+bool CtiPort::isSimulated()
+{
+    //  if we haven't checked before
+    if( !_simulated )
+    {
+        _simulated = -1;  //  default to NOT simulated
+
+        if( (gSimulatePorts > 0) && (gSimulatedPortList.find(getPortID()) != gSimulatedPortList.end()) )  //  must be included
+        {
+            _simulated = 1;
+        }
+        if( (gSimulatePorts < 0) && (gSimulatedPortList.find(getPortID()) == gSimulatedPortList.end()) )  //  must be excluded
+        {
+            _simulated = 1;
+        }
+    }
+
+    return _simulated > 0;
 }
 
 INT CtiPort::connectToDevice(CtiDeviceSPtr Device, LONG &LastDeviceId, INT trace)
@@ -806,7 +827,7 @@ pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
     pair< bool, INT > rpair = make_pair( false, NORMAL );
 
     //  no need to attempt this if we're simulating the port
-    if( !gSimulatePorts )
+    if( !isSimulated() )
     {
         if( !isDialup() ) // We don't always want to re-open these types of port.
         {
