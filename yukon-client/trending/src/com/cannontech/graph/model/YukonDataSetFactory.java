@@ -30,7 +30,8 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		int validIndex = 0;
 		for( int i = 0; i < tSeries.length; i++ )
 		{
-			if( tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+			if( tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES)||
+				tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.YESTERDAY_SERIES))
 			{
 		   		com.jrefinery.data.TimeSeriesDataPair[] dp = tSeries[i].getDataPairArray();
 		
@@ -75,7 +76,8 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 			TrendSerie serie = tSeries[i];
 			if( serie != null)
 			{
-				if( serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+				if( serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) ||
+					serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.YESTERDAY_SERIES))
 				{
 					com.jrefinery.data.BasicTimeSeries series = 
 						new com.jrefinery.data.BasicTimeSeries(serie.getLabel(), com.jrefinery.data.Second.class);
@@ -188,7 +190,8 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		int validSeriesLength = 0;
 		for( int i = 0; i < tSeries.length; i++)
 		{
-			if( tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+			if( tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) ||
+				tSeries[i].getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.YESTERDAY_SERIES))
 			{
 				if( tSeries[i].getPointId().equals(peakPointId))
 				{	//find the 'graph' point representing the peak point, if it exists!
@@ -261,9 +264,10 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 			if( serie != null)
 			{
 				boolean firstOne = true;				
-				if( serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
+				if( serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES)||
+					serie.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.YESTERDAY_SERIES))
 				{
-					com.jrefinery.data.BasicTimeSeries series = null;// new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() -1000)) + " -No Data", com.jrefinery.data.Second.class);
+					com.jrefinery.data.BasicTimeSeries timeSeries = null;// new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() -1000)) + " -No Data", com.jrefinery.data.Second.class);
 
 					if( serie.getDataPairArray() != null)
 					{
@@ -281,11 +285,11 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 								{
 									com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(dp.getPeriod().getStart() + TRANSLATE_TIME));
 									com.jrefinery.data.TimeSeriesDataPair tempDP = new com.jrefinery.data.TimeSeriesDataPair(tp, dp.getValue());
-									if( series == null)
+									if( timeSeries == null)
 									{
-										series = new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(compareStart.getTime())), com.jrefinery.data.Second.class);
+										timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(compareStart.getTime())), com.jrefinery.data.Second.class);
 									}		
-									series.add(tempDP);
+									timeSeries.add(tempDP);
 								}
 								else		
 								{
@@ -293,16 +297,16 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 									{
 										firstOne = false;
 
-										if( series == null)	//sets up a series if there is no yesterday available.
+										if( timeSeries == null)	//sets up a series if there is no yesterday available.
 										{
 											//subtract an extra 1000 (sec) so we can hit yesterday, otherwise we get the first second of today.
-											series = new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(compareStart.getTime()))+ " -No Data", com.jrefinery.data.Second.class);
+											timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(compareStart.getTime()))+ " -No Data", com.jrefinery.data.Second.class);
 										}
 
-										dSet.addSeries(series);
-										series = new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() )), com.jrefinery.data.Second.class);
+										dSet.addSeries(timeSeries);
+										timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel() + " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime() )), com.jrefinery.data.Second.class);
 									}
-									series.add(dp);
+									timeSeries.add(dp);
 								}
 							}
 							catch(com.jrefinery.data.SeriesException se)
@@ -313,12 +317,12 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 						}
 					}
 
-					if( series == null)
+					if( timeSeries == null)
 					{
-						series = new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime())), com.jrefinery.data.Second.class);
+						timeSeries = new com.jrefinery.data.BasicTimeSeries(serie.getLabel()+ " - " + LEGEND_FORMAT.format(new java.util.Date(startDate.getTime())), com.jrefinery.data.Second.class);
 					}		
 
-					dSet.addSeries(series);
+					dSet.addSeries(timeSeries);
 					if( firstOne )	
 					{
 						//Only had data for one day, therefore, we have null data on the other days
