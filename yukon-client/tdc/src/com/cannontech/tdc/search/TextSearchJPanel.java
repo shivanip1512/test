@@ -1,5 +1,7 @@
 package com.cannontech.tdc.search;
 
+import java.awt.KeyboardFocusManager;
+
 /**
  * Insert the type's description here.
  * Creation date: (7/6/2001 4:55:01 PM)
@@ -31,28 +33,7 @@ public TextSearchJPanel() {
 	super();
 	initialize();
 }
-/**
- * TextSearchJPanel constructor comment.
- * @param layout java.awt.LayoutManager
- */
-public TextSearchJPanel(java.awt.LayoutManager layout) {
-	super(layout);
-}
-/**
- * TextSearchJPanel constructor comment.
- * @param layout java.awt.LayoutManager
- * @param isDoubleBuffered boolean
- */
-public TextSearchJPanel(java.awt.LayoutManager layout, boolean isDoubleBuffered) {
-	super(layout, isDoubleBuffered);
-}
-/**
- * TextSearchJPanel constructor comment.
- * @param isDoubleBuffered boolean
- */
-public TextSearchJPanel(boolean isDoubleBuffered) {
-	super(isDoubleBuffered);
-}
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
@@ -463,7 +444,10 @@ private javax.swing.JPanel getJPanelSearchOption() {
  */
 public String getSearchText() 
 {
-	return getJComboBoxSearchText().getSelectedItem().toString();
+	if( getJComboBoxSearchText().getSelectedItem() == null )
+		return null;
+	else
+		return getJComboBoxSearchText().getSelectedItem().toString();
 }
 /**
  * Insert the method's description here.
@@ -548,7 +532,10 @@ private void initialize() {
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
+	// user code begin {2}	
+	
+	getJComboBoxSearchText().requestFocus();	
+	
 	// user code end
 }
 /**
@@ -732,8 +719,9 @@ public void setColumnNames(String[] columns)
  * @param newTableToSearch javax.swing.JTable
  */
 public void setTableToSearch(javax.swing.JTable newTableToSearch) {
-	tableToSearch = newTableToSearch;
+	tableToSearch = newTableToSearch;	
 }
+
 /**
  * 
  */
