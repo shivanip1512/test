@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/10/08 20:14:14 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/10/09 19:36:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #include "dev_meter.h"
 #include "dev_schlum.h"
 #include "dev_fulcrum.h"
+#include "dev_ion.h"
 #include "dev_lcu.h"
 #include "dev_quantum.h"
 #include "dev_vectron.h"
@@ -105,6 +106,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_DNPRTU:
         {
             Device = (CtiDeviceBase*) new CtiDeviceDNP;
+            break;
+        }
+    case TYPE_ION7700:
+        {
+            Device = (CtiDeviceBase*) new CtiDeviceION;
             break;
         }
     case TYPE_TCU5000:

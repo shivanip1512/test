@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/08 20:14:11 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/10/09 19:37:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,6 +203,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_DNPRTU)
    {
       Ret = "rtu-dnp";
+   }
+   else if(aType == TYPE_ION7700)
+   {
+       Ret = "ion-7700";
    }
    else if(aType == TYPE_LCU415)
    {

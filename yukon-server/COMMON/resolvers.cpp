@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/10/08 20:14:11 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/10/09 19:36:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -301,6 +301,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "rtu-dnp")
     {
         nRet = TYPE_DNPRTU;
+    }
+    else if(rwsTemp == "ion-7700")
+    {
+        nRet = TYPE_ION7700;
     }
     else if(rwsTemp == "davis weather")
     {
