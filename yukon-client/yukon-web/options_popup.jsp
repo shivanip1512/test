@@ -1,5 +1,16 @@
-<HEAD>
-<link rel="stylesheet" href="../CannonStyle.css" type="text/css">
+<html>
+<%@ page language="java" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole"%>
+<%@ page import="com.cannontech.graph.model.TrendModelType" %>
+<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+
+<cti:checklogin/>
+<head>
+<title>Trending Options Popup</title>
+<link id="StyleSheet" rel="stylesheet" href="WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<META NAME="robots" CONTENT="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 <SCRIPT LANGUAGE="JavaScript">
 //variable options mapped to com.cannontech.graph.model.TrendModelType options.
 var MULT = parseInt(<%=com.cannontech.graph.model.TrendModelType.GRAPH_MULTIPLIER%>); 
