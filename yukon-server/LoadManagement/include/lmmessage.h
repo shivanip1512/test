@@ -261,6 +261,7 @@ public:
 
     // Possible bit mask settings
     static ULONG AllControlAreasSent;
+    static ULONG ControlAreaDeleted;
 
 private:
     CtiLMControlAreaMsg() : CtiLMMessage("ControlAreas"), _controlAreas(NULL), _msgInfoBitMask(0) {};

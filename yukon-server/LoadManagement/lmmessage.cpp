@@ -876,6 +876,7 @@ void CtiLMControlAreaMsg::saveGuts(RWvostream& strm) const
 
 // Static Members
 ULONG CtiLMControlAreaMsg::AllControlAreasSent = 0x00000001;
+ULONG CtiLMControlAreaMsg::ControlAreaDeleted  = 0x00000002;
 
 
 /*===========================================================================

@@ -98,6 +98,8 @@ public:
     void setValid(bool valid);
     bool getReregisterForPoints();
     void setReregisterForPoints(bool reregister);
+    bool getWasControlAreaDeletedFlag();
+    void setWasControlAreaDeletedFlag(bool wasDeleted);
 
     bool UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea);
     bool UpdateProgramDisableFlagInDB(CtiLMProgramBase* program);
@@ -132,6 +134,7 @@ private:
 
     bool _isvalid;
     bool _reregisterforpoints;
+    bool _wascontrolareadeletedflag;
     RWDBDateTime _lastdbreloadtime;
     RWTValOrderedVector<CtiLMSavedProjectionQueue> _projectionQueues;
     RWTValOrderedVector<CtiLMSavedControlString> _controlStrings;

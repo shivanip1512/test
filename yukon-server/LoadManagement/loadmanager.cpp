@@ -738,6 +738,11 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
                       dbChange->getDatabase() == ChangePointDb ||
                       dbChange->getDatabase() == ChangeStateGroupDb ) )
                 {
+                    if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
+                        resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_LM_CONTROL_AREA )
+                    {
+                        CtiLMControlAreaStore::getInstance()->setWasControlAreaDeletedFlag(true);
+                    }
                     CtiLMControlAreaStore::getInstance()->setValid(false);
                 }
             }
