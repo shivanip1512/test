@@ -103,7 +103,11 @@ private void initialize() {
 					exitMenuItem.doClick();
 					return true;
 				}
-				
+				else if( e.getKeyCode() == KeyEvent.VK_F5 && e.isControlDown() )
+				{
+					commandSpecificControl.doClick();
+					return true;
+				}
 				//its this the last handling of the KeyEvent in this KeyboardFocusManager?
 				return false;
 			}
