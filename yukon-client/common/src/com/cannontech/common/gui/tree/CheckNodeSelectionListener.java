@@ -23,12 +23,26 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	//Contains LiteBase (hopefully) values.  DOES NOT CONTAIN THE PARENT!!!
 	private Vector checkedNodes = null;
 
+	/**
+	 * CheckedNodes is a vector for storing the "checked" objects (stored as the getUserObject() from JTree)
+	 * @param tree
+	 * @param checkedNodes
+	 */
 	public CheckNodeSelectionListener(JTree tree, Vector checkedNodes)
 	{
 		super();
 		this.tree = tree;
 		this.checkedNodes = checkedNodes;
 	}
+	
+	/**
+	 * Data for checked nodes will not be collected.
+	 * @param tree
+	 */
+	public CheckNodeSelectionListener(JTree tree)
+	{
+		this(tree, null);
+	}	
 
 	/* (non-Javadoc)
 	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
