@@ -116,7 +116,7 @@
 			<xs:element name="AltTrackingNumber" type="xs:string" minOccurs="0"/>
 			<xs:element name="Voltage" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="Notes" type="xs:string" minOccurs="0"/>
-			
+
 			<xs:element name="DeviceStatus" type="stars-CustListEntry" minOccurs="0"/>
 			<xs:element name="InstallationNotes" type="xs:string" minOccurs="0"/>
 			<xs:element ref="stars-LMHardwareHistory" minOccurs="0"/>
@@ -604,7 +604,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="stars-LMHardware" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element ref="stars-MCT" minOccurs="0" maxOccurs="unbounded"/></xs:sequence>
+				<xs:element ref="stars-MCT" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-LMHardware" type="stars-LMHw"/>
@@ -852,7 +853,8 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="stars-LMHardware"/>
-			<xs:element ref="stars-MCT"/></xs:choice>
+				<xs:element ref="stars-MCT"/>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateLMHardware" type="stars-LMHw"/>
@@ -860,7 +862,8 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="stars-LMHardware"/>
-			<xs:element ref="stars-MCT"/></xs:choice>
+				<xs:element ref="stars-MCT"/>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-DeleteLMHardware">
@@ -944,6 +947,7 @@
 				<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/>
 			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int"/>
+			<xs:attribute name="inventoryIDs" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateThermostatScheduleResponse">
@@ -952,7 +956,6 @@
 				<xs:element ref="stars-LMHardwareEvent" minOccurs="0"/>
 				<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/>
 			</xs:sequence>
-			<xs:attribute name="inventoryID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-UpdateThermostatManualOption">
