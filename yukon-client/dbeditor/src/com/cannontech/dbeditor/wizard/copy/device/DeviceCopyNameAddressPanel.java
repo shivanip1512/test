@@ -470,7 +470,12 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 			if (val instanceof IDLCBase)
 				 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof CarrierBase)
-				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(new Integer(getAddressTextField().getText()));
+				 {
+				 	 Integer addressHolder = new Integer(getAddressTextField().getText());
+				 	 if(val instanceof Repeater900)
+				 	 	addressHolder = new Integer(addressHolder.intValue() + 4190000);
+					 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
+				 }
 			else if (val instanceof CapBank)
 				 ((CapBank) val).setLocation(getAddressTextField().getText());
 			else if (val instanceof ICapBankController )
@@ -812,9 +817,15 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
    private void setPanelState( com.cannontech.database.data.device.DeviceBase val )
    {
 
-      if( val instanceof CarrierBase )
-         getAddressTextField().setText( ((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString() );
+      Integer addressHolder;
       
+      if( val instanceof CarrierBase )
+         {
+          	addressHolder = new Integer(((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString());
+            if(val instanceof Repeater900 )
+         		addressHolder = new Integer(addressHolder.intValue() - 4190000);
+          	getAddressTextField().setText( addressHolder.toString() );
+         }
       if( val instanceof IDLCBase )
          getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
    
