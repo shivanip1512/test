@@ -1,4 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%
 	String action = request.getParameter("action");
@@ -72,7 +73,7 @@
 		return;
 	}
 	
-	boolean hasMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null;
+	YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, false);
 %>
 <html>
 <head>
@@ -110,8 +111,8 @@ function selectMCT(form) {
 }
 
 function changeDeviceType(type) {
-<% if (hasMCT) { %>
-	if (type == <%= liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryID() %>) {
+<% if (devTypeMCT != null) { %>
+	if (type == <%= devTypeMCT.getEntryID() %>) {
 		document.getElementById("HardwareDiv").style.display = "none";
 		document.getElementById("DeviceDiv").style.display = "";
 	}
@@ -171,7 +172,7 @@ function confirmCancel() {
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
-<% if (hasMCT) { %>
+<% if (devTypeMCT != null) { %>
                 select a meter from the list of all MCTs (Select Meter),<br>
 <% } %>
                 or check the inventory for a specific device type and serial number 
@@ -191,7 +192,7 @@ function confirmCancel() {
                       </table>
                     </td>
                   </tr>
-<% if (hasMCT) { %>
+<% if (devTypeMCT != null) { %>
                   <tr> 
                     <td> 
                       <div align="center" class="TableCell">or</div>
