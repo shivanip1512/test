@@ -4,6 +4,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IMACSConnection;
 
 /**
@@ -152,7 +153,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 	String action = req.getParameter("ACTION");
 	String startAtStr = req.getParameter("STARTAT");
 	String stopAtStr = req.getParameter("STOPAT");
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 	
 	java.util.Date startDate = parseTime(startAtStr);
 	java.util.Date stopDate  = parseTime(stopAtStr);

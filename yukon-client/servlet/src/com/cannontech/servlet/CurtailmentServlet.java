@@ -19,6 +19,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 
 public class CurtailmentServlet extends javax.servlet.http.HttpServlet {
 
@@ -103,7 +104,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 	try
 	{
 		javax.servlet.http.HttpSession session = ((javax.servlet.http.HttpServletRequest) req).getSession(false);
-		LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
+		LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 					
 		String customerIDStr = req.getParameter("CUSTOMERID");
 		String curtailIDStr  = req.getParameter("CURTAILID");

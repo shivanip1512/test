@@ -6,6 +6,7 @@ package com.cannontech.servlet;
  */
 import javax.servlet.http.HttpServlet;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.billing.mainprograms.BillingBean;
 
 public class BillingServlet extends HttpServlet
@@ -38,11 +39,11 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
 		resp.setContentType("text/x-comma-separated-values");
 
-		BillingBean localBean = (BillingBean)session.getAttribute("billingBean");
+		BillingBean localBean = (BillingBean)session.getAttribute(ServletUtil.ATT_BILLING_BEAN);
 		if(localBean == null)
 		{
 			CTILogger.debug("!!! BEAN IS NULL !!! ");
-			session.setAttribute("billingBean", new BillingBean());
+			session.setAttribute(ServletUtil.ATT_BILLING_BEAN, new BillingBean());
 		}
 		String fileName = "billing";		
 		fileName += fileNameFormat.format(localBean.getEndDate());

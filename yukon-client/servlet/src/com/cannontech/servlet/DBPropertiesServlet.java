@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Writes the contents of db.properties out the responses output stream if
@@ -31,7 +31,7 @@ public class DBPropertiesServlet extends HttpServlet {
 		HttpSession session = req.getSession(false);
 		
 		if(session != null) {
-			LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+			LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 			if(user != null) {
 				sendDBProps(resp.getOutputStream());		
 			}

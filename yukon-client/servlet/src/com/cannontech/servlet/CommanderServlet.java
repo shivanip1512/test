@@ -33,34 +33,34 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.gui.YC;
 
 public class CommanderServlet extends javax.servlet.http.HttpServlet 
 {
-	public static final String YC_BEAN_SESSION_KEY = "ycBean";	
-
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 	{	
 		final HttpSession session = req.getSession( false );
 
 		//I'm sure I need this for something but not sure what yet.  SN 12/18/03
-		LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
+		LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 
 		/**Create a YC bean for the session if one does not already exist.*/
-		YC localBean = (YC)session.getAttribute(YC_BEAN_SESSION_KEY);
+		YC localBean = (YC)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		if(localBean == null)
 		{
-			session.setAttribute(YC_BEAN_SESSION_KEY, new YC());
-			localBean = (YC)session.getAttribute(YC_BEAN_SESSION_KEY);
+			session.setAttribute(ServletUtil.ATT_YC_BEAN, new YC());
+			localBean = (YC)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		}
 		
 
 		/**Debug print of all parameter names.*/
-		java.util.Enumeration enum1 = req.getParameterNames();
+/*		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
-			 System.out.println(" --" + enum1.nextElement());
+		  	String ele = enum1.nextElement().toString();
+			 System.out.println(" --" + ele);
 		 }
-		
+*/		
 		/**deviceID(opt1) or SerialNumber(opt2) must exist!
 		 * deviceID/serialNumber command is sent. */
 		String deviceID = req.getParameter("deviceID");

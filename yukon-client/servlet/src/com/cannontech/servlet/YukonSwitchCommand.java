@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 
 public class YukonSwitchCommand extends javax.servlet.http.HttpServlet 
 {
@@ -46,7 +47,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 {	
 	HttpSession session = req.getSession( false );
 
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute("YUKON_USER");
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 	
 	String groupID = req.getParameter("groupid");
 	String serialNumber = req.getParameter("serialNumber");
