@@ -267,7 +267,9 @@ public class WorkOrderManager extends HttpServlet {
 			JFreeReport report = rpt.createReport();
 			report.setData(rpt.getModel());
 			
-			File tempFile = File.createTempFile("WorkOrder", ".pdf", new File(ServerUtils.getStarsTempDir(), "/WorkOrder"));
+			File tempDir = new File( ServerUtils.getStarsTempDir(), "/WorkOrder" );
+			if (!tempDir.exists()) tempDir.mkdirs();
+			File tempFile = File.createTempFile("WorkOrder", ".pdf", tempDir);
 			tempFile.deleteOnExit();
 			
 			FileOutputStream fos = null;
