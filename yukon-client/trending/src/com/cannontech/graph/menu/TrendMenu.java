@@ -12,7 +12,9 @@ public class TrendMenu extends javax.swing.JMenu
 	private javax.swing.JMenuItem ivjEditMenuItem = null;
 	
 	private javax.swing.JSeparator separator = null;
-	private javax.swing.JMenuItem getDataNowMenuItem = null;
+	private javax.swing.JMenu getDataNowMenu = null;
+	private javax.swing.JMenuItem getDataNowAllMetersMenuItem = null;	
+	private javax.swing.JMenuItem getDataNowSelectedTrendMenuItem = null;
 /**
  * YukonCommanderFileMenu constructor comment.
  */
@@ -135,7 +137,7 @@ private void initialize() {
 		add(getEditMenuItem());
 		add(getDeleteMenuItem());
 		add(getSeparator());
-		add(getGetDataNowMenuItem());
+		add(getGetDataNowMenu());
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -143,19 +145,52 @@ private void initialize() {
 	// user code end
 }
 	/**
+	 * Returns the getDataNowMenu.
+	 * @return javax.swing.JMenu
+	 */
+	public javax.swing.JMenu getGetDataNowMenu()
+	{
+		if( getDataNowMenu == null)
+		{
+			getDataNowMenu = new javax.swing.JMenu();
+			getDataNowMenu.setName("GetDataNowMenu");
+			getDataNowMenu.setMnemonic('n');
+			getDataNowMenu.setText("Get Data Now");
+			getDataNowMenu.add(getGetDataNowAllMetersMenuItem());
+			getDataNowMenu.add(getGetDataNowSelectedTrendMenuItem());
+			
+		}
+		return getDataNowMenu;
+	}
+		/**
 	 * Returns the getDataNowMenuItem.
 	 * @return javax.swing.JMenuItem
 	 */
-	public javax.swing.JMenuItem getGetDataNowMenuItem()
+	public javax.swing.JMenuItem getGetDataNowAllMetersMenuItem()
 	{
-		if( getDataNowMenuItem == null)
+		if( getDataNowAllMetersMenuItem == null)
 		{
-			getDataNowMenuItem = new javax.swing.JMenuItem();
-			getDataNowMenuItem.setName("GetDataNowMenuItem");
-			getDataNowMenuItem.setMnemonic('n');
-			getDataNowMenuItem.setText("Get Data Now");
+			getDataNowAllMetersMenuItem= new javax.swing.JMenuItem();
+			getDataNowAllMetersMenuItem.setName("GetDataNowAllTrendsMenuItem");
+			getDataNowAllMetersMenuItem.setMnemonic('a');
+			getDataNowAllMetersMenuItem.setText("All Meters");
 		}
-		return getDataNowMenuItem;
+		return getDataNowAllMetersMenuItem;
+	}
+	/**
+	 * Returns the getDataNowMenuItem.
+	 * @return javax.swing.JMenuItem
+	 */
+	public javax.swing.JMenuItem getGetDataNowSelectedTrendMenuItem()
+	{
+		if( getDataNowSelectedTrendMenuItem == null)
+		{
+			getDataNowSelectedTrendMenuItem = new javax.swing.JMenuItem();
+			getDataNowSelectedTrendMenuItem.setName("GetDataNowSelectedTrendMenuItem");
+			getDataNowSelectedTrendMenuItem.setMnemonic('s');
+			getDataNowSelectedTrendMenuItem.setText("Selected Trend");
+		}
+		return getDataNowSelectedTrendMenuItem;
 	}
 
 	/**
