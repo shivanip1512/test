@@ -436,7 +436,7 @@ public void setTableFont(java.awt.Font font )
 	mainPanel.getScheduleTable().getTableHeader().setFont( font );
 
 	// Set the values for the table model
-	((ScheduleTableModel)mainPanel.getScheduleTable().getModel()).setModelFont( font.getName(), font.getSize() );
+	mainPanel.getScheduleTableModel().setModelFont( font.getName(), font.getSize() );
 	
 	mainPanel.getScheduleTable().revalidate();
 	mainPanel.getScheduleTable().repaint();	

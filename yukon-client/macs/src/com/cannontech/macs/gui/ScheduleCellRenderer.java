@@ -1,5 +1,7 @@
 package com.cannontech.macs.gui;
 
+import com.cannontech.common.gui.util.SortTableModelWrapper;
+
 /**
  * This class will renderer the MACs JTable
  */
@@ -23,8 +25,12 @@ public ScheduleCellRenderer() {
  */
 public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
 {
-
 	javax.swing.table.TableModel model = table.getModel();
+
+	if( model instanceof SortTableModelWrapper )
+		model = ((SortTableModelWrapper)model).getRealDataModel();
+
+
 	
 	if( model instanceof ScheduleTableModel )
 	{

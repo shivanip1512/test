@@ -4,6 +4,7 @@ package com.cannontech.macs.gui;
  * This type was created in VisualAge.
  */
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
@@ -19,6 +20,8 @@ import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.macs.debug.ScheduleDebugViewer;
@@ -146,7 +149,6 @@ public String[] createPrintableText()
 {
 	int columnCount = this.getScheduleTable().getColumnCount();
 	int rowCount = this.getScheduleTable().getRowCount();
-	ScheduleTableModel tableModel = (ScheduleTableModel)this.getScheduleTable().getModel();
 																
 	int cellCount = ( rowCount * columnCount + columnCount);
 	
@@ -155,17 +157,17 @@ public String[] createPrintableText()
 	int j = 0;
 	for( j = 0; j < columnCount; j++ )
 	{
-		tableData[ j ] = tableModel.getColumnName( j );
+		tableData[ j ] = getScheduleTableModel().getColumnName( j );
 	}
 	
 	for( int i = 0; i < rowCount; i++ )
 	{
 		for( int k = 0; k < columnCount; k++ )
 		{
-			if( tableModel.getValueAt( i, k ).equals("") )
+			if( getScheduleTableModel().getValueAt( i, k ).equals("") )
 				break;  // blank row
 			else
-				tableData[ j++ ] = tableModel.getValueAt( i, k ).toString();
+				tableData[ j++ ] = getScheduleTableModel().getValueAt( i, k ).toString();
 		}
 	}
 	
@@ -548,6 +550,65 @@ public javax.swing.JTable getScheduleTable()
 		scheduleTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
 		scheduleTable.setGridColor( getScheduleTable().getTableHeader().getBackground() );
+		
+		
+		//add all the needed code for sorting a table
+		final SortTableModelWrapper s = new SortTableModelWrapper(getScheduleTableModel());
+		java.awt.event.MouseAdapter m = new java.awt.event.MouseAdapter() 
+		{
+			public void mouseClicked(java.awt.event.MouseEvent e)
+			{
+				if( e.getClickCount() == 2 )
+				{
+					int vc = getScheduleTable().getColumnModel().getColumnIndexAtX( e.getX() );
+					int mc = getScheduleTable().convertColumnIndexToModel( vc );
+
+					java.awt.Frame owner = CtiUtilities.getParentFrame( getScheduleTable() );
+					java.awt.Cursor original = null;
+
+					if( owner != null )
+					{	
+						original = owner.getCursor();	
+						owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+					}
+		
+					try
+					{						
+//						Schedule sched = 
+//								getScheduleTableModel().getSchedule(getScheduleTable().getSelectedRow());
+
+						s.sort( mc );
+
+						//Set the last selected row selected
+//						int i = 0;
+//						for( i = 0 ; i < getScheduleTableModel().getRowCount(); i++ )
+//							if( getScheduleTableModel().getSchedule(i).equals(sched) )
+//							{
+//								getScheduleTable().getSelectionModel().setSelectionInterval( i, i );
+//								break;
+//							}
+							
+//						i = (i == getScheduleTableModel().getRowCount()-1 ? i+1: i);
+//						getScheduleTable().scrollRectToVisible( 
+//								new Rectangle( 
+//									0, 
+//									(getScheduleTable().getRowHeight() * i),
+//									0, 0 ) );
+					}
+					finally
+					{
+						if( owner != null )
+							owner.setCursor( original );
+					}
+					
+				}
+				
+			}};
+	
+		s.setTableHeaderListener( m, scheduleTable.getTableHeader() );
+		scheduleTable.setModel( s );
+		
+		
 	}
 	
 	return scheduleTable;
@@ -578,22 +639,18 @@ public ScheduleTableModel getScheduleTableModel()
  * This method was created in VisualAge.
  * @return Schedule
  */
-protected Schedule getSelectedSchedule() {
-
-	if( scheduleTable == null )
-		return null;
-		
-	ListSelectionModel lsm = scheduleTable.getSelectionModel();
+protected Schedule getSelectedSchedule() 
+{
+	ListSelectionModel lsm = getScheduleTable().getSelectionModel();
 	
 	//only one should be selected
 	int selectedRow = lsm.getMinSelectionIndex();
-	//The scheduleTable should have a ScheduleTableModel		
-	ScheduleTableModel model = (ScheduleTableModel) scheduleTable.getModel();
+
 
 	if( selectedRow < 0 )
 		return null;
 		
-	Schedule selected = model.getSchedule( selectedRow );
+	Schedule selected = getScheduleTableModel().getSchedule( selectedRow );
 
 	return selected;
 }
@@ -1118,7 +1175,7 @@ public void tableChanged(TableModelEvent event )
 		{
 			if( lastSelected.equals( getScheduleTableModel().getSchedule(i) ) )
 			{
-				scheduleTable.getSelectionModel().setSelectionInterval( i, i );
+				getScheduleTable().getSelectionModel().setSelectionInterval( i, i );
 				break;
 			}
 		}

@@ -12,7 +12,7 @@ import java.util.Vector;
 import com.cannontech.message.macs.message.DeleteSchedule;
 import com.cannontech.message.macs.message.Schedule;
 
-public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer 
+public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.common.gui.util.SortableTableModel 
 {
 	private java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("MM-dd-yyyy E HH:mm");
 	private Font modelFont = new Font("dialog", Font.PLAIN, 12);
@@ -519,4 +519,29 @@ public synchronized void update(Observable source, Object obj )
 	}
 	
 }
+
+
+	/**
+	 * This method add a Blank row to the table
+	 */
+	 
+	public boolean isRowSelectedBlank( int location )
+	{
+		return false;
+	}
+
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (4/14/00 11:33:17 AM)
+	 * Version: <version>
+	 */
+	public synchronized void rowDataSwap( int i, int j )
+	{
+		Object tmp = null;
+
+		tmp = getAllSchedules().get(i);
+		getAllSchedules().set( i, getAllSchedules().get(j) );
+		getAllSchedules().set( j, tmp );
+
+	}
 }
