@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/08/20 14:33:06 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/09/12 02:35:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2721,11 +2721,12 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             if( parse.isKeyValid("epget") )
             {
                 operation = parse.getiValue("epget");
+                BOOL resetval = parse.getiValue("epruntimereset", FALSE);
                 switch(operation)
                 {
                 case TYPE_GETRUNTIME:
                     {
-                        sendQueryRuntime( msgsock, (UCHAR)FALSE );
+                        sendQueryRuntime( msgsock, (UCHAR)resetval );
                         break;
                     }
                 default:
@@ -3018,6 +3019,11 @@ int CtiDeviceGatewayStat::parseGetValueRequest(CtiCommandParser &parse)
     }
     else if( CmdStr.contains(" runtime") )
     {
+        if( CmdStr.contains(" reset") )
+        {
+            parse.setValue("epruntimereset", TRUE);
+        }
+
         parse.setValue("epget", TYPE_GETRUNTIME);
     }
     else if(CmdStr.contains(" setpoints"))
