@@ -484,13 +484,16 @@ public synchronized void setFilter(java.lang.String newFilter)
 		}
 		else
 		{
-			int start = -1, stop = -1;
+			int start = -1, stop = getAllSubBuses().size();
 			for( int i = 0; i < getAllSubBuses().size(); i++ )
 			{
 				SubBus realBus = (SubBus)getAllSubBuses().get(i);
 				if( start <= -1 && realBus.getCcArea().equalsIgnoreCase(getFilter()) )
+				{
 					start = i;
-				else if( start >= 0 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
+				}
+				else if( start >= 0 
+							 && !realBus.getCcArea().equalsIgnoreCase(getFilter()) )
 				{
 					stop = i;
 					break;
@@ -507,7 +510,7 @@ public synchronized void setFilter(java.lang.String newFilter)
 			else  //this locks down AllSubBuses and disallows any structural modification to AllSubBuses
 				currentSubBuses = getAllSubBuses().subList(
 											start, 
-											(stop < 0 ? start+1 : stop) );
+											(stop < 0 || stop > getAllSubBuses().size() ? start+1 : stop) );
 						
 			filterTable.put( getFilter(), currentSubBuses );
 		}

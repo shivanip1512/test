@@ -30,9 +30,10 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
   	public static final int TARGET_COLUMN  = 3;
   	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
   	public static final int TIME_STAMP_COLUMN  = 5;
-   public static final int POWER_FACTOR_COLUMN = 6;
-  	public static final int ESTIMATED_VARS_COLUMN  = 7;
-  	public static final int DAILY_OPERATIONS_COLUMN  = 8;
+  	public static final int WATTS_COLUMN  = 6;
+   public static final int POWER_FACTOR_COLUMN = 7;
+  	public static final int ESTIMATED_VARS_COLUMN  = 8;
+  	public static final int DAILY_OPERATIONS_COLUMN  = 9;
 
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
@@ -42,7 +43,8 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"State",
 		"Target",
 		"VAR Load",
-		"Time",		
+		"Time",
+		"Watts",		
       "PFactor/Estimated",
 		"Estimated VARS",
 		"Daily Ops"
@@ -305,6 +307,12 @@ public Object getValueAt(int row, int col)
 			case ESTIMATED_VARS_COLUMN:
 				return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 							feeder.getEstimatedVarLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
+
+			case WATTS_COLUMN:
+	      {
+	         return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+	                  feeder.getCurrentWattLoadPointValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() ) );
+	      }
 
 			case TIME_STAMP_COLUMN:
 				if( feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
