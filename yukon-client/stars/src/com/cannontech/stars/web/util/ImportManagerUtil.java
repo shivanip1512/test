@@ -509,28 +509,34 @@ public class ImportManagerUtil {
 	    primContact.setLastName( fields[IDX_LAST_NAME] );
 	    primContact.setFirstName( fields[IDX_FIRST_NAME] );
 	    
-	    try {
-	    	ContactNotification homePhone = ServletUtils.createContactNotification(
-					ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
-			if (homePhone != null) primContact.addContactNotification( homePhone );
-	    }
-	    catch (WebClientException e) {
-			if (problem != null) problem.appendProblem( e.getMessage() );
-	    }
-	    
-	    try {
-			ContactNotification workPhone = ServletUtils.createContactNotification(
-					ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
-			if (workPhone != null) primContact.addContactNotification( workPhone );
-	    }
-	    catch (WebClientException e) {
-			if (problem != null) problem.appendProblem( e.getMessage() );
+	    if (fields[IDX_HOME_PHONE].trim().length() > 0) {
+			try {
+				ContactNotification homePhone = ServletUtils.createContactNotification(
+						ServletUtils.formatPhoneNumber(fields[IDX_HOME_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
+				if (homePhone != null) primContact.addContactNotification( homePhone );
+			}
+			catch (WebClientException e) {
+				if (problem != null) problem.appendProblem( e.getMessage() );
+			}
 	    }
 	    
-	    ContactNotification email = ServletUtils.createContactNotification(
-				fields[IDX_EMAIL], YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-	    email.setDisabled( true );
-	    primContact.addContactNotification( email );
+	    if (fields[IDX_WORK_PHONE].trim().length() > 0) {
+			try {
+				ContactNotification workPhone = ServletUtils.createContactNotification(
+						ServletUtils.formatPhoneNumber(fields[IDX_WORK_PHONE]), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+				if (workPhone != null) primContact.addContactNotification( workPhone );
+			}
+			catch (WebClientException e) {
+				if (problem != null) problem.appendProblem( e.getMessage() );
+			}
+	    }
+	    
+	    if (fields[IDX_EMAIL].trim().length() > 0) {
+			ContactNotification email = ServletUtils.createContactNotification(
+					fields[IDX_EMAIL], YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			email.setDisabled( true );
+			primContact.addContactNotification( email );
+	    }
 	    
 	    account.setPrimaryContact( primContact );
 	}
