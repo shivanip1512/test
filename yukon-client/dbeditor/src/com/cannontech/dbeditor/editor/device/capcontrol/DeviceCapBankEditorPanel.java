@@ -1176,6 +1176,10 @@ public void operationalStateComboBox_ActionPerformed(java.awt.event.ActionEvent 
 				litePoint = (LitePoint)points.get(i);
 			
 				liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
+				
+				//System device, leave it alone
+				if(litePoint.getPaobjectID() == 0)
+					continue;
 
 				if( litePoint.getPointType() == PointTypes.STATUS_POINT )
 				{

@@ -90,6 +90,9 @@ public static java.util.Hashtable getAllLiteDevicesWithPoints()
 			litePoint = (com.cannontech.database.data.lite.LitePoint) points.get(i);
 			liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
 			
+			if(litePoint.getPaobjectID() == 0)
+				continue;
+			
 			if( liteDevice.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
 			{				
 				java.util.ArrayList tmpPtLst= (java.util.ArrayList)deviceTable.get( liteDevice );

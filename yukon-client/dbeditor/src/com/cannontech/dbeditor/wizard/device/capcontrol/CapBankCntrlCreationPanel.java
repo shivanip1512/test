@@ -830,6 +830,10 @@ private void initComboBoxes()
 			
 			liteDevice = PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() );
 			
+			//System device, ignore it
+			if(litePoint.getPaobjectID() == 0)
+				continue;
+						
 			if( !showAll && !DeviceTypesFuncs.isCapBankController(liteDevice) )
 			{
 				continue;
