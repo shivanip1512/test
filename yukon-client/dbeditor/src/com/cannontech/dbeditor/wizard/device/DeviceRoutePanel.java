@@ -248,7 +248,7 @@ public class DeviceRoutePanel
 						"kW",
 						((DeviceBase) val).getDevice().getDeviceID(),
 						new Integer(++pointID),
-						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+						PointTypes.PT_OFFSET_KW_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						multiplier) );
 						
@@ -257,7 +257,7 @@ public class DeviceRoutePanel
 						"Voltage",
 						((DeviceBase) val).getDevice().getDeviceID(),
 						new Integer(++pointID),
-						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						multiplier) );
 			}
