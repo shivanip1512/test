@@ -82,6 +82,11 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		String format = getFileFormatComboBox().getSelectedItem().toString();
 		getExportProperties().setFormatID(ExportFormatTypes.getFormatTypeInt(format));
+		
+		if( getExportProperties().getFormatID() == com.cannontech.export.ExportFormatTypes.IONEVENTLOG_FORMAT)
+			getAdvancedButton().setEnabled(false);
+		else
+			getAdvancedButton().setEnabled(true);
 	}
 	else if (event.getSource() == getRunOnceButton())
 	{
