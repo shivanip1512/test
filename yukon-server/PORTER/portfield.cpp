@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2004/01/16 22:41:13 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2004/02/02 17:00:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1420,7 +1420,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     {
                        extern CtiConnection VanGoghConnection;
                        BYTE   inBuffer[5000];
-                       BYTE   outBuffer[5000];
+                       BYTE   outBuffer[5000];     //smaller?
                        ULONG  bytesReceived = 0;
                        int    error = 1;
 
@@ -1434,7 +1434,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                        trx.setInCountActual( &bytesReceived );
 
                        transdata.reinitalize();
-
+                       
                        while( !transdata.isTransactionComplete() )
                        {
                           transdata.generate( trx );
