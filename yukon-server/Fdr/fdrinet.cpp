@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/08/06 22:02:21 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2002/09/06 18:54:17 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.5  2002/09/06 18:54:17  dsutton
+      The database load and list swap used to occur before we updated
+      the translation names.  I now update the entire temporary list and then
+      lock the real list and swap it.  Much faster and doesn't lock the list
+      down as long.
+
       Revision 1.4  2002/08/06 22:02:21  dsutton
       Programming around the error that happens if the dataset is empty when it is
       returned from the database and shouldn't be.  If our point list had more than
@@ -423,15 +429,6 @@ bool CtiFDR_Inet::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
             if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
                 (pointList->entries() > 0))
             {
-    
-                // lock the list I'm inserting into so it doesn't get deleted on me
-                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
-                if (aList.getPointList() != NULL)
-                {
-                    aList.deletePointList();
-                }
-                aList.setPointList (pointList);
-    
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
     
@@ -500,6 +497,14 @@ bool CtiFDR_Inet::loadList(RWCString &aDirection,  CtiFDRPointList &aList)
                     }   // end of while entries
                 }   // end for interator
     
+                // lock the list I'm swapping 
+                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+                if (aList.getPointList() != NULL)
+                {
+                    aList.deletePointList();
+                }
+                aList.setPointList (pointList);
+
                 // set this to null, the memory is now assigned to the other point
                 pointList=NULL;
     

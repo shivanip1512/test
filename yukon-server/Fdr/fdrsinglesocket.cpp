@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2002/08/06 22:03:14 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2002/09/06 18:55:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrsinglesocket.cpp,v $
+      Revision 1.5  2002/09/06 18:55:22  dsutton
+      The database load and list swap used to occur before we updated
+      the translation names.  I now update the entire temporary list and then
+      lock the real list and swap it.  Much faster and doesn't lock the list
+      down as long.
+
       Revision 1.4  2002/08/06 22:03:14  dsutton
       Programming around the error that happens if the dataset is empty when it is
       returned from the database and shouldn't be.  If our point list had more than
@@ -310,16 +316,9 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
             if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
                 (pointList->entries() > 0))
             {
-                // lock the list I'm inserting into so it doesn't get deleted on me
-                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
-                if (aList.getPointList() != NULL)
-                {
-                    aList.deletePointList();
-                }
-                aList.setPointList (pointList);
-
                 // get iterator on list
-                CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
+                CtiFDRManager::CTIFdrPointIterator  myIterator(pointList->getMap());
+//                CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
                 int x;
 
                 for ( ; myIterator(); )
@@ -343,6 +342,14 @@ bool CtiFDRSingleSocket::loadList(RWCString &aDirection,  CtiFDRPointList &aList
                         }
                     }
                 }   // end for interator
+
+                // lock the list I'm inserting into so it doesn't get deleted on me
+                CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
+                if (aList.getPointList() != NULL)
+                {
+                    aList.deletePointList();
+                }
+                aList.setPointList (pointList);
 
                 // set this to null, the memory is now assigned to the other point
                 pointList=NULL;
