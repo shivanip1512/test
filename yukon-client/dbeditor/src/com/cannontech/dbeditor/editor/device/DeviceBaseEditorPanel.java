@@ -1858,11 +1858,12 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
       
       //create a new editor for our combobox so we can set the document
       getSlaveAddressComboBox().setEditable( true );
+      getSlaveAddressComboBox().removeAllItems();
       com.cannontech.common.gui.util.JTextFieldComboEditor editor = new com.cannontech.common.gui.util.JTextFieldComboEditor();
       editor.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999) );
       editor.addCaretListener(this);  //be sure to fireInputUpdate() messages!
+
       getSlaveAddressComboBox().setEditor( editor );
-      getSlaveAddressComboBox().removeAllItems();
       getSlaveAddressComboBox().addItem( ((DNPBase)rBase).getDeviceDNP().getSlaveAddress() );
 
       
