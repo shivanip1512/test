@@ -1954,10 +1954,51 @@ public class StarsLiteFactory {
 		
 		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
 		if (queue != null) {
-			OptOutEventQueue.OptOutEvent[] events = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
-			for (int i = 0; i < events.length; i++) {
-				StarsLMProgramEvent starsEvent = createStarsOptOutEvent( events[i], energyCompany );
-				starsProgHist.addStarsLMProgramEvent( starsEvent );
+			OptOutEventQueue.OptOutEvent[] optoutEvents = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
+			ArrayList events = new ArrayList();
+			
+			for (int i = 0; i < optoutEvents.length; i++) {
+				StarsLMProgramEvent relatedEvent = null;
+				for (int j = 0; j < events.size(); j++) {
+					StarsLMProgramEvent event = (StarsLMProgramEvent) events.get(j);
+					if (Math.abs(event.getEventDateTime().getTime() - optoutEvents[i].getStartDateTime()) < 1000
+						&& event.getDuration() == optoutEvents[i].getPeriod())
+					{
+						relatedEvent = event;
+						break;
+					}
+				}
+				
+				if (relatedEvent == null) {
+					StarsLMProgramEvent event = createStarsOptOutEvent( optoutEvents[i], energyCompany );
+					starsProgHist.addStarsLMProgramEvent( event );
+					events.add( event );
+				}
+				else {
+					if (optoutEvents[i].getInventoryID() == 0) {
+						// Opt out event for all programs
+						relatedEvent.removeAllProgramID();
+						for (int j = 0; j < liteAcctInfo.getPrograms().size(); j++)
+							relatedEvent.addProgramID( ((LiteStarsLMProgram)liteAcctInfo.getPrograms().get(j)).getProgramID() );
+					}
+					else {
+						// Opt out event for a hardware
+						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+							if (liteApp.getInventoryID() == optoutEvents[i].getInventoryID() && liteApp.getProgramID() > 0) {
+								boolean programAdded = false;
+								for (int k = 0; k < relatedEvent.getProgramIDCount(); k++) {
+									if (relatedEvent.getProgramID(k) == liteApp.getProgramID()) {
+										programAdded = true;
+										break;
+									}
+								}
+								if (!programAdded)
+									relatedEvent.addProgramID( liteApp.getProgramID() );
+							}
+						}
+					}
+				}
 			}
 		}
 		
@@ -2437,8 +2478,17 @@ public class StarsLiteFactory {
 		if (event.getInventoryID() != 0) {
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-				if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0)
-					starsEvent.addProgramID( liteApp.getProgramID() );
+				if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0) {
+					boolean programAdded = false;
+					for (int j = 0; j < starsEvent.getProgramIDCount(); j++) {
+						if (starsEvent.getProgramID(j) == liteApp.getProgramID()) {
+							programAdded = true;
+							break;
+						}
+					}
+					if (!programAdded)
+						starsEvent.addProgramID( liteApp.getProgramID() );
+				}
 			}
 		}
 		else {

@@ -298,9 +298,10 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append(LINE_SEPARATOR);
 		
 		ArrayList hardwares = null;
-		if (optout.hasInventoryID()) {
+		if (optout.getInventoryIDCount() > 0) {
 			hardwares = new ArrayList();
-			hardwares.add( energyCompany.getInventory(optout.getInventoryID(), true) );
+			for (int i = 0; i < optout.getInventoryIDCount(); i++)
+				hardwares.add( energyCompany.getInventory(optout.getInventoryID(i), true) );
 		}
 		else
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );

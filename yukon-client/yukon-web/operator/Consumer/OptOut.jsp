@@ -1,7 +1,15 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	boolean needMoreInfo = exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0;
+	ArrayList enrolledHwIDs = new ArrayList();
+	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+		StarsAppliance app = appliances.getStarsAppliance(i);
+		if (app.getProgramID() > 0 && app.getInventoryID() > 0) {
+			Integer invID = new Integer(app.getInventoryID());
+			if (!enrolledHwIDs.contains(invID))
+				enrolledHwIDs.add(invID);
+		}
+	}
 %>
 <html>
 <head>
@@ -20,10 +28,13 @@ function doAction(form, action) {
 }
 
 function validate(form) {
-	if (form.action.value == "OptOutProgram" && (form.StartDate.value == "" || form.EndDate.value == "")) {
-		alert("The start and end date cannot be empty");
+	if (form.action.value == "OptOutProgram" && form.StartDate.value == "") {
+		alert("The start date cannot be empty");
 		return false;
 	}
+<% if (enrolledHwIDs.size() > 1) { %>
+	form.attributes["action"].value = "OptOut2.jsp";
+<% } %>
 	return true;
 }
 </script>
@@ -49,8 +60,8 @@ function validate(form) {
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "OptOut.jsp"; %>
-          <%@ include file="include/Nav.jsp" %>
+			<% String pageName = "OptOut.jsp"; %>
+        	<%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -71,15 +82,13 @@ function validate(form) {
 			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp">
 			    <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
-<% if (needMoreInfo) { %>
+<% if (exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0) { %>
 			    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
 			    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/OptForm.jsp">
 <% } %>
                 <table width="350" border="1" cellspacing="0" cellpadding="5" bgcolor="#CCCCCC" align="center">
                   <tr> 
-                    <td align="center"> 
-                      <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>" defaultvalue="opt out of"/> 
-                        all programs</p>
+                    <td align="center"> <br>
                       <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell2">
                         <tr> 
                           <td align="right" width="120">Start Date:</td>
@@ -92,14 +101,18 @@ function validate(form) {
 						  </td>
                         </tr>
                         <tr> 
-                          <td align="right" width="120">End Date (midnight of):</td>
-                          <td width="168"> 
-                            <input type="text" name="EndDate" id="EndDate" size="14" value="<%= datePart.format(new Date()) %>">
-                            <a href="javascript:openCalendar(document.getElementById('EndDate'))"
-							  onMouseOver="window.status='Start Date Calendar';return true;"
-							  onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
-                            </a>
-						  </td>
+                          <td align="right" width="120">Duration:</td>
+                          <td width="168">
+                            <select name="Duration">
+                              <option value="1">1 Day</option>
+                              <option value="2">2 Days</option>
+                              <option value="3">3 Days</option>
+                              <option value="4">4 Days</option>
+                              <option value="5">5 Days</option>
+                              <option value="6">6 Days</option>
+                              <option value="7">7 Days</option>
+                            </select>
+                          </td>
                         </tr>
                       </table>
                       <br>

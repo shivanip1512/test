@@ -16,6 +16,8 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -33,13 +35,6 @@ public class StarsProgramOptOut implements java.io.Serializable {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _inventoryID;
-
-    /**
-     * keeps track of state for field: _inventoryID
-    **/
-    private boolean _has_inventoryID;
-
     private java.util.Date _startDateTime;
 
     private int _period;
@@ -49,6 +44,8 @@ public class StarsProgramOptOut implements java.io.Serializable {
     **/
     private boolean _has_period;
 
+    private java.util.Vector _inventoryIDList;
+
 
       //----------------/
      //- Constructors -/
@@ -56,6 +53,7 @@ public class StarsProgramOptOut implements java.io.Serializable {
 
     public StarsProgramOptOut() {
         super();
+        _inventoryIDList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsProgramOptOut()
 
 
@@ -64,21 +62,69 @@ public class StarsProgramOptOut implements java.io.Serializable {
     //-----------/
 
     /**
+     * 
+     * 
+     * @param vInventoryID
     **/
-    public void deleteInventoryID()
+    public void addInventoryID(int vInventoryID)
+        throws java.lang.IndexOutOfBoundsException
     {
-        this._has_inventoryID= false;
-    } //-- void deleteInventoryID() 
+        _inventoryIDList.addElement(new Integer(vInventoryID));
+    } //-- void addInventoryID(int) 
 
     /**
-     * Returns the value of field 'inventoryID'.
      * 
-     * @return the value of field 'inventoryID'.
+     * 
+     * @param index
+     * @param vInventoryID
     **/
-    public int getInventoryID()
+    public void addInventoryID(int index, int vInventoryID)
+        throws java.lang.IndexOutOfBoundsException
     {
-        return this._inventoryID;
-    } //-- int getInventoryID() 
+        _inventoryIDList.insertElementAt(new Integer(vInventoryID), index);
+    } //-- void addInventoryID(int, int) 
+
+    /**
+    **/
+    public java.util.Enumeration enumerateInventoryID()
+    {
+        return _inventoryIDList.elements();
+    } //-- java.util.Enumeration enumerateInventoryID() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public int getInventoryID(int index)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _inventoryIDList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        return ((Integer)_inventoryIDList.elementAt(index)).intValue();
+    } //-- int getInventoryID(int) 
+
+    /**
+    **/
+    public int[] getInventoryID()
+    {
+        int size = _inventoryIDList.size();
+        int[] mArray = new int[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = ((Integer)_inventoryIDList.elementAt(index)).intValue();
+        }
+        return mArray;
+    } //-- int[] getInventoryID() 
+
+    /**
+    **/
+    public int getInventoryIDCount()
+    {
+        return _inventoryIDList.size();
+    } //-- int getInventoryIDCount() 
 
     /**
      * Returns the value of field 'period'.
@@ -99,13 +145,6 @@ public class StarsProgramOptOut implements java.io.Serializable {
     {
         return this._startDateTime;
     } //-- java.util.Date getStartDateTime() 
-
-    /**
-    **/
-    public boolean hasInventoryID()
-    {
-        return this._has_inventoryID;
-    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -152,14 +191,52 @@ public class StarsProgramOptOut implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'inventoryID'.
-     * 
-     * @param inventoryID the value of field 'inventoryID'.
     **/
-    public void setInventoryID(int inventoryID)
+    public void removeAllInventoryID()
     {
-        this._inventoryID = inventoryID;
-        this._has_inventoryID = true;
+        _inventoryIDList.removeAllElements();
+    } //-- void removeAllInventoryID() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public int removeInventoryID(int index)
+    {
+        java.lang.Object obj = _inventoryIDList.elementAt(index);
+        _inventoryIDList.removeElementAt(index);
+        return ((Integer)obj).intValue();
+    } //-- int removeInventoryID(int) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vInventoryID
+    **/
+    public void setInventoryID(int index, int vInventoryID)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _inventoryIDList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        _inventoryIDList.setElementAt(new Integer(vInventoryID), index);
+    } //-- void setInventoryID(int, int) 
+
+    /**
+     * 
+     * 
+     * @param inventoryIDArray
+    **/
+    public void setInventoryID(int[] inventoryIDArray)
+    {
+        //-- copy array
+        _inventoryIDList.removeAllElements();
+        for (int i = 0; i < inventoryIDArray.length; i++) {
+            _inventoryIDList.addElement(new Integer(inventoryIDArray[i]));
+        }
     } //-- void setInventoryID(int) 
 
     /**

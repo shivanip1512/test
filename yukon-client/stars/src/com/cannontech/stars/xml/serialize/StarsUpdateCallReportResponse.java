@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateCallReportResponse.java,v 1.32 2004/12/09 16:25:32 zyao Exp $
+ * $Id: StarsUpdateCallReportResponse.java,v 1.33 2004/12/09 22:16:42 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.32 $ $Date: 2004/12/09 16:25:32 $
+ * @version $Revision: 1.33 $ $Date: 2004/12/09 22:16:42 $
 **/
 public class StarsUpdateCallReportResponse implements java.io.Serializable {
 

@@ -1066,8 +1066,8 @@
 			<xs:sequence>
 				<xs:element name="StartDateTime" type="xs:dateTime" minOccurs="0"/>
 				<xs:element name="Period" type="xs:int"/>
+				<xs:element name="InventoryID" type="xs:int" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="inventoryID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ProgramOptOutResponse">

@@ -58,48 +58,6 @@ public class StarsProgramOptOutDescriptor extends org.exolab.castor.xml.util.XML
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _inventoryID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsProgramOptOut target = (StarsProgramOptOut) object;
-                if(!target.hasInventoryID())
-                    return null;
-                return new Integer(target.getInventoryID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsProgramOptOut target = (StarsProgramOptOut) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteInventoryID();
-                        return;
-                    }
-                    target.setInventoryID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _inventoryID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
         //-- initialize element descriptors
         
         //-- _startDateTime
@@ -172,6 +130,46 @@ public class StarsProgramOptOutDescriptor extends org.exolab.castor.xml.util.XML
         //-- validation code for: _period
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _inventoryIDList
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryIDList", "InventoryID", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsProgramOptOut target = (StarsProgramOptOut) object;
+                return target.getInventoryID();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsProgramOptOut target = (StarsProgramOptOut) object;
+                    // ignore null values for non optional primitives
+                    if (value == null) return;
+                    
+                    target.addInventoryID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _inventoryIDList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
             fieldValidator.setValidator(iv);
