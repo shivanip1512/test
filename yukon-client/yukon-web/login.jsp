@@ -7,7 +7,7 @@ String email = (String) com.cannontech.common.util.CtiProperties.getInstance().g
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="demostyle.css" type="text/css">
+<link rel="stylesheet" href="WebConfig/CannonStyle.css" type="text/css">
 
 <SCRIPT LANGUAGE="JavaScript">
 function popUp(url) {
@@ -94,7 +94,7 @@ self.name = "mainWin";
   </tr>
 </table>
 <br>
-<div align="center" class="TableCell2"><img src="YukonLogo.gif" width="139" height="29"></div>
+<div align="center" class="TableCell1"><img src="YukonLogo.gif" width="139" height="29"></div>
 </body>
 
 </html>
