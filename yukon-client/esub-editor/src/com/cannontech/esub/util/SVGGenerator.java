@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
@@ -169,6 +170,9 @@ public class SVGGenerator {
 		Rectangle2D r = text.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMaxY();
+		
+//		int x =(int) Math.round(text.getBaseLinePoint1().getX());
+//		int y = (int) Math.round(text.getBaseLinePoint1().getY());
 
 		LxAbstractStyle style = text.getStyle();
 		
@@ -317,8 +321,11 @@ public class SVGGenerator {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
-		int x = (int) r.getMinX();		
-		int y = (int) r.getMaxY();
+//		int x = (int) r.getMinX();		
+//		int y = (int) r.getMaxY();
+
+int x = (int) Math.round(text.getBaseLinePoint1().getX());
+int y = (int) Math.round(text.getBaseLinePoint1().getY());
 
 		LxAbstractStyle style = text.getStyle();
 		

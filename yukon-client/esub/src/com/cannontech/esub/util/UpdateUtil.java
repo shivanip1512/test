@@ -38,6 +38,7 @@ public class UpdateUtil {
 			if (pData != null && lpu != null ) {				
 				DecimalFormat f = new DecimalFormat();
 				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
+				f.setMinimumFractionDigits(lpu.getDecimalPlaces());
 				text = f.format(pData.getValue());
 				if(text.length() == 1) { //workaround for bugin adobe svg geturl function!
 					text = " " + text;
