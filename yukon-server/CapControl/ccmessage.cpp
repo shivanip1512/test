@@ -348,6 +348,7 @@ void CtiCCSubstationBusMsg::saveGuts(RWvostream& strm) const
 
 // Static Members
 ULONG CtiCCSubstationBusMsg::AllSubBusesSent = 0x00000001;
+ULONG CtiCCSubstationBusMsg::SubBusDeleted   = 0x00000002;
 
 
 /*===========================================================================

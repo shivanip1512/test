@@ -39,7 +39,7 @@ extern ULONG _CC_DEBUG;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(RWDBDateTime(1990,1,1,0,0,0,0))
+CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregisterforpoints(TRUE), _reloadfromamfmsystemflag(FALSE), _lastdbreloadtime(RWDBDateTime(1990,1,1,0,0,0,0)), _wassubbusdeletedflag(FALSE)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _ccSubstationBuses = new RWOrdered();
@@ -792,8 +792,14 @@ void CtiCCSubstationBusStore::reset()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Store START sending messages to clients." << endl;
         }*/
+        ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
+        if( _wassubbusdeletedflag )
+        {
+            msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent | CtiCCSubstationBusMsg::SubBusDeleted;
+        }
+        _wassubbusdeletedflag = false;
         CtiCCExecutorFactory f;
-        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses, CtiCCSubstationBusMsg::AllSubBusesSent));
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses,msgBitMask));
         executor->Execute();
         delete executor;
         executor = f.createExecutor(new CtiCCCapBankStatesMsg(*_ccCapBankStates));
@@ -1999,6 +2005,18 @@ void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(BOOL reload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _reloadfromamfmsystemflag = reload;
+}
+
+BOOL CtiCCSubstationBusStore::getWasSubBusDeletedFlag()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    return _wassubbusdeletedflag;
+}
+
+void CtiCCSubstationBusStore::setWasSubBusDeletedFlag(BOOL wasDeleted)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    _wassubbusdeletedflag = wasDeleted;
 }
 
 /*---------------------------------------------------------------------------

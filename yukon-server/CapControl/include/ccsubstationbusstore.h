@@ -47,6 +47,8 @@ public:
     void setReregisterForPoints(BOOL reregister);
     BOOL getReloadFromAMFMSystemFlag();
     void setReloadFromAMFMSystemFlag(BOOL reload);
+    BOOL getWasSubBusDeletedFlag();
+    void setWasSubBusDeletedFlag(BOOL wasDeleted);
 
     void verifySubBusAndFeedersStates();
     void resetDailyOperations();
@@ -100,6 +102,7 @@ private:
     BOOL _isvalid;
     BOOL _reregisterforpoints;
     BOOL _reloadfromamfmsystemflag;
+    BOOL _wassubbusdeletedflag;
     RWDBDateTime _lastdbreloadtime;
 
     //The singleton instance of CtiCCSubstationBusStore

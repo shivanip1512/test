@@ -136,6 +136,7 @@ public:
 
     // Possible bit mask settings
     static ULONG AllSubBusesSent;
+    static ULONG SubBusDeleted;
 
 private:
     CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0) {};

@@ -36,6 +36,7 @@
 #include "netports.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
+#include "devicetypes.h"
 #include "resolvers.h"
 
 #include <rw/thr/prodcons.h>
@@ -730,7 +731,12 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Relavant database change.  Setting reload flag." << endl;
                         }
-    
+
+                        if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
+                            resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS )
+                        {
+                            CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
+                        }
                         CtiCCSubstationBusStore::getInstance()->setValid(false);
                     }
                 }
