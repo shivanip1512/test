@@ -42,6 +42,8 @@ MaxActivateTime = 0 and HolidayScheduleID = 0 and SeasonScheduleID = 0);
 
 delete from LMProgramConstraints where constraintid not in (select constraintid from LMProgram) and constraintid <> 0;
 
+insert into YukonListEntry values (1137,1011,0,'Alt Track #',1607);
+
 
 
 

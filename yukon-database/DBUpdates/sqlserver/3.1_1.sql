@@ -47,6 +47,8 @@ go
 delete from LMProgramConstraints where constraintid not in (select constraintid from LMProgram) and constraintid <> 0;
 go
 
+insert into YukonListEntry values (1137,1011,0,'Alt Track #',1607);
+
 
 
 
