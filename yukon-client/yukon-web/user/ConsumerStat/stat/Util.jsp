@@ -5,9 +5,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/CannonStyle.css" type="text/css">
 <link id="StyleSheet" rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-<script language="JavaScript">
-	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
-</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -20,15 +17,14 @@
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -58,7 +54,7 @@
               <br>
               
             <div align="center" class="Main">
-              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_UTIL_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_UTILITY_TITLE); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -78,27 +74,23 @@
 <% if (energyCompany.getMainFaxNumber().length() > 0) { %>
               Fax: <%= energyCompany.getMainFaxNumber() %><br>
 <% } %>
-<cti:checkRole roleid="<%= RoleTypes.CUSTOMIZED_EMAIL_LINK %>">
-			  <a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_EMAIL %>"/>' class="Link1" target="new">Click here for trouble shooting</a>
-</cti:checkRole>
-<cti:checkNoRole roleid="<%= RoleTypes.CUSTOMIZED_EMAIL_LINK %>">
+<cti:checkProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
+			  <a href="<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL%>"/>" class="Link1" target="new">Click here for trouble shooting</a>
+</cti:checkProperty>
+<cti:checkNoProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
 <% if (energyCompany.getEmail().length() > 0) { %>
               <a href="mailto: <%= energyCompany.getEmail() %>" class = "Link1">Email: <%= energyCompany.getEmail() %></a><br>
 <% } %>
-</cti:checkNoRole>
+</cti:checkNoProperty>
               <br>
             </div>
             <p>&nbsp;</p>
-			
           </td>
-		  
-		  
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
-	  
     </td>
-	</tr>
+  </tr>
 </table>
 <p align="center" class="TableCell2">&nbsp;</p>
 </body>

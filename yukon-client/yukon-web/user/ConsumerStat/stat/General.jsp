@@ -17,15 +17,14 @@
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -60,25 +59,26 @@
                     <table width="400" border="0" cellspacing="3" cellpadding="0">
                       <tr> 
                         <td valign="bottom" class="Main">
-<div align="center"><strong><br>
-                            <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_GENERAL_TITLE %>"/></strong> <br>
+                          <div align="center"><strong><br>
+                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_GENERAL_TITLE %>"/></strong> <br>
                             <br>
                             <br>
-                            </div></td>
+                          </div>
+                        </td>
                       </tr>
                       <tr> 
                         <td><table width="400" border="0" cellspacing="0" cellpadding="5">
-                            <tr> 
-                              <td valign="top">
-								<p class="Main"><%= ecWebSettings.getDescription() %></p></td>
-                              <td valign="top"> 
-                                <div align="center" class="MainHeader"><b>Your 
-                                  Enrolled Programs</b> </div>
+                          <tr> 
+                            <td valign="top">
+							  <p class="Main"><%= ecWebSettings.getDescription() %></p>
+							</td>
+                            <td valign="top"> 
+                              <div align="center" class="MainHeader"><b>Your Enrolled Programs</b></div>
                                 <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
                                     <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
-                                  <%
+<%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
@@ -118,13 +118,13 @@
                                             Out of Service 
 <%		} else if (todayCtrlHist.getBeingControlled()) { %>
                                               Currently<br>
-                                              <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/> 
+                                              <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>"/> 
 <%		} else if (todayCtrlHist.getControlHistoryCount() > 0) { %>
                                               You have<br>
-                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> since midnight
+                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> since midnight
 <%		} else { %>
                                               You have not<br>
-                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> since midnight
+                                              been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> since midnight
 <%		} %>
                                             </div>
                                           </td>
@@ -134,7 +134,9 @@
 <%		if (ctrlOdds != null) { %>
                                             <div align="center">Control odds:<br>
                                               <b><i><%= ctrlOdds %></i></b> </div>
-<%		} %>
+<%
+		}
+%>
                                           &nbsp;</td>
                                         </tr>
                                       </table>
@@ -143,18 +145,19 @@
                                   <tr> 
                                     <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
                                   </tr>
-                                  <%
+<%
 	}
 %>
                                 </table>
                               </td>
                             </tr>
-                          </table></td>
+                          </table>
+                        </td>
                       </tr>
                     </table>
-                    <p><cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>"></cti:checkRole> 
+                    <p><cti:checkProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>"></cti:checkProperty> 
                     </p>
-                    <cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>"> 
+                    <cti:checkProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>"> 
 <%
 	boolean showNotification = false;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -176,10 +179,10 @@
 	
 	if (showNotification) {
 %>
-                    <form name="form1" method="POST" action="/servlet/SOAPClient">
+                    <form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
                       <input type="hidden" name="action" value="UpdateCtrlNotification">
-                      <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
-                      <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/General.jsp">
+                      <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
+                      <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
                       <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td height="58"> 
@@ -195,10 +198,11 @@
                         </tr>
                       </table>
                     </form>
-                    <%
+<%
 	}
 %>
-                    </cti:checkRole></td>
+                    </cti:checkProperty>
+                  </td>
                   <td width="171" valign="top"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
@@ -210,11 +214,11 @@
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>

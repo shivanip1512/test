@@ -26,21 +26,20 @@ function setRedirect(form, progNo) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO %>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
           </td>
 		  <td width="1" height="102" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-          </tr>
+        </tr>
       </table>
     </td>
   </tr>
@@ -61,7 +60,7 @@ function setRedirect(form, progNo) {
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_CTRL_HIST_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_CONTROL_HISTORY_TITLE); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -78,14 +77,14 @@ function setRedirect(form, progNo) {
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="302" class="HeaderCell"> 
-                    <div align="center">Recent <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> History <br>
+                    <div align="center">Recent <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capitalized"/> History <br>
                       (since midnight)</div>
                   </td>
                   <td width="180" class="HeaderCell"> 
-                    <div align="center">Complete <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/> History</div>
+                    <div align="center">Complete <cti:getProperty propertyid="<%= ResidentialCustomerROle.WEB_TEXT_CONTROL %>" format="capitalized"/> History</div>
                   </td>
                 </tr>
-                <%
+<%
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
@@ -126,7 +125,7 @@ function setRedirect(form, progNo) {
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="61" class="TableCell">No <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROL %>" format="capitalized"/></td>
+                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capitalized"/></td>
                         <td width="61" class="TableCell"></td>
                         <td width="60" class="TableCell">----</td>
                       </tr>
@@ -177,10 +176,10 @@ function setRedirect(form, progNo) {
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 %>
                   <td width="180"> 
-                    <form method="POST" action="/servlet/SOAPClient" onsubmit="setRedirect(this, <%= i %>)">
+                    <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="setRedirect(this, <%= i %>)">
                       <input type="hidden" name="action" value="GetLMCtrlHist">
                       <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-                      <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
+                      <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="180" valign="top" align="center"> 
@@ -201,18 +200,18 @@ function setRedirect(form, progNo) {
                     </form>
                   </td>
                 </tr>
-                <%
+<%
 	}
 %>
               </table>
             </div>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>

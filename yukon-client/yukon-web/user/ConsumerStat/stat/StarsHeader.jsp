@@ -10,13 +10,13 @@
 <%@ page import="com.cannontech.stars.web.action.*" %>
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
-<%@ page import="com.cannontech.common.constants.RoleTypes" %>
+<%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
+<%@ page import="com.cannontech.roles.application.WebClientRole" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 
+<cti:checkLogin/>
 <%
-	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-	if (lYukonUser == null) {
-		response.sendRedirect("/login.jsp"); return;
-	}
+	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
@@ -28,8 +28,8 @@
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
-		user = SOAPServer.getStarsYukonUser( lYukonUser );
+	if (user == null || user.getYukonUser().getUserID() != liteYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
+		user = SOAPServer.getStarsYukonUser( liteYukonUser );
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
 		MultiAction actions = new MultiAction();

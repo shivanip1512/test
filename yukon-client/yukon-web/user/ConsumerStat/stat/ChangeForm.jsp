@@ -30,10 +30,7 @@ function MM_popupMsg(msg) { //v1.0
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                  <form name="logoutForm"  action="/servlet/LoginController">
-                    <input type="hidden" name="ACTION" value="LOGOUT">
-                  </form>
-                  <div align="left"><span class="Main"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -79,11 +76,10 @@ function MM_popupMsg(msg) { //v1.0
                       </table>
                     </td>
                     <td width="187" valign="top"> 
-                      <div align="center"><b><span class="Main"> CHANGE PROGRAM 
-                        </span></b></div>
+                      <div align="center"><b><span class="Main"> CHANGE PROGRAM </span></b></div>
                     </td>
-                    <td valign="top" width="205" align = "right"> <%@ include file="Notice.jsp" %>
-                      
+                    <td valign="top" width="205" align = "right">
+                      <%@ include file="Notice.jsp" %>
                     </td>
                   </tr>
                 </table>
@@ -94,10 +90,8 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <p class="Main">Please complete the following form to change your 
-                  program:</p>
-                  
-				            <form method="post" action="Enrollment.jsp">
+                <p class="Main">Please complete the following form to change your program:</p>
+                <form method="post" action="Enrollment.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 
@@ -122,8 +116,7 @@ function MM_popupMsg(msg) { //v1.0
                       </td>
                     </tr>
                     <tr> 
-                      <td class="TableCell"> Would you be interested in other 
-                        programs. If so, which ones:</td>
+                      <td class="TableCell"> Would you be interested in other programs. If so, which ones:</td>
                     </tr>
                     <tr> 
                       <td> 
@@ -144,26 +137,20 @@ function MM_popupMsg(msg) { //v1.0
                     </tr>
                   </table>
                   <p align="center"> 
-                    <input type="submit" name="Submit" value="Submit" >
-                    <input type="button" name="Input" value="Cancel">
+                  <input type="submit" name="Submit" value="Submit" >
+                  <input type="button" name="Input" value="Cancel">
                 </form>
-				 	
-                    
                 <p><span class="TableCell">
                   * This field must be completed.</span></p>
                 <p>&nbsp;</p>
               </div>
-                </div>
-			
+            </div>
           </td>
-
-		  
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
-	  
     </td>
-	</tr>
+  </tr>
 </table>
 <div align="center"></div>
 </body>

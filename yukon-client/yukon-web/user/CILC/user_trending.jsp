@@ -32,18 +32,14 @@ MM_reloadPage(true);
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr>
 			    <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Trending</td>
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-	
-	            <form name="logoutForm"  action="/servlet/LoginController">
-                    <input type="hidden" name="ACTION" value="LOGOUT">
-                </form>
-                  <div align="left"><span class="Main"><a href="javascript:document.logoutForm.submit()" class="Link3">Log Off</a>&nbsp;</span></div>
+                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                 </td>
               </tr>
             </table>
@@ -95,14 +91,13 @@ MM_reloadPage(true);
 					}
 					else // "graph" is default
 					{%>
-        	            <img id = "theGraph" src="/servlet/GraphGenerator?" > 
+        	            <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?" >
                 	<%}%>
 					<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>                	
 					</center>
                   </td>
                 </tr>
               </table>
-			<HR WIDTH="575">
     <br>
 	<td width="1" bgcolor="#000000" height="1"></td>
 	</tr>

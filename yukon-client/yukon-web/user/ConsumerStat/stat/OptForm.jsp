@@ -25,15 +25,14 @@ function MM_popupMsg(msg) { //v1.0
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -58,13 +57,11 @@ function MM_popupMsg(msg) { //v1.0
             <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
+            <div align="center"> 
+              <br>
               <div align="center"> 
-                <br>
-                
-              <div align="center"> 
-              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_OPT_OUT_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_OPT_OUT_TITLE); %>
               <%@ include file="InfoBar.jsp" %>
                 <table width="600" border="0" cellpadding="0" cellspacing="0">
                   <tr> 
@@ -73,12 +70,11 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <p class="Main">Please complete the following form to opt out 
-                  of your program:</p>
-                  <form method="post" action="/servlet/SOAPClient">
+                <p class="Main">Please complete the following form to opt out of your program:</p>
+                  <form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 					<input type="hidden" name="action" value="SendExitAnswers">
-					<input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
-					<input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/OptOut.jsp">
+					<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
+					<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
 <%
 	for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {
@@ -104,23 +100,18 @@ function MM_popupMsg(msg) { //v1.0
                   <p align="center"> 
                     <input type="submit" name="Submit" value="Submit">
                     <input type="button" name="Cancel" value="Cancel" onclick="location='OptOut.jsp'">
+                  </p>
                 </form>
-				  
                 <p><span class="TableCell">* This field must be completed.</span></p>
-                <p><br>
-                </p>
+                <p><br></p>
               </div>
-                </div>
-			
+            </div>
           </td>
-
-		  
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
-	  
     </td>
-	</tr>
+  </tr>
 </table>
 <div align="center"></div>
 </body>

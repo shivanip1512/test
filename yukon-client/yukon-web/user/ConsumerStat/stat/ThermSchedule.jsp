@@ -186,15 +186,14 @@ MM_reloadPage(true);
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
 				  <td width="265" height="28">&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                      Off</a>&nbsp;</span></div>
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
@@ -234,12 +233,12 @@ MM_reloadPage(true);
               </table>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
+			<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -441,17 +440,13 @@ updateLayout(
                     <table width="100%" border="0" height="27">
                       <tr>
 					  	  <td width="10%">&nbsp;</td> 
-                          <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Wake 
-                            (W)</b> </span></td>
+                          <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Wake (W)</b> </span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Leave 
-                            (L)</b></span> </td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Leave (L)</b></span> </td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Return 
-                            (R)</b> </span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Return (R)</b> </span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Sleep 
-                            (S)</b></span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "Main"><b>Sleep (S)</b></span></td>
                       </tr>
                       <tr> 
                         <td class = "TableCell">
@@ -462,7 +457,7 @@ updateLayout(
                         </td>
                         <td class = "TableCell">
                             <div align="right">Start At: </div>
-                          </td>
+                        </td>
 						<td class = "TableCell"> 
                           <input id="time2" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime2().toDate()) %>" name="time2" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer2', 'time3', 'time1');">
                         </td>
@@ -474,39 +469,39 @@ updateLayout(
                         </td>
                         <td class = "TableCell">
                             <div align="right">Start At: </div>
-                          </td>
+                        </td>
 						<td class = "TableCell"> 
                           <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="Javascript:setScheduleChanged();timeChange(this, 'MovingLayer4', null, 'time3');">
                         </td>
                       </tr>
                     </table>
-                      <noscript>
-<table width="100%" border="0" class = "TableCell">
-  <tr>
-                          <td class = "TableCell" width="10%"> 
-                            <div align="right">Temp: </div>
-                          </td>
-						  <td width="15%"> 
-                            <input id="temp1" type="text" size="3" name="temp1" onchange="setScheduleChanged()" value="<%= schedule.getTemperature1() %>">
-                          </td>
-                          <td class = "TableCell" width="10%"> 
-                            <div align="right">Temp: </div></td>
-						  <td width="15%"> 
-                            <input id="temp2" type="text" size="3" name="temp2" onchange="setScheduleChanged()" value="<%= schedule.getTemperature2() %>">
-                          </td>
-                          <td class = "TableCell" width="10%"> 
-                            <div align="right">Temp: </div>
-                          </td>
-						  <td width="15%"> 
-                            <input id="temp3" type="text" size="3" name="temp3" onchange="setScheduleChanged()" value="<%= schedule.getTemperature3() %>">
-                          </td>
-                          <td class = "TableCell" width="10%"> 
-                            <div align="right">Temp: </div></td>
-						  <td width="15%"> 
-                            <input id="temp4" type="text" size="3" name="temp4" onchange="setScheduleChanged()" value="<%= schedule.getTemperature4() %>">
-                          </td>
-  </tr>
-</table>
+                    <noscript>
+                    <table width="100%" border="0" class = "TableCell">
+                      <tr>
+                        <td class = "TableCell" width="10%"> 
+                          <div align="right">Temp: </div>
+                        </td>
+						<td width="15%"> 
+                          <input id="temp1" type="text" size="3" name="temp1" onchange="setScheduleChanged()" value="<%= schedule.getTemperature1() %>">
+                        </td>
+                        <td class = "TableCell" width="10%"> 
+                          <div align="right">Temp: </div></td>
+						<td width="15%"> 
+                          <input id="temp2" type="text" size="3" name="temp2" onchange="setScheduleChanged()" value="<%= schedule.getTemperature2() %>">
+                        </td>
+                        <td class = "TableCell" width="10%"> 
+                          <div align="right">Temp: </div>
+                        </td>
+						<td width="15%"> 
+                          <input id="temp3" type="text" size="3" name="temp3" onchange="setScheduleChanged()" value="<%= schedule.getTemperature3() %>">
+                        </td>
+                        <td class = "TableCell" width="10%"> 
+                          <div align="right">Temp: </div></td>
+						<td width="15%"> 
+                          <input id="temp4" type="text" size="3" name="temp4" onchange="setScheduleChanged()" value="<%= schedule.getTemperature4() %>">
+                        </td>
+                      </tr>
+                    </table>
                     <div class = "TableCell" align = "left">
                       <table width="100%" border="0">
                         <tr>
@@ -515,7 +510,7 @@ updateLayout(
                               your browser's security settings are not set to 
                               support scripting. Please enter all information 
                               manually or change security settings.</div>
-                           </td>
+                          </td>
                         </tr>
                       </table>
                     </div>
@@ -525,30 +520,26 @@ updateLayout(
               </table><br>
               <table width="75%" border="0">
                 <tr>
-                    <td width="36%" align = "right" class = "TableCell" > 
-                      <input type="submit" name="Submit" value="Submit">
+                  <td width="36%" align = "right" class = "TableCell" > 
+                    <input type="submit" name="Submit" value="Submit">
                   </td>
-                    <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" id="Default" value="<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_REC_SET_BTN %>"/>" onclick="setToDefault()">
+                  <td width="64%" align = "left" class = "TableCell"> 
+                    <input type="button" id="Default" value="<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>" onclick="setToDefault()">
                   </td>
                 </tr>
               </table>
-              </form>
-              <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
+            </form>
+            <p align="center" class="Main"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
-              </p>
-              <p align="center" class="Main">&nbsp; </p>
+            </p>
+            <p align="center" class="Main">&nbsp; </p>
             </div>
-			
           </td>
-		  
-		  
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
-	  
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>

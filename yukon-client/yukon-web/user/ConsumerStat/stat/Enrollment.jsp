@@ -66,14 +66,14 @@ function changeProgram(radioBtn, index) {
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td id="Header" colspan="4" height="74" background="../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height="28">&nbsp;</td>
 				  <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -101,7 +101,7 @@ function changeProgram(radioBtn, index) {
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_ENROLL_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_ENROLLMENT_TITLE); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -120,11 +120,11 @@ function changeProgram(radioBtn, index) {
                   programs you would like to be enrolled in.<br> <br></span><b><span class="Main"></span></b>
                   <input type="button" value="Program Details" onclick="location='ProgramDetails.jsp'">
                 
-				<form method="post" action="/servlet/SOAPClient">
+				<form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 				  <input type="hidden" name="action" value="ProgramSignUp">
 				  <input type="hidden" name="SignUpChanged" value="false">
-				  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/Enrollment.jsp">
-				  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/Enrollment.jsp">
+				  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
+				  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
                   <table border="1" cellspacing="0" cellpadding="3">
                     <tr align = "center"> 
                       <td width="175" class="HeaderCell"> 
@@ -208,7 +208,7 @@ function changeProgram(radioBtn, index) {
 %>
                   </table>
                     <p></p>
-<cti:checkNoRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>">
+<cti:checkNoProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>">
 <%
 	boolean showNotification = false;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -245,7 +245,7 @@ function changeProgram(radioBtn, index) {
 <%
 	}
 %>
-</cti:checkNoRole>
+</cti:checkNoProperty>
 					<p>
                     <table width="50%" border="0">
                     <tr>
@@ -263,11 +263,11 @@ function changeProgram(radioBtn, index) {
             </table>
             <p>&nbsp;</p>
           </td>
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 </body>
