@@ -7,11 +7,9 @@ import java.awt.Color;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
 import com.cannontech.roles.application.TDCRole;
 
@@ -234,29 +232,6 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 		return (getRowCount() == 0 ? 0 : getRowCount());
 	}
 	
-	private String getCurrentGear( IGearProgram dPrg )
-	{
-		LMProgramDirectGear gear = null;
-		
-		//get the current gear we are in
-		for( int i = 0; i < dPrg.getDirectGearVector().size(); i++ )
-		{			
-			gear = (LMProgramDirectGear)dPrg.getDirectGearVector().get(i);
-	
-			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() )
-			{
-				return gear.getGearName();
-			}			
-		}
-	
-		//should not get here
-		com.cannontech.clientutils.CTILogger.info("*** Unable to find gear #: " + 
-				gear.getGearNumber() + " was not found.");
-	
-		return "(Gear #" + gear.getGearNumber() + " not Found)";	
-	}
-	
-	
 	/**
 	 * This method returns the value of a row in the form of 
 	 * an Object, but its really a LMProgramBase object.
@@ -318,65 +293,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 		if( row <= getRowCount() && isProgramValid((LMProgramBase)getRowAt(row)) )
 		{
 			LMProgramBase prg = (LMProgramBase)getRowAt(row);
-	
-			switch( col )
-			{
-			 	case PROGRAM_NAME:
-					return prg.getYukonName();
-	
-			 	case CURRENT_STATUS:
-			 		if( prg.getDisableFlag().booleanValue() )				
-						return "DISABLED: " + LMProgramBase.getProgramStatusString( prg.getProgramStatus().intValue() );
-			 		else
-						return LMProgramBase.getProgramStatusString( prg.getProgramStatus().intValue() );
-		
-				case START_TIME:
-					if( prg.getDisableFlag().booleanValue() )
-						return CtiUtilities.STRING_DASH_LINE;
-					else
-					{
-						if( prg.getStartTime() == null
-							 || prg.getStartTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
-							return CtiUtilities.STRING_DASH_LINE;
-						else
-							return new com.cannontech.clientutils.commonutils.ModifiedDate( prg.getStartTime().getTime().getTime() );
-					}
-	
-				case CURRENT_GEAR:
-				{
-					if( prg instanceof IGearProgram ) 
-					{
-						return getCurrentGear( (IGearProgram)prg );
-					}
-					else
-						return CtiUtilities.STRING_DASH_LINE;
-				}
-				
-				case STOP_TIME:
-					if( prg.getDisableFlag().booleanValue() )
-						return CtiUtilities.STRING_DASH_LINE;
-					else
-					{
-						if( prg.getStopTime() == null
-							|| prg.getStopTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
-							return CtiUtilities.STRING_DASH_LINE;
-						else
-							return new com.cannontech.clientutils.commonutils.ModifiedDate( prg.getStopTime().getTime().getTime() );
-					}
-				
-				case PRIORITY:
-					return 
-						( prg.getDefaultPriority().intValue() <= 0
-						? new Integer(1)
-						: prg.getDefaultPriority() );
-
-				case REDUCTION:
-					return prg.getReductionTotal();
-					
-				default:
-					return null;
-			}
-					
+			return LCUtils.getProgramValueAt( prg, col );
 		}
 		else
 			return null;

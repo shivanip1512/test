@@ -5,9 +5,9 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
@@ -378,24 +378,24 @@ private void showCurtailManualEntry()
  */
 private void syncButtons()
 {
-
+	//what string should we display
+	getJMenuItemStartStop().setText(
+		LCUtils.getProgAvailChgStr(getLoadControlProgram()) );
+	
 	switch( getLoadControlProgram().getProgramStatus().intValue() )
 	{
 		case LMProgramBase.STATUS_ACTIVE:
-			getJMenuItemStartStop().setText("Stop...");
 			getJMenuItemStartStop().setEnabled(false);
 			getJMenuItemDisable().setEnabled(true);
 			break;
 		
 		case LMProgramBase.STATUS_MANUAL_ACTIVE:
 		case LMProgramBase.STATUS_FULL_ACTIVE:
-			getJMenuItemStartStop().setText("Stop...");
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
 			break;
 		
 		case LMProgramBase.STATUS_INACTIVE:
-			getJMenuItemStartStop().setText("Start...");
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
 			break;
@@ -403,13 +403,11 @@ private void syncButtons()
 		case LMProgramBase.STATUS_NOTIFIED:
 		case LMProgramBase.STATUS_SCHEDULED:
 		case LMProgramBase.STATUS_CNTRL_ATTEMPT:
-			getJMenuItemStartStop().setText("Stop...");
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
 			break;
 
 		case LMProgramBase.STATUS_STOPPING: /*only used by the server*/
-			getJMenuItemStartStop().setText("Start...");
 			getJMenuItemStartStop().setEnabled(false);
 			getJMenuItemDisable().setEnabled(false);
 			break;

@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (5/15/2002 4:49:59 PM)
  * @author: 
  */
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class ControlAreaTimeChangeJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements com.cannontech.common.gui.util.OkCancelPanelListener, java.awt.event.ActionListener 
@@ -542,19 +543,11 @@ public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLm
 		
 		//try to use the CurrentDaily first, then try the DefDaily
 		getTimeComboStart().setTimeInSeconds(
-				(getLmControlArea().getCurrentDailyStartTime() == null 
-					? (getLmControlArea().getDefDailyStartTime() == null
-						? LMControlArea.INVAID_INT
-						: getLmControlArea().getDefDailyStartTime().intValue())
-					: getLmControlArea().getCurrentDailyStartTime().intValue() ) );
+			LCUtils.decodeStartWindow(getLmControlArea()) );
 
 		//try to use the CurrentDaily first, then try the DefDaily
 		getTimeComboStop().setTimeInSeconds(
-				(getLmControlArea().getCurrentDailyStopTime() == null 
-					? (getLmControlArea().getDefDailyStopTime() == null
-						? LMControlArea.INVAID_INT
-						: getLmControlArea().getDefDailyStopTime().intValue())
-					: getLmControlArea().getCurrentDailyStopTime().intValue() ) );
+				LCUtils.decodeStopWindow(getLmControlArea()) );
 		
 		
 		

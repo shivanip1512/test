@@ -193,7 +193,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	 * @return java.lang.String
 	 * @param trigger LMControlAreaTrigger
 	 */
-	private synchronized void setTriggerStrings(
+	public static synchronized void setTriggerStrings(
 			com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger, 
 			JTable table, 
 			StringBuffer strBuf, 
@@ -202,8 +202,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		if( trigger == null )
 			return;
 	
-	
-		switch( table.convertColumnIndexToModel(col) )
+
+		switch( (table == null ? col : table.convertColumnIndexToModel(col)) )
 		{
 			case ControlAreaTableModel.VALUE_THRESHOLD:
 			{
@@ -329,17 +329,19 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	private synchronized void processLMControlArea( LMControlArea value, JTable table, final int col )
 	{
 		//add(getJLabelText());
-		StringBuffer topStrBuf = new StringBuffer(), botStrBuf = new StringBuffer();
+		StringBuffer topStrBuf = new StringBuffer();
+		StringBuffer botStrBuf = new StringBuffer();
+
+
+		if( table.getRowHeight() != rowHeight )
+			table.setRowHeight( rowHeight );
 		
 		if( value.getTriggerVector().size() > 0 )
-		{
+		{			
 			for( int i = 0; i < value.getTriggerVector().size(); i++ )
 			{
 				com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger = 
 						(com.cannontech.loadcontrol.data.LMControlAreaTrigger)value.getTriggerVector().get(i);
-				
-				if( table.getRowHeight() != rowHeight )
-					table.setRowHeight( rowHeight );
 
 
 				if( trigger.getTriggerNumber().intValue() == 1 )

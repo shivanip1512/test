@@ -5,15 +5,11 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import java.awt.Color;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class ControlAreaTableModel extends com.cannontech.tdc.observe.ObservableRowTableModel implements IControlAreaTableModel
 {
-	private static final java.text.SimpleDateFormat TIME_FORMATTER = new java.text.SimpleDateFormat("HH:mm");
-
-	private final java.util.GregorianCalendar currTime = new java.util.GregorianCalendar();
-	private final java.util.GregorianCalendar tempTime = new java.util.GregorianCalendar();
 	
   	// the holder for the current LMControlAreas in our Model
   	//  Objects of type LMControlArea only are allowed in here
@@ -42,7 +38,7 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 
 	//The color schemes - based on the program status (foreGround, backGround)
 	// We will mostly likely later make these a StateGroup in the Database!!! :)
-	private Color[] cellColors =
+	public static final Color[] CELL_COLORS =
 	{
 		//Inactive
 		Color.white,
@@ -193,22 +189,22 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 		{
 			if( getRowAt(row).getDisableFlag().booleanValue() )
 			{
-				return cellColors[3];
+				return CELL_COLORS[3];
 			}
 			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_INACTIVE )
 			{
-				return cellColors[0];
+				return CELL_COLORS[0];
 			}
 			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_ACTIVE
 						|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_FULLY_ACTIVE
 						|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_MANUAL_ACTIVE )
 			{
-				return cellColors[1];
+				return CELL_COLORS[1];
 			}
 			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
 						 //|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_SCHEDULED )
 			{
-				return cellColors[2];
+				return CELL_COLORS[2];
 			}
 			
 		}
@@ -270,79 +266,13 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 		if( row < getRowCount() && row >= 0 )
 		{
 			LMControlArea lmCntrArea = getRowAt(row);
-			
-			switch( col )
-			{
-			 	case AREA_NAME:
-					return lmCntrArea.getYukonName();
-	
-			 	case CURRENT_STATE:
-			 	{
-			 		if( lmCntrArea.getDisableFlag().booleanValue() )
-						return "DISABLED: " + LMControlArea.getControlAreaStateString( lmCntrArea.getControlAreaState().intValue() );
-			 		else
-						return LMControlArea.getControlAreaStateString( lmCntrArea.getControlAreaState().intValue() );
-			 	}
-	
-				case VALUE_THRESHOLD:
-				{
-					//data is on the trigger object
-					return lmCntrArea;
-				}
-						
-				case TIME_WINDOW:
-				{
-					return
-						getTimeString(
-								lmCntrArea,
-								(lmCntrArea.getDefDailyStartTime() == null 
-									? LMControlArea.INVAID_INT
-									: lmCntrArea.getDefDailyStartTime().intValue()),
-								(lmCntrArea.getCurrentDailyStartTime() == null
-									? LMControlArea.INVAID_INT
-									: lmCntrArea.getCurrentDailyStartTime().intValue()) ) +
-						" - " +
-						getTimeString(
-								lmCntrArea,
-								(lmCntrArea.getDefDailyStopTime() == null 
-									? LMControlArea.INVAID_INT
-									: lmCntrArea.getDefDailyStopTime().intValue()),
-								(lmCntrArea.getCurrentDailyStopTime() == null
-									? LMControlArea.INVAID_INT
-									: lmCntrArea.getCurrentDailyStopTime().intValue()) ); 
-						 
-				}
-				
-				case PEAK_PROJECTION:
-				{
-					//data is on the trigger object
-					return lmCntrArea;
-				}
-	
-				case PRIORITY:
-				{
-					//data is on the trigger object
-					return
-						( lmCntrArea.getCurrentPriority().intValue() <= 0
-						? new Integer(1)
-						: lmCntrArea.getCurrentPriority() );
-				}
-	
-				case ATKU:
-				{
-					//data is on the trigger object
-					return lmCntrArea;
-				}
-				
-				
-				default:
-					return null;
-			}
-					
+			return LCUtils.getControlAreaValueAt( lmCntrArea, col );					
 		}
 		else
 			return null;
 	}
+
+
 	/*
 	private String getTriggerString(com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger) 
 	{
@@ -370,43 +300,7 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	
 	}
 	*/
-	
-	private synchronized String getTimeString( LMControlArea row, int defSecs, int currSecs )
-	{
-		String retStr = null;
-		
-		if( row == null || row.getDisableFlag().booleanValue() )
-			retStr = CtiUtilities.STRING_DASH_LINE;
-		else
-		{					
-			if( defSecs <= LMControlArea.INVAID_INT )
-			{
-				retStr = CtiUtilities.STRING_DASH_LINE;
-			}
-			else
-			{
-				//set our time to todays date
-				currTime.setTime( new java.util.Date() );
-				currTime.set( currTime.HOUR_OF_DAY, 0 ); 
-				currTime.set( currTime.MINUTE, 0 );
-				currTime.set( currTime.SECOND, defSecs );
-										
-				if( defSecs == currSecs || currSecs <= LMControlArea.INVAID_INT )
-					retStr = TIME_FORMATTER.format( currTime.getTime() );
-				else
-				{
-					tempTime.setTime( currTime.getTime() );
-					tempTime.set( tempTime.HOUR_OF_DAY, 0 ); 
-					tempTime.set( tempTime.MINUTE, 0 );
-					tempTime.set( tempTime.SECOND, currSecs );
-	
-					retStr = TIME_FORMATTER.format( tempTime.getTime() );
-				}
-			}
-		}
-	
-		return retStr;
-	}
+
 	
 	/**
 	 * This method was created in VisualAge.

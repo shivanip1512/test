@@ -26,6 +26,11 @@ public class LMCurtailCustomer extends LMCICustomerBase implements ILMGroup
 	private Boolean ackLateFlag = null;
 
 
+	public Integer getYukonID() 
+	{
+		return new Integer( getCustomerID().intValue() );
+	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/11/2001 2:33:32 PM)

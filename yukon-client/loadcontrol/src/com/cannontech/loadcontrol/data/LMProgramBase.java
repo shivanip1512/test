@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public abstract class LMProgramBase implements ILMProgramMessageCreation
+public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMData
 {
 	//control types
 	public static final String CONTROL_AUTOMATIC = "Automatic";

@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public class LMControlArea
+public class LMControlArea implements ILMData
 {
 	public static final int INVAID_INT = -1;
 	

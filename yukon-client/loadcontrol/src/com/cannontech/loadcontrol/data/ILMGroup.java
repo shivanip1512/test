@@ -10,8 +10,10 @@ import java.util.Date;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public interface ILMGroup {
-
+public interface ILMGroup 
+{
+	public Integer getYukonID();
+	
 	public String getName();
 	
 	public Boolean getDisableFlag();

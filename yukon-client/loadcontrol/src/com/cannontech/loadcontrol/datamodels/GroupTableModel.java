@@ -6,9 +6,8 @@ package com.cannontech.loadcontrol.datamodels;
 import java.awt.Color;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
@@ -75,11 +74,12 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 		Color.green,
 		//Active Pending groups
 		Color.yellow,
-		//Inctive Pending groups
-		Color.blue,
 
 		//Disabled Groups
-		Color.red
+		Color.red,
+
+		//Inctive Pending groups
+		Color.blue,
 	};
 
 
@@ -171,6 +171,7 @@ public java.awt.Color getCellBackgroundColor(int row, int col)
  * @return java.awt.Color
  * @param row int
  * @param col int
+ * 
  */
 public java.awt.Color getCellForegroundColor(int row, int col) 
 {
@@ -181,7 +182,7 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 		
 		if( rowValue.getDisableFlag().booleanValue() )
 		{
-			return cellColors[4];	
+			return cellColors[3];	
 		}
 		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE])
 					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_UNACKNOWLEDGED) )
@@ -201,7 +202,7 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE_PENDING])
 					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_VERBAL) )
 		{
-			return cellColors[3];
+			return cellColors[4];
 		}
 	}
 
@@ -274,35 +275,7 @@ public Object getValueAt(int row, int col)
 	{
 		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		
-		switch( col )
-		{
-		 	case GROUP_NAME:
-				return rowValue.getName();
-
-		 	case GROUP_STATE:
-		 		if( rowValue.getDisableFlag().booleanValue() )
-		 			return "DISABLED: " + rowValue.getGroupControlStateString();
-		 		else
-					return rowValue.getGroupControlStateString();
-	
-			case TIME:
-			{
-				if( rowValue.getGroupTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return new ModifiedDate( rowValue.getGroupTime().getTime() );
-				else
-					return CtiUtilities.STRING_DASH_LINE;
-			}
-			
-			case STATS:
-				return rowValue.getStatistics();
-				
-		 	case REDUCTION:
-				return rowValue.getReduction();
-
-			default:
-				return null;
-		}
-				
+		return LCUtils.getGroupValueAt( rowValue, col );
 	}
 	else
 		return null;

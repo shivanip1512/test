@@ -5,24 +5,17 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (9/28/00 3:40:06 PM)
  * @author: 
  */
-
-
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupExpresscom;
 import com.cannontech.loadcontrol.data.LMGroupPoint;
 import com.cannontech.loadcontrol.data.LMGroupRipple;
 import com.cannontech.loadcontrol.data.LMGroupVersacom;
-import com.cannontech.loadcontrol.gui.manualentry.LMCurtailCustomerInfoPanel;
 import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
@@ -35,23 +28,6 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	private javax.swing.JMenuItem jMenuItemDisable = null;
 	private javax.swing.JMenuItem jMenuItemRestore = null;
 	private javax.swing.JMenuItem jMenuItemShed = null;
-
-	private static final String[] SHED_STRS = 
-	{
-		"5 minutes",
-		"7 minutes",
-		"10 minutes",
-		"15 minutes",
-		"20 minutes",
-		"30 minutes",
-		"45 minutes",
-		"1 hour",
-		"2 hours",
-		"3 hours",
-		"4 hours",
-		"6 hours",
-		"8 hours"
-	};
 
 
 	/**
@@ -248,7 +224,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			null, 
 			(getLoadControlGroup() instanceof LMGroupRipple
 			  ? new Object[] { new StringBuffer("(Ripple Groups use programmed times in switch)") }
-			  : SHED_STRS), 
+			  : LCUtils.SHED_STRS), 
 			null );
 
 

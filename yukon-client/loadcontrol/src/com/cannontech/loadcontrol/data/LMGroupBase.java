@@ -1,13 +1,11 @@
 package com.cannontech.loadcontrol.data;
 
-import java.util.Date;
-
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public abstract class LMGroupBase
+public abstract class LMGroupBase implements ILMData
 {
 	//Posible states a group may be in
 	public static final int STATE_INACTIVE = 0;

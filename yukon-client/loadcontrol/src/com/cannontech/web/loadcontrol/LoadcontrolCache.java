@@ -12,7 +12,9 @@ package com.cannontech.web.loadcontrol;
  */
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -23,10 +25,12 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
+import com.cannontech.loadcontrol.events.LCChangeEvent;
 
 public class LoadcontrolCache implements java.util.Observer, java.awt.event.ActionListener {
 
@@ -46,7 +50,14 @@ public class LoadcontrolCache implements java.util.Observer, java.awt.event.Acti
 	   to have happened when this update(..) method is called, this observes
 	   the loadcontrol connection.
 	*/
-	
+
+	// key = Map<Integer, LMControlArea>
+	private Hashtable controlAreaMap = new Hashtable();
+	//	key = Map<Integer, LMProgramBase>
+	private Hashtable programMap = new Hashtable();
+	//	key = Map<Integer, LMGroupBase>
+	private Hashtable groupMap = new Hashtable();
+
 	// key = (Integer) energy company id, value = (long[]) customer id
 	private HashMap energyCompanyCustomer = new HashMap();
 	
@@ -56,6 +67,8 @@ public class LoadcontrolCache implements java.util.Observer, java.awt.event.Acti
 	// key = (Integer) customer, value = Integer baseline pointid
 	private HashMap customerBaseLine = new HashMap();
 	
+	
+	//programs
 	private ArrayList curtailmentPrograms = new ArrayList();
 	private ArrayList energyExchangePrograms = new ArrayList();
 	private ArrayList directPrograms = new ArrayList();
@@ -344,6 +357,44 @@ public LMProgramDirect[] getDirectPrograms() {
 
 	return p;
 }
+
+/**
+ * Creation date: (7/24/2001 11:23:41 AM)
+ * @return Enumeration
+ */
+public Enumeration getAllControlAreas() 
+{
+	return controlAreaMap.elements();
+}
+
+/**
+ * 
+ * @return LMControlArea
+ */
+public LMControlArea getControlArea( Integer areaID )
+{
+	return (LMControlArea)controlAreaMap.get( areaID );
+}
+
+/**
+ * 
+ * @return LMProgramBase
+ */
+public LMProgramBase getProgram( Integer progID )
+{
+	return (LMProgramBase)programMap.get( progID );
+}
+
+/**
+ * 
+ * @return LMGroupBase
+ */
+public LMGroupBase getGroup( Integer grpID )
+{
+	return (LMGroupBase)groupMap.get( grpID );
+}
+
+
 public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(long energyCompanyID)
 {
 	LMProgramCurtailment[] retVal = null;
@@ -452,17 +503,35 @@ public synchronized LMEnergyExchangeCustomer[] getEnergyExchangeCustomers(long p
 		
 	return retVal;
 }
+
+private void handleGroups( LMProgramBase prog )
+{
+	for( int j = 0; j < prog.getLoadControlGroupVector().size(); j++ )
+	{
+		LMGroupBase grp = (LMGroupBase)prog.getLoadControlGroupVector().get(j);
+		groupMap.put( grp.getYukonID(), grp );
+	}
+
+}
+
 /**
  * Creation date: (6/21/2001 3:47:41 PM)
  * @param controlArea com.cannontech.loadcontrol.data.LMControlArea
  */
 private synchronized void handleControlArea(LMControlArea controlArea) 
 {	
-	java.util.Vector areas = controlArea.getLmProgramVector();
+	controlAreaMap.put( controlArea.getYukonID(), controlArea );
+	
 
-	for( int i = 0; i < areas.size(); i++ )
-	{
-		Object prog = areas.elementAt(i);
+	java.util.Vector programs = controlArea.getLmProgramVector();
+
+	for( int i = 0; i < programs.size(); i++ )
+	{		
+		LMProgramBase prog = (LMProgramBase)programs.elementAt(i);
+		programMap.put( prog.getYukonID(), prog );
+		handleGroups( prog );
+
+		
 		if( prog instanceof LMProgramDirect )
 		{
 			handleDirectProgram( (LMProgramDirect) prog );	
@@ -479,7 +548,7 @@ private synchronized void handleControlArea(LMControlArea controlArea)
 		}
 		else
 		{
-			com.cannontech.clientutils.CTILogger.info(getClass() + " - Warning, received unhandled program type");
+			CTILogger.info(getClass() + " - Warning, received unhandled program type");
 		}
 	}
 }
@@ -501,6 +570,8 @@ private void handleDirectProgram(LMProgramDirect prog)
 {
 	replaceProgram(prog,directPrograms);
 }
+
+
 /**
  * Creation date: (6/21/2001 4:31:19 PM)
  * @param prog com.cannontech.loadcontrol.data.LMProgramEnergyExchange
@@ -516,7 +587,7 @@ private void handleEnergyExchangeProgram(LMProgramEnergyExchange prog)
 public synchronized void refresh()
 {
 
-	com.cannontech.clientutils.CTILogger.info("Refreshing customer-energycompany mappings");
+	CTILogger.info("Refreshing customer-energycompany mappings");
 	
 	// Update energy company - customer mapping from db
 	energyCompanyCustomer.clear();
@@ -538,7 +609,7 @@ public synchronized void refresh()
 
 	
 	{
-		com.cannontech.clientutils.CTILogger.info("Refreshing customer baselines");
+		CTILogger.info("Refreshing customer baselines");
 		
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -559,7 +630,7 @@ public synchronized void refresh()
 		}
 		catch(java.sql.SQLException e)
 		{
-			com.cannontech.clientutils.CTILogger.info("An error occured refreshing customerbaselines");			
+			CTILogger.info("An error occured refreshing customerbaselines");			
 		}
 		finally
 		{
@@ -570,10 +641,10 @@ public synchronized void refresh()
 			} catch(java.sql.SQLException e2) {  }
 		}
 
-		com.cannontech.clientutils.CTILogger.info("Loaded " + customerBaseLine.size() + " customer baselines.");
+		CTILogger.info("Loaded " + customerBaseLine.size() + " customer baselines.");
 	}
 	
-	com.cannontech.clientutils.CTILogger.info("Refreshing control areas");
+	CTILogger.info("Refreshing control areas");
 	
 	if( conn != null )
 	{		
@@ -616,6 +687,7 @@ private boolean replaceProgram(LMProgramBase p, ArrayList l) {
 	l.add(p);
 	return false;
 }
+
 /**
  * Creation date: (6/12/2001 9:37:54 AM)
  * @param newDbAlias java.lang.String
@@ -623,32 +695,58 @@ private boolean replaceProgram(LMProgramBase p, ArrayList l) {
 public void setDbAlias(java.lang.String newDbAlias) {
 	dbAlias = newDbAlias;
 }
-	/**
-	 * This method is called whenever the observed object is changed. An
-	 * application calls an <tt>Observable</tt> object's
-	 * <code>notifyObservers</code> method to have all the object's
-	 * observers notified of the change.
-	 *
-	 * @param   o     the observable object.
-	 * @param   arg   an argument passed to the <code>notifyObservers</code>
-	 *                 method.
-	 */
+
+/**
+ * This method is called whenever the observed object is changed. An
+ * application calls an <tt>Observable</tt> object's
+ * <code>notifyObservers</code> method to have all the object's
+ * observers notified of the change.
+ *
+ * @param   o     the observable object.
+ * @param   arg   an argument passed to the <code>notifyObservers</code>
+ *                 method.
+ */
 public synchronized void update(java.util.Observable o, java.lang.Object arg) 
 {
 	CTILogger.info( getClass() + ": received type: " + arg.getClass());
 
-	if( arg instanceof com.cannontech.loadcontrol.events.LCChangeEvent )
+	if( arg instanceof LCChangeEvent )
 	{
-		// Arg is assumed to be a com.cannontech.loadcontrol.events.LCChangeEvent
-		com.cannontech.loadcontrol.events.LCChangeEvent e =
-			(com.cannontech.loadcontrol.events.LCChangeEvent) arg;
+		// Arg is assumed to be a LCChangeEvent
+		LCChangeEvent e = (LCChangeEvent) arg;
 
 		if( conn == null )		
 			conn = (com.cannontech.loadcontrol.LoadControlClientConnection) e.target;
 
 		// e.arg is assumed to be a LMControlArea
-		handleControlArea( (LMControlArea) e.arg );
+		if( e.id == LCChangeEvent.DELETE )
+		{
+			LMControlArea lmArea = (LMControlArea)e.arg;
+			controlAreaMap.remove( lmArea.getYukonID() );
+
+			java.util.Vector programs = lmArea.getLmProgramVector();
+			for( int i = 0; i < programs.size(); i++ )
+			{		
+				LMProgramBase prog = (LMProgramBase)programs.elementAt(i);
+				programMap.remove( prog.getYukonID() );
+				
+				for( int j = 0; j < prog.getLoadControlGroupVector().size(); j++ )
+				{
+					LMGroupBase grp = (LMGroupBase)prog.getLoadControlGroupVector().get(j);
+					groupMap.remove( grp.getYukonID() );
+				}
+			}
+		}
+		else if( e.id == LCChangeEvent.DELETE_ALL ) // remove all areas
+		{
+			controlAreaMap.clear();				
+			programMap.clear();
+			groupMap.clear();
+		}		
+		else
+			handleControlArea( (LMControlArea) e.arg );
 		
 	}	
 }
+
 }
