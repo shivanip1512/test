@@ -111,14 +111,31 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
 {
     RWCString controlString = RWCString("control shed ");
     LONG shedTime = 450;
-    if( offTime > 570 && offTime <= 1220 )
+
+    //CASE LESS THAN 8.5: 7.5 min shed is ok and warning message
+    if( offTime < 510 )
+    {
+        DOUBLE realizedPercentage = 570.0 / (DOUBLE)period;
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Master Cycle Warning: cannot send a shed of less than 9.5 minutes (including random time-in) to Emetcon groups, LM Group: " << getPAOName()
+             << ", given the 9.5 minute minimum shed time and the cycle period specified the group will give a realized control percentage of:" << realizedPercentage << endl;
+    }
+    //CASE 8.5 TO 10.5: 7.5 min shed is ok and no over lap
+    else if( offTime >= 510 && offTime <= 630 )
+    {
+        //shedTime = 450;  already set
+    }
+    //CASE 16.5 TO 17.5: 15 min shed is ok and no over lap
+    else if( offTime > 630 && offTime <= 1220 )
     {
         shedTime = 900;
     }
+    //CASE 31.5 TO 32.5: 30 min shed is ok and no over lap
     else if( offTime > 1220 && offTime <= 1920 )
     {
         shedTime = 1800;
     }
+    //CASE 59.5 TO 60.5: 60 min shed is ok and no over lap
     else if( offTime > 1920 )
     {
         shedTime = 3600;
@@ -148,11 +165,21 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, UL
         controlTimeLeft < 572 &&
         controlTimeLeft >= 569 )
     {
-        returnBOOL = TRUE;
-        _refreshsent = TRUE;
+        //CASE 8.5 TO 10.5: 7.5 min shed is ok and no over lap
+        //CASE 16.5 TO 17.5: 15 min shed is ok and no over lap
+        //CASE 31.5 TO 32.5: 30 min shed is ok and no over lap
+        //CASE 59.5 TO 60.5: 60 min shed is ok and no over lap
+        if( !( offTime >= 510 && offTime <= 630 ||
+               offTime >= 990 && offTime <= 1050 ||
+               offTime >= 1890 && offTime <= 1950 ||
+               offTime >= 3570 && offTime <= 3630 ) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed." << endl;
+            returnBOOL = TRUE;
+            _refreshsent = TRUE;
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed." << endl;
+            }
         }
     }
 
