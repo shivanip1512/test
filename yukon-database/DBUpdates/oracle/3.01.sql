@@ -1,0 +1,133 @@
+/******************************************/
+/**** Oracle 9.2 DBupdates             ****/
+/******************************************/
+
+create table LMGroupSA305  (
+   GroupID              NUMBER                           not null,
+   RouteID              NUMBER                           not null,
+   AddressUsage         VARCHAR2(8)                      not null,
+   UtilityAddress       NUMBER                           not null,
+   GroupAddress         NUMBER                           not null,
+   DivisionAddress      NUMBER                           not null,
+   SubstationAddress    NUMBER                           not null,
+   IndividualAddress    VARCHAR2(16)                     not null,
+   RateFamily           NUMBER                           not null,
+   RateMember           NUMBER                           not null,
+   RateHierarchy        NUMBER                           not null,
+   LoadNumber           VARCHAR2(8)                      not null
+);
+alter table LMGroupSA305
+   add constraint PK_LMGROUPSA305 primary key (GroupID);
+alter table LMGroupSA305
+   add constraint FK_LGrS305_LmGrp foreign key (GroupID)
+      references LMGroup (DeviceID);
+alter table LMGroupSA305
+   add constraint FK_LGrS305_Rt foreign key (RouteID)
+      references Route (RouteID);
+
+create table LMGroupSA205105  (
+   GroupID              NUMBER                           not null,
+   RouteID              NUMBER                           not null,
+   OperationalAddress   NUMBER                           not null,
+   LoadNumber           VARCHAR2(64)                     not null
+);
+alter table LMGroupSA205105
+   add constraint PK_LMGROUPSA205105 primary key (GroupID);
+alter table LMGroupSA205105
+   add constraint FK_LGrS205_Rt foreign key (RouteID)
+      references Route (RouteID);
+alter table LMGroupSA205105
+   add constraint FK_LGrS205_LmG foreign key (GroupID)
+      references LMGroup (DeviceID);
+
+
+create table LMGroupSASimple  (
+   GroupID              NUMBER                           not null,
+   RouteID              NUMBER                           not null,
+   OperationalAddress   VARCHAR2(8)                      not null,
+   NominalTimeout       NUMBER                           not null,
+   VirtualTimeout       NUMBER
+);
+alter table LMGroupSASimple
+   add constraint PK_LMGROUPSASIMPLE primary key (GroupID);
+alter table LMGroupSASimple
+   add constraint FK_LmGrSa_LmG foreign key (GroupID)
+      references LMGroup (DeviceID);
+alter table LMGroupSASimple
+   add constraint FK_LmGrSa_Rt foreign key (RouteID)
+      references Route (RouteID);
+
+create table LMControlScenarioProgram  (
+   ScenarioID           NUMBER                           not null,
+   ProgramID            NUMBER                           not null,
+   StartDelay           NUMBER                           not null,
+   Duration             NUMBER                           not null,
+   StartGear            NUMBER                           not null
+);
+alter table LMControlScenarioProgram
+   add constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID);
+alter table LMControlScenarioProgram
+   add constraint FK_LMC_REF__LMP foreign key (ProgramID)
+      references LMPROGRAM (DEVICEID);
+
+
+create table LMProgramConstraints  (
+   ConstraintID         NUMBER                           not null,
+   ConstraintName       VARCHAR2(60)                     not null,
+   AvailableSeasons     VARCHAR2(4)                      not null,
+   AvailableWeekDays    VARCHAR2(8)                      not null,
+   MaxHoursDaily        NUMBER                           not null,
+   MaxHoursMonthly      NUMBER                           not null,
+   MaxHoursSeasonal     NUMBER                           not null,
+   MaxHoursAnnually     NUMBER                           not null,
+   MinActivateTime      NUMBER                           not null,
+   MinRestartTime       NUMBER                           not null,
+   MaxDailyOps          NUMBER                           not null,
+   MaxActivateTime      NUMBER                           not null,
+   HolidayScheduleID    NUMBER                           not null,
+   SeasonScheduleID     NUMBER                           not null
+);
+insert into LMProgramConstraints values (0, 'Default Constraint', 'YYYY', 'YYYYYYYN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+alter table LMProgramConstraints
+   add constraint PK_PRGCONSTR primary key (ConstraintID);
+
+
+alter table LMProgram add ConstraintID number;
+update LMProgram set ConstraintID = 0;
+alter table LMProgram modify ConstraintID number not null;
+
+
+alter table LMPROGRAM
+   add constraint FK_LMPr_PrgCon foreign key (ConstraintID)
+      references LMProgramConstraints (ConstraintID);
+go
+
+
+create or replace view LMProgram_View (DeviceID, ControlType, ConstraintID , ConstraintName , AvailableSeasons , AvailableWeekDays , MaxHoursDaily , MaxHoursMonthly , MaxHoursSeasonal , MaxHoursAnnually , MinActivateTime , MinRestartTime , MaxDailyOps , MaxActivateTime , HolidayScheduleID , SeasonScheduleID ) as
+select t.DEVICEID, t.CONTROLTYPE, u.ConstraintID, u.ConstraintName, u.AvailableSeasons, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
+from LMPROGRAM t, LMProgramConstraints u
+where u.ConstraintID = t.ConstraintID;
+go
+
+
+/* @error ignore */
+drop table portstatistics;
+
+
+
+
+
+
+
+
+/******************************************************************************/
+/* Run the Stars Update if needed here */
+/* Note: DBUpdate application will ignore this if STARS is not present */
+/* @include StarsUpdate */
+/******************************************************************************/
+
+
+/******************************************************************************/
+/* VERSION INFO                                                               */
+/******************************************************************************/
+insert into CTIDatabase values('3.00', 'Ryan', '5-MAR-2004', 'Many changes to a major version jump');
