@@ -2,6 +2,7 @@ package com.cannontech.stars.web.servlet;
 
 import java.util.ArrayList;
 import java.util.Timer;
+import java.util.Vector;
 
 import javax.xml.messaging.JAXMServlet;
 import javax.xml.messaging.ReqRespListener;
@@ -134,8 +135,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
 	
 	void initDispatchConnection() {
-//		CtiProperties properties = CtiProperties.getInstance();
-		//String host = properties.getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
 		String host =
 			ClientSession.getInstance().getRolePropertyValue(
 				SystemRole.DISPATCH_MACHINE, "127.0.0.1" ).toString();
@@ -486,17 +485,14 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 				LiteContact litePrimContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
 				litePrimContact.retrieve( CtiUtilities.getDatabaseAlias() );;
 				
-				ArrayList contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+				Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 				for (int i = 0; i < contacts.size(); i++)
-					energyCompany.deleteContact( ((Integer) contacts.get(i)).intValue() );
+					energyCompany.deleteContact( ((LiteContact)contacts.get(i)).getContactID() );
 				
-				liteAcctInfo.getCustomer().retrieve();
+				liteAcctInfo.getCustomer().retrieve( CtiUtilities.getDatabaseAlias() );
 				contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-				for (int i = 0; i < contacts.size(); i++) {
-					LiteContact liteContact = new LiteContact( ((Integer) contacts.get(i)).intValue() );
-					liteContact.retrieve( CtiUtilities.getDatabaseAlias() );
-					energyCompany.addContact( liteContact, liteAcctInfo );
-				}
+				for (int i = 0; i < contacts.size(); i++)
+					energyCompany.addContact( (LiteContact)contacts.get(i), liteAcctInfo );
 				
 				energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() ).retrieve();
 				liteAcctInfo.getAccountSite().retrieve();
@@ -553,10 +549,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						CTILogger.info("ERROR: Primary contact with id = " + liteContact.getContactID() + " deleted not through the web page!");
 					}
 					
-					ArrayList contactIDs = liteAcctInfo.getCustomer().getAdditionalContacts();
-					for (int i = 0; i < contactIDs.size(); i++) {
-						if (((Integer) contactIDs.get(i)).intValue() == liteContact.getContactID()) {
-							contactIDs.remove(i);
+					Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+					for (int i = 0; i < contacts.size(); i++) {
+						if (((LiteContact)contacts.get(i)).getContactID() == liteContact.getContactID()) {
+							contacts.remove(i);
 							break;
 						}
 					}

@@ -6,14 +6,14 @@
  */
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.stars.LiteCustomer;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -156,18 +156,17 @@ public class UpdateContactsAction implements ActionBase {
 			
 			resp.setPrimaryContact( starsPrimContact );
 
-			ArrayList contactList = liteCustomer.getAdditionalContacts();
-			ArrayList newContactList = new ArrayList();
+			Vector contactList = liteCustomer.getAdditionalContacts();
+			Vector newContactList = new Vector();
             
 			for (int i = 0; i < updateContacts.getAdditionalContactCount(); i++) {
 				AdditionalContact starsContact = updateContacts.getAdditionalContact(i);
 				LiteContact liteContact = null;
 				
 				for (int j = 0; j < contactList.size(); j++) {
-					Integer contactID = (Integer) contactList.get(j);
-					if (contactID.intValue() == starsContact.getContactID()) {
+					liteContact = (LiteContact) contactList.get(j);
+					if (liteContact.getContactID() == starsContact.getContactID()) {
 						contactList.remove(j);
-						liteContact = energyCompany.getContact( contactID.intValue(), liteAcctInfo );
 		        		
 						if (!StarsLiteFactory.isIdenticalCustomerContact(liteContact, starsContact)) {
 							// Update the customer contact
@@ -204,12 +203,12 @@ public class UpdateContactsAction implements ActionBase {
 					resp.addAdditionalContact( starsContact );
 				}
             	
-				newContactList.add( new Integer(liteContact.getContactID()) );
+				newContactList.add( liteContact );
 			}
             
 			// Remove customer contacts that are not in the update list
 			for (int i = 0; i < contactList.size(); i++) {
-				LiteContact liteContact = energyCompany.getContact( ((Integer) contactList.get(i)).intValue(), liteAcctInfo );
+				LiteContact liteContact = (LiteContact) contactList.get(i);
 				com.cannontech.database.data.customer.Contact contact =
 						(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
             	
