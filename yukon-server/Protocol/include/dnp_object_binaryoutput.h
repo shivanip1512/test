@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/10/12 01:16:34 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/11/12 19:55:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,6 +54,12 @@ public:
     enum
     {
         Group = 10
+    };
+
+    enum
+    {
+        //  Binary outputs are offset by this amount when they are returned as statuses
+        BinaryOutputStatusOffset = 10000
     };
 
     int restore(unsigned char *buf, int len);
