@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/02/16 19:07:13 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,10 +177,20 @@ void CtiTransdataData::formatTime( ULONG temp )
 
    switch( _formatCode )
    {
-   case 14:
+   case 14:    //SS:MM:HH
+      {
+         _second = temp / 10000;
+         holder = temp % 10000;
+         _minute = holder / 100;
+         _hour = holder % 100;
+      
+         _year = date.year();
+         _month = date.month();
+         _day = date.dayOfMonth();
+      }
       break;
 
-   case 15:
+   case 15:    //HH:MM:SS
       {
          _hour = temp / 10000;
          holder = temp % 10000 ;
@@ -193,28 +203,107 @@ void CtiTransdataData::formatTime( ULONG temp )
       }
       break;
 
-   case 16:
+   case 16:    //DD:MM:YY
+      {
+         _day = temp / 10000;
+         holder = temp % 10000 ;
+         _month = holder / 100;
+         _year = holder % 100;
+      
+         _hour = time.hour();
+         _minute = time.minute();
+         _second = time.second();
+      }
       break;
 
-   case 17:
+   case 17:    //MM:DD:YY
+      {
+         _month = temp / 10000;
+         holder = temp % 10000 ;
+         _day = holder / 100;
+         _year = holder % 100;
+      
+         _hour = time.hour();
+         _minute = time.minute();
+         _second = time.second();
+      }
       break;
 
-   case 18:
+   case 18:    //YY:DD:MM
+      {
+         _year = temp / 10000;
+         holder = temp % 10000 ;
+         _day = holder / 100;
+         _month = holder % 100;
+      
+         _hour = time.hour();
+         _minute = time.minute();
+         _second = time.second();
+      }
       break;
 
-   case 19:
+   case 19:    //YY:MM:DD
+      {
+         _year = temp / 10000;
+         holder = temp % 10000 ;
+         _month = holder / 100;
+         _day = holder % 100;
+      
+         _hour = time.hour();
+         _minute = time.minute();
+         _second = time.second();
+      }
       break;
 
-   case 20:
+   case 20:    //DD:HH:MM
+      {
+         _day = temp / 10000;
+         holder = temp % 10000 ;
+         _hour = holder / 100;
+         _minute = holder % 100;
+      
+         _year = date.year();
+         _month = date.month();
+         _day = date.dayOfMonth();
+      }
       break;
 
-   case 21:
+   case 21:    //MM:HH:DD
+      {
+         _minute = temp / 10000;
+         holder = temp % 10000 ;
+         _hour = holder / 100;
+         _day = holder % 100;
+   
+         _year = date.year();
+         _month = date.month();
+         _day = date.dayOfMonth();
+      }
       break;
 
-   case 22:
-      break;
-
-   case 23:
+   case 22:    //MM:DD:HH
+      {
+         _minute = temp / 10000;
+         holder = temp % 10000 ;
+         _day = holder / 100;
+         _hour = holder % 100;
+   
+         _year = date.year();
+         _month = date.month();
+         _day = date.dayOfMonth();
+      }
+   
+   case 23:    //HH:DD:MM
+      {
+         _hour = temp / 10000;
+         holder = temp % 10000 ;
+         _day = holder / 100;
+         _minute = holder % 100;
+   
+         _year = date.year();
+         _month = date.month();
+         _day = date.dayOfMonth();
+      }
       break;
    }
 }
