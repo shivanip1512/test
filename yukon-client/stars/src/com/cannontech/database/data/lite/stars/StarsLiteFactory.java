@@ -1667,6 +1667,8 @@ public class StarsLiteFactory {
 			starsCompany.setCompanyAddress( starsAddr );
 		}
 		
+		starsCompany.setTimeZone( liteCompany.getEnergyCompanySetting(ServerUtils.DEFAULT_TIME_ZONE) );
+		
 		return starsCompany;
 	}
 	
