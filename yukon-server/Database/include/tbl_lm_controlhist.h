@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/02/16 20:57:28 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/06/08 16:42:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,7 @@ private:
 
     bool _isNewControl;
     static CtiMutex    _soeMux;
+    RWCString   _loadedActiveRestore;
 
 public:
 

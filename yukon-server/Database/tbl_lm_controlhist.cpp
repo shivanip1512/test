@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/05/19 14:50:52 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/06/08 16:42:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ _lmControlHistID(lmchid), _paoID(paoid), _startDateTime(start), _soeTag(soe),
 _controlDuration(dur), _controlType(type), _currentDailyTime(daily), _currentMonthlyTime(month),
 _currentSeasonalTime(season), _currentAnnualTime(annual), _defaultActiveRestore(restore),
 _reductionValue(reduce), _reductionRatio(100), _prevLogTime(start), _prevStopReportTime(start),
-_isNewControl(true)
+_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL)
 {
 }
 
@@ -361,6 +361,7 @@ void CtiTableLMControlHistory::DecodeControlTimes(RWDBReader &rdr)
     rdr["currentmonthlytime"]  >> _currentMonthlyTime;
     rdr["currentseasonaltime"] >> _currentSeasonalTime;
     rdr["currentannualtime"]   >> _currentAnnualTime;
+    rdr["activerestore"]       >> _loadedActiveRestore;
 
     _prevStopReportTime = _prevLogTime;
 
@@ -382,7 +383,8 @@ RWDBStatus CtiTableLMControlHistory::RestoreControlTimes()
     table["currentdailytime"] <<
     table["currentmonthlytime"] <<
     table["currentseasonaltime"] <<
-    table["currentannualtime"];
+    table["currentannualtime"] <<
+    table["activerestore"];
 
     selector.where( table["paobjectid"] == getPAOID() && table["lmctrlhistid"] == maxid);
 
@@ -621,39 +623,65 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
 
     if(today.day() != prevdate.day())
     {
-        RWTime lastTimePrevious(prevdate, 23,59,59);
-        ULONG todaysSeconds = now.seconds() - lastTimePrevious.seconds();
-        partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
-
-#if 0
+        if( isNewControl() /* &&
+            ( !_loadedActiveRestore.compareTo(LMAR_TIMED_RESTORE, RWCString::ignoreCase) ||
+              !_loadedActiveRestore.compareTo(LMAR_MANUAL_RESTORE, RWCString::ignoreCase))*/ )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " lastTimePrevious() = " << lastTimePrevious << endl;
-            dout << " now()              = " << now << endl;
-            dout << " todaysSeconds      = " << todaysSeconds << endl;
-            dout << " partialIncrement   = " << partialIncrement << endl;
-        }
-#endif
-
-        if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
-        {
-            LONG offtime = ( (double)getReductionRatio() * (double)(partialIncrement) / 100.0 );
-
+            // These controls did not continue into the next day.
+            partialIncrement = 0;
+            #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Partial Increment = " << partialIncrement << endl;
+                dout << " PreviousLogTime()  = " << getPreviousLogTime() << endl;
+                dout << " partialIncrement   = " << partialIncrement << endl;
+                dout << " Increment          = " << increment << endl;
+                dout << " dar                = " << _loadedActiveRestore << endl;
             }
+            #endif
 
-            CtiTableLMControlHistory closeLog(*this);       // make a copy
-            closeLog.setActiveRestore(LMAR_PERIOD_TRANSITION);
-            closeLog.setCurrentDailyTime   ( closeLog.getCurrentDailyTime()    + offtime );
-            closeLog.setCurrentMonthlyTime ( closeLog.getCurrentMonthlyTime()  + offtime );
-            closeLog.setCurrentSeasonalTime( closeLog.getCurrentSeasonalTime() + offtime );
-            closeLog.setCurrentAnnualTime  ( closeLog.getCurrentAnnualTime()   + offtime );
-            closeLog.setStopTime( lastTimePrevious );
-            closeLog.Insert();
+            _loadedActiveRestore = "N";
+        }
+        else
+        {
+            // we must evaluate the day crossing.
+            RWTime lastTimePrevious(prevdate, 23,59,59);
+            ULONG todaysSeconds = now.seconds() - lastTimePrevious.seconds() - 1;
+            partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
+
+            #if 0
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " PreviousLogTime()  = " << getPreviousLogTime() << endl;
+                dout << " lastTimePrevious() = " << lastTimePrevious << endl;
+                dout << " now()              = " << now << endl;
+                dout << " todaysSeconds      = " << todaysSeconds << endl;
+                dout << " partialIncrement   = " << partialIncrement << endl;
+                dout << " Increment          = " << increment << endl;
+                dout << " dar                = " << _loadedActiveRestore << endl;
+            }
+            #endif
+
+            if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
+            {
+                LONG offtime = ( (double)getReductionRatio() * (double)(partialIncrement) / 100.0 );
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " Partial Increment = " << partialIncrement << endl;
+                }
+
+                CtiTableLMControlHistory closeLog(*this);       // make a copy
+                closeLog.setActiveRestore(LMAR_PERIOD_TRANSITION);
+                closeLog.setCurrentDailyTime   ( closeLog.getCurrentDailyTime()    + offtime );
+                closeLog.setCurrentMonthlyTime ( closeLog.getCurrentMonthlyTime()  + offtime );
+                closeLog.setCurrentSeasonalTime( closeLog.getCurrentSeasonalTime() + offtime );
+                closeLog.setCurrentAnnualTime  ( closeLog.getCurrentAnnualTime()   + offtime );
+                closeLog.setStopTime( lastTimePrevious );
+                closeLog.Insert();
+            }
         }
 
         newday = true;
