@@ -87,6 +87,26 @@ public final class CommandFuncs {
 
 		return liteCommand;
 	}
+	
+	public static LiteDeviceTypeCommand getDeviceTypeCommand(int devTypeCmdID)
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		LiteCommand liteCommand = null;
+		synchronized (cache)
+		{
+			java.util.List devTypeCmds = cache.getAllDeviceTypeCommands();
+			LiteDeviceTypeCommand ldtc = null;
+
+			for (int i = 0; i < devTypeCmds.size(); i++)
+			{
+				ldtc = (LiteDeviceTypeCommand)devTypeCmds.get(i);
+				if( devTypeCmdID == ldtc.getDeviceCommandID())
+					return ldtc;	
+			}
+		}
+
+		return null;
+	}
 	/** 
 	 * Replace the Default value prompt with the prompted input text.
 	 * @param valueString
