@@ -3,8 +3,6 @@
   */
 package com.cannontech.esub.viewer;
 
-import javax.swing.JFrame;
-
 import com.cannontech.esub.editor.Drawing;
 
 /**

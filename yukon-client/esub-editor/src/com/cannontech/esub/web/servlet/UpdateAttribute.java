@@ -128,8 +128,4 @@ public class UpdateAttribute extends HttpServlet {
 			Util.getConnToDispatch().write(msg[i]);
 		}			
 	}
-
-			
-		
-
 }

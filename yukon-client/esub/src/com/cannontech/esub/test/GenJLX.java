@@ -82,6 +82,7 @@ public class GenJLX {
 		alarmsTable.setCenter(506,600);
 		alarmsTable.setDeviceID(7);
 		graph.add(alarmsTable);
+		
 		d.save("c:/temp/test.jlx");
 		
 		System.exit(0);

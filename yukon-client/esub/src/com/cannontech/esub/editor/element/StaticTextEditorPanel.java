@@ -395,6 +395,7 @@ public Object getValue(Object o) {
 						((Integer) getFontSizeComboBox().getSelectedItem()).intValue() );
 	
 	staticText.setPaint(colorChooser.getColor());
+	
 	return staticText;
 }
 /**
