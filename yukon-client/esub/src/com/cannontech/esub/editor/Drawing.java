@@ -73,21 +73,18 @@ public class Drawing implements Serializable {
 		// Workaround for a bug that doesn't appear often
 		// Outof bounds excpetion is popped from an internal sun font cache occaisionally
 		// a retry seems to alleviate things
-		boolean retry = false;
-		do {
-		
-		try {
-		
-		writeSVG(fileName);
-		writeHTML(fileName);
-		writeImages(new File(fileName).getParent());
-		retry = false;
-		}
-		catch(Exception e) {
-			retry = true;
-			CTILogger.debug(e.getMessage());
-		}
-		} while(retry);
+		int retries = 3;
+		do {		
+			try {
+				writeSVG(fileName);
+				writeHTML(fileName);
+				writeImages(new File(fileName).getParent());
+				break;
+			}
+			catch(Exception e) {
+				CTILogger.debug(e.getMessage());
+			}
+		} while(retries-- > 0);
 	}
 	
 	private String writeHTML(String fileName) {
