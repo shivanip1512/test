@@ -171,15 +171,13 @@
                     <td width="75" height="10" valign="TOP" class="HeaderCell">Hour 
                       Ending </td>
                     <td width="75" height="10" valign="TOP" class="HeaderCell">Offer 
-                      in $ per Kwh</td>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell"> 
-                      <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>
-                      SCL in Kw 
+                      in $ per kWh</td>
+                      <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>                      
+                    <td width="75" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
                       <% } else { %>
-                      Kw Requested 
+<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
                       <% } %>
-                    </td>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>
+<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->
                   </tr>
                   <%
                for( int i = 0; i < 12; i++ ) {
@@ -188,8 +186,17 @@
                   <tr> 
                     <td width="75" height="10" class="TableCell"><%= hourStr %></td>
                     <td width="75" height="10" class="TableCell"><%= priceStrs[i] %></td>
-                    <td width="75" height="10" class="TableCell"><%= amountStrs[i] %></td>
-                    <td width="75" height="10" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>
+                    <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) {
+                      		if( amountStrs[i] == "----"){
+                      			 %>
+                    <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
+                    <%}
+                    else{ 
+                    %>
+                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.parse(amountStrs[i])%></td>
+                    <%}
+                    }%>
+<!--                    <td width="75" height="10" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
                   </tr>
                   <%
                }
@@ -205,15 +212,13 @@
                     <td width="75" height="10" valign="TOP" class="HeaderCell">Hour 
                       Ending </td>
                     <td width="75" height="10" valign="TOP" class="HeaderCell">Offer 
-                      in $ per Kwh</td>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell"> 
+                      in $ per kWh</td>
                       <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) { %>
-                      SCL in Kw 
+                    <td width="75" height="10" valign="TOP" class="HeaderCell">CLR in kW</td>
                       <% } else { %>
-                      Kw Requested 
+<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">kW Requested</td>-->
                       <% } %>
-                    </td>
-                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>
+<!--                    <td width="75" height="10" valign="TOP" class="HeaderCell">Baseline</td>-->
                   </tr>
                   <%
                for( int i = 12; i < 24; i++ ) {
@@ -222,8 +227,17 @@
                   <tr> 
                     <td width="75" height="10" valign="TOP" class="TableCell"><%= hourStr %></td>
                     <td width="75" height="10" valign="TOP" class="TableCell"><%= priceStrs[i] %></td>
+                      <% if (replyHistory.getAcceptStatus().equalsIgnoreCase("accepted")) {
+                      		if( amountStrs[i] == "----"){
+                      			 %>
                     <td width="75" height="10" valign="TOP" class="TableCell"><%= amountStrs[i] %></td>
-                    <td width="75" height="10" valign="TOP" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>
+                    <%}
+                    else{ 
+                    %>
+                    <td width="75" height="10" valign="TOP" class="TableCell"><%=numberFormat.parse(amountStrs[i])%></td>
+                    <%}
+                    }%>
+<!--                    <td width="75" height="10" valign="TOP" class="TableCell"><% if(baseLineValues != null) { %><%= numberFormat.format(baseLineValues[i]) %><% } else { %>----<% } %></td>-->
                   </tr>
                   <%
                }
