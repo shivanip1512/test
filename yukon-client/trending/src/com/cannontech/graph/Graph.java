@@ -13,9 +13,9 @@ package com.cannontech.graph;
  * @author:  Aaron Lauinger 
  */
 import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 
 import org.w3c.dom.Element;
+
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
@@ -179,9 +179,9 @@ public void encodePeakHTML(java.io.OutputStream out) throws java.io.IOException
 
 	tabHtml.setModel( getTrendModel() );
 	tabHtml.getHtml(buf);
-
 	out.write(buf.toString().getBytes());	
 }
+	
 public void encodePDF(java.io.OutputStream out) throws java.io.IOException
 {
 	// NOT IMPLEMENTE CORRECTLY YET!!!!  9/04/02 SN
@@ -221,7 +221,6 @@ public void encodePDF(java.io.OutputStream out) throws java.io.IOException
  * @param out java.io.OutputStream
  */
 public void encodeTabularHTML(java.io.OutputStream out) throws java.io.IOException 
-//public void encodeTabularHTML(java.io.PrintWriter out) throws java.io.IOException 
 {
 	StringBuffer buf = new StringBuffer();
 	TabularHtml tabHtml = new TabularHtml();
@@ -229,14 +228,6 @@ public void encodeTabularHTML(java.io.OutputStream out) throws java.io.IOExcepti
 	tabHtml.setModel( getTrendModel());
 	tabHtml.getHtml(buf);
 	out.write(buf.toString().getBytes());
-//	out.write(buf.toString().toCharArray());
-}
-
-public void getTabularHTML(StringBuffer buffer) throws java.io.IOException 
-{
-	TabularHtml tabHtml = new TabularHtml();
-	tabHtml.setModel( getTrendModel());
-	tabHtml.getHtml(buffer);
 }
 
 /**
@@ -301,7 +292,7 @@ public synchronized com.jrefinery.chart.JFreeChart getFreeChart()
 	return freeChart;
 }
 
-public StringBuffer getHTMLString()
+public StringBuffer getHtmlString()
 {
 	return htmlString;
 }
@@ -326,10 +317,6 @@ public int getViewType()
 public int getOptionsMaskHolder()
 {
 	return options_mask_holder;
-}
-public int getSeriesMask()
-{
-	return seriesMask;
 }
 
 /**
@@ -530,21 +517,6 @@ public void setOptionsMaskHolder(int newMask, boolean setMasked)
 		getTrendModel().setOptionsMask(getOptionsMaskHolder());
 }
 
-public void setSeriesMask(int newMask, boolean setMasked)
-{
-	// when setMasked = true, the newMask will be added to the options_mask
-	// when setMasked = false, the newMask will be removed from the options_mask
-	if( setMasked)
-		seriesMask |= newMask;
-	else
-	{
-		//check to make sure it's there if we are going to remove it
-		if( (seriesMask & newMask) != 0)
-		{
-			seriesMask ^= newMask;
-		}
-	}
-}
 /**
  * Insert the method's description here.
  * Creation date: (9/13/2001 3:03:38 PM)
