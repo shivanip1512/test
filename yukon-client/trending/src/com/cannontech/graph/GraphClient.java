@@ -833,6 +833,7 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
 			{
 				((TabularHtml) htmlBuffer).setTabularStartDate(tModel.getStartDate());
 				((TabularHtml) htmlBuffer).setTabularEndDate(tModel.getStopDate());
+				((TabularHtml) htmlBuffer).setResolution(getTrendProperties().getResolutionInMillis());
 
 				formatDateRangeSlider(tModel, (TabularHtml)htmlBuffer);
 			}

@@ -72,6 +72,8 @@ public class GraphBean extends Graph
 
 					tempCal.add(Calendar.DATE, 1);	//incr date by one
 					((TabularHtml) htmlBuffer).setTabularEndDate(tempCal.getTime());
+					
+					((TabularHtml) htmlBuffer).setResolution(getTrendProperties().getResolutionInMillis());
 				}
 	
 				htmlBuffer.getHtml( returnBuffer );
