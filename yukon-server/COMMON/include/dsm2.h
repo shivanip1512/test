@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/08/20 22:44:15 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/08/27 22:49:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -785,6 +785,7 @@ typedef class CtiOutMessage
 {
 public:
 
+   BYTE               HeadFrame[2];                 // 082702 CGP    // Hey, it should have been in there for a long time!
    LONG               DeviceID;                     // 083199 CGP    // The device id of the transmitter device.
    LONG               TargetID;                     // 022701 CGP    // The device id of the end-of-line device. May be the same as DeviceID depending on protocol
    USHORT             Sequence;                     // 083199 CGP    // Used by CCU711 to id a CCU queue entry.
@@ -825,6 +826,7 @@ public:
       TAPSTRUCT       TAPSt;
       DIALUPREQUEST   DUPReq;
    } Buffer;
+   BYTE               TailFrame[2];               // 082702 CGP    // Hey, it should have been in there for a long time!
 
 public:
 
@@ -834,16 +836,17 @@ public:
       ReturnNexus = NULL;
       SaveNexus = NULL;
 
+      HeadFrame[0] = 0x02;      // STX
+      HeadFrame[1] = 0xe0;
+      TailFrame[0] = 0xea;
+      TailFrame[1] = 0x03;      // ETX
+
       incrementCount();
    }
 
    CtiOutMessage(const CtiOutMessage &aRef)
    {
-      memset(this, 0, sizeof(CtiOutMessage));
-      ReturnNexus = NULL;
-      SaveNexus = NULL;
       *this = aRef;
-
       incrementCount();
    }
 
@@ -856,6 +859,8 @@ public:
    {
       if(this != &aRef)
       {
+         HeadFrame[0]      = aRef.HeadFrame[0];
+         HeadFrame[1]      = aRef.HeadFrame[2];
          DeviceID          = aRef.DeviceID;
          TargetID          = aRef.TargetID;
          Sequence          = aRef.Sequence;
@@ -886,6 +891,9 @@ public:
          SaveNexus         = aRef.SaveNexus;
 
          Buffer            = aRef.Buffer;
+
+         TailFrame[0]      = aRef.TailFrame[0];
+         TailFrame[1]      = aRef.TailFrame[1];
       }
 
       return *this;
