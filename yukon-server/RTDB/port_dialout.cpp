@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/09/23 20:26:51 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/09/30 14:58:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,7 +159,9 @@ INT CtiPortDialout::setup(INT trace)
     return modemSetup(trace, (_superPort->getTablePortSettings().getCDWait() != 0));
 }
 
-CtiPortDialout::CtiPortDialout() {}
+CtiPortDialout::CtiPortDialout() :
+_shouldDisconnect(FALSE)
+{}
 
 CtiPortDialout::CtiPortDialout(const CtiPortDialout& aRef)
 {

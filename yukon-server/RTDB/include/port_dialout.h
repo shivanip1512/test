@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/09/23 20:26:52 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/09/30 14:58:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ protected:
 
     CtiPort             *_superPort;           // This is how we know who owns us...
 
-    bool                _shouldDisconnect;
+    BOOL                _shouldDisconnect;
     RWCString           _dialedUpNumber;
     CtiTablePortDialup  _tblPortDialup;
 
