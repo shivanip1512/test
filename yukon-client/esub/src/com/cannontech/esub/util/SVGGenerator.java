@@ -252,7 +252,7 @@ public class SVGGenerator {
 		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
 			//UpdateUtil assumes a live system!
-			if(genOptions.isControlEnabled() && UpdateUtil.isControllable(text.getPointID())) {
+			if(genOptions.isControlEnabled() && Util.isStatusPoint(text.getPointID())) /*&& UpdateUtil.isControllable(text.getPointID())*/ { 
 				textElem.setAttributeNS(null, "onclick", "controlPoint(evt)");	
 			}
 			else
@@ -390,7 +390,7 @@ public class SVGGenerator {
 		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
 			//Update Util requires a live system!
-			if(genOptions.isControlEnabled() && UpdateUtil.isControllable(img.getPoint().getPointID())) {
+			if(genOptions.isControlEnabled() /*&& UpdateUtil.isControllable(img.getPoint().getPointID())*/) {
 				imgElem.setAttributeNS(null, "onclick", "controlPoint(evt)");	
 			}
 		}
