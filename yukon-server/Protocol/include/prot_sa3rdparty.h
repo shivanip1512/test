@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/05/19 14:55:56 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/06/03 21:46:17 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.3  2004/06/03 21:46:17  cplender
+* Simulator mods.
+*
 * Revision 1.2  2004/05/19 14:55:56  cplender
 * Supportting new dsm2.h struct CtiSAData
 *
@@ -42,6 +45,9 @@ class IM_EX_PROT CtiProtocolSA3rdParty : public CtiProtocolBase
 protected:
 
     CtiSAData _sa;
+
+    int _sTime;
+    int _cTime;
 
     bool _messageReady;
 

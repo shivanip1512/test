@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/05/24 21:38:06 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/06/03 21:46:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -945,6 +945,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             OutMessage->EventCode = RESULT | ENCODED;
             OutMessage->Buffer.SASt._groupType = GOLAY;
             strncpy(OutMessage->Buffer.SASt._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
             resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
 

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/24 13:47:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/03 21:46:17 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.5  2004/06/03 21:46:17  cplender
+* Simulator mods.
+*
 * Revision 1.4  2004/05/24 13:47:40  cplender
 * Added opcode to the 105/205 protocol asString call.
 *
@@ -321,8 +324,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         }
 
         _sa._repeats = parse.getiValue("sa_reps", 1);
-        _sa._swTimeout = 450;
-        _sa._cycleTime = 450;
+        _sa._swTimeout = 900;
+        _sa._cycleTime = 900;
     }
     else
     {
@@ -339,12 +342,14 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         {
             // It is a cycle command!
 
-            if(cycle_period <= 8)
+            if(_sa._groupType == SA205 && cycle_period <= 8)
             {
                 _sa._cycleTime = 450;
                 if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 450;
+                    _sTime = 3;
+                    _cTime = 5;
                 }
                 else
                 {
@@ -362,22 +367,32 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 450;
+                    _sTime = 2;
+                    _cTime = 6;
                 }
                 else if(cycle_percent <= 67)
                 {
                     _sa._swTimeout = 600;
+                    _sTime = 3;
+                    _cTime = 6;
                 }
                 else if(cycle_percent <= 73)
                 {
                     _sa._swTimeout = 660;
+                    _sTime = 4;
+                    _cTime = 6;
                 }
                 else if(cycle_percent <= 80)
                 {
                     _sa._swTimeout = 720;
+                    _sTime = 5;
+                    _cTime = 6;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 900;
+                    _sTime = 0;
+                    _cTime = 5;
                 }
                 else
                 {
@@ -422,22 +437,32 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 25)
                 {
                     _sa._swTimeout = 450;
+                    _sTime = 0;
+                    _cTime = 6;
                 }
                 else if(cycle_percent <= 33)
                 {
                     _sa._swTimeout = 600;
+                    _sTime = 1;
+                    _cTime = 6;
                 }
                 else if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 900;
+                    _sTime = 0;
+                    _cTime = 4;
                 }
                 else if(cycle_percent <= 75)
                 {
                     _sa._swTimeout = 1350;
+                    _sTime = 1;
+                    _cTime = 4;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 1800;
+                    _sTime = 1;
+                    _cTime = 5;
                 }
                 else
                 {
@@ -568,42 +593,62 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 13)
                 {
                     _sa._swTimeout = 450;
+                    _sTime = 0;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 25)
                 {
                     _sa._swTimeout = 900;
+                    _sTime = 1;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 33)
                 {
                     _sa._swTimeout = 1200;
+                    _sTime = 2;
+                    _cTime = 4;
                 }
                 else if(cycle_percent <= 38)
                 {
                     _sa._swTimeout = 1350;
+                    _sTime = 2;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 1800;
+                    _sTime = 3;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 63)
                 {
                     _sa._swTimeout = 2250;
+                    _sTime = 4;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 67)
                 {
                     _sa._swTimeout = 2400;
+                    _sTime = 3;
+                    _cTime = 4;
                 }
                 else if(cycle_percent <= 75)
                 {
                     _sa._swTimeout = 2700;
+                    _sTime = 5;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 88)
                 {
                     _sa._swTimeout = 3150;
+                    _sTime = 6;
+                    _cTime = 7;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 3600;
+                    _sTime = 2;
+                    _cTime = 5;
                 }
                 else
                 {
@@ -919,7 +964,7 @@ RWCString CtiProtocolSA3rdParty::asString() const
 
 RWCString CtiProtocolSA3rdParty::strategyAsString() const
 {
-    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds. " + CtiNumStr(_sa._repeats) + " period repeats.");
+    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds. (" + CtiNumStr(_sTime) + " / " + CtiNumStr(_cTime) + ") " + CtiNumStr(_sa._repeats) + " period repeats.");
     return rstr;
 }
 

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/19 14:50:33 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/03 21:46:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,19 +192,24 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["funcparams"]       >> _funcParams;
 
     _funcParams.toLower();
-    RWCString temp;
-    temp = _funcParams.match(RWCRExpr("cycletime:[0-9]+"));
-    temp = temp.match("[0-9]+");
-    _cycleTime = atoi(temp.data());
-    temp = _funcParams.match(RWCRExpr("offset:[0-9]+"));
-    temp = temp.match("[0-9]+");
-    _cycleOffset = atoi(temp.data());
-    temp = _funcParams.match(RWCRExpr("transmittime:[0-9]+"));
-    temp = temp.match("[0-9]+");
-    _transmitTime = atoi(temp.data());
-    temp = _funcParams.match(RWCRExpr("maxtime:[0-9]+"));
-    temp = temp.match("[0-9]+");
-    _maxTransmitTime = atoi(temp.data());
+
+    if(_funcParams[(size_t)0] != '#')
+    {
+        RWCString temp;
+        temp = _funcParams.match(RWCRExpr("cycletime:[0-9]+"));
+        temp = temp.match("[0-9]+");
+        _cycleTime = atoi(temp.data());
+        temp = _funcParams.match(RWCRExpr("offset:[0-9]+"));
+        temp = temp.match("[0-9]+");
+        _cycleOffset = atoi(temp.data());
+        temp = _funcParams.match(RWCRExpr("transmittime:[0-9]+"));
+        temp = temp.match("[0-9]+");
+        _transmitTime = atoi(temp.data());
+        temp = _funcParams.match(RWCRExpr("maxtime:[0-9]+"));
+        temp = temp.match("[0-9]+");
+        _maxTransmitTime = atoi(temp.data());
+    }
+
 }
 
 RWDBStatus CtiTablePaoExclusion::Restore()

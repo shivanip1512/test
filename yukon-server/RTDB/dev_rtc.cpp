@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/05/24 20:25:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/06/03 21:46:17 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.10  2004/06/03 21:46:17  cplender
+* Simulator mods.
+*
 * Revision 1.9  2004/05/24 20:25:36  cplender
 * Scramble
 *
@@ -357,11 +360,12 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
-    if(hasExclusions())
+    if( !(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags) && hasExclusions())
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
-        OutMessage->MessageFlags &= ~MSGFLG_APPLY_EXCLUSION_LOGIC;
+        OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE; // This OM has already been queued to the device once.
+
         _workQueue.putQueue(OutMessage);
         OutMessage= 0;
 
@@ -466,7 +470,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
     RWTime now;
     INT status = NORMAL;
 
-    CtiOutMessage *rtcOutMessage = 0;
+    CtiOutMessage *rtcOutMessage = 0;       // This pointer is used to process the queued outmessages on this device.
 
     INT codecount = 1;      // One is for The one in OutMessage.
 
@@ -495,7 +499,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
         msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
 
-        while( codecount <= 35 && getOutMessage(rtcOutMessage) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) )
+        while( codecount <= 35 && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
         {
             now = now.now();
             codecount++;
@@ -503,8 +507,8 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             OutMessage->OutLength += rtcOutMessage->OutLength;
 
             msgMillis += messageDuration(rtcOutMessage->Buffer.SASt._groupType);
-            prot.setSAData( rtcOutMessage->Buffer.SASt );
 
+            prot.setSAData( rtcOutMessage->Buffer.SASt );
             {
                 CtiLockGuard<CtiLogger> doubt_guard(slog);
                 slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
@@ -522,6 +526,14 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
             rtcOutMessage = 0;
 
+        }
+
+        if(rtcOutMessage)   // This means we be leaking.
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
         prot.setTransmitterAddress(getAddress());
@@ -553,7 +565,7 @@ ULONG CtiDeviceRTC::messageDuration(int groupType)
     }
     else
     {
-        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 225);
+        millitime = gConfigParms.getValueAsULong("PORTER_RTC_TIME_PER_SIMPLE_CODE", 250);
     }
 
     return millitime;
