@@ -24,6 +24,7 @@
 #include "logger.h"
 #include "capcontroller.h"
 #include "resolvers.h"
+#include "mgr_holiday.h"
 
 extern BOOL _CC_DEBUG;
 
@@ -1557,10 +1558,16 @@ BOOL CtiCCSubstationBus::isPeakDay()
     //also, but we must wait until there is
     //a dll with a function to do this
     //-------------------------------------
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    RWDate today;
-    ULONG weekday = today.weekDay();
-    if( _daysofweek(weekday-1) == 'Y' )
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
+    RWTime now;
+    struct tm start_tm;
+
+    now.extract(&start_tm);
+
+    if( _daysofweek(start_tm.tm_wday) == 'Y' &&
+        ( _daysofweek(7) == 'Y' ||
+          !CtiHolidayManager::getInstance().isHoliday() ) )
         return TRUE;
     else
         return FALSE;
