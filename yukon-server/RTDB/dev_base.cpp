@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/12/19 20:29:21 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/03/06 18:05:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -761,5 +761,17 @@ bool CtiDeviceBase::isTAP() const
     }
 
     return bret;
+}
+
+bool CtiDeviceBase::hasExclusions() const
+{
+    bool bret = _excluded.size() != 0;
+
+    return bret;
+}
+
+CtiDeviceBase::exclusions CtiDeviceBase::getExclusions() const
+{
+    return _excluded;
 }
 

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/12/19 20:27:26 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/03/06 18:05:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,39 +56,10 @@ class CtiProtocolBase;
  */
 class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAO, public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
-protected:
-
-    INT                  _commFailCount;                        // Consecutive failures to this device.
-    INT                  _attemptCount;                         // Cumulative. Attempts to communicate with the device
-    INT                  _attemptFailCount;                     // Cumulative. Failed with no retries
-    INT                  _attemptRetryCount;                    // Cumulative. Failed, but retries remain
-    INT                  _attemptSuccessCount;                  // Cumulative. Comms successful.
-
-
-    CtiPointManager      *_pointMgr;                            // Manages points associated with this Device (Device owned memory)
-    CtiRouteManager      *_routeMgr;                            // Helps me find my Route.  (Memory managed elsewhere)
-
-    union
-    {
-        UINT     _clear;
-        struct
-        {
-            UINT  _logOnNeeded : 1;
-        };
-    };
-
-    bool _singleDevice;                                         // This should be one for any device not a group.
-    CtiTableDeviceBase _deviceBase;                             // This guy used to give us a LOT of members by being our parent!
-
-private:
-
-    int _currTrxID;
-    int _responsesOnTrxID;
-    RWTime _lastReport;
-
 public:
 
     typedef CtiTblPAO Inherited;
+    typedef vector< unsigned long > exclusions;
 
     CtiDeviceBase();
     CtiDeviceBase(const CtiDeviceBase& aRef);
@@ -224,6 +195,41 @@ public:
     virtual INT getBits() const;
     virtual INT getStopBits() const;
     virtual INT getParity() const;
+
+    virtual bool hasExclusions() const;
+    exclusions getExclusions() const;
+
+protected:
+
+    INT                  _commFailCount;                        // Consecutive failures to this device.
+    INT                  _attemptCount;                         // Cumulative. Attempts to communicate with the device
+    INT                  _attemptFailCount;                     // Cumulative. Failed with no retries
+    INT                  _attemptRetryCount;                    // Cumulative. Failed, but retries remain
+    INT                  _attemptSuccessCount;                  // Cumulative. Comms successful.
+
+
+    CtiPointManager      *_pointMgr;                            // Manages points associated with this Device (Device owned memory)
+    CtiRouteManager      *_routeMgr;                            // Helps me find my Route.  (Memory managed elsewhere)
+
+    union
+    {
+        UINT     _clear;
+        struct
+        {
+            UINT  _logOnNeeded : 1;
+        };
+    };
+
+    bool _singleDevice;                                         // This should be one for any device not a group.
+    CtiTableDeviceBase _deviceBase;                             // This guy used to give us a LOT of members by being our parent!
+
+private:
+
+    int _currTrxID;
+    int _responsesOnTrxID;
+    RWTime _lastReport;
+
+    exclusions  _excluded;
 
 };
 

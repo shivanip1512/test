@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2003/02/07 15:03:35 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2003/03/06 18:07:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -236,19 +236,6 @@ bool isTAPTermPort(LONG PortNumber)
     result = DeviceManager.getMap().contains(containsTAPDevice, (void*)PortNumber);
 
     return result;
-}
-
-void applyTAPPortStatus(const long portid, CtiPortSPtr &Port, void *unusedPtr)
-{
-    /* Find out if we have a TAP terminal */
-    Port->setTAP( isTAPTermPort(portid) );
-
-    if((PorterDebugLevel & PORTER_DEBUG_VERBOSE) && Port->isTAP())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " WARNING: " << Port->getName() << " has a TAP device on it." << endl;
-        dout << " This currently sets the port to 7E1 mode for ALL devices on the port" << endl;
-    }
 }
 
 /* Routine to load all routes on a system */
@@ -1669,6 +1656,8 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
 
 CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
 {
+    extern VOID PortPoolDialoutThread(void *pid);
+
     CTI_PORTTHREAD_FUNC_PTR fptr = PortThread;
 
     switch(porttype)
@@ -1676,6 +1665,11 @@ CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
     case PortTypeLocalDialBack:
         {
             fptr = PortDialbackThread;
+            break;
+        }
+    case PortTypePoolDialout:
+        {
+            fptr = PortPoolDialoutThread;
             break;
         }
     }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2003/03/05 23:54:01 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2003/03/06 18:07:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,7 +150,6 @@ BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
 INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
 INT VerifyPortStatus(CtiPortSPtr Port);
-INT ResetPortParameters(CtiPortSPtr Port, CtiDevice *Device);
 INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage);
 INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDevice *Device);
 INT ValidateDevice(CtiPortSPtr Port, CtiDevice *Device);
@@ -238,7 +237,7 @@ VOID PortThread(void *pid)
                 PorterQuit = TRUE;
             }
 
-            continue; // 012601 CGP...  What is this..  // return;
+            continue;
         }
 
         try
@@ -340,7 +339,7 @@ VOID PortThread(void *pid)
                     dout << RWTime() << " did not assign new deviceID" << endl;
                 }
 
-                SendError(OutMessage, status);
+                SendError(OutMessage, UnknownError);
                 continue;
             }
         }
@@ -357,32 +356,13 @@ VOID PortThread(void *pid)
                     " Porter does not seem to know about him and is throwing away the message!" << endl;
                 }
 
-                SendError(OutMessage, status);
+                SendError(OutMessage, UnknownError);
                 continue;
             }
         }
 
-
         gQueSlot = 0;   // Set this back to zero every time regardless of port type.
 
-        // Make sure port hasn't changed any here..
-        if( ResetPortParameters(Port, Device) != NORMAL )
-        {
-            if(OutMessage->DeviceID != OutMessage->TargetID)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "Port " << Port->getName() << " has a re-init problem" << endl;
-                dout << RWTime() << "  Messages have been lost." << endl;
-            }
-
-            if(OutMessage != NULL)
-            {
-                delete OutMessage;
-                OutMessage = NULL;
-            }
-
-            continue;
-        }
         // Copy a good portion of the OutMessage to the to-be-formed InMessage
         OutEchoToIN(OutMessage, &InMessage);
 
@@ -409,10 +389,10 @@ VOID PortThread(void *pid)
         }
 
         // See if there is a reason to proceed..
-        if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL) /* do any preprocessing according to type */
+        if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL)   /* do any preprocessing according to type */
         {
             RequeueReportError(status, OutMessage);
-            continue;            // Connection never happened!
+            continue;
         }
 
         /* Check if this port is dial up and initiate connection. */
@@ -635,28 +615,6 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
     return status;
 }
 
-
-INT ResetPortParameters(CtiPortSPtr Port, CtiDevice *Device)
-{
-    INT status = NORMAL;
-
-
-#if 0    // 8/9/01 CGP This is not working correctly anyway!
-
-    if( !(Port->isTCPIPPort()) )
-    {
-        /*
-         *  Check if the port has changed name i.e. com1 -> com2 etc... via the editor.
-         */
-
-        // 121702 CGP.  Need to figure out how to handle DB changes on a port.
-    }
-
-#endif
-
-    return status;
-}
-
 /*----------------------------------------------------------------------------*
  * This function prepares or resets the communications port for (re)use.
  * it checks it for proper state and setup condition.
@@ -840,6 +798,31 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
     INT status = NORMAL;
     struct timeb   TimeB;
     ULONG          QueueCount;
+
+
+    // 030503 CGP Adding Exclusion logic in this location.
+    /*
+     * Exclusion logic will consist of:
+     *  - Is there a time exclusion on either the port or the device in that order?
+     *  - Is this port blocked by any other currently executing port.
+     *  - Is the device blocked by any other currently executing device.
+     *
+     *  A paobject will be considered blocked if a paobjectid in the exclusion list of the paobject in question
+     *  reports itself as currently executing...
+     *
+     */
+
+    if(Port->hasExclusions())
+    {
+    }
+
+    if(Device->hasExclusions())
+    {
+    }
+
+
+
+    // 030503 CGP END Exclusion logic.
 
     if( Port->isDialup() )
     {
@@ -3023,7 +3006,7 @@ VOID PortDialbackThread(void *pid)
                         PorterQuit = TRUE;
                         break;
                     }
-                    else if(Port->isDCD())
+                    else if(Port->dcdTest())
                         break;
                 }
             }
@@ -3038,7 +3021,7 @@ VOID PortDialbackThread(void *pid)
                 break;
             }
 
-            if(Port->isDCD())
+            if(Port->dcdTest())
             {
                 char mych = '\0';
                 {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/01/07 17:49:12 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/03/06 18:07:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,7 +241,7 @@ ReportRemoteError (CtiDeviceBase *RemoteRecord, ERRSTRUCT *ErrorRecord)
 
 
 /* Add Device error to the comm error log */
-ReportDeviceError (CtiDeviceBase    *DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT *ErrorRecord)
+ReportDeviceError (CtiDeviceBase* DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT *ErrorRecord)
 {
     COMM_ERROR_LOG_STRUCT ComErrorRecord;
 
