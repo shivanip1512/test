@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.ServletUtils;
 
 /*
  * Created on May 24, 2004
@@ -41,11 +40,22 @@ public class AlliantImportResidential {
 		
 		try {
 			for (int i = 1; i < lines.length; i++) {
-				String[] columns = ServerUtils.splitString( lines[i], "," );;
+				String[] columns = ServerUtils.splitString( lines[i], "," );
+				
+				String groupName = "";
+				if (columns[2].equalsIgnoreCase("Beaver Dam")
+					|| columns[2].equalsIgnoreCase("Randolph")
+					|| columns[2].equalsIgnoreCase("Horicon"))
+					groupName = "AE Residential Beaver Dam";
+				else if (columns[2].equalsIgnoreCase("Baraboo"))
+					groupName = "AE Residential Baraboo";
+				else if (columns[2].equalsIgnoreCase("Portage"))
+					groupName = "AE Residential Portage";
+				
 				output[i] = lines[i] + "," +
 						"ExpressStat," +
 						"AE Residential DegreeSaver," +
-						"AE Residential " + ServletUtils.capitalize2(columns[2]) + "," +
+						groupName + "," +
 						columns[8] + "," + columns[8];	// username = password = serial #
 			}
 			
