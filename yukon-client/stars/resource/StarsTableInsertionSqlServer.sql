@@ -88,6 +88,7 @@ insert into YukonSelectionList values (1046,'N','(none)','Irrigation type select
 insert into YukonSelectionList values (1047,'N','(none)','Soil type selection', 'SoilType','N');
 insert into YukonSelectionList values (1048,'N','(none)','Device location selection', 'DeviceLocation','N');
 insert into YukonSelectionList values (1049,'O','(none)','Opt out period selection','OptOutPeriod','N');
+insert into YukonSelectionList values (1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N');
 
 /* YukonListEntry */
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
@@ -200,6 +201,15 @@ insert into YukonListEntry values (1107,1049,2,'Today',2602);
 insert into YukonListEntry values (1108,1049,99,'Repeat Last',2699);
 insert into YukonListEntry values (1109,1003,0,'TwoWayRec',1202);
 insert into YukonListEntry values (1110,1005,0,'EnergyPro',3100);
+insert into YukonListEntry values (1201,1050,0,'Last Update Time',3201);
+insert into YukonListEntry values (1202,1050,0,'Setpoint',3202);
+insert into YukonListEntry values (1203,1050,0,'Fan',3203);
+insert into YukonListEntry values (1204,1050,0,'System',3204);
+insert into YukonListEntry values (1205,1050,0,'Room,Unit',3205);
+insert into YukonListEntry values (1206,1050,0,'Outdoor',3234);
+insert into YukonListEntry values (1207,1050,0,'Filter Remaining,Filter Restart',3236);
+insert into YukonListEntry values (1208,1050,0,'Lower CoolSetpoint Limit, Upper HeatSetpoint Limit',3237);
+insert into YukonListEntry values (1209,1050,0,'Information String',3299);
 
 /* ECToGenericMapping */
 insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
@@ -250,6 +260,7 @@ insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1050, 'YukonSelectionList');
 
 /* Thermostat tables */
 /* LMThermostatSeason */
