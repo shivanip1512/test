@@ -39,9 +39,15 @@ ULONG&    CtiXfer::getInCountExpected()
 {
    return _inCountExpected;
 }
-ULONG*   CtiXfer::getInCountActual() const
+ULONG   CtiXfer::getInCountActual() const
 {
-   return _inCountActual;
+    ULONG cnt = 0;
+
+    if(_inCountActual != NULL)
+    {
+        cnt = *_inCountActual;
+    }
+   return cnt;
 }
 ULONG    CtiXfer::getInTimeout() const
 {

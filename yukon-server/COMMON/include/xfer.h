@@ -96,7 +96,7 @@ public:
    ULONG&   getOutCount();
    ULONG    getInCountExpected() const;
    ULONG&   getInCountExpected();
-   ULONG*   getInCountActual() const;
+   ULONG    getInCountActual() const;
    ULONG    getInTimeout() const;
    ULONG&   getInTimeout();
    UINT     getFlag() const;

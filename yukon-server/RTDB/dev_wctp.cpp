@@ -732,7 +732,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
             }
         case StateScanDecode2:
             {
-                if( (inCnt = *xfer.getInCountActual()) > 0) {
+                if( (inCnt = xfer.getInCountActual()) > 0) {
                     // Append the out buffer with the input data
                     strncat(out, in, inCnt);
 
@@ -952,7 +952,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                 setCurrentState(StateScanAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
                 break;
             }

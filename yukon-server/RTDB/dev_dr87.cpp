@@ -2315,7 +2315,7 @@ INT CtiDeviceDR87::getMessageInDataStream (CtiXfer  &Transfer, int aCommValue)
         // make sure we don't go off looking for the sync bit forever
         setNumberOfIncompleteMsgs (getNumberOfIncompleteMsgs()-1);
 
-        while (cnt < *Transfer.getInCountActual() && retVal != DR87_NAK && !isDataMsgComplete())
+        while (cnt < Transfer.getInCountActual() && retVal != DR87_NAK && !isDataMsgComplete())
         {
             // check if we've gotten a sync byte already
             if (syncByteHasBeenReceived())

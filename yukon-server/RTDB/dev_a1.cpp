@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/12 17:02:44 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/02/07 13:57:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -975,9 +975,9 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
 
                     memcpy(&_dataBuffer[getTotalByteCount()],
                            &Transfer.getInBuffer()[5],
-                           (*Transfer.getInCountActual()) - 7);
+                           (Transfer.getInCountActual()) - 7);
 
-                    setTotalByteCount (getTotalByteCount() + (*(Transfer.getInCountActual())) - 7);
+                    setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
 
                     // need to check if have any more info
                     setCurrentState (StateScanValueSet7FirstScan);
@@ -1033,7 +1033,7 @@ INT CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, INT commReturnValu
 
         case StateScanDecode5:
             {
-                if (commReturnValue || (*Transfer.getInCountActual() == 0))
+                if (commReturnValue || (Transfer.getInCountActual() == 0))
                 {
                                        // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);
@@ -1233,9 +1233,9 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
                     memcpy(&_workBuffer[getTotalByteCount()],
                            &Transfer.getInBuffer()[5],
-                           (*Transfer.getInCountActual()) - 7);
+                           (Transfer.getInCountActual()) - 7);
 
-                    setTotalByteCount (getTotalByteCount() + (*(Transfer.getInCountActual())) - 7);
+                    setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
 
                     // need to check if its time to send back load profile or if we are at the end
                     if ((getTotalByteCount() >= ptr->dayRecordSize) ||
@@ -1314,7 +1314,7 @@ INT CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
         case StateScanDecode5:
             {
-                if (commReturnValue || (*Transfer.getInCountActual() == 0))
+                if (commReturnValue || (Transfer.getInCountActual() == 0))
                 {
                     // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);

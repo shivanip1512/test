@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/11/15 20:37:56 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/02/07 13:57:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -271,7 +271,7 @@ bool CtiANSIDatalink::decode( CtiXfer &xfer, BYTE *dataPtr, int &recieved )
 
    if( _sendAck != true )
    {
-      arrived = *xfer.getInCountActual();
+      arrived = xfer.getInCountActual();
 
       done = disassemblePacket( packet, retrieve, send, arrived );
       xfer.setInCountExpected( retrieve );
@@ -290,7 +290,7 @@ bool CtiANSIDatalink::decode( CtiXfer &xfer, BYTE *dataPtr, int &recieved )
 
       if( getSequence() != 0 )      //we're in the middle of a table (mult. packets)
       {
-         arrived = *xfer.getInCountActual();
+         arrived = xfer.getInCountActual();
 
          done = disassemblePacket( packet, retrieve, send, arrived );
          xfer.setInCountExpected( retrieve );

@@ -980,9 +980,9 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
 
                     memcpy(&_dataBuffer[getTotalByteCount()],
                            &Transfer.getInBuffer()[5],
-                           (*Transfer.getInCountActual()) - 7);
+                           (Transfer.getInCountActual()) - 7);
 
-                    setTotalByteCount (getTotalByteCount() + (*(Transfer.getInCountActual())) - 7);
+                    setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
 
                     // need to check if have any more info
                     setCurrentState (StateScanValueSet7FirstScan);
@@ -1038,7 +1038,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
 
         case StateScanDecode5:
             {
-                if (commReturnValue || (*Transfer.getInCountActual() == 0))
+                if (commReturnValue || (Transfer.getInCountActual() == 0))
                 {
                     // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);
@@ -1240,9 +1240,9 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
 
                     memcpy(&_workBuffer[getTotalByteCount()],
                            &Transfer.getInBuffer()[5],
-                           (*Transfer.getInCountActual()) - 7);
+                           (Transfer.getInCountActual()) - 7);
 
-                    setTotalByteCount (getTotalByteCount() + (*(Transfer.getInCountActual())) - 7);
+                    setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
 
                     // need to check if its time to send back load profile
                     if (getTotalByteCount() >= ptr->class14.dayRecordSize)
@@ -1346,7 +1346,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
 
         case StateScanDecode5:
             {
-               if (commReturnValue || (*Transfer.getInCountActual() == 0))
+               if (commReturnValue || (Transfer.getInCountActual() == 0))
                 {
                     // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);

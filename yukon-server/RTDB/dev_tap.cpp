@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/07 13:57:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,7 +216,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
     case StateHandshakeDecodeStart:
         {
             /* Check if this is ID= */
-            if(*xfer.getInCountActual() >= 2)
+            if(xfer.getInCountActual() >= 2)
             {
                 if((strstr((char*)xfer.getInBuffer(), "ID") != NULL) || (strstr((char*)xfer.getInBuffer(), "\r\n") != NULL))
                 {
@@ -226,13 +226,13 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                         // We got the bytes we needed though.. so lets ignore the error!
                         status = NORMAL;  // Make sure the portfield loop is not compromised!
 
-                        _idByteCount = *xfer.getInCountActual();  // Improve the efficiency for the next call.
+                        _idByteCount = xfer.getInCountActual();  // Improve the efficiency for the next call.
                     }
 
                     setCurrentState(StateHandshakeSendIdentify);
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                     }
                 }
                 else // We will retry the operation
@@ -258,7 +258,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
 
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
             }
@@ -276,7 +276,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 status = NORMAL;  // Make sure the portfield loop is not compromised!
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
 
             }
@@ -290,7 +290,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 setCurrentState(StateGenerate_1);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
             }
             else if( xfer.getInBuffer()[0] == CHAR_NAK )
@@ -299,7 +299,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 setCurrentState(StateHandshakeAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
             }
             else if( xfer.getInBuffer()[0] == CHAR_ESC )
@@ -307,7 +307,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 setCurrentState(StateHandshakeSendIdentify_2);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
             }
             else // We will retry the operation
@@ -315,7 +315,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 setCurrentState( StateAbsorb );
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
 
                 if(commReturnValue == NORMAL)
@@ -333,14 +333,14 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
         }
     case StateDecode_1:
         {
-            if(*xfer.getInCountActual() > 0)
+            if(xfer.getInCountActual() > 0)
             {
                 if( xfer.getInBuffer()[0] == CHAR_ESC )
                 {
                     setCurrentState(StateGenerate_2);
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
                 else
@@ -350,17 +350,17 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     status = NORMAL;  // Make sure the portfield loop is not compromised!
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
             }
             else
             {
-                status = READTIMEOUT;
+                status = ErrorPageNoResponse;
                 setCurrentState(StateHandshakeAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
             }
 
@@ -368,7 +368,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
         }
     case StateDecode_2:
         {
-            if(*xfer.getInCountActual() > 0)
+            if(xfer.getInCountActual() > 0)
             {
                 /*
                  *  Looking for "[p<CR>"
@@ -382,7 +382,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     setLogOnNeeded(FALSE);                     // We are connected to the tap terminal.
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                     }
                 }
                 else // We will retry the operation
@@ -392,17 +392,17 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                     status = NORMAL;  // Make sure the portfield loop is not compromised!
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
             }
             else
             {
-                status = READTIMEOUT;
+                status = ErrorPageNoResponse;
                 setCurrentState(StateHandshakeAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
             }
 
@@ -417,7 +417,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 setCurrentState(StateHandshakeAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
             }
             else // We will retry the operation (sometimes this means we fail if attempts is zero)
@@ -427,7 +427,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
                 status = NORMAL;  // Make sure the portfield loop is not compromised!
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
             }
 
@@ -449,7 +449,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer,INT commRe
             setCurrentState(StateHandshakeAbort);
             if(xfer.doTrace(commReturnValue))
             {
-                traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
             }
 
             break;
@@ -601,6 +601,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrS
 
             if( getAttemptsRemaining() - 1 <= 0 )
             {
+                status = ErrorPageNoResponse;
                 setCurrentState( StateHandshakeAbort );
             }
             else
@@ -622,6 +623,7 @@ INT CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer, RWTPtrS
         {
             if( getAttemptsRemaining() - 1 <= 0 )
             {
+                status = ErrorPageNoResponse;
                 setCurrentState( StateHandshakeAbort );
                 if(xfer.doTrace(0))
                 {
@@ -999,7 +1001,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                  *  We just sent out our page, we are going to look at the one character returned and make sure we
                  *  like what we see.
                  */
-                if( *xfer.getInCountActual() > 0 &&
+                if( xfer.getInCountActual() > 0 &&
                     xfer.getInBuffer()[0] != CHAR_ACK &&
                     xfer.getInBuffer()[0] != CHAR_NAK &&
                     xfer.getInBuffer()[0] != CHAR_ESC &&
@@ -1018,14 +1020,14 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
 
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                 }
                 break;
             }
         case StateScanDecode4:
         case StateScanDecode5:
             {
-                if(*xfer.getInCountActual() > 0 )
+                if(xfer.getInCountActual() > 0 )
                 {
                     if( xfer.getInBuffer()[0] == CHAR_NAK && getAttemptsRemaining() > 0 )
                     {
@@ -1033,7 +1035,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         setCurrentState( StateRepeat );
                         if(xfer.doTrace(commReturnValue))
                         {
-                            traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                            traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                         }
                     }
                     else if(xfer.getInBuffer()[0] == CHAR_ESC || xfer.getInBuffer()[0] == CHAR_NAK)
@@ -1043,7 +1045,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         setCurrentState( StateAbort );
                         if(xfer.doTrace(commReturnValue))
                         {
-                            traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                            traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                         }
                     }
                     else  // This is the good state;
@@ -1056,7 +1058,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         setCurrentState( StateScanComplete );
                         if(xfer.doTrace(commReturnValue))
                         {
-                            traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                            traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                         }
                     }
                 }
@@ -1067,7 +1069,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                     setCurrentState( StateAbort );
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                     }
                 }
 
@@ -1089,7 +1091,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                 setCurrentState(StateAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
                 break;
             }
@@ -1235,7 +1237,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
         {
         case StateDecode_1:     // Looking for a CHAR_ESC
             {
-                if( *(xfer.getInCountActual()) > 0 )
+                if( (xfer.getInCountActual()) > 0 )
                 {
                     if( xfer.getInBuffer()[0] != CHAR_ESC )
                     {
@@ -1248,7 +1250,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
 
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
                 else // We will retry the operation
@@ -1256,7 +1258,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
                     setCurrentState( StateRepeat );
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
 
@@ -1264,12 +1266,12 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
             }
         case StateDecode_2:     // Looking for a CHAR_ESC
             {
-                if( *(xfer.getInCountActual()) > 0 )
+                if( (xfer.getInCountActual()) > 0 )
                 {
                     setCurrentState( StateComplete );
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                     }
                 }
                 else // We will retry the operation
@@ -1277,7 +1279,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
                     setCurrentState( StateRepeat );
                     if(xfer.doTrace(commReturnValue))
                     {
-                        traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, FALSE);
+                        traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, FALSE);
                     }
                 }
 
@@ -1300,7 +1302,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer, INT com
                 setCurrentState(StateAbort);
                 if(xfer.doTrace(commReturnValue))
                 {
-                    traceIn((char*)xfer.getInBuffer(), *xfer.getInCountActual(), traceList, TRUE);
+                    traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                 }
                 break;
             }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/12 17:02:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/02/07 13:57:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1221,7 +1221,7 @@ INT CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, INT commRetu
                 * once the stream returns zero bytes, we can continue
                 ********************
                 */
-                if (*Transfer.getInCountActual() != 0)
+                if (Transfer.getInCountActual() != 0)
                 {
                     setAttemptsRemaining (getAttemptsRemaining() - 1);
 

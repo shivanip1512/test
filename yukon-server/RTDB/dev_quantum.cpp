@@ -1195,7 +1195,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
         case StateScanDecode2:
             {
                 //  get our ACK, or try again
-                if( *(Transfer.getInCountActual( )) == 1 && Transfer.getInBuffer( )[0] == ACK )
+                if( (Transfer.getInCountActual( )) == 1 && Transfer.getInBuffer( )[0] == ACK )
                 {
                     //  once we get the ACK, we wait 3 seconds for the other meter to pick up and stabilize
                     CTISleep( 3000L );
@@ -1215,7 +1215,7 @@ INT CtiDeviceQuantum::decodeResponseSelectMeter( CtiXfer &Transfer, INT commRetu
         case StateScanDecode3:
             {
                 //  flush all noise/garbage bytes from the stream until we get only an ACK
-                if( !((*(Transfer.getInCountActual( )) == 1) && (Transfer.getInBuffer( )[0] == ACK)) )
+                if( !(((Transfer.getInCountActual( )) == 1) && (Transfer.getInBuffer( )[0] == ACK)) )
                 {
                     if( getAttemptsRemaining( ) > 0)
                     {
@@ -1508,9 +1508,9 @@ INT CtiDeviceQuantum::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commRet
 
                     memcpy( &_loadProfileBuffer[getTotalByteCount( )],
                             Transfer.getInBuffer( ) + 1,                       //  offset past the ACK
-                            (INT)(*(Transfer.getInCountActual( )) - 1 - 2 ) ); //  don't copy the CRC
+                            (INT)((Transfer.getInCountActual( )) - 1 - 2 ) ); //  don't copy the CRC
 
-                    setTotalByteCount( getTotalByteCount( ) + *(Transfer.getInCountActual( )) - 1 - 2 );  //  don't count either of the above
+                    setTotalByteCount( getTotalByteCount( ) + (Transfer.getInCountActual( )) - 1 - 2 );  //  don't count either of the above
 
                     //  check if we've gotten the whole record
                     if( getTotalByteCount( ) >= recordSize )

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/12 17:02:45 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/02/07 13:57:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -672,8 +672,8 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
     {
         case StateHandshakeDecodeStart:
             {
-                if (*(Transfer.getInCountActual()) &&
-                    strncmp((CHAR *)Transfer.getInBuffer(), "ABB ALPHA,01   \r", *(Transfer.getInCountActual())))
+                if ((Transfer.getInCountActual()) &&
+                    strncmp((CHAR *)Transfer.getInBuffer(), "ABB ALPHA,01   \r", (Transfer.getInCountActual())))
                 {
                     setAttemptsRemaining (getAttemptsRemaining()-1);
 
@@ -702,7 +702,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
         case StateHandshakeDecodeIdentify:
             {
                 // decode message
-                if ( commReturnValue || *(Transfer.getInCountActual()) != 15 )
+                if ( commReturnValue || (Transfer.getInCountActual()) != 15 )
                 {
                     Transfer.doTrace(ERRUNKNOWN);
                     setAttemptsRemaining (getAttemptsRemaining()-1);
@@ -726,7 +726,7 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
 
         case StateHandshakeDecodeSecurity:
             {
-                if (decodeAckNak(Transfer.getInBuffer()[2]) || *(Transfer.getInCountActual()) != 6)
+                if (decodeAckNak(Transfer.getInBuffer()[2]) || (Transfer.getInCountActual()) != 6)
                 {
                     // This guy naked all over my password, or we got nothing back
 

@@ -440,10 +440,10 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-            if( *(xfer.getInCountActual()) > 0 )
+            if( (xfer.getInCountActual()) > 0 )
             {
-                dout << "Datalink layer input (" << *(xfer.getInCountActual()) << " bytes)" << endl;
-                for( int i = 0; i < *(xfer.getInCountActual()); i++ )
+                dout << "Datalink layer input (" << (xfer.getInCountActual()) << " bytes)" << endl;
+                for( int i = 0; i < (xfer.getInCountActual()); i++ )
                 {
                     dout << CtiNumStr((xfer.getInBuffer())[i]).hex().zpad(2) << " ";
                 }

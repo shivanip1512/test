@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/12/12 17:35:23 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/02/07 13:57:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -809,7 +809,7 @@ INT CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, RWTPtrSlist< C
     LockGuard gd(monitor());
     setCurrentState( CtiDeviceIED::StateHandshakeInitialize );
     INT status = NORMAL;
-    INT bytesread = (INT) *(Transfer.getInCountActual());
+    INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
     bool breakcase = true;
@@ -874,7 +874,7 @@ INT CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, INT commReturnVa
 {
     LockGuard gd(monitor());
     INT status = NORMAL;
-    INT bytesread = (INT) *(Transfer.getInCountActual());
+    INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
     bool breakcase = true;
@@ -968,7 +968,7 @@ INT CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, INT commReturnV
 INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT status = NORMAL;
-    INT bytesread = (INT) *(Transfer.getInCountActual());
+    INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
     setPreviousState( CtiDeviceIED::StateScanValueSet1 );
@@ -1116,7 +1116,7 @@ INT CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, RWTPtrSlist< CtiMessage
 INT CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer,INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT status = NORMAL;
-    INT bytesread = (INT) *(Transfer.getInCountActual());
+    INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
 
     switch ( _executionState )
@@ -1584,7 +1584,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         _executionState = SXNT_COMPLETE;
         infloopprevention = 0;
     }
-    else if (CtiProtocolSixnet::GETLEAD == protocolreturn && *Transfer.getInCountActual() == 0)
+    else if (CtiProtocolSixnet::GETLEAD == protocolreturn && Transfer.getInCountActual() == 0)
     {
 
         if (infloopprevention++ < 10)
@@ -1636,7 +1636,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         }
         else
         {
-            Transfer.setInBuffer(getRxBuffer() + *Transfer.getInCountActual());
+            Transfer.setInBuffer(getRxBuffer() + Transfer.getInCountActual());
             Transfer.setNonBlockingReads(false);          // OK, Make sure we get at least this many!
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( bytesleft );
