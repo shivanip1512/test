@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/05/19 14:47:10 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/05/20 22:39:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -810,6 +810,7 @@ typedef struct
     int _transmitterAddress;            // The address of the RTC, or RTU.
     int _groupType;                     // This must be one of the supported DCU types in the lib.. ie. SA205, GOLAY...
 
+    BOOL _retransmit;                   // DCU205 groups use this bool to determine that this is a retransmission.
     BOOL _shed;                         // NON DCU205 groups use this bool to determine shed or restore.
     int _function;                      // This is the function to execute on the DCU....  Should be directly applied in the switch.
 
