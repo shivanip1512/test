@@ -423,6 +423,16 @@ insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
 
 alter table YukonImage modify ImageValue long raw;
 
+delete from yukonuserrole where rolepropertyid = -1012;
+delete from yukongrouprole where rolepropertyid = -1012;
+delete from yukonroleproperty where rolepropertyid = -1012;
+
+insert into fdrinterface values (20,'BEPC','Send','f');
+insert into fdrinterfaceoption values(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
+
+
+
+
 
 
 /******************************************************************************/
