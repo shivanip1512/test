@@ -16,9 +16,7 @@ yukon-client/common/build
 yukon-client/custom/.cvsignore
 yukon-client/custom/bin
 yukon-client/custom/build
-yukon-client/dbeditor/.classpath
 yukon-client/dbeditor/.cvsignore
-yukon-client/dbeditor/.project
 yukon-client/dbeditor/bin
 yukon-client/dbeditor/build
 yukon-client/esub-editor/bin
