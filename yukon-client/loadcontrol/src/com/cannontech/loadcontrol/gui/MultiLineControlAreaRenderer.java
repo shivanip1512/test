@@ -19,7 +19,7 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
+import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
@@ -217,7 +217,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			{
 				LitePoint point = PointFuncs.getLitePoint( trigger.getPointId().intValue() );
 			
-				if( ILMControlAreaTrigger.TYPE_STATUS.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( IlmDefines.TYPE_STATUS.equalsIgnoreCase(trigger.getTriggerType()) )
 				{
 					LiteState lsVal = StateFuncs.getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
 					LiteState lsThresh = StateFuncs.getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
@@ -241,7 +241,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	
 			case ControlAreaTableModel.PEAK_PROJECTION:
 			{	
-				if( ILMControlAreaTrigger.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
 				{
 					strBuf.append(
 						NMBR_FORMATTER.format(trigger.getPeakPointValue()) +
@@ -255,7 +255,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			
 			case ControlAreaTableModel.ATKU:
 			{
-				if( ILMControlAreaTrigger.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
 				{
 					strBuf.append(
 						(trigger.getThresholdKickPercent().intValue() <= 0

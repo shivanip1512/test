@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/19/2001 3:54:21 PM)
  * @author: 
  */
-import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
+import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
@@ -615,7 +615,7 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		double threshValue = 0.0;
 		double restoreVal = 0.0;
 		
-		if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
+		if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
 		{
 			try
 			{
@@ -818,7 +818,7 @@ private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.data
 	else
 */
 
-	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
+	if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
 	{
 		getJLabelTrigger1NotPresent().setVisible(false);
 
@@ -854,7 +854,7 @@ private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.data
 	}
 	else
 */
-	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
+	if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
 	{
 		getJLabelTrigger2NotPresent().setVisible(false);
 

@@ -16,7 +16,7 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.lm.ILMControlAreaTrigger;
+import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -304,7 +304,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger =
 					(LMControlAreaTrigger)getCurrentControlArea().getTriggerVector().get(i);
 				
-				if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_THRESHOLD) )
+				if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
 				{
 					valPtID = trigger.getPointId().intValue();
 					peakPtID = trigger.getPeakPointId().intValue();
@@ -381,7 +381,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger = 
 						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
-				if( ILMControlAreaTrigger.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
 				{
 					return trigger.getThreshold().doubleValue();
 				}
@@ -403,7 +403,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger = 
 						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
-				if( ILMControlAreaTrigger.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
 				{
 					return trigger.getPointId().intValue();
 				}

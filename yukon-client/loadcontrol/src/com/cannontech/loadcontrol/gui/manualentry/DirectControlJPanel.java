@@ -7,7 +7,7 @@ import javax.swing.DefaultCellEditor;
 
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.db.device.lm.LMProgramDirectGearDefines;
+import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -752,7 +752,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 				// Create and add the column renderers	
 				ComboBoxTableRenderer comboBxRender = new ComboBoxTableRenderer();
 				//comboBxRender.setBackground( Color.WHITE );	
-				for( int i = 0; i < LMProgramDirectGearDefines.MAX_GEAR_COUNT; i++ )
+				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
 					comboBxRender.addItem( new Integer(i+1) );
 				
 				gearColumn.setCellRenderer( comboBxRender );
@@ -761,7 +761,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 				// Create and add the column editors
 			 	javax.swing.JComboBox combo = new javax.swing.JComboBox();
 				//combo.setBackground( Color.WHITE );
-				for( int i = 0; i < LMProgramDirectGearDefines.MAX_GEAR_COUNT; i++ )
+				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
 					combo.addItem( new Integer(i+1) );
 			
 				gearColumn.setCellEditor( new DefaultCellEditor(combo) );				
@@ -1175,7 +1175,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	private void jComboBoxGear_ActionPerformed( java.awt.event.ActionEvent actionEvent )
 	{
 		if( getJComboBoxGear().getSelectedIndex() >= 0
-		    && getJComboBoxGear().getSelectedIndex() < LMProgramDirectGearDefines.MAX_GEAR_COUNT )
+		    && getJComboBoxGear().getSelectedIndex() < IlmDefines.MAX_GEAR_COUNT )
 		{
 			//add 1 to the gear selected index since gear numbers start at 1
 			getMultiSelectPrgModel().setAllGearNumbers(
@@ -1395,7 +1395,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 
 		if( rows.length > 1 )
 		{
-			for( int i = 0; i < LMProgramDirectGearDefines.MAX_GEAR_COUNT; i++ )
+			for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
 				getJComboBoxGear().addItem( "Gear " + (i+1) ); //all gear nums start at 1
 		}
 		//only 1 program, lets just show the gears for this program
