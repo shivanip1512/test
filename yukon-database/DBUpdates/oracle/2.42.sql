@@ -96,6 +96,8 @@ create index Indx_SOELG_PtId on SOELog (
 create index Indx_SOELG_Date on SOELog (
    SOEDateTime ASC
 );
+
+/* @error ignore */
 create unique index Indx_SOELog_PK on SOELog (
    LogID ASC
 );
@@ -240,6 +242,8 @@ insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
 
 alter table BaseLine
    add constraint PK_BASELINE primary key (BaselineID);
+
+/* @error ignore */
 create unique index Indx_BASELINE_PK on BaseLine (
    BaselineID ASC
 );
