@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_multi.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/12/12 01:03:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/20 22:37:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,6 +50,8 @@ void CtiMultiMsg::What() const
 
 void CtiMultiMsg::dump() const
 {
+   Inherited::dump();
+
    for(int i = 0; i < _bag.entries(); i++)
    {
       ((CtiMessage*)_bag[i])->dump();
