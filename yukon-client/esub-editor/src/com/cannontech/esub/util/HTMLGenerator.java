@@ -12,7 +12,7 @@ import com.cannontech.esub.editor.Drawing;
  */
 public class HTMLGenerator {
 	private static final String header = 
-	"<html>\n<META HTTP-EQUIV=\"refresh\" CONTENT=\"10\">\n<head><script language=\"JavaScript\" src=\"svgcheck.js\"></script><script language=\"VBScript\" src=\"svgcheck.vbs\"></script></head><script language=\"JavaScript\"><!-- checkAndGetSVGViewer(); // --></script>\n<BODY BGCOLOR=\"#000000\" LINK=\"#000000\" ALINK=\"#000000\" VLINK=\"#000000\">\n";
+	"<html>\n<META HTTP-EQUIV=\"refresh\" CONTENT=\"120\">\n<head><script language=\"JavaScript\" src=\"svgcheck.js\"></script><script language=\"VBScript\" src=\"svgcheck.vbs\"></script></head><script language=\"JavaScript\"><!-- checkAndGetSVGViewer(); // --></script>\n<BODY BGCOLOR=\"#000000\" LINK=\"#000000\" ALINK=\"#000000\" VLINK=\"#000000\">\n";
 	
 	private static final String footer = 
 	"</html>\n";
