@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/10/06 18:43:44 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/10/21 16:32:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,10 +23,12 @@
 #include "dev_mct310.h"
 #include "logger.h"
 #include "mgr_point.h"
+#include "pt_status.h"
 #include "numstr.h"
 #include "porter.h"
 #include "prot_emetcon.h"
 #include "utility.h"
+#include "dllyukon.h"
 
 set< CtiDLCCommandStore > CtiDeviceMCT310::_commandStore;
 
@@ -893,6 +895,9 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
 
         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         CtiPointDataMsg      *pData = NULL;
+        CtiPointStatus       *point = NULL;
+
+        int powerfailStatus;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -909,11 +914,12 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
         if( geneBuf[5] )        resultString += "  Active\n";
         else                    resultString += "  Halted\n";
 
-        if( geneBuf[1] & 0x01 ) resultString += "  Short PF/Reset\n";
         if( geneBuf[0] & 0x04 ) resultString += "  Metering Overflow\n";
+        if( geneBuf[0] & 0x08 ) resultString += "  Powerfail flag set\n";
         if( geneBuf[0] & 0x10 ) resultString += "  Reset Flag set\n";
         if( geneBuf[0] & 0x20 ) resultString += "  Self Test Failed\n";
-        if( geneBuf[1] & 0x80 ) resultString += "  UADD failed - NovRam\n";
+
+        if( geneBuf[1] & 0x80 ) resultString += "  UADD fail - NovRam\n";
         if( geneBuf[1] & 0x40 ) resultString += "  UADD fail - Ram\n";
         if( geneBuf[1] & 0x20 ) resultString += "  SPI interrupt flag\n";
         if( geneBuf[1] & 0x10 ) resultString += "  SCI interrupt flag\n";
@@ -922,6 +928,27 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
 
         if( !(geneBuf[0] | geneBuf[1] | geneBuf[5]) )
             resultString += "  Normal Operating Mode\n";
+
+        if( geneBuf[0] & 0x08 )
+        {
+            powerfailStatus = 1;
+        }
+        else
+        {
+            powerfailStatus = 0;
+        }
+
+        if( point = (CtiPointStatus *)getDevicePointOffsetTypeEqual( MCT_PointOffset_Status_Powerfail, StatusPointType ) )
+        {
+            RWCString pointResult;
+
+            pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName(((CtiPointStatus *)point)->getStateGroupID(), powerfailStatus);
+
+            pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), powerfailStatus, NormalQuality, DemandAccumulatorPointType, resultString);
+
+            ReturnMsg->PointData().insert(pData);
+        }
+
 
         ReturnMsg->setResultString(resultString);
 
