@@ -354,8 +354,6 @@ public Object getValue(Object val)
 			(controlType.equals(com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL))) )
 	{
 		point.getPointStatus().setControlOffset(controlOffset);
-		point.getPointStatus().setCloseTime1(new Integer(0));
-		point.getPointStatus().setCloseTime2(new Integer(0));
 	}
 
 /*	if (pointOffset.intValue() == 0)
