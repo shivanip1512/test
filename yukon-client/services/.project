@@ -7,7 +7,9 @@
 		<project>cbc</project>
 		<project>common</project>
 		<project>notification</project>
+		<project>tools</project>
 		<project>trending</project>
+		<project>yimp</project>
 		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
