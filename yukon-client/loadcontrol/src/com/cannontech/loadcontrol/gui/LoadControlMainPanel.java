@@ -367,6 +367,9 @@ private void showContScenWindow( final int panelMode )
 		//if( getJComboBoxScenario().getItemCount() > 0 )
 		d.show();
 	
+		//destroy the JDialog
+		d.dispose();
+
 		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
 		{
 			MultiSelectProg[] selected = panel.getMultiSelectObject();
@@ -441,8 +444,6 @@ private void showContScenWindow( final int panelMode )
 		
 	}
 
-	//destroy the JDialog
-	d.dispose();
 
 }
 

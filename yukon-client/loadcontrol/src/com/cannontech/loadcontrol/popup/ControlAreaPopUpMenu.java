@@ -188,6 +188,9 @@ private void showDirectManualEntry( final int panelMode )
 	{
 		d.show();
 	
+		//destroy the JDialog
+		d.dispose();
+
 		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
 		{
 			MultiSelectProg[] selected = panel.getMultiSelectObject();
@@ -214,7 +217,7 @@ private void showDirectManualEntry( final int panelMode )
 				{
 					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
 					OkCancelDialog diag = new OkCancelDialog(
-						CtiUtilities.getParentFrame(this),
+						CtiUtilities.getParentFrame(this.getInvoker()),
 						"Program Constraint Violation",
 						true,
 						constrPanel );
@@ -261,9 +264,6 @@ private void showDirectManualEntry( final int panelMode )
 			JOptionPane.WARNING_MESSAGE );
 		
 	}
-
-	//destroy the JDialog
-	d.dispose();
 	
 }
 

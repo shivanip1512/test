@@ -5,6 +5,8 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import javax.swing.SwingUtilities;
+
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
@@ -247,6 +249,9 @@ private void showDirectManualEntry( final int panelMode )
 	if( panel.setMultiSelectObject( new LMProgramBase[] { getLoadControlProgram() } ) )
 	{
 		d.show();
+
+		//destroy the JDialog
+		d.dispose();
 	
 		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
 		{
@@ -276,8 +281,8 @@ private void showDirectManualEntry( final int panelMode )
 				if( !success )
 				{
 					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
-					OkCancelDialog diag = new OkCancelDialog(
-						CtiUtilities.getParentFrame(this),
+					final OkCancelDialog diag = new OkCancelDialog(
+						CtiUtilities.getParentFrame(this.getInvoker()),
 						"Program Constraint Violation",
 						true,
 						constrPanel );
@@ -285,7 +290,7 @@ private void showDirectManualEntry( final int panelMode )
 					//set our responses
 					constrPanel.setValue( programResp );
 					
-					diag.setCancelButtonVisible( false );					
+					diag.setCancelButtonVisible( false );
 					diag.setResizable( true );
 					diag.setSize( 640, 350 );
 					diag.setLocationRelativeTo( this );
@@ -305,7 +310,6 @@ private void showDirectManualEntry( final int panelMode )
 					}
 
 					diag.dispose();
-
 				}
 				
 				
@@ -316,9 +320,6 @@ private void showDirectManualEntry( final int panelMode )
 	
 	}
 
-
-	//destroy the JDialog
-	d.dispose();
 	
 }
 
