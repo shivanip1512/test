@@ -1,6 +1,7 @@
 package com.cannontech.database.cache.functions;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.LiteContact;
 
 /**
  * @author rneuharth
@@ -32,6 +33,24 @@ public final class YukonUserFuncs
          {
             if( userID_ == ((LiteYukonUser)users.get(j)).getUserID() )
                return (LiteYukonUser)users.get(j);
+         }
+   
+         return null;
+      }	
+   }
+
+   public static LiteContact getLiteContact ( int userID_ )
+   {
+      com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      
+      synchronized( cache )
+      {
+         java.util.List contacts = cache.getAllContacts();
+         
+         for( int j = 0; j < contacts.size(); j++ )
+         {
+            if( userID_ == ((LiteContact)contacts.get(j)).getLoginID() )
+               return (LiteContact)contacts.get(j);
          }
    
          return null;
