@@ -33,7 +33,7 @@
             </td>
             <td width="34%" valign="top"> 
               <div align="right"><img src="YukonLogoWhite.gif" width="132" height="28"></div>
-              <font face="Arial, Helvetica, sans-serif" size="2"><A HREF="esub-demo/SVGView.exe">Click here to install Adobe SVG Plugin 3.0
+              <font face="Arial, Helvetica, sans-serif" size="2"><A HREF="SVGView.exe">Click here to install Adobe SVG Plugin 3.0
             </A></FONT><BR>
             <BR>
 
