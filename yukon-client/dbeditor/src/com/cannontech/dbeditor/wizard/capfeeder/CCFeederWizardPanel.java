@@ -75,6 +75,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	}
 	else if( currentInputPanel == getCcFeederPeakSettingsPanel() )
 	{
+      getCcFeederPointSettingsPanel().setValue( null );
 		return getCcFeederPointSettingsPanel();
 	}
 	else
