@@ -3155,7 +3155,7 @@ void CtiCommandParser::Dump()
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Key " << itr.key() << " Value (str) " << itr.value().getString() <<
-            " (int) " << itr.value().getInt() <<
+            " (int) " << (int)(itr.value().getInt()) <<
             " (dbl) " << itr.value().getReal() <<
             " (bytes) ";
         }
@@ -4225,8 +4225,9 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
     INT         _num;
     INT         iValue = 0;
 
+    CHAR tbuf[80];
     RWCString   valStr;
-    RWCString   temp;
+    RWCString   temp, token, strnum;
 
     RWCTokenizer   tok(CmdStr);
 
@@ -4240,6 +4241,85 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             {
                 iValue = atoi(valStr.data());
                 _cmd["sa_priority"] = CtiParseValue( iValue );
+            }
+        }
+    }
+
+    if(!(CmdStr.match(" cold")).isNull())
+    {
+        if(!(token = CmdStr.match("cold[ a-z_]*" \
+                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)" \
+                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)?" \
+                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)?" \
+                                  "( *r[1234][ =]*[0-9]+[ =]*[hms]?)?")).isNull())
+        {
+            // dout << token << endl;
+            _cmd["sa_coldload"] = TRUE;
+
+            if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).isNull())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                _num = convertTimeInputToSeconds(strnum);
+                _cmd["coldload_r1"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R1 = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(strnum = token.match("r2[ =]*[0-9]+[ =]*[hms]?")).isNull())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                _num = convertTimeInputToSeconds(strnum);
+                _cmd["coldload_r2"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R2 = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(strnum = token.match("r3[ =]*[0-9]+[ =]*[hms]?")).isNull())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                _num = convertTimeInputToSeconds(strnum);
+                _cmd["coldload_r3"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R3 = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(strnum = token.match("r4[ =]*[0-9]+[ =]*[hms]?")).isNull())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                _num = convertTimeInputToSeconds(strnum);
+                _cmd["coldload_r4"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG COLDLOAD R4 = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+        }
+    }
+    else if(!(CmdStr.match(" tamper")).isNull())
+    {
+        if(!(token = CmdStr.match("tamper[ a-z_]*" \
+                                  "( *r[12][ =]*[0-9]+)" \
+                                  "( *r[12][ =]*[0-9]+)?")).isNull())
+        {
+            // dout << token << endl;
+            _cmd["sa_tamper"] = TRUE;
+
+            if(!(strnum = token.match("r1[ =]*[0-9]+")).isNull())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                _num = atoi(strnum.match("[0-9]+").data());
+                _cmd["tamperdetect_r1"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R1 = %d", _num);
+                _actionItems.insert(tbuf);
+            }
+            if(!(strnum = token.match("r2[ =]*[0-9]+")).isNull())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                _num = atoi(strnum.match("[0-9]+").data());
+                _cmd["tamperdetect_r2"] = CtiParseValue( _num );
+
+                _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R2 = %d", _num);
+                _actionItems.insert(tbuf);
             }
         }
     }
@@ -4488,6 +4568,7 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
 
 CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
 {
+    #if 0
     _cmdString = RWCString("built from string");
     _actionItems.clear();
     _cmd.clear();
@@ -4508,12 +4589,11 @@ CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << key << " " << asStr << " " << iValue << " " << dValue << endl;
         }
     }
 
-    RWCString   temp;
+    #endif
 
 
     return *this;

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/10/08 20:53:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/10/14 20:39:09 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.11  2004/10/14 20:39:09  cplender
+* Added config205 and tamper205 and coldLoad205 to the party.
+*
 * Revision 1.10  2004/10/08 20:53:19  cplender
 * Telvent altered the control105_205 to accept matrix coordinates.
 *
@@ -48,6 +51,9 @@
 *-----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786)
+
+#include <rw\re.h>
+#undef mask_                // Stupid RogueWave re.h
 
 #include "cparms.h"
 #include "logger.h"
@@ -127,48 +133,175 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         }
     }
 
-/*    if(_sa._groupType == GRP_SA_RTM)
+    switch(_sa._commandType)
     {
-        formRTMRequest( parse.getiValue("rtm_command") );
-        _messageReady = true;
-    }
-    else*/
-    {
-        switch(_sa._commandType)
+    case ControlRequest:
         {
-        case ControlRequest:
-            {
-                _sa._function = parse.getiValue("sa_function");
-                solveStrategy(parse);
+            _sa._function = parse.getiValue("sa_function");
 
-                if( NORMAL == (status = assembleControl( parse, OutMessage )) )
+            if( !solveStrategy(parse) && NORMAL == (status = assembleControl( parse, OutMessage )) )
+            {
+                loadControl();
+                _messageReady = true;
+            }
+            break;
+        }
+    case PutConfigRequest:
+        {
+            if( NORMAL == (status = assemblePutConfig( parse, OutMessage )) )
+            {
+                if( parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
                 {
-                    loadControl();
+                    // There has been an assignment request!
+                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    INT totalLen = 0;
+                    // More than one config might be generated into the buffer.
+                    _errorBuf[0] = '\0';
+                    _errorLen = MAX_SAERR_MSG_SIZE;
+
+                    _sa._buffer[0] = '/0';
+                    _sa._bufferLen = MAX_SA_MSG_SIZE;
+
+                    strncpy(_sa._serial205, serialstr.data(), 33);
+
+                    for(int i = 1; i <= 6; i++)     // Look for each slot assignment and add a blurb for it!
+                    {
+                        RWCString slotstr = RWCString("sa_slot") + CtiNumStr(i);
+
+                        if(parse.isKeyValid(slotstr))
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << " Calling addressAssign " << parse.getsValue(slotstr) << " to slot " << i << " on the receiver" << endl;
+                            }
+
+                            strncpy(_sa._codeSimple, parse.getsValue(slotstr).data(), 7);
+                            addressAssign(totalLen, i);
+
+                            totalLen += _sa._bufferLen;                     // What's been accumulated
+                            _sa._bufferLen = MAX_SA_MSG_SIZE - totalLen;    // What's left to fill.
+                        }
+                    }
+
+                    _sa._bufferLen = totalLen;                              // This is what the world wants to know and where it wants to know it.
+
                     _messageReady = true;
                 }
-                break;
-            }
-        case PutConfigRequest:
-            {
-                assemblePutConfig( parse, OutMessage );
-                _messageReady = true;
-                break;
-            }
-        default:
-            {
+                else if( parse.isKeyValid("sa_offtime") && parse.isKeyValid("serial") )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << RWTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
+                    // temporary service out command!
+                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    INT totalLen = 0;
+                    // More than one config might be generated into the buffer.
+                    _errorBuf[0] = '\0';
+                    _errorLen = MAX_SAERR_MSG_SIZE;
+
+                    _sa._buffer[0] = '/0';
+                    _sa._bufferLen = MAX_SA_MSG_SIZE;
+
+
+                    strncpy(_sa._serial205, serialstr.data(), 33);
+
+                    tempOutOfService205(_sa._buffer, &_sa._bufferLen, _sa._serial205, parse.getiValue("sa_offtime",0), _sa._transmitterAddress);
+
+                    _messageReady = true;
                 }
+                else if( parse.isKeyValid("sa_coldload") && parse.isKeyValid("serial") )
+                {
+                    // There has been an assignment request!
+                    RWCString clpstr;
+                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    INT totalLen = 0;
+                    // More than one config might be generated into the buffer.
+                    _errorBuf[0] = '\0';
+                    _errorLen = MAX_SAERR_MSG_SIZE;
 
-                status = CtiInvalidRequest;
+                    _sa._buffer[0] = '/0';
+                    _sa._bufferLen = MAX_SA_MSG_SIZE;
 
-                break;
+                    strncpy(_sa._serial205, serialstr.data(), 33);
+
+                    int i, clsec, clpCount;
+                    for(i = 1; i <= 4; i++)
+                    {
+                        clpstr = RWCString("coldload_r") + CtiNumStr(i); // coldload_r1,,... coldload_r4
+
+                        if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
+                        {
+                            clpCount = (int)( (float)clsec / 14.0616 );
+                            // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
+                            {
+                                CtiLockGuard<CtiLogger> slog_guard(slog);
+                                slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                slog << " Calling coldLoadPickup205(). Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
+                            }
+
+                            coldLoadPickup205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial205, i, clpCount, _sa._transmitterAddress);
+                            _messageReady = true;
+
+                            totalLen += _sa._bufferLen;                     // What's been accumulated
+                            _sa._bufferLen = MAX_SA_MSG_SIZE - totalLen;    // What's left to fill.
+                        }
+                    }
+
+                    _sa._bufferLen = totalLen;                              // This is what the world wants to know and where it wants to know it.
+                }
+                else if( parse.isKeyValid("sa_tamper") && parse.isKeyValid("serial") )
+                {
+                    // There has been an assignment request!
+                    RWCString tdstr;
+                    RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+                    INT totalLen = 0;
+                    // More than one config might be generated into the buffer.
+                    _errorBuf[0] = '\0';
+                    _errorLen = MAX_SAERR_MSG_SIZE;
+
+                    _sa._buffer[0] = '/0';
+                    _sa._bufferLen = MAX_SA_MSG_SIZE;
+
+                    strncpy(_sa._serial205, serialstr.data(), 33);
+
+                    int i, tdCount;
+                    for(i = 1; i <= 4; i++)
+                    {
+                        tdstr = RWCString("tamperdetect_r") + CtiNumStr(i);
+
+                        if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> slog_guard(slog);
+                                slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                slog << " Calling tamperDetect205(). Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
+                            }
+
+                            if(!tamperDetect205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial205, i, tdCount, _sa._transmitterAddress))
+                            {
+                                _messageReady = true;
+
+                                totalLen += _sa._bufferLen;                     // What's been accumulated
+                                _sa._bufferLen = MAX_SA_MSG_SIZE - totalLen;    // What's left to fill.
+                            }
+                        }
+                    }
+                    _sa._bufferLen = totalLen;                              // This is what the world wants to know and where it wants to know it.
+                }
             }
+            break;
+        }
+    default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
+            }
+
+            status = CtiInvalidRequest;
+
+            break;
         }
     }
-
 
     return status;
 }
@@ -205,7 +338,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
@@ -226,24 +359,76 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 {
     INT status = NORMAL;
 
-    RWCString   token;
-    RWCString   temp, temp2;
-    RWCString   strnum;
+    RWCString   temp, token;
     RWCString   str = parse.getCommandStr();
 
-    #if 0
-    if(!(token = str.match(" assign" \
-                                             " +[0-9]+, *[0-9]+" \
-                                             "( *, *[0-9]+, *[0-9]+)?" \
-                                             "( *, *[0-9]+, *[0-9]+)?" \
-                                             "( *, *[0-9]+, *[0-9]+)?" \
-                                             "( *, *[0-9]+, *[0-9]+)?" \
-                                             "( *, *[0-9]+, *[0-9]+)?" \
-                                             )).isNull())
+    if(str.contains(" assign"))
     {
+        RWCString mstr;
+        RWCString rwsslot;
+        RWCString rwsaddr;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
+        int i;
+        for(i = 1; i <= 6; i++)
+        {
+            mstr = CtiNumStr(i) + RWCString(" *= *[0-9]+");
+
+            if(!(temp = str.match(mstr)).isNull())
+            {
+                RWCTokenizer slotok(temp);
+
+                rwsslot = slotok("=");
+                rwsaddr = slotok("=,\r\n ");
+
+                int addr = atoi(rwsaddr.data());
+
+                mstr = RWCString("sa_slot") + CtiNumStr(i); // sa_slot1, sa_slot2,... sa_slot6.
+
+                parse.setValue(mstr, rwsaddr);              // Stored as a string because the Telvent lib wants it that way!!
+
+                {
+                    CtiLockGuard<CtiLogger> slog_guard(slog);
+                    slog << RWTime() << " Address config command. Serial " << parse.getiValue("serial") << " writing address " << addr << " to slot " << i << " on the receiver" << endl;
+                }
+            }
+        }
     }
-    #endif
+    else if(str.contains(" service"))
+    {
+        if(str.contains(" temp") && !(token = str.match("service +((in)|(out)|(enable)|(disable))")).isNull())
+        {
+            INT offtime = 0;
+
+            if(!(token = str.match(" offhours +[0-9]+")).isNull())
+            {
+                str = token.match("[0-9]+");
+                offtime = atoi(str.data());
+                {
+                    CtiLockGuard<CtiLogger> slog_guard(slog);
+                    slog << RWTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
+                }
+                parse.setValue("sa_offtime", offtime);              // Stored as a string because the Telvent lib wants it that way!!
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Unknown service command: \"" << str << "\"" <<endl;
+            }
+        }
+    }
+    else if(parse.isKeyValid("sa_coldload"))
+    {
+    }
+    else if(parse.isKeyValid("sa_tamper"))
+    {
+    }
 
 
     return status;
@@ -287,6 +472,7 @@ INT CtiProtocolSA3rdParty::loadControl()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress, _sTime, _cTime);
+                dout << RWTime() << " control105_205() complete" << endl;
             }
             break;
         }
@@ -295,6 +481,7 @@ INT CtiProtocolSA3rdParty::loadControl()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 retCode = controlGolay(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._function, _sa._transmitterAddress);
+                dout << RWTime() << " controlGolay() complete" << endl;
             }
             break;
         }
@@ -305,6 +492,45 @@ INT CtiProtocolSA3rdParty::loadControl()
                 retCode = controlSADigital(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._transmitterAddress,
                                            gConfigParms.getValueAsInt("SADIGITIAL_MARK_INDEX",3),
                                            gConfigParms.getValueAsInt("SADIGITIAL_SPARE_INDEX",10));
+                dout << RWTime() << " controlSADigital() complete" << endl;
+            }
+            break;
+        }
+    }
+
+
+    processResult(retCode);
+
+
+    return status;
+}
+
+INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
+{
+    INT status = NORMAL;
+
+    INT retCode;
+
+    switch(_sa._groupType)
+    {
+    case SA205:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial205, slot, _sa._codeSimple, _sa._transmitterAddress);
+
+                dout << RWTime() << " config205() complete" << endl;
+            }
+            break;
+        }
+    case SA105:
+    case GOLAY:
+    case SADIG:
+    default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Address assignment is not supported by protocol for grouptype " << _sa._groupType << endl;
             }
             break;
         }
@@ -342,8 +568,10 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         }
 
         _sa._repeats = parse.getiValue("sa_reps", 1);
-        _sa._swTimeout = 900;
-        _sa._cycleTime = 900;
+        _sa._swTimeout = 450;
+        _sa._cycleTime = 450;
+        _sTime = 0;
+        _cTime = 0;
     }
     else
     {
@@ -351,6 +579,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         int cycle_percent = parse.getiValue("cycle",0);
         int cycle_period = parse.getiValue("cycle_period", 30);
         int cycle_count = parse.getiValue("cycle_count", 8);
+
+        bool dlc_control = parse.getCommandStr().contains(" dlc");      // if set, we want DLC (not DI) control!
 
         if(shed_seconds)
         {
@@ -366,8 +596,17 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 450;
-                    _sTime = 3;
-                    _cTime = 5;
+
+                    if(dlc_control)
+                    {
+                        _sTime = 0;
+                        _cTime = 0;
+                    }
+                    else
+                    {
+                        _sTime = 3;
+                        _cTime = 5;
+                    }
                 }
                 else
                 {
@@ -385,8 +624,16 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 450;
-                    _sTime = 2;
-                    _cTime = 6;
+                    if(dlc_control)
+                    {
+                        _sTime = 0;
+                        _cTime = 1;
+                    }
+                    else
+                    {
+                        _sTime = 2;
+                        _cTime = 6;
+                    }
                 }
                 else if(cycle_percent <= 67)
                 {
@@ -409,8 +656,16 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 900;
-                    _sTime = 0;
-                    _cTime = 5;
+                    if(dlc_control)
+                    {
+                        _sTime = 1;
+                        _cTime = 1;
+                    }
+                    else
+                    {
+                        _sTime = 0;
+                        _cTime = 5;
+                    }
                 }
                 else
                 {
@@ -455,8 +710,16 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 25)
                 {
                     _sa._swTimeout = 450;
-                    _sTime = 0;
-                    _cTime = 6;
+                    if(dlc_control)
+                    {
+                        _sTime = 3;
+                        _cTime = 0;
+                    }
+                    else
+                    {
+                        _sTime = 0;
+                        _cTime = 6;
+                    }
                 }
                 else if(cycle_percent <= 33)
                 {
@@ -467,20 +730,44 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 900;
-                    _sTime = 0;
-                    _cTime = 4;
+                    if(dlc_control)
+                    {
+                        _sTime = 3;
+                        _cTime = 1;
+                    }
+                    else
+                    {
+                        _sTime = 0;
+                        _cTime = 4;
+                    }
                 }
                 else if(cycle_percent <= 75)
                 {
                     _sa._swTimeout = 1350;
-                    _sTime = 1;
-                    _cTime = 4;
+                    if(dlc_control)
+                    {
+                        _sTime = 3;
+                        _cTime = 2;
+                    }
+                    else
+                    {
+                        _sTime = 1;
+                        _cTime = 4;
+                    }
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 1800;
-                    _sTime = 1;
-                    _cTime = 5;
+                    if(dlc_control)
+                    {
+                        _sTime = 3;
+                        _cTime = 3;
+                    }
+                    else
+                    {
+                        _sTime = 1;
+                        _cTime = 5;
+                    }
                 }
                 else
                 {
@@ -611,14 +898,30 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 13)
                 {
                     _sa._swTimeout = 450;
-                    _sTime = 0;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 0;
+                    }
+                    else
+                    {
+                        _sTime = 0;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 25)
                 {
                     _sa._swTimeout = 900;
-                    _sTime = 1;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 1;
+                    }
+                    else
+                    {
+                        _sTime = 1;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 33)
                 {
@@ -629,20 +932,44 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else if(cycle_percent <= 38)
                 {
                     _sa._swTimeout = 1350;
-                    _sTime = 2;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 2;
+                    }
+                    else
+                    {
+                        _sTime = 2;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 1800;
-                    _sTime = 3;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 3;
+                    }
+                    else
+                    {
+                        _sTime = 3;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 63)
                 {
                     _sa._swTimeout = 2250;
-                    _sTime = 4;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 4;
+                    }
+                    else
+                    {
+                        _sTime = 4;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 67)
                 {
@@ -653,20 +980,44 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else if(cycle_percent <= 75)
                 {
                     _sa._swTimeout = 2700;
-                    _sTime = 5;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 5;
+                    }
+                    else
+                    {
+                        _sTime = 5;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 88)
                 {
                     _sa._swTimeout = 3150;
-                    _sTime = 6;
-                    _cTime = 7;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 6;
+                    }
+                    else
+                    {
+                        _sTime = 6;
+                        _cTime = 7;
+                    }
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 3600;
-                    _sTime = 2;
-                    _cTime = 5;
+                    if(dlc_control)
+                    {
+                        _sTime = 7;
+                        _cTime = 7;
+                    }
+                    else
+                    {
+                        _sTime = 2;
+                        _cTime = 5;
+                    }
                 }
                 else
                 {
@@ -777,10 +1128,14 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
 
 #ifdef SA_PROTOCOL_COMPLETE
     int ctimes[] = { 450, 900, 1350, 1800, 2250, 2700, 3150, 3600 };        // These are the available cycle times in seconds
-#else
+#elif SA_USE_DI_ONLY
     int ctimes[] = { 450, 900, 1800, 3600 };        // These are the available cycle times in seconds
-    int oactime[] = { 3, 0, 1, 2 };        // These are the available cycle times in seconds
-    int oastime[] = { 5, 5, 5, 5 };        // These are the available cycle times in seconds
+    int oactime[] = { 3, 0, 1, 2 };                 // These are the available timeout times in "matrix"
+    int oastime[] = { 5, 5, 5, 5 };                 // These are the available cycle times in "matrix"
+#else
+    int ctimes[] = { 450, 900, 1800, 3600 };    // These are the available cycle times in seconds
+    int oactime[] = { 0, 1, 3, 7 };             // These are the available timeout times in "matrix"
+    int oastime[] = { 0, 1, 3, 7 };             // These are the available cycle times in "matrix"
 #endif
 
     int bestoffset = 0;                             // Pick a 450 scond shed by default?
@@ -952,33 +1307,43 @@ RWCString CtiProtocolSA3rdParty::asString() const
 {
     RWCString rstr;
 
-    //_sa._transmitterAddress
-
-    switch(_sa._groupType)
+    switch(_sa._commandType)
     {
-    case SA105:
+    case PutConfigRequest:
         {
-            rstr += "SA 105 - code " + RWCString(_sa._codeSimple) + " - " + strategyAsString();
+            rstr += "SA 205 - config. Serial " + RWCString(_sa._serial205) + " - " + strategyAsString();
             break;
         }
-    case SA205:
+    case ControlRequest:
         {
-            rstr += "SA 205 - code " + CtiNumStr(_sa._code205) + " - " + strategyAsString();
-            break;
-        }
-    case GOLAY:
-        {
-            rstr += "GOLAY  - " + RWCString(_sa._codeSimple) + " Function " + CtiNumStr(_sa._function);
-            break;
-        }
-    case SADIG:
-        {
-            rstr += "SA DIG - " + RWCString(_sa._codeSimple);
-            break;
-        }
-    case GRP_SA_RTM:
-        {
-            rstr += "SA RTM - command " + CtiNumStr(_sa._function);
+            switch(_sa._groupType)
+            {
+            case SA105:
+                {
+                    rstr += "SA 105 - code " + RWCString(_sa._codeSimple) + " - " + strategyAsString();
+                    break;
+                }
+            case SA205:
+                {
+                    rstr += "SA 205 - code " + CtiNumStr(_sa._code205) + " - " + strategyAsString();
+                    break;
+                }
+            case GOLAY:
+                {
+                    rstr += "GOLAY  - " + RWCString(_sa._codeSimple) + " Function " + CtiNumStr(_sa._function);
+                    break;
+                }
+            case SADIG:
+                {
+                    rstr += "SA DIG - " + RWCString(_sa._codeSimple);
+                    break;
+                }
+            case GRP_SA_RTM:
+                {
+                    rstr += "SA RTM - command " + CtiNumStr(_sa._function);
+                    break;
+                }
+            }
             break;
         }
     }
@@ -995,7 +1360,22 @@ RWCString CtiProtocolSA3rdParty::asString() const
 
 RWCString CtiProtocolSA3rdParty::strategyAsString() const
 {
-    RWCString rstr(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds (" + CtiNumStr(_sTime) + "/" + CtiNumStr(_cTime) + "). " + CtiNumStr(_sa._repeats) + " period repeats.");
+    RWCString rstr;
+
+    switch(_sa._function)
+    {
+    case sac_toos:
+        {
+            rstr = RWCString( " temporary out of service " + CtiNumStr(_sa._swTimeout) + " hours" );
+            break;
+        }
+    default:
+        {
+            rstr = RWCString(functionAsString() + " " + CtiNumStr(_sa._swTimeout) + " of " + CtiNumStr(_sa._cycleTime) + " seconds (" + CtiNumStr(_sTime) + "/" + CtiNumStr(_cTime) + "). " + CtiNumStr(_sa._repeats) + " period repeats.");
+            break;
+        }
+    }
+
     return rstr;
 }
 

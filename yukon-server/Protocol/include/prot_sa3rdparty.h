@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/09/20 16:11:51 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/14 20:39:09 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.7  2004/10/14 20:39:09  cplender
+* Added config205 and tamper205 and coldLoad205 to the party.
+*
 * Revision 1.6  2004/09/20 16:11:51  mfisher
 * changed RTM functions to be static - we don't need to keep state
 *
@@ -56,6 +59,13 @@ class IM_EX_PROT CtiProtocolSA3rdParty : public CtiProtocolBase
 {
 protected:
 
+    enum
+    {
+        sac_unspec = 16,
+        sac_toos,               // _sTime = hours off
+        sac_address_config      // ???
+    };
+
     CtiSAData _sa;
 
     int _sTime;
@@ -70,6 +80,7 @@ protected:
     INT assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
     INT loadControl();                 // This is a shed!
+    INT addressAssign(INT &len, USHORT slot);
     INT restoreLoadControl();
     //INT formRTMRequest(USHORT command);
 
