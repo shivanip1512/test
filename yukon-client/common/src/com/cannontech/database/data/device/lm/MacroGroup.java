@@ -23,8 +23,10 @@ public void add() throws java.sql.SQLException
 {
 	super.add();
 
-	for( int i = 0; i < getMacroGroupVector().size(); i++ )
+	for( int i = 0; i < getMacroGroupVector().size(); i++ ) {
+		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).setOwnerID( getPAObjectID() );
 		((com.cannontech.database.db.macro.GenericMacro) getMacroGroupVector().elementAt(i)).add();
+	}
 
 }
 /**
