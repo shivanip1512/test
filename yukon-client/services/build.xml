@@ -21,12 +21,17 @@
             basedir="build/" 
             manifest="resource/manifest.mf" />       
 
-	<copy todir="${yukon.lib}">
- 	    <fileset dir="resource">
-		<include name="**/*.gif"/>
- 		<include name="**/*.ico"/>
-	    </fileset>
+	   <copy todir="${yukon.lib}">
+	 	 <fileset dir="resource">
+		   <include name="**/*.gif"/>
+	 	   <include name="**/*.ico"/>
+		 </fileset>
        </copy>
+       
+       <copy todir="${yukon.lib}">
+         <fileset dir="conf"/>
+       </copy>
+       
    </target>
 
 	<target name="install" depends="build">
