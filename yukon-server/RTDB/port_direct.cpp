@@ -62,7 +62,7 @@ INT CtiPortDirect::init()
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
+                dout << RWTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
             }
 
             return(BADPORT);
@@ -70,7 +70,7 @@ INT CtiPortDirect::init()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << getName() << " acquiring port handle" << endl;
+            dout << RWTime() << " Port " << getName() << " acquiring port handle" << endl;
         }
 
         /* set the baud rate on the port */
