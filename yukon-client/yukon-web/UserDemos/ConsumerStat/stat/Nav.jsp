@@ -1,7 +1,8 @@
 <%
 	// Map of page name / link text
-	String linkMap[][] = {{"TOU.jsp", "Usage"},
-						  {"ProgramHist.jsp", "Control Summary"},
+	String linkMap[][] = {{"General.jsp", "General"},
+						  {"TOU.jsp", "Usage"},
+						  {"ProgramHist.jsp", "Control History"},
 						  {"Programs.jsp", "Add/Change"},
 						  {"Util.jsp", "Utility"},
 						  {"Installer.jsp", "Installer"},
@@ -22,9 +23,23 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
+  <tr>
+    <td height="65"><br>
+<div align="left"><span class="NavHeader">Thermostat</span><br>
+        <%= links.get("WeekdayS.jsp") %><br>
+        <%= links.get("Thermostat.jsp") %></div>
+    </td>
+  </tr>
   <tr> 
     <td> 
-      <div align="left"><span class="NavHeader"><br>
+      <div align="left"><span class="NavHeader">
+        Account</span><br>
+        <%= links.get("General.jsp") %></div>
+    </td>
+  </tr>
+  <tr> 
+    <td> 
+      <div align="left"><span class="NavHeader">
         Metering</span><br>
         <%= links.get("TOU.jsp") %></div>
     </td>
@@ -35,13 +50,6 @@
         <%= links.get("ProgramHist.jsp") %><br>
 		<%= links.get("Enrollment.jsp") %><br>
 		<%= links.get("OptOut.jsp") %></div>
-    </td>
-  </tr>
-  <tr>
-    <td height="65">
-<div align="left"><span class="NavHeader">Thermostat</span><br>
-        <%= links.get("WeekdayS.jsp") %><br>
-        <%= links.get("Thermostat.jsp") %></div>
     </td>
   </tr>
   <tr> 
