@@ -71,7 +71,7 @@ public class CCOneLineGenerator {
 			feederHorzLineStop = halfAcross;
 			feederHorzLineLength = feederHorzLineStop - feederHorzLineStart  ;
 		}
-		double feederVertLineLength = 800 - subLineStart - subLineLevel;
+		double feederVertLineLength = 790 - subLineStart - subLineLevel;
 		double feederVertLineStart = subLineLevel;
 		double feederVertLineStop = feederVertLineStart + feederVertLineLength;
 
@@ -408,8 +408,8 @@ public class CCOneLineGenerator {
 			//cap banks
 			Vector capBankVector =  currentFeeder.getCcCapBanks();
 
-			double capBankStateHorzOffset = 15.0;
-			double capBankStateVertOffset = 5.0;
+			double capBankNameHorzOffset = 15.0;
+			double capBankNameVertOffset = 5.0;
 
 			if( capBankVector.size() > 1 )
 			{//make sure we don't try to divide by zero
@@ -419,6 +419,23 @@ public class CCOneLineGenerator {
 				{
 					double capBankPosition = capBanksStart+(capBankSpacing*((double)j));
 					CapBankDevice currentCapBank = (CapBankDevice)capBankVector.get(j);
+
+					LxLine capacitorAndGroundLine = new LxLine();
+					capacitorAndGroundLine.setPoint1(feederPosition,capBankPosition);
+					capacitorAndGroundLine.setPoint2(feederPosition-30.0,capBankPosition);
+					capacitorAndGroundLine.setLineColor(Color.YELLOW);
+					graph.add(capacitorAndGroundLine);
+
+					StaticImage capacitorImage = new StaticImage();
+					capacitorImage.setYukonImage("Capacitor.gif");
+					capacitorImage.setCenter(feederPosition-30.0,capBankPosition+10.0);
+					graph.add(capacitorImage);
+
+					StaticImage groundImage = new StaticImage();
+					groundImage.setYukonImage("Ground.gif");
+					groundImage.setCenter(feederPosition-30.0,capBankPosition+30.0);
+					graph.add(groundImage);
+
 					StateImage stateImage = new StateImage();
 					stateImage.setPointID(currentCapBank.getStatusPointID().intValue());
 					graph.add(stateImage);
@@ -426,20 +443,44 @@ public class CCOneLineGenerator {
 					stateImage.setCenter(feederPosition,capBankPosition);
 					//stateImage.setLinkTo("capbankmanualchange.html");
 
-					DynamicText capBankStateString = new DynamicText();
-					capBankStateString.setX(feederPosition+capBankStateHorzOffset);
-					capBankStateString.setY(capBankPosition-capBankStateVertOffset);
-					capBankStateString.setPointID(currentCapBank.getStatusPointID().intValue());
-					capBankStateString.setDisplayAttribs(PointAttributes.STATE_TEXT);
-					capBankStateString.setFont(DEFAULT_FONT);
-					capBankStateString.setPaint(Color.LIGHT_GRAY);
-					graph.add(capBankStateString);
+					StaticText capBankNameString = new StaticText();
+					capBankNameString.setX(feederPosition+capBankNameHorzOffset);
+					capBankNameString.setY(capBankPosition-capBankNameVertOffset-10.0);
+					capBankNameString.setFont(DEFAULT_FONT);
+					capBankNameString.setPaint(Color.LIGHT_GRAY);
+					capBankNameString.setText(currentCapBank.getCcName());
+					graph.add(capBankNameString);
+
+					StaticText capBankSizeString = new StaticText();
+					capBankSizeString.setX(feederPosition+capBankNameHorzOffset);
+					capBankSizeString.setY(capBankPosition+capBankNameVertOffset);
+					capBankSizeString.setFont(DEFAULT_FONT);
+					capBankSizeString.setPaint(Color.LIGHT_GRAY);
+					capBankSizeString.setText("Size: " + Integer.toString(currentCapBank.getBankSize().intValue()) + " KVAR");
+					graph.add(capBankSizeString);
 				}
 			}
 			else if( capBankVector.size() == 1 )
 			{
 				double capBankPosition = feederVertLineStop;
 				CapBankDevice currentCapBank = (CapBankDevice)capBankVector.get(0);
+
+				LxLine capacitorAndGroundLine = new LxLine();
+				capacitorAndGroundLine.setPoint1(feederPosition,capBankPosition);
+				capacitorAndGroundLine.setPoint2(feederPosition-30.0,capBankPosition);
+				capacitorAndGroundLine.setLineColor(Color.YELLOW);
+				graph.add(capacitorAndGroundLine);
+
+				StaticImage capacitorImage = new StaticImage();
+				capacitorImage.setYukonImage("Capacitor.gif");
+				capacitorImage.setCenter(feederPosition-30.0,capBankPosition+10.0);
+				graph.add(capacitorImage);
+
+				StaticImage groundImage = new StaticImage();
+				groundImage.setYukonImage("Ground.gif");
+				groundImage.setCenter(feederPosition-30.0,capBankPosition+30.0);
+				graph.add(groundImage);
+
 				StateImage stateImage = new StateImage();
 				stateImage.setPointID(currentCapBank.getStatusPointID().intValue());
 				graph.add(stateImage);
@@ -447,14 +488,21 @@ public class CCOneLineGenerator {
 				stateImage.setCenter(feederPosition,capBankPosition);
 				//stateImage.setLinkTo("capbankmanualchange.html");
 
-				DynamicText capBankStateString = new DynamicText();
-				capBankStateString.setX(feederPosition+capBankStateHorzOffset);
-				capBankStateString.setY(capBankPosition-capBankStateVertOffset);
-				capBankStateString.setPointID(currentCapBank.getStatusPointID().intValue());
-				capBankStateString.setDisplayAttribs(PointAttributes.STATE_TEXT);
-				capBankStateString.setFont(DEFAULT_FONT);
-				capBankStateString.setPaint(Color.LIGHT_GRAY);
-				graph.add(capBankStateString);
+				StaticText capBankNameString = new StaticText();
+				capBankNameString.setX(feederPosition+capBankNameHorzOffset);
+				capBankNameString.setY(capBankPosition-capBankNameVertOffset-10.0);
+				capBankNameString.setFont(DEFAULT_FONT);
+				capBankNameString.setPaint(Color.LIGHT_GRAY);
+				capBankNameString.setText(currentCapBank.getCcName());
+				graph.add(capBankNameString);
+
+				StaticText capBankSizeString = new StaticText();
+				capBankSizeString.setX(feederPosition+capBankNameHorzOffset);
+				capBankSizeString.setY(capBankPosition+capBankNameVertOffset);
+				capBankSizeString.setFont(DEFAULT_FONT);
+				capBankSizeString.setPaint(Color.LIGHT_GRAY);
+				capBankSizeString.setText("Size: " + Integer.toString(currentCapBank.getBankSize().intValue()) + " KVAR");
+				graph.add(capBankSizeString);
 			}
 		}
 		
