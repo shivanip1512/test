@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_local_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/23 15:38:33 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/24 21:36:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,32 +43,6 @@ CtiPortLocalModem& CtiPortLocalModem::setLocalDialup(const CtiTablePortDialup& a
     _localDialup = aRef;
     return *this;
 }
-
-#if 0
-
-INT CtiPortLocalModem::init()
-{
-    INT      status = Inherited::init();            // Get the porthandle open and ready!
-
-    return status;
-}
-
-INT CtiPortLocalModem::inMess(CtiXfer& Xfer, CtiDevice* Dev)
-{
-    INT status = CtiPortDirect::inMess(Xfer, Dev);
-
-    return status;
-}
-
-INT CtiPortLocalModem::outMess(CtiXfer& Xfer, CtiDevice* Dev)
-{
-    INT status = NORMAL;
-
-    status = CtiPortDirect::outMess(Xfer, Dev);
-
-    return status;
-}
-#endif
 
 INT CtiPortLocalModem::connectToDevice(CtiDevice *Device, INT trace)
 {
@@ -246,22 +220,25 @@ void CtiPortLocalModem::DecodeDatabaseReader(RWDBReader &rdr)
 
 INT CtiPortLocalModem::init()
 {
-    INT status = Inherited::init();
+    INT status;
 
-    if(status == NORMAL)
+    if((status = Inherited::init()) != NORMAL)
     {
-        if((status = reset(false)) != NORMAL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error resetting dial up modem on " << getName() << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Error initializing dial up modem on " << getName() << endl;
+    }
 
-        /* set the modem parameters */
-        if((status = setup(false)) != NORMAL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error setting up dial up modem on " << getName() << endl;
-        }
+    if((status = reset(true)) != NORMAL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Error resetting dial up modem on " << getName() << endl;
+    }
+
+    /* set the modem parameters */
+    if((status = setup(true)) != NORMAL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Error setting up dial up modem on " << getName() << endl;
     }
 
     return status;

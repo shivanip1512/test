@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:16 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/24 21:36:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,12 +105,12 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
    /* set the timeout on read to 1 second */
    SetReadTimeOut (getHandle(), 1);
 
-   LowerModemRTS (getHandle());
-   LowerModemDTR (getHandle());
-   CTISleep ( 500L );
-   RaiseModemDTR (getHandle());
-   RaiseModemRTS (getHandle());
-   CTISleep ( 500L );
+   lowerRTS();
+   lowerDTR();
+   CTISleep( 500L );
+   raiseDTR();
+   raiseRTS();
+   CTISleep( 500L );
 
    /* If we do not have CTS it is a problem */
    if(!(isCTS()))
@@ -121,11 +121,11 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
          dout << RWTime() << "  Port " << getName() << " No Modem CTS.  Modem may be off or configured wrong" << endl;
       }
 
-      LowerModemDTR (getHandle());
-      CTISleep ( 500L );
-      RaiseModemDTR (getHandle());
-      RaiseModemRTS (getHandle());
-      CTISleep ( 500L );
+      lowerDTR();
+      CTISleep( 500L );
+      raiseDTR();
+      raiseRTS();
+      CTISleep( 500L );
 
       if(!(isCTS()))
       {
@@ -148,13 +148,11 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
             }
          }
 
-         LowerModemDTR (getHandle());
-         CTISleep ( 500L );
-         RaiseModemDTR (getHandle());
-         RaiseModemRTS (getHandle());
-         CTISleep ( 500L );
-
-         CTISleep ( 100L );
+         lowerDTR();
+         CTISleep( 500L );
+         raiseDTR();
+         raiseRTS();
+         CTISleep( 500L );
 
          if(!(isCTS()))
          {
@@ -163,7 +161,7 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
       }
 
       /* Clear the buffer */
-      PortInputFlush (getHandle());
+      inClear();
       ResponseSize = sizeof (Response);
 
       /* Wait to see if we get the no carrier message */
@@ -219,6 +217,7 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
       }
 
 
+#if 0 // Not needed. 042402 CGP
       ResponseSize = sizeof (Response);
       /* Send it a reset message (Ask for an OK) */
       CTIWrite (getHandle(), "ATZ\r", 4, &BytesWritten);
@@ -246,6 +245,7 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Port " << getName() << " Received from Modem:  " << Response <<  endl;
       }
+#endif
 
       if(gLogPorts)
       {
@@ -311,7 +311,7 @@ INT CtiPortModem::modemSetup(USHORT Trace, BOOL dcdTest)
       if(Trace)
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << RWTime() << " Port " << getName() << " Received from Modem:  " << Response << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         dout << RWTime() << " Port " << getName() << " Received from Modem:  " << Response << endl;
       }
 
       /* Make sure that we got OK */
