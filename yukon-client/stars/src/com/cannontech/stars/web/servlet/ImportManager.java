@@ -551,7 +551,7 @@ public class ImportManager extends HttpServlet {
 									 + fields[IDX_LAST_NAME].toLowerCase();
 				fields[IDX_PASSWORD] = fields[NUM_ACCOUNT_FIELDS + IDX_SERIAL_NO];
 				
-				fields[NUM_ACCOUNT_FIELDS + IDX_DEVICE_TYPE] = "Thermostat";
+				fields[NUM_ACCOUNT_FIELDS + IDX_DEVICE_TYPE] = "ExpressStat";
 				
 				if (fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY].equalsIgnoreCase("Western"))
 					fields[NUM_ACCOUNT_FIELDS + IDX_SERVICE_COMPANY] = "Western Heating";
@@ -737,7 +737,7 @@ public class ImportManager extends HttpServlet {
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[NUM_ACCOUNT_FIELDS + IDX_HARDWARE_ACTION] = st.sval;
 				
-				fields[NUM_ACCOUNT_FIELDS + IDX_DEVICE_TYPE] = "Thermostat";
+				fields[NUM_ACCOUNT_FIELDS + IDX_DEVICE_TYPE] = "ExpressStat";
 				
 				return fields;
 			}

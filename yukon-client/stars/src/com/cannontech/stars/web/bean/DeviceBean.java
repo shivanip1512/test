@@ -49,7 +49,7 @@ public class DeviceBean {
 	public String getHTML(HttpServletRequest req) {
 		if (deviceList == null || deviceList.size() == 0) {
 			StringBuffer htmlBuf = new StringBuffer();
-			htmlBuf.append("<p class='MainText'>No device found.</p>").append(LINE_SEPARATOR);
+			htmlBuf.append("<p class='ErrorMsg'>No device found.</p>").append(LINE_SEPARATOR);
 			
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
