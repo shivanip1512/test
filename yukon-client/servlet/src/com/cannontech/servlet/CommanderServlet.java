@@ -28,11 +28,16 @@ PARAMETERS
  REDIRECT			- where the servlet should go after the post
 */
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.gui.YC;
 
@@ -58,9 +63,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 /*		java.util.Enumeration enum1 = req.getParameterNames();
 		  while (enum1.hasMoreElements()) {
 		  	String ele = enum1.nextElement().toString();
-			 System.out.println(" --" + ele);
-		 }
-*/		
+			 System.out.println(" --" + ele + "  " + req.getParameter(ele));
+		 }*/
+		
 		/**deviceID(opt1) or SerialNumber(opt2) must exist!
 		 * deviceID/serialNumber command is sent. */
 		String deviceID = req.getParameter("deviceID");
@@ -140,5 +145,24 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		else {
 			resp.sendRedirect(req.getContextPath() + "/operator/Operations.jsp");
 		}
+	}
+	
+	/**
+	 * Returns a RawPointHistory from HashMap, where deviceID is used to gain a collectino of LitePoints.
+	 * PointOffset and PointType is used to select one of the LitePoints.
+	 */
+	public static RawPointHistory getRPHData(int deviceID, int pointOffset, int pointType, HashMap rphData)
+	{
+		RawPointHistory rph = null;
+		
+		LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(deviceID);
+		for (int i = 0; i < litePoints.length; i++)
+		{
+			LitePoint lp = litePoints[i];
+			if( lp.getPointOffset() == pointOffset && pointType == lp.getPointType())
+				return (RawPointHistory)rphData.get(new Integer(lp.getPointID()));
+		}
+		
+		return rph;
 	}
 }
