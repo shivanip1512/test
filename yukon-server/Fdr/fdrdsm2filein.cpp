@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2004/09/27 23:33:28 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/09/29 17:47:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.4  2004/09/29 17:47:47  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.3  2004/09/27 23:33:28  mfisher
       changes/updates for Boost compatibility
 
@@ -555,7 +558,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);

@@ -1844,7 +1844,7 @@ int CtiFDRTelegyr::readConfig( void )
    if( tempStr.length() > 0 )
       setReloadRate( atoi( tempStr ) );
    else
-      setReloadRate( 3600 );
+      setReloadRate( 86400 );
 
    tempStr = getCparmValueAsString( KEY_HI_REASONABILITY_FILTER );
 

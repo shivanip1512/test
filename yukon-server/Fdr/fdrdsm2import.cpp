@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2import.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2003/10/20 20:28:17 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2004/09/29 17:47:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2import.cpp,v $
+      Revision 1.5  2004/09/29 17:47:47  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.4  2003/10/20 20:28:17  dsutton
       Bug:  The application wasn't locking the point list down before looking for a
       point.  The database reload does lock the list down before reloading.  If the
@@ -491,7 +494,7 @@ int CtiFDR_Dsm2Import::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);

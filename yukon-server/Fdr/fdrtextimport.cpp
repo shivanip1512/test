@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2004/09/24 14:36:53 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/09/29 17:47:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.7  2004/09/29 17:47:48  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.6  2004/09/24 14:36:53  eschmit
       Added Boost includes and libraries, misc fixes for ptime support
 
@@ -542,7 +545,7 @@ int CtiFDR_TextImport::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);

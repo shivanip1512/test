@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/09/24 14:36:52 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2004/09/29 17:47:46 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.8  2004/09/29 17:47:46  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.7  2004/09/24 14:36:52  eschmit
       Added Boost includes and libraries, misc fixes for ptime support
 
@@ -215,7 +218,7 @@ int CtiFDR_ACS::readConfig()
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);

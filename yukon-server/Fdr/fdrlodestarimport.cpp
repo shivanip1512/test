@@ -8,8 +8,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2004/09/24 14:36:52 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2004/09/29 17:47:47 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -21,6 +21,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.12  2004/09/29 17:47:47  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.11  2004/09/24 14:36:52  eschmit
       Added Boost includes and libraries, misc fixes for ptime support
 
@@ -269,7 +272,7 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(getKeyQueueFlushRate());

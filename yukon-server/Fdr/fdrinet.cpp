@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2003/12/12 21:58:32 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2004/09/29 17:47:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.10  2004/09/29 17:47:47  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.9  2003/12/12 21:58:32  dsutton
       Sending of status points was following Yukon values 0,1 instead of DSM2
       values of 1,2 for open and close.   Caused things to fail for powerlink
@@ -741,7 +744,7 @@ int CtiFDR_Inet::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_SOURCE_NAME);

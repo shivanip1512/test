@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/09/24 14:36:52 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/09/29 17:47:47 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrcygnet.cpp,v $
+      Revision 1.6  2004/09/29 17:47:47  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.5  2004/09/24 14:36:52  eschmit
       Added Boost includes and libraries, misc fixes for ptime support
 
@@ -333,7 +336,7 @@ int CtiFDRCygnet::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     {

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/09/24 14:36:53 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/09/29 17:47:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
+      Revision 1.6  2004/09/29 17:47:48  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.5  2004/09/24 14:36:53  eschmit
       Added Boost includes and libraries, misc fixes for ptime support
 
@@ -182,7 +185,7 @@ int CtiFDR_Valmet::readConfig()
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);

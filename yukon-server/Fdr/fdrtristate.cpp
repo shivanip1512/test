@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtristate.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:39 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2004/09/29 17:47:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtristate.cpp,v $
+      Revision 1.4  2004/09/29 17:47:48  dsutton
+      Updated all interfaces to default the db reload rate to once a day (86400)
+
       Revision 1.3  2002/04/16 15:58:39  softwarebuild
       20020416_1031_2_16
 
@@ -572,7 +575,7 @@ int CtiFDR_Tristate::readConfig( void )
     }
     else
     {
-        setReloadRate (3600);
+        setReloadRate (86400);
     }
 
     tempStr = getCparmValueAsString(KEY_QUEUE_FLUSH_RATE);
