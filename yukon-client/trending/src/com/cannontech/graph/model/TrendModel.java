@@ -19,8 +19,8 @@ import com.jrefinery.chart.renderer.VerticalBarRenderer3D;
 import com.jrefinery.chart.renderer.XYItemRenderer;
 import com.jrefinery.chart.renderer.XYStepRenderer;
 import com.jrefinery.data.DefaultCategoryDataset;
-
-public class TrendModel implements com.cannontech.graph.GraphDefines
+//import com.cannontech.graph.model.TrendProperties;
+public class TrendModel implements com.cannontech.graph.GraphDefines 
 {
     private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
 	private java.text.SimpleDateFormat TRANSLATE_DATE= new java.text.SimpleDateFormat("HHmmss");
@@ -28,8 +28,10 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
     private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
 	
 	private int optionsMaskSettings = 0x00;
-	private com.jrefinery.data.AbstractSeriesDataset dataset = null;
-	private com.jrefinery.data.AbstractSeriesDataset dataset_secondary = null;
+	
+	// dataset is an array of size 2.
+	// Left and Right (axis) datasets.
+	private com.jrefinery.data.AbstractSeriesDataset [] dataset = null;	
     private TrendSerie trendSeries[] = null;
     private java.util.Date startDate = null;
     private java.util.Date	stopDate = null;
@@ -45,6 +47,12 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
     private Character autoScaleLeft = new Character('Y');
     private Double leftScaleMin = new Double(0.0);
     private Double leftScaleMax = new Double(100.0);
+    
+	private NumberAxis rangeAxis1 = null;
+	private NumberAxis rangeAxis2 = null;
+
+	private final int PRIMARY = 0;
+	private final int SECONDARY = 1;
 
 /**
  * Constructor for TestFreeChart.
@@ -77,15 +85,10 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		serie.setPointId(gds.getPointID());
 		serie.setColor( com.cannontech.common.gui.util.Colors.getColor(gds.getColor().intValue()));
 		serie.setLabel(gds.getLabel().toString());
-//		serie.setType(gds.getType().toString());
+		serie.setAxis(gds.getAxis());
 		serie.setTypeMask(gds.getType().intValue());
+		serie.setMultiplier(gds.getMultiplier());
 
-
-
-//		if( ((getOptionsMaskSettings() & TrendModelType.GRAPH_MULTIPLIER) == TrendModelType.GRAPH_MULTIPLIER))
-//		{
-			serie.setMultiplier(gds.getMultiplier());
-//		}
 		dsVector.add(serie);
 	}
 
@@ -156,31 +159,126 @@ public String getChartName()
 {
 	return chartName;
 }
+private com.jrefinery.data.AbstractSeriesDataset getPrimaryDataset()
+{
+	if( dataset != null)
+	{
+		return dataset[PRIMARY];
+	}
+	return null;
+}
+private com.jrefinery.data.AbstractSeriesDataset getSecondaryDataset()
+{
+	if( dataset != null)
+	{
+		return dataset[SECONDARY];
+	}
+	return null;
+}
+private int getDatasetSeriesCount()
+{
+	int count = 0;
+	if( getPrimaryDataset() != null)
+		count += getPrimaryDataset().getSeriesCount();
+	if( getSecondaryDataset() != null)
+		count += getSecondaryDataset().getSeriesCount();
+	return count;
+}
 
 private com.jrefinery.chart.PaintTable getPaintTable()
 {
-	java.awt.Paint[] colors = null;
+    java.awt.Paint [][] paintArray = new java.awt.Paint[2][];
+	
 	if( getTrendSeries() != null)
 	{
-		colors = new java.awt.Color[dataset.getSeriesCount()];
-		int colorCount = 0;
+		paintArray[PRIMARY] = new java.awt.Color[getPrimaryDataset().getSeriesCount()];
+		paintArray[SECONDARY] = new java.awt.Color[getSecondaryDataset().getSeriesCount()];
+		
+		int primaryCount = 0;
+		int secondaryCount = 0;	
+
+		for( int i = 0; i < trendSeries.length; i++)
+		{
+			TrendSerie serie = trendSeries[i];
+			if( serie != null && (GraphDataSeries.isGraphType(serie.getTypeMask())))
+			{
+				if( serie.getAxis().equals(new Character('L')))
+				{
+					if(serie.getColor() != null)
+						paintArray[PRIMARY][primaryCount++] = serie.getColor();
+				}
+				else if( serie.getAxis().equals(new Character('R')))
+				{
+					if(serie.getColor() != null)
+						paintArray[SECONDARY][secondaryCount++] = serie.getColor();
+				}
+			}
+		}
+	}
+		
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(paintArray);	
+	
+	return pt;
+}
+
+private com.jrefinery.chart.PaintTable getPaintTable_BAR_Temporary()
+{
+    java.awt.Paint [][] paintArray = new java.awt.Paint[2][];
+	
+	if( getTrendSeries() != null)
+	{
+		paintArray[PRIMARY] = new java.awt.Color[getPrimaryDataset().getSeriesCount()];
+		
+		int primaryCount = 0;
+
 		for( int i = 0; i < trendSeries.length; i++)
 		{
 			TrendSerie serie = trendSeries[i];
 			if( serie != null && (GraphDataSeries.isGraphType(serie.getTypeMask())))
 			{
 				if(serie.getColor() != null)
-				{ 
-					colors[colorCount++] = serie.getColor();
-				}
+					paintArray[PRIMARY][primaryCount++] = serie.getColor();
 			}
 		}
 	}
 		
-    java.awt.Paint [][] p1 = new java.awt.Paint[][] {colors};
-	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(p1);	
+	com.jrefinery.chart.PaintTable pt = new com.jrefinery.chart.DefaultPaintTable(paintArray);	
 	
 	return pt;
+}
+
+private com.cannontech.jfreechart.chart.Dataset_MinMaxValues[][] getDataset_MinMaxValues()
+{
+    com.cannontech.jfreechart.chart.Dataset_MinMaxValues[][] minMaxValuesArray = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[2][];
+	
+	if( getTrendSeries() != null)
+	{
+		minMaxValuesArray[PRIMARY] = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[getPrimaryDataset().getSeriesCount()];
+		minMaxValuesArray[SECONDARY] = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[getSecondaryDataset().getSeriesCount()];
+		
+		int primaryCount = 0;
+		int secondaryCount = 0;	
+
+		for( int i = 0; i < trendSeries.length; i++)
+		{
+			TrendSerie serie = trendSeries[i];
+			if( serie != null && (GraphDataSeries.isGraphType(serie.getTypeMask())))
+			{
+				if( serie.getMaximumValue() != null && serie.getMinimumValue() != null)
+				{
+					if( serie.getAxis().equals(new Character('L')))
+					{
+						minMaxValuesArray[PRIMARY][primaryCount++] = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(serie.getMinimumValue().doubleValue(), serie.getMaximumValue().doubleValue());
+					}
+					else if( serie.getAxis().equals(new Character('R')))
+					{
+						minMaxValuesArray[SECONDARY][secondaryCount++] = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(serie.getMinimumValue().doubleValue(), serie.getMaximumValue().doubleValue());
+					}
+				}				
+			}
+		}
+	}
+	return minMaxValuesArray;
 }
 
 public void setAutoScaleLeft(Character newAutoScale)
@@ -247,7 +345,6 @@ private StringBuffer getSQLQueryString(int seriesTypeMask)
 	java.util.Vector validIDs = new java.util.Vector(trendSeries.length);	//guess on max capacity
 	for (int i = 0; i < trendSeries.length; i++)
 	{
-//		if( (trendSeries[i].getTypeMask() & seriesTypeMask) == trendSeries[i].getTypeMask())
 		if( (trendSeries[i].getTypeMask() & seriesTypeMask) == seriesTypeMask)
 			validIDs.add(trendSeries[i].getPointId());
 	}
@@ -292,16 +389,16 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 	if( (getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK ||
 		(getOptionsMaskSettings() & TrendModelType.LEGEND_MIN_MAX_MASK ) == TrendModelType.LEGEND_MIN_MAX_MASK)
 	{
-		int cnt = 0;
-		stats = new java.util.Vector(dataset.getSeriesCount());
+		stats = new java.util.Vector(getDatasetSeriesCount());
 		for( int i = 0; i < trendSeries.length; i++)
 		{
+			TrendSerie serie = trendSeries[i];
 			String stat = "";					
-			if(GraphDataSeries.isGraphType(trendSeries[i].getTypeMask()))
+			if(GraphDataSeries.isGraphType(serie.getTypeMask()))
 			{
 				if ((getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
 				{
-					double lf = trendSeries[i].getLoadFactor();
+					double lf = serie.getLoadFactor();
 					if( lf < 0)
 						stat += "Load Factor: n/a";
 					else
@@ -310,20 +407,29 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 
 				if( (getOptionsMaskSettings() & TrendModelType.LEGEND_MIN_MAX_MASK) == TrendModelType.LEGEND_MIN_MAX_MASK)
 				{
-					if (dataset.getMinValue(cnt) == null ||
-							dataset.getMinValue(cnt).doubleValue() == Double.MAX_VALUE)
-						stat += "    Min:  n/a";
-					else
-						stat += "    Min: " + MIN_MAX_FORMAT.format(dataset.getMinValue(cnt));
-						
-					if( dataset.getMaxValue(cnt) == null ||
-							dataset.getMaxValue(cnt).doubleValue() == Double.MIN_VALUE)
-						stat += "    Max:  n/a";
-					else
-						stat += "    Max: " + MIN_MAX_FORMAT.format(dataset.getMaxValue(cnt));
-					cnt++;
+					if( serie.getAxis().equals(new Character('L')))
+					{					
+						if( serie.getMinimumValue() == null ||	serie.getMinimumValue().doubleValue() == Double.MAX_VALUE)
+							stat += "    Min:  n/a";
+						else
+							stat += "    Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
+						if( serie.getMaximumValue() == null ||	serie.getMaximumValue().doubleValue() == Double.MIN_VALUE)
+							stat += "    Max:  n/a";
+						else
+							stat += "    Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
+					}
+					else if( serie.getAxis().equals(new Character('R')))
+					{					
+						if( serie.getMinimumValue() == null || serie.getMinimumValue().doubleValue() == Double.MAX_VALUE)
+							stat += "    Min:  n/a";
+						else
+							stat += "    Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
+						if( serie.getMaximumValue() == null || serie.getMaximumValue().doubleValue() == Double.MIN_VALUE)
+							stat += "    Max:  n/a";
+						else
+							stat += "    Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
+					}
 				}
-				
 				stats.add(stat);
 			}
 		}
@@ -381,63 +487,74 @@ public TrendSerie[] getTrendSeries()
 private NumberAxis getVerticalNumberAxis_primary()	//LEFT
 {
 	//Vertical 'values' Axis setup
-	NumberAxis rangeAxis = new VerticalNumberAxis("Reading");
+//	rangeAxis1 = new VerticalNumberAxis(TrendProperties.getRangeLabel_primary());
+	rangeAxis1 = new VerticalNumberAxis("Reading");
+	rangeAxis1.setAutoRange(true);
 	if( getAutoScaleLeft().charValue() != 'Y')
 	{
-		rangeAxis.setAutoRange(false);
-		rangeAxis.setMaximumAxisValue(getLeftScaleMax().doubleValue());
-		rangeAxis.setMinimumAxisValue(getLeftScaleMin().doubleValue());
+		rangeAxis1.setAutoRange(false);
+		rangeAxis1.setMaximumAxisValue(getLeftScaleMax().doubleValue());
+		rangeAxis1.setMinimumAxisValue(getLeftScaleMin().doubleValue());
 	}
 
-	rangeAxis.setTickMarksVisible(true);
-	rangeAxis.setAutoRangeIncludesZero(false);
-	return rangeAxis;
+	rangeAxis1.setTickMarksVisible(true);
+	rangeAxis1.setAutoRangeIncludesZero(false);
+	return rangeAxis1;
 }
 private NumberAxis getVerticalNumberAxis_secondary()	//RIGHT
 {
-	//Vertical 'values' Axis setup
-	NumberAxis rangeAxis = new VerticalNumberAxis("Reading");
-	if( getAutoScaleRight().charValue() != 'Y')
+	if( rangeAxis2 == null || (rangeAxis2 instanceof VerticalNumberAxis3D))
 	{
-		rangeAxis.setAutoRange(false);
-		rangeAxis.setMaximumAxisValue(getRightScaleMax().doubleValue());
-		rangeAxis.setMinimumAxisValue(getRightScaleMin().doubleValue());
+		//Vertical 'values' Axis setup
+//		rangeAxis2 = new VerticalNumberAxis(TrendProperties.getRangeLabel_secondary());
+		rangeAxis2 = new VerticalNumberAxis("Reading");
+		if( getAutoScaleRight().charValue() != 'Y')
+		{
+			rangeAxis2.setAutoRange(false);
+			rangeAxis2.setMaximumAxisValue(getRightScaleMax().doubleValue());
+			rangeAxis2.setMinimumAxisValue(getRightScaleMin().doubleValue());
+		}
+		
+		rangeAxis2.setTickMarksVisible(true);
+		rangeAxis2.setAutoRangeIncludesZero(false);
 	}
-
-	rangeAxis.setTickMarksVisible(true);
-	rangeAxis.setAutoRangeIncludesZero(false);
-	return rangeAxis;
+	return rangeAxis2;
 }
 
 private NumberAxis getVerticalNumberAxis3D_primary()	//LEFT
 {
 	//Vertical 'values' Axis setup
-	NumberAxis rangeAxis = new VerticalNumberAxis3D("Reading");
+//	rangeAxis1 = new VerticalNumberAxis3D(TrendProperties.getRangeLabel_primary());
+	rangeAxis1 = new VerticalNumberAxis3D("Reading");
 	if( getAutoScaleLeft().charValue() != 'Y')
 	{
-		rangeAxis.setAutoRange(false);
-		rangeAxis.setMaximumAxisValue(getLeftScaleMax().doubleValue());
-		rangeAxis.setMinimumAxisValue(getLeftScaleMin().doubleValue());
+		rangeAxis1.setAutoRange(false);
+		rangeAxis1.setMaximumAxisValue(getLeftScaleMax().doubleValue());
+		rangeAxis1.setMinimumAxisValue(getLeftScaleMin().doubleValue());
 	}
 		
-	rangeAxis.setTickMarksVisible(true);
-	rangeAxis.setAutoRangeIncludesZero(false);
-	return rangeAxis;
+	rangeAxis1.setTickMarksVisible(true);
+	rangeAxis1.setAutoRangeIncludesZero(false);
+	return rangeAxis1;
 }
 
 private NumberAxis getVerticalNumberAxis3D_secondary()	//RIGHT
 {
-	//Vertical 'values' Axis setup
-	NumberAxis rangeAxis = new VerticalNumberAxis3D("Reading");
-	if( getAutoScaleRight().charValue() != 'Y')
+	if( rangeAxis2 == null || (rangeAxis2 instanceof VerticalNumberAxis))
 	{
-		rangeAxis.setAutoRange(false);
-		rangeAxis.setMaximumAxisValue(getRightScaleMax().doubleValue());
-		rangeAxis.setMinimumAxisValue(getRightScaleMin().doubleValue());
+		//Vertical 'values' Axis setup
+//		rangeAxis2 = new VerticalNumberAxis3D(TrendProperties.getRangeLabel_secondary());
+		rangeAxis2 = new VerticalNumberAxis3D("Reading");
+		if( getAutoScaleRight().charValue() != 'Y')
+		{
+			rangeAxis2.setAutoRange(false);
+			rangeAxis2.setMaximumAxisValue(getRightScaleMax().doubleValue());
+			rangeAxis2.setMinimumAxisValue(getRightScaleMin().doubleValue());
+		}
+		rangeAxis2.setTickMarksVisible(true);
+		rangeAxis2.setAutoRangeIncludesZero(false);
 	}
-	rangeAxis.setTickMarksVisible(true);
-	rangeAxis.setAutoRangeIncludesZero(false);
-	return rangeAxis;
+	return rangeAxis2;
 }
 /**
  * Retrieves the data for the given point list for the date
@@ -557,16 +674,16 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				//new pointid in rset.
 				//init everything, a new freechartmodel will be created with the change of pointid.
 				java.sql.Timestamp ts = rset.getTimestamp(2);
-				com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(ts.getTime() + day));
+				com.jrefinery.data.RegularTimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(ts.getTime() + day));
 				double val = rset.getDouble(3);
-
+			
 				if( GraphDataSeries.isUsageType(seriesTypeMask))
 				{
 					java.util.Date tsDate = new java.util.Date(ts.getTime());
 
 					if(tsDate.compareTo(start) < 0)
 					{	
-						dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);
+						dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);	
 					}
 					else if(tsDate.compareTo(start) == 0)
 					{	
@@ -578,11 +695,12 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 					{
 						if(firstOne)
 						{
-							if( dataPair != null)
+							if(dataPair == null)
 							{
-								dataPairVector.add(dataPair);
-								firstOne = false;
+								dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);						
 							}
+							dataPairVector.add(dataPair);
+							firstOne = false;
 						}
 						if( addNext )
 						{
@@ -603,7 +721,10 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 					{
 						if( firstOne)
 						{
-							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);						
+							if(dataPair == null)
+							{
+								dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp, val);						
+							}
 							dataPairVector.add(dataPair);
 							firstOne = false;
 						}
@@ -630,7 +751,7 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 						for (int j = 0; j < size; j++)
 						{
 							double v = ((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getValue().doubleValue();
-							com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getPeriod().getStart()+ (86400000*i)));
+							com.jrefinery.data.RegularTimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getPeriod().getStart().getTime() + (86400000*i)));
 							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp,v);
 							dataPairVector.add(dataPair);							
 						}					
@@ -880,21 +1001,11 @@ public JFreeChart refresh(int rendererType)
 		if( (getOptionsMaskSettings()  & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
 		{
 			rend = new com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax(type, generator);
-			((com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax)rend).minMaxValues = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[dataset.getSeriesCount()];
-
-			for ( int i = 0; i < dataset.getSeriesCount(); i++)
-			{
-				if(dataset.getMaxValue(i) != null && dataset.getMinValue(i) != null)
-				{
-					((com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax)rend).minMaxValues[i] = 
-						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(dataset.getMinValue(i).doubleValue(), dataset.getMaxValue(i).doubleValue());
-				}
-			}
+			((com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues();
 		}
 		else
 		{
 			rend = new StandardXYItemRenderer(type, generator);
-
 		}
 		//TimeSeriesCollection
 //        com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm mavg = new com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm();
@@ -904,7 +1015,16 @@ public JFreeChart refresh(int rendererType)
 		
 		rend.setFillPaintTable(getPaintTable());
 		
-		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);
+		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)getPrimaryDataset(), domainAxis, getVerticalNumberAxis_primary(), rend);
+		
+		//Attempt to do multiple axis
+		if(getSecondaryDataset().getSeriesCount() > 0)
+		{
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryDataset(getSecondaryDataset());
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryRenderer(rend);
+		}
 	}
 	else if( rendererType == TrendModelType.STEP_VIEW)
 	{
@@ -924,16 +1044,7 @@ public JFreeChart refresh(int rendererType)
 		if( (getOptionsMaskSettings()  & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
 		{
 			rend = new com.cannontech.jfreechart.chart.XYStepRenderer_MinMax(true);
-			((com.cannontech.jfreechart.chart.XYStepRenderer_MinMax)rend).minMaxValues = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[dataset.getSeriesCount()];			
-
-			for ( int i = 0; i < dataset.getSeriesCount(); i++)
-			{
-				if( dataset.getMaxValue(i) != null && dataset.getMinValue(i) != null)
-				{
-					((com.cannontech.jfreechart.chart.XYStepRenderer_MinMax)rend).minMaxValues[i] = 
-						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(dataset.getMinValue(i).doubleValue(), dataset.getMaxValue(i).doubleValue());
-				}
-			}
+			((com.cannontech.jfreechart.chart.XYStepRenderer_MinMax)rend).minMaxValues = getDataset_MinMaxValues();
 		}
 		else
 		{
@@ -943,10 +1054,20 @@ public JFreeChart refresh(int rendererType)
 			 new com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator(dwellValuesDateTimeformat, valueFormat);
 
 		rend.setToolTipGenerator(generator)		;
-		
+
 		rend.setFillPaintTable(getPaintTable());
 
-		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis_primary(), rend);	
+		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)getPrimaryDataset(), domainAxis, getVerticalNumberAxis_primary(), rend);	
+
+		//Attempt to do multiple axis
+		if( getSecondaryDataset().getSeriesCount() > 0)
+		{
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryDataset(getSecondaryDataset());
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			((com.jrefinery.chart.XYPlot)plot).setSecondaryRenderer(rend);
+		}
+		
 	}
 	else if( rendererType == TrendModelType.BAR_VIEW)
 	{
@@ -957,8 +1078,23 @@ public JFreeChart refresh(int rendererType)
 
 		CategoryItemRenderer rend = new VerticalBarRenderer(new com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator());
 
-		rend.setFillPaintTable(getPaintTable());
-		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis_primary(), rend);
+//		UNCOMMENT WITH MULTIPLE ACCESS SUPPORT		
+//		rend.setFillPaintTable(getPaintTable());
+		rend.setFillPaintTable(getPaintTable_BAR_Temporary());
+		
+		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), getHorizontalCategoryAxis(), getVerticalNumberAxis_primary(), rend);
+
+		//Attempt to do multiple axis
+		//	FIX ME...Not able to do multiple bar axis, make lines instead (hopefully for not very long)
+		if( getSecondaryDataset().getSeriesCount() > 0)
+		{
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			rend = new com.jrefinery.chart.renderer.LineAndShapeRenderer(com.jrefinery.chart.renderer.LineAndShapeRenderer.LINES);
+			rend.setFillPaintTable(getPaintTable());
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryRenderer(rend);
+		}
 	}
 	else if( rendererType == TrendModelType.BAR_3D_VIEW)
 	{
@@ -967,11 +1103,24 @@ public JFreeChart refresh(int rendererType)
 		else
 			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 
-//		CategoryItemRenderer rend = new VerticalBarRenderer3D(new StandardCategoryToolTipGenerator(), 10);
 		CategoryItemRenderer rend = new VerticalBarRenderer3D(10, 10);
 
-		rend.setFillPaintTable(getPaintTable());		
-		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
+//		UNCOMMENT WITH MULTIPLE ACCESS SUPPORT		
+//		rend.setFillPaintTable(getPaintTable());
+		rend.setFillPaintTable(getPaintTable_BAR_Temporary());
+		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)getPrimaryDataset(), getHorizontalCategoryAxis(), getVerticalNumberAxis3D_primary(), rend);
+
+		//Attempt to do multiple axis
+		//	FIX ME...Not able to do multiple bar axis, make lines instead (hopefully for not very long)
+		if(getSecondaryDataset().getSeriesCount() > 0)
+		{
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryDataset(getSecondaryDataset());
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryRangeAxis(getVerticalNumberAxis_secondary());
+			rend = new com.jrefinery.chart.renderer.LineAndShapeRenderer(com.jrefinery.chart.renderer.LineAndShapeRenderer.LINES);
+			rend.setFillPaintTable(getPaintTable());
+			((com.jrefinery.chart.VerticalCategoryPlot)plot).setSecondaryRenderer(rend);
+		}
 	}
 	else if( rendererType == TrendModelType.TABULAR_VIEW)
 	{
@@ -983,7 +1132,7 @@ public JFreeChart refresh(int rendererType)
 	}
 
 	JFreeChart fChart = null;
-	fChart = new JFreeChart(plot);//, com.jrefinery.chart.ChartFactory.createTimeSeriesChart("Yukon Trending Application", "Time", "Value", new com.jrefinery.data.TimeSeriesCollection(), true);
+	fChart = new JFreeChart(plot);
 
 	fChart.setLegend( getLegend(fChart) );
 	fChart.setTitle(getTitle());
