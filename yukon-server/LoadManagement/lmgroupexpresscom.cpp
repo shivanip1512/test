@@ -149,21 +149,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
 CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control xcom shed ");
-    LONG shedTime = 450;
-    if( offTime > 570 && offTime <= 1220 )
-    {
-        shedTime = 900;
-    }
-    else if( offTime > 1220 && offTime <= 1920 )
-    {
-        shedTime = 1800;
-    }
-    else if( offTime > 1920 )
-    {
-        shedTime = 3600;
-    }
-
-    controlString += convertSecondsToEvenTimeString(shedTime);
+    controlString += convertSecondsToEvenTimeString(offTime-60);
 
     if( _LM_DEBUG )
     {
