@@ -76,8 +76,8 @@ public class SwitchCommandQueue {
 	public SwitchCommandQueue(String fileName) throws IOException {
 		diskFile = new File( fileName );
 		if (!diskFile.exists()) {
-			File dir = new File( diskFile.getParent() );
-			if (!dir.exists()) dir.mkdirs();
+			File dir = diskFile.getParentFile();
+			if (dir != null && !dir.exists()) dir.mkdirs();
 			diskFile.createNewFile();
 		}
 	}

@@ -398,6 +398,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				switchCommandQueue.syncFromFile();
 			}
 			catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -499,9 +500,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public String getEnergyCompanySetting(int rolePropertyID) {
-		return ServerUtils.forceNotNone(
-				AuthFuncs.getRolePropertyValue(
-					YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID) );
+		String value = AuthFuncs.getRolePropertyValue( YukonUserFuncs.getLiteYukonUser(getUserID()), rolePropertyID );
+		if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
+			value = "";
+		return value;
 	}
 	
 	public LiteYukonGroup[] getResidentialCustomerGroups() {
