@@ -33,6 +33,7 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 
    // the string for filtering all areas
    public static final String ALL_FILTER = "All Areas";
+	public static final String STR_NA = "  NA";
 
    // the holder for the current filter, default to all
    private String filter = ALL_FILTER;
@@ -344,31 +345,30 @@ public Object getValueAt(int row, int col)
 		case TARGET_COLUMN:
 		{
 			// decide which set Point we are to use
-			if( sub.getPeakTimeFlag().booleanValue() )
+			if( sub.isPowerFactorControlled() )
 			{
-            if( sub.isPowerFactorControlled() )
-            {
-               return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
-            }
-            else
-				  return
-				  	CommonUtils.formatDecimalPlaces(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
-   				" to " + 
-   				CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue(), 0) + 
-   				" Pk";
+				return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
+			}
+			else if( sub.getLowerBandWidth().doubleValue() == 0
+						 && sub.getUpperBandWidth().doubleValue() == 0 )
+			{
+				return STR_NA;
+			}
+			else if( sub.getPeakTimeFlag().booleanValue() )
+			{
+				return
+					CommonUtils.formatDecimalPlaces(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
+					" to " + 
+					CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue(), 0) + 
+					" Pk";
 			}
 			else
 			{
-            if( sub.isPowerFactorControlled() )
-            {
-               return getPowerFactorText(sub.getPeakSetPoint().doubleValue(), false);
-            }
-            else
-   				return
-   				 CommonUtils.formatDecimalPlaces(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
-   				 " to " + 
-   				 CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue(), 0) + 
-   				 " OffPk";
+				return
+					CommonUtils.formatDecimalPlaces(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue(), 0) +
+					" to " + 
+					CommonUtils.formatDecimalPlaces(sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue(), 0) + 
+					" OffPk";
 			}
 
 		}
@@ -376,7 +376,7 @@ public Object getValueAt(int row, int col)
 		case DAILY_OPERATIONS_COLUMN:
 			return new String(sub.getCurrentDailyOperations() + " / " + 
 				(sub.getMaxDailyOperation().intValue() <= 0 
-					? "NA" 
+					? STR_NA 
 					: sub.getMaxDailyOperation().toString()) );
 		
 		case VAR_LOAD_COLUMN:
@@ -462,7 +462,7 @@ private String getPowerFactorText( double value, boolean compute )
    {}
 	
    if( value <= CapControlConst.PF_INVALID_VALUE )
-      return "  NA";
+      return STR_NA;
    else
       return CommonUtils.formatDecimalPlaces(
             value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   

@@ -38,6 +38,8 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 
 
    public static final String DASH_LINE = "  ----";
+	public static final String STR_NA = "  NA";
+
 
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
@@ -279,31 +281,30 @@ public Object getValueAt(int row, int col)
 			case TARGET_COLUMN:
 			{
 				// decide which set Point we are to use
+				if( getCurrentSubBus().isPowerFactorControlled() )
+				{
+					return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " Pk";
+				}
+				else if( feeder.getLowerBandWidth().doubleValue() == 0
+							 && feeder.getUpperBandWidth().doubleValue() == 0 )
+				{
+					return STR_NA;
+				}
 				if( getCurrentSubBus().getPeakTimeFlag().booleanValue() )
 				{
-               if( getCurrentSubBus().isPowerFactorControlled() )
-               {
-                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " Pk";
-               }
-               else
-   					return
-   					 CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-   					 " to " + 
-   					 CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
-   					 " Pk";
+					return
+					 CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
+					 " to " + 
+					 CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
+					 " Pk";
 				}
 				else
 				{
-               if( getCurrentSubBus().isPowerFactorControlled() )
-               {
-                  return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " OffPk";
-               }
-               else
-   					return
-   					 CommonUtils.formatDecimalPlaces(feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-   					 " to " + 
-   					 CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue(), 0) + 
-   					 " OffPk";
+					return
+   					CommonUtils.formatDecimalPlaces(feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
+   					" to " + 
+   					CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue(), 0) + 
+   					" OffPk";
 				}
 
 			}
