@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2002/10/14 21:10:54 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2003/06/04 21:18:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.7  2003/06/04 21:18:51  dsutton
+      Interface wasn't applying the multiplier or offset to the incoming points
+
       Revision 1.6  2002/10/14 21:10:54  dsutton
       In the database translation routines, if we failed to hit the database
       we called the load routine again just to get the error code.  Whoops
@@ -1655,6 +1658,9 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                     // assign last stuff	
                     quality = ForeignToYukonQuality (data->msgUnion.value.Quality);
                     value = data->msgUnion.value.Value;
+                    value *= point.getMultiplier();
+                    value += point.getOffset();
+
                     timestamp = RWTime (data->msgUnion.value.TimeStamp + rwEpoch);
                     if (timestamp == rwEpoch)
                     {

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/04/22 20:44:45 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2003/06/04 21:18:51 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.3  2003/06/04 21:18:51  dsutton
+      Interface wasn't applying the multiplier or offset to the incoming points
+
       Revision 1.2  2003/04/22 20:44:45  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
@@ -258,6 +261,8 @@ bool CtiFDR_TextImport::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
             case 3:
                 {
                     value = atof(tempString1);
+                    value *= point.getMultiplier();
+                    value += point.getOffset();
                     break;
                 }
             case 4:
