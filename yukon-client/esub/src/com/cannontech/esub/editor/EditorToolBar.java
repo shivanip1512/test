@@ -33,7 +33,6 @@ public void addToToolBar(LxAbstractAction action, JToolBar toolBar) {
 		return toolBar;
 	}
 	private void initialize(EditorActions actions) {
-		AbstractButton button;
 				
 		toolBar = new javax.swing.JToolBar(JToolBar.VERTICAL);
 

@@ -102,7 +102,6 @@ public com.loox.jloox.LxGraph getLxGraph() {
  * @param id int
  */
 String getPointState(int id) {
-	double retVal = Double.NaN;
 	
 	String[] param = new String[] { "id" };
 	String[] values = new String[] { Integer.toString(id) };
