@@ -162,7 +162,7 @@ public class SubmitCommandRequestHandler implements CttpMessageHandler {
 
 		cttp_CommandResponseType cmdResp = new cttp_CommandResponseType();
 		cmdResp.addtimestamp(Cttp.formatCTTPDate(new Date()));
-		cmdResp.addcommandTrackingCode(Integer.toString(trackingID));
+		cmdResp.addcommandTrackingCode(Cttp.TRACKING_ID_PREFIX+ Integer.toString(trackingID));
 		submitCmdResp.addcttp_CommandResponse(cmdResp);		
 		return new CttpResponse(cttpResp);
 	}

@@ -70,7 +70,7 @@ public class GroupStatusRequestHandler implements CttpMessageHandler {
 				if(curCmd != null) {
 					Date cmdExpires = new Date(curCmd.getTimeSent().getTime() + curCmd.getDuration().intValue()*60L*60L*1000L);
 					groupDetail.addcommandInEffect("OFFSET");
-					groupDetail.addcommandTrackingCode(curCmd.getTrackingID().toString());
+					groupDetail.addcommandTrackingCode(Cttp.TRACKING_ID_PREFIX + curCmd.getTrackingID().toString());
 					groupDetail.addcommandExpireTime(Cttp.formatCTTPDate(cmdExpires));
 					groupsWithOffset++;
 					statsWithOffset += Cttp.getNumberOfStatsInGroup(lmGroupPAO);

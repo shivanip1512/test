@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.cache.PILCommandCache;
 import com.cannontech.cttp.Cttp;
 
 /**
@@ -22,7 +23,7 @@ public class CttpServlet extends HttpServlet {
 
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
-		
+
 		resp.setContentType("text/xml");
 				
 		Cttp cttp = Cttp.getInstance();
@@ -38,7 +39,7 @@ public class CttpServlet extends HttpServlet {
 	public void init(ServletConfig arg0) throws ServletException {
 		super.init(arg0);
 		//make sure the cache is fired up
-	//	PILCommandCache.getInstance();
+		PILCommandCache.getInstance();
 	}
 
 }

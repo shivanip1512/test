@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.cttp.schema.cttp_FailureType;
 import com.cannontech.cttp.schema.cttp_OperationType;
@@ -73,6 +74,9 @@ public class Cttp {
 		cttpDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
+	//	Prefix any tracking ids with this
+	public static final String TRACKING_ID_PREFIX = "cannontech";
+	
 	private static ThreadLocal cttpHolder = new ThreadLocal();
 	
 	//return a threadlocal instance
@@ -103,11 +107,11 @@ public class Cttp {
 			inMsg.append(in);
 		}
 		
-		if(inMsg.length() == 0) 
-			return;
+		//if(inMsg.length() == 0) 
+		//	return;
 			
-		System.out.println(">>>>>>>>incoming");
-		System.out.println(inMsg.toString());
+		CTILogger.info("CTTP INCOMING:");
+		CTILogger.info(inMsg.toString());
 			
 		//Check login		
 		cttp_dtd_v0r1Doc doc = new cttp_dtd_v0r1Doc();
@@ -134,13 +138,11 @@ public class Cttp {
 	
 		cttp_dtd_v0r1Doc cttpDoc = new cttp_dtd_v0r1Doc();
 		cttpDoc.setRootElementName(null, "cttp-Operation");
-	//	if(!(msgHandler instanceof SubmitCommandRequestHandler)) {	
+	
 		cttpDoc.save(os, resp.getCttpOperation());	
-	//	}
 		
-		System.out.println("<<<<<<<<<<<<<<outgoing");
+		CTILogger.info("CTTP OUTGOING:");
 		cttpDoc.save(System.out, resp.getCttpOperation());
-		System.out.println("");
 	}
 	
 	/**

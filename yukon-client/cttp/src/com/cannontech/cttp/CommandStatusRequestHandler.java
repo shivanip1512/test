@@ -32,7 +32,12 @@ public class CommandStatusRequestHandler implements CttpMessageHandler {
 	public CttpResponse handleMessage(CttpRequest req) throws Exception {
 		cttp_OperationType cttpReq = req.getCttpOperation();
 		cttp_CommandStatusRequestType cttpCmdStatusReq = cttpReq.getcttp_CommandStatusRequest();
-		int messageID = Integer.parseInt(cttpCmdStatusReq.getcommandTrackingCode().toString());
+		String trackingIDStr = cttpCmdStatusReq.getcommandTrackingCode().toString();
+		int messageID = -1;
+		if(trackingIDStr.length() >= Cttp.TRACKING_ID_PREFIX.length() + 1) {
+			messageID = Integer.parseInt(trackingIDStr.substring(Cttp.TRACKING_ID_PREFIX.length()));
+		}
+		
 		
 		CttpCmd cmd = CttpCmdCache.getInstance().getCmd(messageID);
 		
@@ -41,7 +46,7 @@ public class CommandStatusRequestHandler implements CttpMessageHandler {
 		cttp_CommandStatusResponseType cmdStatusResp = new cttp_CommandStatusResponseType();
 		cttpResp.addcttp_CommandStatusResponse(cmdStatusResp);
 				
-		if(cmd == null) {
+		if(cmd == null || messageID == -1) {
 			cttp_FailureType cttpFail = Cttp.makeFailure(Cttp.UNKNOWN_TRACKING_CODE, "Unknown tracking code");
 			cmdStatusResp.addcttp_Failure(cttpFail);	
 		}
