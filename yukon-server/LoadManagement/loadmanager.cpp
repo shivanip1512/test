@@ -197,8 +197,9 @@ void CtiLoadManager::controlLoop()
     
     while(TRUE)
     {
-    {
-        if( (msg = _main_queue.getQueue(500)) != NULL)
+        // first service incoming messages, but let the main loop execute even if there are a lot of incoming messages
+        int num_msgs = 0; 
+        while( (msg = _main_queue.getQueue(500)) != NULL && num_msgs++ < 25) // is 25 a good number? future cparm?
         {
             CtiLMExecutor* executor = executorFactory.createExecutor(msg);
             try
@@ -211,9 +212,8 @@ void CtiLoadManager::controlLoop()
                 dout << RWTime() << " **Checkpoint** " <<  " Caught '...' executing executor in main thread." << __FILE__ << "(" << __LINE__ << ")" << endl;
             }
             delete executor;
-            continue;
         }
-        
+    {        
 	RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
 	RWDBDateTime prevDateTime = currentDateTime;
@@ -473,7 +473,7 @@ void CtiLoadManager::controlLoop()
     }
 
     rwRunnable().serviceCancellation();
-//    rwRunnable().sleep( 500 );
+
     }
     }
     catch(RWCancellation& )

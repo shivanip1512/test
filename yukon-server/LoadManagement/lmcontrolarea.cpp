@@ -545,8 +545,8 @@ CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatarece
 {
     if(_newpointdatareceivedflag != newdatareceived)
     {
-	_newpointdatareceivedflag = newdatareceived;
-	setDirty(true);
+        _newpointdatareceivedflag = newdatareceived;
+        setDirty(true);
     }
     return *this;
 }
@@ -560,8 +560,8 @@ CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 {
     if(_updatedflag != updated)
     {
-	_updatedflag = updated;
-	setDirty(true);
+        _updatedflag = updated;
+        setDirty(true);
     }
     return *this;
 }
@@ -588,8 +588,8 @@ CtiLMControlArea& CtiLMControlArea::setControlAreaState(LONG state)
 {
     if(_controlareastate != state)
     {
-	_controlareastate = state;
-	setDirty(true);
+        _controlareastate = state;
+        setDirty(true);
     }
 
     return *this;
@@ -604,8 +604,8 @@ CtiLMControlArea& CtiLMControlArea::setCurrentStartPriority(LONG currpriority)
 {
     if(_currentpriority != currpriority)
     {
-	_currentpriority = currpriority;
-	setDirty(true);
+        _currentpriority = currpriority;
+        setDirty(true);
     }
     return *this;
 }
@@ -620,8 +620,8 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStartTime(LONG tempstart)
 {
     if(_currentdailystoptime != tempstart)
     {
-	_currentdailystarttime = tempstart;
-	setDirty(true);
+        _currentdailystarttime = tempstart;
+        setDirty(true);
     }
     return *this;
 }
@@ -636,8 +636,8 @@ CtiLMControlArea& CtiLMControlArea::setCurrentDailyStopTime(LONG tempstop)
 {
     if(_currentdailystoptime != tempstop)
     {
-	_currentdailystoptime = tempstop;
-	setDirty(true);
+        _currentdailystoptime = tempstop;
+        setDirty(true);
     }
     return *this;
 }
@@ -1135,7 +1135,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
         else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) &&
                  currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) &&
-	         currentLMProgram->getControlType().compareTo(CtiLMProgramBase::TimedType,RWCString::ignoreCase) )
+                 currentLMProgram->getControlType().compareTo(CtiLMProgramBase::TimedType,RWCString::ignoreCase) )
         {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1146,7 +1146,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
     {
         if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
             ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             fullyActivePrograms++;
             activePrograms++;
@@ -1370,7 +1370,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
             }
         }
         else if( currentLMProgram->getControlType().compareTo(CtiLMProgramBase::ManualOnlyType,RWCString::ignoreCase) &&
-	         currentLMProgram->getControlType().compareTo(CtiLMProgramBase::TimedType,RWCString::ignoreCase))
+                 currentLMProgram->getControlType().compareTo(CtiLMProgramBase::TimedType,RWCString::ignoreCase))
         {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Unknown LM Program Control Type in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1434,10 +1434,10 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             {
                 returnBoolean = TRUE;
             }
-		}
+                }
         if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
             currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
+            currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1545,7 +1545,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
         }
         if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
             currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
+            currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1617,7 +1617,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
         }
         if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
             currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState)
+            currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState)
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1668,7 +1668,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
             setCurrentStartPriority(-1);
-			setUpdatedFlag(TRUE);
+                        setUpdatedFlag(TRUE);
         }
     }
     else
@@ -1689,7 +1689,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
-	            setUpdatedFlag(TRUE);
+                    setUpdatedFlag(TRUE);
             }
         }
     }
@@ -1717,17 +1717,17 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
 
-	if(currentLMProgram->getControlType() == CtiLMProgramBase::TimedType )
-	{
-	    if(currentLMProgram->handleTimedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg))
-	    {
-		setUpdatedFlag(TRUE);
-	    }
-	}
-	
+        if(currentLMProgram->getControlType() == CtiLMProgramBase::TimedType )
+        {
+            if(currentLMProgram->handleTimedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg))
+            {
+                setUpdatedFlag(TRUE);
+            }
+        }
+        
         if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||
             currentLMProgram->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
+            currentLMProgram->getProgramState() == CtiLMProgramBase::TimedActiveState )
         {
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
@@ -1800,7 +1800,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
-	            setUpdatedFlag(TRUE);
+                    setUpdatedFlag(TRUE);
             }
         }
     }
@@ -1817,16 +1817,16 @@ void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* mu
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-	{
-	    CtiLMProgramDirect* currentLMDirectProgram = (CtiLMProgramDirect*) currentLMProgram;
-	    if( currentLMDirectProgram->getNotifyTime().seconds() > RWDBDateTime(1991,1,1,0,0,0,0).seconds() &&
-		currentLMDirectProgram->getNotifyTime().seconds() <= secondsFrom1901 )
-	    {
-		currentLMDirectProgram->notifyGroupsOfStart(multiDispatchMsg);
-		currentLMDirectProgram->setNotifyTime(RWDBDateTime(1990,1,1,0,0,0,0));
-		currentLMDirectProgram->dumpDynamicData();
-	    }
-	}
+        {
+            CtiLMProgramDirect* currentLMDirectProgram = (CtiLMProgramDirect*) currentLMProgram;
+            if( currentLMDirectProgram->getNotifyTime().seconds() > RWDBDateTime(1991,1,1,0,0,0,0).seconds() &&
+                currentLMDirectProgram->getNotifyTime().seconds() <= secondsFrom1901 )
+            {
+                currentLMDirectProgram->notifyGroupsOfStart(multiDispatchMsg);
+                currentLMDirectProgram->setNotifyTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                currentLMDirectProgram->dumpDynamicData();
+            }
+        }
     }    
 }
 
@@ -1869,44 +1869,45 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
 {
     for(int i = 0; i < _lmprograms.entries(); i++)
     {
-	CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
-	if( lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
- 	    lm_program->getControlType() == CtiLMProgramBase::TimedType )
-	{
-	    CtiLMProgramDirect* lm_direct = (CtiLMProgramDirect*) lm_program;
+        CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
+        if( lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
+            lm_program->getControlType() == CtiLMProgramBase::TimedType )
+        {
+            CtiLMProgramDirect* lm_direct = (CtiLMProgramDirect*) lm_program;
 
-	    RWDate today;
-	    RWDBDateTime start(today);
-	    RWDBDateTime stop(today);
-	    
-	    CtiLMProgramControlWindow* cw = lm_program->getControlWindow(secondsFromBeginningOfDay);
-	    if(cw == 0)
-	    {
-		cw = lm_program->getNextControlWindow(secondsFromBeginningOfDay);
-	    }
-	    
-	    if(cw != 0)
-	    { 
-		start.addSeconds(cw->getAvailableStartTime());
-		stop.addSeconds(cw->getAvailableStopTime());
+            RWDate today;
+            RWDBDateTime start(today);
+            RWDBDateTime stop(today);
+            
+            CtiLMProgramControlWindow* cw = lm_program->getControlWindow(secondsFromBeginningOfDay);
+            if(cw == 0)
+            {
+                cw = lm_program->getNextControlWindow(secondsFromBeginningOfDay);
+            }
+            
+            if(cw != 0)
+            { 
+                start.addSeconds(cw->getAvailableStartTime());
+                stop.addSeconds(cw->getAvailableStopTime());
 
-		//control window could be from earlier in the day, add a day to it to indicate
-		//tomorrow
-		if( cw->getAvailableStopTime() < secondsFromBeginningOfDay)
-		{
-		    start.addDays(1);
-		    stop.addDays(1);
-		}
-	    }
+                //control window could be from earlier in the day, add a day to it to indicate
+                //tomorrow
+                if( cw->getAvailableStopTime() < secondsFromBeginningOfDay)
+                {
+                    start.addDays(1);
+                    stop.addDays(1);
+                }
+            }
 
-	    if(lm_direct->getDirectStartTime() != start ||
-	       lm_direct->getDirectStopTime() != stop)
-	    {		
-		lm_direct->setDirectStartTime(start);
-		lm_direct->setDirectStopTime(stop);
-		setUpdatedFlag(TRUE);
-	    }
-	}
+            if(!lm_direct->getManualControlReceivedFlag() &&
+               (lm_direct->getDirectStartTime() != start ||
+                lm_direct->getDirectStopTime() != stop))
+            {
+                lm_direct->setDirectStartTime(start);
+                lm_direct->setDirectStopTime(stop);
+                setUpdatedFlag(TRUE);
+            }
+        }
     }
 }
 
@@ -2203,7 +2204,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         rdr["timestamp"] >> dynamicTimeStamp;
 
         _insertDynamicDataFlag = FALSE;
-	setDirty(false);
+        setDirty(false);
     }
     else
     {
@@ -2217,7 +2218,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         setCurrentDailyStopTime(getDefDailyStopTime());
 
         _insertDynamicDataFlag = TRUE;
-	setDirty(true);
+        setDirty(true);
     }
 }
 
