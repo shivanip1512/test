@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/07/27 17:04:53 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/07/27 17:05:34 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
