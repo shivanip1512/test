@@ -41,20 +41,23 @@ using boost::shared_ptr;
 template < class T >
 class IM_EX_CTIBASE CtiSmartMap
 {
+public:
+
+    typedef map< long, shared_ptr< T > >                coll_type;              // This is the collection type!
+    typedef coll_type::value_type                       val_type;
+    typedef coll_type::iterator                         spiterator;
+    typedef pair<spiterator, bool>                      insert_pair;
+    typedef shared_ptr< T >                             ptr_type;
+
 protected:
 
     mutable CtiMutex _mux;
     // This is a keyed Mapping which does not allow duplicates!
-    map< long, shared_ptr< T > > _map;
+    coll_type _map;
 
     int _dberrorcode;
 
 public:
-
-    typedef map< long, shared_ptr< T > >::value_type    val_type;
-    typedef map< long, shared_ptr< T > >::iterator      spiterator;
-    typedef pair<spiterator, bool>                      insert_pair;
-    typedef shared_ptr< T >                             ptr_type;
 
 
     CtiSmartMap() {}
@@ -76,6 +79,42 @@ public:
             applyFun( vp.first, vp.second, d);
         }
     }
+
+
+    #ifdef MISCROSOFT_EVER_FIXES_STL
+    /*
+     *  Selects all collection entries which match the function and return a smartpointer to them in match_col
+     */
+    vector< long > select(bool (*selectFun)(const long, ptr_type, void*), void* d )
+    {
+        int count = 0;
+        CtiLockGuard< CtiMutex >  gaurd(_mux);
+        spiterator itr;
+
+        vector< long > local_coll;
+
+        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        {
+            val_type vp = *itr;
+            if(selectFun( vp.first, vp.second, d))
+            {
+                try
+                {
+                    local_coll.push_back(vp.first);
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+        }
+
+        return local_coll;
+    }
+    #endif
 
     insert_pair insert(long key, T* val)
     {
@@ -121,6 +160,24 @@ public:
         for(itr = _map.begin(); itr != _map.end(); ++itr)
         {
             if(testFun(itr->second, d))
+            {
+                retRef = itr->second;
+                break;
+            }
+        }
+
+        return retRef;
+    }
+
+    ptr_type find(bool (*testFun)(const long, ptr_type, void*),void* d)
+    {
+        CtiLockGuard< CtiMutex > gaurd(_mux);
+        ptr_type retRef;
+        spiterator itr;
+
+        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        {
+            if(testFun(itr->first, itr->second, d))
             {
                 retRef = itr->second;
                 break;
