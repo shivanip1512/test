@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:08:06 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/01/07 21:21:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,6 +298,7 @@ int CtiProtocolDNP::sendCommResult( INMESS *InMessage )
             }
 
             //  oh well, closest thing to reality - not enough room in outmess
+
             retVal = MemoryError;
         }
     }
@@ -313,6 +314,7 @@ int CtiProtocolDNP::sendCommResult( INMESS *InMessage )
 bool CtiProtocolDNP::isTransactionComplete( void )
 {
     //  ACH: factor in application layer retries... ?
+
     return _appLayer.isTransactionComplete() | _appLayer.errorCondition();
 }
 
