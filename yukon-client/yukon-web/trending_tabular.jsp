@@ -1,9 +1,7 @@
 <%
-
-
-
     java.text.SimpleDateFormat shortDateFormat = new java.text.SimpleDateFormat("M/d");      
 %>
+
 <br>
 <center>
 <%
@@ -86,13 +84,13 @@ if( numWeeks > 0 && cal.getTime().compareTo( now ) <= 0 )
     }
 %>
 
-<!--<jrun:servlet code="TabularDataGenerator">
+<jrun:servlet code="TabularDataGenerator">
 <jrun:servletparam name="gdefid" value="<%= Integer.toString(graphDefinitionId) %>" />
 <jrun:servletparam name="start" value="<%= dateFormat.format(start) %>" />
-<jrun:servletparam name="page" value="<%= page %>" />
+<jrun:servletparam name="page" value="<%= page_ %>" />
 <jrun:servletparam name="end" value="<%= dateFormat.format(stop) %>" />
 <jrun:servletparam name="db" value="<%= dbAlias %>" />
-</jrun:servlet>-->
+</jrun:servlet>
 
 <br>
 <center>
