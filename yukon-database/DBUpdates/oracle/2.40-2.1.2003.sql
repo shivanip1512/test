@@ -197,6 +197,19 @@ insert into contact values ( 0, '(none)', '(none)', -1, 0 );
 /* No big deal if this fails, just insures a row is there */
 insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
 
+/* Create a dummy contact for notifications that do not have a contact */
+insert into address 
+select max(addressid)+1, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' from address;
+insert into contact 
+select max(contactid)+1, 'DUMMY', 'DUMMY', -1, max(a.addressid) from contact,address a;
+
+/* Assign the dangling notifications to the dummy contact */
+update contactnotification cn 
+set cn.contactid = (select max(c.contactid) from contact c)
+where cn.contactid not in (select c.contactid from contact c);
+
+
+
 alter table Contact
    add constraint FK_CON_REF__ADD foreign key (AddressID)
       references Address (AddressID);
