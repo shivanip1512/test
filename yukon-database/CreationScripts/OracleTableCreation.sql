@@ -1065,7 +1065,7 @@ create table CTIDatabase  (
 /
 
 
-insert into CTIDatabase values('3.00', 'Ryan', '11-JAN-2004', 'Added some more roles, tag tables, new alarms, soe tables');
+insert into CTIDatabase values('3.00', 'Ryan', '11-JAN-2004', 'Many changes to a major version jump');
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key (Version)
