@@ -834,43 +834,43 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                     }
 
                     triggersTripped++;
+                }
 
-                    if( currentTrigger->getThresholdKickPercent() > 0 )
+                if( currentTrigger->getThresholdKickPercent() > 0 && currentTrigger->getPeakPointId() <= 0 )
+                {
+                    DOUBLE oldThreshold = currentTrigger->getThreshold();
+                    LONG thresholdKickOffset = currentTrigger->getThresholdKickPercent();
+                    LONG amountOverKickValue = currentTrigger->getPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
+
+                    if( amountOverKickValue > 0 )
                     {
-                        DOUBLE oldThreshold = currentTrigger->getThreshold();
-                        DOUBLE thresholdKickDouble = ((DOUBLE)currentTrigger->getThresholdKickPercent())/100.0;
-                        LONG thresholdKickOffset = (LONG)(currentTrigger->getThreshold() * thresholdKickDouble);
-                        LONG amountOverKickValue = currentTrigger->getPointValue() - currentTrigger->getThreshold() - thresholdKickOffset;
-                        if( amountOverKickValue > 0 )
+                        currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
+                        CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(this, currentTrigger);
+                        setUpdatedFlag(TRUE);
                         {
-                            currentTrigger->setThreshold( currentTrigger->getThreshold() + amountOverKickValue );
-                            CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(this, currentTrigger);
-                            setUpdatedFlag(TRUE);
+                            char tempchar[80] = "";
+                            RWCString text = RWCString("Automatic Threshold Kick Up");
+                            RWCString additional = RWCString("Threshold for Trigger: ");
+                            _snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
+                            additional += tempchar;
+                            additional += " changed in LMControlArea: ";
+                            additional += getPAOName();
+                            additional += " PAO ID: ";
+                            _snprintf(tempchar,80,"%d",getPAOId());
+                            additional += tempchar;
+                            additional += " old threshold: ";
+                            _snprintf(tempchar,80,"%.*f",3,oldThreshold);
+                            additional += tempchar;
+                            additional += " new threshold: ";
+                            _snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
+                            additional += tempchar;
+                            additional += " changed because point value: ";
+                            _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
+                            additional += tempchar;
+                            CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                             {
-                                char tempchar[80] = "";
-                                RWCString text = RWCString("Automatic Threshold Kick Up");
-                                RWCString additional = RWCString("Threshold for Trigger: ");
-                                _snprintf(tempchar,80,"%d",currentTrigger->getTriggerNumber());
-                                additional += tempchar;
-                                additional += " changed in LMControlArea: ";
-                                additional += getPAOName();
-                                additional += " PAO ID: ";
-                                _snprintf(tempchar,80,"%d",getPAOId());
-                                additional += tempchar;
-                                additional += " old threshold: ";
-                                _snprintf(tempchar,80,"%.*f",3,oldThreshold);
-                                additional += tempchar;
-                                additional += " new threshold: ";
-                                _snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
-                                additional += tempchar;
-                                additional += " point value was: ";
-                                _snprintf(tempchar,80,"%.*f",3,currentTrigger->getPointValue());
-                                additional += tempchar;
-                                CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - " << text << ", " << additional << endl;
-                                }
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - " << text << ", " << additional << endl;
                             }
                         }
                     }
@@ -1570,10 +1570,11 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
 
             updater.where(dynamicLMControlAreaTable["deviceid"]==getPAOId());//will be paobjectid
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
-            }*/
+            }
 
             updater.execute( conn );
         }
@@ -1596,10 +1597,11 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& curre
             << getCurrentDailyStartTime()
             << getCurrentDailyStopTime();
 
-            /*{
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << inserter.asString().data() << endl;
-            }*/
+            }
 
             inserter.execute( conn );
 
