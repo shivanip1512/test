@@ -28,7 +28,7 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT UoMID, LongName, CALCTYPE FROM UNITMEASURE";
+	String sqlString = "select UoMID, LongName, calctype from UnitMeasure order by LongName";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;

@@ -1,5 +1,4 @@
 package com.cannontech.database.db.capcontrol;
-
 /**
  * This type was created in VisualAge.
  */
@@ -8,6 +7,10 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
 	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
 	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
+
+	public static final String UNITS_KVAR = "KVAR";
+	public static final String UNITS_PF_KVAR = "PF BY KVAR";
+	public static final String UNITS_PF_KQ = "PF BY KQ";
 	
 	private Integer substationBusID = null;
 	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;
@@ -19,27 +22,31 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private Integer peakStopTime = null;
 	private Integer currentVarLoadPointID = null;
 	private Integer currentWattLoadPointID = null;	
-	private Integer bandwidth = new Integer(300);
+	private Double upperBandwidth = new Double(300.0);
 	private Integer controlInterval = new Integer(0);
 	private Integer minResponseTime = new Integer(30);
 	private Integer minConfirmPercent = new Integer(15);
 	private Integer failurePercent = new Integer(15);
 	private String daysOfWeek = new String("YYYYYNNN");
 	private Integer mapLocationID = new Integer(0);  //not used as of 11-12-2001
+	private Double lowerBandwidth = new Double(0.0);
+	private String controlUnits = UNITS_KVAR;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ControlMethod", "MaxDailyOperation", "MaxOperationDisableFlag",
 		"PeakSetPoint", "OffPeakSetPoint", "PeakStartTime", "PeakStopTime",
-		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "Bandwidth",
+		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "UpperBandwidth",
 		"ControlInterval", "MinResponseTime", "MinConfirmPercent",
-		"FailurePercent", "DaysOfWeek", "MapLocationID"
+		"FailurePercent", "DaysOfWeek", "MapLocationID",
+		"LowerBandwidth", "ControlUnits"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID" };
 
 
 	public static final String TABLE_NAME = "CapControlSubstationBus";
+
 /**
  * DeviceTwoWayFlags constructor comment.
  */
@@ -47,6 +54,8 @@ public CapControlSubstationBus()
 {
 	super();
 }
+
+
 /**
  * DeviceTwoWayFlags constructor comment.
  */
@@ -55,6 +64,8 @@ public CapControlSubstationBus(Integer subID)
 	super();
 	setSubstationBusID( subID );
 }
+
+
 /**
  * add method comment.
  */
@@ -66,13 +77,16 @@ public void add() throws java.sql.SQLException
 		getMaxOperationDisableFlag(), getPeakSetPoint(), 
 		getOffPeakSetPoint(), getPeakStartTime(), getPeakStopTime(),
 		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), 
-		getBandwidth(), getControlInterval(), getMinResponseTime(), 
+		getUpperBandwidth(), getControlInterval(), getMinResponseTime(), 
 		getMinConfirmPercent(), getFailurePercent(),
-		getDaysOfWeek(), getMapLocationID()
+		getDaysOfWeek(), getMapLocationID(),
+		getLowerBandwidth(), getControlUnits()
 	};
 
 	add( TABLE_NAME, addValues );
 }
+
+
 /**
  * delete method comment.
  */
@@ -80,13 +94,8 @@ public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getSubstationBusID() );	
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public Integer getBandwidth() {
-	return bandwidth;
-}
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -94,6 +103,8 @@ public Integer getBandwidth() {
 public Integer getControlInterval() {
 	return controlInterval;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -102,6 +113,18 @@ public Integer getControlInterval() {
 public java.lang.String getControlMethod() {
 	return controlMethod;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @return java.lang.String
+ */
+public java.lang.String getControlUnits() {
+	return controlUnits;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -110,6 +133,8 @@ public java.lang.String getControlMethod() {
 public java.lang.Integer getCurrentVarLoadPointID() {
 	return currentVarLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -118,6 +143,8 @@ public java.lang.Integer getCurrentVarLoadPointID() {
 public java.lang.Integer getCurrentWattLoadPointID() {
 	return currentWattLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (9/26/00 10:27:13 AM)
@@ -126,6 +153,8 @@ public java.lang.Integer getCurrentWattLoadPointID() {
 public java.lang.String getDaysOfWeek() {
 	return daysOfWeek;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -133,6 +162,18 @@ public java.lang.String getDaysOfWeek() {
 public Integer getFailurePercent() {
 	return failurePercent;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @return java.lang.Double
+ */
+public java.lang.Double getLowerBandwidth() {
+	return lowerBandwidth;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -141,6 +182,8 @@ public Integer getFailurePercent() {
 public java.lang.Integer getMapLocationID() {
 	return mapLocationID;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -148,6 +191,8 @@ public java.lang.Integer getMapLocationID() {
 public Integer getMaxDailyOperation() {
 	return maxDailyOperation;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -156,6 +201,8 @@ public Integer getMaxDailyOperation() {
 public java.lang.Character getMaxOperationDisableFlag() {
 	return maxOperationDisableFlag;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -163,6 +210,8 @@ public java.lang.Character getMaxOperationDisableFlag() {
 public Integer getMinConfirmPercent() {
 	return minConfirmPercent;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer
@@ -170,6 +219,8 @@ public Integer getMinConfirmPercent() {
 public Integer getMinResponseTime() {
 	return minResponseTime;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Double
@@ -177,6 +228,8 @@ public Integer getMinResponseTime() {
 public Double getOffPeakSetPoint() {
 	return offPeakSetPoint;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Double
@@ -184,6 +237,8 @@ public Double getOffPeakSetPoint() {
 public Double getPeakSetPoint() {
 	return peakSetPoint;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/13/2001 3:58:59 PM)
@@ -192,6 +247,8 @@ public Double getPeakSetPoint() {
 public java.lang.Integer getPeakStartTime() {
 	return peakStartTime;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/13/2001 3:58:59 PM)
@@ -200,6 +257,8 @@ public java.lang.Integer getPeakStartTime() {
 public java.lang.Integer getPeakStopTime() {
 	return peakStopTime;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -208,6 +267,18 @@ public java.lang.Integer getPeakStopTime() {
 public java.lang.Integer getSubstationBusID() {
 	return substationBusID;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @return java.lang.Double
+ */
+public java.lang.Double getUpperBandwidth() {
+	return upperBandwidth;
+}
+
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
@@ -266,6 +337,8 @@ public static com.cannontech.common.util.NativeIntVector getUsedVARPointIDs( int
 
 	return vect;
 }
+
+
 /**
  * retrieve method comment.
  */
@@ -287,24 +360,22 @@ public void retrieve() throws java.sql.SQLException
 		
 		setCurrentVarLoadPointID( (Integer) results[7] );
 		setCurrentWattLoadPointID( (Integer) results[8] );
-		setBandwidth( (Integer) results[9] );
+		setUpperBandwidth( (Double) results[9] );
 		setControlInterval( (Integer) results[10] );
 		setMinResponseTime( (Integer) results[11] );
 		setMinConfirmPercent( (Integer) results[12] );
 		setFailurePercent( (Integer) results[13] );
 		setDaysOfWeek( (String) results[14] );
 		setMapLocationID( (Integer) results[15] );
+		setLowerBandwidth( (Double) results[16] );
+		setControlUnits( (String) results[17] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
 
 }
-/**
- * This method was created in VisualAge.
- */
-public void setBandwidth(Integer newValue) {
-	this.bandwidth = newValue;
-}
+
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -312,6 +383,8 @@ public void setBandwidth(Integer newValue) {
 public void setControlInterval(Integer newValue) {
 	this.controlInterval = newValue;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -320,6 +393,18 @@ public void setControlInterval(Integer newValue) {
 public void setControlMethod(java.lang.String newControlMethod) {
 	controlMethod = newControlMethod;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @param newControlUnits java.lang.String
+ */
+public void setControlUnits(java.lang.String newControlUnits) {
+	controlUnits = newControlUnits;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -328,6 +413,8 @@ public void setControlMethod(java.lang.String newControlMethod) {
 public void setCurrentVarLoadPointID(java.lang.Integer newCurrentVarLoadPointID) {
 	currentVarLoadPointID = newCurrentVarLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -336,6 +423,8 @@ public void setCurrentVarLoadPointID(java.lang.Integer newCurrentVarLoadPointID)
 public void setCurrentWattLoadPointID(java.lang.Integer newCurrentWattLoadPointID) {
 	currentWattLoadPointID = newCurrentWattLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (9/26/00 10:27:13 AM)
@@ -344,6 +433,8 @@ public void setCurrentWattLoadPointID(java.lang.Integer newCurrentWattLoadPointI
 public void setDaysOfWeek(java.lang.String newDaysOfWeek) {
 	daysOfWeek = newDaysOfWeek;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -351,6 +442,18 @@ public void setDaysOfWeek(java.lang.String newDaysOfWeek) {
 public void setFailurePercent(Integer newValue) {
 	this.failurePercent = newValue;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @param newLowerBandwidth java.lang.Double
+ */
+public void setLowerBandwidth(java.lang.Double newLowerBandwidth) {
+	lowerBandwidth = newLowerBandwidth;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -359,6 +462,8 @@ public void setFailurePercent(Integer newValue) {
 public void setMapLocationID(java.lang.Integer newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -366,6 +471,8 @@ public void setMapLocationID(java.lang.Integer newMapLocationID) {
 public void setMaxDailyOperation(Integer newValue) {
 	this.maxDailyOperation = newValue;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -374,6 +481,8 @@ public void setMaxDailyOperation(Integer newValue) {
 public void setMaxOperationDisableFlag(java.lang.Character newMaxOperationDisableFlag) {
 	maxOperationDisableFlag = newMaxOperationDisableFlag;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -381,6 +490,8 @@ public void setMaxOperationDisableFlag(java.lang.Character newMaxOperationDisabl
 public void setMinConfirmPercent(Integer newValue) {
 	this.minConfirmPercent = newValue;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
@@ -388,18 +499,24 @@ public void setMinConfirmPercent(Integer newValue) {
 public void setMinResponseTime(Integer newValue) {
 	this.minResponseTime = newValue;
 }
+
+
 /**
  * This method was created in VisualAge.
  */
 public void setOffPeakSetPoint(Double newValue) {
 	this.offPeakSetPoint = newValue;
 }
+
+
 /**
  * This method was created in VisualAge.
  */
 public void setPeakSetPoint(Double newValue) {
 	this.peakSetPoint = newValue;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/13/2001 3:58:59 PM)
@@ -408,6 +525,8 @@ public void setPeakSetPoint(Double newValue) {
 public void setPeakStartTime(java.lang.Integer newPeakStartTime) {
 	peakStartTime = newPeakStartTime;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/13/2001 3:58:59 PM)
@@ -416,6 +535,8 @@ public void setPeakStartTime(java.lang.Integer newPeakStartTime) {
 public void setPeakStopTime(java.lang.Integer newPeakStopTime) {
 	peakStopTime = newPeakStopTime;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -424,6 +545,18 @@ public void setPeakStopTime(java.lang.Integer newPeakStopTime) {
 public void setSubstationBusID(java.lang.Integer newSubstationBusID) {
 	substationBusID = newSubstationBusID;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 10:22:53 AM)
+ * @param newUpperBandwidth java.lang.Double
+ */
+public void setUpperBandwidth(java.lang.Double newUpperBandwidth) {
+	upperBandwidth = newUpperBandwidth;
+}
+
+
 /**
  * update method comment.
  */
@@ -435,9 +568,10 @@ public void update() throws java.sql.SQLException
 		getMaxOperationDisableFlag(), getPeakSetPoint(), 
 		getOffPeakSetPoint(), getPeakStartTime(), getPeakStopTime(),
 		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), 
-		getBandwidth(), getControlInterval(), getMinResponseTime(), 
+		getUpperBandwidth(), getControlInterval(), getMinResponseTime(), 
 		getMinConfirmPercent(), getFailurePercent(),
-		getDaysOfWeek(), getMapLocationID()
+		getDaysOfWeek(), getMapLocationID(),
+		getLowerBandwidth(), getControlUnits()
 	};
 
 

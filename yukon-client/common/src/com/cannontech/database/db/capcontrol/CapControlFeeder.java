@@ -1,28 +1,30 @@
 package com.cannontech.database.db.capcontrol;
-
 /**
  * This type was created in VisualAge.
  */
 public class CapControlFeeder extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer feederID = null;
-	private Double peakSetPoint = null;
-	private Double offPeakSetPoint = null;
-	private Integer bandwidth = null;	
+	private Double peakSetPoint = new Double(0.0);
+	private Double offPeakSetPoint = new Double(0.0);
+	private Double upperBandwidth = new Double(0.0);
 	private Integer currentVarLoadPointID = null;
 	private Integer currentWattLoadPointID = null;	
-	private Integer mapLocationID = null;
+	private Integer mapLocationID = new Integer(0);
+	private Double lowerBandwidth = new Double(0.0);	
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"PeakSetPoint", "OffPeakSetPoint", "Bandwidth",
-		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID"
+		"PeakSetPoint", "OffPeakSetPoint", "UpperBandwidth",
+		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID",
+		"LowerBandwidth"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "FeederID" };
 
 
 	public static final String TABLE_NAME = "CapControlFeeder";
+
 /**
  * DeviceTwoWayFlags constructor comment.
  */
@@ -30,6 +32,8 @@ public CapControlFeeder()
 {
 	super();
 }
+
+
 /**
  * DeviceTwoWayFlags constructor comment.
  */
@@ -38,6 +42,8 @@ public CapControlFeeder(Integer feedID)
 	super();
 	setFeederID( feedID );
 }
+
+
 /**
  * add method comment.
  */
@@ -46,13 +52,15 @@ public void add() throws java.sql.SQLException
 	Object[] addValues = 
 	{
 		getFeederID(), getPeakSetPoint(), 
-		getOffPeakSetPoint(), getBandwidth(),
+		getOffPeakSetPoint(), getUpperBandwidth(),
 		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), 
-		getMapLocationID()
+		getMapLocationID(), getLowerBandwidth()
 	};
 
 	add( TABLE_NAME, addValues );
 }
+
+
 /**
  * delete method comment.
  */
@@ -60,13 +68,8 @@ public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getFeederID() );	
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
-public Integer getBandwidth() {
-	return bandwidth;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -75,6 +78,8 @@ public Integer getBandwidth() {
 public java.lang.Integer getCurrentVarLoadPointID() {
 	return currentVarLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -83,6 +88,8 @@ public java.lang.Integer getCurrentVarLoadPointID() {
 public java.lang.Integer getCurrentWattLoadPointID() {
 	return currentWattLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 6:46:13 PM)
@@ -91,6 +98,18 @@ public java.lang.Integer getCurrentWattLoadPointID() {
 public java.lang.Integer getFeederID() {
 	return feederID;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 9:52:08 AM)
+ * @return java.lang.Double
+ */
+public java.lang.Double getLowerBandwidth() {
+	return lowerBandwidth;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -99,6 +118,8 @@ public java.lang.Integer getFeederID() {
 public java.lang.Integer getMapLocationID() {
 	return mapLocationID;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Double
@@ -106,6 +127,8 @@ public java.lang.Integer getMapLocationID() {
 public Double getOffPeakSetPoint() {
 	return offPeakSetPoint;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Double
@@ -113,6 +136,8 @@ public Double getOffPeakSetPoint() {
 public Double getPeakSetPoint() {
 	return peakSetPoint;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
@@ -178,6 +203,18 @@ public static CapControlFeeder[] getUnassignedFeeders()
 	CapControlFeeder[] feeders = new CapControlFeeder[returnVector.size()];
 	return (CapControlFeeder[])returnVector.toArray( feeders );
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 9:52:08 AM)
+ * @return java.lang.Double
+ */
+public java.lang.Double getUpperBandwidth() {
+	return upperBandwidth;
+}
+
+
 /**
  * retrieve method comment.
  */
@@ -190,21 +227,18 @@ public void retrieve() throws java.sql.SQLException
 	{
 		setPeakSetPoint( (Double) results[0] );
 		setOffPeakSetPoint( (Double) results[1] );
-		setBandwidth( (Integer) results[2] );
+		setUpperBandwidth( (Double) results[2] );
 		setCurrentVarLoadPointID( (Integer) results[3] );
 		setCurrentWattLoadPointID( (Integer) results[4] );
 		setMapLocationID( (Integer) results[5] );
+		setLowerBandwidth( (Double) results[6] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
 
 }
-/**
- * This method was created in VisualAge.
- */
-public void setBandwidth(Integer newValue) {
-	this.bandwidth = newValue;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -213,6 +247,8 @@ public void setBandwidth(Integer newValue) {
 public void setCurrentVarLoadPointID(java.lang.Integer newCurrentVarLoadPointID) {
 	currentVarLoadPointID = newCurrentVarLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -221,6 +257,8 @@ public void setCurrentVarLoadPointID(java.lang.Integer newCurrentVarLoadPointID)
 public void setCurrentWattLoadPointID(java.lang.Integer newCurrentWattLoadPointID) {
 	currentWattLoadPointID = newCurrentWattLoadPointID;
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 6:46:13 PM)
@@ -229,6 +267,18 @@ public void setCurrentWattLoadPointID(java.lang.Integer newCurrentWattLoadPointI
 public void setFeederID(java.lang.Integer newFeederID) {
 	feederID = newFeederID;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 9:52:08 AM)
+ * @param newLowerBandwidth java.lang.Double
+ */
+public void setLowerBandwidth(java.lang.Double newLowerBandwidth) {
+	lowerBandwidth = newLowerBandwidth;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 1:42:02 PM)
@@ -237,18 +287,34 @@ public void setFeederID(java.lang.Integer newFeederID) {
 public void setMapLocationID(java.lang.Integer newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
+
+
 /**
  * This method was created in VisualAge.
  */
 public void setOffPeakSetPoint(Double newValue) {
 	this.offPeakSetPoint = newValue;
 }
+
+
 /**
  * This method was created in VisualAge.
  */
 public void setPeakSetPoint(Double newValue) {
 	this.peakSetPoint = newValue;
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/5/2002 9:52:08 AM)
+ * @param newUpperBandwidth java.lang.Double
+ */
+public void setUpperBandwidth(java.lang.Double newUpperBandwidth) {
+	upperBandwidth = newUpperBandwidth;
+}
+
+
 /**
  * update method comment.
  */
@@ -257,9 +323,9 @@ public void update() throws java.sql.SQLException
 	Object setValues[]= 
 	{ 
 		getPeakSetPoint(), 
-		getOffPeakSetPoint(), getBandwidth(),
+		getOffPeakSetPoint(), getUpperBandwidth(),
 		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), 
-		getMapLocationID()
+		getMapLocationID(), getLowerBandwidth()
 	};
 
 

@@ -8,7 +8,7 @@ public class PointUnit extends com.cannontech.database.db.DBPersistent
 	public static final int DEFAULT_DECIMAL_PLACES = 3;
 
 	private Integer pointID = null;
-	private Integer uomID = new Integer(com.cannontech.database.db.point.PointUnit.UOMID_KWH);
+	private Integer uomID = new Integer(com.cannontech.database.data.point.PointUnits.UOMID_KWH);
 	private Integer decimalPlaces = new Integer(DEFAULT_DECIMAL_PLACES);
 	private Double highReasonabilityLimit = new Double(com.cannontech.common.util.CtiUtilities.INVALID_MAX_DOUBLE);
 	private Double lowReasonabilityLimit = new Double(com.cannontech.common.util.CtiUtilities.INVALID_MIN_DOUBLE);
@@ -22,18 +22,6 @@ public class PointUnit extends com.cannontech.database.db.DBPersistent
 	public final static String TABLE_NAME = "PointUnit";
 
 
-
-	//some predefined UOMID's that should be in all Databases!
-	public static final int UOMID_KW = 0;
-	public static final int UOMID_KWH = 1;
-	public static final int UOMID_KVA = 2;
-	public static final int UOMID_KVAR = 3;
-	public static final int UOMID_KVAH = 4;
-	public static final int UOMID_KVARH = 5;
-	public static final int UOMID_KVOLTS = 6;
-	public static final int UOMID_KQ = 7;
-	public static final int UOMID_AMPS = 8;
-	public static final int UOMID_COUNTS = 9;	
 /**
  * PointUnit constructor comment.
  */
@@ -181,4 +169,67 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+/**
+ * This method was created in VisualAge.
+ * @return com.cannontech.common.util.NativeIntVector
+ * @param uomid int
+ */
+public static final com.cannontech.common.util.NativeIntVector getAllPointIDsByUOMID(int uomids[]) throws java.sql.SQLException
+{
+   com.cannontech.common.util.NativeIntVector idList = 
+            new com.cannontech.common.util.NativeIntVector(10);
+
+   java.sql.Statement stmt = null;
+   java.sql.ResultSet rset = null;
+   java.sql.Connection conn = 
+      com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+   
+
+   StringBuffer sql = new StringBuffer(
+                  "select pointid from " +
+                  TABLE_NAME +
+                  " where uomid=");                  
+                  for( int i = 0; i < uomids.length; i++ )
+                  {
+                     sql.append( uomids[i] );
+                     if( i < (uomids.length-1) )
+                        sql.append( " or uomid=" );
+                  }
+                  sql.append(" order by uomid");
+   try
+   {
+      if( conn == null )
+         throw new IllegalArgumentException("Received a (null) database connection");
+
+      stmt = conn.createStatement();
+      rset = stmt.executeQuery( sql.toString() );
+
+      while( rset.next() )
+      {
+         idList.add( rset.getInt(1) );
+      }
+
+   }
+   catch( java.sql.SQLException e )
+   {
+      e.printStackTrace();
+   }
+   finally
+   {
+      try
+      {
+         if( stmt != null ) stmt.close();
+         if( conn != null ) conn.close();
+      } 
+      catch( java.sql.SQLException e2 )
+      {
+         e2.printStackTrace();//something is up
+      }  
+   }
+
+
+   return idList;
+}
+
 }

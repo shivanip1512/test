@@ -214,13 +214,14 @@ public final static boolean hasCapBank(Integer pointID) throws java.sql.SQLExcep
 public final static boolean hasCapBank(Integer pointID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT ControlPointID FROM " + com.cannontech.database.db.capcontrol.CapBank.TABLE_NAME + " WHERE ControlPointID=" + pointID,
-													databaseAlias );
+		new com.cannontech.database.SqlStatement("SELECT count(ControlPointID) FROM " + 
+               com.cannontech.database.db.capcontrol.CapBank.TABLE_NAME + 
+               " WHERE ControlPointID=" + pointID, databaseAlias );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -242,14 +243,16 @@ public final static boolean hasCapControlSubstationBus(Integer pointID) throws j
 public final static boolean hasCapControlSubstationBus(Integer pointID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT CurrentWattLoadPointID, CurrentVarLoadPointID FROM " + com.cannontech.database.db.capcontrol.CapControlSubstationBus.TABLE_NAME + 
+		new com.cannontech.database.SqlStatement(
+           "SELECT count(CurrentWattLoadPointID) FROM " + 
+           com.cannontech.database.db.capcontrol.CapControlSubstationBus.TABLE_NAME + 
 			  " WHERE CurrentWattLoadPointID=" + pointID + 
 			  " or CurrentVarLoadPointID=" + pointID, databaseAlias );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -271,13 +274,13 @@ public final static boolean hasLMGroup(Integer pointID) throws java.sql.SQLExcep
 public final static boolean hasLMGroup(Integer pointID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT PointIDUsage FROM " + com.cannontech.database.db.device.lm.LMGroupPoint.TABLE_NAME + 
+		new com.cannontech.database.SqlStatement("SELECT count(PointIDUsage) FROM " + com.cannontech.database.db.device.lm.LMGroupPoint.TABLE_NAME + 
 			  " WHERE PointIDUsage=" + pointID, databaseAlias );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -299,14 +302,14 @@ public final static boolean hasLMTrigger(Integer pointID) throws java.sql.SQLExc
 public final static boolean hasLMTrigger(Integer pointID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT PointID, PeakPointID FROM " + com.cannontech.database.db.device.lm.LMControlAreaTrigger.TABLE_NAME + 
+		new com.cannontech.database.SqlStatement("SELECT count(PointID) FROM " + com.cannontech.database.db.device.lm.LMControlAreaTrigger.TABLE_NAME + 
 			  " WHERE PointID=" + pointID + 
 			  " or PeakPointID=" + pointID, databaseAlias );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -328,13 +331,13 @@ public final static boolean hasRawPointHistorys(Integer pointID) throws java.sql
 public final static boolean hasRawPointHistorys(Integer pointID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT pointID FROM " + RawPointHistory.TABLE_NAME + " WHERE pointID=" + pointID,
+		new com.cannontech.database.SqlStatement("SELECT count(pointID) FROM " + RawPointHistory.TABLE_NAME + " WHERE pointID=" + pointID,
 													databaseAlias );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+		return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
 	}
 	catch( Exception e )
 	{
@@ -358,13 +361,13 @@ public static final boolean hasSystemLogEntry(Integer ptID) throws java.sql.SQLE
 public final static boolean hasSystemLogEntry(Integer ptID, String databaseAlias) throws java.sql.SQLException 
 {
 	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT pointID FROM " + SystemLog.TABLE_NAME + " WHERE pointID=" + ptID,
+		new com.cannontech.database.SqlStatement("SELECT count(pointID) FROM " + SystemLog.TABLE_NAME + " WHERE pointID=" + ptID,
 													databaseAlias );
 
 	try
 	{
 		stmt.execute();
-		return (stmt.getRowCount() > 0 );
+      return ((Integer)stmt.getRow(0)[0]).intValue() > 0;
 	}
 	catch( Exception e )
 	{
