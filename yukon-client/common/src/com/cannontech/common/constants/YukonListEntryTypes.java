@@ -64,6 +64,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SEARCH_TYPE_LAST_NAME		= 1603;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO		= 1604;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_MAP_NO			= 1605;
+	public static final int YUK_DEF_ID_SEARCH_TYPE_ADDRESS			= 1606;
 	public static final int YUK_DEF_ID_DEV_STAT_AVAIL				= 1701;
 	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1702;
 	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1703;
@@ -99,6 +100,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO		= 2703;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME		= 2704;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO		= 2705;
+	public static final int YUK_DEF_ID_INV_SEARCH_BY_ADDRESS		= 2706;
 	public static final int YUK_DEF_ID_INV_SORT_BY_SERIAL_NO		= 2801;
 	public static final int YUK_DEF_ID_INV_SORT_BY_INST_DATE		= 2802;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE		= 2901;
@@ -156,6 +158,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO		= 3303;
 	public static final int YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME		= 3304;
 	public static final int YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO		= 3305;
+	public static final int YUK_DEF_ID_SO_SEARCH_BY_ADDRESS			= 3306;
 	public static final int YUK_DEF_ID_SO_SORT_BY_ORDER_NO			= 3401;
 	public static final int YUK_DEF_ID_SO_SORT_BY_DATE_TIME			= 3402;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_STATUS			= 3501;
