@@ -227,7 +227,7 @@ void CtiLoadManager::controlLoop()
             {//every five minutes tell the user if the manager thread is still alive
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Load Manager thread pulse" << endl;
-            }
+            } 
         }
 
         rwRunnable().serviceCancellation();
@@ -275,7 +275,7 @@ void CtiLoadManager::controlLoop()
                         currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg);
                     }
 
-                    if( !currentControlArea->getDisableFlag() ) // how about control area windows?
+//                    if( !currentControlArea->getDisableFlag() ) // how about control area windows?
                     {
                         currentControlArea->updateTimedPrograms(secondsFromBeginningOfDay);
                         currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg);

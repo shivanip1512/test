@@ -312,7 +312,10 @@ void CtiLMCommandExecutor::DisableControlArea()
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
-                    currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
+                    if( currentLMProgramBase->getPAOType() != TYPE_LMPROGRAM_DIRECT )
+                    { // do curtialment types still need this state?
+                        currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
+                    }
                     currentLMProgramBase->setManualControlReceivedFlag(TRUE);
                     {
                         char tempchar[80];
@@ -421,7 +424,10 @@ void CtiLMCommandExecutor::DisableProgram()
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
-//                    currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState); NOTE: DO WE NEED STOPPING STATE?
+                    if( currentLMProgramBase->getPAOType() != TYPE_LMPROGRAM_DIRECT )
+                    { // do curtialment types still need this state?
+                        currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
+                    }
                     currentLMProgramBase->setManualControlReceivedFlag(TRUE);
                     {
                         char tempchar[80];

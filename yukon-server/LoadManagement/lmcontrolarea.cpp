@@ -1763,9 +1763,8 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
     }
     else if( numberOfActivePrograms == 0 )
     {
-        setControlAreaState(CtiLMControlArea::InactiveState);
-        if( previousControlAreaState != CtiLMControlArea::InactiveState &&
-            previousControlAreaState != CtiLMControlArea::AttemptingControlState ) 
+        if( previousControlAreaState == CtiLMControlArea::ActiveState ||
+            previousControlAreaState == CtiLMControlArea::FullyActiveState )
         {
             RWCString text = RWCString("Timed Stop, LMControl Area: ");
             text += getPAOName();
@@ -1778,13 +1777,16 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
+            
+            setControlAreaState(CtiLMControlArea::InactiveState);
             setCurrentStartPriority(-1);
             setUpdatedFlag(TRUE);
         }
     }
     else
     {
-        if( getControlAreaState() != CtiLMControlArea::ActiveState )
+        if( getControlAreaState() != CtiLMControlArea::ActiveState &&
+            getControlAreaState() != CtiLMControlArea::FullyActiveState )
         {
             setControlAreaState(CtiLMControlArea::ActiveState);
             if( previousControlAreaState == CtiLMControlArea::InactiveState )

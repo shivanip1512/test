@@ -3875,6 +3875,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
     return returnBoolean;
 }
 
+
 /*---------------------------------------------------------------------------
     stopProgramControl
 
@@ -4233,11 +4234,13 @@ bool CtiLMProgramDirect::refreshRampOutProgramControl(ULONG secondsFrom1901, Cti
 
   Should only be called when the program is ramping out, checks to see if
   any groups should be done ramping out and sets them to not be ramping out.
-  Returns true if there are any groups still rampingout, false otherwise.
+  Retruns true if any groups were dirtied.
+  Call getIsRampingOut after this if you want to know if any groups
+  are still ramping out.
 ----------------------------------------------------------------------------*/  
 bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
 {
-    
+    bool ret_val = false;
     int num_groups = _lmprogramdirectgroups.entries();
     /* int total_ramp_time = (100.0 / (double) getCurrentGearObject()->getRampOutPercent()) * getCurrentGearObject()->getRampOutInterval();
     innt started_ramping_time = getControlCompleteTime().seconds() - total_ramp_time;
@@ -4284,8 +4287,10 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << RWTime() << " LMProgram: " << getPAOName() << " Tried to ramp out " << num_to_ramp_out << ", but all the program's groups are already ramped out." << endl;
         }
+        
         lm_group->setIsRampingOut(false);
-
+        ret_val = true;
+        
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -4320,7 +4325,7 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
         }
     }
 
-    return getIsRampingOut();
+    return ret_val;
 }
 
 /*---------------------------------------------------------------------------
@@ -4336,6 +4341,8 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
     {
         if( secondsFrom1901 >= getDirectStartTime().seconds() )
         {
+            // are any of our master programs already running?  if so we can't start MASTERSLAVE
+            // are any of our slave programs already running?  if so, stop them! MASTERSLAVE
             returnBoolean = TRUE;
             {
                 RWCString text = RWCString("Manual Start, LM Program: ");
@@ -4350,6 +4357,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
             }
+
             manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
             setProgramState(CtiLMProgramBase::ManualActiveState);
         }
@@ -4412,22 +4420,26 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
             {
                 returnBoolean = TRUE;
             }
-            if( getIsRampingOut() && !updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901) )
-            {
-                RWCString text = RWCString("Finshed Ramping Out, LM Program: ");
-                text += getPAOName();
-                RWCString additional = RWCString("");
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
-                signal->setSOE(2);
+            if( getIsRampingOut())
+            {   
+                returnBoolean = updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901);
+                if(!getIsRampingOut())  // no longer ramping out?
+                {
+                    RWCString text = RWCString("Finshed Ramping Out, LM Program: ");
+                    text += getPAOName();
+                    RWCString additional = RWCString("");
+                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    signal->setSOE(2);
 
-                multiDispatchMsg->insert(signal);
+                    multiDispatchMsg->insert(signal);
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - " << text << ", " << additional << endl;
                 }
 //NOTE more ?
-                setProgramState(CtiLMProgramBase::InactiveState);
-                setManualControlReceivedFlag(FALSE);
+                    setProgramState(CtiLMProgramBase::InactiveState);
+                    setManualControlReceivedFlag(FALSE);
+                }
             }
         }
     }
@@ -4502,15 +4514,104 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    if( getDisableFlag() ||
+    if( (getDisableFlag() && CtiLMProgramBase::InactiveState) ||
         getProgramState() == CtiLMProgramBase::ManualActiveState ||
         getProgramState() == CtiLMProgramBase::ScheduledState )
     {
         // don't do any timed control while this program is manually active
-        return FALSE;
+        // or we are disabled and inactive
+        return false;
+    }
+
+    bool ret_val = false;
+    bool was_ramping_out = getIsRampingOut();
+    
+    if(was_ramping_out)
+    {
+        ret_val = updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901); // consider if any groups have ramped out
     }
     
-    // Have we entered or left a control window?
+    bool in_control_window = (getControlWindow(secondsFromBeginningOfDay) != NULL);
+    bool timed_active = (getProgramState() == CtiLMProgramBase::TimedActiveState);
+    bool inactive = (getProgramState() == CtiLMProgramBase::InactiveState);
+    bool disabled = getDisableFlag();
+    bool is_ramping_out = getIsRampingOut();
+
+    if(inactive)
+    {
+        if(in_control_window && !disabled) //do we need to do a timed start?
+        {
+            // timed start
+            return (ret_val || startTimedProgram(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg));
+        }
+        else
+        {   // inactive and either not in a control window or disabled so nothin to do
+            return ret_val;
+        }
+    } // end timed start
+    else if(timed_active) //do we need to do a timed stop or just refresh?
+    {
+        if( (!in_control_window || disabled))
+        {
+            if(!is_ramping_out && was_ramping_out)  //we just finished ramping out!
+            {
+                string text = "Finished ramping out, LM Program: ";
+                text += getPAOName();
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),"",GeneralLogType,SignalEvent);
+                multiDispatchMsg->insert(signal);
+                
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << " - " <<  text << endl;
+            }
+
+                setProgramState(CtiLMProgramBase::InactiveState);
+                setManualControlReceivedFlag(FALSE);
+                return true;
+            } //end finshed ramping out
+            else if(!is_ramping_out )
+            {
+                //timed stop
+                string text = "Timed Stop, LM Program: ";
+                text += getPAOName();
+                string additional = "";
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                signal->setSOE(2);
+
+                multiDispatchMsg->insert(signal);
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << " - " << text << ", " << additional << endl;
+            }
+
+            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+
+            setReductionTotal(0.0); //is this resetting dynamic info?
+            setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+            return true;
+            } //end timed stop
+        }
+/*
+  Lets say someone disabled this program and then enabled it again quick, while were are still
+  in a control window, what do we do?
+        else if(in_control_window && !disabled && is_ramping_out)  //ramping out, but we shouldn't be
+        {
+            return (ret_val || startTimedProgram(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg));
+        }
+*/
+        //refresh
+        return (ret_val || refreshStandardProgramControl(secondsFrom1901, multiPilMsg, multiDispatchMsg));
+        //end refresh
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " << "Invalid timed control state: " << getProgramState()
+             << " " << __FILE__ << "(" << __LINE__ << ")" << endl;
+        return ret_val;
+    }
+#ifdef _bung_    
+    // Have we entered or left a control window? or maybe been disabled?
     bool isReady = isReadyForTimedControl(secondsFromBeginningOfDay);
     
     if( getProgramState() == CtiLMProgramBase::InactiveState )
@@ -4580,26 +4681,30 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
         }
     }
     else if( getProgramState() == CtiLMProgramBase::TimedActiveState )
-    {
-        
+    {        
         if(isReady)
         {
-            if(getIsRampingOut() && !updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901))
+            if(getIsRampingOut())
             {
-                string text = "Finisehd ramping out, LM Program: ";
-                text += getPAOName();
-                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),"",GeneralLogType,SignalEvent);
-                multiDispatchMsg->insert(signal);
+                bool ret_val = updateGroupsRampingOut(multiPilMsg, multiDispatchMsg, secondsFrom1901))
+                if(!getIsRampingOut())
+                {
+                    string text = "Finished ramping out, LM Program: ";
+                    text += getPAOName();
+                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),"",GeneralLogType,SignalEvent);
+                    multiDispatchMsg->insert(signal);
                 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << RWTime() << " - " <<  text << endl;
-            }
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << RWTime() << " - " <<  text << endl;
+                }
 
                 setProgramState(CtiLMProgramBase::InactiveState);
                 setManualControlReceivedFlag(FALSE);
+                return ret_val;
+                }
             }
-            else if(!getIsRampingOut())
+            else if(!getIsRampingOut() || getDisableFlag()) // Yikes are we disabled _and_ timed active?  better stop
             {
                 string text = "Timed Stop, LM Program: ";
                 text += getPAOName();
@@ -4637,8 +4742,74 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
         }
         return FALSE;
     }
+ #endif
 }
 
+/*----------------------------------------------------------------------------
+  startTimedProgram
+
+  Start a timed program, check constraints first though.
+  Returns true if the timed program actually starts.
+----------------------------------------------------------------------------*/
+bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+{
+            CtiLMConstraintChecker con_checker;
+        
+            CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
+            assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
+            RWDBDateTime startTime(RWTime((unsigned long)secondsFrom1901));
+            RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
+
+            vector<string> cons_results;
+            if(!con_checker.checkConstraints(*this, getCurrentGearNumber(), startTime.seconds(), endTime.seconds(), cons_results))
+            {
+                if(!_announced_constraint_violation)
+                {
+                    string text = " LMProgram: ";
+                    text += getPAOName();
+                    text += ", a timed program, was scheduled to start but did not due to constraint violations";
+                    string additional = "";
+                    for(vector<string>::iterator iter = cons_results.begin(); iter != cons_results.end(); iter++)
+                    {
+                        additional += *iter;
+                        additional += "\n";
+                    }
+                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                    signal->setSOE(2);
+                    multiDispatchMsg->insert(signal);
+
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << RWTime() << " - " <<  text << endl << additional << endl;
+                }
+                
+                    _announced_constraint_violation = true;
+                }
+                return false;
+            }
+            else
+            {
+                string text = "Timed Start, LM Program: ";
+                text += getPAOName();
+                string additional = "";
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                signal->setSOE(2);
+
+                multiDispatchMsg->insert(signal);
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << " - " << text << ", " << additional << endl;
+            }
+            manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
+            setProgramState(CtiLMProgramBase::TimedActiveState);
+
+            incrementDailyOps();
+            setDirectStartTime(startTime);
+            setDirectStopTime(endTime);
+            _announced_constraint_violation = false;
+            return true;
+        }
+}
 /*---------------------------------------------------------------------------
     isTimedControlReady
 
@@ -4646,27 +4817,22 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
 {   
-    // If the program IS in a control window and NOT started, then we are ready
-    // to start the program
-    // If the program IS NOT in a control window and IS started, then we are ready
-    // to stop the program
-
     bool ret_val = true;
-    
-    if(getControlType() == CtiLMProgramBase::TimedType && !getDisableFlag())
-    {
-        CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
-        if(controlWindow != NULL)
-        {
-            return  (getProgramState() == CtiLMProgramBase::InactiveState);
-        }
-        else
-        {
-            return (getProgramState() == CtiLMProgramBase::TimedActiveState);
 
-        }
+    if(getControlType() == CtiLMProgramBase::TimedType)
+    {
+        bool in_cw = (getControlWindow(secondsFromBeginningOfDay) != NULL);
+        bool timed_active = (getProgramState() == CtiLMProgramBase::TimedActiveState);
+        bool inactive = (getProgramState() == CtiLMProgramBase::InactiveState);
+        bool disabled = getDisableFlag();
+        bool is_ramping_out = getIsRampingOut();
+        
+        return
+            (in_cw && inactive && !disabled) ||     // In window, inactive, should start
+            (!in_cw && timed_active && !disabled) || // Not in window but timed active, should stop
+            (timed_active && disabled /*&& !is_ramping_out*/);               // Timed active and disabled, should stop
     }
-    return FALSE; 
+    return false;
 }
 
 /*---------------------------------------------------------------------------
