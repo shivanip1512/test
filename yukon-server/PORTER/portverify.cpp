@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/10/22 20:58:55 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/10/29 19:59:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@ using namespace std;
 #include "mgr_port.h"
 #include "dbaccess.h"
 #include "rwutil.h"
+#include "cparms.h"
 
 #include "portverify.h"
 
@@ -94,6 +95,9 @@ void CtiPorterVerification::verificationThread( void )
     CtiVerificationWork   *work;
     CtiVerificationReport *report;
 
+    ptime::time_duration_type prune_interval = hours(24) * gConfigParms.getValueAsInt("DYNAMIC_VERIFICATION_PRUNE_DAYS", 30);
+    ptime last_prune = second_clock::universal_time() - hours(48);  //  two days ago will force it to go right now
+
     int sleep;
 
     set(RELOAD);
@@ -131,7 +135,7 @@ void CtiPorterVerification::verificationThread( void )
                                 //  insert it if it doesn't exist (this should only happen once)
                                 if( r_itr == _receiver_work.end() )
                                 {
-                                    r_itr = (_receiver_work.insert(make_pair(a.receiver_id, vector< CtiVerificationWork * >()))).first;
+                                    r_itr = (_receiver_work.insert(make_pair(a.receiver_id, deque< CtiVerificationWork * >()))).first;
                                 }
 
                                 (r_itr->second).push_back(work);
@@ -161,15 +165,15 @@ void CtiPorterVerification::verificationThread( void )
 
                         if( r_itr != _receiver_work.end() )
                         {
-                            pending_vector &p_v = r_itr->second;
+                            pending_queue &p_q = r_itr->second;
 
                             //  iterate through all entries, looking for a matching code
-                            for( pending_itr itr = p_v.begin(); itr != p_v.end(); itr++ )
+                            for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
                             {
                                 //  if it's accepted
                                 if( (*itr)->checkReceipt(*report) )
                                 {
-                                    p_v.erase(itr);
+                                    p_q.erase(itr);
 
                                     delete report;
                                     report = 0;
@@ -221,6 +225,13 @@ void CtiPorterVerification::verificationThread( void )
             }
 
             processWorkQueue();
+
+            if( (last_prune + hours(24)) <= second_clock::universal_time() )
+            {
+                pruneEntries(prune_interval);
+
+                last_prune = second_clock::universal_time();
+            }
 
             //  possible optimization sometime
             /*
@@ -291,8 +302,8 @@ void CtiPorterVerification::processWorkQueue(bool purge)
             //  hmm...  i could hash on code instead of receiver...  that would be suave
 
             //  remove the expectations that weren't received  (maybe change this to a global list based on expiration)
-            vector< long > expectations = work->getExpectations();
-            vector< long >::iterator e_itr;
+            deque< long > expectations = work->getExpectations();
+            deque< long >::iterator e_itr;
 
             for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
             {
@@ -300,14 +311,14 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
                 if( r_itr != _receiver_work.end() )
                 {
-                    pending_vector &p_v = r_itr->second;
+                    pending_queue &p_q = r_itr->second;
 
                     //  iterate through all entries, looking for a pointer match
-                    for( pending_itr itr = p_v.begin(); itr != p_v.end(); itr++ )
+                    for( pending_itr itr = p_q.begin(); itr != p_q.end(); itr++ )
                     {
                         if( *itr == work )
                         {
-                            p_v.erase(itr);
+                            p_q.erase(itr);
 
                             break;
                         }
@@ -469,11 +480,11 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
 
     ptime now(second_clock::universal_time());
 
-    vector< long > expectations;
-    vector< long >::iterator e_itr;
+    deque< long > expectations;
+    deque< long >::iterator e_itr;
 
-    vector< pair< long, ptime > > receipts;
-    vector< pair< long, ptime > >::iterator r_itr;
+    deque< pair< long, ptime > > receipts;
+    deque< pair< long, ptime > >::iterator r_itr;
 
     expectations = work.getExpectations();
     receipts     = work.getReceipts();
@@ -590,13 +601,20 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
     unsigned long earliest = ::time(0) - age.total_seconds();
 
-    deleter.where(table["datetime"] < RWDBDateTime(RWTime(earliest + rwEpoch)));
+    deleter.where(table["timearrival"] < RWDBDateTime(RWTime(earliest + rwEpoch)));
 
     if( e = deleter.execute(conn).status().errorCode() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint - error \"" << e << "\" while pruning entries in CtiPorterVerification::pruneEntries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         //  dout << "Data: ";
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " DynamicVerification pruning successful (" << RWTime(earliest + rwEpoch) << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
