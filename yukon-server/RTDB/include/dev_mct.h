@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/06/27 21:12:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,15 +46,15 @@ protected:
 
     enum
     {
-        MCT_ModelAddr        = 0x00,
+        MCT_ModelPos         = 0x00,
         MCT_ModelLen         =    8,
         MCT_SspecLen         =    5,
 
         MCT_FuncWriteOpen    = 0x41,
         MCT_FuncWriteClose   = 0x42,
-        MCT_TimeAddr         = 0x46,
+        MCT_TimePos          = 0x46,
         MCT_TimeLen          =    3,
-        MCT_TSyncAddr        = 0x49,
+        MCT_TSyncPos         = 0x49,
         MCT_TSyncLen         =    3, //  5,  <-- !!  don't send the extra 2 bytes - this fools Porter into letting it through unscathed
 
         MCT_GroupAddrInhibit = 0x53,
@@ -91,13 +91,13 @@ public:
     ULONG         getNextLPScanTime( void );
     void          sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     int           checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, int &badData );
+
     //  porter-side functions
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     RWCString getDescription( const CtiCommandParser &parse ) const;
 
     virtual LONG getDemandInterval() const;
-
 
     static bool initCommandStore( );
     virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
@@ -139,10 +139,13 @@ public:
     INT  getSSpec() const;
     bool sspecIsValid( int sspec );
     RWCString sspecIsFrom( int sspec );
+    bool isLoadProfile( int type );
+    bool hasVariableDemandRate( int type, int sspec );
 
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
     static  INT verifyAlphaBuffer( DSTRUCT *DSt );
 
 };
+
 #endif // #ifndef __DEV_MCT_H__

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2003/06/27 21:12:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@ using namespace std;
 #include "device.h"
 #include "dev_mct.h"
 #include "dev_mct31x.h"  //  for IED scanning capability
+#include "dev_mct_lmt2.h"
 #include "logger.h"
 #include "mgr_point.h"
 #include "pt_numeric.h"
@@ -75,6 +76,8 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
     set< pair<int, int> > mct_sspec;
     pair<int, int> reported;
 
+    mct_sspec.insert(make_pair(TYPELMT2,       36));
+
     mct_sspec.insert(make_pair(TYPEMCT210,     95));
 
     mct_sspec.insert(make_pair(TYPEMCT213,     95));
@@ -95,23 +98,23 @@ bool CtiDeviceMCT::sspecIsValid( int sspec )
     mct_sspec.insert(make_pair(TYPEMCT250,    111));
 
     mct_sspec.insert(make_pair(TYPEMCT310,    153));
-    mct_sspec.insert(make_pair(TYPEMCT310,   1007));  //  CTIDBG_new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT310,   1007));  //  new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT310ID,  153));
-    mct_sspec.insert(make_pair(TYPEMCT310ID, 1007));  //  CTIDBG_new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT310ID, 1007));  //  new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT310IL, 1007));
 
     mct_sspec.insert(make_pair(TYPEMCT318L,  1007));
 
     mct_sspec.insert(make_pair(TYPEMCT318,    218));
-    mct_sspec.insert(make_pair(TYPEMCT318,   1007));  //  CTIDBG_new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT318,   1007));  //  new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT360,    218));
-    mct_sspec.insert(make_pair(TYPEMCT360,   1007));  //  CTIDBG_new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT360,   1007));  //  new Grand Unification sspec
 
     mct_sspec.insert(make_pair(TYPEMCT370,    218));
-    mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  CTIDBG_new Grand Unification sspec
+    mct_sspec.insert(make_pair(TYPEMCT370,   1007));  //  new Grand Unification sspec
 
 
     reported = make_pair(getType(), sspec);
@@ -131,6 +134,10 @@ RWCString CtiDeviceMCT::sspecIsFrom( int sspec )
 
     switch( sspec )
     {
+        case 36:
+            whois = "LMT-2";
+            break;
+
         case 95:
             whois = "MCT 21x";
             break;
@@ -415,18 +422,18 @@ bool CtiDeviceMCT::initCommandStore()
    //  initialize any pan-MCT operations
    cs._cmd     = CtiProtocolEmetcon::GetConfig_Model;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_ModelAddr,
+   cs._funcLen = make_pair( (int)MCT_ModelPos,
                             (int)MCT_ModelLen );   // Decode happens in the children please...
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Command_Loop;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_ModelAddr, 1 );
+   cs._funcLen = make_pair( (int)MCT_ModelPos, 1 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_Install;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_ModelAddr,
+   cs._funcLen = make_pair( (int)MCT_ModelPos,
                             (int)MCT_SspecLen );
    _commandStore.insert( cs );
 
@@ -446,7 +453,7 @@ bool CtiDeviceMCT::initCommandStore()
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
-   cs._io      = IO_WRITE;
+   cs._io      = IO_WRITE | Q_ARMC;
    cs._funcLen = make_pair( 0, 0 );
    _commandStore.insert( cs );
 
@@ -484,7 +491,7 @@ bool CtiDeviceMCT::initCommandStore()
    //    also, the getconfig time location is different for 2XX and 3XX, so that's in each's base as well
    cs._cmd     = CtiProtocolEmetcon::GetConfig_TSync;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_TSyncAddr,
+   cs._funcLen = make_pair( (int)MCT_TSyncPos,
                             (int)MCT_TSyncLen );
    _commandStore.insert( cs );
 
@@ -956,6 +963,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::GetConfig_Multiplier:
         case CtiProtocolEmetcon::GetConfig_Multiplier2:
         case CtiProtocolEmetcon::GetConfig_Multiplier3:
+        case CtiProtocolEmetcon::GetConfig_GroupAddress:
         {
             status = decodeGetConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -994,6 +1002,9 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         case CtiProtocolEmetcon::PutConfig_LoadProfileInterval:
         case CtiProtocolEmetcon::PutConfig_IEDClass:
         case CtiProtocolEmetcon::PutConfig_IEDScan:
+        case CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze:
+        case CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver:
+        case CtiProtocolEmetcon::PutConfig_GroupAddr_Lead:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1010,6 +1021,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         }
 
         case CtiProtocolEmetcon::PutStatus_Reset:
+        case CtiProtocolEmetcon::PutStatus_ResetOverride:
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1572,14 +1584,14 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                 switch( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() )
                 {
                     case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetAddr;
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetPos;
                         OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
                         OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
                         break;
 
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetAddr;
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetPos;
                         OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
                         OutMessage->Buffer.BSt.Message[0] = 3;     //  MCT's LG command identifier
                         OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
@@ -1712,6 +1724,12 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
         OutMessage->Buffer.BSt.Message[2] = 0;
     }
 
+    if(parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
+    {
+        function = CtiProtocolEmetcon::PutStatus_ResetOverride;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+
 
     if(!found)
     {
@@ -1810,6 +1828,11 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     else if(parse.isKeyValid("options"))
     {
         function = CtiProtocolEmetcon::GetConfig_Options;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if(parse.isKeyValid("address_group"))
+    {
+        function = CtiProtocolEmetcon::GetConfig_GroupAddress;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("time"))
@@ -1960,9 +1983,9 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         function = CtiProtocolEmetcon::PutConfig_Install;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
-    else if( parse.isKeyValid("groupaddr") )
+    else if( parse.isKeyValid("groupaddress_enable") )
     {
-        if( parse.getiValue("groupaddr") == 0 )
+        if( parse.getiValue("groupaddress_enable") == 0 )
         {
             function = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
         }
@@ -1972,6 +1995,108 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         }
 
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if( parse.isKeyValid("groupaddress_set") )
+    {
+        if( parse.isKeyValid("groupaddress_gold") && parse.isKeyValid("groupaddress_silver") )
+        {
+            int gold, silver;
+
+            function = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            gold   = parse.getiValue("groupaddress_gold");
+            silver = parse.getiValue("groupaddress_silver");
+
+            if( gold   >= 1 && gold   < 5 &&
+                silver >= 1 && silver < 61 )
+            {
+                //  zero-based in the meter
+                gold--;
+                silver--;
+
+                OutMessage->Buffer.BSt.Message[0] = (gold << 6) | silver;
+            }
+            else
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    temp = "Bad address specification - Acceptable values:  Gold: [0-3], Silver [0-59]";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.insert( errRet );
+                    errRet = NULL;
+                }
+            }
+        }
+        else if( parse.isKeyValid("groupaddress_bronze") )
+        {
+            int bronze;
+
+            function = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            bronze = parse.getiValue("groupaddress_bronze");
+
+            if( bronze >= 1 && bronze < 257 )
+            {
+                //  zero-based in the meter
+                bronze--;
+
+                OutMessage->Buffer.BSt.Message[0] = bronze;
+            }
+            else
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    temp = "Bad address specification - Acceptable values:  Bronze: [0-255]";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.insert( errRet );
+                    errRet = NULL;
+                }
+            }
+        }
+        else if( parse.isKeyValid("groupaddress_lead_meter") && parse.isKeyValid("groupaddress_lead_load") )
+        {
+            int lead_load, lead_meter;
+
+            function = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            lead_load  = parse.getiValue("groupaddress_lead_load");
+            lead_meter = parse.getiValue("groupaddress_lead_meter");
+
+            if( lead_load  >= 1 && lead_load  < 4097 &&
+                lead_meter >= 1 && lead_meter < 4097 )
+            {
+                //  zero-based in the meter
+                lead_load--;
+                lead_meter--;
+
+                OutMessage->Buffer.BSt.Message[0] =   lead_load  & 0x00ff;
+                OutMessage->Buffer.BSt.Message[1] =   lead_meter & 0x00ff;
+                OutMessage->Buffer.BSt.Message[2] = ((lead_load  & 0x0f00) >> 4) |
+                                                    ((lead_meter & 0x0f00) >> 8);
+            }
+            else
+            {
+                found = false;
+
+                if( errRet )
+                {
+                    temp = "Bad address specification - Acceptable values:  Bronze: [0-255]";
+                    errRet->setResultString( temp );
+                    errRet->setStatus(NoMethod);
+                    retList.insert( errRet );
+                    errRet = NULL;
+                }
+            }
+        }
     }
     else if( parse.isKeyValid("ied") )
     {
@@ -2093,7 +2218,10 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             if( intervallength >=  1 &&
                 intervallength <= 60 )
             {
-                if( getType() == TYPEMCT212 ||
+                //  This code may be added back someday, but it's pointless for now - we didn't even construct the appropriate commands
+                //    yet.  The MCT22x's demand interval/readings are for internal use only, and not directly readable from the outside.
+                //    So we have to make do with the 5-minute-subtraction dealy in the getvalue demand.
+/*                if( getType() == TYPEMCT212 ||
                     getType() == TYPEMCT224 ||
                     getType() == TYPEMCT226 )
                 {
@@ -2119,7 +2247,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                             }
                     }
                 }
-                else
+                else*/
                 {
                     intervallength *= 4;  //  all else are in multiples of 15 seconds
                 }
@@ -2468,6 +2596,28 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
         switch( InMessage->Sequence )
         {
+            case CtiProtocolEmetcon::GetConfig_GroupAddress:
+            {
+                long gold, silver, bronze, lead_load, lead_meter;
+
+                bronze     = DSt->Message[0];
+                lead_load  = ((DSt->Message[3] & 0xf0) << 4) | DSt->Message[1];
+                lead_meter = ((DSt->Message[3] & 0x0f) << 8) | DSt->Message[2];
+                gold       = (DSt->Message[4] & 0xc0) >> 6;
+                silver     = (DSt->Message[4] & 0x3f);
+
+                resultStr  = getName() + " / Group Addresses:\n";
+                resultStr += "Gold:       " + CtiNumStr(gold + 1).spad(5) + "\n";
+                resultStr += "Silver:     " + CtiNumStr(silver + 1).spad(5) + "\n";
+                resultStr += "Bronze:     " + CtiNumStr(bronze + 1).spad(5) + "\n";
+                resultStr += "Lead Meter: " + CtiNumStr(lead_meter + 1).spad(5) + "\n";
+                resultStr += "Lead Load:  " + CtiNumStr(lead_load + 1).spad(5) + "\n";
+
+                ReturnMsg->setResultString( resultStr );
+
+                break;
+            }
+
             case CtiProtocolEmetcon::GetConfig_DemandInterval:
             {
                 //  see MCT22X ResultDecode for an additional MCT22X step
@@ -2710,8 +2860,20 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         {
             case CtiProtocolEmetcon::PutConfig_Install:
             {
-                int sspec = DSt->Message[0] + (DSt->Message[4] << 8);
+                int sspec;
                 bool sspecValid;
+
+                //  LMT-2 sspec - it only has 1 sspec byte...
+                //    make sure any additional sspec rev numbers do not have 36 as their least-significant byte,
+                //    or this will have to change.
+                if( DSt->Message[0] == 36 )
+                {
+                    sspec = DSt->Message[0];
+                }
+                else
+                {
+                    sspec = DSt->Message[0] + (DSt->Message[4] << 8);
+                }
 
                 //  if it's an invalid sspec or if the option bits aren't set properly
                 if( !sspecIsValid(sspec) )
@@ -2771,7 +2933,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     }
 
                     //  put the load profile interval if it's a lp device
-                    if( getType( ) == TYPEMCT310IL || getType( ) == TYPEMCT318L )
+                    if( isLoadProfile(getType()) )
                     {
                         pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
@@ -2786,6 +2948,8 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     }
 
                     //  put the demand interval
+                    if( hasVariableDemandRate(getType(), sspec) )
+                    {
                     pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                     if( pReq != NULL )
@@ -2795,6 +2959,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                         CtiCommandParser parse(pReq->CommandString());
                         CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                         delete pReq;
+                    }
                     }
 
                     if( OutTemplate != NULL )
@@ -2825,6 +2990,60 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     }
 
     return status;
+}
+
+
+bool CtiDeviceMCT::isLoadProfile( int type )
+{
+    bool retVal = false;
+
+    switch( type )
+    {
+        case TYPEMCT310IL:
+        case TYPEMCT318L:
+        case TYPELMT2:
+        case TYPEMCT240:
+        case TYPEMCT248:
+        case TYPEMCT250:
+        {
+            retVal = true;
+
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
+bool CtiDeviceMCT::hasVariableDemandRate( int type, int sspec )
+{
+    bool retVal = true;
+
+    switch( type )
+    {
+        case TYPELMT2:
+        case TYPEMCT210:
+        case TYPEMCT212:
+        case TYPEMCT213:
+        case TYPEMCT224:
+        case TYPEMCT226:
+        {
+            retVal = false;
+
+            break;
+        }
+
+        case TYPEMCT240:
+        {
+            if( sspec == 74 )
+            {
+                retVal = false;
+            }
+        }
+    }
+
+    return retVal;
 }
 
 
