@@ -242,13 +242,13 @@ public class CapBankListModel extends ReportModelBase
 			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, offset+=90, 18, null),
-				new ColumnProperties(offset, 1, offset+=120, 18, null),
-				new ColumnProperties(offset, 1, offset+=40, 18, null),
-				new ColumnProperties(offset, 1, offset+=80, 18, null),
-				new ColumnProperties(offset, 1, offset+=40, 18, null),
-				new ColumnProperties(offset, 1, offset+=90, 18, null),
-				new ColumnProperties(offset, 1, offset+=90, 18, null)
+				new ColumnProperties(offset, 1, offset+=90, null),
+				new ColumnProperties(offset, 1, offset+=120, null),
+				new ColumnProperties(offset, 1, offset+=40, null),
+				new ColumnProperties(offset, 1, offset+=80, null),
+				new ColumnProperties(offset, 1, offset+=40, null),
+				new ColumnProperties(offset, 1, offset+=90, null),
+				new ColumnProperties(offset, 1, offset+=90, null)
 			};
 		}
 		return columnProperties;

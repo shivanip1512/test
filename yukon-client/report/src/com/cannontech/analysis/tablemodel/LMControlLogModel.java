@@ -139,10 +139,10 @@ public class LMControlLogModel extends SystemLogModel
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 150, 18, "MMMMM dd, yyyy"),
-				new ColumnProperties(0, 1, 65, 18, "hh:mm:ss"),
-				new ColumnProperties(65, 1, 200, 18, null),
-				new ColumnProperties(265, 1, 300, 18, null)
+				new ColumnProperties(0, 1, 150, "MMMMM dd, yyyy"),
+				new ColumnProperties(0, 1, 65, "HH:mm:ss"),
+				new ColumnProperties(65, 1, 200, null),
+				new ColumnProperties(265, 1, 300, null)
 			};
 		}
 		return columnProperties;

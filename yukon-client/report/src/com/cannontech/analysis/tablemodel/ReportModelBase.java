@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.analysis.ColumnProperties;
@@ -46,9 +48,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/** Vector of data (of inner class type from implementors)*/
 	protected java.util.Vector data = new java.util.Vector(100);
 
-	/** The report type, valid types are in com.cannontech.analysis.data.ReportTypes*/
-//	protected int reportType;
-	
 	/** Start time for query in millis */
 	private long startTime = Long.MIN_VALUE;
 	
@@ -72,7 +71,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	public ReportModelBase(long startTime_, long stopTime_)
 	{
 		this();
-//		setReportType(reportType_);
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
 	}	
@@ -183,22 +181,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	}
 
 	/**
-	 * @return
-	 */
-//	public int getReportType()
-//	{
-//		return reportType;
-//	}
-
-	/**
-	 * @param i
-	 */
-//	public void setReportType(int i)
-//	{
-//		reportType = i;
-//	}
-	
-	/**
 	 * Returns the startTime in millis
 	 * @return long startTime
 	 */
@@ -206,12 +188,12 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		if( startTime < 0 )
 		{
-			java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
-			tempCal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-			tempCal.set(java.util.Calendar.MINUTE, 0);
-			tempCal.set(java.util.Calendar.SECOND, 0);
-			tempCal.set(java.util.Calendar.MILLISECOND, 0);
-			tempCal.add(java.util.Calendar.DATE, -1);
+			GregorianCalendar tempCal = new GregorianCalendar();
+			tempCal.set(Calendar.HOUR_OF_DAY, 0);
+			tempCal.set(Calendar.MINUTE, 0);
+			tempCal.set(Calendar.SECOND, 0);
+			tempCal.set(Calendar.MILLISECOND, 0);
+			tempCal.add(Calendar.DATE, -1);
 			startTime = tempCal.getTime().getTime();				
 		}
 		return startTime;
@@ -225,7 +207,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		if( stopTime < 0 )
 		{
-			java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
+			GregorianCalendar tempCal = new GregorianCalendar();
 			tempCal.setTimeInMillis(getStartTime());
 			tempCal.add(java.util.Calendar.DATE, 1);
 			stopTime = tempCal.getTime().getTime();				

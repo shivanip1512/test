@@ -534,11 +534,11 @@ public class StatisticModel extends ReportModelBase
 				case STAT_COMM_CHANNEL_DATA:
 				case STAT_TRANS_COMM_DATA:
 					columnProperties = new ColumnProperties[]{
-						new ColumnProperties(0, 1, 200, 18, null),
-						new ColumnProperties(200, 1, 80, 18, "#,##0"),
-						new ColumnProperties(280, 1, 80, 18, "#,##0"),
-						new ColumnProperties(360, 1, 90, 18, "##0.00%"),
-						new ColumnProperties(450, 1, 100, 18, "##0.00%")
+						new ColumnProperties(0, 1, 200, null),
+						new ColumnProperties(200, 1, 80, "#,##0"),
+						new ColumnProperties(280, 1, 80, "#,##0"),
+						new ColumnProperties(360, 1, 90, "##0.00%"),
+						new ColumnProperties(450, 1, 100, "##0.00%")
 					};
 					break;
 			}

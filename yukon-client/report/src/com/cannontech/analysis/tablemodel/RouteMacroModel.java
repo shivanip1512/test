@@ -308,14 +308,14 @@ public class RouteMacroModel extends ReportModelBase
 			columnProperties = new ColumnProperties[]
 			{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 130, 18, null),
-				new ColumnProperties(0, 1, 130, 18, null),
-				new ColumnProperties(130, 1, 125, 18, null),
-				new ColumnProperties(255, 1, 55, 18, null),
-				new ColumnProperties(310, 1, 55, 18, null),
-				new ColumnProperties(365, 1, 55, 18, null),
-				new ColumnProperties(420, 1, 65, 18, null),
-				new ColumnProperties(485, 1, 120, 18, null)
+				new ColumnProperties(0, 1, 130, null),
+				new ColumnProperties(0, 1, 130, null),
+				new ColumnProperties(130, 1, 125, null),
+				new ColumnProperties(255, 1, 55, null),
+				new ColumnProperties(310, 1, 55, null),
+				new ColumnProperties(365, 1, 55, null),
+				new ColumnProperties(420, 1, 65, null),
+				new ColumnProperties(485, 1, 120, null)
 			};
 		}
 		return columnProperties;

@@ -6,9 +6,10 @@
  */
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -18,7 +19,6 @@ import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
@@ -76,6 +76,21 @@ public class DailyPeaksModel extends ReportModelBase
 	private Double currentPeakValue = null;
 	private GregorianCalendar currentPeakTimestamp = null;
 	
+	public static Comparator lmControlAreaPAONameComparator = new Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			LMControlArea object1 = ((TempControlAreaObject)o1).getLMControlArea();
+			LMControlArea object2 = ((TempControlAreaObject)o2).getLMControlArea();
+			String thisVal = PAOFuncs.getYukonPAOName(object1.getDeviceID().intValue());
+			String anotherVal = PAOFuncs.getYukonPAOName(object2.getDeviceID().intValue());
+			return ( thisVal.compareToIgnoreCase(anotherVal));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
 	
 	class TempControlAreaObject
 	{
@@ -175,7 +190,8 @@ public class DailyPeaksModel extends ReportModelBase
 					controlAreaVector.add(tempLM);
 				}
 			}
-
+			if( !controlAreaVector.isEmpty())
+				Collections.sort(controlAreaVector, lmControlAreaPAONameComparator);
 			rset = null;	//clean it out
 			for(int i=0;i<controlAreaVector.size();i++)
 			{
@@ -448,19 +464,19 @@ public class DailyPeaksModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 500, 18, null),
-				new ColumnProperties(0, 1, 375, 18, null),
-				new ColumnProperties(375, 1, 375, 18, null),
-				new ColumnProperties(0, 1, 50, 18, "#."),
-				new ColumnProperties(50, 1, 60, 18, "0.00"),
-				new ColumnProperties(150, 1, 100, 18, null),
-				new ColumnProperties(250, 1, 100, 18, "MM/dd/yyyy HH:mm:ss"),
-				new ColumnProperties(400, 1, 100, 18, "0.00"),
-				new ColumnProperties(500, 1, 100, 18, null),
-				new ColumnProperties(600, 1, 100, 18, "MM/dd/yyyy HH:mm:ss"),
-				new ColumnProperties(0, 1, 250, 18, "Target Threshold Value is:  0.00" ),
-				new ColumnProperties(0, 1, 150, 18, "Current Peak of  #0.00" ),
-				new ColumnProperties(250, 1, 150, 18, "  'occurred at'  MM/dd/yyyy HH:mm:ss")
+				new ColumnProperties(0, 1, 500, null),
+				new ColumnProperties(0, 1, 375, null),
+				new ColumnProperties(375, 1, 375, null),
+				new ColumnProperties(0, 1, 50, "#."),
+				new ColumnProperties(50, 1, 60, "0.00"),
+				new ColumnProperties(150, 1, 100, null),
+				new ColumnProperties(250, 1, 100, "MM/dd/yyyy HH:mm:ss"),
+				new ColumnProperties(400, 1, 100, "0.00"),
+				new ColumnProperties(500, 1, 100, null),
+				new ColumnProperties(600, 1, 100, "MM/dd/yyyy HH:mm:ss"),
+				new ColumnProperties(0, 1, 250, "Target Threshold Value is:  0.00" ),
+				new ColumnProperties(0, 1, 150, "Current Peak of  #0.00" ),
+				new ColumnProperties(250, 1, 150, "  'occurred at'  MM/dd/yyyy HH:mm:ss")
 			};
 		}
 		return columnProperties;
@@ -505,5 +521,4 @@ public class DailyPeaksModel extends ReportModelBase
 	{
 		currentPeakValue = double1;
 	}
-
 }

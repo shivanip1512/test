@@ -524,14 +524,14 @@ public class ActivityDetailModel extends ReportModelBase
 			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, 150, 10, null),
-				new ColumnProperties(offset, 1, 75, 10, "MMMM dd, yyyy"),
-				new ColumnProperties(offset, 1, offset+=75, 10, "HH:mm:ss"),
-				new ColumnProperties(offset, 1, offset+=125, 10, null),
-				new ColumnProperties(offset, 1, offset+=75, 10, null),
-				new ColumnProperties(offset, 1, offset+=90, 10, null),
-				new ColumnProperties(offset, 1, offset+=125, 10, null),
-				new ColumnProperties(offset-125, 12, 600, 10, null)
+				new ColumnProperties(offset, 1, 150, null),
+				new ColumnProperties(offset, 1, 75, "MMMM dd, yyyy"),
+				new ColumnProperties(offset, 1, offset+=75, "HH:mm:ss"),
+				new ColumnProperties(offset, 1, offset+=125, null),
+				new ColumnProperties(offset, 1, offset+=75, null),
+				new ColumnProperties(offset, 1, offset+=90, null),
+				new ColumnProperties(offset, 1, offset+=125, null),
+				new ColumnProperties(offset-125, 12, 600, null)
 			};				
 		}
 		return columnProperties;

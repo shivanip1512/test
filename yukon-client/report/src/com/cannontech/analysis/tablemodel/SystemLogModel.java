@@ -415,14 +415,14 @@ public class SystemLogModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, 18, "MMMMM dd, yyyy"),
-				new ColumnProperties(0, 1, 50, 18, "hh:mm:ss"),
-				new ColumnProperties(50, 1, 100, 18, "#"),
-				new ColumnProperties(50, 1, 100, 18, null),
-				new ColumnProperties(150, 1, 40, 18, "#"),
-				new ColumnProperties(190, 1, 90, 18, null),
-				new ColumnProperties(280, 1, 200, 18, null),
-				new ColumnProperties(480, 1, 230, 18, null)
+				new ColumnProperties(0, 1, 100, "MMMMM dd, yyyy"),
+				new ColumnProperties(0, 1, 50, "HH:mm:ss"),
+				new ColumnProperties(50, 1, 100, "#"),
+				new ColumnProperties(50, 1, 100, null),
+				new ColumnProperties(150, 1, 40, "#"),
+				new ColumnProperties(190, 1, 90, null),
+				new ColumnProperties(280, 1, 200, null),
+				new ColumnProperties(480, 1, 230, null)
 			};				
 		}
 		return columnProperties;

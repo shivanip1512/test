@@ -14,7 +14,7 @@ public class ColumnProperties
 	private float positionY = 1;
 	/** Minimum width */
 	private float width = 100;
-	/** Minimum height */
+	/** @deprecated Minimum height */
 	private float height = 9;
 	/** Value display format, null implies basic String/Text display */
 	private String valueFormat = null;
@@ -27,24 +27,24 @@ public class ColumnProperties
 	 * @param height_ hight 
 	 * @param valueFormat_ = string format of data, null for String/Text data
 	 */
-	public ColumnProperties(float posX_, float posY_, float width_, float height_, String valueFormat_)
+	public ColumnProperties(float posX_, float posY_, float width_, String valueFormat_)
 	{
 		super();
 		positionX = posX_;
 		positionY = posY_;
 		width = width_;
-		height = height_;
 		valueFormat = valueFormat_;
 	}
 
 	/**
 	 * Returns the height
+	 * @deprecated
 	 * @return float height.
 	 */
-	public float getHeight()
-	{
-		return height;
-	}
+//	public float getHeight()
+//	{
+//		return height;
+//	}
 
 	/**
 	 * Returns the positionX
@@ -75,6 +75,7 @@ public class ColumnProperties
 
 	/**
 	 * Set the height
+	 * @deprecated
 	 * @param float height_
 	 */
 	public void setHeight(float height_)

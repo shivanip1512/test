@@ -42,7 +42,6 @@ import com.cannontech.stars.util.StarsUtils;
  */
 public class WorkOrderModel extends ReportModelBase {
 	
-	private int colHeight = 14;
 	/** A string for the title of the data */
 	private static String title = "Work Order";
 	
@@ -299,19 +298,6 @@ public class WorkOrderModel extends ReportModelBase {
 		serviceStatus = integer;
 	}
 
-	/**
-	 * @return Returns the colHeight.
-	 */
-	public int getColHeight() {
-		return colHeight;
-	}
-	/**
-	 * @param colHeight The colHeight to set.
-	 */
-	public void setColHeight(int colHeight) {
-		this.colHeight = colHeight;
-	}
-	
 	/**
 	 * Build a mapping of AccountID(Integer):String).
 	 * @return String an Sqlstatement
@@ -731,6 +717,7 @@ public class WorkOrderModel extends ReportModelBase {
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
 	public ColumnProperties[] getColumnProperties() {
+		int colHeight = 14;
 		if (columnProperties == null) {
 			int offset = 0;
 			int _home = 0;
@@ -746,38 +733,38 @@ public class WorkOrderModel extends ReportModelBase {
 			int _yPos = 1; 
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(_1third, 1, _thirdWidth, getColHeight(), null),		//EC_NAME_STRING,
-				new ColumnProperties(_1third, (getColHeight()*1), _thirdWidth, getColHeight(), null),		//EC_INFO_STRING,
+				new ColumnProperties(_1third, 1, _thirdWidth,null),		//EC_NAME_STRING,
+				new ColumnProperties(_1third, (colHeight*1), _thirdWidth, null),		//EC_INFO_STRING,
 				//HEADER
-				new ColumnProperties(_2third, (getColHeight()*1), _thirdWidth, getColHeight(), null),		//ORDER_NO_STRING,
-				new ColumnProperties(_2third, (getColHeight()*2), _thirdWidth, getColHeight(), null),		//DATE_TIME_TODAY_STRING,
-				new ColumnProperties(_home, (getColHeight()*4), _thirdWidth, getColHeight(), null),		//DATE_TIME_REPORTED_STRING,
-				new ColumnProperties(_2third, (getColHeight()*4), _thirdWidth, getColHeight(), null),		//DATE_SCHEDULED_STRING,
-				new ColumnProperties(_2third, (getColHeight()*5), _thirdWidth, getColHeight(), null),		//TIME_SCHEDULED_STRING,
-				new ColumnProperties(_home, (getColHeight()*5), _thirdWidth, getColHeight(), null),		//DATE_TIME_CLOSED_STRING,
-				new ColumnProperties(_1half, (getColHeight()*7), _halfWidth, getColHeight(), null),		//SERVICE_TYPE_STRING,
-				new ColumnProperties(_1half, (getColHeight()*14), _halfWidth, getColHeight(), null),		//CONTRACTOR_STRING,
-				new ColumnProperties(_home, (getColHeight()*7), _halfWidth, getColHeight(), null),		//ACCOUNT_NO_STRING,
-				new ColumnProperties(_home, (getColHeight()*9), _halfWidth, getColHeight(), null),		//NAME_STRING,
-				new ColumnProperties(_1half, (getColHeight()*9), _halfWidth, getColHeight(), null),		//PHONE_HOME_STRING,
-				new ColumnProperties(_1half, (getColHeight()*10), _halfWidth, getColHeight(), null),		//PHONE_WORK_STRING,
-				new ColumnProperties(_home, (getColHeight()*11), _halfWidth, getColHeight(), null),		//ADDRESS1_STRING,				
-				new ColumnProperties(_home, (getColHeight()*12), _halfWidth, getColHeight(), null),		//ADDRESS2_STRING,
-				new ColumnProperties(_home, (getColHeight()*13), _thirdWidth, getColHeight(), null),		//CITY_STATE_ZIP_STRING,
-//				new ColumnProperties(_1third, (getColHeight()*13), _thirdWidth, getColHeight(), null),	//STATE_STRING,
-//				new ColumnProperties(_2third, (getColHeight()*13), _thirdWidth, getColHeight(), null),	//ZIP_STRING,
-				new ColumnProperties(_home, (getColHeight()*10), _halfWidth, getColHeight(), null),		//COMPANY_NAME_STRING,
-				new ColumnProperties(_1half, (getColHeight()*12), _halfWidth, getColHeight(), null),		//MAP_NO_STRING,
-				new ColumnProperties(_home, (getColHeight()*15), _wholeWidth, getColHeight(), null),		//METER_NO_STRING,				
-				new ColumnProperties(_home, (getColHeight()*17), _wholeWidth, getColHeight(), null),		//ACCOUNT_NOTES_STRING,
+				new ColumnProperties(_2third, (colHeight*1), _thirdWidth, null),		//ORDER_NO_STRING,
+				new ColumnProperties(_2third, (colHeight*2), _thirdWidth, null),		//DATE_TIME_TODAY_STRING,
+				new ColumnProperties(_home, (colHeight*4), _thirdWidth, null),		//DATE_TIME_REPORTED_STRING,
+				new ColumnProperties(_2third, (colHeight*4), _thirdWidth, null),		//DATE_SCHEDULED_STRING,
+				new ColumnProperties(_2third, (colHeight*5), _thirdWidth, null),		//TIME_SCHEDULED_STRING,
+				new ColumnProperties(_home, (colHeight*5), _thirdWidth, null),		//DATE_TIME_CLOSED_STRING,
+				new ColumnProperties(_1half, (colHeight*7), _halfWidth, null),		//SERVICE_TYPE_STRING,
+				new ColumnProperties(_1half, (colHeight*14), _halfWidth, null),		//CONTRACTOR_STRING,
+				new ColumnProperties(_home, (colHeight*7), _halfWidth, null),		//ACCOUNT_NO_STRING,
+				new ColumnProperties(_home, (colHeight*9), _halfWidth, null),		//NAME_STRING,
+				new ColumnProperties(_1half, (colHeight*9), _halfWidth,  null),		//PHONE_HOME_STRING,
+				new ColumnProperties(_1half, (colHeight*10), _halfWidth, null),		//PHONE_WORK_STRING,
+				new ColumnProperties(_home, (colHeight*11), _halfWidth, null),		//ADDRESS1_STRING,				
+				new ColumnProperties(_home, (colHeight*12), _halfWidth, null),		//ADDRESS2_STRING,
+				new ColumnProperties(_home, (colHeight*13), _thirdWidth, null),		//CITY_STATE_ZIP_STRING,
+//				new ColumnProperties(_1third, (colHeight*13), _thirdWidth, null),	//STATE_STRING,
+//				new ColumnProperties(_2third, (colHeight*13), _thirdWidth, null),	//ZIP_STRING,
+				new ColumnProperties(_home, (colHeight*10), _halfWidth, null),		//COMPANY_NAME_STRING,
+				new ColumnProperties(_1half, (colHeight*12), _halfWidth, null),		//MAP_NO_STRING,
+				new ColumnProperties(_home, (colHeight*15), _wholeWidth, null),		//METER_NO_STRING,				
+				new ColumnProperties(_home, (colHeight*17), _wholeWidth, null),		//ACCOUNT_NOTES_STRING,
 				//ITEMBAND
-				new ColumnProperties(_home+5, _yPos, _fourthWidth, getColHeight(), null),			//SERIAL_NO_STRING,
-				new ColumnProperties(_1fourth, _yPos, _fourthWidth, getColHeight(), null),			//DEVICE_TYPE_STRING,
-				new ColumnProperties(_1fourth*2, _yPos, _fourthWidth, getColHeight(), null),		//INSTALL_DATE_STRING,
-				new ColumnProperties(_1fourth*3,_yPos, _fourthWidth, getColHeight(), null),		//INSTALL_COMPANY_STRING
+				new ColumnProperties(_home+5, _yPos, _fourthWidth, null),			//SERIAL_NO_STRING,
+				new ColumnProperties(_1fourth, _yPos, _fourthWidth, null),			//DEVICE_TYPE_STRING,
+				new ColumnProperties(_1fourth*2, _yPos, _fourthWidth, null),		//INSTALL_DATE_STRING,
+				new ColumnProperties(_1fourth*3,_yPos, _fourthWidth, null),		//INSTALL_COMPANY_STRING
 				//FOOTER
-				new ColumnProperties(_home, (getColHeight()*1), _wholeWidth, getColHeight(), null),		//WORK_DESC_STRING,
-				new ColumnProperties(_home, (getColHeight()*5), _wholeWidth, getColHeight(), null),		//ACTION_TAKEN_STRING,
+				new ColumnProperties(_home, (colHeight*1), _wholeWidth, null),		//WORK_DESC_STRING,
+				new ColumnProperties(_home, (colHeight*5), _wholeWidth, null),		//ACTION_TAKEN_STRING,
 			};				
 		}
 		

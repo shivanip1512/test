@@ -288,11 +288,11 @@ public class MeterReadModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 200, 18, null),
-				new ColumnProperties(0, 1, 200, 18, null),
-				new ColumnProperties(200, 1, 150, 18, null),
-				new ColumnProperties(200, 1, 150, 18, null),
-				new ColumnProperties(350, 1, 150, 18, null)
+				new ColumnProperties(0, 1, 200, null),
+				new ColumnProperties(0, 1, 200, null),
+				new ColumnProperties(200, 1, 150, null),
+				new ColumnProperties(200, 1, 150, null),
+				new ColumnProperties(350, 1, 150, null)
 			};
 		}
 		return columnProperties;

@@ -257,12 +257,12 @@ public class CarrierDBModel extends ReportModelBase
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(0, 1, 175, 20, null),
-				new ColumnProperties(175, 1, 75, 20, null),
-				new ColumnProperties(250, 1, 50, 20, null),
-				new ColumnProperties(300, 1, 100, 20, null),
-				new ColumnProperties(400, 1, 75, 20, null),
-				new ColumnProperties(477, 1, 75, 20, null)
+				new ColumnProperties(0, 1, 175, null),
+				new ColumnProperties(175, 1, 75, null),
+				new ColumnProperties(250, 1, 50, null),
+				new ColumnProperties(300, 1, 100, null),
+				new ColumnProperties(400, 1, 75, null),
+				new ColumnProperties(477, 1, 75, null)
 			};
 		}
 		return columnProperties;

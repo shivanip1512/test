@@ -250,11 +250,11 @@ public class PowerFailModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, 18, null),
-				new ColumnProperties(100, 1, 100, 18, null),
-				new ColumnProperties(200, 1, 100, 18, null),
-				new ColumnProperties(300, 1, 100, 18, "#"),
-				new ColumnProperties(400, 1, 100, 18, "#")
+				new ColumnProperties(0, 1, 100, null),
+				new ColumnProperties(100, 1, 100, null),
+				new ColumnProperties(200, 1, 100, null),
+				new ColumnProperties(300, 1, 100, "#"),
+				new ColumnProperties(400, 1, 100, "#")
 			};
 		}
 		return columnProperties;

@@ -321,11 +321,11 @@ public class DisconnectModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, 10, null),  //Collection Group
-				new ColumnProperties(10, 1, 200, 10, null),	//MCT
-				new ColumnProperties(20, 1, 150, 10, null),	//Point
-				new ColumnProperties(175, 1, 100, 10, "MM/dd/yyyy HH:MM:SS"),   //Timestamp
-				new ColumnProperties(280, 1, 100, 10, null)   // Rawpointhistory.value
+				new ColumnProperties(0, 1, 100, null),  //Collection Group
+				new ColumnProperties(10, 1, 200, null),	//MCT
+				new ColumnProperties(20, 1, 150, null),	//Point
+				new ColumnProperties(175, 1, 100, "MM/dd/yyyy HH:MM:SS"),   //Timestamp
+				new ColumnProperties(280, 1, 100, null)   // Rawpointhistory.value
 			};
 		}
 		return columnProperties;

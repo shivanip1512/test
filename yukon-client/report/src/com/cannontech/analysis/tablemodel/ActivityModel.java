@@ -536,12 +536,12 @@ public class ActivityModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 150, 10, null),
-				new ColumnProperties(0, 1, 150, 10, null),
-				new ColumnProperties(150, 1, 100, 10, null),
-				new ColumnProperties(250, 1, 100, 10, null),
-				new ColumnProperties(350, 1, 150, 10, null),
-				new ColumnProperties(500, 1, 30, 10, "#")
+				new ColumnProperties(0, 1, 150, null),
+				new ColumnProperties(0, 1, 150, null),
+				new ColumnProperties(150, 1, 100, null),
+				new ColumnProperties(250, 1, 100, null),
+				new ColumnProperties(350, 1, 150, null),
+				new ColumnProperties(500, 1, 30, "#")
 			};				
 		}
 		return columnProperties;
