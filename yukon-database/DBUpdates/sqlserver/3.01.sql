@@ -205,7 +205,7 @@ create table DeviceRTC (
 DeviceID             numeric              not null,
 RTCAddress           numeric              not null,
 Response             varchar(1)           not null,
-LPTMode              numeric              not null
+LBTMode              numeric              not null
 );
 go
 alter table DeviceRTC

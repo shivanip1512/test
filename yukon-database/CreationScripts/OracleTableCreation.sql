@@ -2121,7 +2121,7 @@ create table DeviceRTC  (
    DeviceID             NUMBER                           not null,
    RTCAddress           NUMBER                           not null,
    Response             VARCHAR2(1)                      not null,
-   LPTMode              NUMBER                           not null
+   LBTMode              NUMBER                           not null
 )
 /
 
