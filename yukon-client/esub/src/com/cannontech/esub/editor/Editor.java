@@ -595,6 +595,7 @@ public class Editor extends JPanel {
 	
 	private void startUpdating() {
 		drawingUpdater = new DrawingUpdater();	
+		drawingUpdater.setUpdateGraphs(true);
 		drawingUpdater.setDrawing( getDrawing() );
 		drawingUpdateTimer = new Timer();
 		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
