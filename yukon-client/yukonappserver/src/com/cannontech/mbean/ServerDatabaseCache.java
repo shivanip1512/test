@@ -508,15 +508,21 @@ public synchronized java.util.List getAllLMProgramConstraints()
 public synchronized java.util.List getAllLMScenarios()
 {
 
-	if (allLMScenarios != null)
-		return allLMScenarios;
-	else
+	if( allLMScenarios == null )
 	{
-		allLMScenarios = new java.util.ArrayList();
-		/*LMScenarioLoader lmScenariosLoader = new LMScenarioLoader(allLMScenarios, databaseAlias);
-		lmScenariosLoader.run();*/
-		return allLMScenarios;
+		allLMScenarios = new java.util.ArrayList( getAllYukonPAObjects().size() );
+
+		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+		{
+			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getAllYukonPAObjects().get(i)).getCategory() 
+				  == com.cannontech.database.data.pao.PAOGroups.CAT_SCENARIO )
+			allLMScenarios.add( getAllYukonPAObjects().get(i) );
+		}
+
+		allLMScenarios.trimToSize();		
 	}
+
+	return allLMScenarios;
 }
 /**
  * Insert the method's description here.
@@ -1205,6 +1211,34 @@ public synchronized java.util.List getAllYukonPAObjects()
 		return allCustomers;
 	}
 	
+	/**
+	 * @see com.cannontech.yukon.IDatabaseCache#getCustomer(int)
+	 */
+	public LiteCustomer getCustomer(int customerID) {
+		List customers = getAllCustomers();
+		for (int i = 0; i < customers.size(); i++) {
+			LiteCustomer liteCustomer = (LiteCustomer) customers.get(i);
+			if (liteCustomer.getCustomerID() == customerID)
+				return liteCustomer;
+		}
+		
+		List ciCustomers = getAllCICustomers();
+		for (int i = 0; i < ciCustomers.size(); i++) {
+			LiteCICustomer liteCICust = (LiteCICustomer) ciCustomers.get(i);
+			if (liteCICust.getCustomerID() == customerID) {
+				if (!liteCICust.isExtended())
+					liteCICust.retrieve( CtiUtilities.getDatabaseAlias() );
+				return liteCICust;
+			}
+		}
+		
+		LiteCustomer liteCustomer = new LiteCustomer( customerID );
+		liteCustomer.retrieve( CtiUtilities.getDatabaseAlias() );
+		customers.add( liteCustomer );
+		
+		return liteCustomer;
+	}
+	
 	public void deleteCustomer(int customerID) {
 		Iterator it = getAllCustomers().iterator();
 		while (it.hasNext()) {
@@ -1570,6 +1604,11 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleTagChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
+	{
+		retLBase = handleLMProgramConstraintChange( dbType, id );
+	}
+	
 	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
 	{
 		retLBase = handleCustomerChange( dbType, id );
@@ -2030,63 +2069,6 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 	return lBase;
 }
 
-private synchronized LiteBase handleLMScenarioChange( int changeType, int id )
-{
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
-
-	// if the storage is not already loaded, we must not care about it
-	if( allLMScenarios == null )
-		return lBase;
-
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allLMScenarios.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).getScenarioID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allLMScenarios.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteLMScenario lh = new com.cannontech.database.data.lite.LiteLMScenario(id);
-					lh.retrieve(databaseAlias);
-					allLMScenarios.add(lh);
-					lBase = lh;
-				}
-				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allLMScenarios.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).getScenarioID() == id )
-					{
-						((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allLMScenarios.get(i);
-						break;
-					}
-				}
-				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allLMScenarios.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).getScenarioID() == id )
-					{
-						lBase = (LiteBase)allLMScenarios.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllLMScenarios();
-				break;
-	}
-
-	return lBase;
-}
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
