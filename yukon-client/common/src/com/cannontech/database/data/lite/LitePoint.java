@@ -121,11 +121,17 @@ public long getTags() {
  */
 public void retrieve(String databaseAlias) 
 {
+   //nearly the same as the PointLoader's run() method
+   String sqlString = 
+            "SELECT POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, FORMULA"+
+            " FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
+            " ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
+            " WHERE P.POINTID = " + Integer.toString(getPointID());
+   
  	com.cannontech.database.SqlStatement stmt =
  		new com.cannontech.database.SqlStatement(
-			"SELECT POINTNAME,POINTTYPE,PAOBJECTID, " +
-			"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID = " + 
-			Integer.toString(getPointID()), databaseAlias );
+         sqlString,
+         databaseAlias );
 
 
  	try
@@ -136,6 +142,13 @@ public void retrieve(String databaseAlias)
 		setPaobjectID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
 		setPointOffset( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
 		setStateGroupID( ((java.math.BigDecimal) stmt.getRow(0)[4]).intValue() );
+      
+      
+      String formula = (String) stmt.getRow(0)[5];      
+      if( "usage".equalsIgnoreCase(formula) )
+         setTags( LitePoint.POINT_UOFM_USAGE );
+      else
+         setTags( LitePoint.POINT_UOFM_GRAPH );      
  	}
  	catch( Exception e )
  	{
