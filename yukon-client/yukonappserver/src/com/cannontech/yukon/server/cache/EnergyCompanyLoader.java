@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.database.db.web.EnergyCompanyCustomerList;
 
 /**
  * @author alauinger
@@ -30,27 +32,57 @@ public class EnergyCompanyLoader implements Runnable
 	{
    		long timerStart = System.currentTimeMillis();
    		
-   		String sql = "SELECT EnergyCompanyID, Name, PrimaryContactID, UserID FROM EnergyCompany";
+   		String sql = 
+				"SELECT EnergyCompanyID, Name, PrimaryContactID, UserID FROM " + EnergyCompany.TABLE_NAME;
    		   		
       	Connection conn = null;
       	Statement stmt = null;
       	ResultSet rset = null;
-      	try {
-        	conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-         	stmt = conn.createStatement();
-         	rset = stmt.executeQuery(sql);
+      	try 
+      	{
+	        	conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+	         stmt = conn.createStatement();
+	         rset = stmt.executeQuery(sql);
    
-      		while (rset.next() ) {
-      			int id = rset.getInt(1);
-      			String name = rset.getString(2).trim();
-      			int primaryContactID = rset.getInt(3);
-      			int userID = rset.getInt(4);
-      			
-      			LiteEnergyCompany company = new LiteEnergyCompany(id,name, primaryContactID, userID);
+      		while (rset.next() ) 
+      		{
+      			LiteEnergyCompany company = new LiteEnergyCompany(
+      					rset.getInt(1),
+							rset.getString(2).trim(),
+							rset.getInt(3),
+							rset.getInt(4) );
+
       			allCompanies.add(company);                                   		
          	}
+
+         	
+         	//assign all the customers that belong to each Energycompany
+         	// NOTE: 1 customer may belong to several EnergyCompanies 
+				sql = 
+					"select EnergyCompanyID, CustomerID FROM " + EnergyCompanyCustomerList.tableName + " " +
+					"order by EnergyCompanyID";
+				stmt = conn.createStatement();
+				rset = stmt.executeQuery(sql);
+				while( rset.next() ) 
+				{
+					int engID = rset.getInt(1);
+					int cstID = rset.getInt(2);
+
+					for( int i = 0; i < allCompanies.size(); i++ )
+					{
+						LiteEnergyCompany company = (LiteEnergyCompany)allCompanies.get(i);
+						
+						if( company.getEnergyCompanyID() == engID )
+						{
+							company.getCiCustumerIDs().add( cstID );
+						}
+					}
+				}
+					
+
       	}
-      	catch(SQLException e ) {
+      	catch(SQLException e ) 
+      	{
          	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
       	}
       	finally {
