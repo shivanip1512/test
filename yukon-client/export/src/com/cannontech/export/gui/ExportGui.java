@@ -951,10 +951,12 @@ private void initialize() {
 	}
 	// user code begin {2}
 	getRunAsButtonGroup();
-	for( int i = 0; i < ExportFormatTypes.formatTypeNames.length; i++)
-	{
-		getFileFormatComboBox().addItem(ExportFormatTypes.formatTypeNames[i]);
-	}
+//	for( int i = 0; i < ExportFormatTypes.formatTypeNames.length; i++)
+//	{
+//		getFileFormatComboBox().addItem(ExportFormatTypes.formatTypeNames[i]);
+//	}
+	getFileFormatComboBox().addItem(ExportFormatTypes.getFormatTypeName(com.cannontech.export.ExportFormatTypes.CSVBILLING_FORMAT));
+	getFileFormatComboBox().addItem(ExportFormatTypes.getFormatTypeName(com.cannontech.export.ExportFormatTypes.DBPURGE_FORMAT));
 	setSelectedRunAsButton(RUN_ONCE);
 
 	// user code end
