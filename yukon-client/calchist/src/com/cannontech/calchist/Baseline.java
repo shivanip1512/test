@@ -7,11 +7,9 @@ package com.cannontech.calchist;
  */
 import java.util.GregorianCalendar;
 import java.util.Vector;
-
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.message.dispatch.message.PointData;
-
 
 public class Baseline
 {
