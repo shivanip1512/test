@@ -1893,7 +1893,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	 */
 	private void treeModelChanged()
 	{
-		setModelType( treeModels[getTreeViewPanel().getSortByComboBox().getSelectedIndex()] );
+		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
+		if( index < 0 )
+			return;
+			
+		setModelType( treeModels[index] );
 		
 		if (getModelType() == ModelFactory.EDITABLELCRSERIAL)
 		{
@@ -1955,7 +1959,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	{
 		String savedCommandFileName = ycClass.getCommandFileName().toString();
 		
-		setModelType( treeModels[getTreeViewPanel().getSortByComboBox().getSelectedIndex()] );
+		int index = getTreeViewPanel().getSortByComboBox().getSelectedIndex();
+		if( index < 0 )
+			return;
+		setModelType( treeModels[index] );
 		setTreeItem( getTreeViewPanel().getSelectedItem());
 	
 		if (getTreeItem() == null)
