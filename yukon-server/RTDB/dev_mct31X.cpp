@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2003/07/10 21:12:43 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2003/07/14 18:23:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -514,6 +514,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     bool retVal = false;
     int lpBlockAddress, lpChannel;
 
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1926,89 +1927,89 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
         if( lpChannel = parse.getiValue("scan_loadprofile_channel", 0) )
         {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "channel " << lpChannel << endl;
             }
 
-        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
+            lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
 
             pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( lpChannel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
 
-        if( pPoint != NULL )
-        {
-            badData = FALSE;
-
-            for( intervalOffset = 0; intervalOffset < 6; intervalOffset++ )
+            if( pPoint != NULL )
             {
-                //  error code in the top 5 bits - parsed by checkLoadProfileQuality
-                pulses   = DSt->Message[intervalOffset*2 + 1];
-                pulses <<= 8;
-                pulses  |= DSt->Message[intervalOffset*2 + 2];
+                badData = FALSE;
 
-                if( badData )  //  load survey was halted - the rest of the data is bad
+                for( intervalOffset = 0; intervalOffset < 6; intervalOffset++ )
                 {
-                    pointQuality = DeviceFillerQuality;
-                    Value = 0.0;
-                }
-                else if( !checkLoadProfileQuality( pulses, pointQuality, badData ) )
-                {
-                    //  if no fatal problems with the quality,
-                    //    adjust for the demand interval
-                    Value = pulses * (3600 / lpDemandRate);
-                    //    and the UOM
-                    Value = pPoint->computeValueForUOM( Value );
-                }
-                else
-                {
-                    Value = 0.0;
-                }
+                    //  error code in the top 5 bits - parsed by checkLoadProfileQuality
+                    pulses   = DSt->Message[intervalOffset*2 + 1];
+                    pulses <<= 8;
+                    pulses  |= DSt->Message[intervalOffset*2 + 2];
 
+                    if( badData )  //  load survey was halted - the rest of the data is bad
+                    {
+                        pointQuality = DeviceFillerQuality;
+                        Value = 0.0;
+                    }
+                    else if( !checkLoadProfileQuality( pulses, pointQuality, badData ) )
+                    {
+                        //  if no fatal problems with the quality,
+                        //    adjust for the demand interval
+                        Value = pulses * (3600 / lpDemandRate);
+                        //    and the UOM
+                        Value = pPoint->computeValueForUOM( Value );
+                    }
+                    else
+                    {
+                        Value = 0.0;
+                    }
+
+                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
+                                                Value,
+                                                pointQuality,
+                                                DemandAccumulatorPointType,
+                                                "",
+                                                TAG_POINT_LOAD_PROFILE_DATA );
+
+                    //  this is where the block started...
+                        timeStamp  = _lastLPRequestBlockStart[lpChannel-1].seconds() + (lpDemandRate * intervalOffset);
+
+                    //  but we want interval *ending* times, so add on one more interval
+                    timeStamp += lpDemandRate;
+
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "_lastLPRequestBlockStart[" << (lpChannel - 1) << "] = " << RWTime(_lastLPRequestBlockStart[lpChannel-1]) << endl;
+                        dout << "Value = " << Value << endl;
+                        dout << "intervalOffset = " << intervalOffset << endl;
+                        dout << "timeStamp = " << RWTime(timeStamp) << endl;
+                    }
+
+                    pData->setTime( timeStamp );
+
+                    ReturnMsg->insert( pData );
+                }
+                //  insert a point data message for TDC and the like
+                //    note that timeStamp, Value, and pointQuality are set in the final iteration of the above for loop
+                valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                             Value,
                                             pointQuality,
                                             DemandAccumulatorPointType,
-                                            "",
-                                            TAG_POINT_LOAD_PROFILE_DATA );
-
-                //  this is where the block started...
-                        timeStamp  = _lastLPRequestBlockStart[lpChannel-1].seconds() + (lpDemandRate * intervalOffset);
-
-                //  but we want interval *ending* times, so add on one more interval
-                timeStamp += lpDemandRate;
-
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "_lastLPRequestBlockStart[" << (lpChannel - 1) << "] = " << RWTime(_lastLPRequestBlockStart[lpChannel-1]) << endl;
-                    dout << "Value = " << Value << endl;
-                    dout << "intervalOffset = " << intervalOffset << endl;
-                    dout << "timeStamp = " << RWTime(timeStamp) << endl;
-                }
-
+                                            valReport );
                 pData->setTime( timeStamp );
-
                 ReturnMsg->insert( pData );
-            }
-            //  insert a point data message for TDC and the like
-            //    note that timeStamp, Value, and pointQuality are set in the final iteration of the above for loop
-            valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                  ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                        Value,
-                                        pointQuality,
-                                        DemandAccumulatorPointType,
-                                        valReport );
-            pData->setTime( timeStamp );
-            ReturnMsg->insert( pData );
 
                 _lastLPTime[lpChannel-1] = timeStamp;
-        }
-        else
-        {
+            }
+            else
+            {
                 resultString = "No load profile point defined for '" + getName() + "' demand accumulator " + CtiNumStr(lpChannel);
                 ReturnMsg->setResultString(resultString);
             }
