@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/04/16 18:59:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,84 +70,103 @@
 #include "mgr_device.h"
 #include "dev_tcu.h"
 #include "dev_tap.h"
+#include "dev_wctp.h"
 #include "prot_versacom.h"
+#include "expresscom.h"
 
 extern HCTIQUEUE* QueueHandle(LONG pid);
+
+static USHORT gsUID = 0;
+static USHORT gsSPID = 0;
+
+// Protocols will be defined as 0x01 Masks Versacom
+// Protocols will be defined as 0x02 Masks Expresscom
+// Therefore 0x03 Masks BOTH
+
+static USHORT sendProtocol = 0x0003;        // Default to both
 
 /* Routine to generate filler messages */
 static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
 {
-    USHORT UtilityID = (USHORT)uid;
-
     ULONG j;
     OUTMESS *OutMessage;
 
     RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
     CtiRTDB<CtiDeviceBase>::CtiRTDBIterator  itr_dev(DeviceManager.getMap());
 
-    for(; ++itr_dev && !PorterQuit ;)
+    try
     {
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0) )
+        if( !Port->isInhibited() )
         {
-            PorterQuit = TRUE;
-            break;
-        }
-
-        CtiDeviceBase *TransmitterDevice = itr_dev.value();
-
-        if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
-        {
-            switch(TransmitterDevice->getType())
+            for(; ++itr_dev && !PorterQuit ;)
             {
-            case TYPE_TCU5000:
-            case TYPE_TCU5500:
+                if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0) )
                 {
-                    CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice;
-
-                    // In the beginning (6/25/01) NONE will send a filler message.
-
-                    if(xcu->getSendFiller())
-                    {
-                        /* Allocate some memory */
-                        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-                        {
-                            return;
-                        }
-
-                        /* send a filler to this guy */
-                        OutMessage->DeviceID = xcu->getID();
-                        OutMessage->TargetID = xcu->getID();
-                        OutMessage->Port     = xcu->getPortID();
-                        OutMessage->Remote   = xcu->getAddress();
-                        OutMessage->TimeOut  = 2;
-                        OutMessage->Retry    = 0;
-                        OutMessage->OutLength = 6;
-                        OutMessage->InLength = -1;
-                        OutMessage->Sequence = 0;
-                        OutMessage->Priority = MAXPRIORITY;
-                        OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
-                        OutMessage->ReturnNexus = NULL;
-                        OutMessage->SaveNexus = NULL;
-
-                        MasterHeader (OutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Remote, MASTERSEND, 2);
-
-                        /* Now build the filler message */
-                        OutMessage->Buffer.OutMessage[PREIDLEN + 4] = 0xb8;
-                        OutMessage->Buffer.OutMessage[PREIDLEN + 5] = LOBYTE (UtilityID);
-
-                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-                        {
-                            printf ("Error Writing to Queue for Port %2hd\n", xcu->getPortID());
-                            delete (OutMessage);
-                        }
-                    }
-
+                    PorterQuit = TRUE;
                     break;
                 }
-            default:
-                break;
+
+                CtiDeviceBase *TransmitterDevice = itr_dev.value();
+
+                if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
+                {
+                    switch(TransmitterDevice->getType())
+                    {
+                    case TYPE_TCU5000:
+                    case TYPE_TCU5500:
+                        {
+                            CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice;
+
+                            // In the beginning (6/25/01) NONE will send a filler message.
+                            if(xcu->getSendFiller())
+                            {
+                                /* Allocate some memory */
+                                if((OutMessage = CTIDBG_new OUTMESS) == NULL)
+                                {
+                                    return;
+                                }
+
+                                /* send a filler to this guy */
+                                OutMessage->DeviceID = xcu->getID();
+                                OutMessage->TargetID = xcu->getID();
+                                OutMessage->Port     = xcu->getPortID();
+                                OutMessage->Remote   = xcu->getAddress();
+                                OutMessage->TimeOut  = 2;
+                                OutMessage->Retry    = 0;
+                                OutMessage->OutLength = 6;
+                                OutMessage->InLength = -1;
+                                OutMessage->Sequence = 0;
+                                OutMessage->Priority = MAXPRIORITY;
+                                OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
+                                OutMessage->ReturnNexus = NULL;
+                                OutMessage->SaveNexus = NULL;
+
+                                MasterHeader (OutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Remote, MASTERSEND, 2);
+
+                                /* Now build the filler message */
+                                OutMessage->Buffer.OutMessage[PREIDLEN + 4] = 0xb8;
+                                OutMessage->Buffer.OutMessage[PREIDLEN + 5] = LOBYTE ((gsUID == 0 ? 0xff : gsUID));
+
+                                if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                                {
+                                    printf ("Error Writing to Queue for Port %2hd\n", xcu->getPortID());
+                                    delete (OutMessage);
+                                }
+                            }
+
+                            break;
+                        }
+                    default:
+                        break;
+                    }
+                }
             }
         }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return;
@@ -156,129 +175,360 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
 /* Routine to generate filler messages */
 static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid)
 {
-    USHORT UtilityID = (USHORT)uid;
     INT status = NORMAL;
     ULONG i, j;
     OUTMESS OutMessage;
 
-    /*Scan ports */
-    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-    CtiRTDB<CtiDeviceBase>::CtiRTDBIterator  itr_dev(DeviceManager.getMap());
-
-    for(; ++itr_dev && !PorterQuit ;)
+    try
     {
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0) )
+        if( !Port->isInhibited() )
         {
-            PorterQuit = TRUE;
-            break;
-        }
+            /*Scan ports */
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator  itr_dev(DeviceManager.getMap());
 
-        CtiDeviceBase *TransmitterDevice = itr_dev.value();
-
-        if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
-        {
-            switch(TransmitterDevice->getType())
+            for(; ++itr_dev && !PorterQuit ;)
             {
-            case TYPE_WCTP:
-            case TYPE_TAPTERM:
+                if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0) )
                 {
-                    CtiDeviceTapPagingTerminal *tapTRX = (CtiDeviceTapPagingTerminal *)TransmitterDevice;
-
-                    if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
-                    {
-
-                        OutMessage.DeviceID = tapTRX->getID();
-                        OutMessage.TargetID = tapTRX->getID();
-                        OutMessage.Priority = MAXPRIORITY;
-                        OutMessage.Buffer.VSt.UtilityID = 0xFF; // All Call
-                        OutMessage.Retry    = 2;
-                        OutMessage.InLength = -1;
-                        OutMessage.Sequence = 0;
-                        OutMessage.Port = tapTRX->getPortID();
-                        OutMessage.Remote = tapTRX->getAddress();
-                        OutMessage.Buffer.VSt.CommandType  = VFILLER;
-
-                        /*
-                         *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
-                         *  control path to take with this OutMessage!
-                         */
-                        OutMessage.EventCode = VERSACOM | NORESULT | ENCODED;
-
-                        /*
-                         * OK, these are the items we are about to set out to perform..  Any additional signals will
-                         * be added into the list upon completion of the Execute!
-                         */
-
-                        CtiProtocolVersacom  Versacom(tapTRX->getType());
-
-                        // Someone else did all the parsing and is just needs building
-                        // Prime the Protocol device with the vstruct, and call the update routine
-                        if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == NORMAL)
-                        {
-                            status = Versacom.updateVersacomMessage();
-                        }
-
-
-                        if(status == NORMAL)
-                        {
-                            OutMessage.TimeOut   = 2;
-                            OutMessage.InLength  = -1;
-
-                            for(j = 0; j < Versacom.entries(); j++)
-                            {
-                                OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
-
-                                if(NewOutMessage != NULL)
-                                {
-                                    VSTRUCT VSt = Versacom.getVStruct(j);                      // Copy in the structure
-
-                                    /* Calculate the length */
-                                    USHORT Length = VSt.Nibbles +  2;
-
-                                    NewOutMessage->TimeOut              = 2;
-                                    NewOutMessage->InLength             = -1;
-                                    NewOutMessage->OutLength            = Length;
-                                    NewOutMessage->Buffer.TAPSt.Length  = Length;
-
-                                    /* Build the message */
-                                    NewOutMessage->Buffer.TAPSt.Message[0] = 'h';
-
-                                    for(i = 0; i < VSt.Nibbles; i++)
-                                    {
-                                        if(i % 2)
-                                        {
-                                            sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
-                                        }
-                                        else
-                                        {
-                                            sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
-                                        }
-                                    }
-
-                                    NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
-
-                                    /* Now add it to the collection of outbound messages */
-                                    // In the beginning (6/25/01) ALL will send a filler message.
-                                    if(PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
-                                    {
-                                        printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
-                                        delete (NewOutMessage);
-                                    }
-                                }
-                                else
-                                {
-                                    status = MEMORY;
-                                }
-                            }
-                        }
-                    }
+                    PorterQuit = TRUE;
                     break;
                 }
-            default:
-                break;
+
+                CtiDeviceBase *TransmitterDevice = itr_dev.value();
+
+                if(Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
+                {
+                    switch(TransmitterDevice->getType())
+                    {
+                    case TYPE_WCTP:
+                        {
+                            CtiDeviceWctpTerminal *tapTRX = (CtiDeviceWctpTerminal *)TransmitterDevice;
+
+                            if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
+                            {
+                                if(gsUID != 0)
+                                {
+                                    OutMessage.DeviceID = tapTRX->getID();
+                                    OutMessage.TargetID = tapTRX->getID();
+                                    OutMessage.Priority = MAXPRIORITY;
+                                    OutMessage.Buffer.VSt.UtilityID = (BYTE)uid; // All Call
+                                    OutMessage.Retry    = 2;
+                                    OutMessage.InLength = -1;
+                                    OutMessage.Sequence = 0;
+                                    OutMessage.Port = tapTRX->getPortID();
+                                    OutMessage.Remote = tapTRX->getAddress();
+                                    OutMessage.Buffer.VSt.CommandType  = VFILLER;
+
+                                    /*
+                                     *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
+                                     *  control path to take with this OutMessage!
+                                     */
+                                    OutMessage.EventCode = VERSACOM | NORESULT | ENCODED;
+
+                                    /*
+                                     * OK, these are the items we are about to set out to perform..  Any additional signals will
+                                     * be added into the list upon completion of the Execute!
+                                     */
+
+                                    CtiProtocolVersacom  Versacom(tapTRX->getType());
+
+                                    // Someone else did all the parsing and is just needs building
+                                    // Prime the Protocol device with the vstruct, and call the update routine
+                                    if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == NORMAL)
+                                    {
+                                        status = Versacom.updateVersacomMessage();
+                                    }
+
+
+                                    if(status == NORMAL)
+                                    {
+                                        OutMessage.TimeOut   = 2;
+                                        OutMessage.InLength  = -1;
+
+                                        for(j = 0; j < Versacom.entries(); j++)
+                                        {
+                                            OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
+
+                                            if(NewOutMessage != NULL)
+                                            {
+                                                VSTRUCT VSt = Versacom.getVStruct(j);                      // Copy in the structure
+
+                                                /* Calculate the length */
+                                                USHORT Length = VSt.Nibbles +  2;
+
+                                                NewOutMessage->TimeOut              = 2;
+                                                NewOutMessage->InLength             = -1;
+                                                NewOutMessage->OutLength            = Length;
+                                                NewOutMessage->Buffer.TAPSt.Length  = Length;
+
+                                                /* Build the message */
+                                                NewOutMessage->Buffer.TAPSt.Message[0] = 'h';
+
+                                                for(i = 0; i < VSt.Nibbles; i++)
+                                                {
+                                                    if(i % 2)
+                                                    {
+                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
+                                                    }
+                                                    else
+                                                    {
+                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
+                                                    }
+                                                }
+
+                                                NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
+
+                                                /* Now add it to the collection of outbound messages */
+                                                // In the beginning (6/25/01) ALL will send a filler message.
+                                                if(PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
+                                                {
+                                                    printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
+                                                    delete (NewOutMessage);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                status = MEMORY;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if(gsSPID != 0)
+                                {
+                                    CtiCommandParser parse( "putconfig sync" );
+                                    CtiProtocolExpresscom  xcom;
+
+                                    RWCString byteString;
+
+                                    // Add code here to send a sync page expresscom style.
+                                    OutMessage.DeviceID = tapTRX->getID();
+                                    OutMessage.Port     = tapTRX->getPortID();
+                                    OutMessage.Remote   = tapTRX->getAddress();
+                                    OutMessage.TimeOut  = 2;
+                                    OutMessage.InLength = -1;
+
+                                    OutMessage.Retry = 2;
+
+
+                                    xcom.addAddressing(0, gsSPID);
+                                    xcom.parseRequest(parse, OutMessage);
+
+                                    if(xcom.entries() > 0)
+                                    {
+                                        OutMessage.EventCode |= ENCODED;               // Make the OM be ignored by porter...
+
+                                        OutMessage.OutLength            = xcom.messageSize() * 2 +  2;
+                                        OutMessage.Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
+
+                                        /* Build the message */
+                                        OutMessage.Buffer.TAPSt.Message[0] = xcom.getStartByte();
+
+                                        for(i = 0; i < xcom.messageSize() * 2; i++)
+                                        {
+                                            BYTE curByte = xcom.getByte(i / 2);
+                                            if(i % 2)
+                                            {
+                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                                            }
+                                            else
+                                            {
+                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                                            }
+                                        }
+                                        OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+
+                                        for(i = 0; i < OutMessage.OutLength; i++)
+                                        {
+                                            byteString += (char)OutMessage.Buffer.TAPSt.Message[i];
+                                        }
+
+                                        OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
+                                        /* Now add it to the collection of outbound messages */
+                                        // In the beginning (6/25/01) ALL will send a sync message.
+                                        if(NewOutMessage && PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
+                                        {
+                                            printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
+                                            delete (NewOutMessage);
+                                        }
+                                    }
+                                }
+                            }
+
+                            break;
+                        }
+                    case TYPE_TAPTERM:
+                        {
+                            CtiDeviceTapPagingTerminal *tapTRX = (CtiDeviceTapPagingTerminal *)TransmitterDevice;
+
+                            if(!tapTRX->isInhibited() && tapTRX->getSendFiller())
+                            {
+
+                                if(gsUID != 0)
+                                {
+                                    OutMessage.DeviceID = tapTRX->getID();
+                                    OutMessage.TargetID = tapTRX->getID();
+                                    OutMessage.Priority = MAXPRIORITY;
+                                    OutMessage.Buffer.VSt.UtilityID = (BYTE)gsUID; // All Call
+                                    OutMessage.Retry    = 2;
+                                    OutMessage.InLength = -1;
+                                    OutMessage.Sequence = 0;
+                                    OutMessage.Port = tapTRX->getPortID();
+                                    OutMessage.Remote = tapTRX->getAddress();
+                                    OutMessage.Buffer.VSt.CommandType  = VFILLER;
+
+                                    /*
+                                     *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
+                                     *  control path to take with this OutMessage!
+                                     */
+                                    OutMessage.EventCode = VERSACOM | NORESULT | ENCODED;
+
+                                    /*
+                                     * OK, these are the items we are about to set out to perform..  Any additional signals will
+                                     * be added into the list upon completion of the Execute!
+                                     */
+
+                                    CtiProtocolVersacom  Versacom(tapTRX->getType());
+
+                                    // Someone else did all the parsing and is just needs building
+                                    // Prime the Protocol device with the vstruct, and call the update routine
+                                    if((status = Versacom.primeAndAppend(OutMessage.Buffer.VSt)) == NORMAL)
+                                    {
+                                        status = Versacom.updateVersacomMessage();
+                                    }
+
+
+                                    if(status == NORMAL)
+                                    {
+                                        OutMessage.TimeOut   = 2;
+                                        OutMessage.InLength  = -1;
+
+                                        for(j = 0; j < Versacom.entries(); j++)
+                                        {
+                                            OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
+
+                                            if(NewOutMessage != NULL)
+                                            {
+                                                VSTRUCT VSt = Versacom.getVStruct(j);                      // Copy in the structure
+
+                                                /* Calculate the length */
+                                                USHORT Length = VSt.Nibbles +  2;
+
+                                                NewOutMessage->TimeOut              = 2;
+                                                NewOutMessage->InLength             = -1;
+                                                NewOutMessage->OutLength            = Length;
+                                                NewOutMessage->Buffer.TAPSt.Length  = Length;
+
+                                                /* Build the message */
+                                                NewOutMessage->Buffer.TAPSt.Message[0] = 'h';
+
+                                                for(i = 0; i < VSt.Nibbles; i++)
+                                                {
+                                                    if(i % 2)
+                                                    {
+                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", VSt.Message[i / 2] & 0x0f);
+                                                    }
+                                                    else
+                                                    {
+                                                        sprintf (&NewOutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (VSt.Message[i / 2] >> 4) & 0x0f);
+                                                    }
+                                                }
+
+                                                NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
+
+                                                /* Now add it to the collection of outbound messages */
+                                                // In the beginning (6/25/01) ALL will send a filler message.
+                                                if(PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
+                                                {
+                                                    printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
+                                                    delete (NewOutMessage);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                status = MEMORY;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if(gsSPID != 0)
+                                {
+                                    CtiCommandParser parse( "putconfig sync" );
+                                    CtiProtocolExpresscom  xcom;
+
+                                    RWCString byteString;
+
+                                    // Add code here to send a sync page expresscom style.
+                                    OutMessage.DeviceID = tapTRX->getID();
+                                    OutMessage.Port     = tapTRX->getPortID();
+                                    OutMessage.Remote   = tapTRX->getAddress();
+                                    OutMessage.TimeOut  = 2;
+                                    OutMessage.InLength = -1;
+
+                                    OutMessage.Retry = 2;
+
+
+                                    xcom.addAddressing(0, gsSPID);
+                                    xcom.parseRequest(parse, OutMessage);
+
+                                    if(xcom.entries() > 0)
+                                    {
+                                        OutMessage.EventCode |= ENCODED;               // Make the OM be ignored by porter...
+
+                                        OutMessage.OutLength            = xcom.messageSize() * 2 +  2;
+                                        OutMessage.Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
+
+                                        /* Build the message */
+                                        OutMessage.Buffer.TAPSt.Message[0] = xcom.getStartByte();
+
+                                        for(i = 0; i < xcom.messageSize() * 2; i++)
+                                        {
+                                            BYTE curByte = xcom.getByte(i / 2);
+                                            if(i % 2)
+                                            {
+                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                                            }
+                                            else
+                                            {
+                                                sprintf(&OutMessage.Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                                            }
+                                        }
+                                        OutMessage.Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+
+                                        for(i = 0; i < OutMessage.OutLength; i++)
+                                        {
+                                            byteString += (char)OutMessage.Buffer.TAPSt.Message[i];
+                                        }
+
+                                        OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( OutMessage );  // Create and copy
+                                        /* Now add it to the collection of outbound messages */
+                                        // In the beginning (6/25/01) ALL will send a sync message.
+                                        if(NewOutMessage && PortManager.writeQueue(NewOutMessage->Port, NewOutMessage->EventCode, sizeof (*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority))
+                                        {
+                                            printf ("Error Writing to Queue for Port %2hd\n", tapTRX->getPortID());
+                                            delete (NewOutMessage);
+                                        }
+                                    }
+                                }
+                            }
+
+                            break;
+                        }
+                    default:
+                        break;
+                    }
+                }
             }
         }
     }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
 
     return;
 }
@@ -288,7 +538,6 @@ VOID FillerThread (PVOID Arg)
 
 {
     ULONG FillerRate = {300L};
-    USHORT UtilityID;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -298,7 +547,7 @@ VOID FillerThread (PVOID Arg)
     /* First try to get the utility ID */
     if( !(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID")).isNull() )
     {
-        if( !(UtilityID = atoi(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID").data())) )
+        if( !(gsUID = atoi(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID").data())) )
         {
             // We have no joy in mudville.
             {
@@ -309,19 +558,38 @@ VOID FillerThread (PVOID Arg)
         }
     }
 
-    if(!gConfigParms.isOpt("PORTER_VERSACOM_FILLER_RATE"))
+    if( !(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID")).isNull() )
     {
-        FillerRate = 3600L;
+        gsSPID = atoi(gConfigParms.getValueAsString("PORTER_EXPRESSCOM_SPID").data());
     }
-    else
+
+    if(gConfigParms.isOpt("PORTER_FILLER_RATE"))
     {
-        RWCString FillerCommand = gConfigParms.getValueAsString("PORTER_VERSACOM_FILLER_RATE");
+        RWCString FillerCommand = gConfigParms.getValueAsString("PORTER_FILLER_RATE");
 
         /* Find out how often to send fillers */
         if(!(FillerRate = atol(FillerCommand.data())))
         {
-            /* Unable to convert so assume every five minutes */
+            /* Unable to convert so assume every hour */
             FillerRate = 3600L;
+        }
+    }
+    else
+    {
+        if(!gConfigParms.isOpt("PORTER_VERSACOM_FILLER_RATE"))
+        {
+            FillerRate = 3600L;
+        }
+        else
+        {
+            RWCString FillerCommand = gConfigParms.getValueAsString("PORTER_VERSACOM_FILLER_RATE");
+
+            /* Find out how often to send fillers */
+            if(!(FillerRate = atol(FillerCommand.data())))
+            {
+                /* Unable to convert so assume every five minutes */
+                FillerRate = 3600L;
+            }
         }
     }
 
@@ -350,8 +618,8 @@ VOID FillerThread (PVOID Arg)
                 dout << RWTime() << " Sending Filler Messages " << endl;
             }
             /* Send filler messages */
-            PortManager.apply( applySendFiller, (void*)UtilityID );
-            PortManager.apply( applySendFillerPage, (void*)UtilityID );
+            PortManager.apply( applySendFiller, (void*)0 );
+            PortManager.apply( applySendFillerPage, (void*)0 );
         }
     }
 }
