@@ -1817,30 +1817,13 @@ public class StarsAdmin extends HttpServlet {
 			return;
 		}
 		
-		DeleteEnergyCompanyTask task = new DeleteEnergyCompanyTask(user);
-		long id = ProgressChecker.addTask( task );
+		StarsDatabaseCache.getInstance().refreshCache( energyCompany );
 		
-		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
-		for (int i = 0; i < 5; i++) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {}
-			
-			if (task.getStatus() == DeleteEnergyCompanyTask.STATUS_FINISHED) {
-				ProgressChecker.removeTask( id );
-				return;
-			}
-			
-			if (task.getStatus() == DeleteEnergyCompanyTask.STATUS_ERROR) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
-				ProgressChecker.removeTask( id );
-				return;
-			}
-		}
+		DeleteEnergyCompanyTask task = new DeleteEnergyCompanyTask( user.getEnergyCompanyID() );
+		new Thread( task ).start();
 		
-		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+		session.invalidate();
+		redirect = req.getContextPath() + SOAPClient.LOGIN_URL;
 	}
 	
 	private void updateRouteList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
