@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.cannontech.stars.util.ServerUtils;
 
@@ -34,9 +35,9 @@ public class AlliantImportResidential {
 		}
 		
 		File outputFile = (args.length > 1)? new File(args[1]) : new File(inputFile.getParent(), OUTPUT_FILE);
-		String[] output = new String[ lines.length ];
+		ArrayList output = new ArrayList();
 		
-		output[0] = "COLUMN_NAMES:LAST_NAME,STREET_ADDR1,CITY,STATE,ZIP_CODE,HOME_PHONE,ACCOUNT_NO,MAP_NO,SERIAL_NO,DEVICE_TYPE,PROGRAM_NAME,ADDR_GROUP,USERNAME,PASSWORD";
+		output.add( "COLUMN_NAMES:LAST_NAME,STREET_ADDR1,CITY,STATE,ZIP_CODE,HOME_PHONE,ACCOUNT_NO,MAP_NO,SERIAL_NO,DEVICE_TYPE,PROGRAM_NAME,ADDR_GROUP,USERNAME,PASSWORD" );
 		
 		try {
 			for (int i = 1; i < lines.length; i++) {
@@ -54,7 +55,7 @@ public class AlliantImportResidential {
 				else if (columns[2].equalsIgnoreCase("Baraboo")
 					|| columns[2].equalsIgnoreCase("Sauk City")
 					|| columns[2].equalsIgnoreCase("West Baraboo")
-					|| columns[2].equalsIgnoreCase("Prarie Du Sac"))
+					|| columns[2].equalsIgnoreCase("Prairie Du Sac"))
 				{
 					groupName = "AE Residential Baraboo";
 				}
@@ -66,14 +67,29 @@ public class AlliantImportResidential {
 					groupName = "AE Residential Portage";
 				}
 				
-				output[i] = lines[i] + "," +
-						"ExpressStat," +
-						"AE Residential DegreeSaver," +
-						groupName + "," +
-						columns[8] + "," + columns[8];	// username = password = serial #
+				String[] serialNos = columns[8].split(",");
+				for (int j = 0; j < serialNos.length; j++) {
+					String line = "\"" + columns[0] + "\","
+							+ columns[1] + ","
+							+ columns[2] + ","
+							+ columns[3] + ","
+							+ columns[4] + ","
+							+ columns[5] + ","
+							+ columns[6] + ","
+							+ columns[7] + ","
+							+ serialNos[j] + ","
+							+ "ExpressStat,"
+							+ "AE Residential DegreeSaver,"
+							+ groupName + ","
+							+ serialNos[0] + ","
+							+ serialNos[0];		// username = password = serial #
+					output.add( line );
+				}
 			}
 			
-			ServerUtils.writeFile( outputFile, output );
+			lines = new String[ output.size() ];
+			output.toArray( lines );
+			ServerUtils.writeFile( outputFile, lines );
 		}
 		catch (IOException e) {
 			e.printStackTrace();
