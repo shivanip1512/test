@@ -60,8 +60,8 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 	CtiProperties props = CtiProperties.getInstance();
 		
-	String host = props.getProperty("porter_machine","127.0.0.1");
-	int port = Integer.parseInt(props.getProperty("porter_port","1540"));
+	String host = props.getProperty(CtiProperties.KEY_PORTER_MACHINE,"127.0.0.1");
+	int port = Integer.parseInt(props.getProperty(CtiProperties.KEY_PORTER_PORT,"1540"));
 	
 	CTILogger.info("Will attempt to connect to porter @" + host + ":" + port);
 	conn = new ClientConnection();
