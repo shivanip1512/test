@@ -23,6 +23,7 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_THERMOSTAT %>">
 <%
 	if (dftThermoSettings != null) {	// Hide thermostat settings if it's not available
 %>
@@ -30,45 +31,74 @@
     <td height="65"><br>
 <div align="left"><span class="NavHeader">Thermostat</span><br>
         <%= links.get("ThermSchedule.jsp") %><br>
-        <%= links.get("Thermostat.jsp") %></div>
+        <%= links.get("Thermostat.jsp") %><br>
+	  </div>
     </td>
   </tr>
 <%
 	}
 %>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">
         Account</span><br>
-        <%= links.get("General.jsp") %></div>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_GENERAL %>">
+        <%= links.get("General.jsp") %><br>
+</cti:checkRole>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">
         Metering</span><br>
-        <%= links.get("TOU.jsp") %></div>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING_USAGE %>">
+        <%= links.get("TOU.jsp") %><br>
+</cti:checkRole>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Programs</span><br>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_CONTROL_HISTORY %>">
         <%= links.get("ProgramHist.jsp") %><br>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_ENROLLMENT %>">
 		<%= links.get("Enrollment.jsp") %><br>
-		<%= links.get("OptOut.jsp") %></div>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT %>">
+        <%= links.get("OptOut.jsp") %><br>
+</cti:checkRole>
+      </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_QUESTIONS %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Questions</span><br>
         <%= links.get("Util.jsp") %><br>
-        <%= links.get("FAQ.jsp") %></div>
+        <%= links.get("FAQ.jsp") %><br>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Administration</span><br>
-        <%= links.get("Password.jsp") %></div>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_PASSWORD %>">
+        <%= links.get("Password.jsp") %><br>
+</cti:checkRole>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
 </table>

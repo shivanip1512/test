@@ -76,69 +76,113 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Account</span><br>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_GENERAL %>">
         <%= links.get("Update.jsp") %><br>
         <%= links.get("Contacts.jsp") %><br>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_RESIDENCE %>">
 		<%= links.get("Residence.jsp") %><br>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_CALL_TRACKING %>">
 		<%= links.get("Calls.jsp") %><br>
-		<%= links.get("CreateCalls.jsp") %></div>
+		<%= links.get("CreateCalls.jsp") %><br>
+</cti:checkRole>
+      </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Metering</span><br>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING_INTERVAL_DATA %>">
         <%= links.get("Metering.jsp") %><br>
-        <%= links.get("Usage.jsp") %></div>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING_USAGE %>">
+        <%= links.get("Usage.jsp") %><br>
+</cti:checkRole>
+      </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Programs</span><br>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_CONTROL_HISTORY %>">
         <%= links.get("ProgramHist.jsp") %><br>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_ENROLLMENT %>">
 		<%= links.get("Programs.jsp") %><br>
-        <%= links.get("OptOut.jsp") %></div>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT %>">
+        <%= links.get("OptOut.jsp") %><br>
+</cti:checkRole>
+      </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_APPLIANCES %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Appliances</span><br>
-        <%
+<%
 		for (int i = 0; i < appLinks.length; i++) {
 %>
         <%= appLinks[i] %><br>
-        <%
+<%
 		}
 %>
-        <%= links.get("CreateAppliances.jsp") %></div>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_APPLIANCES_CREATE %>">
+        <%= links.get("CreateAppliances.jsp") %><br>
+</cti:checkRole>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_HARDWARES %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Hardware</span><br>
-        <%
+<%
 		for (int i = 0; i < invLinks.length; i++) {
 %>
         <%= invLinks[i] %><br>
-        <%
+<%
 		}
-%><%= links.get("CreateHardware.jsp") %></div>
+%>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_HARDWARES_CREATE %>">
+		<%= links.get("CreateHardware.jsp") %><br>
+</cti:checkRole>
+      </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_WORKORDERS %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Work Orders</span><br>
         <%= links.get("Service.jsp") %><br>
-        <%= links.get("ServiceSummary.jsp") %></div>
+        <%= links.get("ServiceSummary.jsp") %><br>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN %>">
   <tr> 
     <td> 
       <div align="left"><span class="Header2">Administration</span><br>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_PASSWORD %>">
         <%= links.get("Password.jsp") %><br>
+</cti:checkRole>
         <%= links.get("Privileges.jsp")%><br>
-		<%= links.get("PrintExport.jsp")%></div>
+		<%= links.get("PrintExport.jsp")%><br>
+	  </div>
     </td>
   </tr>
+</cti:checkRole>
 </table>
