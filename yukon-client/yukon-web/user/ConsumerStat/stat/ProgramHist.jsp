@@ -103,8 +103,7 @@ function setRedirect(form) {
                         <td width="60" class="TableCell">Duration</td>
                       </tr>
 <%
-			StarsLMControlHistory allCtrlHist = ServletUtils.getAllControlHistory( program, appliances, liteEC );
-			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( allCtrlHist, StarsCtrlHistPeriod.PASTDAY, null, tz );
+			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.PASTDAY,liteEC );
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
