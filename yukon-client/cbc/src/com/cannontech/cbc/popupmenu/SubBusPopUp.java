@@ -18,6 +18,8 @@ public class SubBusPopUp extends javax.swing.JPopupMenu implements java.awt.even
 	private CBCClientConnection connectionWrapper = null;
 	
 	private javax.swing.JMenuItem ivjJMenuItemConfirm = null;
+	private javax.swing.JMenuItem ivjJMenuItemResetOpCount = null;
+
 /**
  * StrategyPopUp constructor comment.
  */
@@ -137,6 +139,32 @@ private javax.swing.JMenuItem getJMenuItemConfirm() {
 	}
 	return ivjJMenuItemConfirm;
 }
+
+/**
+ * Return the JMenuItemResetOpCount property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemResetOpCount() 
+{
+	if( ivjJMenuItemResetOpCount == null ) 
+	{
+		try 
+		{
+			ivjJMenuItemResetOpCount = new javax.swing.JMenuItem();
+			ivjJMenuItemResetOpCount.setName("JMenuItemResetOpCount");
+			ivjJMenuItemResetOpCount.setMnemonic('r');
+			ivjJMenuItemResetOpCount.setText("Reset Op Counts");
+		}
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return ivjJMenuItemResetOpCount;
+}
+
+
 /**
  * Return the JMenuItemEnableDisable property value.
  * @return javax.swing.JMenuItem
@@ -220,7 +248,9 @@ private void initialize()
 		setName("SubBusPopUp");
 		add(getJMenuItemConfirm(), getJMenuItemConfirm().getName());
 		add(getJMenuItemEnableDisable(), getJMenuItemEnableDisable().getName());
+		add(getJMenuItemResetOpCount(), getJMenuItemResetOpCount().getName());		
 		add(getJMenuItemSubBusData(), getJMenuItemSubBusData().getName());
+
 		initConnections();
 	} 
 	catch (java.lang.Throwable ivjExc) 
@@ -292,6 +322,25 @@ public void jMenuItemConfirm_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 	return;
 }
+
+/**
+ * Comment
+ */
+public void jMenuItemResetOpCount_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	try
+	{
+		getConnectionWrapper().executeCommand( 
+				getSubBus().getCcId().intValue(), CBCCommand.RESET_OPCOUNT );
+	}
+	catch( java.io.IOException ex )
+	{
+		handleException( ex );
+	}
+
+	return;
+}
+
 /**
  * Comment
  */

@@ -15,6 +15,10 @@ public class FeederPopUp extends javax.swing.JPopupMenu implements java.awt.even
 	private javax.swing.JMenuItem ivjJMenuItemEnableDisable = null;
 	private CBCClientConnection connectionWrapper = null;
 	private javax.swing.JMenuItem ivjJMenuItemFeederData = null;
+	
+	
+	private javax.swing.JMenuItem ivjJMenuItemResetOpCount = null;
+	
 /**
  * FeederPopUp constructor comment.
  */
@@ -45,6 +49,11 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJMenuItemEnableDisable()) 
 		connEtoC2(e);
 	// user code begin {2}
+
+	if( e.getSource() == getJMenuItemResetOpCount() )
+		jMenuItemResetOpCount_ActionPerformed(e);		
+
+	
 	// user code end
 }
 /**
@@ -122,6 +131,32 @@ private javax.swing.JMenuItem getJMenuItemEnableDisable() {
 	}
 	return ivjJMenuItemEnableDisable;
 }
+
+/**
+ * Return the JMenuItemResetOpCount property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemResetOpCount() 
+{
+	if( ivjJMenuItemResetOpCount == null ) 
+	{
+		try 
+		{
+			ivjJMenuItemResetOpCount = new javax.swing.JMenuItem();
+			ivjJMenuItemResetOpCount.setName("JMenuItemResetOpCount");
+			ivjJMenuItemResetOpCount.setMnemonic('r');
+			ivjJMenuItemResetOpCount.setText("Reset Op Counts");
+		}
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return ivjJMenuItemResetOpCount;
+}
+
+
 /**
  * Return the JMenuItemStrategyData property value.
  * @return javax.swing.JMenuItem
@@ -174,6 +209,7 @@ private void initialize()
 	{
 		setName("FeederPopUp");
 		add(getJMenuItemEnableDisable(), getJMenuItemEnableDisable().getName());
+		add(getJMenuItemResetOpCount(), getJMenuItemResetOpCount().getName());
 		add(getJMenuItemFeederData(), getJMenuItemFeederData().getName());
 		
 		initConnections();
@@ -203,6 +239,25 @@ public void jMenuItemEnableDisable_ActionPerformed(java.awt.event.ActionEvent ac
 
 	return;
 }
+
+/**
+ * Comment
+ */
+public void jMenuItemResetOpCount_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+{
+	try
+	{
+		getConnectionWrapper().executeCommand( 
+				getFeeder().getCcId().intValue(), CBCCommand.RESET_OPCOUNT );
+	}
+	catch( java.io.IOException ex )
+	{
+		handleException( ex );
+	}
+
+	return;
+}
+
 /**
  * Comment
  */
