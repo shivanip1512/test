@@ -32,7 +32,9 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.loox.jloox.LxAbstractImage;
 import com.loox.jloox.LxAbstractStyle;
+import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
@@ -79,6 +81,7 @@ public class SVGGenerator {
 		svgRoot.setAttributeNS(null, "width", Integer.toString(d.getMetaElement().getDrawingWidth()));
 		svgRoot.setAttributeNS(null, "height", Integer.toString(d.getMetaElement().getDrawingHeight()));
 	 	svgRoot.setAttributeNS(null, "onload", "refresh(evt)");
+	 	//svgRoot.setAttributeNS(null, "onerror", "suppressErrors()");
 	 		 	
 		Element scriptElem = doc.createElementNS(null, "script");
 		scriptElem.setAttributeNS(null, "type", "text/ecmascript");
@@ -160,6 +163,16 @@ public class SVGGenerator {
 					String link = de.getLinkTo();
 					if(link != null && link.length() > 0) {
 						elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");
+						
+						if(comp instanceof LxAbstractText) {
+							elem.setAttributeNS(null,"onmouseover", "underLine(evt.getTarget())");
+							elem.setAttributeNS(null,"onmouseout", "noUnderLine(evt.getTarget())");
+						}
+						else 
+						if(comp instanceof LxAbstractImage){						
+							elem.setAttributeNS(null,"onmouseover", "addBorder(evt.getTarget())");
+							elem.setAttributeNS(null,"onmouseout", "noBorder(evt.getTarget())");
+						}
 					}
 				 
 				elem.setAttributeNS(null,"elementID", de.getElementID());
@@ -348,7 +361,7 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "id", text.getName());
 		textElem.setAttributeNS(null, "x", Integer.toString(x));
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
-		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
+		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";cursor:move;");
 
 		Text theText = doc.createTextNode(text.getText());
 		textElem.insertBefore(theText, null);
