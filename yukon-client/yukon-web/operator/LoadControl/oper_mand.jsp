@@ -156,8 +156,8 @@
 				stopCal.setTime( new java.util.Date(startCal.getTime().getTime() + durationMillis) );
 
 				com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-				com.cannontech.loadcontrol.messages.LMManualControlMsg msg = new com.cannontech.loadcontrol.messages.LMManualControlMsg();
-				msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlMsg.SCHEDULED_START );
+				com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+				msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START );
 				msg.setYukonID(Integer.parseInt(request.getParameter("program")));
 				msg.setNotifyTime(notifyCal);
 				msg.setStartTime(startCal);
