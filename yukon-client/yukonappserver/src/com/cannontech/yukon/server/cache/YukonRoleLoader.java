@@ -15,7 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 
 public final class YukonRoleLoader implements Runnable
 {
-	private static final String sql = "SELECT RoleID,RoleName,Category,RoleDescription FROM SystemRole";
+	private static final String sql = "SELECT RoleID,RoleName,Category,RoleDescription FROM YukonRole";
    	final private List allRoles;
 	final private String dbAlias;
 
