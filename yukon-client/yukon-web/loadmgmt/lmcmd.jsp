@@ -181,7 +181,7 @@ function setStopPixTime()
     <div class="confMsg"><BR><%= cmdMsg.getHTMLTextMsg() %></div>
 		<BR>
 <%
-	if( ILCCmds.PROG_START.equals(cmd) )
+	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) )
 	{
 		LMProgramBase prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
 %>
@@ -288,7 +288,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 <%	
 	}
 	
-	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.PROG_STOP.equals(cmd) )
+	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_START_PROGS.equals(cmd) )
 	{
 %>
 	<div class="TableCell"> 
@@ -360,9 +360,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
     </table>
 <%
 	}
-%>
 
-<%
 	if( ILCCmds.GRP_SHED.equals(cmd) )
 	{
 %>
@@ -406,9 +404,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 
 <%
 	}
-%>
 
-<%
 	if( ILCCmds.GRP_TRUE_CY.equals(cmd) || ILCCmds.GRP_SMRT_CY.equals(cmd) )
 	{
 %>
@@ -488,9 +484,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 
 <%
 	}
-%>
 
-<%
 	if( ILCCmds.AREA_TRIG_CHG.equals(cmd) )
 	{	
 		LMControlArea cntrlArea = (LMControlArea)lcCache.getControlArea( new Integer(itemid) );
@@ -535,11 +529,7 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
 <%
 		}
 	}
-%>
 
-
-
-<%
 	if( ILCCmds.AREA_DAILY_CHG.equals(cmd) )
 	{
 		LMControlArea cntrlArea = (LMControlArea)lcCache.getControlArea( new Integer(itemid) );
@@ -607,6 +597,75 @@ javascript:show_calendar('cmdForm.date', [Month from 0 (Jan) to 11 (Dec)], [4-di
     </table>
 	<BR>
 <%	
+	}
+
+	if( ILCCmds.AREA_START_PROGS.equals(cmd) )
+	{
+		LMControlArea cntrlArea = (LMControlArea)lcCache.getControlArea( new Integer(itemid) );
+%>
+	<div class="TableCell"> 
+	  <div align="center">Select the programs you want to start:</div>
+	</div>	
+    <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" class="TableCell" bgcolor="#FFFFFF">
+      <tr> 
+        <td height="145"> 
+          <table width="350" border="1" cellspacing="0" cellpadding="3" align="center">
+
+		  <tr valign="top" class="HeaderCell"> 
+			<td width="20"><div align="center">
+				<input type="checkbox" name="allChks" value="true" onClick="this.form.submit()">
+				Selected</div>
+			</td>
+			<td width="167"><div align="center">Program</div></td>
+			<td width="34"><div align="center">Gear</div></td>
+			<td width="81"><div align="center">State</div></td>
+		  </tr>
+
+<%
+		java.util.List progList = cntrlArea.getLmProgramVector();
+		java.util.Collections.sort( 
+				progList,
+				ProgramTableModel.PROGRAM_NAME_COMPARATOR );
+
+		for( int i = 0; i < progList.size(); i++)
+		{
+			LMProgramBase prg = (LMProgramBase)progList.get(i);
+%>
+            <tr valign="top"> 
+              <td width="20">
+				<input type="checkbox" name="progid" value=<%= prg.getYukonID() %> onClick="this.form.submit()" >
+              </td>
+              <td width="167">
+                <div class="TableCell">
+				<%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME) %>
+				</div>
+              </td>
+              <td width="34"> 
+                <div align="right" class="TableCell">
+                <select name="duration">
+                <%
+					for( int j = 1; j <= 8; j++ )
+					{
+				%>				
+                  <option value="<%= j %>" <%= (j == 1 ? "selected" : "") %> > 
+	                  <%= j %>
+				  </option>
+                <%		
+					}
+				%>
+                </select></div>			
+              </td>
+              <td width="81">
+                <div class="TableCell">
+				  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS) %>
+				</div>
+			  </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+<%
 	}
 %>
 
