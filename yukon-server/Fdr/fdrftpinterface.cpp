@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2003/10/31 21:15:59 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2004/02/13 20:36:42 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,7 +20,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
-      Revision 1.6  2003/10/31 21:15:59  dsutton
+      Revision 1.7  2004/02/13 20:36:42  dsutton
+      Number of tries were not being decremented correctly on a failure.  This may
+      have caused the problem where the STEC or TRISTATE interface would
+      fail a few times due to network struggles and then stop trying to retrieve
+      the files
+
+      Revision 1.5.12.1  2003/10/31 18:30:55  dsutton
       After a network failure, the STEC and TRISTATE interfaces reported an error
       connecting to their sites.  After the network came back up, the app stopped
       retrieving data altogether (some threads were still running).  Updated the locking
@@ -586,6 +592,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                     InternetCloseHandle (iInitialHandle);
                     iInitialHandle = NULL;
 
+                    tries--;
                     if (tries <= 0)
                     {
                         tries = getTries();
@@ -621,6 +628,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 
                         iThreadInternetConnect.join();
 
+                        tries--;
                         if (tries <= 0)
                         {
                             tries = getTries();
@@ -646,6 +654,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             InternetCloseHandle (iInitialHandle);
                             iInitialHandle = NULL;
 
+                            tries--;
                             if (tries <= 0)
                             {
                                 tries = getTries();
@@ -678,6 +687,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 // put the smack on it to make sure it dies
                                 iThreadFTPGetFile.join();
 
+                                tries--;
                                 if (tries <= 0)
                                 {
                                     tries = getTries();
@@ -701,6 +711,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                     InternetCloseHandle (iSessionHandle);
                                     iSessionHandle = NULL;
 
+                                    tries--;
                                     if (tries <= 0)
                                     {
                                         tries = getTries();
@@ -725,7 +736,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                         }            
                     }
                 }
-            }
+            }                          
         }
     }
 
