@@ -180,17 +180,6 @@ function changeProgram(radioBtn, index) {
 %>
                   </table>
                     <p>
-                    <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
-                      <tr> 
-                        <td height="58"> <p align="center" class="TableCell1"> 
-                            <input type="checkbox" name="checkbox3" value="checkbox">
-                            <span class="TableCell3"> I would like to be notified 
-                            by e-mail prior to control.<br>
-                            My e-mail address is:<br>
-                            <input type="text" name="textfield2" maxlength="20" size="20">
-                            </span></p></td>
-                      </tr>
-                    </table>
                     <p>
                     </p>
                     <table width="50%" border="0">
