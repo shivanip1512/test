@@ -57,15 +57,15 @@
                     <%
 	if (pending != null) {
 		if (pending.equalsIgnoreCase("confirm"))
-			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">The confirmation of the offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">Your confirmation of the offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 		else if (pending.equalsIgnoreCase("decline"))
-			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">The declination of the offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">Your decision to decline the offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 	}
 	else {
 		if (numNewOffers > 0)
 		{
 %>
-                    <p class="Main"><b>YOU HAVE A NEW OFFER</b></p>
+                    <p class="Main"><b>YOU HAVE A NEW OFFER</b>
                     <table width="600" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="20%" height="26" class="HeaderCell">Offer ID</td>
@@ -101,7 +101,7 @@
 		if (numAcceptedOffers > 0)
 		{
 %>
-                    <p class="Main"><b>RESPONSED OFFERS</b></p>
+                    <p class="Main"><b>RESPONDED OFFERS</b>
                     <table width="600" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="15%" height="26" class="HeaderCell"> Offer 
@@ -145,7 +145,7 @@
 		{
 %>
                     <p> 
-                    <p class="Main"><b>NO OFFERS AT THIS TIME</b> </p>
+                    <p class="Main"><b>NO OFFERS AT THIS TIME</b>
                     <%
 		}
 
@@ -181,7 +181,7 @@
 		if (!foundReplies)
 			replies = new com.cannontech.web.history.HEnergyExchangeCustomerReply[0];
 %>
-                    <p class="Main"><b>CURTAILMENT HISTORY</b></p>
+                    <p class="Main"><b>CURTAILMENT HISTORY</b>
                     <table width="600" border="1" cellspacing="0" cellpadding="2">
                       <tr> 
                         <td width="15%" height="26" class="HeaderCell">Offer ID</td>

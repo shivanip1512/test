@@ -53,11 +53,14 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">&nbsp; </td>
+          <td  valign="top" width="101">
+          <% String pageName = "user_ee.jsp"; %>
+          <%@ include file="nav.jsp" %>
+          </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF">
-<table width="657" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+            <table width="657" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
                 <td width="650" class="Main"> 
                   <div align="center"><b><br>
                     CURTAILMENT TO CUSTOMER</b><br>
@@ -163,9 +166,7 @@
             </td>
           </tr>
         </table>
-        <br>
-      <table
-    width="580" border="0" cellspacing="0" cellpadding="4" height="10" align="center" class="Main">
+       <table width="580" border="0" cellspacing="0" cellpadding="4" height="10" align="center" class="Main">
         <tr> 
           <td width="36%" valign="TOP" height="10"> 
             <p align=RIGHT>Initials: 
@@ -186,17 +187,16 @@
   </tr>
 </table>
 </FORM>
-            <div align="center">
-              <span class="Main">If you would like to review the terms of your 
-                energy contract, click</span>
-            </div>
-            <form method="get" action="">
-              <div align="center">
+          <form method="get" action="">
+              <div align="center"><span class="Main">If you would like to review 
+                the terms of your energy contract, click</span> <br>
                 <input type="submit" name="" value="Here">
-              </div>
+                <br>
+                <span class="Main">If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/>
+                </span></div>
             </form>
-            <p class="Main" align="center"><br>
-              If you have questions or problems, call 1-800-555-1212.</p>
+            <p class="Main" align="center">
+            </p>
             <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

@@ -63,7 +63,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -184,7 +184,7 @@
                       totalCommitted += committed;
 
                         %>
-                      <tr> 
+                      <tr valign="top"> 
                         <td width="300" class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>&cust=<%= customer.getCustomerID() %>" class="Link1"><%= customer.getCompanyName() %></a></td>
                         <td width="150" class="TableCell"><%= reply.getAcceptStatus() %></td>
                         <td width="150" class="TableCell"><%= committed %></td>

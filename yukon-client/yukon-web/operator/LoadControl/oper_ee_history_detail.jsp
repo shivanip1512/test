@@ -42,7 +42,7 @@ System.out.println("revisionNumber: " + revisionNumber);
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -140,7 +140,7 @@ System.out.println("revisionNumber: " + revisionNumber);
 				if (reply == null) continue;
 				totalCommitted += reply.getAmountCommitted();
 			%>
-          <tr> 
+            <tr valign="top"> 
             <td class="TableCell"><a href="oper_ee.jsp?tab=historyresponse&prog=<%= programId %>&offer=<%= offerId %>&rev=<%= revisionNumber %>&cust=<%= customers[j].getCustomerId() %>" class="Link1"> 
               <%= customers[j].getCustomerName() %> </a></td>
             <td class="TableCell"><%= reply.getAcceptStatus() %></td>

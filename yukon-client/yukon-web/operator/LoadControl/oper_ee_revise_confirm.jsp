@@ -26,7 +26,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -117,32 +117,32 @@
 %>
                   <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="14%" valign="TOP" class="MainHeader"> 
+            <td width="100" valign="TOP" class="MainHeader"> 
                         <p align=RIGHT><b>Program: </b>
                       </td>
-            <td width="11%" valign="TOP" class="MainHeader"><%= programStr %></td>
-            <td width="15%" valign="TOP" class="MainHeader"> 
+            <td width="100" valign="TOP" class="MainHeader"><%= programStr %></td>
+            <td width="100" valign="TOP" class="MainHeader"> 
                         <p align=RIGHT><b>Notify Date: </b>
                       </td>
-            <td width="12%" valign="TOP" class="MainHeader"><%= notifyDateStr %></td>
-            <td width="15%" valign="TOP" class="MainHeader"> 
+            <td width="80" valign="TOP" class="MainHeader"><%= notifyDateStr %></td>
+            <td width="100" valign="TOP" class="MainHeader"> 
                         <p align=RIGHT><b>Notify Time: </b> 
                       </td>
-            <td width="10%" valign="TOP" class="MainHeader"><%= notifyTimeStr %></td>
+            <td width="120" valign="TOP" class="MainHeader"><%= notifyTimeStr %></td>
           </tr>
           <tr> 
-            <td width="11%" valign="TOP" class="MainHeader"> 
+            <td width="100" valign="TOP" class="MainHeader"> 
                         <p align=RIGHT><b>Date: </b>
                       </td>
-            <td width="12%" valign="TOP" class="MainHeader"><%= dateStr %></td>
-            <td width="15%" valign="TOP" class="MainHeader"> 
+            <td width="100" valign="TOP" class="MainHeader"><%= dateStr %></td>
+            <td width="100" valign="TOP" class="MainHeader"> 
                         <p align=RIGHT><b>Expire Date: </b>
                       </td>
-            <td width="12%" valign="TOP" class="MainHeader"><%= expireDateStr %></td>
-            <td width="15%" valign="TOP" class="MainHeader"> 
+            <td width="80" valign="TOP" class="MainHeader"><%= expireDateStr %></td>
+            <td width="100" valign="TOP" class="MainHeader"> 
                         <p align=RIGHT><b>Expire Time: </b>
                       </td>
-            <td width="10%" valign="TOP" class="MainHeader"><%= expireTimeStr %></td>
+            <td width="80" valign="TOP" class="MainHeader"><%= expireTimeStr %></td>
           </tr>
         </table>
         <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">

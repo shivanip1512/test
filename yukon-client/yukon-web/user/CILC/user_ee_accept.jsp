@@ -71,11 +71,13 @@ function decline_form()
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">&nbsp; </td>
+          <td  valign="top" width="101">
+          <% String pageName = "user_ee.jsp"; %>
+          <%@ include file="nav.jsp" %> </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		    <td width="657" valign="top" bgcolor="#FFFFFF">
-<table width="657" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
+              <table width="657" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
                 <td width="650" class="Main" valign="top"> 
                   <p align="center"><b><br>
                     OFFER TO CUSTOMER</b><br>
@@ -238,9 +240,7 @@ function decline_form()
             </td>
           </tr>
         </table>
-        <br>        
-	<table
-    width="580" border="0" cellspacing="0" cellpadding="4">
+        <table width="580" border="0" cellspacing="0" cellpadding="4">
           <tr> 
             <td width="36%" valign="TOP"> 
               <p align=RIGHT><span class="Main">Initials:</span></td>
@@ -258,20 +258,18 @@ function decline_form()
           </tr>
         </table>
 	                
-                  </struts:form> <div align="center"> 
-                  <div align="center"><span class="Main">If you would like to 
-                    review the terms of your energy contract, click</span> </div>
+                  </struts:form> 
                   <form method="get" action="">
-                    <div align="center"> 
+                    <div align="center"><span class="Main">If you would like to 
+                      review the terms of your energy contract, click</span> <br>
                       <input type="submit" name="Input" value="Here">
-                    </div>
+                      <br>
+                      If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/></div>
                   </form>
-                  <p class="Main" align="center"><br>
-                    If you have questions or problems, call <cti:getProperty propertyid="<%=EnergyBuybackRole.SUPPORT_PHONE_NUMBER%>"/></p>
-                 <div align = "center"><a href = "user_ee.jsp" class = "Link1">Back</a></div>
-          </p>
-               
-                    </center>
+                    <div align = "center"><a href = "user_ee.jsp" class = "Link1"><br>
+                      Back</a><br>
+                    </div>
+          </center>
 
 
    </td>

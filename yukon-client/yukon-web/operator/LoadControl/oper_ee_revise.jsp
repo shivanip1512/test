@@ -108,7 +108,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -186,42 +186,45 @@
       <table
     width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="8%" class="MainHeader" valign = "top"> 
+            <td width="100" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Program: </b>
                       </td>
-            <td width="14%" class="MainHeader" valign = "top"><%= program.getYukonName() %></td>
-            <td width="13%" class="MainHeader" valign = "top"> 
+            <td width="100" class="MainHeader" valign = "top"><%= program.getYukonName() %></td>
+            <td width="100" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Notify Date: </b> 
                       </td>
-            <td width="15%" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/> 
+            <td width="80" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/> 
               <span class = "TableCell"><%= checker.getError("notifydate") %></span></td>
-            <td width="14%" class="MainHeader" valign = "top"> 
+            <td width="100" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Notify Time: </b> 
                       </td>
-            <td width="15%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/> 
+            <td width="80" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/> 
               <span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
               <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
               </td>
           </tr>
           <tr> 
-            <td width="7%" class="MainHeader" valign = "top"> 
+            <td width="100" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Date: </b> 
                       </td>
-            <td width="14%" class="MainHeader" valign = "top"><span class = "TableCell"><%= datePart.format(offer.getOfferDate()) %></span></td>
-            <td width="13%" class="MainHeader" valign = "top"> 
+            <td width="100" class="MainHeader" valign = "top"><span class = "TableCell"><%= datePart.format(offer.getOfferDate()) %></span></td>
+            <td width="100" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Expire Date: </b> 
                       </td>
-            <td width="15%" class="MainHeader"><struts:text property="expiredate" size="10" pattern="@date"/> 
+            <td width="80" class="MainHeader"><struts:text property="expiredate" size="10" pattern="@date"/> 
               <span class = "TableCell"><%= checker.getError("expiredate") %></span></td>
-            <td width="14%" class="MainHeader" valign = "top"> 
+            <td width="100" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Expire Time: </b> 
                       </td>
-            <td width="15%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/> 
+            <td width="80" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/> 
               <span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
             <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
             </td>
           </tr>
         </table>
+        <center>
+          <%= checker.getError("formaterror") %> 
+        </center>
         <table width="640" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
             
@@ -285,10 +288,6 @@
                   </td>
                 </tr>
               </table>
-              <center>
-                <%= checker.getError("formaterror") %> 
-              </center>
-            
         <table
     width="600" border="0" cellspacing="0" cellpadding="4" height="10" align="center">
           <tr> 

@@ -16,7 +16,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -158,7 +158,7 @@
                                                      }
                                                  }
                           %>
-          <tr> 
+          <tr valign="top"> 
             <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
             <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
             <td class="TableCell"><%= offer.getRunStatus() %></td>
@@ -175,8 +175,8 @@
                              }
                           %>
         </table>
+        <br>
       </center> 
-      <p>&nbsp; 
       <p align="center"><span class="MainHeader"><b>Tomorrow's 
         <cti:getProperty propertyid="<%=EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getTomorrow(tz)) %></b></span>
       <table width="620" border="1" cellspacing="0" cellpadding="2" align="center">
@@ -254,7 +254,7 @@
                                                      }
                                                  }
                           %>
-        <tr> 
+        <tr valign="top"> 
           <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
           <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
           <td class="TableCell"><%= offer.getRunStatus() %></td>

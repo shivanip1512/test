@@ -17,7 +17,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                <td width="310" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load Response</td>
@@ -119,7 +119,7 @@
 				double amountRequested = revisions[j].getAmountRequested();
 				double amountCommitted = revisions[j].getAmountCommitted();
 			%>
-                <tr> 
+                <tr valign="top"> 
                   <td height="23" class="TableCell"><a href="oper_ee.jsp?tab=historydetail&prog=<%= program.getDeviceId() %>&offer=<%= offers[i].getOfferId() %>&rev=<%= revisions[j].getRevisionNumber() %>" class="Link1"> 
                     <%= offers[i].getOfferId() %> - <%= revisions[j].getRevisionNumber() %> 
                     </a></td>
