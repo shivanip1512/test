@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/03/16 15:48:37 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/03/18 19:49:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1058,16 +1058,20 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 
 
     // Service should be first parse to ensure a device which is awake and listening to us if so directed.
-    if(parse.isKeyValid("xcpservice"))
+
+    if(!_addressLevel || (_addressLevel & ~atSpid))  // Allow only serial, or levels BEYOND SPID only.
     {
-        status = service((BYTE)parse.getiValue("xcpservice"));
-    }
-    else if(parse.isKeyValid("xctservicecancel"))
-    {
-        status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
-                                   (bool)parse.getiValue("xctservicecancel"),
-                                   (bool)parse.getiValue("xctservicebitp"),
-                                   (bool)parse.getiValue("xctservicebitl") );
+        if(parse.isKeyValid("xcpservice"))
+        {
+            status = service((BYTE)parse.getiValue("xcpservice"));
+        }
+        else if(parse.isKeyValid("xctservicecancel"))
+        {
+            status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
+                                       (bool)parse.getiValue("xctservicecancel"),
+                                       (bool)parse.getiValue("xctservicebitp"),
+                                       (bool)parse.getiValue("xctservicebitl") );
+        }
     }
 
     if(serial != 0 && parse.isKeyValid("xcaddress"))
