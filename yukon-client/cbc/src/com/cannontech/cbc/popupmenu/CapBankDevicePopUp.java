@@ -406,12 +406,11 @@ private void initialize()
 		add(getJMenuItemConfirm(), getJMenuItemConfirm().getName() );
 		add(getJMenuItemOpenClose(), getJMenuItemOpenClose().getName());
 
-/* UNCOMMENT WHEN READY TO ROLL! */		
-/*		add( new JSeparator() );
+		add( new JSeparator() );
 		
 		add(getJMenuItemTempMove(), getJMenuItemTempMove().getName());
 		add(getJMenuItemMoveBack(), getJMenuItemMoveBack().getName());
-*/		
+		
 		initConnections();
 	}
 	catch (java.lang.Throwable ivjExc) 

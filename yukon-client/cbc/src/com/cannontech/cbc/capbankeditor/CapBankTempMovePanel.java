@@ -433,11 +433,12 @@ private javax.swing.JTextField getJTextFieldCapBankOrder() {
 			}
 			    
 			// Build up  the move message here
-			CBCTempMoveCapBank msg = new CBCTempMoveCapBank( 
+			CBCTempMoveCapBank msg = new CBCTempMoveCapBank(
 				getOwnerFeeder().getCcId().intValue(),
 				feeder.getLiteID(),
 				getCapBankDevice().getCcId().intValue(),
-				order );
+				order,
+				true );
 
 			if( getConnectionWrapper() != null )
 			{

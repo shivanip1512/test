@@ -27,7 +27,6 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer tagControlStatus = null;
 	
 	private int origFeederID = 0;
-	private int origSwitchOrder = 0;
 
 	/**
 	 * CapBankDevice constructor comment.
@@ -371,13 +370,6 @@ public class CapBankDevice extends StreamableCapObject
 		return origFeederID;
 	}
 
-	/**
-	 * Returns the origSwitchOrder.
-	 * @return int
-	 */
-	public int getOrigSwitchOrder() {
-		return origSwitchOrder;
-	}
 
 	/**
 	 * Sets the origFeederID.
@@ -387,13 +379,6 @@ public class CapBankDevice extends StreamableCapObject
 		this.origFeederID = origFeederID;
 	}
 
-	/**
-	 * Sets the origSwitchOrder.
-	 * @param origSwitchOrder The origSwitchOrder to set
-	 */
-	public void setOrigSwitchOrder(int origSwitchOrder) {
-		this.origSwitchOrder = origSwitchOrder;
-	}
 
 	public boolean isBankMoved()
 	{
