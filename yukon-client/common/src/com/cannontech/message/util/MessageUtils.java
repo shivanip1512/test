@@ -40,32 +40,32 @@ public class MessageUtils
 			
 			if( msgVect.size() >= 4 )
 			{
-				Integer majVers = (Integer)msgVect.get(1);
-				Integer minVers = (Integer)msgVect.get(2);
-				Integer build = (Integer)msgVect.get(3);
+				Integer servMaj = (Integer)msgVect.get(1);
+				Integer servMin = (Integer)msgVect.get(2);
+				Integer servBuild = (Integer)msgVect.get(3);
 
 				//if all zeros, this is a development version, let it continue
-				if( majVers.intValue() == 0
-					&& minVers.intValue() == 0
-					&& build.intValue() == 0 )
+				if( servMaj.intValue() == 0
+					&& servMin.intValue() == 0
+					&& servBuild.intValue() == 0 )
 				{
 					return null;
 				}
 				
-				CTIDatabase ctiDB = VersionTools.getDatabaseVersion();
-				String[] vers = ctiDB.getVersion().split("\\.");				
-				Integer dbMaj = new Integer( vers[0] );
-				Integer dbMin = new Integer( vers[1] );
+				String[] vers = VersionTools.getYUKON_VERSION().split("\\.");				
+				Integer clientMaj = new Integer( vers[0] );
+				Integer clientMin = new Integer( vers[1] );
+				Integer clientBuild = new Integer( vers[2] );
 
 
-				if( !(dbMaj.equals(majVers)
-					  && dbMin.equals(minVers)
-					  && ctiDB.getBuild().equals(build)) )
+				if( !(clientMaj.equals(servMaj)
+					  && clientMin.equals(servMin)
+					  && clientBuild.equals(servBuild)) )
 				{
 					String retStr =
 						" CLIENT/SERVER version mismatch in messaging, " +
-						" (Client: " + ctiDB.getVersion() + " build: " + ctiDB.getBuild() + ")" +
-						" (Server: " + majVers + "." + minVers + " build: " + build + ")";
+						" (Client: " + clientMaj + "." + clientMin + " build: " + clientBuild + ")" +
+						" (Server: " + servMaj + "." + servMin + " build: " + servBuild + ")";
 
 					CTILogger.warn( retStr );
 					return retStr;
