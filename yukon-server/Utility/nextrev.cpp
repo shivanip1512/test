@@ -40,6 +40,7 @@ int main(int argc, char **argv)
     bool incrementMajor = false;
     bool incrementMinor = false;
     bool incrementBuild = true;
+    bool reportOnly = false;
 
     FILE *fp;
 
@@ -58,6 +59,11 @@ int main(int argc, char **argv)
                 {
                     filename = RWCString(argv[i+1]);
                     i++; // Hop over two positions here!
+                    break;
+                }
+            case 'r':
+                {
+                    reportOnly = true;
                     break;
                 }
             case 'M':
@@ -88,7 +94,7 @@ int main(int argc, char **argv)
     }
 
     {
-        cout << endl << "Opening " << filename << " for processing" << endl << endl;
+        // cout << endl << "Opening " << filename << " for processing" << endl << endl;
         fp = fopen(filename.data(), "rt");
 
         if(fp != NULL)
@@ -106,6 +112,11 @@ int main(int argc, char **argv)
                 {
                     RWCTokenizer next(str);
                     RWCString token = next(":");
+
+                    if(reportOnly)
+                    {
+                        cout << str << endl;
+                    }
 
                     if(!(str = token.match("_[0-9]_[0-9]+(_[0-9]+)?")).isNull())
                     {
@@ -142,7 +153,7 @@ int main(int argc, char **argv)
                 }
             }
 
-            cout << endl << " CURRENT REVISION " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
+            // cout << endl << " CURRENT REVISION " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
 
             fclose(fp);
         }
@@ -165,7 +176,7 @@ int main(int argc, char **argv)
         errorCode = ++buildRevisionVal;
     }
 
-    cout << " NEXT REVISION    " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
+    // cout << " NEXT REVISION    " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
 
     return errorCode;
 }
