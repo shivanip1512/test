@@ -12,6 +12,9 @@ public abstract class DBPersistent implements java.io.Serializable
 	public static String SQLFileName = com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DBeditorSQL.sql";
 	
 	private transient Connection dbConnection = null;
+   
+   
+         
 /**
  * DBPersistent constructor comment.
  */
@@ -23,6 +26,7 @@ public DBPersistent() {
  * @exception java.sql.SQLException The exception description.
  */
 public abstract void add() throws java.sql.SQLException;
+
 /**
  * This method was created in VisualAge.
  * @param tableName java.lang.String
@@ -47,11 +51,68 @@ protected void add( String tableName, Object values[] ) throws SQLException {
 	try
 	{
 		pstmt = getDbConnection().prepareStatement(pSql.toString());
+
+/* ************************************************************************************
+ * This commented out block would be nice to add to all DBPersistence objects.
+ * By adding this code, each DBPersistence object could query the DB for 
+ * the table metadata. With this meatadata, we could allow the insertion of nulls.
+ * Also, since the metadata is the table structure, we could remove most metatdata
+ * about the DBPersitence object (such as COLUMN_NAMES, TABLE_NAME, etc).
+ * Every DBPersistence object would need to do this metatdata query.  The data could
+ * be static so the query is only done once.  --RWN 7-30-2002
+ * ************************************************************************************
+/*    j(1) = ryan
+      j(2) = dbo
+      j(3) = StateImage
+      j(4) = ImageID
+      j(5) = 2
+      j(6) = numeric
+      j(7) = 18
+      j(8) = 20
+      j(9) = 0
+      j(10) = 10
+      j(11) = 0
+      j(12) = null
+      j(13) = null
+      j(14) = 2
+      j(15) = null
+      j(16) = null
+      j(17) = 1
+      j(18) = NO      
+*/
+/*      ResultSet rs = getDbConnection().getMetaData().getColumns(
+                  null, 
+                  null, 
+                  tableName.toUpperCase(), 
+                  "%" );
+
+      int[] sh = new int[values.length];
+      int i = 0;
+      while( rs.next() ) 
+      {           
+         for( int j = 1; j <= 18; j++ )
+            System.out.println("j("+j+") = " + rs.getString(j) );
+            
+         sh[i++] = rs.getInt(5);
+      }
+
+      
 		for( int k = 0; k < values.length; k++ )
 		{
-			pstmt.setObject(k+1, values[k] );
+   	   pstmt.setObject(
+            k+1, 
+            values[k],
+            sh[k] );
 		}
-		pstmt.executeUpdate();
+*/
+      for( int k = 0; k < values.length; k++ )
+      {
+         pstmt.setObject(
+            k+1, 
+            values[k] );
+      }
+
+   	pstmt.executeUpdate();
 
 		//everything went well, print the SQL to a file if desired
 		if( isPrintSQL() )
@@ -430,7 +491,8 @@ private Object[] retrieve(String selectColumnNames[], String tableName, String k
 				else
 					temp = new Integer(((java.math.BigDecimal) v.elementAt(n)).intValue());
 			}
-			else
+/* Cant remember why this is here??? 7-29-2002 */
+/*			else
 				if (temp instanceof byte[])
 				{
 					if (((byte[]) temp).length == 1)
@@ -443,6 +505,7 @@ private Object[] retrieve(String selectColumnNames[], String tableName, String k
 						temp = newTemp;
 					}
 				}
+*/
 			returnObjects[n] = temp;
 		}
 	}
