@@ -493,7 +493,9 @@ private javax.swing.JTable getJTableProgram() {
  * Creation date: (1/11/2002 4:44:33 PM)
  * @return java.lang.Integer
  */
-private Integer getNextStartOrder() 
+
+//as of 2.41 we do not use incrementing priorities; user changes priorities manually
+/*private Integer getNextStartOrder() 
 {
 	int j = 1;
 	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
@@ -510,7 +512,7 @@ private Integer getNextStartOrder()
 	}
 	
 	return new Integer(j);
-}
+}*/
 /**
  * Insert the method's description here.
  * Creation date: (1/11/2002 4:44:33 PM)
@@ -674,13 +676,15 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	// this is set to the LMPrograms deviceID
 	programList.setLmProgramDeviceID( new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem()).getYukonID() ) );
 	
- 	if( getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
+ 	/*if( getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
  	{
-	 	//increment our priority values
+	 	//as of 2.41 we no longer increment priorities
+	 	//user manually changes them; otherwise, they remain at the same value
 	 	getJCSpinFieldStopOrder().setValue( getNextStopOrder() );
 	 	getJCSpinFieldPriority().setValue( getNextStartOrder() );
 	}
- 	else
+ 	else*/
+	if( ! getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
  		javax.swing.JOptionPane.showMessageDialog( this, "That Program is already in the list.", "Duplicate Program", javax.swing.JOptionPane.INFORMATION_MESSAGE );
  	
 	fireInputUpdate();
@@ -776,7 +780,7 @@ public void setValue(Object o)
 	}
 
 
-	getJCSpinFieldStopOrder().setValue( new Integer(getJTableModel().getRowCount()+1) );
+	//getJCSpinFieldStopOrder().setValue( new Integer(getJTableModel().getRowCount()+1) );
 }
 /**
  * 
