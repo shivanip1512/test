@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2002/09/30 15:03:05 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2002/10/03 16:16:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ using namespace std;
 
 #include "portglob.h"
 
-//#include "dialup.h"
+#include "connection.h"
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
