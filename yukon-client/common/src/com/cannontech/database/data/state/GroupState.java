@@ -7,7 +7,10 @@ package com.cannontech.database.data.state;
 public class GroupState extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.state.StateGroup stateGroup = null;
+   
+   //contains instances of com.cannontech.database.data.state.State
 	private java.util.Vector statesVector = null;
+
 /**
  * StatusPoint constructor comment.
  */
@@ -126,8 +129,11 @@ public void retrieve() throws java.sql.SQLException {
 
 		for( int i = 0; i < rArray.length; i++ )
 		{
-			rArray[i].setDbConnection(getDbConnection());
-			statesVector.addElement( rArray[i] );
+         State stateData = new State();
+         stateData.setState( rArray[i] );
+         
+			stateData.setDbConnection( getDbConnection() );
+			statesVector.addElement( stateData );
 		}
 	}
 	catch(java.sql.SQLException e )

@@ -51,8 +51,8 @@ public class SVGGenerator {
 	 */
 	public void generate(Writer writer, LxGraph graph) throws IOException {
 	 	
-		int width = 800; //graph.getView(0).getWidth();
-		int height = 600;
+		int width = 1024; //graph.getView(0).getWidth();
+		int height = 768;
 		LxComponent[] c	= graph.getComponents();
 		
 		writer.write(svgHeader);

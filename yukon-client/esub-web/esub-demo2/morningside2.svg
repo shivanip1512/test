@@ -1,0 +1,17 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width="800.0px" height="600.0px" >
+<rect width="100%" height="100%" color="#000000" />
+<image id="LxAbstractImage" xlink:href="images\oneline\TransformerBY.gif" x="50" y="130" width="60" height="20" />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 80.0 20.0 L 80.0 280.0 M 80.0 20.0 L 76.0 26.0 L 77.0 26.0 L 80.0 22.0 L 83.0 26.0 L 84.0 26.0 Z M 80.0 280.0 L 84.0 274.0 L 83.0 274.0 L 80.0 278.0 L 77.0 274.0 L 76.0 274.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 80.0 210.0 L 410.0 150.0 M 80.0 210.0 L 86.61875915527344 212.86216735839844 L 86.43988037109375 211.87829780578613 L 81.96774291992188 209.6422290802002 L 85.36656188964844 205.97507858276367 L 85.18768310546875 204.99120712280273 Z M 410.0 150.0 L 403.38124084472656 147.13783264160156 L 403.56011962890625 148.12170219421387 L 408.0322570800781 150.3577709197998 L 404.63343811035156 154.02492141723633 L 404.81231689453125 155.00879287719727 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 610.0 210.0 L 610.0 30.0 M 610.0 210.0 L 614.0 204.0 L 613.0 204.0 L 610.0 208.0 L 607.0 204.0 L 606.0 204.0 Z M 610.0 30.0 L 606.0 36.0 L 607.0 36.0 L 610.0 32.0 L 613.0 36.0 L 614.0 36.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:2.0;" d="M 310.0 210.0 L 310.0 280.0 " />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="300" y="230" width="20" height="20" />
+<text id="LxAbstractText" x="330" y="228" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >F1</text>
+<text id="LxAbstractText" x="337" y="243" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="336" y="280" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >50.77</text>
+<a xlink:href="sublist.jsp">
+<image id="LxAbstractImage" xlink:href="images\oneline\SubListButton.gif" x="457" y="203" width="120" height="20" />
+</a>
+</svg>

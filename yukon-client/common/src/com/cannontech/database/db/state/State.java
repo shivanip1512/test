@@ -5,17 +5,18 @@ package com.cannontech.database.db.state;
  */
 public class State extends com.cannontech.database.db.DBPersistent 
 {
+   // ANY is primarily used for the Initial State and Normal State values in PointStatus
+   public static final String ANY = "Any";
+   public static final int ANY_ID = -1;
+   
 	private Integer stateGroupID = null;
 	private Integer rawState = null;
 	private String text = null;
 	private Integer foregroundColor = null;
 	private Integer backgroundColor = null;
-   private Integer imageID = new Integer(0); //default to no image
+   private Integer imageID = new Integer(YukonImage.NONE_IMAGE_ID); //default to no image
 	
 
-	// ANY is primarily used for the Initial State and Normal State values in PointStatus
-	public static final String ANY = "Any";
-	public static final int ANY_ID = -1;
 	
    public static final String SETTER_COLUMNS[] = 
    { 
@@ -35,13 +36,7 @@ public State()
 {
 	super();
 }
-/**
- * State constructor comment.
- */
-public State(Integer stateGroupID, Integer rawState) {
-	super();
-	initialize( stateGroupID, rawState, null, null, null, null );
-}
+
 /**
  * State constructor comment.
  */
@@ -71,6 +66,7 @@ public void add() throws java.sql.SQLException
    };
 
 	add( TABLE_NAME, setValues );
+      
 }
 /**
  * delete method comment.
@@ -78,8 +74,7 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException 
 {
 	Object constraintValues[] = { getStateGroupID() };
-
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );   
 }
 /**
  * This method was created by Cannon Technologies Inc.
@@ -103,9 +98,8 @@ public static void deleteAllStates(Integer stateGroupID, java.sql.Connection con
 		else
 		{
 			pstmt = conn.prepareStatement( sql.toString() );
-			pstmt.setInt( 1, stateGroupID.intValue() );
-			
-			pstmt.executeUpdate();
+			pstmt.setInt( 1, stateGroupID.intValue() );			
+			pstmt.executeUpdate();         
 		}
 
 	}
@@ -176,7 +170,7 @@ public static final State[] getStates(Integer stateGroup, String databaseAlias) 
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
-	String sql = "SELECT RAWSTATE,TEXT,FOREGROUNDCOLOR,BACKGROUNDCOLOR, IMAGEID " + 
+	String sql = "SELECT RAWSTATE,TEXT,FOREGROUNDCOLOR,BACKGROUNDCOLOR,IMAGEID " + 
 				 "FROM STATE WHERE STATE.STATEGROUPID= ? " +
 				 "AND STATE.RAWSTATE > ? ORDER BY RAWSTATE";
 
@@ -204,7 +198,7 @@ public static final State[] getStates(Integer stateGroup, String databaseAlias) 
 						rset.getString("Text"), 
 						new Integer(rset.getInt("ForegroundColor")), 
 						new Integer(rset.getInt("BackgroundColor")),
-                  new Integer(rset.getInt("ImageID")) ) );
+                  new Integer(rset.getInt("ImageID")) ) );                  
 			}
 					
 		}		

@@ -18,12 +18,13 @@
     <classpathentry kind="lib" path="/third-party/led.jar"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
-    <classpathentry kind="src" path="/common"/>
-    <classpathentry kind="src" path="/tdc"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
     <classpathentry kind="lib" path="/third-party/jruntags.jar"/>
     <classpathentry kind="lib" path="/third-party/struts.jar"/>
+    <classpathentry kind="src" path="/common"/>
+    <classpathentry kind="src" path="/dbeditor"/>
+    <classpathentry kind="src" path="/tdc"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

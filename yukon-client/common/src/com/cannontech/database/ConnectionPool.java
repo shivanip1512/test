@@ -5,7 +5,7 @@ import java.util.*;
 
 import java.io.*;
 
-import com.cannontech.common.util.LogWriter;
+import com.cannontech.clientutils.CTILogger;
 
 
 public class ConnectionPool
@@ -17,15 +17,12 @@ public class ConnectionPool
    private String password;
    private int maxConns;
    private int timeOut;
-   private LogWriter logWriter;
-   
 
    private int checkedOut;
    private Vector freeConnections = new Vector();
 
    public ConnectionPool(String name, String URL, String user, 
-	  String password, int maxConns, int initConns, int timeOut,
-	  PrintWriter pw, int logLevel)
+	  String password, int maxConns, int initConns, int timeOut )
 	  {
    
 	  this.name = name;
@@ -35,18 +32,17 @@ public class ConnectionPool
 	  this.maxConns = maxConns;
 	  this.timeOut = timeOut > 0 ? timeOut : 5;
 
-	  logWriter = new LogWriter(name, logLevel, pw);
 	  initPool(initConns);
 
-	  logWriter.log("New pool created", LogWriter.INFO);
+	  CTILogger.debug("New pool created");
 	  String lf = System.getProperty("line.separator");
-	  logWriter.log(lf +
+	  CTILogger.debug(lf +
 					" url=" + URL + lf +
 					" user=" + user + lf +
 					" initconns=" + initConns + lf +
 					" maxconns=" + maxConns + lf +
-					" logintimeout=" + this.timeOut, LogWriter.INFO);
-	  logWriter.log(getStats(), LogWriter.INFO);
+					" logintimeout=" + this.timeOut );
+	  CTILogger.debug( getStats() );
    }            
    public synchronized void freeConnection(Connection conn)
    {
@@ -54,16 +50,16 @@ public class ConnectionPool
 	  freeConnections.addElement(conn);
 	  checkedOut--;
 	  notifyAll();
-	  logWriter.log("Returned connection to pool", LogWriter.INFO);
-	  logWriter.log(getStats(), LogWriter.INFO);
+	  CTILogger.debug("Returned connection to pool");
+	  CTILogger.debug( getStats() );
    }   
    public Connection getConnection() throws SQLException 
    {
-	  logWriter.log("Request for connection received", LogWriter.DEBUG);
+	  CTILogger.debug( "Request for connection received" );
 
 	  //The below line lets you find any connections that are not
 	  //   releasing the connection to the DB!!  (Creates a lot of output!!)
-	  logWriter.log("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE(), LogWriter.DEBUG);
+	  CTILogger.debug("   " + com.cannontech.common.util.CtiUtilities.getSTACK_TRACE() );
 
 	  try
 	  {
@@ -72,8 +68,7 @@ public class ConnectionPool
 	  }
 	  catch (SQLException e)
 	  {
-		 logWriter.log(e, "Exception getting connection", 
-			logWriter.ERROR);
+		 CTILogger.error("Exception getting connection", e );
 		 throw e;
 	  }
    }                        
@@ -91,8 +86,8 @@ public class ConnectionPool
 	  {
 		 try
 		 {
-			logWriter.log("Waiting for connection. Timeout=" + remaining,
-						  LogWriter.DEBUG);
+			CTILogger.debug("Waiting for connection. Timeout=" + remaining );
+
 			wait(remaining);
 		 }
 		 catch (InterruptedException e)
@@ -101,8 +96,8 @@ public class ConnectionPool
 		 if (remaining <= 0)
 		 {
 			// Timeout has expired
-			logWriter.log("Time-out while waiting for connection", 
-						  LogWriter.DEBUG);
+			CTILogger.debug("Time-out while waiting for connection" );
+
 			throw new SQLException("getConnection() timed-out");
 		 }
 	  }
@@ -111,13 +106,13 @@ public class ConnectionPool
 	  if (!isConnectionOK(conn))
 	  {
 		 // It was bad. Try again with the remaining timeout
-		 logWriter.log("Removed selected bad connection from pool", 
-					   LogWriter.ERROR);
+		 CTILogger.debug("Removed selected bad connection from pool" );
+
 		 return getConnection(remaining);
 	  }
 	  checkedOut++;
-	  logWriter.log("Delivered connection from pool", LogWriter.INFO);
-	  logWriter.log(getStats(), LogWriter.INFO);
+	  CTILogger.debug( "Delivered connection from pool" );
+	  CTILogger.debug( getStats() );
 	  return conn;
    }   
 /**
@@ -191,8 +186,8 @@ private String getStats()
 			catch (SQLException se)
 			{ }
 		 }
-		 logWriter.log(e, "Pooled Connection was not okay", 
-						   LogWriter.ERROR);
+		 CTILogger.error( "Pooled Connection was not okay", e );
+
 		 return false;
 	  }
 	  return true;
@@ -206,7 +201,7 @@ private String getStats()
 	  else {
 		 conn = DriverManager.getConnection(URL, user, password);
 	  }
-	  logWriter.log("Opened a new connection", LogWriter.INFO);
+	  CTILogger.debug("Opened a new connection" );
 	  return conn;
    }
    public synchronized void release()
@@ -218,11 +213,11 @@ private String getStats()
 		 try
 		 {
 			con.close();
-			logWriter.log("Closed connection", LogWriter.INFO);
+			CTILogger.debug( "Closed connection" );
 		 }
 		 catch (SQLException e)
 		 {
-			logWriter.log(e, "Couldn't close connection", LogWriter.ERROR);
+			CTILogger.error( "Couldn't close connection", e );
 		 }
 	  }
 	  freeConnections.removeAllElements();
@@ -246,7 +241,7 @@ public String toString()
 	  freeConnections.addElement(conn);
 	  checkedOut--;
 	  notifyAll();
-	  logWriter.log("Returned connection to pool", LogWriter.INFO);
-	  logWriter.log(getStats(), LogWriter.INFO);
+	  CTILogger.debug( "Returned connection to pool" );
+	  CTILogger.debug( getStats() );
    }   
 }

@@ -63,11 +63,17 @@ public java.awt.Component getListCellRendererComponent(javax.swing.JList list, O
  * Creation date: (1/19/00 2:29:21 PM)
  * @param g java.awt.Graphics
  */
-public void paint(java.awt.Graphics g) {
+public void paint(java.awt.Graphics g) 
+{
+   //color
 	g.setColor(iconColor);
-	g.fillRect(0,0,((int)(.5*getWidth())),(getHeight()));
+	g.fillRect(0,0,((int)(.15*getWidth())), getHeight() - 1 );
 	g.setColor(java.awt.Color.black);
-	g.drawRect(0,0,(int)(.5*getWidth()),getHeight());
-	g.drawString(boxString,((int)(.5*getWidth())+5),((int)(.5*getHeight() + .25*g.getFontMetrics().getHeight())));
+	g.drawRect(0,0,(int)(.15*getWidth()),getHeight() - 1);
+   
+   //text
+	g.drawString( boxString,
+         ((int)(.15*getWidth())+5),
+         ((int)(.5*getHeight() + .25*g.getFontMetrics().getHeight())));
 }
 }

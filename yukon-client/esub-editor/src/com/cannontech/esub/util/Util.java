@@ -6,8 +6,11 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.*;
 import com.cannontech.esub.editor.Drawing;
 
@@ -16,14 +19,10 @@ import com.cannontech.esub.editor.Drawing;
  * @author: 
  */
 public class Util {
-    public final static String jpeg = "jpeg";
-    public final static String jpg = "jpg";
-    public final static String gif = "gif";
-    public final static String tiff = "tiff";
-    public final static String tif = "tif";
-
+    
     private static javax.swing.JColorChooser colorChooser = null;
     private static javax.swing.JFileChooser drawingFileChooser = null;
+  
     
 /**
  * Util constructor comment.
@@ -126,5 +125,48 @@ public static Image findImage(String imageName)
   	
   return(Toolkit.getDefaultToolkit().getImage(imageURL));
  }
+/* 
+ public static Image[] getStaticButtons() {
+ 	String sep = "/";
+ 	String home = CtiProperties.getInstance().getProperty(CtiProperties.KEY_YUKON_HOME, "c:" + sep + "yukon");
+ 	String buttonHome = home + sep + "client" + sep + "esub" + sep + "images" + sep + "buttons";
+ 	
+ 	File buttonDir = new File(buttonHome);
+ 	if( !buttonDir.exists() || !buttonDir.isDirectory()) {
+ 		CTILogger.error("Can't find images at " + buttonDir.getPath());
+ 		return null;
+ 	}
+ 	
+	return loadAllImagesInDir(buttonDir); 	
+ }
  
+ 
+ public static Image[] getOnelineImages() {
+ 	String sep = "/";
+ 	String home = CtiProperties.getInstance().getProperty(CtiProperties.KEY_YUKON_HOME, "c:" + sep + "yukon");
+ 	String onelineHome = home + sep + "client" + sep + "esub" + sep + "images" + sep + "oneline";
+ 	
+ 	File onelineDir = new File(onelineHome);
+ 	if( !onelineDir.exists() || !onelineDir.isDirectory()) {
+ 		CTILogger.error("Can't find images at " + onelineDir.getPath());
+ 		return null;
+ 	}
+ 	
+	return loadAllImagesInDir(onelineDir); 		
+ }
+
+ private static Image[] loadAllImagesInDir(File dir) {
+ 	File[] all = dir.listFiles();
+ 	ArrayList images = new ArrayList(all.length);
+ 	ImageFilter filter = new ImageFilter();
+ 	for( int i = 0; i < all.length; i++ ) {
+ 		if( filter.accept(all[i]) ) {
+ 			images.add( ImageCache.getInstance().getImage(all[i].getPath())); 			
+ 		}
+ 	}
+ 	
+ 	Image[] iArr = new Image[images.size()];
+ 	images.toArray(iArr);
+ 	return iArr;	
+ } */
 }

@@ -8,6 +8,7 @@ import java.net.URL;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
+import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
 import com.cannontech.esub.util.Util;
 
@@ -100,7 +101,28 @@ public class Drawing {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		String htmlFileName = fileName;
+		
+		if (htmlFileName.endsWith(".jlx")) {
+			htmlFileName = htmlFileName.substring(0, htmlFileName.length() - 4);
+		}
 
+		htmlFileName = htmlFileName.concat(".html");
+
+		try { 
+			HTMLGenerator gen3 = new HTMLGenerator();
+			FileWriter fw = new FileWriter(htmlFileName);
+			
+			gen3.generate(fw, this);
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+
+		
 		LxSVGGenerator lxGen = new LxSVGGenerator();
 		lxGen.saveAsSVG(lxGraph, svgFileName + ".svg");		
 	}

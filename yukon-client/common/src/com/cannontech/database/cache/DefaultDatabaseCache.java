@@ -30,6 +30,7 @@ public class DefaultDatabaseCache
 	private java.util.ArrayList allHolidaySchedules = null;
 	private java.util.ArrayList allDeviceMeterGroups = null;
 	private java.util.ArrayList allPointsUnits = null;
+        private java.util.ArrayList allYukonImages = null;
 
 	//lists that are created by the joining/parsing of existing lists
 	private java.util.ArrayList allGraphTaggedPoints = null;
@@ -93,6 +94,26 @@ public synchronized java.util.List getAllAlarmCategories(){
 	}
 
 }
+
+/**
+ * Returns a list of all
+ * com.cannontech.database.data.lite.LiteYukonImage
+ * Creation date: (3/14/00 3:19:19 PM)
+ */
+public synchronized java.util.List getAllYukonImages()
+{
+   if( allYukonImages != null )
+      return allYukonImages;
+   else
+   {
+      allYukonImages = new java.util.ArrayList();
+      YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
+      imageLoader.run();
+      return allYukonImages;
+   }
+
+}
+
 /**
  *
  */
@@ -813,6 +834,70 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 
 	return lBase;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (12/7/00 12:34:05 PM)
+ */
+private synchronized LiteBase handleYukonImageChange( int changeType, int id )
+{
+   boolean alreadyAdded = false;
+   LiteBase lBase = null;
+
+   // if the storage is not already loaded, we must not care about it
+   if( allAlarmCategories == null )
+      return lBase;
+
+   switch(changeType)
+   {
+      case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD:
+            for(int i=0;i<allYukonImages.size();i++)
+            {
+               if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+               {
+                  alreadyAdded = true;
+                  lBase = (LiteBase)allYukonImages.get(i);
+                  break;
+               }
+            }
+            if( !alreadyAdded )
+            {
+               com.cannontech.database.data.lite.LiteYukonImage ls = new com.cannontech.database.data.lite.LiteYukonImage(id);
+               ls.retrieve(databaseAlias);
+               allYukonImages.add(ls);
+               lBase = ls;
+            }           
+            break;
+
+      case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE:
+            for(int i=0;i<allYukonImages.size();i++)
+            {
+               if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+               {
+                  ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).retrieve(databaseAlias);
+                  lBase = (LiteBase)allYukonImages.get(i);
+                  break;
+               }
+            }
+            break;
+      case com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE:
+            for(int i=0;i<allYukonImages.size();i++)
+            {
+               if( ((com.cannontech.database.data.lite.LiteYukonImage)allYukonImages.get(i)).getImageID() == id )
+               {
+                  lBase = (LiteBase)allYukonImages.remove(i);
+                  break;
+               }
+            }
+            break;
+      default:
+            releaseAllAlarmCategories();
+            break;
+   }
+
+   return lBase;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -972,6 +1057,10 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	{
 		retLBase = handleAlarmCategoryChange( dbType, id );
 	}
+   else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_STATE_IMAGE_DB )
+   {
+      retLBase = handleYukonImageChange( dbType, id );
+   }
 	else if( database == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
 	{
 		retLBase = handleNotificationGroupChange( dbType, id );
@@ -1503,8 +1592,10 @@ public synchronized void loadAllCache()
 	allHolidaySchedules = new java.util.ArrayList();
 	allYukonPAObjects = new java.util.ArrayList();
 	allDeviceMeterGroups = new java.util.ArrayList();
+        allYukonImages = new java.util.ArrayList();
 	
-	//be sure all of our derived storage is cleard
+	
+        //be sure all of our derived storage is cleard
 	allGraphTaggedPoints = null;
 	allUnusedCCDevices = null;
 	allCapControlFeeders = null;
@@ -1530,6 +1621,7 @@ public synchronized void loadAllCache()
 		new CustomerContactLoader(allCustomerContacts, databaseAlias),
 		new HolidayScheduleLoader(allHolidaySchedules, databaseAlias),
 		new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias),
+                new YukonImageLoader(allYukonImages, databaseAlias)
 	};
 
 
@@ -1580,6 +1672,7 @@ public synchronized void releaseAllCache()
 	allGraphDefinitions = null;
 	allYukonPAObjects = null;
 	allDeviceMeterGroups = null;
+   allYukonImages = null;
 
 	//be sure all of our derived storage is cleard
 	allGraphTaggedPoints = null;
@@ -1608,6 +1701,14 @@ public synchronized void releaseAllCustomerContacts()
 public synchronized void releaseAllDeviceMeterGroups()
 {
 	allDeviceMeterGroups = null;
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (3/14/00 3:22:47 PM)
+ */
+public synchronized void releaseAllYukonImages()
+{
+   allYukonImages = null;
 }
 /**
  * Insert the method's description here.

@@ -12,6 +12,19 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 {
 	private static CtiProperties props = null;
 
+
+/* # ------- Client Log Configuration ------- #
+   # CLIENT_LOG_VERBOSE                  0x00000001
+   # CLIENT_LOG_CONNECTIONS              0x00000010
+   # CLIENT_LOG_PENDINGOPS               0x00000020
+   # CLIENT_LOG_REGISTRATION             0x00000040
+   # CLIENT_LOG_ALARMACK                 0x01000000
+   # CLIENT_LOG_MESSAGES                 0x02000000
+   # CLIENT_LOG_MSGSTOCLIENT             0x04000000
+   # CLIENT_LOG_MSGSFRMCLIENT            0x08000000
+   # CLIENT_LOG_ALARMS                   0x10000000
+*/
+
 	public static final String COMMON_JAR = "common.jar";
 	public static final String CONFIG_RESOURCE_NAME = "/config.properties";
 
@@ -46,13 +59,15 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 	public static final String KEY_ACTIVATE_BILLING = "billing_wiz_activate";
 	public static final String KEY_BILLING_INPUT = "billing_input_file";
 
-   public static final String KEY_CLIENT_LOG_FILE = "client_log_file";
-   public static final String KEY_CBC_CREATION_NAME = "cbc_creation_name";
-   
+        public static final String KEY_CBC_CREATION_NAME = "cbc_creation_name";
+        public static final String KEY_LOG_LEVEL = "client_log_level";
+        public static final String KEY_CLIENT_LOG_FILE = "client_log_file";
+
+
 	public static final String[] ALL_CONFIG_KEYS =
 	{
 		//Do not put KEY_YUKON_VERSION in here since it is not in the config.properties file
-      KEY_CLIENT_LOG_FILE,
+                KEY_CLIENT_LOG_FILE,
       
 		KEY_CC_INTERFACE,
 		KEY_EDITOR_CORE,
@@ -75,8 +90,10 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 		KEY_TDC_RIGHTS,
 
 		KEY_ACTIVATE_BILLING,
+                KEY_CBC_CREATION_NAME,
 		KEY_BILLING_INPUT,
-      KEY_CBC_CREATION_NAME
+      
+                KEY_LOG_LEVEL
 	};
 
 

@@ -1,0 +1,87 @@
+JLoox 2.0.2
+"UTF8"
+A 0 2 0 0 ff6699ff 1 F ff6699ff ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+10
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 50;130;60;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"images\oneline\TransformerBY.gif" ""
+
+com.loox.jloox.LxLine
+! 111101100 80;20;0;260 5 0 $ ! ! 0
+A 0 2 0 0 ffffff66 1 F ffffff66 ! 0 0
+2
+0 0;-130
+1 0;130
+0 3
+
+com.loox.jloox.LxLine
+! 111101100 80;150;330;60 5 0 $ ! ! 0
+A 0 2 0 0 ffffff66 1 F ffffff66 ! 0 0
+2
+0 -165;30
+1 165;-30
+0 3
+
+com.loox.jloox.LxLine
+! 111101100 610;30;0;180 5 0 $ ! ! 0
+A 0 2 0 0 ffffff66 1 F ffffff66 ! 0 0
+2
+0 0;90
+1 0;-90
+0 3
+
+com.loox.jloox.LxLine
+! 111101100 310;210;0;70 5 0 $ ! ! 0
+A 0 2 0 0 ff6699ff 1 F ff6699ff ! 0 0
+2
+0 0;-35
+1 0;35
+0 0
+
+com.cannontech.esub.editor.element.StateImage
+! 111101100 300;230;20;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+956 2 "Open" "images\oneline\GreenBox.gif" "Closed" "images\oneline\RedBox.gif" "Closed" ""
+
+com.cannontech.esub.editor.element.StaticText
+! 111101100 330;220;11.158203;8.625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "F1"
+"Arial Bold" 12 255 255 255 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 111101100 337.132812;234.5625;5.578125;8.765625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "0"
+762 ""
+
+com.cannontech.esub.editor.element.DynamicText
+! 111101100 336.132812;271.5625;28.964844;8.765625 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Arial Bold" 0 12 "50.77"
+759 ""
+
+com.cannontech.esub.editor.element.StaticImage
+! 111101100 457;203;120;20 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+"images\oneline\SubListButton.gif" "sublist.jsp"
+
+
+0

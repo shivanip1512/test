@@ -274,7 +274,7 @@ public class Editor extends JPanel {
 
 				//HACKHACK
 				currentDir = EditorPrefs.getPreferences().getWorkingDir();
-				com.cannontech.esub.util.ImageChooser.getInstance().setCurrentDirectory(
+				com.cannontech.common.gui.image.ImageChooser.getInstance().setCurrentDirectory(
 					new File(currentDir));
 
 			}
@@ -323,8 +323,9 @@ public class Editor extends JPanel {
 	 * @param drawing java.net.URL
 	 */
 	public void loadDrawing(String drawingFile) {
+	
 		getDrawing().load(drawingFile);
-
+	
 		LxComponent[] comps = getDrawing().getLxGraph().getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			setBehavior(comps[i]);
@@ -426,7 +427,7 @@ public class Editor extends JPanel {
 
 			//HACKHACK
 			currentDir = EditorPrefs.getPreferences().getWorkingDir();
-			com.cannontech.esub.util.ImageChooser.getInstance().setCurrentDirectory(
+			com.cannontech.common.gui.image.ImageChooser.getInstance().setCurrentDirectory(
 				new File(currentDir));
 
 		}

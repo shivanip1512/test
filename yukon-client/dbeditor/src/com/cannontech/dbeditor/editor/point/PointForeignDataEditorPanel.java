@@ -1210,14 +1210,9 @@ public void jComboBoxInterface_ActionPerformed(java.awt.event.ActionEvent action
 					{
 						s.execute();
 
-						Object[] values = null;
-						
-						//should only have 1 row of values all the time
-						if( s.getRowCount() > 0 )
-							values = s.getRow(0);
-
-						for( int j = 0; values != null && j < values.length; j++ )
-							((javax.swing.JComboBox)getDataOptions()[i][1]).addItem( values[j].toString() );
+						for( int j = 0; j < s.getRowCount(); j++ )
+							((javax.swing.JComboBox)getDataOptions()[i][1]).addItem( 
+                           s.getRow(j)[0].toString() );
 					}
 					catch( com.cannontech.common.util.CommandExecutionException e )
 					{

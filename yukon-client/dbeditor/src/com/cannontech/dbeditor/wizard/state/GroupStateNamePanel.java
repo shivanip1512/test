@@ -134,24 +134,35 @@ public Object getValue(Object val) {
 		numberOfStates = new Integer( ((Integer)stateNumberSpinVal).intValue() );
 
 	gs.getStatesVector().removeAllElements();
-	com.cannontech.database.db.state.State tempState = null;
+   
+   com.cannontech.database.data.state.State
+         tempStateData = new com.cannontech.database.data.state.State();
 
 	// Add an 'Any' state to all state groups!!!  12-6-2000
-	gs.getStatesVector().add( new com.cannontech.database.db.state.State( gs.getStateGroup().getStateGroupID(),
-											new Integer(com.cannontech.database.db.state.State.ANY_ID),
-											com.cannontech.database.db.state.State.ANY,
-											new Integer(com.cannontech.common.gui.util.Colors.BLACK_ID),
-											new Integer(com.cannontech.common.gui.util.Colors.WHITE_ID) ) );
+	tempStateData.setState( new com.cannontech.database.db.state.State( gs.getStateGroup().getStateGroupID(),
+										new Integer(com.cannontech.database.db.state.State.ANY_ID),
+										com.cannontech.database.db.state.State.ANY,
+										new Integer(com.cannontech.common.gui.util.Colors.BLACK_ID),
+										new Integer(com.cannontech.common.gui.util.Colors.WHITE_ID) ) );
 
+   gs.getStatesVector().add( tempStateData );
+   
+
+   com.cannontech.database.db.state.State tempState = null;
+   
 	// add the rest of the states below
 	for(int i=0;i<numberOfStates.intValue();i++)
 	{
-		tempState = new com.cannontech.database.db.state.State(	gs.getStateGroup().getStateGroupID(),
-												new Integer(i),
-												"DefaultStateName" + (Integer.toString(i)),
-												new Integer(i),
-												new Integer(com.cannontech.common.gui.util.Colors.BLACK_ID) );
-		gs.getStatesVector().add(tempState);
+      tempStateData = new com.cannontech.database.data.state.State();
+      
+		tempStateData.setState( new com.cannontech.database.db.state.State(	
+                                 gs.getStateGroup().getStateGroupID(),
+                                 new Integer(i),
+      									"DefaultStateName" + (Integer.toString(i)),
+      									new Integer(i),
+      									new Integer(com.cannontech.common.gui.util.Colors.BLACK_ID) ) );
+
+		gs.getStatesVector().add(tempStateData);
 	}
 
 	return gs;
@@ -163,8 +174,8 @@ public Object getValue(Object val) {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initialize the class.

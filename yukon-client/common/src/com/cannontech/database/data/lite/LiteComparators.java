@@ -76,6 +76,21 @@ public final class LiteComparators
 		}
 	};
 
+   public static java.util.Comparator liteYukonImageCategoryComparator = new java.util.Comparator()
+   {
+      public int compare(Object o1, Object o2)
+      {
+         String thisVal = ((com.cannontech.database.data.lite.LiteYukonImage)o1).getImageCategory();
+         String anotherVal = ((com.cannontech.database.data.lite.LiteYukonImage)o2).getImageCategory();
+
+         return ( thisVal.compareToIgnoreCase(anotherVal) );
+      }
+      public boolean equals(Object obj)
+      {
+         return false;
+      }
+   };
+
 	public static java.util.Comparator liteBaseIDComparator = new java.util.Comparator()
 	{
 		public int compare(Object o1, Object o2)
@@ -154,7 +169,7 @@ public final class LiteComparators
 			}
 
 			
-			return ( thisVal.compareToIgnoreCase(anotherVal) );			
+			return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
 		
 		public boolean equals(Object obj)

@@ -98,6 +98,14 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleID(new Integer(((LiteHolidaySchedule)liteObject).getHolidayScheduleID()) );
 				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleName( ((LiteHolidaySchedule)liteObject).getHolidayScheduleName() );
 				break;				
+         case LiteTypes.STATE_IMAGE:
+            returnObject = new com.cannontech.database.db.state.YukonImage();
+            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageID(new Integer(((LiteYukonImage)liteObject).getImageID()) );
+            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageValue( ((LiteYukonImage)liteObject).getImageValue() );
+            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageName( ((LiteYukonImage)liteObject).getImageName() );
+            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageCategory( ((LiteYukonImage)liteObject).getImageCategory() );
+            break;            
+         
 
 			default:
 				returnObject = null;
@@ -188,6 +196,11 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteYukonPAObject( 
 			((com.cannontech.database.data.pao.YukonPAObject)val).getPAObjectID().intValue() );
 	}
+   else if( val instanceof com.cannontech.database.db.state.YukonImage )
+   {
+      returnLite = new LiteYukonImage( 
+         ((com.cannontech.database.db.state.YukonImage)val).getImageID().intValue() );
+   }
 
 		
 	return returnLite;

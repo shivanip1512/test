@@ -47,14 +47,24 @@
    <servlet-name>svgGenerator</servlet-name>
    <servlet-class>com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>   
   </servlet>
-   
+ 
+  <servlet>
+   <servlet-name>htmlGenerator</servlet-name>
+   <servlet-class>com.cannontech.esub.web.servlet.HTMLGenerator</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
  	<servlet-name>svgGenerator</servlet-name>
  	<url-pattern>*.svg</url-pattern>
  </servlet-mapping>
  
+ <servlet-mapping>
+   <servlet-name>htmlGenerator</servlet-name>
+   <url-pattern>*.html</url-pattern>
+ </servlet-mapping>
+ 
   <session-config>
-  <session-timeout>2</session-timeout>
+  <session-timeout>60</session-timeout>
  </session-config>
 
   <!--

@@ -1722,12 +1722,17 @@ public boolean processStateGroupFile()
 		
 		for( int j = 0; j < stateCount; j++)
 		{
-			com.cannontech.database.db.state.State state = new com.cannontech.database.db.state.State();
-			state.setRawState( new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ) );
-			state.setText( tokenizer.nextElement().toString() );
-			state.setForegroundColor( new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ) );
-			state.setBackgroundColor( new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ) );
-			state.setStateGroupID( group.getStateGroupID() );
+         com.cannontech.database.data.state.State state = 
+                  new com.cannontech.database.data.state.State();
+         
+			state.setState( new com.cannontech.database.db.state.State(
+               group.getStateGroupID(),
+               new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ),
+   			   tokenizer.nextElement().toString(),
+   			   new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ),
+   			   new Integer( Integer.parseInt(tokenizer.nextElement().toString()) ) ) );
+
+         
 			multi.getDBPersistentVector().add( state );
 		}
 	}

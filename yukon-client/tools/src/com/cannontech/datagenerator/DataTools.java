@@ -23,7 +23,7 @@ public class DataTools
       java.io.InputStream in = new java.io.FileInputStream(f.getPath());
       StringBuffer buf = new StringBuffer( (int)len );
 
-      byte[] b = new byte[4096];
+      byte[] b = new byte[2048];
       int n;
       while( (n = in.read(b, 0, b.length)) != -1) 
       {

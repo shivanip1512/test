@@ -61,9 +61,13 @@ public class ImageSelectorPanel extends JPanel {
 	}
 
 	public ImageSelectorPanel(Image[] images) {
-		initialize(images);
+		setImages(images);
 	}
 
+   protected ImageSelectorPanel() {
+      super();
+   }
+   
 	/**
 	 * Returns the selectedImage.
 	 * @return Image
@@ -81,8 +85,9 @@ public class ImageSelectorPanel extends JPanel {
 		selectLabel(imageLabel);
 	}
 
-	private void initialize(Image[] images) {
+	protected void setImages(Image[] images) {
 
+      removeAll();  //just in case we have some images
 		setBackground(Color.WHITE);
 
 		for (int i = 0; i < images.length; i++) {

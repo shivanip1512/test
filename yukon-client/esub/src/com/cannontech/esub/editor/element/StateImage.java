@@ -9,10 +9,10 @@ import java.util.List;
 
 import com.loox.jloox.*;
 
+import com.cannontech.common.gui.image.ImageCache;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.util.ImageCache;
 import com.cannontech.esub.util.Util;
 
 /**

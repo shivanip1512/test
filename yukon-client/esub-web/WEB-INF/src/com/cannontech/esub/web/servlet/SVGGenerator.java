@@ -59,9 +59,6 @@ public class SVGGenerator extends HttpServlet {
 			
 			DrawingUpdater du = new DrawingUpdater(d);
 			du.run();
-			/*LxGraph g = new LxGraph();
-			g.read(jlxPath);
-			*/
 			com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();
 			gen.generate(w, d);	
 		}

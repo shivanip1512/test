@@ -1,0 +1,129 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width="800.0px" height="600.0px" >
+<rect width="100%" height="100%" color="#000000" />
+<image id="LxAbstractImage" xlink:href="images\oneline\midamerican substation.gif" x="480" y="90" width="301" height="90" />
+<text id="LxAbstractText" x="29" y="30" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >RAUN</text>
+<text id="LxAbstractText" x="310" y="30" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >PLYMOUTH</text>
+<text id="LxAbstractText" x="60" y="60" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8560</text>
+<text id="LxAbstractText" x="370" y="60" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8580</text>
+<text id="LxAbstractText" x="80" y="160" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8564</text>
+<text id="LxAbstractText" x="400" y="160" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >8582</text>
+<text id="LxAbstractText" x="80" y="190" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >XFMR BF</text>
+<text id="LxAbstractText" x="60" y="280" style="fill:rgb(102,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >F1 240-01</text>
+<text id="LxAbstractText" x="960" y="270" style="fill:rgb(103,153,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >G1 185-01</text>
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:2.0;" d="M 40.0 40.0 L 40.0 210.0 M 40.0 40.0 L 36.0 46.0 L 37.0 46.0 L 40.0 42.0 L 43.0 46.0 L 44.0 46.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:2.0;" d="M 350.0 40.0 L 350.0 210.0 M 350.0 40.0 L 346.0 46.0 L 347.0 46.0 L 350.0 42.0 L 353.0 46.0 L 354.0 46.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(102,153,255); stroke-width:2.0;" d="M 40.0 130.0 L 350.0 130.0 " />
+<image id="LxAbstractImage" xlink:href="images\oneline\TransformerBY.gif" x="10" y="210" width="60" height="20" />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 40.0 230.0 L 40.0 410.0 M 40.0 410.0 L 44.0 404.0 L 43.0 404.0 L 40.0 408.0 L 37.0 404.0 L 36.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 40.0 340.0 L 1030.0 340.0 " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 140.0 340.0 L 140.0 410.0 M 140.0 410.0 L 144.0 404.0 L 143.0 404.0 L 140.0 408.0 L 137.0 404.0 L 136.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 240.0 340.0 L 240.0 410.0 M 240.0 410.0 L 244.0 404.0 L 243.0 404.0 L 240.0 408.0 L 237.0 404.0 L 236.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 340.0 340.0 L 340.0 410.0 M 340.0 410.0 L 344.0 404.0 L 343.0 404.0 L 340.0 408.0 L 337.0 404.0 L 336.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 540.0 340.0 L 540.0 410.0 M 540.0 410.0 L 544.0 404.0 L 543.0 404.0 L 540.0 408.0 L 537.0 404.0 L 536.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 640.0 340.0 L 640.0 410.0 M 640.0 410.0 L 644.0 404.0 L 643.0 404.0 L 640.0 408.0 L 637.0 404.0 L 636.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 740.0 340.0 L 740.0 410.0 M 740.0 410.0 L 744.0 404.0 L 743.0 404.0 L 740.0 408.0 L 737.0 404.0 L 736.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 840.0 340.0 L 840.0 410.0 M 840.0 410.0 L 844.0 404.0 L 843.0 404.0 L 840.0 408.0 L 837.0 404.0 L 836.0 404.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 940.0 230.0 L 940.0 470.0 M 940.0 230.0 L 936.0 236.0 L 937.0 236.0 L 940.0 232.0 L 943.0 236.0 L 944.0 236.0 Z M 940.0 470.0 L 944.0 464.0 L 943.0 464.0 L 940.0 468.0 L 937.0 464.0 L 936.0 464.0 Z " />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 940.0 440.0 L 790.0 440.0 " />
+<image id="LxAbstractImage" xlink:href="images\oneline\Capacitor.gif" x="780" y="450" width="20" height="20" />
+<path id="LxLine" style="fill:none;opacity:1.0;stroke:rgb(255,255,102); stroke-width:2.0;" d="M 790.0 440.0 L 790.0 460.0 " />
+<text id="LxAbstractText" x="49" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >F2 241-10</text>
+<text id="LxAbstractText" x="150" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >F3 242-10</text>
+<text id="LxAbstractText" x="250" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >F4 243-10</text>
+<text id="LxAbstractText" x="350" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >F5 244-10</text>
+<text id="LxAbstractText" x="550" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >G6 184-10</text>
+<text id="LxAbstractText" x="650" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >G5 183-10</text>
+<text id="LxAbstractText" x="750" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >G4 182-10</text>
+<text id="LxAbstractText" x="850" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >G3 181-10</text>
+<text id="LxAbstractText" x="950" y="358" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:12;opacity:1.0;" >G2 180-10</text>
+<text id="LxAbstractText" x="910" y="490" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >SPARE</text>
+<text id="LxAbstractText" x="840" y="470" style="fill:rgb(255,255,102);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:14;opacity:1.0;" >180-02</text>
+<a xlink:href="sublist.jsp">
+<image id="LxAbstractImage" xlink:href="images\oneline\SubListButton.gif" x="550" y="200" width="120" height="20" />
+</a>
+<image id="LxAbstractImage" xlink:href="images\oneline\SubDataButton.gif" x="550" y="230" width="120" height="20" />
+<image id="LxAbstractImage" xlink:href="images\oneline\powered by yukon.gif" x="310" y="430" width="184" height="47" />
+<image id="LxAbstractImage" xlink:href="images\oneline\advisor.gif" x="30" y="430" width="270" height="40" />
+<image id="LxAbstractImage" xlink:href="images\oneline\EsubLogo.gif" x="510" y="20" width="240" height="60" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="30" y="70" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="340" y="70" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/ClosedMotor.gif" x="30" y="150" width="40" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/OpenMotor.gif" x="350" y="150" width="40" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="30" y="290" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/GreenBox.gif" x="30" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="130" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/GreenBox.gif" x="230" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="330" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/GreenBox.gif" x="530" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/GreenBox.gif" x="630" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="730" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="830" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/RedBox.gif" x="930" y="370" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/GreenBox.gif" x="930" y="260" width="20" height="20" />
+<image id="LxAbstractImage" xlink:href="images/oneline/GreenBox.gif" x="850" y="430" width="20" height="20" />
+<text id="LxAbstractText" x="59" y="77" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >-65.92</text>
+<text id="LxAbstractText" x="60" y="87" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >12.21</text>
+<text id="LxAbstractText" x="60" y="97" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >101.78</text>
+<text id="LxAbstractText" x="100" y="77" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="100" y="87" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="100" y="97" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >SF6 DENSITY %</text>
+<text id="LxAbstractText" x="370" y="77" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >49.78</text>
+<text id="LxAbstractText" x="370" y="87" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >-15.16</text>
+<text id="LxAbstractText" x="370" y="97" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >106.54</text>
+<text id="LxAbstractText" x="410" y="77" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="410" y="87" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="410" y="97" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >SF6 DENSITY %</text>
+<text id="LxAbstractText" x="80" y="207" style="fill:rgb(255,255,102);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >33 MVA</text>
+<text id="LxAbstractText" x="80" y="217" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >40.9</text>
+<text id="LxAbstractText" x="80" y="227" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >48.84</text>
+<text id="LxAbstractText" x="79" y="237" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >28.04</text>
+<text id="LxAbstractText" x="79" y="247" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >15.45</text>
+<text id="LxAbstractText" x="80" y="257" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >6</text>
+<text id="LxAbstractText" x="110" y="217" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >OIL C</text>
+<text id="LxAbstractText" x="109" y="227" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >WDG HS C</text>
+<text id="LxAbstractText" x="110" y="237" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >AMB C</text>
+<text id="LxAbstractText" x="110" y="247" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVA</text>
+<text id="LxAbstractText" x="110" y="257" style="fill:rgb(255,255,255);font-family:'Arial';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >DAILY LTC</text>
+<text id="LxAbstractText" x="60" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="60" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="90" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="190" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="190" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="290" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="290" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="390" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="390" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="590" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="590" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="690" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="790" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="890" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="100" y="297" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="890" y="267" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="100" y="307" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="690" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="790" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="890" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="890" y="277" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MVAR</text>
+<text id="LxAbstractText" x="60" y="307" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >-0.06</text>
+<text id="LxAbstractText" x="160" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="160" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="260" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="260" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="360" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >4.08</text>
+<text id="LxAbstractText" x="360" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0.32</text>
+<text id="LxAbstractText" x="560" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="560" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="660" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="760" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >3.29</text>
+<text id="LxAbstractText" x="760" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >-0.37</text>
+<text id="LxAbstractText" x="860" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >1.93</text>
+<text id="LxAbstractText" x="860" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >-0.92</text>
+<text id="LxAbstractText" x="860" y="267" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="860" y="277" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="87" y="377" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >MW</text>
+<text id="LxAbstractText" x="660" y="387" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >0</text>
+<text id="LxAbstractText" x="60" y="297" style="fill:rgb(255,255,255);font-family:'Arial Bold';font-style:normal;font-weight:normal;font-size:10;opacity:1.0;" >-65.92</text>
+</svg>

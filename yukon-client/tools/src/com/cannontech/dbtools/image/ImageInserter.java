@@ -24,10 +24,10 @@ import com.cannontech.database.PoolManager;
  */
 public class ImageInserter {
 
-	private static final String DB_TABLE = "StateImage";
+	private static final String DB_TABLE = "YukonImage";
 	
 	private static final String MAX_SQL = "SELECT MAX(ImageID) FROM " + DB_TABLE;
-	private static final String INSERT_SQL = "INSERT INTO " + DB_TABLE + " VALUES( ?, ? )";
+	private static final String INSERT_SQL = "INSERT INTO " + DB_TABLE + " VALUES( ?,?,?,? )";
 		
 	public static void main(String[] args) {
 		if( args.length != 1 ) {
@@ -73,8 +73,12 @@ public class ImageInserter {
 				InputStream in = new FileInputStream(f);
 				
 				pstmt.setInt(1, id++);
-				pstmt.setBinaryStream(2, in, (int) len);
+            pstmt.setString(2, fDir.getName());
+            pstmt.setString(3, f.getName());
+				pstmt.setBinaryStream(4, in, (int) len);
 				pstmt.execute();
+            
+            System.out.println(" (success) Inserted " + f.getName() );
 			}	
 		}
 			pstmt.executeBatch();

@@ -1,7 +1,8 @@
 package com.cannontech.esub.editor.element;
 
+import com.cannontech.common.gui.image.ImageCache;
 import com.cannontech.common.gui.util.*;
-import com.cannontech.esub.util.ImageCache;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.util.Util;
 
 import java.awt.Image;
@@ -9,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -210,7 +212,32 @@ private void initialize() {
 
 	getImageNameLabel().addMouseListener( new MouseAdapter() {
 		public void mousePressed(MouseEvent e) {
-			final javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();
+			final javax.swing.JDialog d = new javax.swing.JDialog();
+    
+   com.cannontech.dbeditor.wizard.state.YukonImagePanel yPanel = new com.cannontech.dbeditor.wizard.state.YukonImagePanel()
+   {
+      public void disposePanel()
+      {
+         d.setVisible(false);
+      }
+   }; 
+
+         
+   d.setModal( true );      
+   d.getContentPane().add( yPanel );
+   d.setSize(650, 500);
+
+   //set the location of the dialog to the center of the screen
+   d.setLocation( (getToolkit().getScreenSize().width - d.getSize().width) / 2,
+                  (getToolkit().getScreenSize().height - d.getSize().height) / 2);
+   d.show();   
+			//YukonImagePanel p = Util.getYukonImageChooser();
+			//OkCancelDialog d = new OkCancelDialog(CtiUtilities.getParentFrame(StaticImageEditorPanel.this), "Select an image...", true, p);
+//			YukonCategoryImageChooserDialog d = Util.getCategoryImageChooser();
+			//d.setSize(640,480);
+			//d.show();
+			
+			/*final javax.swing.JFileChooser fc = com.cannontech.esub.util.ImageChooser.getInstance();
 				//fc.setCurrentDirectory( new File(staticImage.getDrawing().getFileName()).getParentFile());
 				final String iPath = staticImage.getAbsoluteImagePath();
 				if(iPath != null ) {
@@ -229,7 +256,22 @@ private void initialize() {
                     //Image i = Util.loadImage(img);                   
                     Image i = ImageCache.getInstance().getImage(img, StaticImageEditorPanel.this);                   
 					getImageNameLabel().setIcon(new javax.swing.ImageIcon(i));	
-                }                
+                }                */
+               /* CategoryImageModel m = new CategoryImageModel();
+                Image[] buttons = Util.getStaticButtons();
+                Image[] oneline = Util.getOnelineImages(); 
+                
+                m.addCategory("Buttons", buttons);
+                m.addCategory("Oneline", oneline);
+                
+                CategoryImageChooserPanel cic = new CategoryImageChooserPanel(m);
+               // JOptionPane.showInputDialog(StaticImageEditorPanel.this, "hi");
+               JOptionPane.showMessageDialog(
+				StaticImageEditorPanel.this,
+				cic,
+				"Select an image",
+				javax.swing.JOptionPane.PLAIN_MESSAGE,
+				null);*/
 		} 
 	});
 	// user code end

@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import com.cannontech.common.gui.image.ImageCache;
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.util.ImageCache;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.*;
 /**

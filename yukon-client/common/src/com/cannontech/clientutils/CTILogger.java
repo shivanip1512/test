@@ -16,8 +16,23 @@ public class CTILogger
    {      
       Layout layout = new PatternLayout("[%d{HH:mm:ss}] %-5p [%-11.11t] %m%n");
 
-      logger.addAppender( new ConsoleAppender(layout, ConsoleAppender.SYSTEM_OUT) );
+      
+      /*
+       * All levels that are greater than the current level will be printed
+       * 
+        final static public Level OFF = new Level(MAX_INT, "OFF", 0);
+        final static public Level FATAL = new Level(5000, "FATAL", 0);
+        final static public Level ERROR = new Level(4000, "ERROR", 3);
+        final static public Level WARN  = new Level(3000, "WARN",  4);
+        final static public Level INFO  = new Level(2000, "INFO",  6);
+        final static public Level DEBUG = new Level(1000, "DEBUG", 7);
+        final static public Level ALL = new Level(MIN_INT, "ALL", 7);
+      */ 
+      logger.setLevel( Level.INFO );  //default log level
 
+
+      logger.addAppender( new ConsoleAppender(layout, ConsoleAppender.SYSTEM_OUT) );
+      
       String fileName = null;
       try
       {  
@@ -27,6 +42,18 @@ public class CTILogger
          //we must have a valid file name
          if( new java.io.File(fileName).isAbsolute() )
             logger.addAppender(new FileAppender(layout, fileName, false)); //create a new file everytime
+      }
+      catch( Exception e )
+      {}
+
+
+      try
+      {  
+         String level = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+            com.cannontech.common.util.CtiProperties.KEY_LOG_LEVEL, null);
+
+         if( level != null )
+            logger.setLevel( Level.toLevel( level, logger.getLevel() ) );
       }
       catch( Exception e )
       {}
