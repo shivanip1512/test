@@ -565,17 +565,24 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		//Search for the correct sub-type and set the address
 		if( getAddressTextField().isVisible() )
 		{
+			Integer address = new Integer(getAddressTextField().getText());
+			
 			if (val instanceof IDLCBase)
-				((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
+				((IDLCBase) val).getDeviceIDLCRemote().setAddress(address);
 			else if (val instanceof DNPBase)
-				((DNPBase) val).getDeviceAddress().setMasterAddress(new Integer(getAddressTextField().getText()));
+				((DNPBase) val).getDeviceAddress().setMasterAddress(address);
 			else if (val instanceof CarrierBase)
-				 {
-				 	 Integer addressHolder = new Integer(getAddressTextField().getText());
-				 	 if(val instanceof Repeater900)
-				 	 	addressHolder = new Integer(addressHolder.intValue() + 4190000);
-					 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
-				 }
+			{
+				 Integer addressHolder = address;
+				 if(val instanceof Repeater900)
+				  	addressHolder = new Integer(addressHolder.intValue() + 4190000);
+				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
+				 
+				if( DeviceTypesFuncs.isMCT(getDeviceType()) )
+				{
+					checkMCTAddresses( address.intValue() );
+				}
+			}
 			else if (val instanceof CapBank)
 			{
 				 ((CapBank) val).setLocation(getAddressTextField().getText());
@@ -603,7 +610,6 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			else //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the Meter Number");
 		}
-	
 		
 		if (com.cannontech.database.data.pao.DeviceClasses.getClass(device.getPAOClass()) == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER)
 		{
@@ -814,32 +820,31 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	
 	   if( getAddressTextField().isVisible() )
 	   {
-	   	if( getAddressTextField().getText() == null
-	          || getAddressTextField().getText().length() < 1 )
-	   	{
-	   		setErrorString("The Address text field must be filled in");
-	   		return false;
-	   	}
-	   
-	   
-	   	try {
-		      long addy = Long.parseLong(getAddressTextField().getText());
-		      if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
-		      {
-		         setErrorString( com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
+	   		if( getAddressTextField().getText() == null
+	        	|| getAddressTextField().getText().length() < 1 )
+	   		{
+	   			setErrorString("The Address text field must be filled in");
+	   			return false;
+	   		}
+	   	
+			try 
+			{
+		      	long addy = Long.parseLong(getAddressTextField().getText());
+		      	if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), addy ) )
+		      	{
+		        	setErrorString( com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() ) );
 		
-		         getJLabelRange().setText( "(" + getErrorString() + ")" );
-		         getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
-		         return false;
-		      }
-		      else
-		         getJLabelRange().setText( "" );
-	   	}
-	   	catch( NumberFormatException e )
-	   	{} //if this happens, we assume they know what they are 
-	   	   // doing and we accept any string as input	      
-	      
-	   }
+		         	getJLabelRange().setText( "(" + getErrorString() + ")" );
+		         	getJLabelRange().setToolTipText( "(" + getErrorString() + ")" );
+		         	return false;
+		      	}
+		      	else
+		         	getJLabelRange().setText( "" );
+	   		}
+	   		catch( NumberFormatException e )
+	   		{} //if this happens, we assume they know what they are 
+	   	   	// doing and we accept any string as input	      
+		}
 	
 		return true;
 	}
@@ -1021,5 +1026,37 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
    private int getDeviceType()
    {
       return deviceType;
+   }
+   
+   private void checkMCTAddresses( int address )
+   {
+	   try
+	   {
+		   String[] devices = DeviceCarrierSettings.isAddressUnique(address, null);
+		   if( devices != null )
+		   {
+			   String devStr = new String();
+			   for( int i = 0; i < devices.length; i++ )
+				   devStr += "          " + devices[i] + "\n";
+
+			   int res = javax.swing.JOptionPane.showConfirmDialog(
+							   this, 
+							   "The address '" + address + "' is already used by the following devices,\n" + 
+							   "are you sure you want to use it again?\n" +
+							   devStr,
+							   "Address Already Used",
+							   javax.swing.JOptionPane.YES_NO_OPTION,
+							   javax.swing.JOptionPane.WARNING_MESSAGE );
+
+			   if( res == javax.swing.JOptionPane.NO_OPTION )
+			   {
+			   		throw new com.cannontech.common.wizard.CancelInsertException("Device was not inserted");
+			   }
+		   }
+	   }
+	   catch( java.sql.SQLException sq )
+	   {
+		   com.cannontech.clientutils.CTILogger.error( sq.getMessage(), sq );
+	   }
    }
 }
