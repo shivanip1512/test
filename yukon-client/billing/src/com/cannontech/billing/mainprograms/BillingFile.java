@@ -7,6 +7,7 @@ package com.cannontech.billing.mainprograms;
  */
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 public class BillingFile extends java.util.Observable implements Runnable
 {
@@ -82,21 +83,21 @@ public class BillingFile extends java.util.Observable implements Runnable
 				else if( argLowerCase.startsWith("coll") )
 				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
-					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.COLLECTION_GROUP);
+					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.COLLECTION_GROUP);
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}
 				else if( argLowerCase.startsWith("test"))
 				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
-					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.TEST_COLLECTION_GROUP);
+					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}
 				else if( argLowerCase.startsWith("bill") )
 				{//BillingFileDefaults.billGroupTypeString.BILLINGGROUP
 				 //BillingFileDefaults.billGroup
-					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.BILLING_GROUP);
+					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.BILLING_GROUP);
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}

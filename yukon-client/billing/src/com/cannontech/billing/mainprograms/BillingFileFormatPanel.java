@@ -11,6 +11,7 @@ import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.roles.application.BillingRole;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
@@ -259,11 +260,11 @@ private javax.swing.JComboBox getBillingGroupTypeComboBox() {
 			ivjBillingGroupTypeComboBox = new javax.swing.JComboBox();
 			ivjBillingGroupTypeComboBox.setName("BillingGroupTypeComboBox");
 			// user code begin {1}
-			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(BillingFileDefaults.COLLECTION_GROUP));
-			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(BillingFileDefaults.TEST_COLLECTION_GROUP));
-			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(BillingFileDefaults.BILLING_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(DeviceMeterGroup.COLLECTION_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(DeviceMeterGroup.TEST_COLLECTION_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(DeviceMeterGroup.BILLING_GROUP));
 
-			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupTypeDisplayString(getBillingDefaults().getBillGroupTypeID()));
+			ivjBillingGroupTypeComboBox.setSelectedItem(BillingFileDefaults.getBillGroupTypeDisplayString(getBillingDefaults().getBillGroupTypeID()));
 			ivjBillingGroupTypeComboBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

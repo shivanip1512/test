@@ -1,5 +1,7 @@
 package com.cannontech.billing.mainprograms;
 
+import com.cannontech.database.db.device.DeviceMeterGroup;;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/6/2002 10:55:56 AM)
@@ -11,18 +13,6 @@ public class BillingFileDefaults
 	public static final String BILLING_DEFAULTS_FILENAME = "\\BillingDefaultSetting.DAT";
 	public static final String BILLING_DEFAULTS_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 
-	public static final int COLLECTION_GROUP = 0;
-	public static final int TEST_COLLECTION_GROUP = 1;
-	public static final int BILLING_GROUP = 2;
-	// The index values are relied upon greatly.  They CANNOT be changed without being in sync with the above id's.
-	private static final String[] validBillGroupTypeDisplayStrings = 
-		{"Collection Group", "Alternate Group", "Billing Group"};
-	private static final String[] validBillGroupTypeStrings = 
-		{"COLLECTIONGROUP", "TESTCOLLECTIONGROUP", "BILLINGGROUP"};
-	private static final int[] validBillGroupTypeIDs = 
-		{COLLECTION_GROUP, TEST_COLLECTION_GROUP, BILLING_GROUP};
-
-
 	//Number of members in this class.
 	private final int NUMBER_OF_PARAMETERS = 7;
 
@@ -31,7 +21,7 @@ public class BillingFileDefaults
 	private int energyDaysPrev = 7;
 	private java.util.Vector billGroup = null;
 	private String outputFileDir = null;
-	private String billGroupType = validBillGroupTypeStrings[COLLECTION_GROUP];
+	private String billGroupType = DeviceMeterGroup.validBillGroupTypeStrings[DeviceMeterGroup.COLLECTION_GROUP];
 	private boolean removeMultiplier = false;
 
 	private boolean appendToFile = false;
@@ -98,7 +88,7 @@ public class BillingFileDefaults
 	 */
 	public static String getBillGroupTypeDisplayString(int index)
 	{
-		return validBillGroupTypeDisplayStrings[index];
+		return DeviceMeterGroup.validBillGroupTypeDisplayStrings[index];
 	}
 
 	/**
@@ -127,12 +117,12 @@ public class BillingFileDefaults
 	 */
 	public int getBillGroupTypeID()
 	{
-		for (int i = 0; i < validBillGroupTypeStrings.length; i++)
+		for (int i = 0; i < DeviceMeterGroup.validBillGroupTypeStrings.length; i++)
 		{
-			if (getBillGroupType() == validBillGroupTypeStrings[i])
-				return validBillGroupTypeIDs[i];
+			if (getBillGroupType() == DeviceMeterGroup.validBillGroupTypeStrings[i])
+				return DeviceMeterGroup.validBillGroupTypeIDs[i];
 		}
-		return COLLECTION_GROUP;
+		return DeviceMeterGroup.COLLECTION_GROUP;
 	}
 
 	/**
@@ -366,7 +356,7 @@ public class BillingFileDefaults
 	 */
 	public void setBillGroupType(int validBillGroupTypeID)
 	{
-		this.billGroupType = validBillGroupTypeStrings[validBillGroupTypeID];
+		this.billGroupType = DeviceMeterGroup.validBillGroupTypeStrings[validBillGroupTypeID];
 	}
 
 	/**
@@ -616,32 +606,4 @@ public class BillingFileDefaults
 	{
 		this.appendToFile = appendToFile;
 	}
-
-	/**
-	 * Returns the validBillGroupTypeDisplayStrings.
-	 * @return String[]
-	 */
-	public static String[] getValidBillGroupTypeDisplayStrings()
-	{
-		return validBillGroupTypeDisplayStrings;
-	}
-
-	/**
-	 * Returns the validBillGroupTypeIDs.
-	 * @return int[]
-	 */
-	public static int[] getValidBillGroupTypeIDs()
-	{
-		return validBillGroupTypeIDs;
-	}
-
-	/**
-	 * Returns the validBillGroupTypeStrings.
-	 * @return String[]
-	 */
-	public static String[] getValidBillGroupTypeStrings()
-	{
-		return validBillGroupTypeStrings;
-	}
-
 }

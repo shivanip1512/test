@@ -10,6 +10,7 @@ import java.util.Date;
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 public class BillingBean implements java.util.Observer
 {
@@ -23,7 +24,7 @@ public class BillingBean implements java.util.Observer
 	private int demandDaysPrev = 30;
 	private int energyDaysPrev = 7;
 	private String billGroup = "Default";
-	private int billGroupType = BillingFileDefaults.COLLECTION_GROUP;
+	private int billGroupType = DeviceMeterGroup.COLLECTION_GROUP;
 	private String outputFile = "";
 	private boolean removeMult = false;
 	private boolean appendToFile = false;
