@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2004/10/08 20:32:32 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/12/14 22:27:18 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@ using namespace std;
 #include "dsm2.h"
 
 #include "cmdparse.h"
+#include "counter.h"
 #include "dev_exclusion.h"
 #include "rte_base.h"
 #include "tbl_base.h"
@@ -237,6 +238,11 @@ public:
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
     virtual INT queuedWorkCount() const;                        // Number of queued commnads on the device.
 
+    INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+    INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
+    INT setQueueOrphans(int num, RWTime &rwt);          // Number of queue entries remaining on device following this pass.
+    void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
+
     /*
      *  The rsvpToDispatch method allows the device object to produce a message to dispatch.
      *  This message may be the result of any number of events.  The callee has no option other than to assume the messages s
@@ -245,6 +251,10 @@ public:
     virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
 
 protected:
+
+    CtiCounter          _submittal;
+    CtiCounter          _processed;
+    CtiCounter          _orphaned;
 
     INT                  _commFailCount;                        // Consecutive failures to this device.
     INT                  _attemptCount;                         // Cumulative. Attempts to communicate with the device

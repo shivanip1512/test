@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2004/11/24 17:15:38 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2004/12/14 22:27:17 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.46  2004/12/14 22:27:17  cplender
+* Added counters to observe communications to the ports and queued devices.  May be removed eventually.
+*
 * Revision 1.45  2004/11/24 17:15:38  cplender
 * Changed queue gripe from ten to fifty.
 *
@@ -1563,4 +1566,29 @@ CtiPort& CtiPort::resetDeviceQueued(LONG id)
     return *this;
 }
 
+
+INT CtiPort::incQueueSubmittal(int bumpCnt, RWTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+{
+    int index = (rwt.hour()*60 + rwt.minute()) / 5;
+    _submittal.inc(index,bumpCnt);
+    return _submittal.get(index);
+}
+INT CtiPort::incQueueProcessed(int bumpCnt, RWTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
+{
+    int index = (rwt.hour()*60 + rwt.minute()) / 5;
+    _processed.inc(index,bumpCnt);
+    return _processed.get(index);
+}
+INT CtiPort::setQueueOrphans(int num, RWTime &rwt)          // Number of queue entries remaining on device following this pass.
+{
+    int index = (rwt.hour()*60 + rwt.minute()) / 5;
+    _orphaned.set(index,num);
+    return _orphaned.get(index);
+}
+void CtiPort::getQueueMetrics(int index, int &submit, int &processed, int &orphan) // Return the metrics above.
+{
+    submit = _submittal.get(index);
+    processed = _processed.get(index);
+    orphan = _orphaned.get(index);
+}
 

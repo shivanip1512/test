@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2004/07/12 19:06:56 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2004/12/14 22:27:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -994,5 +994,32 @@ inline ULONG CtiDeviceBase::getUniqueIdentifier() const
     else
         return getID();
     #endif
+}
+
+INT CtiDeviceBase::incQueueSubmittal(int bumpCnt, RWTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+{
+    int index = (rwt.hour()*60 + rwt.minute()) / 5;
+    _submittal.inc(index,bumpCnt);
+    _submittal.inc((index+1)%288,bumpCnt);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
+    return _submittal.get(index);
+}
+INT CtiDeviceBase::incQueueProcessed(int bumpCnt, RWTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
+{
+    int index = (rwt.hour()*60 + rwt.minute()) / 5;
+    _processed.inc(index,bumpCnt);
+    _processed.inc((index+1)%288,bumpCnt);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
+    return _processed.get(index);
+}
+INT CtiDeviceBase::setQueueOrphans(int num, RWTime &rwt)          // Number of queue entries remaining on device following this pass.
+{
+    int index = (rwt.hour()*60 + rwt.minute()) / 5;
+    _orphaned.set(index,num);
+    return _orphaned.get(index);
+}
+void CtiDeviceBase::getQueueMetrics(int index, int &submit, int &processed, int &orphan) // Return the metrics above.
+{
+    submit = _submittal.get(index);
+    processed = _processed.get(index);
+    orphan = _orphaned.get(index);
 }
 

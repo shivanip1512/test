@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/06/03 16:32:04 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/12/14 22:27:18 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -245,8 +245,16 @@ public:
     CtiPort& resetDeviceQueued(LONG id);
 
 
+    INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
+    INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
+    INT setQueueOrphans(int num, RWTime &rwt);          // Number of queue entries remaining on device following this pass.
+    void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
 
 protected:
+
+    CtiCounter          _submittal;
+    CtiCounter          _processed;
+    CtiCounter          _orphaned;
 
     CtiTblPAO           _tblPAO;
     CtiTablePortBase    _tblPortBase;
