@@ -141,6 +141,22 @@ function copyAddress(form) {
                       </tr>
 					  <tr> 
                         <td width="90" class="TableCell"> 
+                          <div align="right"> </div>
+                        </td>
+                        <td width="210" class="TableCell"> 
+                          <input type="checkbox" name="checkbox" value="checkbox">
+                          Notify of control by e-mail</td>
+                      </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right"> </div>
+                        </td>
+                        <td width="210" class="TableCell"> 
+                          <input type="checkbox" name="checkbox3" value="checkbox">
+                          Notify of control by phone</td>
+                      </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
