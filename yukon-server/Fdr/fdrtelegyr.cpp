@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/23 14:23:46 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/06 19:10:57 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,6 +96,10 @@ const CHAR * CtiFDRTelegyr::COLNAME_TELEGYR_TYPE         = "GroupType";
 CtiFDRTelegyr::CtiFDRTelegyr() : CtiFDRInterface( RWCString( "TELEGYR" ) ) , _hiReasonabilityFilter( 0.0 )
 {
    init();
+
+   CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),RWCString(FDR_INTERFACE_RECEIVE)); 
+   getReceiveFromList().setPointList (recList);
+   recList = NULL;
 }
 
 //=================================================================================================================================
@@ -927,7 +931,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
    int            tempInterval;
    RWDBStatus     retStatus;
 
-   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
    {
       CtiLockGuard< CtiLogger > doubt_guard( dout );
       dout << " ***** We're getting the GROUPLISTS ***** " << endl;
@@ -958,7 +962,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
 
       if( retStatus.errorCode() == RWDBStatus::ok )
       {
-         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
          {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << " retStatus.errorCode() == RWDBStatus::ok " << endl;
@@ -973,7 +977,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
 
             status = api_disable_all_cyclic( _controlCenter.getChannelID() );
 
-            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard< CtiLogger > doubt_guard( dout );
                dout << " Disable all cyclic say: " << decipherError( status ) << endl;
@@ -981,7 +985,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
 
             status = api_disable_all_spontaneous( _controlCenter.getChannelID() );
 
-            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard< CtiLogger > doubt_guard( dout );
                dout << " Disable all spontaneous say: " << decipherError( status ) << endl;
@@ -989,7 +993,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
 
             status = api_delete_all_groups( _controlCenter.getChannelID() );
 
-            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard< CtiLogger > doubt_guard( dout );
                dout << " Delete all groups say: " << decipherError( status ) << endl;
@@ -1016,7 +1020,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
             tempGroup.setInterval( tempInterval );
             tempGroup.setGroupType( tempGroupType );
 
-            if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard< CtiLogger > doubt_guard( dout );
                dout << " Going to addToGroupList() " << endl;
@@ -1045,7 +1049,7 @@ bool CtiFDRTelegyr::getGroupLists( void )
       ///////////temp
       else
       {
-         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
          {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << " retStatus.errorCode() != RWDBStatus::ok " << endl;
@@ -1105,15 +1109,8 @@ bool CtiFDRTelegyr::loadLists( CtiFDRPointList &aList )
               (pointList->entries() > 0))
           {
 
-              CtiLockGuard<CtiMutex> sendGuard( aList.getMutex() );
-              if( aList.getPointList() != NULL )
-              {
-                 aList.deletePointList();
-              }
-              aList.setPointList( pointList );
-
               // get iterator on list
-              CtiFDRManager::CTIFdrPointIterator myIterator( aList.getPointList()->getMap() );
+              CtiFDRManager::CTIFdrPointIterator myIterator( pointList->getMap() );
               int x;
 
               //iterate through all our points in the list
@@ -1200,10 +1197,16 @@ bool CtiFDRTelegyr::loadLists( CtiFDRPointList &aList )
                     }
                  }
 
-                 pointList=NULL;
-
                  //put in debug output from cygnet
               }
+
+              CtiLockGuard<CtiMutex> sendGuard( aList.getMutex() );
+              if( aList.getPointList() != NULL )
+              {
+                 aList.deletePointList();
+              }
+              aList.setPointList( pointList );
+              pointList=NULL;
 
               if( !successful )
               {
