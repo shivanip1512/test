@@ -33,7 +33,7 @@ System.out.println("------------created...");
 
 	public void setJndiName(String jndiName) throws NamingException 
 	{
-System.out.println("------------setJndiName...");
+System.out.println("------------setJndiName..." );
 		
 		String oldName = this.jndiName;
 		this.jndiName = jndiName;

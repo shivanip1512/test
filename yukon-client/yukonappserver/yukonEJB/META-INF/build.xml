@@ -2,6 +2,11 @@
 
 <project name="Test" default="main" basedir="..">
 
+	<target name="main">
+		<echo message="DOING THE JUNK!!" />
+	</target>
+
+
    <!-- Init -->
    <target name="init">
 

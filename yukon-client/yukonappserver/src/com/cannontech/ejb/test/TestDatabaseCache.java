@@ -29,10 +29,20 @@ public class TestDatabaseCache
       InitialContext initialContext = new InitialContext(props);
 
       return (com.cannontech.ejb.DatabaseCacheHome) initialContext.lookup(
-         com.cannontech.ejb.DatabaseCacheHome.JNDI_NAME);         
+			com.cannontech.ejb.DatabaseCacheHome.JNDI_NAME);
+      	//"com/cannontech/DatabaseCache");
    }
 
-
+//14.6
+//4.124
+//4.23
+//3.952
+//3.249
+//3.374
+//3.967
+//3.328
+//4.124
+//3.390
 	public void testBean()
 	{
 
@@ -46,6 +56,10 @@ public class TestDatabaseCache
                java.util.List l = null;
                try
                {
+						java.util.Date timerStart = null;
+						java.util.Date timerStop = null;
+						timerStart = new java.util.Date();
+               	
          			com.cannontech.ejb.DatabaseCache myBean = null;
                   
                   myBean = getHome().create();
@@ -54,6 +68,12 @@ public class TestDatabaseCache
          			//--------------------------------------
          			//This is the place you make your calls.
                   l = myBean.getAllDevices();
+
+
+						timerStop = new java.util.Date();
+						com.cannontech.clientutils.CTILogger.info( 
+							 (timerStop.getTime() - timerStart.getTime())*.001 + 
+								" Secs for JBOSS call" );                  
                }
                catch (Exception e)
                {
@@ -63,8 +83,8 @@ public class TestDatabaseCache
                }      
                
                System.out.println( "Sz = " + l.size() );
-               for( int a = 0; a < l.size(); a++ )
-                  System.out.println("("+j+") "+l.get(a).toString() );
+//               for( int a = 0; a < l.size(); a++ )
+//                  System.out.println("("+j+") "+l.get(a).toString() );
             }
          }).start();
       }

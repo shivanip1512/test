@@ -2,7 +2,7 @@
 <classpath>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="src" path="ejbsrc"/>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="var" path="JDK_TOOLS"/>
     <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry kind="lib" path="/third-party/jboss-client.jar"/>
