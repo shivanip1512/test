@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/02/16 21:01:11 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/03/18 19:56:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -439,7 +439,8 @@ INT CtiDeviceBase::executeScan(CtiRequestMsg                  *pReq,
 
 
 CtiDeviceBase::CtiDeviceBase() :
-_executing(false),
+_executeGrantExpires(rwEpoch),
+_executingUntil(rwEpoch),
 _commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
@@ -455,7 +456,8 @@ _currTrxID(0)
 }
 
 CtiDeviceBase::CtiDeviceBase(const CtiDeviceBase& aRef) :
-_executing(false),
+_executeGrantExpires(rwEpoch),
+_executingUntil(rwEpoch),
 _commFailCount(gDefaultCommFailCount),
 _attemptCount(0),
 _attemptFailCount(0),
@@ -947,14 +949,41 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
 
 bool CtiDeviceBase::isExecuting() const
 {
-    return _executing;
+    return (_executingUntil >= _executingUntil.now());
 }
 
 void CtiDeviceBase::setExecuting(bool set)
 {
-    _executing = set;
+    if(set)
+        _executingUntil = RWTime(YUKONEOT);
+    else
+        _executingUntil = RWTime(rwEpoch);
+
     return;
 }
+
+RWTime CtiDeviceBase::getExecutingUntil() const
+{
+    return _executingUntil;
+}
+
+void CtiDeviceBase::setExecutingUntil(RWTime set)
+{
+    _executingUntil = set;
+    return;
+}
+
+RWTime CtiDeviceBase::getEvaluateNextAt() const
+{
+    return _evalNext;
+}
+
+void CtiDeviceBase::setEvaluateNextAt(RWTime set)
+{
+    _evalNext = set;
+    return;
+}
+
 
 bool CtiDeviceBase::isExecutionProhibited(const RWTime &now)
 {
@@ -973,11 +1002,11 @@ bool CtiDeviceBase::isExecutionProhibited(const RWTime &now)
                     if((*itr).second > now)
                     {
                         prohibited = true;
+                        itr++;
                     }
                     else
                     {
                         itr = _executionProhibited.erase(itr);      // Removes any time exclusions which have expired.
-                        itr++;
                     }
                 }
             }
@@ -1071,3 +1100,66 @@ bool CtiDeviceBase::removeExecutionProhibited(unsigned long id)
 
     return removed;
 }
+
+bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)
+{
+    if(OutMessage)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        delete OutMessage;
+    }
+
+    return false;
+}
+
+bool CtiDeviceBase::hasTimeExclusion() const
+{
+    return false;
+}
+
+bool CtiDeviceBase::isTimeSlotOpen(const RWTime &now) const
+{
+    bool bstatus = true;
+    return bstatus;
+}
+void CtiDeviceBase::setTimeSlotOpen(bool set)
+{
+    return;
+}
+RWTime CtiDeviceBase::getNextTimeSlotOpen(const RWTime &now) const
+{
+    return RWTime();
+}
+
+RWTime CtiDeviceBase::getMustCompleteBy() const
+{
+    return RWTime();
+}
+void CtiDeviceBase::setMustCompleteBy(RWTime set)
+{
+    return;
+}
+
+RWTime CtiDeviceBase::getExecutionGrantExpires() const
+{
+    return _executeGrantExpires;
+}
+void CtiDeviceBase::setExecutionGrantExpires(RWTime set)
+{
+    _executeGrantExpires = set;
+    return;
+}
+
+RWTime CtiDeviceBase::getLastExclusionGrant() const
+{
+    return RWTime();
+}
+void CtiDeviceBase::setLastExclusionGrant(RWTime set)
+{
+    return;
+}
+
