@@ -268,7 +268,7 @@ MM_reloadPage(true);
 			  
 			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
-			  <input type="hidden" name="invID" value="<%= hardware.getInventoryID() %>">
+			  <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">

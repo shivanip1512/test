@@ -320,7 +320,7 @@ function prepareSubmit() {
             </table>
             <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit()">
               <input type="hidden" name="action" value="UpdateThermostatOption">
-			  <input type="hidden" name="invID" value="<%= hardware.getInventoryID() %>">
+			  <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
               <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp?InvNo=<%= invNo %>">
               <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Thermostat2.jsp?InvNo=<%= invNo %>">
               <input type="hidden" name="mode" value="">
