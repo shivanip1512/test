@@ -1,6 +1,7 @@
 <%
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"Inventory.jsp", "Show All"},
+						  {"CreateHardware.jsp", "Create Hardware"},
 						  {"AddSN.jsp", "Add Range"},
 						  {"UpdateSN.jsp", "Update Range"},
 						  {"DeleteSN.jsp", "Delete Range"},
@@ -28,20 +29,28 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
-<cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(InventoryRole.INVENTORY_SHOW_ALL) + ',' + Integer.toString(InventoryRole.INVENTORY_CREATE_HARDWARE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Inventory</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_SHOW_ALL %>"> 
           <tr> 
             <td width="10"><%= ((String[]) links.get("Inventory.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("Inventory.jsp"))[1] %></td>
           </tr>
+		  </cti:checkProperty>
+		  <cti:checkProperty propertyid="<%= InventoryRole.INVENTORY_CREATE_HARDWARE %>">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
+          </tr>
+		  </cti:checkProperty>
         </table>
       </div>
     </td>
   </tr>
-</cti:checkProperty>
+</cti:checkMultiProperty>
 <cti:checkMultiProperty propertyid="<%= Integer.toString(InventoryRole.SN_ADD_RANGE) + ',' + Integer.toString(InventoryRole.SN_UPDATE_RANGE) + ',' + Integer.toString(InventoryRole.SN_CONFIG_RANGE) %>">
   <tr> 
     <td> 

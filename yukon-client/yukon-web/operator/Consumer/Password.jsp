@@ -22,10 +22,6 @@ function validate(form) {
 		alert("Username cannot be empty");
 		return false;
 	}
-	if (form.Password.value == "" && form.Username.value != "" && form.Status.checked) {
-		alert("Password cannot be empty");
-		return false;
-	}
 	if (form.Password.value != form.Password2.value) {
 		alert("The passwords you entered don't match, please enter them again");
 		return false;
@@ -104,18 +100,17 @@ function deleteLogin(form) {
                     <td width="200"> 
                       <select name="CustomerGroup">
 <%
-	if (login.getUsername().length() > 0) {
-		String groupID = login.hasGroupID()? String.valueOf(login.getGroupID()) : "";
-		String groupName = login.hasGroupID()? AuthFuncs.getGroup(login.getGroupID()).getGroupName() : "(none)";
+	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+	if (custGroups == null || custGroups.length == 0) {
 %>
-                        <option value="<%= groupID %>"><%= groupName %></option>
+                        <option value="">(none)</option>
 <%
 	}
 	else {
-		com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 		for (int i = 0; i < custGroups.length; i++) {
+			String selected = (login.getUsername().length() > 0 && custGroups[i].getGroupID() == login.getGroupID())? "selected" : "";
 %>
-                        <option value="<%= custGroups[i].getGroupID() %>"><%= custGroups[i].getGroupName() %></option>
+                        <option value="<%= custGroups[i].getGroupID() %>" <%= selected %>><%= custGroups[i].getGroupName() %></option>
 <%
 		}
 	}
@@ -128,7 +123,8 @@ function deleteLogin(form) {
                       <div align="right"></div>
                     </td>
                     <td width="200" class="TableCell"> 
-                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>" <% if (login.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
+                      <input type="checkbox" name="Status" value="<%= StarsLoginStatus.ENABLED.toString() %>"
+                        <% if (login.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
                       Login Enabled </td>
                   </tr>
                   <tr> 

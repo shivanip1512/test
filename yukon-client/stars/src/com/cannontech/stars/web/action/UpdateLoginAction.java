@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -10,8 +11,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -160,7 +163,8 @@ public class UpdateLoginAction implements ActionBase {
 				}
 				
 				starsUser.setUsername( updateLogin.getUsername() );
-				starsUser.setPassword( updateLogin.getPassword() );
+				//starsUser.setPassword( updateLogin.getPassword() );
+				starsUser.setPassword( "" );
 				if (updateLogin.getStatus() != null)
 					starsUser.setStatus( updateLogin.getStatus() );
 				if (updateLogin.hasGroupID())
@@ -289,23 +293,52 @@ public class UpdateLoginAction implements ActionBase {
 			if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) )
 				throw new WebClientException( "Username '" + username + "' already exists" );
 			
-			String status = (updateLogin.getStatus() != null)? ECUtils.getUserStatus(updateLogin.getStatus()) : liteUser.getStatus();
-			
 			if (password.length() == 0) {
-				if (status.equalsIgnoreCase( liteUser.getStatus() ))
+				if (!username.equalsIgnoreCase( liteUser.getUsername() ))
 					throw new WebClientException( "Password cannot be empty" );
-				// Only the login status is to be changed, ignore the password
+				// Only the login group and/or status have been changed, ignore the password
 				password = liteUser.getPassword();
 			}
 			
-			com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
-					StarsLiteFactory.createDBPersistent( liteUser );
+			com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
+			com.cannontech.database.db.user.YukonUser dbUser = user.getYukonUser();
+			
+			StarsLiteFactory.setYukonUser( dbUser, liteUser );
 			dbUser.setUsername( username );
 			dbUser.setPassword( password );
-			dbUser.setStatus( status );
+			if (updateLogin.getStatus() != null)
+				dbUser.setStatus( ECUtils.getUserStatus(updateLogin.getStatus()) );
 			
-			dbUser = (com.cannontech.database.db.user.YukonUser)
-					Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
+			int loginGroupID = 0;
+			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
+			com.cannontech.database.cache.DefaultDatabaseCache cache =
+					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			
+			synchronized (cache) {
+				List userGroups = (List) cache.getYukonUserGroupMap().get( liteUser );
+				for (int i = 0; i < custGroups.length; i++) {
+					if (userGroups.contains( custGroups[i] )) {
+						loginGroupID = custGroups[i].getGroupID();
+						break;
+					}
+				}
+			}
+			
+			if (updateLogin.hasGroupID() && updateLogin.getGroupID() != loginGroupID) {
+				LiteYukonGroup liteGroup = AuthFuncs.getGroup( updateLogin.getGroupID() );
+				if (liteGroup == null)
+					throw new WebClientException( "Cannot update login to have no customer group" );
+				
+				com.cannontech.database.db.user.YukonGroup group =
+						new com.cannontech.database.db.user.YukonGroup( new Integer(liteGroup.getGroupID()) );
+				user.getYukonGroups().addElement( group );
+				
+				Transaction.createTransaction( Transaction.UPDATE, user ).execute();
+			}
+			else {
+				Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
+			}
+			
 			ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
 	}
