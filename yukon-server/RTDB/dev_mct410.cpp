@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/05/14 01:07:05 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/05/14 17:18:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1235,7 +1235,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
 
             outageTime = RWTime(timestamp + rwEpoch);
 
-            resultString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + outageTime.asString() + " for ";
+            resultString += getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + outageTime.asString() + " for ";
 
             if( duration == 0x8000 )
             {
@@ -1272,6 +1272,8 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
                     resultString += ", " + CtiNumStr(cycles) + " cycles\n";
                 }
             }
+
+            if( !i )    resultString += "\n";
         }
 
         ReturnMsg->setResultString(resultString);
@@ -1358,11 +1360,15 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
                                                        Value,
                                                        quality,
                                                        DemandAccumulatorPointType,
-                                                       "");
+                                                       valReport);
 
                     pData->setTime( timeStamp );
 
                     ReturnMsg->insert( pData );
+                }
+                else
+                {
+                    resultString += valReport + "\n";
                 }
             }
             else
