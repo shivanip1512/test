@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/07/28 18:59:50 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/07/28 19:53:16 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -323,8 +323,8 @@ void CtiPorterVerification::loadAssociations(void)
     {
         selector << tblVerification["ReceiverID"]
                  << tblVerification["TransmitterID"]
-                 << tblVerification["Verify"]
-                 << tblVerification["ResendOnFail"];
+                 << tblVerification["ResendOnFail"]
+                 << tblVerification["Disable"];
 
         rdr = selector.reader(conn);
 
@@ -336,12 +336,12 @@ void CtiPorterVerification::loadAssociations(void)
                 unsigned long tmp_receiver,
                               tmp_transmitter;
                 RWCString     tmp_resend,
-                              tmp_verify;
+                              tmp_disable;
 
                 rdr["ReceiverID"]    >> tmp_receiver;
                 rdr["TransmitterID"] >> tmp_transmitter;
-                rdr["Verify"]        >> tmp_verify;
                 rdr["ResendOnFail"]  >> tmp_resend;
+                rdr["Disable"]       >> tmp_disable;
                 tmp_resend.toLower();
 
                 //tmp_association.transmitter_id = tmp_transmitter;
@@ -351,7 +351,7 @@ void CtiPorterVerification::loadAssociations(void)
                 //  only add this association if we're to verify using it...  otherwise, ignore it and move on
                 //    generally, all associations on a transmitter will be either all on or all off, but
                 //    this allows for some flexibility
-                if( tmp_verify.compareTo("y", RWCString::ignoreCase) == 0 )
+                if( tmp_disable.compareTo("y", RWCString::ignoreCase) != 0 )
                 {
                     _associations.insert(make_pair(tmp_transmitter, tmp_association));
                 }
