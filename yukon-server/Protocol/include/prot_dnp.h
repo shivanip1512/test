@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/10/22 22:12:55 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/10/27 22:13:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,11 @@ private:
     unsigned short    _masterAddress, _slaveAddress;
     DNPCommand        _currentCommand;
     int               _options;
+
+    enum Retries
+    {
+        Retries_Default = 2
+    };
 
     void initLayers( void );
 
@@ -69,6 +74,7 @@ public:
     DNPCommand getCommand( void );
 
     bool commandRequiresRequeueOnFail( void );
+    int  commandRetries( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );

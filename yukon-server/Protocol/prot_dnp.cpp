@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/10/22 22:12:55 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/10/27 22:13:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -314,7 +314,7 @@ bool CtiProtocolDNP::commandRequiresRequeueOnFail( void )
 
     switch( _currentCommand )
     {
-        case DNP_SetDigitalOut_Direct:
+/*        case DNP_SetDigitalOut_Direct:
         case DNP_SetDigitalOut_SBO_Select:
         case DNP_SetDigitalOut_SBO_Operate:
         {
@@ -322,9 +322,36 @@ bool CtiProtocolDNP::commandRequiresRequeueOnFail( void )
 
             break;
         }
+*/
+        default:
+        {
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
+int CtiProtocolDNP::commandRetries( void )
+{
+    int retVal;
+
+    switch( _currentCommand )
+    {
+        case DNP_SetDigitalOut_Direct:
+        case DNP_SetDigitalOut_SBO_Select:
+        case DNP_SetDigitalOut_SBO_Operate:
+        {
+            retVal = 0;
+
+            break;
+        }
 
         default:
         {
+            retVal = Retries_Default;
+
             break;
         }
     }
@@ -364,6 +391,7 @@ int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
         OutMessage->Destination  = _slaveAddress;
         OutMessage->EventCode    = RESULT;
         OutMessage->MessageFlags = commandRequiresRequeueOnFail() ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
+        OutMessage->Retry        = commandRetries();
 
         if( _currentCommand == DNP_WriteTime )
         {
