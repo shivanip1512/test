@@ -331,6 +331,11 @@ public class CSVBillingFormat extends ExportFormatBase
 					csvBillingRec.setCurtailOffer(offerID);
 					csvBillingRec.setCurtailDate(curtailDate);
 					csvBillingRec.setCurtailRate(price);
+
+					//Change hour from 0-23 to 1-24 (the new 0 is midnight as in the latest reading, not the earliest)
+					hour++;
+					if (hour == 24)
+						hour = 0;
 					csvBillingRec.setRLP((Double)baselineValues[hour]);
 					csvBillingRec.setCLR(amtCommit);
 					csvBillingRec.setPDL(csvBillingCust.getPDL());
