@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -44,6 +46,8 @@ implements java.io.Serializable
 
     private StarsLMHardwareHistory _starsLMHardwareHistory;
 
+    private java.util.Vector _starsLMHardwareConfigList;
+
 
       //----------------/
      //- Constructors -/
@@ -51,12 +55,43 @@ implements java.io.Serializable
 
     public StarsLMHw() {
         super();
+        _starsLMHardwareConfigList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsLMHw()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * 
+     * 
+     * @param vStarsLMHardwareConfig
+    **/
+    public void addStarsLMHardwareConfig(StarsLMHardwareConfig vStarsLMHardwareConfig)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        _starsLMHardwareConfigList.addElement(vStarsLMHardwareConfig);
+    } //-- void addStarsLMHardwareConfig(StarsLMHardwareConfig) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vStarsLMHardwareConfig
+    **/
+    public void addStarsLMHardwareConfig(int index, StarsLMHardwareConfig vStarsLMHardwareConfig)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        _starsLMHardwareConfigList.insertElementAt(vStarsLMHardwareConfig, index);
+    } //-- void addStarsLMHardwareConfig(int, StarsLMHardwareConfig) 
+
+    /**
+    **/
+    public java.util.Enumeration enumerateStarsLMHardwareConfig()
+    {
+        return _starsLMHardwareConfigList.elements();
+    } //-- java.util.Enumeration enumerateStarsLMHardwareConfig() 
 
     /**
      * Returns the value of field 'deviceStatus'.
@@ -99,6 +134,41 @@ implements java.io.Serializable
     } //-- java.lang.String getManufactureSerialNumber() 
 
     /**
+     * 
+     * 
+     * @param index
+    **/
+    public StarsLMHardwareConfig getStarsLMHardwareConfig(int index)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsLMHardwareConfigList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        return (StarsLMHardwareConfig) _starsLMHardwareConfigList.elementAt(index);
+    } //-- StarsLMHardwareConfig getStarsLMHardwareConfig(int) 
+
+    /**
+    **/
+    public StarsLMHardwareConfig[] getStarsLMHardwareConfig()
+    {
+        int size = _starsLMHardwareConfigList.size();
+        StarsLMHardwareConfig[] mArray = new StarsLMHardwareConfig[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = (StarsLMHardwareConfig) _starsLMHardwareConfigList.elementAt(index);
+        }
+        return mArray;
+    } //-- StarsLMHardwareConfig[] getStarsLMHardwareConfig() 
+
+    /**
+    **/
+    public int getStarsLMHardwareConfigCount()
+    {
+        return _starsLMHardwareConfigList.size();
+    } //-- int getStarsLMHardwareConfigCount() 
+
+    /**
      * Returns the value of field 'starsLMHardwareHistory'.
      * 
      * @return the value of field 'starsLMHardwareHistory'.
@@ -136,6 +206,25 @@ implements java.io.Serializable
     **/
     public abstract void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+
+    /**
+    **/
+    public void removeAllStarsLMHardwareConfig()
+    {
+        _starsLMHardwareConfigList.removeAllElements();
+    } //-- void removeAllStarsLMHardwareConfig() 
+
+    /**
+     * 
+     * 
+     * @param index
+    **/
+    public StarsLMHardwareConfig removeStarsLMHardwareConfig(int index)
+    {
+        java.lang.Object obj = _starsLMHardwareConfigList.elementAt(index);
+        _starsLMHardwareConfigList.removeElementAt(index);
+        return (StarsLMHardwareConfig) obj;
+    } //-- StarsLMHardwareConfig removeStarsLMHardwareConfig(int) 
 
     /**
      * Sets the value of field 'deviceStatus'.
@@ -178,6 +267,36 @@ implements java.io.Serializable
     {
         this._manufactureSerialNumber = manufactureSerialNumber;
     } //-- void setManufactureSerialNumber(java.lang.String) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vStarsLMHardwareConfig
+    **/
+    public void setStarsLMHardwareConfig(int index, StarsLMHardwareConfig vStarsLMHardwareConfig)
+        throws java.lang.IndexOutOfBoundsException
+    {
+        //-- check bounds for index
+        if ((index < 0) || (index > _starsLMHardwareConfigList.size())) {
+            throw new IndexOutOfBoundsException();
+        }
+        _starsLMHardwareConfigList.setElementAt(vStarsLMHardwareConfig, index);
+    } //-- void setStarsLMHardwareConfig(int, StarsLMHardwareConfig) 
+
+    /**
+     * 
+     * 
+     * @param starsLMHardwareConfigArray
+    **/
+    public void setStarsLMHardwareConfig(StarsLMHardwareConfig[] starsLMHardwareConfigArray)
+    {
+        //-- copy array
+        _starsLMHardwareConfigList.removeAllElements();
+        for (int i = 0; i < starsLMHardwareConfigArray.length; i++) {
+            _starsLMHardwareConfigList.addElement(starsLMHardwareConfigArray[i]);
+        }
+    } //-- void setStarsLMHardwareConfig(StarsLMHardwareConfig) 
 
     /**
      * Sets the value of field 'starsLMHardwareHistory'.

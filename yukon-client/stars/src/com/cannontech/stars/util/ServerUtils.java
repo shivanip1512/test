@@ -49,6 +49,9 @@ public class ServerUtils {
     
     private static String ADMIN_EMAIL_ADDRESS = "admin_email_address";
     
+    // If date in database is earlier than this, than the date is actually empty
+    private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
+    
 	
     public static void sendCommand(String command)
     {
@@ -328,6 +331,11 @@ public class ServerUtils {
 		
 		stmt.execute();
 		return (stmt.getRowCount() > 0);
+	}
+	
+	public static Date translateDate(long time) {
+		if (time < VERY_EARLY_TIME) return null;
+		return new Date(time);
 	}
 
 }

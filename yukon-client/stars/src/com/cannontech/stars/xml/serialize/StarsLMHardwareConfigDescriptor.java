@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoriesDescriptor.java,v 1.34 2003/04/04 18:02:33 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.34 $ $Date: 2003/04/04 18:02:33 $
+ * @version $Revision$ $Date$
 **/
-public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsLMHardwareConfigDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,53 +47,101 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
      //- Constructors -/
     //----------------/
 
-    public StarsInventoriesDescriptor() {
+    public StarsLMHardwareConfigDescriptor() {
         super();
-        xmlName = "stars-Inventories";
+        xmlName = "stars-LMHardwareConfig";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _starsLMHardwareList
-        desc = new XMLFieldDescriptorImpl(StarsLMHardware.class, "_starsLMHardwareList", "stars-LMHardware", NodeType.Element);
+        //-- _applianceID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_applianceID", "applianceID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsInventories target = (StarsInventories) object;
-                return target.getStarsLMHardware();
+                StarsLMHardwareConfig target = (StarsLMHardwareConfig) object;
+                if(!target.hasApplianceID())
+                    return null;
+                return new Integer(target.getApplianceID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsInventories target = (StarsInventories) object;
-                    target.addStarsLMHardware( (StarsLMHardware) value);
+                    StarsLMHardwareConfig target = (StarsLMHardwareConfig) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteApplianceID();
+                        return;
+                    }
+                    target.setApplianceID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMHardware();
+                return null;
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMHardwareList
+        //-- validation code for: _applianceID
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsInventoriesDescriptor()
+        //-- _groupID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_groupID", "groupID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsLMHardwareConfig target = (StarsLMHardwareConfig) object;
+                if(!target.hasGroupID())
+                    return null;
+                return new Integer(target.getGroupID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsLMHardwareConfig target = (StarsLMHardwareConfig) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteGroupID();
+                        return;
+                    }
+                    target.setGroupID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _groupID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareConfigDescriptor()
 
 
       //-----------/
@@ -125,7 +173,7 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsInventories.class;
+        return com.cannontech.stars.xml.serialize.StarsLMHardwareConfig.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -31,6 +31,7 @@ import com.cannontech.stars.xml.serialize.StarsCustListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareEvent;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -78,10 +79,8 @@ public class CreateLMHardwareAction implements ActionBase {
 					DeviceStatus.class );
 			createHw.setDeviceStatus( status );
 			
-			InstallationCompany company = (InstallationCompany) StarsFactory.newStarsCustListEntry(
-					ServletUtils.getStarsCustListEntryByID(
-						selectionLists, com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, Integer.parseInt(req.getParameter("ServiceCompany"))),
-					InstallationCompany.class );
+			InstallationCompany company = new InstallationCompany();
+			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
 			createHw.setInstallationCompany( company );
 			
 			createHw.setCategory( "" );
@@ -89,18 +88,21 @@ public class CreateLMHardwareAction implements ActionBase {
 			createHw.setAltTrackingNumber( req.getParameter("AltTrackNo") );
 			if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
 				createHw.setReceiveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("ReceiveDate")) );
-			else
-				createHw.setReceiveDate( new Date(0) );
 			if (req.getParameter("InstallDate") != null && req.getParameter("InstallDate").length() > 0)
 				createHw.setInstallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("InstallDate")) );
-			else
-				createHw.setInstallDate( new Date(0) );
 			if (req.getParameter("RemoveDate") != null && req.getParameter("RemoveDate").length() > 0)
 				createHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("RemoveDate")) );
-			else
-				createHw.setRemoveDate( new Date(0) );
 			createHw.setNotes( req.getParameter("Notes") );
 			createHw.setInstallationNotes( req.getParameter("InstallNotes") );
+			
+			String[] appIDs = req.getParameterValues( "AppID" );
+			String[] grpIDs = req.getParameterValues( "GroupID" );
+			for (int i = 0; i < appIDs.length; i++) {
+				StarsLMHardwareConfig config = new StarsLMHardwareConfig();
+				config.setApplianceID( Integer.parseInt(appIDs[i]) );
+				config.setGroupID( Integer.parseInt(grpIDs[i]) );
+				createHw.addStarsLMHardwareConfig( config );
+			}
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsCreateLMHardware( createHw );
@@ -149,9 +151,12 @@ public class CreateLMHardwareAction implements ActionBase {
             invDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
             invDB.setInstallationCompanyID( new Integer(createHw.getInstallationCompany().getEntryID()) );
             invDB.setCategoryID( new Integer(getInventoryCategory(createHw.getLMDeviceType(), energyCompanyID).getEntryID()) );
-            invDB.setReceiveDate( createHw.getReceiveDate() );
-            invDB.setInstallDate( createHw.getInstallDate() );
-            invDB.setRemoveDate( createHw.getRemoveDate() );
+            if (createHw.getReceiveDate() != null)
+	            invDB.setReceiveDate( createHw.getReceiveDate() );
+	        if (createHw.getInstallDate() != null)
+	            invDB.setInstallDate( createHw.getInstallDate() );
+	        if (createHw.getRemoveDate() != null)
+	            invDB.setRemoveDate( createHw.getRemoveDate() );
             invDB.setAlternateTrackingNumber( createHw.getAltTrackingNumber() );
             invDB.setVoltageID( new Integer(createHw.getVoltage().getEntryID()) );
             invDB.setNotes( createHw.getNotes() );
@@ -160,39 +165,59 @@ public class CreateLMHardwareAction implements ActionBase {
             hwDB.setLMHardwareTypeID( new Integer(createHw.getLMDeviceType().getEntryID()) );
             
             hw.setEnergyCompanyID( new Integer(energyCompanyID) );
-            hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase) Transaction.createTransaction( Transaction.INSERT, hw ).execute();
+            hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+            		Transaction.createTransaction( Transaction.INSERT, hw ).execute();
+            
+            for (int i = 0; i < createHw.getStarsLMHardwareConfigCount(); i++) {
+            	StarsLMHardwareConfig starsConfig = createHw.getStarsLMHardwareConfig(i);
+            	com.cannontech.database.db.stars.hardware.LMHardwareConfiguration config =
+            			new com.cannontech.database.db.stars.hardware.LMHardwareConfiguration();
+            	config.setInventoryID( hw.getInventoryBase().getInventoryID() );
+            	config.setApplianceID( new Integer(starsConfig.getApplianceID()) );
+            	config.setAddressingGroupID( new Integer(starsConfig.getGroupID()) );
+            	config = (com.cannontech.database.db.stars.hardware.LMHardwareConfiguration)
+            			Transaction.createTransaction( Transaction.INSERT, config ).execute();
+            }
             
             LiteLMHardwareBase liteHw = (LiteLMHardwareBase) StarsLiteFactory.createLite( hw );
             StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompanyID );
             
-            // Add "Install" to hardware events
-        	com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
-        	com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
-        	com.cannontech.database.db.stars.event.LMCustomerEventBase eventBaseDB = event.getLMCustomerEventBase();
-            
-            int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-            int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
-        	
-        	eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
-            eventBaseDB.setActionID( new Integer(installActID) );
-            eventBaseDB.setEventDateTime( createHw.getInstallDate() );
-            eventBaseDB.setNotes( createHw.getInstallationNotes() );
-            
-            eventDB.setInventoryID( hwDB.getInventoryID() );
-            event.setEnergyCompanyID( new Integer(energyCompanyID) );
-            
-            event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-            		Transaction.createTransaction( Transaction.INSERT, event ).execute();
-            
-            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-            liteHw.setLmHardwareHistory( new ArrayList() );
-            liteHw.getLmHardwareHistory().add( liteEvent );
-            
-            StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
-            StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
-            starsHw.setStarsLMHardwareHistory( new StarsLMHardwareHistory() );
-            starsHw.getStarsLMHardwareHistory().addStarsLMHardwareEvent( starsEvent );
-            
+            if (createHw.getInstallDate() != null ||
+            	(createHw.getInstallationNotes() != null && createHw.getInstallationNotes().length() > 0))
+            {
+	            // Add "Install" to hardware events
+	        	com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
+	        	com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
+	        	com.cannontech.database.db.stars.event.LMCustomerEventBase eventBaseDB = event.getLMCustomerEventBase();
+	            
+	            int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
+	            int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
+	        	
+	        	eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
+	            eventBaseDB.setActionID( new Integer(installActID) );
+	            if (createHw.getInstallDate() != null)
+		            eventBaseDB.setEventDateTime( createHw.getInstallDate() );
+	            eventBaseDB.setNotes( createHw.getInstallationNotes() );
+	            
+	            eventDB.setInventoryID( hwDB.getInventoryID() );
+	            event.setEnergyCompanyID( new Integer(energyCompanyID) );
+	            
+	            event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+	            		Transaction.createTransaction( Transaction.INSERT, event ).execute();
+	            
+	            LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+	            liteHw.setLmHardwareHistory( new ArrayList() );
+	            liteHw.getLmHardwareHistory().add( liteEvent );
+	            
+	            StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
+	            StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
+	            starsHw.setStarsLMHardwareHistory( new StarsLMHardwareHistory() );
+	            starsHw.getStarsLMHardwareHistory().addStarsLMHardwareEvent( starsEvent );
+            }
+
+/*
+ * In order to activate the hardware, you must click the "config" button
+ * 
             // If the device status is set to "Available", then add "Config" to hardware events
             YukonListEntry availStatEntry = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
             int configActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG ).getEntryID();
@@ -225,6 +250,7 @@ public class CreateLMHardwareAction implements ActionBase {
 	            StarsLiteFactory.setStarsCustListEntry( status, availStatEntry );
 	            starsHw.setDeviceStatus( status );
             }
+*/
             
             ArrayList lmHardwareList = energyCompany.getAllLMHardwares();
             synchronized (lmHardwareList) { lmHardwareList.add( liteHw ); }

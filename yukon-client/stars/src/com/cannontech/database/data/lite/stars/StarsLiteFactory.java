@@ -1151,9 +1151,9 @@ public class StarsLiteFactory {
 		company.setContent( YukonListFuncs.getYukonListEntry(liteHw.getInstallationCompanyID()).getEntryText() );
 		starsHw.setInstallationCompany( company );
 		
-		starsHw.setReceiveDate( new Date(liteHw.getReceiveDate()) );
-		starsHw.setInstallDate( new Date(liteHw.getInstallDate()) );
-		starsHw.setRemoveDate( new Date(liteHw.getRemoveDate()) );
+		starsHw.setReceiveDate( ServerUtils.translateDate(liteHw.getReceiveDate()) );
+		starsHw.setInstallDate( ServerUtils.translateDate(liteHw.getInstallDate()) );
+		starsHw.setRemoveDate( ServerUtils.translateDate(liteHw.getRemoveDate()) );
 		starsHw.setAltTrackingNumber( forceNotNull(liteHw.getAlternateTrackingNumber()) );
 		
 		Voltage volt = new Voltage();

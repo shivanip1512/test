@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoryDescriptor.java,v 1.33 2003/04/03 22:22:08 zyao Exp $
+ * $Id: StarsInventoryDescriptor.java,v 1.34 2003/04/04 18:02:35 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.33 $ $Date: 2003/04/03 22:22:08 $
+ * @version $Revision: 1.34 $ $Date: 2003/04/04 18:02:35 $
 **/
 public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -202,13 +202,11 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _receiveDate
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _installDate
@@ -237,13 +235,11 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _installDate
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _removeDate
@@ -272,13 +268,11 @@ public class StarsInventoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _removeDate
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _altTrackingNumber

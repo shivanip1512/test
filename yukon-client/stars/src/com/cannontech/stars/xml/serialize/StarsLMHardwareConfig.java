@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistory.java,v 1.34 2003/04/04 18:02:33 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Date;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -24,32 +23,37 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.34 $ $Date: 2003/04/04 18:02:33 $
+ * @version $Revision$ $Date$
 **/
-public class ControlHistory implements java.io.Serializable {
+public class StarsLMHardwareConfig implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Date _startDateTime;
-
-    private int _controlDuration;
+    private int _applianceID;
 
     /**
-     * keeps track of state for field: _controlDuration
+     * keeps track of state for field: _applianceID
     **/
-    private boolean _has_controlDuration;
+    private boolean _has_applianceID;
+
+    private int _groupID;
+
+    /**
+     * keeps track of state for field: _groupID
+    **/
+    private boolean _has_groupID;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public ControlHistory() {
+    public StarsLMHardwareConfig() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.ControlHistory()
+    } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareConfig()
 
 
       //-----------/
@@ -57,31 +61,52 @@ public class ControlHistory implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'controlDuration'.
-     * 
-     * @return the value of field 'controlDuration'.
     **/
-    public int getControlDuration()
+    public void deleteApplianceID()
     {
-        return this._controlDuration;
-    } //-- int getControlDuration() 
-
-    /**
-     * Returns the value of field 'startDateTime'.
-     * 
-     * @return the value of field 'startDateTime'.
-    **/
-    public java.util.Date getStartDateTime()
-    {
-        return this._startDateTime;
-    } //-- java.util.Date getStartDateTime() 
+        this._has_applianceID= false;
+    } //-- void deleteApplianceID() 
 
     /**
     **/
-    public boolean hasControlDuration()
+    public void deleteGroupID()
     {
-        return this._has_controlDuration;
-    } //-- boolean hasControlDuration() 
+        this._has_groupID= false;
+    } //-- void deleteGroupID() 
+
+    /**
+     * Returns the value of field 'applianceID'.
+     * 
+     * @return the value of field 'applianceID'.
+    **/
+    public int getApplianceID()
+    {
+        return this._applianceID;
+    } //-- int getApplianceID() 
+
+    /**
+     * Returns the value of field 'groupID'.
+     * 
+     * @return the value of field 'groupID'.
+    **/
+    public int getGroupID()
+    {
+        return this._groupID;
+    } //-- int getGroupID() 
+
+    /**
+    **/
+    public boolean hasApplianceID()
+    {
+        return this._has_applianceID;
+    } //-- boolean hasApplianceID() 
+
+    /**
+    **/
+    public boolean hasGroupID()
+    {
+        return this._has_groupID;
+    } //-- boolean hasGroupID() 
 
     /**
     **/
@@ -121,36 +146,37 @@ public class ControlHistory implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'controlDuration'.
+     * Sets the value of field 'applianceID'.
      * 
-     * @param controlDuration the value of field 'controlDuration'.
+     * @param applianceID the value of field 'applianceID'.
     **/
-    public void setControlDuration(int controlDuration)
+    public void setApplianceID(int applianceID)
     {
-        this._controlDuration = controlDuration;
-        this._has_controlDuration = true;
-    } //-- void setControlDuration(int) 
+        this._applianceID = applianceID;
+        this._has_applianceID = true;
+    } //-- void setApplianceID(int) 
 
     /**
-     * Sets the value of field 'startDateTime'.
+     * Sets the value of field 'groupID'.
      * 
-     * @param startDateTime the value of field 'startDateTime'.
+     * @param groupID the value of field 'groupID'.
     **/
-    public void setStartDateTime(java.util.Date startDateTime)
+    public void setGroupID(int groupID)
     {
-        this._startDateTime = startDateTime;
-    } //-- void setStartDateTime(java.util.Date) 
+        this._groupID = groupID;
+        this._has_groupID = true;
+    } //-- void setGroupID(int) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.ControlHistory unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsLMHardwareConfig unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.ControlHistory) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ControlHistory.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.ControlHistory unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsLMHardwareConfig) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMHardwareConfig.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsLMHardwareConfig unmarshal(java.io.Reader) 
 
     /**
     **/
