@@ -928,7 +928,7 @@
 	<xs:element name="stars-UpdateThermostatScheduleResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-LMHardwareEvent"/>
+				<xs:element ref="stars-LMHardwareEvent" minOccurs="0"/>
 			<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/></xs:sequence>
 		<xs:attribute name="inventoryID" type="xs:int"/></xs:complexType>
 	</xs:element>
