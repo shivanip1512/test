@@ -1,5 +1,8 @@
 package com.cannontech.billing.record;
 
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.amr.BillingRole;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/28/00 11:55:04 AM)
@@ -183,12 +186,9 @@ public java.lang.String getCoopId()
 {
 	if( coopId == null)
 	{
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			coopId = bundle.getString("coop_id");
-		}
-		catch( java.util.MissingResourceException mre)
+		coopId = ClientSession.getInstance().getRolePropertyValue( BillingRole.COOP_ID_CADP_ONLY );
+		
+		if( coopId == null )
 		{
 			com.cannontech.clientutils.CTILogger.info(" Missing 'coop_id' in config.properties.");
 
@@ -213,6 +213,7 @@ public java.lang.String getCoopId()
 				coopId = "00000";
 		}
 	}
+
 	return coopId;
 }
 /**
