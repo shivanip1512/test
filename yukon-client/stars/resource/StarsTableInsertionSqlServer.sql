@@ -39,7 +39,7 @@ INSERT INTO ECToInventoryMapping VALUES (-1,0)
 
 
 /* YukonWebConfiguration */
-insert into YukonWebConfiguration values (1,'YukonLogo.gif','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','','')
+insert into YukonWebConfiguration values (1,'','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','XYZ Utility','')
 insert into YukonWebConfiguration values(
 2, 'AC.gif', '<b>CYCLE AC<br> Light, Medium</b> - When controlled, your air conditioning compressor will be interrupted for 10 minutes out of every half hour if you sign up for the light program and interrupted for 15 minutes out of every half hour if you sign up for the medium program.', 'Cycle AC', '')
 insert into YukonWebConfiguration values(
@@ -66,10 +66,22 @@ insert into YukonWebConfiguration values(
 18, 'Setback.gif', '<b>SETBACK <br>2&deg, 4&deg</b> - When controlled, your air conditioning compressor will be set back 2 degrees or 4 degrees depending on the program you sign up for. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', 'SetBack', '')
 insert into YukonWebConfiguration values(19, 'Setback.gif,$Sm.gif,QuarterSm.gif,Tree1Sm.gif', 'When controlled, your air conditioning compressor will be set back two degrees. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', '2&deg', '')
 insert into YukonWebConfiguration values(20, 'Setback.gif,$$$Sm.gif,HalfSm.gif,Tree3Sm.gif', 'When controlled, your air conditioning compressor will be set back four degrees. Your furnace fan will keep running. You may notice a slight increase in your indoor air temperature.', '4&deg', '')
+insert into YukonWebConfiguration values(21,'Irrigation.gif','<b>IRRIGATION</b><br>Irrigation control.','Irrigation','')
+insert into YukonWebConfiguration values(22,'Irrigation.gif,IrrigationSm.gif','Irrigation control.','Irrigation','')
 
+
+
+/* energy company address */
+insert into Address values (100,'9000 6th Street','','Minneapolis','MN','55441','(none)')
+
+/* energy company contact */
+insert into Contact values (100,'(none)','(none)',-1,100)
+insert into ContactNotification values (101,100,2,'N','1-800-555-5432')
+insert into ContactNotification values (102,100,4,'N','1-800-555-5431')
+insert into ContactNotification values (103,100,1,'N','info@xyzutility.com')
 
 /* EnergyCompany */
-insert into EnergyCompany values (1,'Test Company',3,1)
+insert into EnergyCompany values (1,'Test Company',3,1,100)
 
 /* Create operator login */
 insert into YukonUser values (101,'op1','op1',0,'1970-01-01','Enabled')
@@ -108,7 +120,18 @@ insert into YukonSelectionList values (1016,'N','','Question type selection', 'Q
 insert into YukonSelectionList values (1017,'N','','Answer type selection', 'AnswerType','N')
 insert into YukonSelectionList values (1018,'N','','Thermostat mode selection', 'ThermostatMode','N')
 insert into YukonSelectionList values (1019,'N','','Thermostat fan state selection', 'ThermostatFanState','N')
-insert into YukonSelectionList values (1020,'O','','Customer FAQ groups', 'CustomerFAQGroup','N')
+insert into YukonSelectionList values (1020,'O','(none)','Customer FAQ groups', 'CustomerFAQGroup','N')
+insert into YukonSelectionList values (1021,'N','(none)','Residence type selection', 'ResidenceType','N')
+insert into YukonSelectionList values (1022,'N','(none)','Construction material selection', 'ConstructionMaterial','N')
+insert into YukonSelectionList values (1023,'N','(none)','Decade built selection', 'DecadeBuilt','N')
+insert into YukonSelectionList values (1024,'N','(none)','Square feet selection', 'SquareFeet','N')
+insert into YukonSelectionList values (1025,'N','(none)','Insulation depth selection', 'InsulationDepth','N')
+insert into YukonSelectionList values (1026,'N','(none)','General condition selection', 'GeneralCondition','N')
+insert into YukonSelectionList values (1027,'N','(none)','Main cooling system selection', 'CoolingSystem','N')
+insert into YukonSelectionList values (1028,'N','(none)','Main heating system selection', 'HeatingSystem','N')
+insert into YukonSelectionList values (1029,'N','(none)','Number of occupants selection', 'NumberOfOccupants','N')
+insert into YukonSelectionList values (1030,'N','(none)','Ownership type selection', 'OwnershipType','N')
+insert into YukonSelectionList values (1031,'N','(none)','Main fuel type selection', 'FuelType','N')
 
 
 /* YukonListEntry */
@@ -132,9 +155,9 @@ insert into YukonListEntry values (1017,1005,0,'LCR-1000',0)
 insert into YukonListEntry values (1018,1005,0,'Thermostat',1301)
 insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401)
 insert into YukonListEntry values (1020,1007,0,'Water Heater',1402)
-insert into YukonListEntry values (1021,1007,0,'Heating System',1403)
-insert into YukonListEntry values (1022,1007,0,'Pool Pump',1404)
-insert into YukonListEntry values (1023,1007,0,'Hot Tub',1405)
+insert into YukonListEntry values (1021,1007,0,'Storage Heat',1403)
+insert into YukonListEntry values (1022,1007,0,'Heat Pump',1404)
+insert into YukonListEntry values (1023,1007,0,'Dual Fuel',1405)
 insert into YukonListEntry values (1024,1008,0,'General',0)
 insert into YukonListEntry values (1025,1008,0,'Credit',0)
 insert into YukonListEntry values (1026,1009,0,'Service Call',0)
@@ -178,6 +201,45 @@ insert into YukonListEntry values (1063,1020,3,'SAVINGS',0)
 insert into YukonListEntry values (1064,1001,0,'ThermostatManual',1003)
 insert into YukonListEntry values (1065,1002,0,'Change Schedule',1109)
 insert into YukonListEntry values (1066,1002,0,'Manual Option',1110)
+insert into YukonListEntry values (1067,1007,0,'Generator',1406)
+insert into YukonListEntry values (1068,1007,0,'Grain Dryer',1407)
+insert into YukonListEntry values (1069,1007,0,'Irrigation',1408)
+insert into YukonListEntry values (1070,1021,0,'Home',0)
+insert into YukonListEntry values (1071,1021,0,'Duplex',0)
+insert into YukonListEntry values (1072,1021,0,'Apartment',0)
+insert into YukonListEntry values (1073,1022,0,'Wood',0)
+insert into YukonListEntry values (1074,1022,0,'Brick',0)
+insert into YukonListEntry values (1075,1023,0,'1920',0)
+insert into YukonListEntry values (1076,1023,0,'1930',0)
+insert into YukonListEntry values (1077,1023,0,'1940',0)
+insert into YukonListEntry values (1078,1023,0,'1950',0)
+insert into YukonListEntry values (1079,1023,0,'1960',0)
+insert into YukonListEntry values (1080,1023,0,'1970',0)
+insert into YukonListEntry values (1081,1023,0,'1980',0)
+insert into YukonListEntry values (1082,1023,0,'1990',0)
+insert into YukonListEntry values (1083,1023,0,'2000',0)
+insert into YukonListEntry values (1084,1024,0,'&lt; 1000',0)
+insert into YukonListEntry values (1085,1024,0,'1000 - 1500',0)
+insert into YukonListEntry values (1086,1024,0,'1500 - 2000',0)
+insert into YukonListEntry values (1087,1024,0,'2000 - 2500',0)
+insert into YukonListEntry values (1088,1024,0,'2500 - 3000',0)
+insert into YukonListEntry values (1089,1024,0,'3000 - 3500',0)
+insert into YukonListEntry values (1090,1024,0,'3500 - 4000',0)
+insert into YukonListEntry values (1091,1024,0,'4000+',0)
+insert into YukonListEntry values (1092,1025,0,'1 - 2',0)
+insert into YukonListEntry values (1093,1025,0,'3 - 6',0)
+insert into YukonListEntry values (1094,1025,0,'6+',0)
+insert into YukonListEntry values (1095,1026,0,'Poor',0)
+insert into YukonListEntry values (1096,1026,0,'Fair',0)
+insert into YukonListEntry values (1097,1026,0,'Good',0)
+insert into YukonListEntry values (1098,1026,0,'Excellent',0)
+insert into YukonListEntry values (1099,1029,0,'1 - 2',0)
+insert into YukonListEntry values (1100,1029,0,'3 - 4',0)
+insert into YukonListEntry values (1101,1029,0,'5 - 6',0)
+insert into YukonListEntry values (1102,1029,0,'7 - 8',0)
+insert into YukonListEntry values (1103,1029,0,'9+',0)
+insert into YukonListEntry values (1104,1030,0,'Own',0)
+insert into YukonListEntry values (1105,1030,0,'Rent',0)
 
 
 
@@ -199,7 +261,7 @@ insert into Substation values (2,'South Sub',3)
 
 /* customer contact */
 insert into Contact values (101,'Robert','Livingston',-1,0)
-insert into ContactNotification values (101,101,3,'N','763-595-7777')	/* home hone */
+insert into ContactNotification values (101,101,5,'N','763-595-7777')	/* home hone */
 
 /* customer address */
 insert into Address values (101,'3801 Golden Valley Rd','Suite 300','Golden Valley','MN','55427','Hennepin')
@@ -228,10 +290,11 @@ insert into LMHardwareBase values (2,'600000328',1018)	/* thermostat */
 /* appliance category */
 insert into ApplianceCategory values (1, 'Air Conditioner', 1019, 2)
 insert into ApplianceCategory values (2, 'Water Heater', 1020, 3)
-insert into ApplianceCategory values (3, 'Dual Fuel', 1021, 4)
+insert into ApplianceCategory values (3, 'Dual Fuel', 1023, 4)
 insert into ApplianceCategory values (4, 'ETS', 1021, 5)
 insert into ApplianceCategory values (5, 'Pool Pump', 1022, 6)
-insert into ApplianceCategory values (6, 'Hot Tub', 1023, 7)
+insert into ApplianceCategory values (6, 'Hot Tub', 1020, 7)
+insert into ApplianceCategory values (7, 'Irrigation', 1069, 21)
 
 /* appliance base */
 insert into ApplianceBase values (1,1,1,5,'2000',1039,1043,0,0,'')
@@ -244,10 +307,11 @@ insert into LMHardwareConfiguration values (1,2,4)
 
 /* LMProgramWebPublishing */
 insert into LMProgramWebPublishing values(1,5,8,0)
-insert into LMProgramWebPublishing values(1,6,9,1045)	/* Chance of control unlikely */
+insert into LMProgramWebPublishing values(1,6,9,0)
 insert into LMProgramWebPublishing values(2,7,10,0)
 insert into LMProgramWebPublishing values(2,8,11,0)
 insert into LMProgramWebPublishing values(2,9,12,0)
+insert into LMProgramWebPublishing values(7,10,22,1045)		/* Chance of control unlikely */
 
 
 /* InterviewQuestion */
@@ -296,17 +360,34 @@ insert into ECToGenericMapping values (1, 1017, 'YukonSelectionList')
 insert into ECToGenericMapping values (1, 1018, 'YukonSelectionList')
 insert into ECToGenericMapping values (1, 1019, 'YukonSelectionList')
 insert into ECToGenericMapping values (1, 1020, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1021, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1022, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1023, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1024, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1025, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1026, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1027, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1028, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1029, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1030, 'YukonSelectionList')
+insert into ECToGenericMapping values (1, 1031, 'YukonSelectionList')
 insert into ECToGenericMapping values (1, 5, 'LMPrograms')
 insert into ECToGenericMapping values (1, 6, 'LMPrograms')
 insert into ECToGenericMapping values (1, 7, 'LMPrograms')
 insert into ECToGenericMapping values (1, 8, 'LMPrograms')
 insert into ECToGenericMapping values (1, 9, 'LMPrograms')
+insert into ECToGenericMapping values (1, 10, 'LMPrograms')
 insert into ECToGenericMapping values (1, 1, 'Substation')
 insert into ECToGenericMapping values (1, 2, 'Substation')
 INSERT INTO ECToGenericMapping VALUES (1, 1, 'ServiceCompany')
 INSERT INTO ECToGenericMapping VALUES (1, 2, 'ServiceCompany')
 INSERT INTO ECToGenericMapping VALUES (1, 1, 'ApplianceCategory')
 INSERT INTO ECToGenericMapping VALUES (1, 2, 'ApplianceCategory')
+INSERT INTO ECToGenericMapping VALUES (1, 3, 'ApplianceCategory')
+INSERT INTO ECToGenericMapping VALUES (1, 4, 'ApplianceCategory')
+INSERT INTO ECToGenericMapping VALUES (1, 5, 'ApplianceCategory')
+INSERT INTO ECToGenericMapping VALUES (1, 6, 'ApplianceCategory')
+INSERT INTO ECToGenericMapping VALUES (1, 7, 'ApplianceCategory')
 INSERT INTO ECToGenericMapping VALUES (1, 1, 'InterviewQuestion')
 INSERT INTO ECToGenericMapping VALUES (1, 2, 'InterviewQuestion')
 INSERT INTO ECToGenericMapping VALUES (1, 1, 'CustomerFAQ')

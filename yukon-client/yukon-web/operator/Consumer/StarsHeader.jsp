@@ -53,6 +53,7 @@
     BillingAddress billAddr = null;
     PrimaryContact primContact = null;
 	
+	StarsResidenceInformation residence = null;
 	StarsAppliances appliances = null;
 	StarsInventories inventories = null;
 	StarsLMPrograms programs = null;
@@ -69,6 +70,7 @@
 		billAddr = account.getBillingAddress();
 		primContact = account.getPrimaryContact();
 		
+		residence = accountInfo.getStarsResidenceInformation();
 		appliances = accountInfo.getStarsAppliances();
 		inventories = accountInfo.getStarsInventories();
 		programs = accountInfo.getStarsLMPrograms();

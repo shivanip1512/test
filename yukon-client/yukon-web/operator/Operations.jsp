@@ -164,9 +164,12 @@
             </td>
 		  </form>
             <form method="post" action="Consumer/Odds.jsp">
-            <td width = "110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control 
-                </a></div>
+            <td width = "110" class = "Main">
+              <div align = "center" style = "border:solid 1px #666999;">
+<cti:checkRole roleid="<%= RoleTypes.LOADCONTROL_CONTROL_ODDS %>">
+			    <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a>
+</cti:checkRole>
+			  &nbsp;</div>
             </td>
 		  </form>
           </tr>
