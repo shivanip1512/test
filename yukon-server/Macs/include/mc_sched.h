@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_sched.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 22:16:48 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/16 23:56:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,6 +114,7 @@ public:
     const RWTime& getManualStopTime() const;
     const RWTime& getCurrentStartTime() const;
     const RWTime& getCurrentStopTime() const;
+    int getTemplateType() const;
 
     //Only simple schedules will return meaningfull info for these
     const string& getTargetSelect() const;
@@ -143,6 +144,7 @@ public:
     CtiMCSchedule& setManualStopTime(const RWTime& manual_stop_time);
     CtiMCSchedule& setCurrentStartTime(const RWTime& start_time);
     CtiMCSchedule& setCurrentStopTime(const RWTime& stop_time);
+    CtiMCSchedule& setTemplateType(int template_type);
 
     //Only simple schedules will return meaningfull info for these
     CtiMCSchedule& setTargetSelect(const string& target_select);

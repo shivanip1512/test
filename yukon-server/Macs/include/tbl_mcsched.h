@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/tbl_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/12/16 23:56:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,8 @@ public:
                        const string& valid_week_days,
                        int duration,
                        const RWTime& manual_start_time,
-                       const RWTime& manual_stop_time );
+                       const RWTime& manual_stop_time,
+                       int template_type );
 
     virtual ~CtiTableMCSchedule();
 
@@ -92,7 +93,7 @@ public:
     int getDuration() const;
     const RWTime& getManualStartTime() const;
     const RWTime& getManualStopTime() const;
-
+    int getTemplateType() const;
 
     CtiTableMCSchedule& setScheduleID(long sched_id);
     CtiTableMCSchedule& setScheduleName(const string& schedule_name);
@@ -114,6 +115,7 @@ public:
     CtiTableMCSchedule& setDuration(int duration);
     CtiTableMCSchedule& setManualStartTime(const RWTime& manual_start_time);
     CtiTableMCSchedule& setManualStopTime(const RWTime& manual_stop_time);
+    CtiTableMCSchedule& setTemplateType(int template_type);
 
 private:
 
@@ -143,6 +145,7 @@ private:
     int             _duration;
     RWTime          _manual_start_time;
     RWTime          _manual_stop_time;
+    int             _template_type;
 
 };
 #endif

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/08 22:12:52 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/16 23:55:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,8 @@ CtiTableMCSchedule::CtiTableMCSchedule(
                                       const string& valid_week_days,
                                       int duration,
                                       const RWTime& manual_start_time,
-                                      const RWTime& manual_stop_time )
+                                      const RWTime& manual_stop_time,
+                                      int template_type )
 :
 _schedule_id(sched_id),
 _category_name(category_name),
@@ -73,7 +74,8 @@ _stop_time(stop_time),
 _valid_week_days(valid_week_days),
 _duration(duration),
 _manual_start_time(manual_start_time),
-_manual_stop_time(manual_stop_time)
+_manual_stop_time(manual_stop_time),
+_template_type(template_type)
 {
 }
 
@@ -103,7 +105,8 @@ void CtiTableMCSchedule::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
     keyTable["validweekdays"]       <<
     keyTable["duration"]            <<
     keyTable["manualstarttime"]     <<
-    keyTable["manualstoptime"];
+    keyTable["manualstoptime"]      <<
+    keyTable["template"];
 
     selector.from(keyTable);
 }
@@ -171,6 +174,8 @@ bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
     else
         rdr["manualstoptime"] >> _manual_stop_time;
 
+    rdr["template"]         >> _template_type;
+
     return true;
 }
 
@@ -233,6 +238,8 @@ bool CtiTableMCSchedule::Update()
                 updater << t["ManualStopTime"].assign( getManualStopTime() );
             else
                 updater << t["ManualStopTime"].assign( RWDBValue() );
+
+            updater << t["Template"].assign( getTemplateType() );
 
             sql = (const char*) updater.asString().data();
 
@@ -319,6 +326,8 @@ bool CtiTableMCSchedule::Insert()
                 inserter << RWDBDateTime( getManualStopTime() );
             else
                 inserter << RWDBValue(); //null
+
+            inserter << getTemplateType();
 
             sql = (const char*) inserter.asString().data();
 
@@ -487,6 +496,11 @@ const RWTime& CtiTableMCSchedule::getManualStopTime() const
     return _manual_stop_time;
 }
 
+int CtiTableMCSchedule::getTemplateType() const
+{
+    return _template_type;
+}
+
 CtiTableMCSchedule& CtiTableMCSchedule::setScheduleID(long sched_id)
 {
     _schedule_id = sched_id;
@@ -598,3 +612,10 @@ CtiTableMCSchedule& CtiTableMCSchedule::setManualStopTime(
     _manual_stop_time = manual_stop_time;
     return *this;
 }
+
+CtiTableMCSchedule& CtiTableMCSchedule::setTemplateType(int template_type)
+{
+    _template_type = template_type;
+    return *this;
+}
+

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/08 14:04:28 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/12/16 23:54:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -505,6 +505,11 @@ const RWTime& CtiMCSchedule::getCurrentStopTime() const
     return _current_stop_time;
 }
 
+int CtiMCSchedule::getTemplateType() const
+{
+    return _schedule_table.getTemplateType();
+}
+
 const string& CtiMCSchedule::getTargetSelect() const
 {
     return _simple_schedule_table.getTargetSelect();
@@ -815,6 +820,17 @@ CtiMCSchedule& CtiMCSchedule::setCurrentStopTime(const RWTime& stop_time)
     return *this;
 }
 
+CtiMCSchedule& CtiMCSchedule::setTemplateType(int template_type)
+{
+    if( template_type != getTemplateType() )
+    {
+        _schedule_table.setTemplateType(template_type);
+        setDirty(true);
+    }
+
+    return *this;
+}
+
 CtiMCSchedule& CtiMCSchedule::setTargetSelect(const string& target_select)
 {
     if( target_select != getTargetSelect() )
@@ -895,7 +911,8 @@ void CtiMCSchedule::saveGuts(RWvostream &aStream) const
                 <<  RWCString( (char*) getStopCommand().data() )
                 <<  getRepeatInterval()  //int
                 <<  getCurrentStartTime() //RWTime
-                <<  getCurrentStopTime(); //RWTime
+                <<  getCurrentStopTime() //RWTime
+                <<  getTemplateType();  //int
 
     if( !checkSchedule() )
     {
@@ -992,6 +1009,9 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
 
     aStream >> temp_int;
     setRepeatInterval( temp_int);
+
+    aStream >> temp_int;
+    setTemplateType(temp_int);
 
     if( !checkSchedule() )
     {
