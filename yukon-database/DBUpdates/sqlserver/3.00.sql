@@ -788,7 +788,7 @@ insert into displaycolumns values(35, 'Point Name', 2, 3, 90 );
 insert into displaycolumns values(35, 'Text Message', 12, 4, 200 );
 insert into displaycolumns values(35, 'User Name', 8, 5, 50 );
 
-update graphdataseries set moredata = '01-JAN-2004' where moredata = '(none)' and type = 17;
+update graphdataseries set moredata = '1072936800000' where moredata = '(none)' and type = 17;
 
 
 
