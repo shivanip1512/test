@@ -1,0 +1,103 @@
+#include <windows.h>
+#include <commctrl.h>
+
+
+#ifdef _WIN32
+LANGUAGE 0x09, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif
+
+
+10305 DIALOGEX 0,0,460,305
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Yukon Setup" 
+
+FONT 8,"MS Sans Serif",0,0,0x1
+BEGIN
+	LTEXT		"@10550,10551;1;0;;0,128,128",1200,0,35,120,240,0,WS_EX_TRANSPARENT
+	LTEXT		"The Yukon installer is transferring files...",710,135,51,310,32,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"",1450,135,104,310,8,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"",1400,135,89,310,8,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"Setup Status",50,10,3,220,8,0,WS_EX_TRANSPARENT
+	LTEXT		"",51,16,15,213,19,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
+	LTEXT		"",7,2,182,40,10,NOT WS_VISIBLE
+	PUSHBUTTON	"Cancel",2,400,285,50,14
+	LTEXT		"Estimated time left:",17809,135,143,78,12,NOT WS_VISIBLE
+	LTEXT		"Transfer rate: ",17810,135,161,78,12,NOT WS_VISIBLE
+	LTEXT		"",17811,218,143,78,11,NOT WS_VISIBLE
+	LTEXT		"",17812,218,161,78,12,NOT WS_VISIBLE
+	CONTROL		"Progress2",1500,"msctls_progress32",WS_BORDER,135,118,310,12,WS_EX_TRANSPARENT
+END
+
+
+12005 DIALOGEX 0,0,460,305
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Yukon Setup" 
+
+FONT 8,"MS Sans Serif",0,0,0x1
+BEGIN
+	LTEXT		"@10550,10551;1;0;;0,128,128   ",1200,0,35,120,240,0,WS_EX_TRANSPARENT
+	DEFPUSHBUTTON	"&Next >",1,250,285,50,14
+	PUSHBUTTON	"Cancel",9,400,285,50,14
+	PUSHBUTTON	"B&rowse...",196,390,231,50,14
+	PUSHBUTTON	"< &Back",12,195,285,50,14,WS_GROUP
+	LTEXT		"Setup will install Yukon in the following folder.\n\nTo install to this folder, click Next. To install to a different folder, click Browse and select another folder.",718,135,49,310,80,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"c:\\path\\company\\product\\suite\\version",715,141,235,240,8,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"Choose Destination Location",50,10,3,220,8,0,WS_EX_TRANSPARENT
+	LTEXT		"Select folder where setup will install files.",51,16,15,213,19,0,WS_EX_TRANSPARENT
+	PUSHBUTTON	"C",2,0,291,50,14,NOT WS_TABSTOP | NOT WS_VISIBLE | WS_GROUP
+	GROUPBOX	"Destination Folder",-1,135,219,310,32,NOT WS_TABSTOP | 0x40000000
+END
+
+
+12006 DIALOGEX 0,0,460,305
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Yukon Setup" 
+
+FONT 8,"MS Sans Serif",0,0,0x1
+BEGIN
+	LTEXT		"@10550,10551;1;0;;0,128,128   ",1200,0,35,120,240,0,WS_EX_TRANSPARENT
+	DEFPUSHBUTTON	"&Next >",1,250,285,50,14,WS_GROUP
+	PUSHBUTTON	"Cancel",9,400,285,50,14
+	PUSHBUTTON	"< &Back",12,195,285,50,14,WS_DISABLED
+	LTEXT		"This program will install the Yukon software on your machine. ",710,135,147,310,40,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
+	LTEXT		"Welcome to the Cannon Technologies Setup Program for Yukon.",50,135,116,310,27,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
+	PUSHBUTTON	"C",2,0,291,50,14,NOT WS_TABSTOP | NOT WS_VISIBLE | WS_GROUP
+END
+
+
+12053 DIALOGEX 0,0,460,305
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Yukon Setup" 
+
+FONT 8,"MS Sans Serif",0,0,0x1
+BEGIN
+	LTEXT		"@10550,10551;1;0;;0,128,128   ",1200,0,35,120,240
+	LTEXT		"Welcome to the Yukon Setup Maintenance program. This program lets you modify the current installation. Click one of the options below.",710,135,51,310,24,ES_AUTOHSCROLL | SS_NOPREFIX
+	CONTROL		"&Modify",301,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP | WS_GROUP,135,79,112,9
+	CONTROL		"R&epair",302,"Button",BS_AUTORADIOBUTTON,136,132,108,9
+	CONTROL		"&Remove",303,"Button",BS_AUTORADIOBUTTON,135,182,124,9
+	LTEXT		"Select new program features to add or select currently installed features to remove.",701,180,94,264,24,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"Reinstall all program features installed by the previous setup.",702,180,145,264,24,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"Remove all installed features.",703,180,196,264,24,ES_AUTOHSCROLL | SS_NOPREFIX
+	ICON		10003,1001,149,91,20,20
+	ICON		10002,1002,149,143,20,20
+	ICON		10004,1003,150,195,20,20,WS_DISABLED
+	DEFPUSHBUTTON	"&Next >",1,250,285,50,14
+	PUSHBUTTON	"Cancel",9,400,285,50,14
+	PUSHBUTTON	"< &Back",12,195,285,50,14
+	LTEXT		"Welcome",50,10,3,220,8,0,WS_EX_TRANSPARENT
+	LTEXT		"Modify, repair, or remove the program.",51,16,15,213,19,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
+	PUSHBUTTON	"C",2,0,291,50,14,NOT WS_TABSTOP | NOT WS_VISIBLE | WS_GROUP
+END
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+10002		ICON	"C:\\Mine\\Cannon Installer Projects\\Yukon X upgraded\\IconId_10002.ico"
+10003		ICON	"C:\\Mine\\Cannon Installer Projects\\Yukon X upgraded\\IconId_10003.ico"
+10004		ICON	"C:\\Mine\\Cannon Installer Projects\\Yukon X upgraded\\IconId_10004.ico"

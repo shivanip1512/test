@@ -1,0 +1,61 @@
+ 
+//---------------------------------------------------------------------------
+// The Installing event is sent just before the feature 
+// Yukon Server\Yukon Service Manager is installed.
+//---------------------------------------------------------------------------
+ 
+export prototype YukonServiceManager_Installing();
+function YukonServiceManager_Installing()
+
+string szCmdLine, szPathAndFile;
+
+begin
+
+//stop the Yukon Service Manager
+szCmdLine = 'stop "Yukon Service Manager"';
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
+Delay(2);
+//remove the Yukon Service Manager
+szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
+szCmdLine = "-r appserver.conf";
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
+
+end;
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Yukon Service Manager
+// is installed.
+//---------------------------------------------------------------------------
+ 
+export prototype YukonServiceManager_Installed();
+function YukonServiceManager_Installed()
+string szCmdLine, szPathAndFile;
+
+begin
+
+//The following sets up the Yukon Service Manager
+szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
+szCmdLine = "-i appserver.conf";
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
+
+end;
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Yukon Service Manager is uninstalled.
+//---------------------------------------------------------------------------
+ 
+export prototype YukonServiceManager_UnInstalling();
+function YukonServiceManager_UnInstalling()
+string szCmdLine, szPathAndFile;
+
+begin
+
+//stop the Yukon Service Manager
+szCmdLine = 'stop "Yukon Service Manager"';
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
+Delay(2);
+//remove the Yukon Service Manager
+szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
+szCmdLine = "-r appserver.conf";
+LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
+
+end;

@@ -1,0 +1,391 @@
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  File Name:  Setup.rul
+//
+//  Description:    InstallShield script
+//
+//  Comments:   This script was generated based on the selections you made in
+//              the Project Wizard.  Refer to the help topic entitled "Modify
+//              the script that the Project Wizard generates" for information
+//              on possible next steps.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// Include header files
+
+#include "ifx.h"
+#include "ComponentEvents.rul"
+#include "FeatureEvents.rul"
+
+////////////////////// string defines ////////////////////////////
+
+//////////////////// installation declarations ///////////////////
+
+// ----- DLL function prototypes -----
+
+
+    // your DLL function prototypes
+
+
+// ---- script function prototypes -----
+
+
+    // your script function prototypes
+    // your global variables
+
+STRING uninstallName;
+STRING svSetupType;
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  FUNCTION:   OnFirstUIBefore
+//
+//  EVENT:      FirstUIBefore event is sent when installation is run for the first
+//              time on given machine. In the handler installation usually displays
+//              UI allowing end user to specify installation parameters. After this
+//              function returns, ComponentTransferData is called to perform file
+//              transfer.
+//
+///////////////////////////////////////////////////////////////////////////////
+function OnFirstUIBefore()
+    number  nResult, nSetupType;
+    string  szTitle, szMsg;
+    string  szDir;
+    string  szfolder;
+    string  szComponents, szTargetdir;
+    number  nLevel;
+    LIST    listStartCopy;
+    string  szTargetPath;
+    number  nvSize;
+
+number nvSize2, nvType, nvResult, foundVal, backupVer, stSize, verCon, dirSearch, dirCreate;
+string szKey, szName, keyValue, minVersion, szDeleteDir;
+STRING szTitle2, szFormat, szString, java_home;
+
+string szKey2, szName2, szEnv; 
+number foundVal2;
+pointer pEnv; 
+ 
+begin
+    
+	// TO DO: if you want to enable background, window title, and caption bar title
+    //SetTitle( @TITLE_MAIN, 24, WHITE );
+    //SetTitle( @TITLE_CAPTIONBAR, 0, BACKGROUNDCAPTION );
+    //Enable( FULLWINDOWMODE );
+    //Enable( BACKGROUND );
+    //SetColor(BACKGROUND,RGB (0, 128, 128));
+
+    TARGETDIR = "C:\\Yukon";
+    szDir = TARGETDIR;
+    SHELL_OBJECT_FOLDER = @FOLDER_NAME;
+
+Dlg_Start:
+
+Dlg_SdWelcome:
+    nResult = SdWelcome("", "");
+    if (nResult = BACK) goto Dlg_Start;
+
+Dlg_SdAskDestPath:
+    szTitle = "";
+    szMsg   = "";
+    nResult = SdAskDestPath( szTitle, szMsg, szDir, 0 );
+    TARGETDIR = szDir;
+    if (nResult = BACK) goto Dlg_SdWelcome;
+    
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+
+Dlg_SetupType:
+    szTitle = "Yukon Install Options";
+    szMsg = "Select between server/client install options.";
+    nResult = SdSetupTypeEx ( szTitle , szMsg , "" , svSetupType , 0 );
+    if (nResult = BACK) then
+        goto Dlg_Start;
+    else
+        if (svSetupType != "Custom Install") then
+           szTargetPath = TARGETDIR;
+           nvSize = 0;
+           FeatureCompareSizeRequired(MEDIA,szTargetPath,nvSize);
+           if (nvSize != 0) then
+                   MessageBox( szSdStr_NotEnoughSpace, WARNING );
+               goto Dlg_SetupType;
+            endif;
+        endif;
+    endif;
+
+//The magic happy Java check
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + MINIMUMJAVAVERSION;
+foundVal = RegDBKeyExist ( szKey );
+
+if(foundVal < 0 ) then
+    szTitle  = "JDK installation required.";
+    szFormat = "This Yukon install requires Java Development Kit version %s or higher, which is not detected on this machine. The JDK will be installed before continuing with Yukon installation.";
+    SprintfBox(INFORMATION, szTitle, szFormat, MINIMUMJAVAVERSION);
+    LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE , "", WAIT);
+    endif;
+    
+//grab the path of the java install in order to set Tomcat JAVA_HOME variable
+szName = "JavaHome";
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" ^ MINIMUMJAVAVERSION;
+foundVal = RegDBGetKeyValueEx ( szKey, szName, nvType, java_home, nvSize ); 
+//set the system environment variable JAVA_HOME for Yukon
+if(foundVal = 0) then
+	szName = "JAVA_HOME";         
+	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+	szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , java_home , -1 );
+	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+endif;
+
+//set the system environment variable YUKON_BASE for the good of all
+if(foundVal2 = 0) then
+	szName2 = "YUKON_BASE";         
+	szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	foundVal2 = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , '"' + TARGETDIR + '"', -1 );
+	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+endif;
+
+//make sure that the system will be aware of the presence of the new Java path
+szEnv = "Environment";
+pEnv = &szEnv;
+SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv ); 
+ 
+RegDBSetDefaultRoot ( HKEY_CLASSES_ROOT );
+
+Dlg_SdComponentTree:
+    if ((nResult = BACK) && (nSetupType != CUSTOM)) goto Dlg_SdAskDestPath;
+    szTitle    = "";
+    szMsg      = "";
+    szTargetdir = TARGETDIR;
+    szComponents = "";
+    nLevel = 2;
+    if (svSetupType = "Custom Install") then
+            nResult = SdFeatureTree(szTitle, szMsg, szTargetdir, szComponents, nLevel);
+            if (nResult = BACK) goto Dlg_SdAskDestPath;
+    endif;
+
+Dlg_ObjDialogs:
+    nResult = ShowObjWizardPages(nResult);
+    if (nResult = BACK) goto Dlg_SdComponentTree;
+
+Dlg_SdStartCopy:
+    szTitle = "Yukon " + svSetupType + "er";
+    szMsg   = "";
+    listStartCopy = ListCreate( STRINGLIST );
+    //The following is an example of how to add a string(szName) to a list(listStartCopy).
+    //eg. ListAddString(listStartCopy,szName,AFTER);
+    ListAddString(listStartCopy, svSetupType, BEFORE);
+    ListAddString(listStartCopy, "", AFTER);
+    if(svSetupType = "Full Install" || svSetupType = "Client Install") then
+    	ListAddString(listStartCopy, "Client Applications will install to " + TARGETDIR + "\\client" , AFTER);
+    endif;
+    if(svSetupType = "Full Install" || svSetupType = "Server Install") then
+    	ListAddString(listStartCopy, "Server Applications will install to " + TARGETDIR + "\\server" , AFTER);
+    endif; 
+    nResult = SdStartCopy( szTitle, szMsg, listStartCopy );
+    ListDestroy(listStartCopy);
+    if (nResult = BACK) goto Dlg_ObjDialogs;
+
+    // setup default status
+    SetStatusWindow(0, "");
+    Enable(STATUSEX);
+    StatusUpdate(ON, 50);
+    
+    SetStatusWindow(50, "");
+    Enable(STATUSEX);
+    StatusUpdate(ON, 100);
+
+    return 0;
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FUNCTION:   OnMoving
+//
+//  EVENT:      Moving event is sent when file transfer is started as a result of
+//              ComponentTransferData call, before any file transfer operations
+//              are performed.
+//
+///////////////////////////////////////////////////////////////////////////////
+function OnMoving()
+    string szAppPath;
+
+begin
+    // Set LOGO Compliance Application Path
+    // TO DO : if your application .exe is in a subfolder of TARGETDIR then add subfolder
+    szAppPath = TARGETDIR;
+
+    // MessageBox(szAppPath, INFORMATION);
+
+
+    RegDBSetItem(REGDB_APPPATH, szAppPath);
+
+end;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FUNCTION:   OnMaintUIBefore
+//
+//  EVENT:      MaintUIBefore event is sent when end user runs installation that
+//              has already been installed on the machine. Usually this happens
+//              through Add/Remove Programs applet. In the handler installation
+//              usually displays UI allowing end user to modify existing installation
+//              or uninstall application. After this function returns,
+//              ComponentTransferData is called to perform file transfer.
+//
+///////////////////////////////////////////////////////////////////////////////
+function OnMaintUIBefore()
+    NUMBER nResult, nType, regSearch, dirSearch, dirSearch2;
+    STRING szTitle, szMsg, svDir, svResult, szCaption, szPath, szPath2;
+    string szSrcFile , szTargetFile;
+    
+    string szPathFile, szName, szKey, java_home, szEnv; 
+	number fileCounter, foundVal, nvType, nvSize;
+	pointer pEnv;
+	
+begin
+    // TO DO: if you want to enable background, window title, and caption bar title
+    // SetTitle( @TITLE_MAIN, 24, WHITE );
+    // SetTitle( @TITLE_CAPTIONBAR, 0, BACKGROUNDCAPTION );
+    // SetColor(BACKGROUND,RGB (0, 128, 128));
+    // Enable( FULLWINDOWMODE );
+    // Enable( BACKGROUND );
+
+Dlg_Start:
+    Disable(BACKBUTTON);
+    nType = SdWelcomeMaint(szTitle, szMsg, REPAIR);
+    Enable(BACKBUTTON);
+
+    if (nType = REMOVEALL) then
+        svResult = SdLoadString(IFX_MAINTUI_MSG);
+        szCaption = SdLoadString(IFX_ONMAINTUI_CAPTION);
+        nResult = SprintfBox(MB_OKCANCEL,szCaption,"%s",svResult);
+        if (nResult = IDCANCEL) goto Dlg_Start;
+    endif;
+
+    nResult = NEXT;
+
+//grab the path of the java install in order to set Tomcat JAVA_HOME variable
+szName = "JavaHome";
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" ^ MINIMUMJAVAVERSION;
+foundVal = RegDBGetKeyValueEx ( szKey, szName, nvType, java_home, nvSize ); 
+//set the system environment variable JAVA_HOME for Yukon
+if(foundVal = 0) then
+	szName = "JAVA_HOME";         
+	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+	szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , java_home , -1 );
+	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+endif;
+
+//make sure that the system will be aware of the presence of the new Java path
+szEnv = "Environment";
+pEnv = &szEnv;
+SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
+
+Dlg_SdComponentTree:
+    if (nType = MODIFY) then
+        szTitle = "";
+        szMsg = "Select any new components you want to install, and clear any existing components that you want to remove.";
+        nResult = SdFeatureTree(szTitle, szMsg, TARGETDIR, "", 2);
+        if (nResult = BACK) goto Dlg_Start;
+    endif;
+
+Dlg_ObjDialogs:
+    nResult = ShowObjWizardPages(nResult);
+    if ((nResult = BACK) && (nType != MODIFY)) goto Dlg_Start;
+    if ((nResult = BACK) && (nType = MODIFY)) goto Dlg_SdComponentTree;
+
+    switch(nType)
+        case REMOVEALL: FeatureRemoveAll();
+        case REPAIR:    FeatureReinstall();
+    endswitch;
+
+    // setup default status
+    SetStatusWindow(0, "");
+    Enable(STATUSEX);
+    StatusUpdate(ON, 75);
+end;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FUNCTION:   OnFirstUIAfter
+//
+//  EVENT:      FirstUIAfter event is sent after file transfer, when installation
+//              is run for the first time on given machine. In this event handler
+//              installation usually displays UI that will inform end user that
+//              installation has been completed successfully.
+//
+///////////////////////////////////////////////////////////////////////////////
+function OnFirstUIAfter()
+    STRING szTitle, szMsg1, szMsg2, szOption1, szOption2, szMsg;
+    NUMBER bOpt1, bOpt2, nvResult;
+begin
+    Disable(STATUSEX);
+
+    if(svSetupType = "Client Install") then
+        uninstallName = "Yukon" + uiClient + " Applications";
+    endif;
+    if(svSetupType = "Server Install") then
+        uninstallName = "Yukon" + uiServer + " Applications";
+    endif;
+    if(svSetupType = "Full Install") then
+        uninstallName = "Yukon" + uiClient + " and" + uiServer + " Applications";
+    endif;
+    if(svSetupType = "Custom Install") then
+        uninstallName = "Yukon" + uiClient + uiServer + " Applications";
+    endif;
+
+    RegDBSetItem ( REGDB_UNINSTALL_NAME , uninstallName );
+
+    ShowObjWizardPages(NEXT);
+     
+    bOpt1  = FALSE;
+    bOpt2  = FALSE;
+    szMsg1 = SdLoadString(IFX_SDFINISH_MSG1);
+    BATCH_INSTALL = FALSE; 
+    SdFinishEx(szTitle, szMsg1, szMsg2, szOption1, szOption2, bOpt1, bOpt2);
+    
+    if(setupIsNeeded) then
+    	szMsg = "To configure Yukon for the first time, please follow the Yukon Setup shortcut on your desktop.";
+    	MessageBox ( szMsg , INFORMATION );
+    endif;
+    	
+end;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FUNCTION:   OnMaintUIAfter
+//
+//  EVENT:      MaintUIAfter event is sent after file transfer, when end user runs
+//              installation that has already been installed on the machine. Usually
+//              this happens through Add/Remove Programs applet.
+//              In the handler installation usually displays UI that will inform
+//              end user that maintenance/uninstallation has been completed successfully.
+//
+///////////////////////////////////////////////////////////////////////////////
+function OnMaintUIAfter()
+    STRING szTitle, szMsg1, szMsg2, szOption1, szOption2, szMsg;
+    NUMBER bOpt1, bOpt2;
+    string szPathFile, svResult; 
+	number dirSearch, fileCounter;
+begin
+	
+	Disable(STATUSEX);
+
+    ShowObjWizardPages(NEXT);
+    
+    bOpt1   = FALSE;
+    bOpt2   = FALSE;
+    szMsg1  = SdLoadString(IFX_SDFINISH_MAINT_MSG1);
+    szTitle = SdLoadString(IFX_SDFINISH_MAINT_TITLE); 
+    BATCH_INSTALL = FALSE;
+    SdFinishEx(szTitle, szMsg1, szMsg2, szOption1, szOption2, bOpt1, bOpt2);
+
+ end;
+ 
