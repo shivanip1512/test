@@ -1508,6 +1508,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		{
 			allLoadManagement = null;
 			allLMPrograms = null;
+			allLMScenarios = null;
 		}
 		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
 		{
