@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/01/07 21:01:48 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/02/21 20:30:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@
 #include "dev_mct310.h"
 #include "dev_mct31X.h"
 #include "dev_mct_lmt2.h"
+#include "dev_mct_broadcast.h"
 #include "dev_kv2.h"
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
@@ -301,6 +302,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_LCUT3026:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceLCU(DevType);
+            break;
+        }
+    case TYPEMCTBCAST:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCTBroadcast;
             break;
         }
     default:

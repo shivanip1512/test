@@ -908,7 +908,6 @@ void  CtiCommandParser::doParsePutValue(const RWCString &CmdStr)
 
     char *p;
 
-    RWCRExpr   re_reset("reset");
     RWCRExpr   re_reading("reading *[0-9]+(\\.[0-9]*)?");
     RWCRExpr   re_numfloat("[0-9]+(\\.[0-9]*)?");
     RWCRExpr   re_kyzoffset("kyz *[123]");   //  if there's a kyz offset specified
@@ -988,7 +987,7 @@ void  CtiCommandParser::doParsePutStatus(const RWCString &CmdStr)
 {
     RWCString   temp2;
     RWCString   token;
-    unsigned int flag;
+    unsigned int flag = 0;
 
     RWCTokenizer   tok(CmdStr);
 
@@ -1040,14 +1039,15 @@ void  CtiCommandParser::doParsePutStatus(const RWCString &CmdStr)
             }
         }
 
-        if( _cmd.contains("flag") )
-            flag = _cmd["flag"].getInt();
-
         if(!(token = CmdStr.match("reset")).isNull())
         {
+            if( _cmd.contains("flag") )
+                flag = _cmd["flag"].getInt();
+
             flag |= CMD_FLAG_PS_RESET;
+
+            _cmd["flag"] = CtiParseValue(flag);
         }
-        _cmd["flag"] = CtiParseValue(flag);
     }
     else
     {
@@ -2370,7 +2370,6 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
 {
     RWCString   temp2;
     RWCString   token;
-    RWCRExpr    re_reset("reset");
     unsigned int flag = 0;
     char *p;
 
@@ -2380,7 +2379,28 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const RWCString &CmdStr)
 
     if(!token.isNull() && token == "putstatus")
     {
-        //  nothing yet
+        if(CmdStr.contains(" freeze"))
+        {
+            unsigned int flag = 0;
+
+            if( isKeyValid("flag") )
+                flag = getiValue("flag", 0);
+
+            if(CmdStr.contains(" zero"))
+            {
+                flag |= CMD_FLAG_PS_FREEZEZERO;
+            }
+            else if(CmdStr.contains(" one"))
+            {
+                flag |= CMD_FLAG_PS_FREEZEONE;
+            }
+            else
+            {
+                flag |= CMD_FLAG_PS_FREEZEZERO | CMD_FLAG_PS_FREEZEONE;
+            }
+
+            _cmd["flag"] = CtiParseValue(flag);
+        }
     }
     else
     {
@@ -3043,7 +3063,7 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
             }
             else if(temp.contains("off"))
             {
-                _cmd["xcfanstate"] = CtiParseValue( 0x02 );
+                _cmd["xcfanstate"] = CtiParseValue( 0x01 );
             }
         }
 
@@ -3370,7 +3390,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
 
     token = tok(); // Get the first one into the hopper....
 
-    if(!(token = CmdStr.match("prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*)|(rssi)|(ping))")).isNull())
+    if(!(token = CmdStr.match(" prop[a-z]*[ =]+((disp[a-z]*)|(inc[a-z]*)|(term[a-z]*)|(rssi)|(ping))")).isNull())
     {
         int   op = -1;
         CHAR  op_name[20];
@@ -3410,7 +3430,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
             _actionItems.insert(tbuf);
         }
     }
-    else if(!(token = CmdStr.match("ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
+    else if(!(token = CmdStr.match(" ovuv[ =]+((ena(ble)?)|(dis(able)?))")).isNull())
     {
         int   op = 0;
         CHAR  op_name[20];

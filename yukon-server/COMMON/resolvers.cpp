@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/01/15 20:41:39 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/02/21 20:34:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -546,6 +546,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = 0;
     }
+    else if(rwsTemp == "mct broadcast")
+    {
+        nRet = TYPEMCTBCAST;
+    }
     else
     {
         {
@@ -1008,6 +1012,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LMGROUP_RIPPLE:
     case TYPE_LMGROUP_VERSACOM:
     case TYPE_LMGROUP_EXPRESSCOM:
+    case TYPEMCTBCAST:
     case TYPE_MACRO:
         {
             bRet = false;

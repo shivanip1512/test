@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/02/21 20:30:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,6 +158,8 @@ public:
 
         // PutStatus Commands
         PutStatus_Reset,
+        PutStatus_ResetZero,
+        PutStatus_ResetOne,
 
         // GetConfig commands
         GetConfig_Default,
