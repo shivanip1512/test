@@ -17,16 +17,10 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
-import com.cannontech.database.data.device.MCT310;
-import com.cannontech.database.data.device.MCT310ID;
-import com.cannontech.database.data.device.MCT310IDL;
-import com.cannontech.database.data.device.MCT310IL;
-import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -34,17 +28,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.YukonPAObject;
-import com.cannontech.database.db.point.PointStatus;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.dbeditor.DBDeletionFuncs;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -1295,71 +1281,9 @@ public class InventoryManager extends HttpServlet {
 				Integer routeID = Integer.valueOf( req.getParameter("Route") );
 				((CarrierBase)device).getDeviceRoutes().setRouteID( routeID );
 				
-				DBPersistent val = (DBPersistent) device;
-				
-				// Special cases for some MCTs
-				if (device instanceof MCT310
-					|| device instanceof MCT310IL
-					|| device instanceof MCT310ID
-					|| device instanceof MCT310IDL
-					|| device instanceof MCT410_KWH_Only)
-				{
-					MultiDBPersistent multiDB = new MultiDBPersistent();
-					val = (DBPersistent) multiDB;
-					
-					multiDB.getDBPersistentVector().add( device );
-					
-					int pointID = PointFuncs.getMaxPointID();
-					double multiplier = 0.01;
-					// multiplier is 0.1 for 410LE, 0.01 for all older MCTs
-					if (device instanceof MCT410_KWH_Only)
-						multiplier = 0.1;
-					
-					// Accumulator point is automatically added
-					PointBase newPoint = PointFactory.createPulseAccumPoint(
-						"kWh",
-						device.getDevice().getDeviceID(),
-						new Integer(++pointID),
-						PointTypes.PT_OFFSET_TOTAL_KWH,
-						PointUnits.UOMID_KWH,
-						multiplier
-					);
-					multiDB.getDBPersistentVector().add( newPoint );
-					
-					// only certain devices get the DemandAccum point auto created
-					if (device instanceof MCT310IL
-						|| device instanceof MCT310IDL)
-					{
-						PointBase newPoint2 = PointFactory.createDmdAccumPoint(
-							"kW-LP",
-							device.getDevice().getDeviceID(),
-							new Integer(++pointID),
-							PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
-							PointUnits.UOMID_KW,
-							multiplier
-						);
-						multiDB.getDBPersistentVector().add( newPoint2 );
-					}
-					
-					// an automatic status point is created for certain devices
-					// set default for point tables
-					if (device instanceof MCT310ID
-						|| device instanceof MCT310IDL)
-					{
-						PointBase newPoint2 = PointFactory.createNewPoint(
-							new Integer(++pointID),
-							PointTypes.STATUS_POINT,
-							"DISCONNECT STATUS",
-							device.getDevice().getDeviceID(),
-							new Integer(PointTypes.PT_OFFSET_TOTAL_KWH)
-						);
-						newPoint2.getPoint().setStateGroupID(
-								new Integer(StateGroupUtils.STATEGROUP_THREE_STATE_STATUS) );
-						((StatusPoint)newPoint2).setPointStatus(
-								new PointStatus(newPoint2.getPoint().getPointID()) );
-						multiDB.getDBPersistentVector().add( newPoint2 );
-					}
-				}
+				// Automatically generate points for some MCTs
+				DBPersistent val = com.cannontech.dbeditor.wizard.device.DeviceRoutePanel.generatePointsForMCT( device );
+				if (val == null) val = (DBPersistent) device;
 				
 				val = (DBPersistent) Transaction.createTransaction( Transaction.INSERT, val ).execute();
 				
