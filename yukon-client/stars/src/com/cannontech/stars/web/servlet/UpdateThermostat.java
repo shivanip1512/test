@@ -33,11 +33,11 @@ public class UpdateThermostat extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
         HttpSession session = req.getSession(false);
-        if (session == null) resp.sendRedirect(loginURL);
+        if (session == null) resp.sendRedirect(req.getContextPath() + loginURL);
 
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {
-			resp.sendRedirect(loginURL); return;
+			resp.sendRedirect(req.getContextPath() + loginURL); return;
 		}
 		
 		String nextURL = req.getParameter( ServletUtils.ATT_REFERRER );

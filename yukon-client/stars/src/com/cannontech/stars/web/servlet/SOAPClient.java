@@ -148,11 +148,11 @@ public class SOAPClient extends HttpServlet {
 			ServletUtils.clear();
 			if (isServerLocal()) SOAPServer.refreshCache();
         	if (session != null) session.invalidate();
-			resp.sendRedirect( loginURL ); return;
+			resp.sendRedirect( req.getContextPath() + loginURL ); return;
 		}
 		
         if (session == null && !action.endsWith("Login")) {
-        	resp.sendRedirect( loginURL ); return;
+        	resp.sendRedirect( req.getContextPath() + loginURL ); return;
         }
         
         if (isServerLocal() && SOAPServer.getInstance() == null) {
@@ -168,7 +168,7 @@ public class SOAPClient extends HttpServlet {
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
 
-        String nextURL = loginURL;		// The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
+        String nextURL = req.getContextPath() + loginURL;		// The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
         String destURL = null;			// URL we should go to if action succeed
         String errorURL = null;		// URL we should go to if action failed
         ActionBase clientAction = null;
@@ -200,12 +200,12 @@ public class SOAPClient extends HttpServlet {
 				
 			clientAction = (ActionBase) actions;
 			if (req.getParameter("Wizard") != null) {
-				destURL = "/operator/Consumer/Programs.jsp?Wizard=true";
-				errorURL = "/operator/Consumer/New.jsp?Wizard=true";
+				destURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
+				errorURL = req.getContextPath() + "/operator/Consumer/New.jsp?Wizard=true";
 			}
 			else {
-				destURL = "/operator/Consumer/Update.jsp";
-				errorURL = "/operator/Consumer/New.jsp";
+				destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+				errorURL = req.getContextPath() + "/operator/Consumer/New.jsp";
 			}
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
@@ -217,8 +217,8 @@ public class SOAPClient extends HttpServlet {
 	            
 			clientAction = (ActionBase) actions;
 			if (req.getParameter("Wizard") != null) {
-				destURL = "/operator/Consumer/CreateHardware.jsp?Wizard=true";
-				errorURL = "/operator/Consumer/Programs.jsp?Wizard=true";
+				destURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
+				errorURL = req.getContextPath() + "/operator/Consumer/Programs.jsp?Wizard=true";
 			}
 			else {
 	        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
@@ -227,8 +227,8 @@ public class SOAPClient extends HttpServlet {
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
             clientAction = new SearchCustAccountAction();
-            destURL = "/operator/Consumer/Update.jsp";
-            errorURL = "/operator/Consumer/SearchResults.jsp";
+            destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+            errorURL = req.getContextPath() + "/operator/Consumer/SearchResults.jsp";
         }
         else if (action.equalsIgnoreCase("GetCustAccount")) {
         	clientAction = new GetCustAccountAction();
@@ -237,8 +237,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("UpdateCustAccount")) {
             clientAction = new UpdateCustAccountAction();
-            destURL = "/operator/Consumer/Update.jsp";
-            errorURL = "/operator/Consumer/Update.jsp";
+            destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+            errorURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
         }
         else if (action.equalsIgnoreCase("ReloadCustAccount")) {
         	clientAction = new ReloadCustAccountAction();
@@ -247,8 +247,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("DeleteCustAccount")) {
         	clientAction = new DeleteCustAccountAction();
-        	destURL = "/operator/Operations.jsp";
-            errorURL = "/operator/Consumer/Update.jsp";
+        	destURL = req.getContextPath() + "/operator/Operations.jsp";
+            errorURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
         }
         else if (action.equalsIgnoreCase("OptOutProgram")) {
         	MultiAction actions = new MultiAction();
@@ -312,38 +312,38 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("GetNextCallNo")) {
         	clientAction = new GetNextCallNumberAction();
-        	destURL = "/operator/Consumer/CreateCalls.jsp";
-        	errorURL = "/operator/Consumer/CreateCalls.jsp?getCallNo=failed";
+        	destURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp?getCallNo=failed";
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	clientAction = new CreateCallAction();
-        	destURL = "/operator/Consumer/Calls.jsp";
-        	errorURL = "/operator/Consumer/CreateCalls.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateCalls")) {
         	clientAction = new UpdateCallReportAction();
-        	destURL = "/operator/Consumer/Calls.jsp";
-        	errorURL = "/operator/Consumer/Calls.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("GetNextOrderNo")) {
         	clientAction = new GetNextOrderNumberAction();
-        	destURL = "/operator/Consumer/Service.jsp";
-        	errorURL = "/operator/Consumer/Service.jsp?getOrderNo=failed";
+        	destURL = req.getContextPath() + "/operator/Consumer/Service.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/Service.jsp?getOrderNo=failed";
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
         	clientAction = new CreateServiceRequestAction();
-        	destURL = "/operator/Consumer/ServiceSummary.jsp";
-        	errorURL = "/operator/Consumer/Service.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/ServiceSummary.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/Service.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateOrders")) {
         	clientAction = new UpdateServiceRequestAction();
-        	destURL = "/operator/Consumer/ServiceSummary.jsp";
-        	errorURL = "/operator/Consumer/ServiceSummary.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/ServiceSummary.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/ServiceSummary.jsp";
         }
         else if (action.equalsIgnoreCase("CreateAppliance")) {
         	clientAction = new CreateApplianceAction();
-        	destURL = "/operator/Consumer/Appliance.jsp";
-        	errorURL = "/operator/Consumer/CreateAppliances.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Appliance.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/CreateAppliances.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateAppliance")) {
         	clientAction = new UpdateApplianceAction();
@@ -352,33 +352,28 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("DeleteAppliance")) {
         	clientAction = new DeleteApplianceAction();
-        	destURL = "/operator/Consumer/Update.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
         	errorURL = req.getHeader( "referer" );
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
         	if (req.getParameter("Wizard") != null) {
-        		destURL = "/operator/Consumer/Update.jsp";
-        		errorURL = "/operator/Consumer/CreateHardware.jsp?Wizard=true";
+        		destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
+        		errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp?Wizard=true";
         	}
         	else {
-	        	destURL = "/operator/Consumer/Inventory.jsp";
-	        	errorURL = "/operator/Consumer/CreateHardware.jsp";
+	        	destURL = req.getContextPath() + "/operator/Consumer/Inventory.jsp";
+	        	errorURL = req.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
         	}
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
-        	MultiAction actions = new MultiAction();
-        	actions.addAction( new UpdateLMHardwareAction(), req, session );
-        	if (Boolean.valueOf( req.getParameter("ConfigChanged") ).booleanValue())
-        		actions.addAction( new UpdateLMHardwareConfigAction(), req, session );
-        		
-        	clientAction = (ActionBase) actions;
+        	clientAction = new UpdateLMHardwareAction();
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
         	errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("DeleteLMHardware")) {
         	clientAction = new DeleteLMHardwareAction();
-        	destURL = "/operator/Consumer/Update.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Update.jsp";
         	errorURL = req.getHeader( "referer" );
         }
         else if (action.equalsIgnoreCase("UpdateLogin")) {
@@ -398,13 +393,13 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("SendControlOdds")) {
         	clientAction = new SendOddsForControlAction();
-        	destURL = "/operator/Consumer/Odds.jsp";
-        	errorURL = "/operator/Consumer/Odds.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Odds.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/Odds.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateResidenceInfo")) {
         	clientAction = new UpdateResidenceInfoAction();
-        	destURL = "/operator/Consumer/Residence.jsp";
-        	errorURL = "/operator/Consumer/Residence.jsp";
+        	destURL = req.getContextPath() + "/operator/Consumer/Residence.jsp";
+        	errorURL = req.getContextPath() + "/operator/Consumer/Residence.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateCtrlNotification")) {
         	clientAction = new UpdateControlNotificationAction();
@@ -434,12 +429,12 @@ public class SOAPClient extends HttpServlet {
                 	
                 	int status = clientAction.parse(reqMsg, respMsg, session);
                 	if (session.getAttribute( ServletUtils.ATT_REDIRECT ) != null)
-                		destURL = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+                		destURL = req.getContextPath() + (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
                 	
                     if (status == 0)	// Operation succeed
                         nextURL = destURL;
                     else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID)
-                    	nextURL = loginURL;
+                    	nextURL = req.getContextPath() + loginURL;
                     else {
                     	setErrorMsg( session, status );
                     	nextURL = errorURL;

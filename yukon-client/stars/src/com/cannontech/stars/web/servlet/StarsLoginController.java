@@ -62,6 +62,6 @@ public class StarsLoginController extends LoginController {
             e.printStackTrace();
         }
 
-        resp.sendRedirect( loginURL );
+        resp.sendRedirect( req.getContextPath() + loginURL );
     }
 }

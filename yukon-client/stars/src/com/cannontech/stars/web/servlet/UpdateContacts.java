@@ -34,18 +34,18 @@ public class UpdateContacts extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
         HttpSession session = req.getSession(false);
-        if (session == null) resp.sendRedirect(loginURL);
+        if (session == null) resp.sendRedirect(req.getContextPath() + loginURL);
 
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		if (user == null) {
-			resp.sendRedirect(loginURL); return;
+			resp.sendRedirect(req.getContextPath() + loginURL); return;
 		}
 		
         StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(
         		ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
         if (account == null) {
-        	resp.sendRedirect(homeURL); return;
+        	resp.sendRedirect(req.getContextPath() + homeURL); return;
         }
 
         String lastName = req.getParameter("LastName");
@@ -83,6 +83,6 @@ public class UpdateContacts extends HttpServlet {
             }
         }
 
-        resp.sendRedirect( nextURL );
+        resp.sendRedirect( req.getContextPath() + nextURL );
     }
 }

@@ -51,7 +51,10 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             if (accountInfo == null) return null;
             
             StarsUpdateThermostatManualOption option = new StarsUpdateThermostatManualOption();
-            option.setTemperature( Integer.parseInt(req.getParameter("tempField")) );
+            if (Boolean.valueOf( req.getParameter("RunProgram") ).booleanValue())
+            	option.setTemperature( -1 );	// "Run Program" button is clicked
+            else
+	            option.setTemperature( Integer.parseInt(req.getParameter("tempField")) );
             option.setHold( Boolean.valueOf(req.getParameter("hold")).booleanValue() );
             if (req.getParameter("mode").length() > 0)
 	            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
@@ -108,15 +111,22 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
     		}
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
 			
-			StringBuffer cmd = new StringBuffer("putconfig xcom setstate")
-					.append(" temp ").append(starsOption.getTemperature());
+			StringBuffer cmd = new StringBuffer("putconfig xcom setstate");
 			if (starsOption.getMode() != null)
 				cmd.append(" system ").append(starsOption.getMode().toString().toLowerCase());
-			if (starsOption.getFan() != null)
-				cmd.append(" fan ").append(starsOption.getFan().toString().toLowerCase());
-			if (starsOption.getHold())
-				cmd.append(" hold");
+			if (starsOption.getTemperature() == -1) {
+				// Run scheduled program
+				cmd.append(" run");
+			}
+			else {
+				cmd.append(" temp ").append(starsOption.getTemperature());
+				if (starsOption.getFan() != null)
+					cmd.append(" fan ").append(starsOption.getFan().toString().toLowerCase());
+				if (starsOption.getHold())
+					cmd.append(" hold");
+			}
 			cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
+			
 			ServerUtils.sendCommand( cmd.toString() );
 
 			com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
