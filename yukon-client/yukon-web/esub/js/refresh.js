@@ -112,6 +112,7 @@ function updateGraph(node) {
 			"&start=" + node.getAttribute('start') + 
 			"&period=" + node.getAttribute('period') +
 			"&db=" + node.getAttribute('db') +
+			"&option=" + node.getAttribute('option') +
 			"&loadfactor=" + node.getAttribute('loadfactor');	
 
 	node.setAttributeNS(xlinkNS, 'xlink\:href', url);
