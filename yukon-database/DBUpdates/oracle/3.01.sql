@@ -225,8 +225,7 @@ create table DeviceSeries5RTU  (
    PowerValueMultiplier FLOAT                            not null,
    PowerValueOffset     FLOAT                            not null,
    StartCode            NUMBER                           not null,
-   StopCode             NUMBER                           not null,
-   Retries              NUMBER                           not null
+   StopCode             NUMBER                           not null
 );
 alter table DeviceSeries5RTU
    add constraint PK_DEVICESERIES5RTU primary key (DeviceID);
@@ -355,6 +354,11 @@ UPDATE DynamicLMProgramDirect SET NotifyTime ='01-JAN-1990';
 alter TABLE DynamicLMProgramDirect MODIFY NotifyTime NOT NULL;
 
 
+alter table DeviceSeries5RTU add Retries number;
+update DeviceSeries5RTU set Retries = 0;
+alter table DeviceSeries5RTU modify Retries number not null;
+
+alter table LMControlScenarioProgram rename column StartDelay to StartOffset;
 
 
 
