@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/02/16 21:00:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,7 @@ class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject, public RWMonitor< R
 protected:
 
     LONG        _deviceID;
+    RWCString   _class;
     RWCString   _name;
     RWCString   _description;
     RWCString   _objectType;
@@ -55,10 +56,12 @@ protected:
 
     CtiDeviceBaseLite& operator=(const CtiDeviceBaseLite& aRef);
     LONG getID() const;
+    RWCString getClass() const;
     RWCString getName() const;
     RWCString getDescription() const;
 
     CtiDeviceBaseLite& setID( LONG id );
+    CtiDeviceBaseLite& setClass( const RWCString &str );
     CtiDeviceBaseLite& setName( const RWCString &str );
     CtiDeviceBaseLite& setDescription( const RWCString &str );
     CtiDeviceBaseLite& setDisableFlag( const RWCString &str );

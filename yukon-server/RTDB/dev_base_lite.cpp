@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/06/05 21:12:02 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/02/16 21:00:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,11 @@ LONG CtiDeviceBaseLite::getID() const
 {
     LockGuard guard( monitor() );
     return _deviceID;
+}
+RWCString CtiDeviceBaseLite::getClass() const
+{
+    LockGuard guard( monitor() );
+    return _class;
 }
 RWCString CtiDeviceBaseLite::getName() const
 {
@@ -97,6 +102,12 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const RWCString &str )
     _name = str;
     return *this;
 }
+CtiDeviceBaseLite& CtiDeviceBaseLite::setClass( const RWCString &str )
+{
+    LockGuard guard( monitor() );
+    _class = str;
+    return *this;
+}
 
 CtiDeviceBaseLite& CtiDeviceBaseLite::setDescription( const RWCString &str )
 {
@@ -128,6 +139,7 @@ void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
     selector <<
     keyTable["paobjectid"] <<
+    keyTable["paoclass"] <<
     keyTable["paoname"] <<
     keyTable["type"] <<
     keyTable["description"] <<
@@ -143,6 +155,7 @@ void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 void CtiDeviceBaseLite::DecodeDatabaseReader(RWDBReader &rdr)
 {
     rdr["paobjectid"] >> _deviceID;
+    rdr["paoclass"] >> _class;
     rdr["paoname"] >> _name;
     rdr["type"] >> _objectType;
     rdr["description"] >> _description;
@@ -172,6 +185,7 @@ RWDBStatus CtiDeviceBaseLite::Restore()
             selector = getDatabase().selector();
 
         selector << table["paobjectid"];
+        selector << table["paoclass"];
         selector << table["paoname"];
         selector << table["type"];
         selector << table["description"];
@@ -201,6 +215,7 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
     if(this != &aRef)
     {
         _deviceID = aRef.getID();
+        _class = aRef.getClass();
         _name = aRef.getName();
         _objectType = aRef.getObjectType();
         _description = aRef.getDescription();
