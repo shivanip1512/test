@@ -23,6 +23,8 @@
 	if(actionStr != null && actionStr.equalsIgnoreCase("SUBMITTAG")) {
 		TagManager.getInstance().createTag(pointID, Integer.parseInt(tagIDStr), YUKON_USER.getUsername(), descriptionStr, "-", "-");
 		response.sendRedirect("control.jsp?pointid=" + pointID + "&action=DISPLAY");
+		//Give dispatch a chance, see if this is long enough
+		try { Thread.sleep(500); } catch(Exception e) { }
 		return;
 	}	
 %>
@@ -70,15 +72,13 @@ Tag</div>
                 <tr>
                   <td class="TableCell" style="vertical-align: top;">Device:<br>
                   </td>
-                  <td class="TableCell" style="vertical-align: top;">Morningside
-RTU<br>
+                  <td class="TableCell" style="vertical-align: top;"><%= liteDevice.getPaoName() %><br>
                   </td>
                 </tr>
                 <tr>
                   <td class="TableCell" style="vertical-align: top;">Point:<br>
                   </td>
-                  <td class="TableCell" style="vertical-align: top;">DCB
-F1<br>
+                  <td class="TableCell" style="vertical-align: top;"><%= litePoint.getPointName() %><br>
                   </td>
                 </tr>
                 <tr>

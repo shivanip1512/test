@@ -78,6 +78,8 @@
 		}
 
 		response.sendRedirect("control.jsp?pointid=" + pointID + "&action=DISPLAY");
+		//Give dispatch a chance, see if this is long enough
+		try { Thread.sleep(500); } catch(Exception e) { }
 		return;
 	} 
 	else
@@ -126,7 +128,7 @@
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
   <link rel="stylesheet" href="CannonStyle.css" type="text/css">
-  <title>Control</title>
+  <title><% if(!controlConfirm) { %>Control<% } else { %>Confirm Control<% } %></title>
   <script langauge = "Javascript" src= "control.js"></script>
   <script type="text/javascript">
 
@@ -148,7 +150,6 @@ location="control.jsp?pointid=<%= pointID %>&action=DISPLAY";
 }
 
 function tagHistory(id) {
-alert("tagHistory " + id);
 location="tag_history.jsp?pointid=" + id;
 }
 
@@ -171,17 +172,17 @@ location="control.jsp?pointid=<%= pointID %>&instanceid=" + instanceID + "&actio
   <tbody>
     <tr align="center">
       <td style="vertical-align: top;" class="esubHeaderCell">
-      <div class="TitleHeader">Control</div>
+      <div class="TitleHeader"><% if(!controlConfirm) { %>Control<% } else { %>Confirm Control<% } %></div>
       </td>
     </tr>
     <tr>
       <td
  style="text-align: center; vertical-align: middle; background-color: rgb(255, 255, 255);">
       <div style="text-align: center;" class="TableCell">Device:&nbsp;
-Test RTU<br>
+<%= lDevice.getPaoName() %><br>
       </div>
       <div class="TableCell" style="text-align: center;">Point:&nbsp;
-DCB1<br>
+<%= lPoint.getPointName() %><br>
       </div>
       <div class="TableCell" style="text-align: center;">Current
 State:&nbsp; Open<br>
