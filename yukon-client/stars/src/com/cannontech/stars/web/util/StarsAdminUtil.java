@@ -942,6 +942,8 @@ public class StarsAdminUtil {
 				
 				while (rset.next()) {
 					int oldEntryID = rset.getInt(1);
+					if (oldEntryID == 0) continue;
+					
 					YukonListEntry oldEntry = YukonListFuncs.getYukonListEntry( oldEntryID );
 					int newEntryID = 0;
 					
