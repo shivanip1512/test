@@ -1,9 +1,5 @@
 package com.cannontech.common.gui.panel;
 
-import java.awt.Color;
-
-import com.cannontech.common.gui.util.CheckBoxTableRenderer;
-
 /**
  * Insert the type's description here.
  * Creation date: (5/13/2002 11:02:58 AM)
@@ -83,6 +79,9 @@ public class MultiSelectJPanel extends javax.swing.JPanel implements java.awt.ev
 			if( col == 0 )
 				getRowAt(row).setIsSelected( (Boolean)val );
 		}
+		
+		public void setAllGearNumbers( Integer val )
+		{}
 	
 	}
 
@@ -150,6 +149,11 @@ private javax.swing.JCheckBox getJCheckBoxSelectAll() {
 public void doClickSelectAll()
 {
 	getJCheckBoxSelectAll().doClick();
+}
+
+public void selectAllSelected( boolean val )
+{
+	getJCheckBoxSelectAll().setSelected( val );
 }
 
 
@@ -320,9 +324,9 @@ private void initJTableCellComponents()
 	javax.swing.table.TableColumn isSelected = 
 			getJTableSelect().getColumnModel().getColumn( getTableModel().getCheckBoxCol() );
 
-	isSelected.setMaxWidth(50);
-	isSelected.setWidth(50);
-	isSelected.setPreferredWidth(50);
+	isSelected.setMaxWidth(65);
+	isSelected.setWidth(65);
+	isSelected.setPreferredWidth(65);
 	
 	// Create and add the column renderers	
 	com.cannontech.common.gui.util.CheckBoxTableRenderer bxRender = new com.cannontech.common.gui.util.CheckBoxTableRenderer();
@@ -391,9 +395,15 @@ public void setSelectableData(Object[] data)
 	getTableModel().clear();
 
 	for( int i = 0; i < data.length; i++ )
-		getTableModel().addRow( new MultiSelectRow(data[i]) );
-	
+	{
+		MultiSelectRow ms = new MultiSelectRow(data[i]);
+		ms.setIsSelected( Boolean.TRUE );
+		getTableModel().addRow( ms );
+	}
+
+	getTableModel().fireTableDataChanged();
 }
+
 /**
  * 
  */

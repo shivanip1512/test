@@ -21,4 +21,6 @@ public interface IMultiSelectModel extends TableModel
 	void fireTableDataChanged();
 	
 	int getCheckBoxCol();
+	
+	void setAllGearNumbers(Integer val);
 }
