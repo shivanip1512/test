@@ -59,7 +59,11 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 {
 	if( event.getSource() == getDateComboBox() )
 	{
-		java.util.Date newEndDate = getDateComboBox().getSelectedDate();
+		java.util.GregorianCalendar  tempCal = new java.util.GregorianCalendar();
+		tempCal.setTime(getDateComboBox().getSelectedDate());
+		tempCal.add(java.util.Calendar.DATE,1);
+//		java.util.Date newEndDate = getDateComboBox().getSelectedDate();
+		java.util.Date newEndDate = tempCal.getTime();
 		getBillingDefaults().setEndDate(newEndDate);
 
 		getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
@@ -1221,10 +1225,14 @@ private void initialize() {
  */
 public BillingFileDefaults retrieveBillingDefaultsFromGui()
 {
-	java.util.Date newEndDate = null;
-	
-	Date tempDate = getDateComboBox().getSelectedDate();
-	newEndDate = tempDate;
+
+	java.util.GregorianCalendar  tempCal = new java.util.GregorianCalendar();
+	tempCal.setTime(getDateComboBox().getSelectedDate());
+	tempCal.add(java.util.Calendar.DATE,1);
+	java.util.Date newEndDate = tempCal.getTime();	
+//	java.util.Date newEndDate = null;
+//	Date tempDate = getDateComboBox().getSelectedDate();
+//	newEndDate = tempDate;
 
 	// Get all selected collection groups from the groupList scroll panel.
 	java.util.Vector selectedCollGrps = new java.util.Vector(getGroupList().getSelectedValues().length);
