@@ -205,6 +205,7 @@ public static void logMessage(String msg, int prioritylevel)
  */
 public static void main(String[] args)
 {
+	System.setProperty("cti.app.name", "Custom");
 	String vanGoghHost;
 	int vanGoghPort;
 

@@ -731,6 +731,7 @@ public static void logEvent(String event, int severity)
  */
 public static void main(java.lang.String[] args)
 {
+	System.setProperty("cti.app.name", "CalcHistorical");
 	CalcHistorical calcHistorical = new CalcHistorical();
 	Baseline baseLine = new Baseline();
 

@@ -283,6 +283,7 @@ public static void main(java.lang.String[] args)
 {
 	try
 	{
+		System.setProperty("cti.app.name", "Billing");
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());		
 		final BillingFileFormatFrame aBillingFileFormatFrame = new BillingFileFormatFrame();
 		billingPanel = new BillingFileFormatPanel();

@@ -3,12 +3,11 @@ package com.cannontech.yc.gui;
 /**
  * This type was created in VisualAge.
  */
-
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Vector;
-
 import javax.swing.event.TreeSelectionEvent;
+
+import java.util.Vector;
 
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
@@ -1331,6 +1330,7 @@ public static void main(java.lang.String[] args)
 {
 	try
 	{
+		System.setProperty("cti.app.name", "Commander");
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		YukonCommander ycClient;

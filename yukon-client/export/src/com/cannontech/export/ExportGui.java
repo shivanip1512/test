@@ -952,6 +952,7 @@ public static void main(java.lang.String[] args)
 {
 	try
 	{
+		System.setProperty("cti.app.name", "Export");
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());		
 		ExportGui aExportGui;
 		aExportGui = new ExportGui();
