@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/01/13 17:49:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/01/17 16:29:31 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.7  2005/01/17 16:29:31  mfisher
+* added the resetScanFlags clobber to resultDecode
+*
 * Revision 1.6  2005/01/13 17:49:57  mfisher
 * Returning ErrReturn for error instead of InMessage->EventCode
 *
@@ -317,6 +320,8 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     if( !ErrReturn )
     {
+        resetScanFlags();
+
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
                                                        getName() + " / scan successful, " + CtiNumStr(InMessage->Buffer.InMessage[0]) + " codes returned",
