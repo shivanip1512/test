@@ -17,10 +17,15 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2002/09/06 18:58:55 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2002/09/12 21:33:33 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.8  2002/09/12 21:33:33  dsutton
+      Updated how FDR reconnects to dispatch in the event dispatch has swept
+      the leg on the connection.  We now reconnect in one place, receivefromdispatch
+      Send to dispatch tries a second time before throwing away the data and continuing.
+
       Revision 1.7  2002/09/06 18:58:55  dsutton
       Added new functions for connecting and registering with dispatch.  Changed
       the logic in the places I try to read and write to dispatch to check the
@@ -544,12 +549,20 @@ BOOL CtiFDRInterface::stop( void )
     }
 
     // this is throwing an exception sometimes, I'm cheating since its only shutdown
-
-    iDispatchConn->ShutdownConnection();
+    try 
+    {
+       iDispatchConn->ShutdownConnection();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "completed ShutdownConnection();" << endl;
+        }
+    }
+    catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "completed ShutdownConnection();" << endl;
+        dout << RWTime() << " Exception on shutdown " << endl;
     }
+
     //
     // FIXFIXFIX  - may need to add exception handling here
     //
@@ -562,6 +575,11 @@ BOOL CtiFDRInterface::connectWithDispatch()
     if (iDispatchConn == 0)
     {
         iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
+        }
+
         /*******************
         * we won't lose info this way
         *******************
@@ -578,6 +596,10 @@ BOOL CtiFDRInterface::registerWithDispatch()
 
     // register who we are
     pMsg = new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE);
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
     sendMessageToDispatch( pMsg );
     sendPointRegistration();
     return TRUE;
@@ -801,6 +823,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     RWRunnableSelf  pSelf = rwRunnable( );
     CtiMessage      *incomingMsg;
     int x,cnt=0;
+    static int cnt2=0;
 
     try
     {
@@ -819,24 +842,65 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             {
                 pSelf.serviceCancellation( );
 
-                if ( (iDispatchConn->verifyConnection()) == NORMAL )
+                // there should always be a connection of some sort, it may be bad, but it will be availble
+                // the else here is the only place other than the destructor that deletes the connection
+                if (iDispatchConn != 0)
                 {
-                    incomingMsg = iDispatchConn->ReadConnQue( 1000 );
+                    if ( (iDispatchConn->verifyConnection()) == NORMAL )
+                    {
+                        incomingMsg = iDispatchConn->ReadConnQue( 1000 );
+/*
+                        cnt2++;
+                        if (cnt2 > 15)
+                        {
+                            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+
+                                delete iDispatchConn;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
+                                }
+                                cnt2 = 0;
+                                iDispatchConn=0;
+                        }
+*/                        
+                    }
+                    else
+                    {
+                        pSelf.serviceCancellation( );
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed.  Attempting to reconnect" << endl;
+                        }
+                        // we're assuming that the send to dispatch will catch the problem
+                        {
+                            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                            iDispatchConn->ShutdownConnection();
+                            delete iDispatchConn;
+                            iDispatchConn=0;
+                            connectWithDispatch();
+                        }
+                        logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
+                        registerWithDispatch();
+                    }   
                 }
                 else
                 {
+                    pSelf.serviceCancellation( );
+
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
+                        dout << RWTime() << " " << getInterfaceName() << "'s connection to dispatch failed.  Attempting to reconnect" << endl;
                     }
-                    pSelf.sleep(2000);
-
-                    CtiLockGuard<CtiMutex> guard(iDispatchMux);  
-                    delete iDispatchConn;
-                    iDispatchConn=0;
-                    connectWithDispatch();
+                    // we're assuming that the send to dispatch will catch the problem
+                    {
+                        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+                        connectWithDispatch();
+                    }
+                    logEvent (RWCString (getInterfaceName() + RWCString ("'s connection to dispatch has been restarted")),RWCString());
                     registerWithDispatch();
-                }   
+                }
 
             } while ( incomingMsg == NULL );
 
@@ -926,6 +990,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             }
             // get rid of the message we received
             delete incomingMsg;
+            incomingMsg = NULL;
         }
     }
 
@@ -1168,6 +1233,65 @@ bool CtiFDRInterface::logEvent( RWCString &aDesc, RWCString &aAction, bool aSend
 }
 
 
+bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
+{
+    bool retVal=false;
+    int attemptReturned;
+
+    {
+        // lock the semaphore out here
+        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+        attemptReturned = attemptSend (aMessage);
+    }
+
+    // log and try again
+    if (attemptReturned == ConnectionFailed)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " The attempt to write point data from " << getInterfaceName() << " to dispatch has failed. Trying again " << endl;
+        }
+        Sleep (1000);
+
+        {
+            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
+            attemptReturned = attemptSend (aMessage);
+        }
+        if (attemptReturned == ConnectionFailed)
+        {
+            {
+                // lock the semaphore out here
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Connection to dispatch for " << getInterfaceName() << " has failed.  Data will be lost " << endl;
+            }
+            retVal = false;
+            delete aMessage;
+        }
+        else
+        {
+            if (attemptReturned == ConnectionOkWriteOk)
+            {
+                retVal = true;
+            }
+            else
+            {
+                retVal = false;
+            }
+        }
+    }
+    else
+    {
+        if (attemptReturned == ConnectionOkWriteOk)
+        {
+            retVal = true;
+        }
+        else
+        {
+            retVal = false;
+        }
+    }
+    return retVal;
+}
 /************************************************************************
 * Function Name: CtiFDRInterface::sendMessageToDispatch( CtiMessage *)
 *
@@ -1176,44 +1300,30 @@ bool CtiFDRInterface::logEvent( RWCString &aDesc, RWCString &aAction, bool aSend
 *
 *************************************************************************
 */
-bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
+int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
 {
+    int returnValue = ConnectionFailed;
     bool retVal=false;
-    static int cnt=0;
 
-    if ( (iDispatchConn->verifyConnection()) == NORMAL )
+    // make sure the connection hasn't been deleted first
+    if (iDispatchConn != 0)
     {
-        cnt++;
-        if (cnt > 1500)
+        if ( (iDispatchConn->verifyConnection()) == NORMAL )
         {
+            // data is eaten no matter what
+            retVal = iDispatchConn->WriteConnQue( aMessage );
+
+            if (retVal == false)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
+                returnValue = ConnectionOkWriteFailed;
             }
-            CtiLockGuard<CtiMutex> guard(iDispatchMux);  
-            delete iDispatchConn;
-            iDispatchConn=0;
-            connectWithDispatch();
-            registerWithDispatch();
-            cnt=0;
+            else
+            {
+                returnValue = ConnectionOkWriteOk;
+            }
         }
-
-        retVal = iDispatchConn->WriteConnQue( aMessage );
     }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ******** Checkpoint ********* " << __FILE__ << " (" << __LINE__ << ") for " << getInterfaceName() << endl;
-        }
-        CtiLockGuard<CtiMutex> guard(iDispatchMux);  
-        delete iDispatchConn;
-        iDispatchConn=0;
-        connectWithDispatch();
-        registerWithDispatch();
-
-    }
-    return retVal;
+    return returnValue;
 }
 
 /************************************************************************
