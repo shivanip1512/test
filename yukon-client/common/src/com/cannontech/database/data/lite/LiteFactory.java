@@ -112,7 +112,19 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				returnObject = new com.cannontech.database.data.config.ConfigTwoWay();
 				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigID(new Integer(((LiteConfig)liteObject).getConfigID()) );
 				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigName( ((LiteConfig)liteObject).getConfigName() );
-				break;						
+				break;
+			case LiteTypes.TAG:
+				returnObject = new com.cannontech.database.db.tags.Tag();
+				((com.cannontech.database.db.tags.Tag)returnObject).setTagID(new Integer(((LiteTag)liteObject).getTagID()) );
+				((com.cannontech.database.db.tags.Tag)returnObject).setTagName( ((LiteTag)liteObject).getTagName() );
+				((com.cannontech.database.db.tags.Tag)returnObject).setTagLevel( new Integer(((LiteTag)liteObject).getTagLevel()));
+				Character inhibit = new Character('N');
+				if(((LiteTag)liteObject).isInhibit())
+					inhibit = new Character('Y');
+				((com.cannontech.database.db.tags.Tag)returnObject).setInhibit( inhibit );
+				((com.cannontech.database.db.tags.Tag)returnObject).setColorID(new Integer(((LiteTag)liteObject).getColorID()) );
+				((com.cannontech.database.db.tags.Tag)returnObject).setImageID(new Integer(((LiteTag)liteObject).getImageID()) );
+				break;							
          case LiteTypes.STATE_IMAGE:
             returnObject = new com.cannontech.database.db.state.YukonImage();
             ((com.cannontech.database.db.state.YukonImage)returnObject).setImageID(new Integer(((LiteYukonImage)liteObject).getImageID()) );
@@ -212,6 +224,19 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteConfig(
 			((com.cannontech.database.data.config.ConfigTwoWay)val).getConfigID().intValue(),
 			((com.cannontech.database.data.config.ConfigTwoWay)val).getConfigName() );
+			
+	}
+	else if( val instanceof com.cannontech.database.db.tags.Tag )
+	{
+		boolean temp = (((com.cannontech.database.db.tags.Tag)val).getInhibit().compareTo(new Character('Y')) == 0);
+		
+		returnLite = new LiteTag(
+			((com.cannontech.database.db.tags.Tag)val).getTagID().intValue(),
+			((com.cannontech.database.db.tags.Tag)val).getTagName(),
+			((com.cannontech.database.db.tags.Tag)val).getTagLevel().intValue(),
+			temp,
+			((com.cannontech.database.db.tags.Tag)val).getColorID().intValue(),
+			((com.cannontech.database.db.tags.Tag)val).getImageID().intValue());
 			
 	}
 	else if( val instanceof com.cannontech.database.data.graph.GraphDefinition )

@@ -221,7 +221,12 @@ public final class LiteComparators
 			{
 				thisVal = ((LiteConfig)o1).getConfigName();
 				anotherVal = ((LiteConfig)o2).getConfigName();
-			}						
+			}
+			else if(o1 instanceof com.cannontech.database.data.lite.LiteTag && o2 instanceof com.cannontech.database.data.lite.LiteTag)
+			{
+				thisVal = ((LiteTag)o1).getTagName();
+				anotherVal = ((LiteTag)o2).getTagName();
+			}							
 			else if(o1 instanceof LiteGraphDefinition && o2 instanceof LiteGraphDefinition)
 			{
 				thisVal = ((LiteGraphDefinition)o1).getName();
