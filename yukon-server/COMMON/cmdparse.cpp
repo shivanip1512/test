@@ -649,7 +649,7 @@ void  CtiCommandParser::doParseControl(void)
         {
             flag |= CMD_FLAG_CTL_SHED;
 
-            if(!(token = CmdStr.match("ed[ \t]*[0-9]+(\\.[0-9]+)?[ \t]*[hms]?")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+            if(!(token = CmdStr.match("ed[ \t]*[0-9]+(\\.[0-9]+)?[ \t]*[hms]?((ours)|(in(utes)?)|(ec(onds)?))?[ \t]+")).isNull())      // Sourcing from CmdStr, which is the entire command string.
             {
                 DOUBLE mult = 60.0;
 
