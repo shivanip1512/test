@@ -1828,78 +1828,175 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
     {
         if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::TimeRefreshMethod )
         {
-            // Normally we would only take the commented out "numberOfGroupsToTake" but when we
-            // switch gears to refresh from smart cycle or rotation there is the possibility
-            // that all groups need to be shed so that's what we'll do
-            LONG refreshRate = currentGearObject->getMethodRate();
-            LONG shedTime = currentGearObject->getMethodPeriod();
-            //LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
-            RWCString refreshCountDownType = currentGearObject->getMethodOptionType();
-            LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
+            if( previousGearObject->getControlMethod() == CtiLMProgramDirectGear::SmartCycleMethod ||
+                previousGearObject->getControlMethod() == CtiLMProgramDirectGear::TrueCycleMethod ||
+                previousGearObject->getControlMethod() == CtiLMProgramDirectGear::MasterCycleMethod ||
+                previousGearObject->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ||
+                previousGearObject->getControlMethod() == CtiLMProgramDirectGear::ThermostatSetbackMethod ||
+                previousGearObject->getControlMethod() == CtiLMProgramDirectGear::LatchingMethod )
+            {
+                // Normally we would only take the commented out "numberOfGroupsToTake" but when we
+                // switch gears to refresh from smart cycle or rotation there is the possibility
+                // that all groups need to be shed so that's what we'll do
+                LONG refreshRate = currentGearObject->getMethodRate();
+                LONG shedTime = currentGearObject->getMethodPeriod();
+                //LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+                RWCString refreshCountDownType = currentGearObject->getMethodOptionType();
+                LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
 
-            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Controlling all time refresh groups, LM Program: " << getPAOName() << endl;
-            }
-            for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
-            {
-                CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
-                if( !currentLMGroup->getDisableFlag() &&
-                    !currentLMGroup->getControlInhibit() )
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
-                    if( refreshCountDownType == CtiLMProgramDirectGear::CountDownMethodOptionType )
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Time Refreshing all previously controlled groups, LM Program: " << getPAOName() << endl;
+                }
+                for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+                {
+                    CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                    if( !currentLMGroup->getDisableFlag() &&
+                        !currentLMGroup->getControlInhibit() &&
+                        ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState ||
+                          previousGearObject->getControlMethod() == CtiLMProgramDirectGear::RotationMethod ) )
                     {
-                        if( maxRefreshShedTime > 0 )
+                        if( refreshCountDownType == CtiLMProgramDirectGear::CountDownMethodOptionType )
                         {
-                            ULONG tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
-
-                            if( maxRefreshShedTime > 0 &&
-                                tempShedTime > maxRefreshShedTime )
+                            if( maxRefreshShedTime > 0 )
                             {
-                                tempShedTime = maxRefreshShedTime;
-                            }
-                            shedTime = tempShedTime;
-                        }
-                        else
-                        {
-                            RWDBDateTime tempDateTime;
-                            RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
-                            compareDateTime.addDays(1);
-                            ULONG tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
+                                ULONG tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
 
-                            if( getDirectStopTime().seconds() > compareDateTime.seconds() )
-                            {
-                                tempShedTime = compareDateTime.seconds() - RWDBDateTime().seconds();
+                                if( maxRefreshShedTime > 0 &&
+                                    tempShedTime > maxRefreshShedTime )
+                                {
+                                    tempShedTime = maxRefreshShedTime;
+                                }
+                                shedTime = tempShedTime;
                             }
                             else
                             {
-                                tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
-                            }
+                                RWDBDateTime tempDateTime;
+                                RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
+                                compareDateTime.addDays(1);
+                                ULONG tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
 
-                            shedTime = tempShedTime;
+                                if( getDirectStopTime().seconds() > compareDateTime.seconds() )
+                                {
+                                    tempShedTime = compareDateTime.seconds() - RWDBDateTime().seconds();
+                                }
+                                else
+                                {
+                                    tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
+                                }
+
+                                shedTime = tempShedTime;
+                            }
+                        }
+                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
+                        currentLMGroup->setLastControlString(requestMsg->CommandString());
+                        multiPilMsg->insert( requestMsg );
+                        setLastControlSent(RWDBDateTime());
+                        setLastGroupControlled(currentLMGroup->getPAOId());
+                        currentLMGroup->setLastControlSent(RWDBDateTime());
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                        if( currentGearObject->getPercentReduction() > 0.0 )
+                        {
+                            expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                        }
+                        else
+                        {
+                            expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
                         }
                     }
-                    CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
-                    currentLMGroup->setLastControlString(requestMsg->CommandString());
-                    multiPilMsg->insert( requestMsg );
-                    setLastControlSent(RWDBDateTime());
-                    setLastGroupControlled(currentLMGroup->getPAOId());
-                    currentLMGroup->setLastControlSent(RWDBDateTime());
-                    currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
-                    if( currentGearObject->getPercentReduction() > 0.0 )
+                }
+                if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
+            }
+            else if( previousGearObject->getControlMethod() == CtiLMProgramDirectGear::TimeRefreshMethod )
+            {
+                LONG refreshRate = currentGearObject->getMethodRate();
+                LONG shedTime = currentGearObject->getMethodPeriod();
+                LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+                RWCString refreshCountDownType = currentGearObject->getMethodOptionType();
+                LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
+
+                if( numberOfGroupsToTake == 0 )
+                {
+                    numberOfGroupsToTake = _lmprogramdirectgroups.entries();
+                }
+
+                for(LONG i=0;i<numberOfGroupsToTake;i++)
+                {
+                    CtiLMGroupBase* currentLMGroup = findGroupToTake(currentGearObject);
+                    if( currentLMGroup != NULL )
                     {
-                        expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                        if( refreshCountDownType == CtiLMProgramDirectGear::CountDownMethodOptionType )
+                        {
+                            if( maxRefreshShedTime > 0 )
+                            {
+                                ULONG tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
+
+                                if( maxRefreshShedTime > 0 &&
+                                    tempShedTime > maxRefreshShedTime )
+                                {
+                                    tempShedTime = maxRefreshShedTime;
+                                }
+                                shedTime = tempShedTime;
+                            }
+                            else
+                            {
+                                RWDBDateTime tempDateTime;
+                                RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
+                                compareDateTime.addDays(1);
+                                ULONG tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
+
+                                if( getDirectStopTime().seconds() > compareDateTime.seconds() )
+                                {
+                                    tempShedTime = compareDateTime.seconds() - RWDBDateTime().seconds();
+                                }
+                                else
+                                {
+                                    tempShedTime = getDirectStopTime().seconds() - RWDBDateTime().seconds();
+                                }
+
+                                shedTime = tempShedTime;
+                            }
+                        }
+                        CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(refreshRate, shedTime, defaultLMStartPriority);
+                        currentLMGroup->setLastControlString(requestMsg->CommandString());
+                        multiPilMsg->insert( requestMsg );
+                        setLastControlSent(RWDBDateTime());
+                        setLastGroupControlled(currentLMGroup->getPAOId());
+                        currentLMGroup->setLastControlSent(RWDBDateTime());
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                        if( currentGearObject->getPercentReduction() > 0.0 )
+                        {
+                            expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                        }
+                        else
+                        {
+                            expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                        }
                     }
-                    else
+                }
+
+                if( getProgramState() == CtiLMProgramBase::ActiveState )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                    for(LONG j=0;j<_lmprogramdirectgroups.entries();j++)
                     {
-                        expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[j];
+                        if( currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActiveState )
+                        {
+                            setProgramState(CtiLMProgramBase::ActiveState);
+                            break;
+                        }
                     }
                 }
             }
-            if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+            else
             {
-                setProgramState(CtiLMProgramBase::FullyActiveState);
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Program: " << getPAOName() << ", Gear#: " << previousGearObject->getGearNumber() << " doesn't have a valid control method in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
         else if( currentGearObject->getControlMethod() == CtiLMProgramDirectGear::SmartCycleMethod )
