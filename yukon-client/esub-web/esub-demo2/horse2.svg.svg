@@ -1,0 +1,56 @@
+<?xml version = "1.0" standalone = "no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
+<svg width = "560.0px" height="270.0px">
+    <defs>
+    </defs>
+    <path id="LxLine"  style="fill:none;stroke:rgb(255,255,255); stroke-width:1.0;" d="M60,40,l180,200," >
+    </path>
+    <rect id="LxRectangle" x="30" y="20" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle1" x="40" y="30" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle2" x="50" y="40" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle3" x="60" y="50" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle4" x="70" y="60" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle5" x="80" y="70" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle6" x="90" y="80" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle7" x="100" y="90" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle8" x="110" y="100" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle9" x="120" y="110" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle10" x="130" y="120" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle11" x="140" y="130" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle12" x="150" y="140" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle13" x="160" y="150" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle14" x="170" y="160" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle15" x="180" y="170" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle16" x="190" y="180" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle17" x="200" y="190" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle18" x="210" y="200" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle19" x="220" y="210" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle20" x="220" y="210" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle21" x="230" y="220" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle22" x="240" y="230" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+    <rect id="LxRectangle23" x="250" y="240" width="310" height="30"   style="fill:none;stroke:rgb(204,0,51); stroke-width:6.0;"   >
+    </rect>
+</svg>

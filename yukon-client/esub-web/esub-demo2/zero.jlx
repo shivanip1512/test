@@ -1,0 +1,20 @@
+JLoox 2.0.2
+"UTF8"
+A 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+1
+
+com.cannontech.esub.editor.element.DynamicText
+! 110101100 166.132812;162.5625;56.15625;74.71875 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"Comic Sans MS Bold" 0 96 "0"
+530 0 ""
+
+
+0

@@ -1,0 +1,141 @@
+JLoox 2.0.2
+"UTF8"
+A 0 6 0 0 ffcc0033 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+25
+
+com.loox.jloox.LxLine
+! 111101100 60;40;180;200 5 0 $ ! ! 0
+A 0 1 0 0 ffffffff 1 ! 0 0
+2
+0 -90;-100
+1 90;100
+0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 30;20;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 40;30;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 50;40;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 60;50;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 70;60;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 80;70;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 90;80;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 100;90;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 110;100;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 120;110;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 130;120;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 140;130;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 150;140;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 160;150;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 170;160;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 180;170;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 190;180;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 200;190;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 210;200;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 220;210;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 220;210;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 230;220;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 240;230;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+com.loox.jloox.LxRectangle
+! 111101100 250;240;310;30 5 0 $ ! ! 0
+A 0 6 0 0 ffcc0033 1 ! 0 0
+0 0 0
+
+
+0
