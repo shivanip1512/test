@@ -63,9 +63,6 @@ public class ActivityModel extends ReportModelBase
 
 	public final static String TOTALS_HEADER_STRING = "TOTALS";
 
-	/** Class fields */
-	private HashMap totals = null;
-
 	public static java.util.Comparator actLogComparator = new java.util.Comparator()
 	{
 		public int compare(Object o1, Object o2)
@@ -555,27 +552,6 @@ public class ActivityModel extends ReportModelBase
 			};				
 		}
 		return columnProperties;
-	}
-
-	public HashMap getTotals()
-	{
-		if (totals == null)
-		{
-			totals = new HashMap();
-			for(int i = 0; i < getData().size(); i++)
-			{
-				String key = ((ActivityLog)getData().get(i)).getAction();
-				Integer initValue = (Integer)totals.get(key);
-				if( initValue == null)
-					initValue = new Integer(0);
-	
-				Integer newValue = ((ActivityLog)getData().get(i)).getActionCount();
-				newValue = new Integer(newValue.intValue() + initValue.intValue());
-				
-				totals.put(key, newValue);		
-			}
-		}
-		return totals;
 	}
 
 }
