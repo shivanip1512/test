@@ -1,6 +1,9 @@
 package com.cannontech.esub.util;
 
 import javax.swing.*;
+
+import com.cannontech.common.cache.*;
+
 import java.beans.*;
 import java.awt.*;
 import java.io.File;
@@ -19,7 +22,7 @@ public class ImagePreview extends JComponent
             return;
         }
  
-        ImageIcon tmpIcon = new ImageIcon(ImageCache.getInstance().getImage(file.getPath()));
+        ImageIcon tmpIcon = new ImageIcon(ImageCache.getInstance().getImage(file.getPath(), this));
         if (tmpIcon.getIconWidth() > 90) {
             thumbnail = new ImageIcon(tmpIcon.getImage().
                                  getScaledInstance(90, -1,

@@ -33,12 +33,12 @@ public class Drawing {
 	private LxGraph lxGraph;
 	private LxView lxView;
 
-	public void clear() {
+	public synchronized void clear() {
 		fileName = null;
 		getLxGraph().removeAll();
 		setModified(false);
 	}
-	public void load(String file) {
+	public synchronized void load(String file) {
 		clear();
 		getLxGraph().read(file);
 		fileName = file;
@@ -74,7 +74,7 @@ public class Drawing {
 		}
 	}
 
-	public void save(String fileName) {
+	public synchronized void save(String fileName) {
 		String jlxFileName = fileName;
 
 		if (!jlxFileName.endsWith(".jlx")) {
@@ -105,7 +105,7 @@ public class Drawing {
 		lxGen.saveAsSVG(lxGraph, svgFileName + ".svg");		
 	}
 
-	public void save() {
+	public synchronized void save() {
 		save(getFileName());
 	}
 

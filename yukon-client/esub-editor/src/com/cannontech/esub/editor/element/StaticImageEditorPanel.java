@@ -227,10 +227,10 @@ private void initialize() {
                     String img = file.getPath();					
                     getImageNameLabel().setText(file.getPath());
                     //Image i = Util.loadImage(img);                   
-                    Image i = ImageCache.getInstance().getImage(img);                   
+                    Image i = ImageCache.getInstance().getImage(img, StaticImageEditorPanel.this);                   
 					getImageNameLabel().setIcon(new javax.swing.ImageIcon(i));	
                 }                
-		}
+		} 
 	});
 	// user code end
 }

@@ -256,7 +256,7 @@ public void setState(java.lang.String newState) {
 	// find the correct image for the new state
 	for( int i = 0; i < states.length; i++ ) {
 		if( states[i].equalsIgnoreCase(newState) ) {				
-			setImage(ImageCache.getInstance().getImage(absoluteImagePaths[i]));	
+			setImage(ImageCache.getInstance().getImage(absoluteImagePaths[i], getDrawing().getLxView()));	
 			break; 
 		}
 	}	

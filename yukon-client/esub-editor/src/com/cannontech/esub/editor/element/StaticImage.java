@@ -1,5 +1,7 @@
 package com.cannontech.esub.editor.element;
 
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -87,7 +89,12 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
  */
 public void setAbsoluteImagePath(java.lang.String newImageName) {
 	absoluteImagePath = newImageName;
-	setImage( ImageCache.getInstance().getImage(absoluteImagePath));
+	Image i = ImageCache.getInstance().getImage(absoluteImagePath, getDrawing().getLxView() );
+	/*MediaTracker mt = new MediaTracker(getDrawing().getLxView());
+	mt.addImage(i, 0);
+	try {
+	mt.waitForID(0); } catch(Exception e ) { e.printStackTrace(); }*/
+	setImage(i);
 }
 /**
  * Creation date: (1/22/2002 10:18:53 AM)
