@@ -78,7 +78,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setDefDailyStartTime(LONG start);
     CtiLMControlArea& setDefDailyStopTime(LONG stop);
     CtiLMControlArea& setRequireAllTriggersActiveFlag(BOOL requireall);
-    CtiLMControlArea& figureNextCheckTime();
+    CtiLMControlArea& figureNextCheckTime(ULONG secondsFrom1901);
     CtiLMControlArea& setNewPointDataReceivedFlag(BOOL newdatareceived);
     CtiLMControlArea& setUpdatedFlag(BOOL updated);
     CtiLMControlArea& setControlAreaStatusPointId(ULONG statuspointid);
@@ -87,17 +87,17 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setCurrentDailyStartTime(LONG tempstart);
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
 
-    BOOL isControlTime(ULONG nowInSeconds);
+    BOOL isControlTime(ULONG secondsFromBeginningOfDay);
     BOOL isControlStillNeeded();
-    BOOL isPastMinResponseTime(ULONG nowInSeconds);
+    BOOL isPastMinResponseTime(ULONG secondsFrom1901);
     BOOL isManualControlReceived();
     BOOL isThresholdTriggerTripped();
     DOUBLE calculateLoadReductionNeeded();
-    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    DOUBLE takeAllAvailableControlAreaLoad(ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    BOOL maintainCurrentControl(ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    void stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    void handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE takeAllAvailableControlAreaLoad(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL maintainCurrentControl(ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     void dumpDynamicData();
 
