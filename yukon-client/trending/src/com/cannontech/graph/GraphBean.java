@@ -45,7 +45,7 @@ public class GraphBean implements GraphDataFormats, GraphDefines
 	private java.util.Date[] sliderValuesArray = null;
 
 	private String period = com.cannontech.util.ServletUtil.historicalPeriods[0];
-	private String tab = null;
+	private String tab = GRAPH_PANE_STRING;
 	private int gdefid = -1;
 	private com.cannontech.database.data.graph.GraphDefinition gdef = null;
 	private String startStr = null;
