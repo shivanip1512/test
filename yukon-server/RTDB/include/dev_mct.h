@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/05/14 01:07:05 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/07/12 19:30:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,8 +61,9 @@ protected:
 
     RWCString _configName;
 
-    ULONG _nextLPScanTime;
-    bool  _lpIntervalSent;
+    bool          _lpIntervalSent;
+    RWTime        _lastLPRequest;
+    unsigned long _nextLPScanTime;
 
     bool _scanGeneralPending,
          _scanIntegrityPending,
@@ -104,7 +105,9 @@ protected:
         MCT_TestAddr1  = 0x155555,
         MCT_TestAddr2  = 0x2aaaaa,
 
-        MCT_PeakOffset = 10  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
+        MCT_PeakOffset       = 10,  //  peak demand points are offset by this amount (point offset 11, 12, 13...)
+
+        MCT_LPWindow         = 60
     };
 
     enum
@@ -134,7 +137,7 @@ public:
     virtual ULONG calcNextLPScanTime( void );
     ULONG         getNextLPScanTime( void );
     void          sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-    int           checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, int &badData );
+    int           checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, bool &badData );
 
     //  porter-side functions
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );

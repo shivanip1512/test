@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/04/14 00:47:30 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/07/12 19:30:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -234,6 +234,8 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     resetScanFreezePending();
     resetScanFreezeFailed();
 
+    setMCTScanPending(ScanRateAccum, false);
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -312,6 +314,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    setMCTScanPending(ScanRateIntegrity, false);
     resetScanPending();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/04/14 17:31:06 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/07/12 19:30:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,8 +26,6 @@ class IM_EX_DEVDB CtiDeviceMCT310 : public CtiDeviceMCT
 private:
 
    static DLCCommandSet _commandStore;
-
-   RWTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
 
 protected:
 

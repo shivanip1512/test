@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/06/01 15:12:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/07/12 19:30:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1402,8 +1402,8 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
     RWCString valReport;
     int       intervalOffset,
-              lpDemandRate,
-              badData;
+              lpDemandRate;
+    bool      badData = false;
     double    Value;
     unsigned long timeStamp, pulses;
     PointQuality_t pointQuality;
@@ -1442,8 +1442,6 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
         if( pPoint != NULL )
         {
-            badData = FALSE;
-
             for( intervalOffset = 0; intervalOffset < 6; intervalOffset++ )
             {
                 //  error code in the top 5 bits - parsed by checkLoadProfileQuality

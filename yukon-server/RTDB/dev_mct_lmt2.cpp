@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/01/06 20:28:29 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/07/12 19:30:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,40 +117,47 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, USHORT &function, USHORT 
 
 ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
 {
-    RWTime Now, blockStart, plannedLPTime, panicLPTime;
-    unsigned long nextTime, midnightOffset;
-    int lpBlockSize, lpDemandRate;
+    RWTime Now, blockStart, nextTime;
+    unsigned long midnightOffset;
+    int lpBlockSize, lpDemandRate, lpMaxBlocks;
 
-    //  if we're not collecting load profile, we never scan
-    if( !getLoadProfile().isChannelValid(0) )
-        return (_nextLPScanTime = YUKONEOT);
+    CtiPointBase *pPoint = getDevicePointOffsetTypeEqual(1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
+
+    //  make sure to completely recalculate this every time
+    _nextLPScanTime = YUKONEOT;
 
     if( !_lpIntervalSent )
     {
         //  send load profile interval on the next 5 minute boundary
-        nextTime = Now.seconds() + 300;
-        if( nextTime % 300 )
+        _nextLPScanTime = Now.seconds() + 300;
+
+        if( _nextLPScanTime % 300 )
         {
-            nextTime -= nextTime % 300;
+            _nextLPScanTime -= _nextLPScanTime % 300;
         }
     }
-    else
+    else if( pPoint && getLoadProfile().isChannelValid(0) )
     {
-        //  the only way for this to have happened is if they haven't been initialized yet...
-        //    (i.e. both were set to Now() at the constructor)
-        if( _lastLPRequestAttempt == _lastLPRequestBlockStart )
-        {
-            //  pretend like we just got a block from January 1, 1901 - that will
-            //    scare us into fetching stuff immediately
-            _lastLPRequestAttempt = Now;
-            _lastLPRequestBlockStart = (unsigned long)86400;
-        }
-
         //  we read 6 intervals at a time
         lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
         lpBlockSize  = lpDemandRate * 6;
 
+        //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+        if( lpDemandRate == 3600 )
+        {
+            lpMaxBlocks = 4;
+        }
+        else
+        {
+            lpMaxBlocks = 8;
+        }
+
         blockStart   = getLastLPTime();
+
+        if( blockStart < (Now - ((lpMaxBlocks - 1) * lpBlockSize)) )
+        {
+            blockStart = Now - ((lpMaxBlocks - 1) * lpBlockSize);
+        }
 
         //  figure out seconds from midnight
         midnightOffset  = blockStart.hour() * 3600;
@@ -162,30 +169,21 @@ ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
 
         //  we can only request in blocks, so we plan to request LP data
         //    after one block (6 intervals) has passed
-        plannedLPTime  = blockStart + lpBlockSize;
-        //  also make sure we allow time for it to move out of the memory we're requesting
-        plannedLPTime += LPBlockEvacuationTime;
+        nextTime  = blockStart + lpBlockSize;
+        //  also add on time for it to move out of the memory we're requesting
+        nextTime += LPBlockEvacuationTime;
 
-        //  if we're still on schedule for our normal request
-        //    (and we haven't already made our request for this block)
-        if( _lastLPRequestAttempt < plannedLPTime &&
-            _lastLPRequestBlockStart < blockStart )
+        //  if we're overdue
+        while( (nextTime <= (Now - MCT_LPWindow)) ||
+               (nextTime <= _lastLPRequest) )
         {
-            nextTime = plannedLPTime.seconds();
+            nextTime += getLPRetryRate(lpDemandRate);
         }
-        //  we're overdue
-        else
-        {
-            unsigned int overdueLPRetryRate = getLPRetryRate(lpDemandRate);
 
-            nextTime  = (Now.seconds() - LPBlockEvacuationTime) + overdueLPRetryRate;
-            nextTime -= (Now.seconds() - LPBlockEvacuationTime) % overdueLPRetryRate;
-
-            nextTime += LPBlockEvacuationTime;
-        }
+        _nextLPScanTime = nextTime.seconds();
     }
 
-    return (_nextLPScanTime = nextTime);
+    return _nextLPScanTime;
 }
 
 
@@ -193,18 +191,19 @@ INT CtiDeviceMCT_LMT2::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist
 {
     int nRet = NoError;
 
-    int           lpDemandRate;
-    unsigned int  lpBlockAddress;
-    unsigned long lpBlocksToCollect,
-                  lpMaxBlocks,
-                  lpBlockSize,
-                  lpMidnightOffset;
-    RWTime        lpBlockStartTime;
-    RWTime        Now;
-    RWCString     lpDescriptorString;
+    int            lpDemandRate;
+    unsigned int   lpBlockAddress;
+    unsigned long  lpBlocksToCollect,
+                   lpMaxBlocks,
+                   lpBlockSize,
+                   lpMidnightOffset;
+    RWTime         lpBlockStartTime;
+    RWTime         Now;
+    OUTMESS       *tmpOutMess;
+    RWCString      lpDescriptorString;
+    int            lpChannel;
 
-    lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
-    lpBlockSize  = lpDemandRate * 6;
+    lpDemandRate     = getLoadProfile().getLoadProfileDemandRate();
 
     if( !_lpIntervalSent )
     {
@@ -212,64 +211,68 @@ INT CtiDeviceMCT_LMT2::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist
     }
     else
     {
+        //  we can read 6 intervals at a time
+        lpBlockSize = lpDemandRate * 6;
+
+        //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+        if( lpDemandRate == 3600 )
+            lpMaxBlocks = 4;
+        else
+            lpMaxBlocks = 8;
+
         if( useScanFlags() )
         {
-            lpBlockStartTime = getLastLPTime();
-
-            //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
-            if( lpDemandRate == 3600 )
-                lpMaxBlocks = 4;
-            else
-                lpMaxBlocks = 8;
-
-            lpBlocksToCollect = (Now.seconds() - lpBlockStartTime.seconds()) / lpBlockSize;
-
-            //  make sure we only ask for what remains in memory
-            if( lpBlocksToCollect > (lpMaxBlocks - 1) )
+            if( _nextLPScanTime <= Now )
             {
-                //  start with everything but the current block
-                lpBlockStartTime = Now.seconds() - (lpBlockSize * (lpMaxBlocks - 1));
-            }
+                tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
-            //  figure out seconds from midnight
-            lpMidnightOffset  = lpBlockStartTime.hour() * 3600;
-            lpMidnightOffset += lpBlockStartTime.minute() * 60;
-            lpMidnightOffset += lpBlockStartTime.second();
+                lpBlockStartTime = getLastLPTime();
 
-            //  make sure our reported "start time" is at the beginning of a block
-            lpBlockStartTime -= lpMidnightOffset % lpBlockSize;
-            lpMidnightOffset -= lpMidnightOffset % lpBlockSize;
+                lpBlocksToCollect = (Now.seconds() - lpBlockStartTime.seconds()) / lpBlockSize;
 
-            if( getNextLPScanTime() <= Now )
-            {
-                _lastLPRequestBlockStart = lpBlockStartTime;
-                _lastLPRequestAttempt    = Now;
+                //  make sure we only ask for what remains in memory
+                if( lpBlocksToCollect >= lpMaxBlocks )
+                {
+                    //  start with everything but the current block
+                    lpBlockStartTime  = Now.seconds();
+                    lpBlockStartTime -= (lpMaxBlocks - 1) * lpBlockSize;
+                }
 
+                //  figure out seconds from midnight
+                lpMidnightOffset  = lpBlockStartTime.hour() * 3600;
+                lpMidnightOffset += lpBlockStartTime.minute() * 60;
+                lpMidnightOffset += lpBlockStartTime.second();
+
+                //  make sure our reported "start time" is at the beginning of a block
+                lpMidnightOffset -= lpMidnightOffset % lpBlockSize;
+
+                //  which block to grab?
+                lpBlockAddress  = lpMidnightOffset / lpBlockSize;
                 //  adjust for wraparound
-                lpBlockAddress = lpMidnightOffset % (lpBlockSize * lpMaxBlocks);
-
-                lpBlockAddress /= lpBlockSize;
+                lpBlockAddress %= lpMaxBlocks;
 
                 lpDescriptorString = RWCString(" block ") + CtiNumStr(lpBlockAddress+1);
 
-                strncat( OutMessage->Request.CommandStr,
+                strncat( tmpOutMess->Request.CommandStr,
                          lpDescriptorString.data(),
-                         sizeof(OutMessage->Request.CommandStr) - strlen(OutMessage->Request.CommandStr));
+                         sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
+
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "\"" << OutMessage->Request.CommandStr << "\"" << endl;
+                    dout << RWTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
                 }
 
-                outList.insert(OutMessage);
-                OutMessage = NULL;
+                outList.insert(tmpOutMess);
+                _lastLPRequest = Now;
             }
             else
             {
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "LP scan too early." << endl;
+                    dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -375,22 +378,24 @@ INT CtiDeviceMCT_LMT2::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSl
 
 INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    INT status = NORMAL;
+    int status = NORMAL;
 
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    int intervalOffset, lpDemandRate;
-    unsigned long timeStamp, pulses, qualityBits;
-    double Value;
-    PointQuality_t pointQuality;
-    RWCString valReport;
+    RWCString val_report, result_string;
 
-    int badData;
+    int     demand_rate, block_size, max_blocks;
+    int     current_block_num, retrieved_block_num, retrieved_channel, midnight_offset;
+    bool    bad_data = false;
+    double  value;
+    unsigned long pulses, timestamp, current_block_start, retrieved_block_start;
+    PointQuality_t quality;
 
-    CtiPointNumeric *pPoint    = NULL;
-    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData     = NULL;
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    CtiPointNumeric *point      = 0;
+    CtiReturnMsg    *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *point_data = 0;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -398,14 +403,14 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow,
     }
 
     //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending( );
-    resetScanFreezeFailed( );
+    resetScanFreezePending();
+    resetScanFreezeFailed();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -413,77 +418,164 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow,
             return MEMORY;
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        return_msg->setUserMessageId(InMessage->Return.UserID);
 
-
-        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
-
-        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
-
-        badData = FALSE;
-
-        if( pPoint != NULL )
+        if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
         {
-            for( intervalOffset = 0; intervalOffset < 6; intervalOffset++ )
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
-                //  error code in the top 5 bits - parsed by checkLoadProfileQuality
-                pulses   = DSt->Message[intervalOffset*2];
-                pulses <<= 8;
-                pulses  |= DSt->Message[intervalOffset*2 + 1];
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
 
-                if( badData )  //  load survey was halted - the rest of the data is bad
+            retrieved_block_num--;
+
+            demand_rate = getLoadProfile().getLoadProfileDemandRate();
+            block_size  = demand_rate * 6;
+
+            //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+            if( demand_rate == 3600 )
+            {
+                max_blocks = 4;
+            }
+            else
+            {
+                max_blocks = 8;
+            }
+
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+
+            if( point != NULL )
+            {
+                //  figure out current seconds from midnight
+                midnight_offset  = TimeNow.hour() * 3600;
+                midnight_offset += TimeNow.minute() * 60;
+                midnight_offset += TimeNow.second();
+
+                //  make sure the alignment is correct
+                current_block_start  = TimeNow.seconds();
+                current_block_start -= midnight_offset % block_size;
+                midnight_offset     -= midnight_offset % block_size;
+
+                current_block_num    = midnight_offset / block_size;
+                current_block_num   %= max_blocks;
+
+                //  work backwards to find the retrieved block
+                retrieved_block_start  = current_block_start;
+                retrieved_block_start -= ((current_block_num + max_blocks - retrieved_block_num) % max_blocks) * block_size;
+
+                if( current_block_num == retrieved_block_num )
                 {
-                    pointQuality = DeviceFillerQuality;
-                    pulses = 0;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << InMessage->Return.CommandStr << endl;
+                    }
+
+                    result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
                 }
-                else if( !checkLoadProfileQuality( pulses, pointQuality, badData ) )
+                else if( retrieved_block_start < getLastLPTime() )
                 {
-                    //  if no fatal problems with the quality,
-                    //    adjust for the demand interval
-                    Value = pulses * (3600 / lpDemandRate);
-                    //    and the UOM
-                    Value = pPoint->computeValueForUOM( Value );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << InMessage->Return.CommandStr << endl;
+                        dout << "retrieved_block_num = " << retrieved_block_num << endl;
+                        dout << "retrieved_block_start = " << retrieved_block_start << endl;
+                        dout << "lastLPTime = " << getLastLPTime()  << endl;
+                    }
+
+                    result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
                 }
                 else
                 {
-                    Value = 0.0;
+                    for( int interval_offset = 0; interval_offset < 6; interval_offset++ )
+                    {
+                        //  error code in the top 5 bits - parsed by checkLoadProfileQuality
+                        pulses   = DSt->Message[interval_offset*2];
+                        pulses <<= 8;
+                        pulses  |= DSt->Message[interval_offset*2 + 1];
+
+                        if( bad_data )  //  load survey was halted - the rest of the data is bad
+                        {
+                            quality = DeviceFillerQuality;
+                            value = 0.0;
+                        }
+                        else if( checkLoadProfileQuality( pulses, quality, bad_data ) )
+                        {
+                            value = 0.0;
+                        }
+                        else
+                        {
+                            //  if no fatal problems with the quality,
+                            //    adjust for the demand interval
+                            value = pulses * (3600 / demand_rate);
+                            //    and the UOM
+                            value = point->computeValueForUOM(value);
+                        }
+
+                        point_data = CTIDBG_new CtiPointDataMsg(point->getPointID(),
+                                                                value,
+                                                                quality,
+                                                                DemandAccumulatorPointType,
+                                                                "",
+                                                                TAG_POINT_LOAD_PROFILE_DATA );
+
+                        //  this is where the block started...
+                        timestamp  = retrieved_block_start + (demand_rate * interval_offset);
+
+                        //  but we want interval *ending* times, so add on one more interval
+                        timestamp += demand_rate;
+
+                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "value = " << value << endl;
+                            dout << "interval_offset = " << interval_offset << endl;
+                            dout << "timestamp = " << RWTime(timestamp) << endl;
+                        }
+
+                        point_data->setTime(timestamp);
+
+                        return_msg->insert(point_data);
+                    }
+
+                    //  insert a point data message for TDC and the like
+                    //    note that timeStamp, Value, and pointQuality are set in the final iteration of the above for loop
+                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(value, ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+
+                    point_data = CTIDBG_new CtiPointDataMsg(point->getPointID(),
+                                                            value,
+                                                            quality,
+                                                            DemandAccumulatorPointType,
+                                                            val_report);
+                    point_data->setTime(timestamp);
+                    return_msg->insert(point_data);
+
+                    setLastLPTime(timestamp);
                 }
-
-                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                            Value,
-                                            pointQuality,
-                                            DemandAccumulatorPointType,
-                                            "",
-                                            TAG_POINT_LOAD_PROFILE_DATA );
-
-                //  this is where the block started...
-                timeStamp  = _lastLPRequestBlockStart.seconds() + (lpDemandRate * intervalOffset);
-                //  but we want interval *ending* times, so add on one more interval
-                timeStamp += lpDemandRate;
-                pData->setTime( timeStamp );
-
-                ReturnMsg->insert( pData );
             }
-
-            //  insert a point data message for TDC and the like
-            //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
-            valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                  ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                        Value,
-                                        pointQuality,
-                                        DemandAccumulatorPointType,
-                                        valReport );
-            pData->setTime( timeStamp );
-            setLastLPTime( timeStamp );
-            ReturnMsg->insert( pData );
+            else
+            {
+                result_string = "No load profile point defined for '" + getName() + "'";
+            }
         }
         else
         {
-            ReturnMsg->setResultString("No load profile point defined for '" + getName() + "'");
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            result_string  = "scan_loadprofile tokens not found in command string \"";
+            result_string += InMessage->Return.CommandStr;
+            result_string += "\" - cannot proceed with decode, aborting";
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return_msg->setResultString(result_string);
+
+        retMsgHandler(InMessage->Return.CommandStr, status, return_msg, vgList, retList);
     }
 
     return status;

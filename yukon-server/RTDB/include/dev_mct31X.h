@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/02/11 05:04:35 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/07/12 19:30:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,15 +24,23 @@
 
 class IM_EX_DEVDB CtiDeviceMCT31X : public CtiDeviceMCT310
 {
+    enum
+    {
+        MCT31X_LPChannels = 3
+    };
+
+private:
+
+    RWTime _lastLPTime[MCT31X_LPChannels],
+           _nextLPTime[MCT31X_LPChannels],
+           _lastLPRequest[MCT31X_LPChannels];
+
+    CtiTableDeviceMCTIEDPort _iedPort;
+
 protected:
 
     static DLCCommandSet _commandStore;
     static const double MCT360_GEKV_KWHMultiplier;
-
-private:
-
-    RWTime _lastLPRequestAttempt[3], _lastLPRequestBlockStart[3], _lastLPTime[3], _nextLPTime[3];
-    CtiTableDeviceMCTIEDPort _iedPort;
 
 public:
 

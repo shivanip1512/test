@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2004/06/02 15:41:52 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2004/07/12 19:30:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -372,7 +372,7 @@ void CtiDeviceMCT::sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > 
 }
 
 
-int CtiDeviceMCT::checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, int &badData )
+int CtiDeviceMCT::checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, bool &badData )
 {
     unsigned long qualityBits;
     int retVal;
@@ -401,7 +401,7 @@ int CtiDeviceMCT::checkLoadProfileQuality( unsigned long &pulses, PointQuality_t
         {
             quality = OverflowQuality;
             pulses = 0;
-            badData = TRUE;
+            badData = true;
             retVal = -1;  //  bad data
         }
         else if( qualityBits & 0x4000 )
@@ -669,9 +669,14 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
 
             outList.insert(OutMessage);
             OutMessage = NULL;
+
+            setMCTScanPending(ScanRateGeneral, true);  //resetScanPending();
         }
         else
         {
+            delete OutMessage;
+            OutMessage = NULL;
+
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Command lookup failed **** " << getName() << ".  Device Type " << desolveDeviceType(getType()) << endl;
 
@@ -723,9 +728,14 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
             outList.insert(OutMessage);
             OutMessage = NULL;
+
+            setMCTScanPending(ScanRateIntegrity, true);  //resetScanPending();
         }
         else
         {
+            delete OutMessage;
+            OutMessage = NULL;
+
             status = NoMethod;
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -778,9 +788,14 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
 
             outList.insert(OutMessage);
             OutMessage = NULL;
+
+            setMCTScanPending(ScanRateAccum, true);  //resetScanPending();
         }
         else
         {
+            delete OutMessage;
+            OutMessage = NULL;
+
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;
@@ -843,6 +858,9 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
         }
         else
         {
+            delete OutMessage;
+            OutMessage = NULL;
+
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " Device " << getName() << endl;

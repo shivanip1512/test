@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dct501.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/10/27 22:04:06 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/07/12 19:30:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,13 +28,17 @@ protected:
     enum
     {
         DCT_AnalogsPos = 0x67,
-        DCT_AnalogsLen =    8
+        DCT_AnalogsLen =    8,
+
+        DCT_LPChannels =    4
     };
 
 private:
 
    static DLCCommandSet _commandStore;
-   RWTime _lastLPRequestAttempt[4], _lastLPRequestBlockStart[4], _lastLPTime[4], _nextLPTime[4];
+   RWTime   _lastLPRequest[DCT_LPChannels],
+            _lastLPTime[DCT_LPChannels],
+            _nextLPTime[DCT_LPChannels];
 
 public:
 
