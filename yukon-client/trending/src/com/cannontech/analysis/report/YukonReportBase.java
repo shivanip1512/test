@@ -67,7 +67,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected String PAGE_NUMBER_FUNCTION = "Page Number";
 	protected String PAGE_XOFY_EXPRESSION = "PageXofY";
 	
-	private PageFormat pageFormat= null;
+	protected PageFormat pageFormat= null;
 	
 	 
 	public void showPreviewFrame(ReportModelBase model_) throws Exception
