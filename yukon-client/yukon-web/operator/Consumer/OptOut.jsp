@@ -103,7 +103,7 @@
 			disabled = "";
 	}
 %>
-                      <input type="submit" value="Cancel Scheduled" onclick="this.form.action.value='CancelScheduledOptOut'" <%= disabled%>>
+                    <input type="submit" value="Cancel Scheduled" onclick="this.form.action.value='CancelScheduledOptOut'" <%= disabled%>>
                   </td>
                 </tr>
               </table>
