@@ -237,7 +237,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
                 ULONG gripemore = QueueGripe * 2;
 
-                QueueGripe = QueueGripe + ( gripemore < 1000 ? gripemore : 1000);
+                QueueGripe = QueueGripe + ( gripemore < 1000 ? gripemore : 100);
             }
             else if(QueEntries < DEFAULT_QUEUE_GRIPE_POINT)
             {
