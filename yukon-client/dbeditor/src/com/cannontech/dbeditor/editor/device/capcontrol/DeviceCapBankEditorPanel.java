@@ -1046,6 +1046,8 @@ public void setValue(Object val)
 	getJTextFieldName().setText( capBank.getPAOName() );
 	getJTextFieldAddress().setText( capBank.getLocation() );
    
+   //this code was never here until 7-18-2002!!!
+   getJComboBoxBankOperation().setSelectedItem( capBank.getCapBank().getOperationalState() );   
    
    //look for the bank size, if not found add it and set it selected
    boolean found = false;
