@@ -103,11 +103,12 @@ public class ServerUtils {
 	}
 	
 	public static boolean isOperator(StarsYukonUser user) {
-		return EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
+		return !isResidentialCustomer(user) &&
+				EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
 	}
 	
 	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return (AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null);
+		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 	
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
