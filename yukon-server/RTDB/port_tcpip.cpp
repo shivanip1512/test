@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/23 20:26:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/31 18:26:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -556,16 +556,17 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
             dout << RWTime() << " Socket close failed. Error = " << iRet << endl;
          }
       }
-      else
-      {
-         _connected = false;
-      }
 
+      _connected = false;
    }
 
    _socket = INVALID_SOCKET;
    _lastBaudRate = 0;
 
+   if(isDialup())
+   {
+       Sleep(1000);
+   }
 
    return(iRet);
 }
@@ -745,7 +746,7 @@ void CtiPortTCPIPDirect::DecodeDialoutDatabaseReader(RWDBReader &rdr)
 
 bool CtiPortTCPIPDirect::needsReinit() const
 {
-   return (_socket == INVALID_SOCKET);
+   return (!isViable());
 }
 
 void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
