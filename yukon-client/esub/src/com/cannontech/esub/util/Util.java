@@ -19,6 +19,7 @@ import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.PointSelectionPanel;
+import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.message.dispatch.ClientConnection;
 
 import com.loox.jloox.LxGraph;
@@ -461,5 +462,18 @@ public class Util {
 			}
 	}
 		
+	}
+	
+	/**
+	 * Generates the name of a yukon graph so that it can be exported to the filesystem as well as referred to by an svg document
+	 * The element MUST be part of a drawing.
+	 * @param dge
+	 * @return
+	 */
+	public static String genExportedGraphName(DynamicGraphElement dge) {
+		Drawing d = dge.getDrawing();			
+		String name = new File(d.getFileName()).getName();
+		name = name.substring(0, name.lastIndexOf('.')) + "-" + dge.getGraphDefinitionID() + ".png";
+		return name;
 	}
 }
