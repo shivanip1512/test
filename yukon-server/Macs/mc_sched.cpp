@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:07 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/08 22:16:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,12 @@ const char* CtiMCSchedule::DefaultLastRunStatus = CtiMCSchedule::None;
 
 ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
 {
+    if( !sched.checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     ostrm << " Schedule ID:       " << sched.getScheduleID() << endl;
     ostrm << " Schedule Name:     " << sched.getScheduleName() << endl;
     ostrm << " Schedule Category: " << sched.getCategoryName() << endl;
@@ -110,6 +116,12 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
         ostrm << " Repeat Int:     " << sched.getRepeatInterval() << endl;
     }
 
+
+    if( !sched.checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
     return ostrm;
 }
@@ -153,6 +165,12 @@ void CtiMCSchedule::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector 
 
 bool CtiMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     bool ret = false;
     _pao_table.DecodeDatabaseReader(rdr);
     ret = _schedule_table.DecodeDatabaseReader(rdr);
@@ -165,11 +183,24 @@ bool CtiMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
     // We just came from the database so we must exist there yes?
     setUpdatedFlag(true);
     setDirty(false);
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return ret;
 }
 
 bool CtiMCSchedule::Update()
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     bool ret = ( _pao_table.Update().errorCode() == RWDBStatus::ok );
     
     if( ret )
@@ -188,11 +219,22 @@ bool CtiMCSchedule::Update()
         setDirty(false);
     }
 
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return ret;
 }
 
 bool CtiMCSchedule::Insert()
-{
+{   if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     bool ret = ( _pao_table.Insert().errorCode() == RWDBStatus::ok );
     
     if( ret )
@@ -211,11 +253,23 @@ bool CtiMCSchedule::Insert()
         setDirty(false);
     }
 
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return ret;
 }
 
 bool CtiMCSchedule::Delete()
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     bool ret = true;
 
     // Delete in opposite order as
@@ -235,6 +289,12 @@ bool CtiMCSchedule::Delete()
         ret = ( _pao_table.Delete().errorCode() == RWDBStatus::ok );
     }
 
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return ret;
 }
 
@@ -249,11 +309,35 @@ bool CtiMCSchedule::isSimpleSchedule() const
 
 bool CtiMCSchedule::operator==(const CtiMCSchedule& ref) const
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( !ref.checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return (getScheduleID() == ref.getScheduleID());
 }
 
 CtiMCSchedule& CtiMCSchedule::operator=(const CtiMCSchedule& ref)
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( !ref.checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     _current_start_time = ref._current_start_time;
     _current_stop_time = ref._current_stop_time;
 
@@ -266,13 +350,45 @@ CtiMCSchedule& CtiMCSchedule::operator=(const CtiMCSchedule& ref)
     }
 
     setDirty(true);
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( !ref.checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return *this;
 }
 
 CtiMessage* CtiMCSchedule::replicateMessage() const
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     CtiMCSchedule* copy = new CtiMCSchedule();
     *copy = *this;
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( !copy->checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return copy;
 }
 
@@ -744,6 +860,12 @@ CtiMCSchedule& CtiMCSchedule::setRepeatInterval(long repeat_interval)
 
 void CtiMCSchedule::saveGuts(RWvostream &aStream) const
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     // conversions before sending
     // string -> RWString
     CtiMessage::saveGuts(aStream);
@@ -773,10 +895,22 @@ void CtiMCSchedule::saveGuts(RWvostream &aStream) const
                 <<  getRepeatInterval()  //int
                 <<  getCurrentStartTime() //RWTime
                 <<  getCurrentStopTime(); //RWTime
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 void CtiMCSchedule::restoreGuts(RWvistream& aStream)
 {
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     // bring the info back into temporaries
     // to use the set functions
     long temp_long;
@@ -857,6 +991,12 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
 
     aStream >> temp_int;
     setRepeatInterval( temp_int);
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 /*== Private Functions == */
@@ -864,4 +1004,56 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
 bool CtiMCSchedule::isValidTime(const RWTime& t) const
 {
     return ( t > RWTime( RWDate( 1, 1990 ) ));
+}
+
+bool CtiMCSchedule::checkSchedule() const
+{
+    if( !checkField( getCategoryName(), "category name") )
+        return false;
+
+    if( !checkField( getCommandFile(), "command file") )
+        return false;
+
+    if( !checkField( getCurrentState(),"current state") )
+        return false;
+
+    if( !checkField( getLastRunStatus(),"last run status") )
+        return false;
+
+    if ( !checkField( getScheduleName(), "schedule name") )
+        return false;
+
+    if( !checkField( getScheduleType(), "schedule type") )
+        return false;
+
+    if( !checkField( getStartCommand(), "start command") )
+        return false;
+
+    if( !checkField( getStartPolicy(), "start policy") )
+        return false;
+
+    if( !checkField( getStopPolicy(), "stop policy") )
+        return false;
+
+    if( !checkField( getStartTime(), "start time") )
+        return false;
+
+    if( !checkField( getStopTime(), "stop time") ) 
+        return false;
+    
+    return true;
+}
+
+bool CtiMCSchedule::checkField(const string& fld, const string& val) const
+{
+	   
+    for( int i = 0; i < fld.length(); i++ )               
+        if( fld[i] <= 0 || fld[i] >= 128 )
+        {                       
+            CtiLockGuard< CtiLogger > guard(dout); 
+            dout << RWTime() << "CORRUPT FIELD: " << fld << " len: " << fld.length() << " value is: " << val << endl;         
+            return false;
+        }
+    
+    return true;
 }
