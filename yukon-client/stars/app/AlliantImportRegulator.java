@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.web.servlet.ImportManager;
 
 /**
  * @author yao
@@ -41,7 +40,7 @@ public class AlliantImportRegulator {
 		
 		try {
 			for (int i = 1; i < lines.length; i++) {
-				String[] columns = ImportManager.parseColumns( lines[i] );
+				String[] columns = ServerUtils.splitString( lines[i], "," );;
 				output[i] = lines[i] + "," +
 						"AE Commercial StatSaver," +
 						"Thermostat," +
