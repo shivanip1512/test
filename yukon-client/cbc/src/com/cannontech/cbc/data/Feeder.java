@@ -9,12 +9,15 @@ public class Feeder extends StreamableCapObject
 {
 	private Double peakSetPoint = null;
 	private Double offPeakSetPoint = null;
-	private Integer bandWidth = null;
+	private Double upperBandWidth = null;
 	private Integer currentVarLoadPointID = null;
 	private Double currentVarLoadPointValue = null;
 	private Integer currentWattLoadPointID = null;
 	private Double currentWattLoadPointValue = null;
 	private Integer mapLocationID = null;
+   
+   private Double lowerBandWidth = null;
+   
 	private Integer displayOrder = null;
 	private Boolean newPointDataReceivedFlag = null;
 	private java.util.Date lastCurrentVarPointUpdateTime = null;
@@ -28,6 +31,8 @@ public class Feeder extends StreamableCapObject
 	private java.util.Date lastOperationTime = null;
 	private Double varValueBeforeControl = null;
 	private Integer lastCapBankControlledDeviceID= null;
+
+   private Double powerFactorValue = null;
 
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
@@ -47,14 +52,6 @@ public Feeder( Integer paoId_, String paoCategory_, String paoClass_,
 	super( paoId_, paoCategory_, paoClass_, paoName_, 
 				paoType_, paoDescription_, paoDisableFlag_ );
 
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getBandWidth() {
-	return bandWidth;
 }
 /**
  * Insert the method's description here.
@@ -215,14 +212,6 @@ public java.lang.Boolean getStatusReceivedFlag() {
  */
 public java.lang.Double getVarValueBeforeControl() {
 	return varValueBeforeControl;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @param newBandWidth java.lang.Integer
- */
-public void setBandWidth(java.lang.Integer newBandWidth) {
-	bandWidth = newBandWidth;
 }
 /**
  * Insert the method's description here.
@@ -394,4 +383,58 @@ public void setStatusReceivedFlag(java.lang.Boolean newStatusReceivedFlag) {
 public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) {
 	varValueBeforeControl = newVarValueBeforeControl;
 }
+	/**
+	 * Returns the lowerBandWidth.
+	 * @return Double
+	 */
+	public Double getLowerBandWidth()
+	{
+		return lowerBandWidth;
+	}
+
+	/**
+	 * Returns the powerFactorValue.
+	 * @return Double
+	 */
+	public Double getPowerFactorValue()
+	{
+		return powerFactorValue;
+	}
+
+	/**
+	 * Returns the upperBandWidth.
+	 * @return Double
+	 */
+	public Double getUpperBandWidth()
+	{
+		return upperBandWidth;
+	}
+
+	/**
+	 * Sets the lowerBandWidth.
+	 * @param lowerBandWidth The lowerBandWidth to set
+	 */
+	public void setLowerBandWidth(Double lowerBandWidth)
+	{
+		this.lowerBandWidth = lowerBandWidth;
+	}
+
+	/**
+	 * Sets the powerFactorValue.
+	 * @param powerFactorValue The powerFactorValue to set
+	 */
+	public void setPowerFactorValue(Double powerFactorValue)
+	{
+		this.powerFactorValue = powerFactorValue;
+	}
+
+	/**
+	 * Sets the upperBandWidth.
+	 * @param upperBandWidth The upperBandWidth to set
+	 */
+	public void setUpperBandWidth(Double upperBandWidth)
+	{
+		this.upperBandWidth = upperBandWidth;
+	}
+
 }

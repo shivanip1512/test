@@ -55,12 +55,15 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	feeder.setPeakSetPoint( new Double( vstr.extractDouble() ) );
 	feeder.setOffPeakSetPoint( new Double( vstr.extractDouble() ) );
-	feeder.setBandWidth( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setUpperBandWidth( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentVarLoadPointValue( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentWattLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentWattLoadPointValue( new Double( vstr.extractDouble() ) );
 	feeder.setMapLocationID( new Integer( (int)vstr.extractUnsignedInt() ) );
+   
+   feeder.setLowerBandWidth( new Double( vstr.extractDouble() ) );
+   
 	/**/feeder.setDisplayOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setNewPointDataReceivedFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
@@ -83,6 +86,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setVarValueBeforeControl( new Double( vstr.extractDouble() ) );
 	feeder.setLastCapBankControlledDeviceID( new Integer( (int)vstr.extractUnsignedInt() ) );
 
+   feeder.setPowerFactorValue( new Double( vstr.extractDouble() ) );
+
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
 	int numberOfCapBanks = (int)vstr.extractUnsignedInt();
@@ -104,12 +109,15 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.insertDouble( feeder.getPeakSetPoint().doubleValue() );
 	vstr.insertDouble( feeder.getOffPeakSetPoint().doubleValue() );
-	vstr.insertUnsignedInt( feeder.getBandWidth().intValue() );
+	vstr.insertDouble( feeder.getUpperBandWidth().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getCurrentVarLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentVarLoadPointValue().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getCurrentWattLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentWattLoadPointValue().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getMapLocationID().intValue() );
+   
+   vstr.insertDouble( feeder.getLowerBandWidth().doubleValue() );
+   
 	vstr.insertUnsignedInt( feeder.getDisplayOrder().intValue() );
 	vstr.insertUnsignedInt( 
 		(feeder.getNewPointDataReceivedFlag().booleanValue() == true)
@@ -132,6 +140,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertDouble( feeder.getVarValueBeforeControl().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getLastCapBankControlledDeviceID().intValue() );
 
+   vstr.insertDouble( feeder.getPowerFactorValue().doubleValue() );
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */

@@ -33,8 +33,9 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
   	public static final int OP_RANGE_COLUMN  = 3;
   	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
   	public static final int TIME_STAMP_COLUMN  = 5;
-  	public static final int ESTIMATED_VARS_COLUMN  = 6;
-  	public static final int DAILY_OPERATIONS_COLUMN  = 7;
+   public static final int POWER_FACTOR_COLUMN = 6;
+  	public static final int ESTIMATED_VARS_COLUMN  = 7;
+  	public static final int DAILY_OPERATIONS_COLUMN  = 8;
 
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
@@ -45,6 +46,7 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"Op Range",
 		"VAR Load",
 		"Time",		
+      "PFactor",
 		"Estimated VARS",
 		"Daily Ops"
 	};
@@ -261,21 +263,25 @@ public Object getValueAt(int row, int col)
 				// decide which set Point we are to use
 				if( getCurrentSubBus().getPeakTimeFlag().booleanValue() )
 				{
-					return (feeder.getPeakSetPoint().doubleValue() - feeder.getBandWidth().intValue()) +
+					return (feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
 							 " to " + 
-							 (feeder.getBandWidth().intValue() + feeder.getPeakSetPoint().doubleValue()) + 
+							 (feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue()) + 
 							 " Pk";
 				}
 				else
 				{
-					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getBandWidth().intValue()) +
+					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
 							 " to " + 
-							 (feeder.getBandWidth().intValue() + feeder.getOffPeakSetPoint().doubleValue()) + 
+							 (feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue()) + 
 							 " OffPk";
 				}
 
 			}
-				
+
+         case POWER_FACTOR_COLUMN:
+            return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
+                     feeder.getPowerFactorValue().doubleValue(), getCurrentSubBus().getDecimalPlaces().intValue() );
+                     				
 			case DAILY_OPERATIONS_COLUMN:
 				return feeder.getCurrentDailyOperations();
 				

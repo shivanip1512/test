@@ -19,7 +19,7 @@ public class SubBus extends StreamableCapObject
 
 	private Integer currentWattLoadPointID = null;
 	private Double currentWattLoadPointValue = null;
-	private Integer bandWidth = null;
+	private Double upperBandWidth = null;
 	private Integer controlInterval = null;
 	private Integer minRepsonseTime = null;
 	private Integer minConfirmPercent = null;
@@ -28,6 +28,10 @@ public class SubBus extends StreamableCapObject
 	private String daysOfWeek = null;
 	private Integer mapLocationID = null;
 	private Integer decimalPlaces = null;
+   
+   private Double lowerBandWidth = null;
+   private String controlUnits = null;
+   
 	private java.util.Date nextCheckTime = null;
 	private Boolean newPointDataReceivedFlag = null;
 	private Boolean busUpdateFlag = null;
@@ -44,6 +48,8 @@ public class SubBus extends StreamableCapObject
 	private Double varValueBeforeControl = null;
 	private Integer lastFeederControlledPAOID = null;
 	private Integer lastFeederControlledPosition = null;
+
+   private Double powerFactorValue = null;
 
 	//should only contain objects of type Feeder
 	private java.util.Vector ccFeeders = null;
@@ -68,14 +74,6 @@ public SubBus( Integer paoId_, String paoCategory_, String paoClass_,
 	super( paoId_, paoCategory_, paoClass_, paoName_, 
 				paoType_, paoDescription_, paoDisableFlag_ );
 
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getBandWidth() {
-	return bandWidth;
 }
 /**
  * Insert the method's description here.
@@ -352,14 +350,6 @@ public java.lang.Double getVarValueBeforeControl() {
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 12:01:28 PM)
- * @param newBandWidth java.lang.Integer
- */
-public void setBandWidth(java.lang.Integer newBandWidth) {
-	bandWidth = newBandWidth;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
  * @param newBusUpdateFlag java.lang.Boolean
  */
 public void setBusUpdateFlag(java.lang.Boolean newBusUpdateFlag) {
@@ -629,4 +619,76 @@ public void setStatusReceivedFlag(java.lang.Boolean newStatusReceivedFlag) {
 public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) {
 	varValueBeforeControl = newVarValueBeforeControl;
 }
+	/**
+	 * Returns the controlUnits.
+	 * @return String
+	 */
+	public String getControlUnits()
+	{
+		return controlUnits;
+	}
+
+	/**
+	 * Returns the lowerBandWidth.
+	 * @return Double
+	 */
+	public Double getLowerBandWidth()
+	{
+		return lowerBandWidth;
+	}
+
+	/**
+	 * Returns the powerFactorValue.
+	 * @return Double
+	 */
+	public Double getPowerFactorValue()
+	{
+		return powerFactorValue;
+	}
+
+	/**
+	 * Returns the upperBandWidth.
+	 * @return Double
+	 */
+	public Double getUpperBandWidth()
+	{
+		return upperBandWidth;
+	}
+
+	/**
+	 * Sets the controlUnits.
+	 * @param controlUnits The controlUnits to set
+	 */
+	public void setControlUnits(String controlUnits)
+	{
+		this.controlUnits = controlUnits;
+	}
+
+	/**
+	 * Sets the lowerBandWidth.
+	 * @param lowerBandWidth The lowerBandWidth to set
+	 */
+	public void setLowerBandWidth(Double lowerBandWidth)
+	{
+		this.lowerBandWidth = lowerBandWidth;
+	}
+
+	/**
+	 * Sets the powerFactorValue.
+	 * @param powerFactorValue The powerFactorValue to set
+	 */
+	public void setPowerFactorValue(Double powerFactorValue)
+	{
+		this.powerFactorValue = powerFactorValue;
+	}
+
+	/**
+	 * Sets the upperBandWidth.
+	 * @param upperBandWidth The upperBandWidth to set
+	 */
+	public void setUpperBandWidth(Double upperBandWidth)
+	{
+		this.upperBandWidth = upperBandWidth;
+	}
+
 }

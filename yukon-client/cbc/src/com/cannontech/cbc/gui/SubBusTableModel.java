@@ -36,10 +36,10 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
   	public static final int OP_RANGE_COLUMN  = 3;
   	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
   	public static final int TIME_STAMP_COLUMN  = 5;
-	//public static final int POWER_FACTOR_COLUMN = 6; //99%
-  	//public static final int WATTS_COLUMN  = 7; //2400
-  	public static final int ESTIMATED_VARS_COLUMN  = 6;
-  	public static final int DAILY_OPERATIONS_COLUMN  = 7;
+	public static final int POWER_FACTOR_COLUMN = 6; //99%
+  	public static final int WATTS_COLUMN  = 7; //2400
+  	public static final int ESTIMATED_VARS_COLUMN  = 8;
+  	public static final int DAILY_OPERATIONS_COLUMN  = 9;
 
   	// the string for filtering all areas
  	public static final String ALL_FILTER = "All Areas";
@@ -56,8 +56,8 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		"Op Range",
 		"VAR Load",
 		"Time",		
-		//"PFactor",
-		//"Watts",
+		"PFactor",
+		"Watts",
 		"Estimated VARS",
 		"Daily/Max Ops"
 	};
@@ -332,16 +332,16 @@ public Object getValueAt(int row, int col)
 			// decide which set Point we are to use
 			if( sub.getPeakTimeFlag().booleanValue() )
 			{
-				return (sub.getPeakSetPoint().doubleValue() - sub.getBandWidth().intValue()) +
+				return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
 						 " to " + 
-						 (sub.getBandWidth().intValue() + sub.getPeakSetPoint().doubleValue()) + 
+						 (sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue()) + 
 						 " Pk";
 			}
 			else
 			{
-				return (sub.getOffPeakSetPoint().doubleValue() - sub.getBandWidth().intValue()) +
+				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
 						 " to " + 
-						 (sub.getBandWidth().intValue() + sub.getOffPeakSetPoint().doubleValue()) + 
+						 (sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue()) + 
 						 " OffPk";
 			}
 
@@ -361,11 +361,13 @@ public Object getValueAt(int row, int col)
 			return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
 						sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
 
-		//case POWER_FACTOR_COLUMN:
-			//return "99%";  //make a const for demo purposes
+		case POWER_FACTOR_COLUMN:
+         return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
+                  sub.getPowerFactorValue().doubleValue(), sub.getDecimalPlaces().intValue() );
 			
-		//case WATTS_COLUMN:
-			//return "2400";  //make a const for demo purposes
+		case WATTS_COLUMN:
+         return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+                  sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
 			
 		case TIME_STAMP_COLUMN:
 			if( sub.getLastCurrentVarPointUpdateTime().getTime() <= 
