@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:42 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/16 13:58:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,7 +103,8 @@ private:
         Failed
     } _ioState;
 
-    vector< CtiDNPObjectBlock * > _objectList;
+    vector< CtiDNPObjectBlock * > _outObjectBlocks;
+    vector< CtiDNPObjectBlock * > _inObjectBlocks;
 
 public:
     enum AppFuncCode;
@@ -118,8 +119,9 @@ public:
 
 
     //  initialization functions
-    void setCommand( AppFuncCode func, unsigned short dstAddr, unsigned short srcAddr );
-    void addData( unsigned char *data, int len );
+    void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
+    void setCommand( AppFuncCode func );
+    void addObjectBlock( const CtiDNPObjectBlock &obj );
 
 
     //  these six functions are for the Out/InMess Scanner/Porter/Pil interactions
@@ -140,13 +142,15 @@ public:
     //  checking completion
     bool isTransactionComplete( void );
     bool errorCondition( void );
-    //bool isReplyExpected( void );
+    bool isReplyExpected( void );
 
 
     //  post-completion processing
     void processInput( void );
-    bool inHasPoints( void );
-    void sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
+    void eraseOutboundObjectBlocks( void );
+    void eraseInboundObjectBlocks( void );
+    bool hasInboundPoints( void );
+    void sendInboundPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
 
     bool hasOutput( void );
 

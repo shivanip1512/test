@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/16 13:57:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,14 +32,14 @@ CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef)
 
 CtiDNPApplication::~CtiDNPApplication()
 {
-    if( !_objectList.empty() )
+    if( !_outObjectBlocks.empty() )
     {
-        while( _objectList.empty() )
-        {
-            delete _objectList.back();
+        eraseOutboundObjectBlocks();
+    }
 
-            _objectList.pop_back();
-        }
+    if( !_inObjectBlocks.empty() )
+    {
+        eraseInboundObjectBlocks();
     }
 }
 
@@ -56,11 +56,15 @@ CtiDNPApplication &CtiDNPApplication::operator=(const CtiDNPApplication &aRef)
 
 /*---  Scanner-side Functions  ---*/
 
-void CtiDNPApplication::setCommand( AppFuncCode func, unsigned short dstAddr, unsigned short srcAddr )
+void CtiDNPApplication::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 {
     _dstAddr = dstAddr;
     _srcAddr = srcAddr;
+}
 
+
+void CtiDNPApplication::setCommand( AppFuncCode func )
+{
     _appReqBytesUsed = 0;
 
     memset( &_appReq, 0, sizeof(_appReq) );
@@ -80,15 +84,43 @@ void CtiDNPApplication::setCommand( AppFuncCode func, unsigned short dstAddr, un
     _appReq.func_code = (unsigned char)func;
 }
 
-void CtiDNPApplication::addData( unsigned char *data, int len )
-{
-    //  ACH:  complain if generated size > sizeof(OUTMESS.Buffer)
 
-    if( len > 0 )
+void CtiDNPApplication::addObjectBlock( const CtiDNPObjectBlock &objBlock )
+{
+    int objBlockLen;
+    unsigned char *tmpbuf;
+
+    //  ACH:  complain if generated+existing size > sizeof(OUTMESS.Buffer)
+    objBlockLen = objBlock.getSerializedLen();
+
+    if( objBlockLen > 0 )
     {
-        //  copy the data in
-        memcpy( &(_appReq.buf[_appReqBytesUsed]), data, len );
-        _appReqBytesUsed += len;
+        tmpbuf = new unsigned char[objBlockLen];
+
+        if( tmpbuf != NULL )
+        {
+            objBlock.serialize(tmpbuf);
+
+            //  copy the data in
+            memcpy( &(_appReq.buf[_appReqBytesUsed]), tmpbuf, objBlockLen );
+            _appReqBytesUsed += objBlockLen;
+
+            delete tmpbuf;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
@@ -97,6 +129,7 @@ int CtiDNPApplication::getLengthReq( void )
 {
     return _appReqBytesUsed + ReqHeaderSize;
 }
+
 
 void CtiDNPApplication::serializeReq( unsigned char *buf )
 {
@@ -121,50 +154,53 @@ void CtiDNPApplication::serializeReq( unsigned char *buf )
 
 void CtiDNPApplication::restoreRsp( unsigned char *buf, int len )
 {
-    //  copy the buffer into the packet
-    memcpy(&_appRsp, buf, len);
-    //  and compute the length
-    _appRspBytesUsed = len - RspHeaderSize;
+    if( len > 0 )
+    {
+        //  copy the buffer into the packet
+        memcpy(&_appRsp, buf, len);
+        //  and compute the length
+        _appRspBytesUsed = len - RspHeaderSize;
 
-    _inHasPoints = false;
-
-    //  i'm a little bit wary of this...  someday, DNPApplication needs to keep track of a larger
-    //    byte buffer, and do more intelligent splitting and ack-ing.
-    //  someday, this shall be moved, as we will not always have a one-to-one in/out more-to-send relationship.
-    _hasOutput   = false;
-
-    processInput();
+        processInput();
+    }
+    else
+    {
+        _appRspBytesUsed = 0;
+        eraseInboundObjectBlocks();
+    }
 }
 
 
 void CtiDNPApplication::processInput( void )
 {
+    _inHasPoints = false;
+
     //  mere output...
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
         dout << "_appRsp.ctrl.func_code = " << (unsigned)_appRsp.func_code << endl;
         dout << endl;
-        dout << "_appRsp.ctrl.first       = " << (unsigned)_appRsp.ctrl.first << endl;
-        dout << "_appRsp.ctrl.final       = " << (unsigned)_appRsp.ctrl.final << endl;
+        dout << "_appRsp.ctrl.first       = " << (unsigned)_appRsp.ctrl.first       << endl;
+        dout << "_appRsp.ctrl.final       = " << (unsigned)_appRsp.ctrl.final       << endl;
         dout << "_appRsp.ctrl.app_confirm = " << (unsigned)_appRsp.ctrl.app_confirm << endl;
         dout << "_appRsp.ctrl.unsolicited = " << (unsigned)_appRsp.ctrl.unsolicited << endl;
-        dout << "_appRsp.ctrl.seq         = " << (unsigned)_appRsp.ctrl.seq << endl;
+        dout << "_appRsp.ctrl.seq         = " << (unsigned)_appRsp.ctrl.seq         << endl;
         dout << endl;
         dout << "_appRsp.ind.all_stations = " << _appRsp.ind.all_stations << endl;
         dout << "_appRsp.ind.already_exec = " << _appRsp.ind.already_exec << endl;
-        dout << "_appRsp.ind.bad_config   = " << _appRsp.ind.bad_config << endl;
+        dout << "_appRsp.ind.bad_config   = " << _appRsp.ind.bad_config   << endl;
         dout << "_appRsp.ind.bad_function = " << _appRsp.ind.bad_function << endl;
         dout << "_appRsp.ind.buf_overflow = " << _appRsp.ind.buf_overflow << endl;
-        dout << "_appRsp.ind.class_1      = " << _appRsp.ind.class_1 << endl;
-        dout << "_appRsp.ind.class_2      = " << _appRsp.ind.class_2 << endl;
-        dout << "_appRsp.ind.class_3      = " << _appRsp.ind.class_3 << endl;
-        dout << "_appRsp.ind.dev_trouble  = " << _appRsp.ind.dev_trouble << endl;
-        dout << "_appRsp.ind.need_time    = " << _appRsp.ind.need_time << endl;
-        dout << "_appRsp.ind.obj_unknown  = " << _appRsp.ind.obj_unknown << endl;
+        dout << "_appRsp.ind.class_1      = " << _appRsp.ind.class_1      << endl;
+        dout << "_appRsp.ind.class_2      = " << _appRsp.ind.class_2      << endl;
+        dout << "_appRsp.ind.class_3      = " << _appRsp.ind.class_3      << endl;
+        dout << "_appRsp.ind.dev_trouble  = " << _appRsp.ind.dev_trouble  << endl;
+        dout << "_appRsp.ind.need_time    = " << _appRsp.ind.need_time    << endl;
+        dout << "_appRsp.ind.obj_unknown  = " << _appRsp.ind.obj_unknown  << endl;
         dout << "_appRsp.ind.out_of_range = " << _appRsp.ind.out_of_range << endl;
-        dout << "_appRsp.ind.reserved     = " << _appRsp.ind.reserved << endl;
-        dout << "_appRsp.ind.restart      = " << _appRsp.ind.restart << endl;
+        dout << "_appRsp.ind.reserved     = " << _appRsp.ind.reserved     << endl;
+        dout << "_appRsp.ind.restart      = " << _appRsp.ind.restart      << endl;
         dout << endl;
         dout << "data: " << endl;
 
@@ -182,13 +218,16 @@ void CtiDNPApplication::processInput( void )
     //  real code
     if( _appRsp.ctrl.app_confirm )
     {
-        setCommand(RequestConfirm, _dstAddr, _srcAddr);
+        setCommand(RequestConfirm);
         _appReq.ctrl.seq = _appRsp.ctrl.seq;
         _hasOutput = true;
     }
 
+    //  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
+
     int processed = 0;
-    _inHasPoints = false;
+
+    eraseInboundObjectBlocks();
 
     while( processed < _appRspBytesUsed )
     {
@@ -196,20 +235,61 @@ void CtiDNPApplication::processInput( void )
 
         processed += tmpDOB->restore(&(_appRsp.buf[processed]), _appRspBytesUsed - processed);
 
-        _inHasPoints |= tmpDOB->hasPoints();
+        _inObjectBlocks.push_back(tmpDOB);
     }
 }
 
 
-bool CtiDNPApplication::inHasPoints( void )
+void CtiDNPApplication::eraseInboundObjectBlocks( void )
 {
-    return _inHasPoints;
+    while( !_inObjectBlocks.empty() )
+    {
+        if( _inObjectBlocks.back() != NULL )
+        {
+            delete _inObjectBlocks.back();
+        }
+
+        _inObjectBlocks.pop_back();
+    }
 }
 
 
-void CtiDNPApplication::sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+void CtiDNPApplication::eraseOutboundObjectBlocks( void )
 {
+    while( !_outObjectBlocks.empty() )
+    {
+        if( _outObjectBlocks.back() != NULL )
+        {
+            delete _outObjectBlocks.back();
+        }
 
+        _outObjectBlocks.pop_back();
+    }
+}
+
+
+bool CtiDNPApplication::hasInboundPoints( void )
+{
+    bool hasPoints = false;
+
+    for( int i = 0; i < _inObjectBlocks.size(); i++ )
+    {
+        hasPoints |= (_inObjectBlocks[i])->hasPoints();
+    }
+
+    return hasPoints;
+}
+
+
+void CtiDNPApplication::sendInboundPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+{
+    for( int i = 0; i < _inObjectBlocks.size(); i++ )
+    {
+        if( _inObjectBlocks[i]->hasPoints() )
+        {
+            //  ACH
+        }
+    }
 }
 
 
@@ -271,6 +351,33 @@ bool CtiDNPApplication::isTransactionComplete( void )
 }
 
 
+bool CtiDNPApplication::isReplyExpected( void )
+{
+    bool retVal;
+
+    switch( _appReq.func_code )
+    {
+        case RequestConfirm:
+        case RequestDirectOpNoAck:
+        case RequestFreezeClrNoAck:
+        case RequestFreezeWTimeNoAck:
+        case RequestImmedFreezeNoAck:
+        {
+            retVal = false;
+            break;
+        }
+
+        default:
+        {
+            retVal = true;
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
 bool CtiDNPApplication::errorCondition( void )
 {
     return _ioState == Failed;
@@ -302,24 +409,14 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
         {
             case Output:
             {
-                switch( _appReq.func_code )
+                if( isReplyExpected() )
                 {
-                    case RequestConfirm:
-                    case RequestDirectOpNoAck:
-                    case RequestFreezeClrNoAck:
-                    case RequestFreezeWTimeNoAck:
-                    case RequestImmedFreezeNoAck:
-                    {
-                        _ioState = Complete;
-                        break;
-                    }
-
-                    default:
-                    {
-                        _transport.initForInput((unsigned char *)&_appRsp);
-                        _ioState = Input;
-                        break;
-                    }
+                    _transport.initForInput((unsigned char *)&_appRsp);
+                    _ioState = Input;
+                }
+                else
+                {
+                    _ioState = Complete;
                 }
 
                 break;

@@ -14,23 +14,54 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:42 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/16 13:58:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include <vector>
+using namespace std;
 
-/*
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+class CtiDNPObject
+{
+protected:
+    unsigned char _group, _variation;
 
-THIS MUST BE OBJECTS SOON, I HATE THIS
+    CtiDNPObject( int group, int variation );
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*/
+public:
+
+    virtual ~CtiDNPObject();
+
+    int getGroup(void);
+    int getVariation(void);
+
+    virtual int restore(unsigned char *buf, int len);
+    virtual int serialize(unsigned char *buf);
+    virtual int getSerializedLen(void);
+};
+
 
 class CtiDNPObjectBlock
 {
+private:
+    bool _restoring,
+         _valid;
+
+    int  _group,
+         _variation,
+         _qualifier;
+
+    unsigned short _qty, _start;
+
+    vector< CtiDNPObject * > _objectList;
+    vector< int > _objectIndices;
+
+    int restoreObject( unsigned char *buf, int len, CtiDNPObject *obj );
+
+    void eraseObjectList(void);
+
 public:
     enum QualifierType;
 
@@ -49,120 +80,36 @@ public:
         ShortIndex_ShortQty    = 0x28
     };
 
-    void setStart( unsigned short );
-    void setStop( unsigned short );
+    enum
+    {
+        ObjectBlockMinSize = 3
+    };
 
-/*    void addObject( CtiDNPObject *object );
-    void addObject( CtiDNPObject *object, unsigned short index );
+    void addObject( CtiDNPObject *object );
+    void addObjectIndex( CtiDNPObject *object, int index );
+//    void addRange( CtiDNPObject *objArray, int start, int stop );
 
-    CtiDNPObject *getObject( int index );*/
+//    CtiDNPObject *getObject( int index );
 
-    int  getLength( void );
-    void serialize( char *buf );
+/*    struct dnp_point_descriptor
+    {
+        //  1 byte
+        unsigned char group;
+        //  2 bytes
+        unsigned char variation;
+        //  3 bytes
+        unsigned char qual_code : 4;
+        unsigned char qual_idx  : 3;
+        unsigned char qual_x    : 1;
+        //  varies (_qty_1_oct is one oct)
+        _idx_qty idx_qty;
+    };*/
+
+    int  getSerializedLen( void ) const;
+    int serialize( unsigned char *buf ) const;
 
     int  restore( unsigned char *buf, int len );
     bool hasPoints( void );
 };
-
-
-
-
-
-//  this is only for a single point - right now we don't send larger blocks of descriptors/data,
-//    but if there's ever a call for a range
-#define DNP_MAX_POINT_DATA_SIZE 11
-
-#pragma pack( push, 1 )
-
-union _idx_qty
-{
-    struct _ind_1oct
-    {
-        unsigned char start;
-        unsigned char stop;
-        unsigned char data[DNP_MAX_POINT_DATA_SIZE];
-    } ind_1oct;
-
-    struct _ind_2oct
-    {
-        unsigned short start;
-        unsigned short stop;
-        unsigned char data[DNP_MAX_POINT_DATA_SIZE];
-    } ind_2oct;
-/*
-    struct
-    {
-        unsigned long start;
-        unsigned long stop;
-    } ind_4oct;
-*/
-    struct _qty_1oct
-    {
-        unsigned char num;
-        unsigned char data[DNP_MAX_POINT_DATA_SIZE];
-    } qty_1oct;
-
-    struct _qty_2oct
-    {
-        unsigned short num;
-        unsigned char data[DNP_MAX_POINT_DATA_SIZE];
-    } qty_2oct;
-/*
-    struct
-    {
-        unsigned short num;
-    } qty_4oct;
-*/
-};
-
-struct dnp_point_descriptor
-{
-    //  1 byte
-    unsigned char group;
-    //  2 bytes
-    unsigned char variation;
-    //  3 bytes
-    unsigned char qual_code : 4;
-    unsigned char qual_idx  : 3;
-    unsigned char qual_x    : 1;
-    //  varies (_qty_1_oct is one oct)
-    _idx_qty idx_qty;
-};
-
-struct dnp_control_relay_output_block
-{
-    //  1 byte
-    struct _control_code
-    {
-        unsigned char code       : 4;
-        unsigned char queue      : 1;
-        unsigned char clear      : 1;
-        unsigned char trip_close : 2;
-    } control_code;
-
-    //  2 bytes
-    unsigned char count;
-    //  6 bytes
-    unsigned long on_time;
-    //  10 bytes
-    unsigned long off_time;
-    //  11 bytes
-    unsigned char status;
-};
-
-struct dnp_analog_output_block_32_bit
-{
-    long value;
-    char status;
-};
-
-struct dnp_analog_output_block_16_bit
-{
-    short value;
-    char status;
-};
-
-
-#pragma pack( pop )
 
 #endif // #ifndef __DNP_OBJECTS_H__

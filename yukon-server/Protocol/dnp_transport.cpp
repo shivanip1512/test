@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:41 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/16 13:58:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,14 +128,14 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 }
 
                 //  add on the header byte
-                packetLen = dataLen + 1;
+                packetLen = dataLen + TransportHeaderLen;
 
                 //  set up the transport header
                 _outPacket.header.first = first;
                 _outPacket.header.final = final;
                 _outPacket.header.seq   = _seq;
 
-                //  copy the app layer chunk in - leave room for the transport header
+                //  copy the app layer chunk into the outbound packet
                 memcpy( (void *)_outPacket.data, (void *)&(_outAppLayer[_outAppLayerSent]), dataLen );
 
                 _datalink.setToOutput((unsigned char *)&_outPacket, packetLen, _dstAddr, _srcAddr);
@@ -187,8 +187,12 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
         {
             case Output:
             {
+                int transportPayloadLen;
+
+                transportPayloadLen = _datalink.getOutPayloadLength() - TransportHeaderLen;
+
                 _seq++;
-                _outAppLayerSent += _datalink.getOutPayloadLength();
+                _outAppLayerSent += transportPayloadLen;
 
                 if( _outAppLayerLen <= _outAppLayerSent )
                 {

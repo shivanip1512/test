@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:41 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/16 13:57:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -218,7 +218,7 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
                 }
         }
 
-        if( ++_errorCount > DNPDatalinkRetryCount )
+        if( ++_errorCount >= DNPDatalinkRetryCount )
         {
             _ioState = Failed;
             retVal   = status;

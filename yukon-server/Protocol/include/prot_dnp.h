@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/07/16 13:58:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,8 +66,8 @@ public:
     int sendInbound( INMESS *InMessage );
     int recvInbound( INMESS *InMessage );
 
-    bool hasPoints( void );
-    void sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
+    bool hasInboundPoints( void );
+    void sendInboundPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList );
 
     struct XferPoint
     {

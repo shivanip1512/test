@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/06/24 20:00:41 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/16 13:58:00 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "utility.h"
 #include "porter.h"  //  for the RESULT EventCode flag
 #include "prot_dnp.h"
+#include "dnp_object_class.h"
 
 CtiProtocolDNP::CtiProtocolDNP()
 {
@@ -61,56 +62,53 @@ void CtiProtocolDNP::setSlaveAddress( unsigned short address )
 
 void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numPoints )
 {
+    unsigned char *tmp;
+    int tmplen;
+
+//    _appLayer.setAddresses(_slaveAddress, _masterAddress);
+    _appLayer.setAddresses(2, 20);
+
     switch( command )
     {
         case DNP_Class0Read:
             {
-                dnp_point_descriptor cls0rd;
+                _appLayer.setCommand(CtiDNPApplication::RequestRead);
 
-                _appLayer.setCommand(CtiDNPApplication::RequestRead, _slaveAddress, _masterAddress);
+                CtiDNPObjectBlock dob(CtiDNPObjectBlock::NoIndex_NoRange);
 
-                cls0rd.group     = 60;
-                cls0rd.variation =  1;
-                cls0rd.qual_code =  6;
-                cls0rd.qual_idx  =  0;
-                cls0rd.qual_x    =  0;  //  unused bit
+                dob.addObject(new CtiDNPClass(CtiDNPClass::Class0));
 
-                _appLayer.addData((unsigned char *)&cls0rd, 3);
+                _appLayer.addObjectBlock(dob);
 
                 break;
             }
         case DNP_Class123Read:
             {
-                dnp_point_descriptor clsrd;
+                _appLayer.setCommand(CtiDNPApplication::RequestRead);
 
-                _appLayer.setCommand(CtiDNPApplication::RequestRead, _slaveAddress, _masterAddress);
+                CtiDNPObjectBlock dob1(CtiDNPObjectBlock::NoIndex_NoRange),
+                                  dob2(CtiDNPObjectBlock::NoIndex_NoRange),
+                                  dob3(CtiDNPObjectBlock::NoIndex_NoRange);
 
-                clsrd.group     = 60;
-                clsrd.variation =  2;
-                clsrd.qual_code =  6;
-                clsrd.qual_idx  =  0;
-                clsrd.qual_x    =  0;  //  unused bit
+                dob1.addObject(new CtiDNPClass(CtiDNPClass::Class1));
+                dob2.addObject(new CtiDNPClass(CtiDNPClass::Class2));
+                dob3.addObject(new CtiDNPClass(CtiDNPClass::Class3));
 
-                _appLayer.addData((unsigned char *)&clsrd, 3);
-
-                clsrd.variation =  3;
-
-                _appLayer.addData((unsigned char *)&clsrd, 3);
-
-                clsrd.variation =  4;
-
-                _appLayer.addData((unsigned char *)&clsrd, 3);
+                _appLayer.addObjectBlock(dob1);
+                _appLayer.addObjectBlock(dob2);
+                _appLayer.addObjectBlock(dob3);
 
                 break;
             }
         case DNP_SetAnalogOut:
             {
+                /*
                 if( numPoints > 0 )
                 {
                     dnp_point_descriptor control;
                     dnp_analog_output_block_16_bit *aob;
 
-                    _appLayer.setCommand(CtiDNPApplication::RequestDirectOp, _slaveAddress, _masterAddress);
+                    _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
                     control.group     = 41;  //  binary output
                     control.variation =  2;  //  2
@@ -128,7 +126,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
 
                     _appLayer.addData((unsigned char *)&control, 8);
                 }
-                else
+                else*/
                 {
                     command = DNP_Invalid;
                 }
@@ -137,12 +135,13 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
             }
         case DNP_SetDigitalOut:
             {
+                /*
                 if( numPoints > 0 )
                 {
                     dnp_point_descriptor control;
                     dnp_control_relay_output_block *crob;
 
-                    _appLayer.setCommand(CtiDNPApplication::RequestDirectOp, _slaveAddress, _masterAddress);
+                    _appLayer.setCommand(CtiDNPApplication::RequestDirectOp);
 
                     control.group     = 12;  //  binary output
                     control.variation =  1;  //  1
@@ -168,7 +167,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
 
                     _appLayer.addData((unsigned char *)&control, 16);
                 }
-                else
+                else*/
                 {
                     command = DNP_Invalid;
                 }
@@ -202,6 +201,7 @@ int CtiProtocolDNP::decode( CtiXfer &xfer, int status )
 }
 
 
+//  just a nice wrapper for sendOutbound
 int CtiProtocolDNP::commOut( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
 {
     int retVal;
@@ -218,7 +218,8 @@ int CtiProtocolDNP::commOut( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outLi
 }
 
 
-int CtiProtocolDNP::commIn( INMESS *InMessage,   RWTPtrSlist< OUTMESS > &outList )
+//  just a nice wrapper for recvInbound
+int CtiProtocolDNP::commIn( INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList )
 {
     int retVal;
 
@@ -275,21 +276,28 @@ int CtiProtocolDNP::sendInbound( INMESS *InMessage )
 {
     int retVal = NoError;
 
-    if( _appLayer.getLengthRsp() < sizeof( InMessage->Buffer ) )
+    if( _appLayer.isReplyExpected() )
     {
-        _appLayer.serializeRsp(InMessage->Buffer.InMessage);
-        InMessage->InLength = _appLayer.getLengthRsp();
+        if( _appLayer.getLengthRsp() < sizeof( InMessage->Buffer ) )
+        {
+            _appLayer.serializeRsp(InMessage->Buffer.InMessage);
+            InMessage->InLength = _appLayer.getLengthRsp();
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "!!!  application layer > 4k!  !!!" << endl;
+            }
+
+            //  oh well, closest thing to reality - not enough room in outmess
+            retVal = MemoryError;
+        }
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "!!!  application layer > 4k!  !!!" << endl;
-        }
-
-        //  oh well, closest thing to reality - not enough room in outmess
-        retVal = MemoryError;
+        InMessage->InLength = 0;
     }
 
     return retVal;
@@ -323,14 +331,14 @@ bool CtiProtocolDNP::isTransactionComplete( void )
 }
 
 
-bool CtiProtocolDNP::hasPoints( void )
+bool CtiProtocolDNP::hasInboundPoints( void )
 {
-    return _appLayer.inHasPoints();
+    return _appLayer.hasInboundPoints();
 }
 
 
-void CtiProtocolDNP::sendPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+void CtiProtocolDNP::sendInboundPoints( RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
 {
-    _appLayer.sendPoints(vgList, retList);
+    _appLayer.sendInboundPoints(vgList, retList);
 }
 
