@@ -2,6 +2,7 @@ package com.cannontech.database.data.lite;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
+import com.cannontech.database.data.notification.GroupNotification;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
@@ -209,9 +210,16 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}
 	else if( val instanceof com.cannontech.database.data.notification.GroupNotification )
 	{
-		returnLite = new LiteNotificationGroup( 
-				((com.cannontech.database.data.notification.GroupNotification)val).getNotificationGroup().getNotificationGroupID().intValue(),
-				((com.cannontech.database.data.notification.GroupNotification)val).getNotificationGroup().getGroupName() );
+		LiteNotificationGroup lGrp = new LiteNotificationGroup( 
+				((GroupNotification)val).getNotificationGroup().getNotificationGroupID().intValue(),
+				((GroupNotification)val).getNotificationGroup().getGroupName() );
+				
+		lGrp.setEmailFrom( ((GroupNotification)val).getNotificationGroup().getEmailFromAddress() );
+		lGrp.setEmailBody( ((GroupNotification)val).getNotificationGroup().getEmailMessage() );
+		lGrp.setEmailSubject( ((GroupNotification)val).getNotificationGroup().getEmailSubject() );
+		lGrp.setDisabled( ((GroupNotification)val).getNotificationGroup().getDisableFlag().equalsIgnoreCase("Y") );
+				
+		returnLite = lGrp;
 	}		
 	else if( val instanceof com.cannontech.database.db.notification.AlarmCategory )
 	{

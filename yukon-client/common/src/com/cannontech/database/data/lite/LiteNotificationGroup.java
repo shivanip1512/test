@@ -1,14 +1,18 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.notification.NotificationDestination;
+import com.cannontech.database.db.notification.NotificationGroup;
 
 /*
  */
 public class LiteNotificationGroup extends LiteBase
 {
 	private String notificationGroupName = null;
+	private String emailSubject = null;
+	private String emailFrom = null;
+	private String emailBody = null;
+	private boolean disabled = false;
 	
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
 	private java.util.ArrayList notificationDestinations = null;
@@ -32,14 +36,7 @@ public class LiteNotificationGroup extends LiteBase
 		setLiteType(LiteTypes.NOTIFICATION_GROUP);
 	}
 
-	/**
-	 * This method was created by Cannon Technologies Inc.
-	 */
-	public java.util.ArrayList getNotificationDestinationsList() {
-		if( notificationDestinations == null )
-			notificationDestinations = new java.util.ArrayList(6);
-		return notificationDestinations;
-	}
+
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
@@ -59,7 +56,9 @@ public class LiteNotificationGroup extends LiteBase
 	
 	 	com.cannontech.database.SqlStatement stmt =
 	 		new com.cannontech.database.SqlStatement(
-					"SELECT GroupName FROM notificationGroup " + 
+					"SELECT GroupName, EmailFromAddress, EmailMessage, " +
+					"EmailSubject, DisableFlag " +
+					"FROM " + NotificationGroup.TABLE_NAME + " " + 
 					"WHERE NotificationGroupID = " + 
 					Integer.toString(getNotificationGroupID()),
 					databaseAlias);
@@ -67,8 +66,14 @@ public class LiteNotificationGroup extends LiteBase
 	 	try
 	 	{
 	 		stmt.execute();
-			notificationGroupName = ((String) stmt.getRow(0)[0]);
-	
+			setNotificationGroupName( (String)stmt.getRow(0)[0] );
+			setEmailFrom( (String)stmt.getRow(0)[1] );
+			setEmailBody( (String)stmt.getRow(0)[2] );
+			setEmailSubject( (String)stmt.getRow(0)[3] );
+			setDisabled( stmt.getRow(0)[4].toString().trim().equalsIgnoreCase("Y") );
+
+
+
 			stmt = new com.cannontech.database.SqlStatement(
 				"SELECT n.ContactNotifID, n.ContactID, n.NotificationCategoryID, " + 
 				"n.DisableFlag, n.Notification " + 
@@ -92,7 +97,7 @@ public class LiteNotificationGroup extends LiteBase
 					stmt.getRow(i)[4].toString() );
 
 
-				getNotificationDestinationsList().add(lcc);
+				getNotificationDestinations().add(lcc);
 			}
 	 	}
 	 	catch( Exception e )
@@ -125,4 +130,86 @@ public class LiteNotificationGroup extends LiteBase
 	public String toString() {
 		return notificationGroupName;
 	}
+	/**
+	 * @return
+	 */
+	public boolean isDisabled()
+	{
+		return disabled;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getEmailFrom()
+	{
+		return emailFrom;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getEmailSubject()
+	{
+		return emailSubject;
+	}
+
+	/**
+	 * @return
+	 */
+	public java.util.ArrayList getNotificationDestinations()
+	{
+		if( notificationDestinations == null )
+			notificationDestinations = new java.util.ArrayList(8);
+		return notificationDestinations;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setDisabled(boolean b)
+	{
+		disabled = b;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setEmailFrom(String string)
+	{
+		emailFrom = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setEmailSubject(String string)
+	{
+		emailSubject = string;
+	}
+
+	/**
+	 * @param list
+	 */
+	public void setNotificationDestinations(java.util.ArrayList list)
+	{
+		notificationDestinations = list;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getEmailBody()
+	{
+		return emailBody;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setEmailBody(String string)
+	{
+		emailBody = string;
+	}
+
 }
