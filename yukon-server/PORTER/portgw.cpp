@@ -1,6 +1,3 @@
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portgw
@@ -10,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/07 15:42:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/09/12 02:44:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +20,7 @@
 #include <map>
 using namespace std;
 
+#include "cparms.h"
 #include "dlldefs.h"
 #include "dllyukon.h"
 #include "dllbase.h"
@@ -48,7 +46,7 @@ extern CtiDeviceManager DeviceManager;
 
 // Some Global Manager types to allow us some RTDB stuff.
 
-#define DEFAULT_PORT 5000 // 4990
+#define DEFAULT_PORT 4990
 
 static CtiMutex gwmux;
 
@@ -61,7 +59,7 @@ CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
 // The stat stores most temps as hundreths of a degree C
 // This routine converts to degree F for display
 
-void GWConnectionThread (void *Dummy);
+void GWConnectionThread (void *portnumber);
 void GWTimeSyncThread (void *Dummy);
 void GWResultThread (void *Dummy);
 void KeepAliveThread (void *Dummy);
@@ -100,6 +98,7 @@ void GWTimeSyncThread (void *Dummy)
                     {
                         CtiDeviceGateway *pGW = (*itr).second;
                         pGW->sendtm_Clock();
+                        pGW->sendQueryRuntime(0, FALSE);    // Get them all, reset none = FALSE
                     }
                 }
             }
@@ -152,7 +151,7 @@ void KeepAliveThread (void *Dummy)
 }
 
 
-VOID GWConnectionThread(VOID *Arg)
+void GWConnectionThread(VOID *Arg)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -160,22 +159,13 @@ VOID GWConnectionThread(VOID *Arg)
     }
 
     int address_request;
-    unsigned short port=DEFAULT_PORT;
+    unsigned short port = (unsigned short)Arg; // DEFAULT_PORT;
     int fromlen;
     int ioctl_opt = 1;
     struct sockaddr_in local, from;
-    WSADATA wsaData;
     SOCKET listen_socket;
     int rc, Length;
     SOCKET msgsock;
-
-    if(WSAStartup(0x202,&wsaData) == SOCKET_ERROR)
-    {
-        fprintf(stderr,"WSAStartup failed with error %d\n",WSAGetLastError());
-        WSACleanup();
-        return;
-    }
-
 
     local.sin_family = AF_INET;
     local.sin_addr.s_addr = INADDR_ANY;
@@ -184,8 +174,10 @@ VOID GWConnectionThread(VOID *Arg)
     listen_socket = socket(AF_INET, SOCK_STREAM,0); // TCP socket
     if(listen_socket == INVALID_SOCKET)
     {
-        fprintf(stderr,"socket() failed with error %d\n",WSAGetLastError());
-        WSACleanup();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " socket() failed with error " << WSAGetLastError() << endl;
+        }
         return;
     }
     //
@@ -194,8 +186,10 @@ VOID GWConnectionThread(VOID *Arg)
 
     if(bind (listen_socket, (struct sockaddr*)&local, sizeof(local)) == SOCKET_ERROR)
     {
-        fprintf (stderr, "bind() failed with error %d\n", WSAGetLastError());
-        WSACleanup();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " bind() failed with error " << WSAGetLastError() << endl;
+        }
         return;
     }
 
@@ -204,8 +198,10 @@ VOID GWConnectionThread(VOID *Arg)
     //
     if(listen (listen_socket, SOMAXCONN) == SOCKET_ERROR)
     {
-        fprintf (stderr, "listen() failed with error %d\n", WSAGetLastError());
-        WSACleanup();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " listen() failed with error " << WSAGetLastError() << endl;
+        }
         return;
     }
 
@@ -319,7 +315,6 @@ VOID PorterGWThread(void *pid)
     ULONG          QueEntries;
     RWTime         lastQueueReportTime;
 
-    WSADATA wsaData;
     LONG portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiDeviceBase *Device = NULL;
     CtiPortSPtr Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
@@ -332,14 +327,25 @@ VOID PorterGWThread(void *pid)
 
     lastQueueReportTime = lastQueueReportTime.seconds() - (lastQueueReportTime.seconds() % 300L);
 
-    if(WSAStartup(0x202, &wsaData) == SOCKET_ERROR)
+    // Start a connection thread for each port in the list
     {
-        fprintf(stderr,"WSAStartup failed with error %d\n",WSAGetLastError());
-        WSACleanup();
-        return;
-    }
+        RWCString portstr = gConfigParms.getValueAsString("PORTER_GATEWAY_PORTS", "4990, 5000");
+        RWCString tempstr;
+        RWTokenizer porttok(portstr);
 
-    _beginthread(GWConnectionThread, 0, NULL);
+        while( !((tempstr = porttok(", ")).isNull()) )
+        {
+            unsigned short portnumber = atoi(tempstr.data());
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " PorterGWThread starting port number " << portnumber << endl;
+
+            }
+
+            _beginthread(GWConnectionThread, 0, (void*)portnumber);
+        }
+    }
     _beginthread(GWResultThread, 0, NULL);
     _beginthread(GWTimeSyncThread, 0, NULL);
     _beginthread(KeepAliveThread, 0, NULL);
