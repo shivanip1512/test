@@ -1,17 +1,15 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>
 
-<jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
-	<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+<jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
+<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+
+<% if (request.getParameter("page") == null) { %>
+	<%-- intialize bean properties --%>
 	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
 	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
 	<jsp:setProperty name="inventoryBean" property="member" value="<%= user.getEnergyCompanyID() %>"/>
-</jsp:useBean>
-
-<% if (request.getParameter("page") == null) { %>
-	<%-- intialize bean properties --%>
 	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
 	<% inventoryBean.resetInventoryList(); %>
 <% } %>
