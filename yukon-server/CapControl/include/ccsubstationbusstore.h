@@ -29,7 +29,7 @@
 #include "ccsubstationbus.h"
 #include "ccid.h"
 
-class CtiCCSubstationBusStore
+class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
 
@@ -41,13 +41,12 @@ public:
     static void deleteInstance();
 
     void dumpAllDynamicData();
-    BOOL isValid() const;
+    BOOL isValid();
     void setValid(BOOL valid);
-    BOOL getReregisterForPoints() const;
+    BOOL getReregisterForPoints();
     void setReregisterForPoints(BOOL reregister);
-    BOOL getReloadFromAMFMSystemFlag() const;
+    BOOL getReloadFromAMFMSystemFlag();
     void setReloadFromAMFMSystemFlag(BOOL reload);
-    const RWDBDateTime& getLastDBReloadTime() const;
 
     void verifySubBusAndFeedersStates();
     void resetDailyOperations();
@@ -60,7 +59,7 @@ public:
 
     static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;
 
-    mutable RWRecursiveLock<RWMutexLock> _storemutex;
+    RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
 private:
 
@@ -115,6 +114,8 @@ private:
     static const RWCString m3iAMFMDisabledString;
     static const RWCString m3iAMFMFixedString;
     static const RWCString m3iAMFMSwitchedString;
+
+    //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };
 
 #endif
