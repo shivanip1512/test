@@ -47,15 +47,6 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
     }
     else if( !updateType.compareTo(UpdateType_Historical, RWCString::ignoreCase))
     {
-//        _updateInterval = 0;
-//        _updateType = historical;
-
-        // XXX  invalid for now
-//        {
-//NO NEED TO PRINT ANYTHING OUT RIGHT NOW...JUST MAKING HUGE FILES OF NOTHING
-//            CtiLockGuard<CtiLogger> doubt_guard(dout);
-//            dout << "Historical Update Type not supported in calc and logic server." << endl;
-//        }
         _valid = FALSE;
     }
     else if( !updateType.compareTo(UpdateType_PeriodicPlusUpdate, RWCString::ignoreCase) )
@@ -176,42 +167,6 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time )
     return retVal;
 }
 
-/*  FIX_ME:  I can't manage to dump the guts of a Calc object without using an iterator - and that
-               doesn't take a const parameter.
-               I don't know how to work around that.  and I'm not too familiar with the whole idea of
-               polymorphic persistence in the first place, so...
-               Will this even be used?
-
-void CtiCalc::restoreGuts( RWvistream& aStream )
-{
-   int entries;
-   CtiCalcComponent scratchPad;
-
-   aStream >> entries;
-
-   for( int i = 0; i < entries; i++ )
-   {
-      aStream >> scratchPad;
-      (*this) << scratchPad;
-   }
-}
-
-
-void CtiCalc::saveGuts(RWvostream &aStream) const
-{
-   RWSlistCollectablesIterator iter( _components );
-
-   aStream << _components.entries( );
-
-   //  Iterate through all of the calculations in the collection
-   for( ; iter( ); )
-   {
-      aStream << *((CtiCalcComponent *)iter.key( ));
-   }
-}
-*/
-
-
 void CtiCalc::push( double val )
 {
     _stack.push( val );
@@ -272,14 +227,11 @@ BOOL CtiCalc::ready( void )
                 {
                     isReady = FALSE;
                 }
-//                isReady = !(--_countdown);  //  NOTE!  do NOT check if ready more than once before calculating
-                break;                      //    it decrements the timer for the periodic points
-
+                break;
             case allUpdate:
                 for( ; iter( ); )
                     isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
                 break;
-
             case anyUpdate:
                 for( ; iter( ); )
                 {
@@ -290,7 +242,6 @@ BOOL CtiCalc::ready( void )
                     }
                 }
                 break;
-
             case periodicPlusUpdate:
                 {
                     if(RWTime::now().seconds() >= getNextInterval())

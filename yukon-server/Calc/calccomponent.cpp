@@ -722,16 +722,14 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
 {
     double retVal = 0.0;
 
+    try
+    {
     if( _updatesInCurrentAvg <= 1 )
     {
         RWTime currenttime = RWTime();
         ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%secondsInAvg))+secondsInAvg;
         _parent->setPointCalcWindowEndTime(RWTime(tempsum));
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  setting PointCalcWindowEndTime: " << _parent->getPointCalcWindowEndTime().asString() << endl;
-        }*/
-    }
+        }
 
     CtiPointStore* pointStore = CtiPointStore::getInstance();
 
@@ -799,15 +797,14 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
             }
         }
     }
-
-    /*if( componentPointPtr->getPointTime() >= _parent->getPointCalcWindowEndTime() )
+    }
+    catch(...)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  reseting updates to zero" << endl;
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        _updatesInCurrentAvg = 0;
-    }*/
+    }
 
     return retVal;
 }

@@ -20,10 +20,8 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
     try
     {
         RWMutexLock::LockGuard msgLock(_pointDataMutex);
-    //    RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
         RWTValHashSetIterator<depStore, depStore, depStore> *dependentIterator;
         CtiHashKey hashKey(changedID);
-        //not sure about this --> BOOL informDependents = FALSE;
 
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
@@ -33,31 +31,18 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
             dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
         }
 
-        if( newTime.seconds() > pointPtr->getPointTime().seconds() ||
-            ( pointPtr->getNumUpdates() > 0 &&
-              ( newQuality != pointPtr->getPointQuality() ||
+        if( newTime.seconds() > pointPtr->getPointTime().seconds() ||       // Point Change is newer than last point data
+            ( pointPtr->getNumUpdates() > 0 &&                              // Point has been updated AND
+              ( newQuality != pointPtr->getPointQuality() ||                // quality, tags, or value have changed.
                 newValue != pointPtr->getPointValue() ||
                 newTags != pointPtr->getPointTags() ) ) )
         {
-            pointPtr->setPointValue( newValue, newTime, newQuality, newTags );
+            pointPtr->setPointValue( newValue, newTime, newQuality, newTags );      // Update the pointStore.
             dependentIterator = pointPtr->getDependents( );
-
-            // not sure about this --> for( ; (*dependentIterator)( ) && informDependents; )
 
             for( ; (*dependentIterator)( ); )
             {
-        //  currently, we don't have any other types that require knowing about dependencies, but who knows.  I had had this
-        //    piece of code in here until i realized that there will likely only be one update type that cares whether a point's
-        //    been updated - the allupdate type.
-        //        switch( dependentIterator->key( ).updateType )
-        //        {
-        //            case allUpdate:
-                        //  this is a bit of a hack - I'm counting on the probability that there will be fewer components
-                        //    to check than possible affected points to insert into, to search for a duplicate in a set.
-                        //    either way, I will be doing some extra work for each point that depends on multiple calc
-                        //    points.
                         _auAffectedPoints.append( dependentIterator->key( ).dependentID );
-        //        }
             }
 
             delete dependentIterator;
@@ -269,13 +254,13 @@ void CtiCalculateThread::onUpdateLoop( void )
                     CtiHashKey recalcKey(recalcPointID);
                     calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
 
+                    //  if not ready
+                    if( calcPoint==NULL || !calcPoint->ready( ) )
+                        continue;  // All the components are not ready.
+
                     CtiPointStore* pointStore = CtiPointStore::getInstance();
                     CtiHashKey pointHashKey(calcPoint->getPointId());
                     CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
-
-                    //  if not ready
-                    if( calcPoint==NULL || !calcPoint->ready( ) )
-                        continue;  // for
 
                     recalcValue = calcPoint->calculate( calcQuality, calcTime );
                     calcPoint->setNextInterval(calcPoint->getUpdateInterval());     // This only matters for periodicPlusUpdatePoints.
@@ -503,8 +488,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, RWCString &componen
     //  insert parameters are (point, dependent, updatetype)
     tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( componentPointID, pointID, updateType );
 
-    newComponent = new CtiCalcComponent( componentType, componentPointID, operationType,
-                                         constantValue, functionName );
+    newComponent = new CtiCalcComponent( componentType, componentPointID, operationType, constantValue, functionName );
     targetCalcPoint->appendComponent( newComponent );
 }
 

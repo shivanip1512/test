@@ -42,9 +42,6 @@ using namespace std;
 struct depStore
 {
     long dependentID;
-//  currently, this isn't important.  the only point type that has dependencies is
-//    the allupdate (and now the anyUpdate type: added by J Wolberg 5/15/2002) point type, but this was constructed with expandability in mind.
-//    PointUpdateType updateType;
     int operator<( const depStore &other ) const    { return (dependentID <  other.dependentID); };
     int operator==( const depStore &other ) const   { return (dependentID == other.dependentID); };
     int operator()( const depStore &one, const depStore &two ) const    { return (one == two); };
@@ -67,7 +64,6 @@ private:
     unsigned _pointTags;
     RWTime _pointTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
-//    RWTValSet<depStore, depStore> _dependents;
 
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
@@ -84,8 +80,6 @@ public:
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
     RWTValHashSetIterator<depStore, depStore, depStore>
             *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
-//    RWTValSetIterator<depStore, depStore>
-//            *getDependents( void )      {   return new RWTValSetIterator<depStore, depStore>( _dependents );    };
 
 protected:
     void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
@@ -110,7 +104,6 @@ protected:
     {
         struct depStore newDependent;
         newDependent.dependentID = dependentID;
-//        newDependent.updateType = updateType;
         _dependents.insert( newDependent );
     };
 };
@@ -125,7 +118,10 @@ public:
 private:
 
     CtiPointStore( void )  {  };
-    ~CtiPointStore( )      {  this->clearAndDestroy( );  };
+    ~CtiPointStore( )
+    {
+        this->clearAndDestroy( );
+    };
 
     //The singleton instance of CtiPointStore
     static CtiPointStore* _instance;

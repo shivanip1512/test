@@ -231,21 +231,6 @@ void CtiCalcLogicService::Run( )
 
     ThreadMonitor.start(); //ecs 1/4/2005
 
-    /*dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.data());
-    dout.setOutputFile("calc");
-
-    if (_running_in_console)
-    {
-        dout.setToStdOut(true);
-        dout.setWriteInterval(0);
-    }
-    else
-    {
-        dout.setToStdOut(false);
-        dout.setWriteInterval(5000);
-    }*/
-
     CALCVERSION = identifyProjectVersion(CompileInfo);
 
     {
@@ -408,10 +393,7 @@ void CtiCalcLogicService::Run( )
             delete depIter;
 
             //  now send off the point registration
-            if(_conxion) 
-            {
-               _conxion->WriteConnQue( msgPtReg );
-            }
+            if(_conxion) _conxion->WriteConnQue( msgPtReg );
             else
             {
                 {
@@ -619,9 +601,13 @@ void CtiCalcLogicService::_outputThread( void )
                 for( ; calcThread->outboxEntries( ); )
                 {
                     toSend = calcThread->getOutboxEntry( );
-
-                    if(_conxion) 
-                       _conxion->WriteConnQue( toSend );
+                    if(_conxion) _conxion->WriteConnQue( toSend );
+                    else
+                    {
+                        delete toSend;
+                        _pSelf.sleep( 1000 );
+                        break;          // The for loop
+                    }
                 }
             }
         }
@@ -661,29 +647,32 @@ void CtiCalcLogicService::_inputThread( void )
 
                 if( _pSelf.serviceInterrupt( ) )
                 {
-                   interrupted = TRUE;
+                    interrupted = TRUE;
                 }
                 else
                 {
-                    _pSelf.sleep( 200 );
+                    _pSelf.sleep( 1000 );
                 }
             }
+
+            // Just in case we have lots of messages inbound.
+            if( _pSelf.serviceInterrupt( ) )
+                interrupted = TRUE;
 
             if(incomingMsg)
             {
                 //  dump out if we're being called
                 if( !interrupted )
                 {
-                   //ecs 1/5/2005
-                   CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 1000, &CtiCalcLogicService::inComplain, 0 , 0, 0 );
-                   ThreadMonitor.tickle( data );
+                    //ecs 1/5/2005
+                    CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 1000, &CtiCalcLogicService::inComplain, 0 , 0, 0 );
+                    ThreadMonitor.tickle( data );
 
-                   //  common variable, but this is the only place that writes to it, so i think it's okay.
+                    //  common variable, but this is the only place that writes to it, so i think it's okay.
                     parseMessage( incomingMsg, calcThread );
-
-                    delete incomingMsg;   //  Make sure to delete this - its on the heap
-                    incomingMsg = 0;
                 }
+                delete incomingMsg;   //  Make sure to delete this - its on the heap
+                incomingMsg = 0;
             }
         }
     }
@@ -1055,25 +1044,25 @@ void CtiCalcLogicService::dropDispatchConnection(  )
 //ecs 1/5/2005
 void CtiCalcLogicService::mainComplain( void *la )
 {
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " CalcLogicSvc MAIN thread is AWOL" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " CalcLogicSvc MAIN thread is AWOL" << endl;
+    }
 }
 
 void CtiCalcLogicService::outComplain( void *la )
 {
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " CalcLogicSvc OUT thread is AWOL" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " CalcLogicSvc OUT thread is AWOL" << endl;
+    }
 }
 
 void CtiCalcLogicService::inComplain( void *la )
 {
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << RWTime() << " CalcLogicSvc IN thread is AWOL" << endl;
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " CalcLogicSvc IN thread is AWOL" << endl;
+    }
 }
 
