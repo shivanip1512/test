@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>billing</project>
+		<project>cbc</project>
 		<project>common</project>
 		<project>loadcontrol</project>
 		<project>macs</project>

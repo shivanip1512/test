@@ -25,5 +25,6 @@
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
     <classpathentry kind="src" path="/billing"/>
     <classpathentry kind="src" path="/tdc"/>
+    <classpathentry kind="src" path="/cbc"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
