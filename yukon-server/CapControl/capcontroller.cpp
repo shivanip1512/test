@@ -42,6 +42,7 @@
 #include <rw/thr/prodcons.h>
 
 extern ULONG _CC_DEBUG;
+extern ULONG _SEND_TRIES;
 
 /* The singleton instance of CtiCapController */
 CtiCapController* CtiCapController::_instance = NULL;
@@ -234,7 +235,13 @@ void CtiCapController::controlLoop()
                                     if( currentSubstationBus->isAlreadyControlled() ||
                                         currentSubstationBus->isPastResponseTime(currentDateTime) )
                                     {
-                                        if( currentSubstationBus->capBankControlStatusUpdate(pointChanges) )
+                                        if( _SEND_TRIES > 1 &&
+                                            !currentSubstationBus->isAlreadyControlled() &&
+                                            currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, pilMessages) )
+                                        {
+                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        }
+                                        else if( currentSubstationBus->capBankControlStatusUpdate(pointChanges) )
                                         {
                                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         }
