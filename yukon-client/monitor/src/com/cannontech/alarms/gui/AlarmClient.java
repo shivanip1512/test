@@ -71,7 +71,7 @@ public class AlarmClient extends com.cannontech.clientutils.ClientBase
 	 */
 	public void receivedSignal( Signal signal )
 	{
-		CTILogger.info("SIGNAL RECEIVED for ptID = "+ signal.getId() + " alarmStateID = "+ signal.getAlarmStateID() + " Tags(hex) = " + Integer.toHexString(signal.getTags()) );
+		CTILogger.info("SIGNAL RECEIVED for ptID = "+ signal.getPointID() + " alarmStateID = "+ signal.getAlarmStateID() + " Tags(hex) = " + Integer.toHexString(signal.getTags()) );
 	}
 
 }

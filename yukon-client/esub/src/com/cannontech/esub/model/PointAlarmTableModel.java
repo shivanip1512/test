@@ -88,7 +88,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @param s
 	 */
 	private void addSignal(Signal s) {
-		int pointID = (int) s.getId();
+		int pointID = (int) s.getPointID();
 		LitePoint point = PointFuncs.getLitePoint(pointID);
 		
 		int devID = point.getPaobjectID();

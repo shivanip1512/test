@@ -5,6 +5,7 @@ package com.cannontech.tdc;
  * 
  */
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.sql.Timestamp;
 import java.util.Vector;
 
@@ -31,6 +32,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
+import com.cannontech.tdc.alarms.gui.RowBlinker;
 import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -41,10 +43,10 @@ import com.cannontech.tdc.utils.TDCDefines;
 public class Display2WayDataAdapter extends AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
 	private boolean muted = false;
-	private boolean ignoreMsgs = false;
-	
+	private boolean inactiveAlarms = false;
+	private Date currentDate = new Date(); //today
 		
-	private com.cannontech.tdc.alarms.gui.RowBlinker currentBlinkingAlarms = null;
+	private RowBlinker currentBlinkingAlarms = null;
 
 	private boolean exceededMaxMsg = true;
 
@@ -195,6 +197,10 @@ private int addColumnDefinedRow( Signal signal )
  */
 private boolean buildRowQuery() 
 {
+	java.util.Date timerStart = null;
+	java.util.Date timerStop = null;
+	timerStart = new java.util.Date();
+
 
 	// Init our Rows in their correct order (Use a SQL-92 compliant query now, aka: 8-6-2003)
 	String query = new String
@@ -259,6 +265,15 @@ private boolean buildRowQuery()
 		pointValues = new Vector( realPoints.size() );
 		
 		createPointValues( realPoints );
+			
+
+		timerStop = new java.util.Date();
+		CTILogger.debug("========= QUERY START ========");
+		CTILogger.debug( query );
+		CTILogger.debug("========= QUERY END ========");
+		CTILogger.debug( 
+			 (timerStop.getTime() - timerStart.getTime())*.001 + 
+				" secs for Custom Created display DB hit" );
 			
 		return true;//createSqlString( colString.toString() );
 
@@ -496,6 +511,16 @@ private void createRowForEventViewer( Signal signal )
 	fireTableRowsInserted( getRowCount(), getRowCount() );
 }
 
+public void setCurrentDate( Date date_ )
+{
+	currentDate = date_;
+}
+
+public Date getCurrentDate()
+{
+	return currentDate;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/24/00 1:24:13 PM)
@@ -503,6 +528,7 @@ private void createRowForEventViewer( Signal signal )
  */
 public int createRowsForHistoricalAlarmView( Date date, int page, int displayNum_ ) 
 {
+	setCurrentDate( date );
 	Integer catID = null;
 	if( Display.isAlarmDisplay(displayNum_) && displayNum_ != Display.GLOBAL_ALARM_DISPLAY )
 	{
@@ -516,26 +542,26 @@ public int createRowsForHistoricalAlarmView( Date date, int page, int displayNum
 					  "and s.datetime < ? " +
 					  (catID == null ? "" : "and s.priority = " + catID + " ");
 
-	String rowQuery = "select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
-					  "s.username, s.pointid, s.soe_tag " +
-					  "from " + SystemLog.TABLE_NAME + " s, YukonPAObject y, point p " +
-					  "where s.pointid=p.pointid and y.PAObjectID=p.PAObjectID " +
-					  "and s.type = " + SystemLog.TYPE_ALARM + " " +
+	String rowQuery = "select s.logid, s.pointid, s.datetime, s.soe_tag, " +
+					  "s.type, s.priority, s.action, s.description, s.username " +
+					  "from " + SystemLog.TABLE_NAME + " s " +
+					  "where s.type = " + SystemLog.TYPE_ALARM + " " +
 					  "and s.datetime >= ? " +
 					  "and s.datetime < ? " +
 					  "and s.logid > ? " +
 					  "and s.logid <= ? " +
 					  (catID == null ? "" : "and s.priority = " + catID + " " ) +
-					  "order by s.datetime, s.soe_tag";
-   
-	java.util.GregorianCalendar lowerCal = new java.util.GregorianCalendar();
+					  "order by s.datetime, s.logid";
+
+
+	GregorianCalendar lowerCal = new GregorianCalendar();
 	lowerCal.setTime( date );
 	lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
 	lowerCal.set( lowerCal.MINUTE, 0 );
 	lowerCal.set( lowerCal.SECOND, 0 );
 	lowerCal.set( lowerCal.MILLISECOND, 000 );
    
-	java.util.GregorianCalendar upperCal = new java.util.GregorianCalendar();
+	GregorianCalendar upperCal = new GregorianCalendar();
 	upperCal.setTime( date );
 	upperCal.set( upperCal.HOUR_OF_DAY, 23 );
 	upperCal.set( upperCal.MINUTE, 59 );
@@ -608,63 +634,27 @@ public int createRowsForHistoricalAlarmView( Date date, int page, int displayNum
 	{}
 	
 	
-	Date prevDate = null;
-	java.util.GregorianCalendar currentCalendar = null;
-	java.util.GregorianCalendar prevCalendar = null;
-	
 	for( int i = 0; i < rowData.length; i++ )
 	{
-		Vector newRow = new Vector( getColumnCount() );
-		for( int j = 0; j < getColumnCount(); j++ )
-			newRow.addElement( "" );  // put these into the vector just as place holder values
-
-		// set TimeStamp
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ) // format of ORACLE: "2000-06-09 16:34:34.0"
-			newRow.setElementAt( new ModifiedDate( 
-						((Timestamp)rowData[i][0]).getTime() ), 
-						columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
-			
-		// set DeviceName
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][1] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICENAME) );
-			
-		// set PointName
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTNAME) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][2] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTNAME) );
-			
-		// set Description
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_UOFM) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_UOFM));
-
-		// set Action
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][4] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
-	
-		// set User Name
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][5] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
-
-		checkRowExceedance();
-
-		// we must add rows like this to accomodate the blank rows that automatically
-		//   get added in	
-		if( getRowCount() > 0 )
-			rows.insertElementAt( newRow, 0 );
-		else
-			rows.addElement( newRow );
-			
+		Signal sig = new Signal();
 		// put a holder value for the model in row location i
 		if( rowData[i].length >= 7 && rowData[i][6] != null )
-			createDummyPointValue( Long.parseLong(rowData[i][6].toString()),
-							((Timestamp)rowData[i][0]).getTime(), //TimeStamp
-							CommonUtils.createString( rowData[i][1] ), //DeviceName
-							CommonUtils.createString( rowData[i][2] ), //PointName
-							Integer.parseInt(rowData[i][7].toString()), //SOE_Tag
-							0 );
+		{
+//"select s.logid, s.pointid, s.datetime, s.soe_tag, " +
+//"s.type, s.priority, s.action, s.description, s.username " +
+			sig.setPointID( Integer.parseInt(rowData[i][1].toString()) );			
+			sig.setTimeStamp( new ModifiedDate( ((Timestamp)rowData[i][2]).getTime() ) );
+			sig.setSOE_Tag( Integer.parseInt(rowData[i][3].toString()) );
+			sig.setLogType( Integer.parseInt(rowData[i][4].toString()) );
+			sig.setAlarmStateID( Integer.parseInt(rowData[i][5].toString()) );
+			sig.setAction( CommonUtils.createString( rowData[i][6] ) );
+			sig.setDescription( CommonUtils.createString( rowData[i][7] ) );
+			sig.setUserName( CommonUtils.createString( rowData[i][8] ) );
+			
+						
+			insertAlarmDisplayAlarmedRow( sig );
+		}
 
-		addBlankRowIfNeeded();
-		
-		prevDate = ((Date)rowData[i][0]);
 	}
 	
 	forcePaintTableDataChanged(); // is actually fireTableDataChanged();
@@ -678,6 +668,8 @@ public int createRowsForHistoricalAlarmView( Date date, int page, int displayNum
  */
 public int createRowsForHistoricalView(Date date, int page) 
 {
+	setCurrentDate( date );
+
    String rowCountQuery = "select min(s.logid), max(s.logid)" +
                  " from " + SystemLog.TABLE_NAME + " s" +
                  " where s.datetime >= ?" +
@@ -693,14 +685,14 @@ public int createRowsForHistoricalView(Date date, int page)
                  " and s.logid <= ? " +
 		 			  " order by s.datetime, s.soe_tag";
    
-   java.util.GregorianCalendar lowerCal = new java.util.GregorianCalendar();
+   GregorianCalendar lowerCal = new GregorianCalendar();
    lowerCal.setTime( date );
    lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
    lowerCal.set( lowerCal.MINUTE, 0 );
    lowerCal.set( lowerCal.SECOND, 0 );
    lowerCal.set( lowerCal.MILLISECOND, 000 );
    
-   java.util.GregorianCalendar upperCal = new java.util.GregorianCalendar();
+   GregorianCalendar upperCal = new GregorianCalendar();
    upperCal.setTime( date );
    upperCal.set( upperCal.HOUR_OF_DAY, 23 );
    upperCal.set( upperCal.MINUTE, 59 );
@@ -773,10 +765,6 @@ public int createRowsForHistoricalView(Date date, int page)
 	{}
 	
 	
-	Date prevDate = null;
-	java.util.GregorianCalendar currentCalendar = null;
-	java.util.GregorianCalendar prevCalendar = null;
-	
 	for( int i = 0; i < rowData.length; i++ )
 	{
 		Vector newRow = new Vector( getColumnCount() );
@@ -802,8 +790,8 @@ public int createRowsForHistoricalView(Date date, int page)
 			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_UOFM));
 
 		// set Action
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
-			newRow.setElementAt( CommonUtils.createString( rowData[i][4] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
+		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_TXT_MSG) )
+			newRow.setElementAt( CommonUtils.createString( rowData[i][4] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_TXT_MSG));
 	
 		// set User Name
 		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
@@ -828,8 +816,6 @@ public int createRowsForHistoricalView(Date date, int page)
 							0 );
 
 		addBlankRowIfNeeded();
-		
-		prevDate = ((Date)rowData[i][0]);
 	}
 	
 	forcePaintTableDataChanged(); // is actually fireTableDataChanged();
@@ -843,6 +829,7 @@ public int createRowsForHistoricalView(Date date, int page)
  */
 public int createRowsForRawPointHistoryView(Date date, int page) 
 {
+	setCurrentDate( date );
 	String rowQuery = "select r.timestamp, y.PAOName, p.pointname, r.value, r.quality, " +
 					  " r.pointid " +  // this extra pointid column needs to be here
 					  " from rawpointhistory r, YukonPAObject y, point p " +
@@ -882,10 +869,6 @@ public int createRowsForRawPointHistoryView(Date date, int page)
 						   (firstValue + maxDataRows) - 1 : rowData.length - 1;
 
 /********* Page checking and processing ends here *******/
-	
-	Date prevDate = null;
-	java.util.GregorianCalendar currentCalendar = null;
-	java.util.GregorianCalendar prevCalendar = null;
 	
 	for( int i = endingValueIndex; i >= firstValue; i-- )
 	{
@@ -946,8 +929,6 @@ public int createRowsForRawPointHistoryView(Date date, int page)
 				 	0 );
 
 		addBlankRowIfNeeded();
-		
-		prevDate = ((Date)rowData[i][0]);
 	}
 	
 	forcePaintTableDataChanged(); // is actually fireTableDataChanged();
@@ -1484,11 +1465,6 @@ public int getRowNumber( final Signal signal_ )
 		{
 			PointValues pv = (PointValues)pointValues.elementAt( i );
 
-// TODO: Change this when ready
-//System.out.println( "---TODO: Need to change ALARM CONDITION when DISPATCH is done");
-//System.out.println( pv.getPointID()+", " + signal_.getId() + ", " +
-//				  pv.getSignalCategory()+ ", " + signal_.getCondition() );
-
 			if( pv.signalEquals(signal_) )
 			{
 				return ( i );
@@ -1524,11 +1500,11 @@ public Object getValueAt(int aRow, int aColumn)
  */
 private void handleAlarm(Signal signal) 
 {
-	// check if we have an alarm (1100)
+	// check if we have an alarm (11 or 01 or 10)
 	if( TagUtils.isAnyAlarm(signal.getTags()) )
 	{
-		//find out what type of alarm signal this is  (1100)
-		if( TagUtils.isAlarm(signal.getTags()) )  // we need to flash
+		//find out what type of alarm signal this is  (0100)
+		if( TagUtils.isAlarmUnacked(signal.getTags()) )  // we need to flash
 		{
 			if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
 				insertAlarmDisplayAlarmedRow( signal );
@@ -1537,8 +1513,8 @@ private void handleAlarm(Signal signal)
 			else if( !Display.isHistoryDisplay(currentDisplayNumber) )
 				setRowAlarmed( signal );
 		}
-		else if( TagUtils.isAlarmAcked(signal.getTags()) )
-		{	// we need to only show the row (0100),
+		else if( TagUtils.isAlarmActive(signal.getTags()) )
+		{	// we need to only show the row (1000),
 			// check if we need to stop the flashing of the alarm
 			if( Display.isAlarmDisplay(getCurrentDisplayNumber()) )
 				insertAlarmDisplayAlarmedRow( signal );
@@ -1725,6 +1701,28 @@ private void initDataStructures()
 	if ( columnNames == null )
 		columnNames = new Vector( 15 );
 }
+
+private boolean isDateInCurrentDay( Date date_ )
+{
+	GregorianCalendar lowerCal = new GregorianCalendar();
+	lowerCal.setTime( currentDate );
+	lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
+	lowerCal.set( lowerCal.MINUTE, 0 );
+	lowerCal.set( lowerCal.SECOND, 0 );
+	lowerCal.set( lowerCal.MILLISECOND, 000 );
+   
+	GregorianCalendar upperCal = new GregorianCalendar();
+	upperCal.setTime( currentDate );
+	upperCal.set( upperCal.HOUR_OF_DAY, 23 );
+	upperCal.set( upperCal.MINUTE, 59 );
+	upperCal.set( upperCal.SECOND, 59 );
+	upperCal.set( upperCal.MILLISECOND, 999 );
+
+	return 
+		date_.after(lowerCal.getTime())
+		&& date_.before(upperCal.getTime());
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/12/00 1:06:13 PM)
@@ -1733,7 +1731,7 @@ private void initDataStructures()
  */
 private void insertAlarmDisplayAlarmedRow( Signal signal )
 {
-	if( signal.getId() < 0 || signal.getAlarmStateID() < Signal.EVENT_SIGNAL )
+	if( signal.getPointID() < 0 || signal.getAlarmStateID() < Signal.EVENT_SIGNAL )
 		return;
 
 	long alarmPage = 0;
@@ -1744,7 +1742,7 @@ private void insertAlarmDisplayAlarmedRow( Signal signal )
 
 	// all alarms display	
 	if( (currentDisplayNumber == Display.GLOBAL_ALARM_DISPLAY || alarmPage == currentDisplayNumber) 
-		&& isValidAlarm(signal.getAlarmStateID()) )
+		 && isValidAlarm(signal.getAlarmStateID()) )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
@@ -1817,12 +1815,8 @@ private void insertBlankLines()
  * @return boolean
  * @param signal com.cannontech.message.dispatch.message.Signal
  */
-private boolean isAlarmUnAcked(int tag) 
+public boolean isCellEditable(int row, int column) 
 {
-	return ( (tag & Signal.TAG_UNACKNOWLEDGED_ALARM) == Signal.TAG_UNACKNOWLEDGED_ALARM );
-}
-public boolean isCellEditable(int row, int column) {
-
 	// make every cell non-editable
 	return false;
 
@@ -1883,14 +1877,16 @@ public boolean isPointAlarmed( int rowNumber_ )
  * @return boolean
  * @param rowNumber int
  */
-public boolean isRowAcked( int rowNumber )
+public boolean isAlarmRowUnAcked( int rowNumber )
 {
-	if( isRowInAalarmVector(rowNumber) )
+	if( isRowInAlarmVector(rowNumber) )
 	{
-		return isAlarmUnAcked( getAlarmingRowVector().getAlarmingRow(rowNumber).getSignal().getTags() ); // we need to only show the row
+		// we need to only show the row
+		return TagUtils.isAlarmUnacked(
+				getAlarmingRowVector().getAlarmingRow(rowNumber).getSignal().getTags() ); 
 	}
 	else
-		return false;
+		return false;  //not alarmed so treat it like it has been ACKED
 }
 /**
  * Insert the method's description here.
@@ -1899,19 +1895,20 @@ public boolean isRowAcked( int rowNumber )
  * @return boolean
  * @param rowNumber int
  */
-public boolean isRowAlarmUnCleared( int rowNumber )
+/*public boolean isRowAlarmUnCleared( int rowNumber )
 {	
 	long tags = getPointValue(rowNumber).getTags();
 	
 	// see if we have an alarm AND it has been ACKED
 	if( ((tags & Signal.MASK_ANY_ALARM) != 0) &&
-		   com.cannontech.clientutils.tags.TagUtils.isAlarmAcked( (int)tags) )
+		   TagUtils.isAlarmActive( (int)tags) )
 	{
 			return true;
 	}
 	
 	return false;
 }
+*/
 /**
  * Insert the method's description here.
  * Creation date: (3/30/00 9:29:03 AM)
@@ -1919,7 +1916,7 @@ public boolean isRowAlarmUnCleared( int rowNumber )
  * @return boolean
  * @param rowNumber int
  */
-public boolean isRowInAalarmVector( int rowNumber )
+public boolean isRowInAlarmVector( int rowNumber )
 {
 	return getAlarmingRowVector().contains( new Integer( rowNumber ) );
 }
@@ -2095,13 +2092,15 @@ public synchronized void processPointDataReceived( PointData point )
 	
 }
 
-public void ignoreMessages( boolean ignore )
+public void setIsInactiveAlarms( boolean inactive )
 {
-	ignoreMsgs = ignore;
+	inactiveAlarms = inactive;
 }
-public boolean ignoreMessages()
+
+//Must be a alarm display all the time!
+public boolean isInactiveAlarms()
 {
-	return ignoreMsgs;
+	return inactiveAlarms && Display.isAlarmDisplay(getCurrentDisplayNumber());
 }
 
 /**
@@ -2114,7 +2113,7 @@ public synchronized void processSignalReceived( Signal signal )
 {
 	// make sure we have a point and we are not looking at historical data
 	if( signal == null 
-		 || ignoreMessages() )
+		 || isInactiveAlarms() )
 	{
 		return;
 	}
@@ -2254,11 +2253,11 @@ public void rowDataSwap( int i, int j )
 	pointValues.setElementAt( tmp, j );
 	
 	// handles alarmed rows
-	if( isRowInAalarmVector(i) || isRowInAalarmVector(j) )
+	if( isRowInAlarmVector(i) || isRowInAlarmVector(j) )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
-			if( isRowInAalarmVector(i) && isRowInAalarmVector(j) )
+			if( isRowInAlarmVector(i) && isRowInAlarmVector(j) )
 			{
 				int iRow = getAlarmingRowVector().getAlarmingRowLocation( i );
 				int jRow = getAlarmingRowVector().getAlarmingRowLocation( j );
@@ -2267,7 +2266,7 @@ public void rowDataSwap( int i, int j )
 				getAlarmingRowVector().setElementAt( getAlarmingRowVector().elementAt(jRow), iRow );
 				getAlarmingRowVector().setElementAt( (AlarmingRow)tmp, jRow );
 			}
-			else if( isRowInAalarmVector(i) )
+			else if( isRowInAlarmVector(i) )
 			{
 				// set row i unalarmed and set row j to alarmed
 				tmp = getAlarmingRowVector().getAlarmingRow(i);
@@ -2277,7 +2276,7 @@ public void rowDataSwap( int i, int j )
 				((PointValues)pointValues.elementAt( i )).setCurrentBackgroundColor(
 					  ((PointValues)pointValues.elementAt( i )).getOriginalBackgroundColor() );
 			}
-			else if( isRowInAalarmVector(j) )
+			else if( isRowInAlarmVector(j) )
 			{
 				// set row j unalarmed and set row i to alarmed				
 				tmp = getAlarmingRowVector().getAlarmingRow(j);
@@ -2340,7 +2339,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 			dataRow.setElementAt( message, 
 					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE), 
 					ObservedPointDataChange.POINT_VALUE_TYPE, point.getPointID(), 
-					isRowInAalarmVector( location ),
+					isRowInAlarmVector( location ),
 					(int)point.getTags() );
 		}
 
@@ -2366,13 +2365,13 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 				dataRow.setElementAt( CtiUtilities.STRING_NONE, 
 					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE), 
 					ObservedPointDataChange.POINT_IMAGE, point.getPointID(), 
-					isRowInAalarmVector( location ),
+					isRowInAlarmVector( location ),
 					(int)point.getTags() );			
 			else
 				dataRow.setElementAt( img, 
 					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE), 
 					ObservedPointDataChange.POINT_IMAGE, point.getPointID(),
-					isRowInAalarmVector( location ),
+					isRowInAlarmVector( location ),
 					(int)point.getTags() );
 		}
 
@@ -2386,7 +2385,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 			 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
 			 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY), 
 			 			ObservedPointDataChange.POINT_QUALITY_TYPE, point.getPointID(), 
-			 			isRowInAalarmVector( location ),
+			 			isRowInAlarmVector( location ),
 						(int)point.getTags() );
 			}
 			catch( CTIPointQuailtyException ex )
@@ -2401,7 +2400,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 		 			TagUtils.getTagString( (int)point.getTags() ),
 		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_TAGS), 
 		 			ObservedPointDataChange.POINT_TAG_TYPE, point.getPointID(),
-		 			isRowInAalarmVector( location ),
+		 			isRowInAlarmVector( location ),
 					(int)point.getTags() );
 		}
 
@@ -2415,7 +2414,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 					tempDate, 
 					columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP), 
 					ObservedPointDataChange.POINT_TIMESTAMP_TYPE, point.getPointID(), 
-					isRowInAalarmVector( location ),
+					isRowInAlarmVector( location ),
 					(int)point.getTags() );
 		}
 
@@ -2426,7 +2425,7 @@ private void setCorrectRowValue( PointValues point, Date timeStamp, int location
 		 			TagUtils.isPointOutOfService((int)point.getTags()) ? "Disabled" : "Enabled",
 		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTSTATE), 
 		 			ObservedPointDataChange.POINT_STATE, point.getPointID(),
-		 			isRowInAalarmVector( location ),
+		 			isRowInAlarmVector( location ),
 					(int)point.getTags() );
 		}
 		
@@ -2501,7 +2500,7 @@ public void setRowAlarmed( Signal signal )
 	//first try to find the alarm by the signal object, then by the pointID
 	int rowLocation = getRowNumber(signal);
 	if( rowLocation < 0 )
-		rowLocation = getRowNumber(signal.getId());
+		rowLocation = getRowNumber(signal.getPointID());
 
 
 	// see if the point is in our display
@@ -2526,7 +2525,7 @@ public void setRowAlarmed( Signal signal )
 			}
 			
 			if( currentBlinkingAlarms == null )
-				currentBlinkingAlarms = new com.cannontech.tdc.alarms.gui.RowBlinker( this, getAlarmingRowVector() );
+				currentBlinkingAlarms = new RowBlinker( this, getAlarmingRowVector() );
 
 		} //end synch
 		
@@ -2554,7 +2553,7 @@ private Vector setRowForEventViewer( Signal signal )
 	for( int i = 0; i < COLUMN_COUNT; i++ )
 		aRow.addElement( "" );  // put these into the vector just as dummy values
 
-	LitePoint lPoint = PointFuncs.getLitePoint( signal.getId() );
+	LitePoint lPoint = PointFuncs.getLitePoint( signal.getPointID() );
 	LiteYukonPAObject lDevice = PAOFuncs.getLiteYukonPAO( lPoint.getPaobjectID() );
 	
 
@@ -2571,8 +2570,8 @@ private Vector setRowForEventViewer( Signal signal )
 		aRow.setElementAt( CommonUtils.createString( signal.getDescription() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_UOFM) );
 
 	// set Action
-	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
-		aRow.setElementAt( CommonUtils.createString( signal.getAction() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
+	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_TXT_MSG) )
+		aRow.setElementAt( CommonUtils.createString( signal.getAction() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_TXT_MSG));
 
 	// set TimeStamp
 	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
@@ -2581,6 +2580,8 @@ private Vector setRowForEventViewer( Signal signal )
 	// set User Name
 	if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
 		aRow.setElementAt( CommonUtils.createString( signal.getUserName() ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
+
+
 
 	return aRow;
 }
@@ -2594,7 +2595,7 @@ public void setRowUnAlarmed( Signal signal )
 	//first try to look for the signal, then by the pointID
 	int rNum = getRowNumber(signal);	
 	if( rNum < 0 )
-		rNum = getRowNumber( signal.getId() );
+		rNum = getRowNumber( signal.getPointID() );
 		
 	setRowUnAlarmed( new Integer(rNum) );
 }

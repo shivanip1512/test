@@ -428,7 +428,7 @@ public Object getValueAt(int row, int col)
  */
 private void handleAlarms(CapBankDevice capBankDevice, int rowNumber ) 
 {
-	if( TagUtils.isAlarm(capBankDevice.getTagControlStatus().intValue()) )
+	if( TagUtils.isAlarmUnacked(capBankDevice.getTagControlStatus().intValue()) )
 	{
 		setRowAlarmed( rowNumber );
 	}
@@ -694,7 +694,7 @@ private void setRowAlarmed( int rowNumber )
 	if( rowNumber >= 0 && rowNumber < getRowCount() )
 	{
 		com.cannontech.message.dispatch.message.Signal sig = new com.cannontech.message.dispatch.message.Signal();
-		sig.setId( getRowAt(rowNumber).getStatusPointID().intValue() );
+		sig.setPointID( getRowAt(rowNumber).getStatusPointID().intValue() );
 		sig.setTimeStamp( new java.util.Date() );
 		sig.setTags( getRowAt(rowNumber).getTagControlStatus().intValue() );
 		sig.setAction("Automatically created signal from CBC Client");

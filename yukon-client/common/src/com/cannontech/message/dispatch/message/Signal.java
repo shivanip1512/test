@@ -55,8 +55,8 @@ public class Signal extends com.cannontech.message.util.Message
 	public final static int TAG_ATTRIB_PSUEDO 				= 0x20000000;
 	
 	// TAGS for alarmed points (alarm states)
-	public final static int TAG_UNACKNOWLEDGED_ALARM 		= 0x80000000;
-	public final static int TAG_ACKNOWLEDGED_ALARM 			= 0x40000000;
+	public final static int TAG_ACTIVE_ALARM					= 0x80000000; //active
+	public final static int TAG_UNACKNOWLEDGED_ALARM		= 0x40000000; //tag_unack
 
 	// masks to see if any tags are present
 	public final static int MASK_RESETTABLE_TAGS 			= 0x00030000; 
@@ -83,7 +83,7 @@ public boolean equals( Object o )
 		o != null
 		&& o instanceof Signal
 		&& 
-		( ((Signal)o).getId() == getId() && ((Signal)o).getCondition() == getCondition() );
+		( ((Signal)o).getPointID() == getPointID() && ((Signal)o).getCondition() == getCondition() );
 }
 
 /**
@@ -95,7 +95,7 @@ public boolean equals( Object o )
  */
 public int hashCode()
 {
-	return getId() << 4 | getCondition();
+	return getPointID() << 4 | getCondition();
 }
 
 /**
@@ -127,7 +127,7 @@ public java.lang.String getDescription() {
  * Creation date: (1/28/00 11:05:49 AM)
  * @return int
  */
-public int getId() {
+public int getPointID() {
 	return id;
 }
 /**
@@ -176,7 +176,7 @@ public void setDescription(java.lang.String newDescription) {
  * Creation date: (1/28/00 11:05:49 AM)
  * @param newId int
  */
-public void setId(int newId) {
+public void setPointID(int newId) {
 	id = newId;
 }
 /**
@@ -205,7 +205,7 @@ public String toString()
 {
 	String retStr = "com.cannontech.message.dispatch.message.Signal:\n";
 	
-	retStr += "Id:  " + getId() + "\n";
+	retStr += "PointID:  " + getPointID() + "\n";
 	retStr += "Log Type:  " + getLogType() + "\n";	
 	retStr += "Logging Priority:  " + getAlarmStateID() + "\n";
 	retStr += "Description:  " + getDescription() + "\n";

@@ -86,8 +86,7 @@ class SignalAlarmHandler
 
       boolean foundSig = false;
       int prevAlrmCnt = getAlarmVector().size();//alarmCount;
-      boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags())
-                          && TagUtils.isAlarm(sig.getTags()); // Is Alarm UnAcked??
+      boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags());
    
       for( int i = 0; i < getAlarmVector().size(); i++ )
       {
@@ -99,7 +98,7 @@ class SignalAlarmHandler
          //we already have a JMenuItem for this signal
          if( storedSig != null )
          {
-            if( storedSig.getId() == sig.getId() ) //update the sig value
+            if( storedSig.equals(sig) ) //update the sig value
             {
                if( addAlarm )  //update the underlying signal
                {
@@ -107,13 +106,17 @@ class SignalAlarmHandler
                         SignalAlarmHandler.class.getName(), sig );
                   
                   LitePoint lp =      
-                     PointFuncs.getLitePoint( (int)sig.getId() );
+                     PointFuncs.getLitePoint( (int)sig.getPointID() );
                   
                   menuItem.setText(
-                        "[" + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) + "] " +
-                        PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
-                        " : " +
-                        lp.getPointName() );
+								"(" + PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
+                        " / " + lp.getPointName() + ") " + 
+								sig.getDescription() +
+								(TagUtils.isAlarmUnacked(sig.getTags())
+								 ? "" : " (ACKED)") );
+								
+						menuItem.setToolTipText( sig.getAction() +
+								" @ " + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) );
                         
                }
                else  //remove the JMenuItem
@@ -207,9 +210,22 @@ class SignalAlarmHandler
    
    private void addAlarm( Signal sig )
    {
-       javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
-            "[" + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) + "] " +
-            PointFuncs.getPointName((int)sig.getId()) );
+   	if( sig == null )
+   		return;
+
+		LitePoint lp =      
+			PointFuncs.getLitePoint( (int)sig.getPointID() );
+
+		javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
+			"(" + PAOFuncs.getYukonPAOName(lp.getPaobjectID()) +
+			" / " + lp.getPointName() + ") " + 
+			sig.getDescription() +
+			(TagUtils.isAlarmUnacked(sig.getTags())
+			 ? "" : " (ACKED)") );
+								
+		newItem.setToolTipText( sig.getAction() +
+			" @ " + (new ModifiedDate(sig.getTimeStamp().getTime()).toString()) );
+
        
       newItem.putClientProperty( SignalAlarmHandler.class.getName(), sig );
       newItem.setBackground(java.awt.SystemColor.control);

@@ -179,8 +179,9 @@ public void receivedSignal( Signal signal )
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplayNumber();
 
 	CTILogger.info(
-		"SIGNAL RECEIVED for ptID="+ signal.getId() + ",alarmStateID="+ signal.getAlarmStateID() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +
-		",Condition=" + signal.getCondition() + ",Display=" + display );
+		"SIGNAL RECEIVED for PtID="+ signal.getPointID() + ",AlarmStateID="+ signal.getAlarmStateID() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +
+		",Condition=" + signal.getCondition() +
+		",Display=" + display );
 	
 	callerModel.processSignalReceived( signal );
 

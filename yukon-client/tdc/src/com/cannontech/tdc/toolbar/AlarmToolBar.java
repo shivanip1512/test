@@ -14,25 +14,32 @@ public class AlarmToolBar extends javax.swing.JToolBar implements java.awt.event
 	
 	private javax.swing.JButton ivjJToolBarButtonMuteAlarms = null;
 	private javax.swing.JButton jButtonSilenceAlarms = null;
+	private javax.swing.JButton jButtonActiveAlarms = null;
 	
 	protected transient com.cannontech.tdc.toolbar.AlarmToolBarListener fieldAlarmToolBarListenerEventMulticaster = null;
 	private javax.swing.JButton ivjJToolBarButtonClear = null;
 	private javax.swing.JButton ivjJToolBarButtonRefresh = null;
 	private javax.swing.JComponent[] currentComponents = null;
 
-	// All alarm buttons must be in here
-	private javax.swing.JComponent[] originalComponents = null;
-	public static final int ORIGINAL_COMPONENT_COUNT = 5;
 
 	// The height of all the JButtons
 	private final int JBUTTON_HEIGHT = getJToolBarButtonAckAll().getHeight();
 	private javax.swing.JLabel ivjJLabelViewDate = null;
 	private javax.swing.JSeparator ivjJSeparatorDate = null;
-	public static final int COMPONENT_INDEX_CLEAR = 0;
-	public static final int COMPONENT_INDEX_ACKALL = 1;
-	public static final int COMPONENT_INDEX_SEPARTORDATE = 2;
-	public static final int COMPONENT_INDEX_DATELABEL = 3;
-	public static final int COMPONENT_INDEX_DATE = 4;
+
+
+
+	// All alarm buttons must be in here
+	private javax.swing.JComponent[] originalComponents = null;
+	public static final int ORIGINAL_COMPONENT_COUNT = 6;
+
+	public static final int COMP_INDX_CLEAR = 0;
+	public static final int COMP_INDX_ACKALL = 1;
+	public static final int COMP_INDX_ACTIVCEALARMS = 2;	
+	public static final int COMP_INDX_SEPARTORDATE = 3;
+	public static final int COMP_INDX_DATELABEL = 4;
+	public static final int COMP_INDX_DATE = 5;
+	
 	private com.cannontech.common.gui.util.DateComboBox ivjDateJComboBox = null;
 
 /**
@@ -65,25 +72,21 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	{
 		fireJToolBarButtonMuteSilenceAction_actionPerformed(new java.util.EventObject(this)); 
 	}
-	
-	// user code end
-	if (e.getSource() == getJToolBarButtonAckAll()) 
+	else if (e.getSource() == getJToolBarButtonAckAll()) 
 		connEtoC1(e);
-	if (e.getSource() == getJToolBarButtonMuteAlarms()) 
+	else if (e.getSource() == getJToolBarButtonMuteAlarms()) 
 		connEtoC3(e);
-	if (e.getSource() == getJToolBarButtonClear()) 
+	else if (e.getSource() == getJToolBarButtonClear()) 
 		connEtoC4(e);
-	if (e.getSource() == getJToolBarButtonRefresh()) 
+	else if (e.getSource() == getJToolBarButtonRefresh()) 
 		connEtoC5(e);
-	if (e.getSource() == getDateJComboBox()) 
-		connEtoC6(e);
-	// user code begin {2}
-
-	// make sure the event wasnt handled above first
-	if (e.getSource() != getJToolBarButtonAckAll()
-		&& e.getSource() != getJToolBarButtonMuteAlarms() && e.getSource() != getJToolBarButtonClear()
-		&& e.getSource() != getJToolBarButtonRefresh() && e.getSource() != getJToolBarButtonSilenceAlarms() )
+	else if (e.getSource() == getDateJComboBox()) 
+		connEtoC6(e);		
+	else if( e.getSource() == getJToolBarButtonActiveAlarms() ) 
+		fireJToolBarButtonActiveAlarms_actionPerformed(new java.util.EventObject(this));
+	else
 	{
+		// make sure the event wasnt handled above first
 		for( int i = 0; i < getCurrentComponents().length; i++ )
 		{
 			if( e.getSource() == getCurrentComponents()[i] )
@@ -301,6 +304,12 @@ protected void fireJToolBarButtonMuteSilenceAction_actionPerformed(java.util.Eve
 	fieldAlarmToolBarListenerEventMulticaster.JToolBarButtonSilenceAlarmsAction_actionPerformed(newEvent);
 }
 
+protected void fireJToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject newEvent) {
+	if (fieldAlarmToolBarListenerEventMulticaster == null) {
+		return;
+	};
+	fieldAlarmToolBarListenerEventMulticaster.JToolBarButtonActiveAlarms_actionPerformed(newEvent);
+}
 /**
  * 
  */
@@ -522,7 +531,7 @@ private javax.swing.JButton getJToolBarButtonRefresh() {
 		try {
 			ivjJToolBarButtonRefresh = new javax.swing.JButton();
 			ivjJToolBarButtonRefresh.setName("JToolBarButtonRefresh");
-			ivjJToolBarButtonRefresh.setToolTipText("Refreshes the data on the screen");
+			ivjJToolBarButtonRefresh.setToolTipText("Refreshes the data on the current display");
 			ivjJToolBarButtonRefresh.setMnemonic('R');
 			ivjJToolBarButtonRefresh.setText("Refresh");
 			ivjJToolBarButtonRefresh.setMaximumSize(new java.awt.Dimension(61, 23));
@@ -545,9 +554,9 @@ private javax.swing.JButton getJToolBarButtonRefresh() {
 
  
   /**
-	* Return the JToolBarButtonSilenceAlarms property value.
-	* @return javax.swing.JButton
-	*/
+* Return the JToolBarButtonSilenceAlarms property value.
+* @return javax.swing.JButton
+*/
   public javax.swing.JButton getJToolBarButtonSilenceAlarms() {
 	  if (jButtonSilenceAlarms == null) {
 		  try {
@@ -567,16 +576,54 @@ private javax.swing.JButton getJToolBarButtonRefresh() {
 				jButtonSilenceAlarms.setPreferredSize(new java.awt.Dimension(91, 23));
 				jButtonSilenceAlarms.setRolloverEnabled(false);
 				jButtonSilenceAlarms.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-			  // user code begin {1}
-			  // user code end
-		  } catch (java.lang.Throwable ivjExc) {
-			  // user code begin {2}
-			  // user code end
+		  // user code begin {1}
+		  // user code end
+	  } catch (java.lang.Throwable ivjExc) {
+		  // user code begin {2}
+		  // user code end
 			  handleException(ivjExc);
 		  }
 	  }
 	  return jButtonSilenceAlarms;
   }
+
+
+
+/**
+* Return the jToolBarButtonActiveAlarms() property value.
+* @return javax.swing.JButton
+*/
+public javax.swing.JButton getJToolBarButtonActiveAlarms() 
+{
+	if (jButtonActiveAlarms == null) 
+	{
+		try 
+		{
+			jButtonActiveAlarms = new javax.swing.JButton();
+			jButtonActiveAlarms.setName("JToolBarButtonSilenceAlarms");
+			jButtonActiveAlarms.setToolTipText("Toggles between viewing active alarms and inactive alarms");
+			jButtonActiveAlarms.setMnemonic('A');
+			jButtonActiveAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			jButtonActiveAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
+			jButtonActiveAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
+			jButtonActiveAlarms.setAutoscrolls(false);
+			jButtonActiveAlarms.setText("Inactive Alarms");
+			jButtonActiveAlarms.setMaximumSize(new java.awt.Dimension(91, 23));
+			jButtonActiveAlarms.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
+			jButtonActiveAlarms.setIcon(null);
+			jButtonActiveAlarms.setBorderPainted(true);
+			jButtonActiveAlarms.setPreferredSize(new java.awt.Dimension(91, 23));
+			jButtonActiveAlarms.setRolloverEnabled(false);
+			jButtonActiveAlarms.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		}
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+
+	return jButtonActiveAlarms;
+}
 
 
 /**
@@ -627,9 +674,10 @@ private javax.swing.JComponent[] getOriginalComoponents()
 		originalComponents = new javax.swing.JComponent[ORIGINAL_COMPONENT_COUNT];
 		originalComponents[0] = getJToolBarButtonClear();
 		originalComponents[1] = getJToolBarButtonAckAll();
-		originalComponents[2] = getJSeparatorDate();
-		originalComponents[3] = getJLabelViewDate();
-		originalComponents[4] = getDateJComboBox();
+		originalComponents[2] = getJToolBarButtonActiveAlarms();
+		originalComponents[3] = getJSeparatorDate();
+		originalComponents[4] = getJLabelViewDate();
+		originalComponents[5] = getDateJComboBox();
 	}
 	
 	return originalComponents;
@@ -668,6 +716,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
 	getJToolBarButtonSilenceAlarms().addActionListener(this);
+	getJToolBarButtonActiveAlarms().addActionListener(this);
 	
 	// user code end
 	getJToolBarButtonAckAll().addActionListener(this);
@@ -690,7 +739,6 @@ private void initialize()
 
 	try 
 	{
-
 		setName("AlarmToolBar");
 		setAutoscrolls(false);
 		setOpaque(true);
@@ -704,6 +752,7 @@ private void initialize()
 		addSeparator();
 		add(getJToolBarButtonClear(), getJToolBarButtonClear().getName());
 		add(getJToolBarButtonAckAll(), getJToolBarButtonAckAll().getName());
+		add(getJToolBarButtonActiveAlarms(), getJToolBarButtonActiveAlarms().getName());
 		add(getJSeparatorDate(), getJSeparatorDate().getName());
 		add(getJLabelViewDate());
 		add(getDateJComboBox(), getDateJComboBox().getName());

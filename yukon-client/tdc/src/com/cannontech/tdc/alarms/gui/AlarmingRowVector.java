@@ -165,23 +165,6 @@ private java.util.Vector getAlarmingRows()
 }
 /**
  * Insert the method's description here.
- * Creation date: (4/7/00 2:04:36 PM)
- * Version: <version>
- * @return boolean
- */
-public int indexOf( long pointid, long alarmStateID )
-{
-	for( int i = 0; i < getAlarmingRows().size(); i++ )
-	{
-		if( ((AlarmingRow)getAlarmingRows().elementAt(i)).getPointID() == pointid &&
-			((AlarmingRow)getAlarmingRows().elementAt(i)).getAlarmStateID() == alarmStateID )		
-			return ((AlarmingRow)getAlarmingRows().elementAt(i)).getRowNumber();
-	}
-	
-	return ALARM_NOT_FOUND;	
-}
-/**
- * Insert the method's description here.
  * Creation date: (1/15/2001 11:55:14 AM)
  */
 public void removeAllElements() 

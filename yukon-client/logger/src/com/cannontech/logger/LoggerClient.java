@@ -205,7 +205,7 @@ public void receivedSignal( Signal point )
 	com.cannontech.clientutils.CTILogger.info(" 	  	  			User = "+ point.getUser());
 */
 
-	Object[] names = getDeviceNameAndPointName( point.getId() );		
+	Object[] names = getDeviceNameAndPointName( point.getPointID() );		
 	
 	// make sure we have a device name and point name
 	if( names[0] != null && names[1] != null )

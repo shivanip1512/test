@@ -99,7 +99,7 @@ public static void main(String[] args) {
 			signal.setDescription("Test Signal");
 			
 			pData.setId( id[j] );
-			signal.setId( id[j] );
+			signal.setPointID( id[j] );
 
 			outMsg.getVector().addElement( pData ); 
 		}

@@ -97,7 +97,7 @@ public static void main(String[] args)
 			
 			signal.setUserName(com.cannontech.common.util.CtiUtilities.getUserName());
 
-			signal.setId( id[j] );
+			signal.setPointID( id[j] );
 
 			conn.write( signal );  // write the signal
 		}

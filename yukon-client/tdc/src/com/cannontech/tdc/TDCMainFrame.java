@@ -6,6 +6,7 @@ package com.cannontech.tdc;
  */
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
@@ -301,18 +302,20 @@ public void alarmToolBar_JToolBarButtonAckViewableAction_actionPerformed(java.ut
 
 	if( rowNumbers.size() > 0 )
 	{
-		com.cannontech.common.util.NativeIntVector ptIDs = new com.cannontech.common.util.NativeIntVector(rowNumbers.size());
+		NativeIntVector ptIDs = new NativeIntVector(rowNumbers.size());
+		NativeIntVector ptConds = new NativeIntVector(rowNumbers.size());
 		
 		for( int i = 0; i < rowNumbers.size(); i++ )
 		{
-			long pointID = getMainPanel().getTableDataModel().getPointID( Integer.parseInt(rowNumbers.get(i).toString()) );
-			
-			if( getMainPanel().getTableDataModel().isPointAlarmed( (int)pointID) )
-				ptIDs.addElement( (int)pointID);
+			PointValues pv = getMainPanel().getTableDataModel().getPointValue(
+						Integer.parseInt(rowNumbers.get(i).toString()) );
+
+			ptIDs.addElement( pv.getPointID() );
+			ptConds.addElement( pv.getCondition() );
 		}
 
 		if( ptIDs != null && ptIDs.size() > 0 )
-			AckAlarm.send( ptIDs.toArray() );
+			AckAlarm.send( ptIDs.toArray(), ptConds.toArray() );
 	}
 		
 	return;
@@ -419,23 +422,6 @@ public void alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed(java.uti
 	}
 	catch( ParameterNotFoundException ex )
 	{}			
-}
-
-
-/**
- * Comment
- */
-public void alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) 
-{
-
-	if( getMainPanel().isClientDisplay() )
-		getMainPanel().getCurrentSpecailChild().silenceAlarms();
-	
-	//Always set the MainTableModel sound toggle flag	
-	getMainPanel().getTableDataModel().silenceAlarms();
-
-		
-	return;
 }
 
 
@@ -3954,7 +3940,50 @@ public void JToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject
 public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) 
 {
 	if( newEvent.getSource() == getAlarmToolBar() )
-		alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed( newEvent );
+	{
+		if( getMainPanel().isClientDisplay() )
+			getMainPanel().getCurrentSpecailChild().silenceAlarms();
+	
+		//Always set the MainTableModel sound toggle flag	
+		getMainPanel().getTableDataModel().silenceAlarms();
+
+	}
+		//alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed( newEvent );
+}
+
+
+/**
+ * Method to handle events for the AlarmToolBarListener interface.
+ * @param newEvent java.util.EventObject
+ */
+public void JToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject newEvent) 
+{
+	if( newEvent.getSource() == getAlarmToolBar() )
+	{
+		String str = getAlarmToolBar().getJToolBarButtonActiveAlarms().getText();
+
+		if( "Inactive Alarms".equalsIgnoreCase(str) )
+			getAlarmToolBar().getJToolBarButtonActiveAlarms().setText("Active Alarms");
+		else
+			getAlarmToolBar().getJToolBarButtonActiveAlarms().setText("Inactive Alarms");
+
+		//make this active
+		str = getAlarmToolBar().getJToolBarButtonActiveAlarms().getText();		
+		getMainPanel().getTableDataModel().setIsInactiveAlarms(
+					!"Inactive Alarms".equalsIgnoreCase(str) );
+
+		//refresh the display we are looking at			
+		getMainPanel().fireJComboCurrentDisplayAction_actionPerformed( 
+				new java.util.EventObject( getMainPanel() ) );
+	}
+
+}
+
+public void setToActiveAlarms()
+{
+	getAlarmToolBar().getJToolBarButtonActiveAlarms().setText("Active Alarms");
+
+	getAlarmToolBar().getJToolBarButtonActiveAlarms().doClick();
 }
 
 /**
@@ -4036,13 +4065,26 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 	{
 
 		// enable/disable the correct corresponding buttons for the the current view
-		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_CLEAR,
+		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_CLEAR,
 			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
-		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_ACKALL, true );
-		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_DATELABEL,
-			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
-		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMPONENT_INDEX_DATE,
-			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+			
+		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACKALL,
+			Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+		
+		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_ACTIVCEALARMS,
+			Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())  );
+		
+		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_DATELABEL,
+			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())
+			|| 
+			(Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())
+			 && source.getTableDataModel().isInactiveAlarms())  );
+
+		getAlarmToolBar().setJComponentEnabled( getAlarmToolBar().COMP_INDX_DATE,
+			Display.isHistoryDisplay(source.getTableDataModel().getCurrentDisplayNumber())
+			|| 
+			(Display.isAlarmDisplay(source.getTableDataModel().getCurrentDisplayNumber())
+			 && source.getTableDataModel().isInactiveAlarms())  );
 
 		
 		setTitleFromDisplay();				

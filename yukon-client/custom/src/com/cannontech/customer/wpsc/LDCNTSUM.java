@@ -68,7 +68,7 @@ private String decodeSignal(com.cannontech.message.dispatch.message.Signal signa
 	try
 	{
 		//First determine whether we need to do any work
-		if( signal.getId() != com.cannontech.database.data.point.PointTypes.SYS_PID_LOADMANAGEMENT )
+		if( signal.getPointID() != com.cannontech.database.data.point.PointTypes.SYS_PID_LOADMANAGEMENT )
 			return null;
 
 		//make sure the action is one we care about
@@ -332,7 +332,7 @@ public void run()
 							//Because of the logger not understanding an end of line character,
 							//Each element is instead specified this way.  Hack..whatever...
 							WPSCMain.logMessage("   Signal received:" , com.cannontech.common.util.LogWriter.DEBUG);
-							WPSCMain.logMessage("                Id: " + sig.getId(), com.cannontech.common.util.LogWriter.DEBUG);
+							WPSCMain.logMessage("                Id: " + sig.getPointID(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("          Log Type: " + sig.getLogType(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("  Logging Priority: " + sig.getAlarmStateID(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("       Description: " + sig.getDescription(), com.cannontech.common.util.LogWriter.DEBUG);

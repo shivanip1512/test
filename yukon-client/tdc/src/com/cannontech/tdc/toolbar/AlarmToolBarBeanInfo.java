@@ -340,6 +340,54 @@ public java.beans.MethodDescriptor alarmToolBarJToolBarButtonSilenceAlarmsAction
 	};
 	return aDescriptor;
 }
+
+/**
+ * Gets the alarmToolBar.JToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject) method descriptor.
+ * @return java.beans.MethodDescriptor
+ */
+public java.beans.MethodDescriptor alarmToolBarJToolBarButtonActiveAlarms_actionPerformed_javautilEventObjectMethodEventDescriptor() {
+	java.beans.MethodDescriptor aDescriptor = null;
+	try {
+		/* Create and return the alarmToolBar.JToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject) method descriptor. */
+		java.lang.reflect.Method aMethod = null;
+		try {
+			/* Attempt to find the method using getMethod with parameter types. */
+			java.lang.Class aParameterTypes[] = {
+				java.util.EventObject.class
+			};
+			aMethod = (com.cannontech.tdc.toolbar.AlarmToolBarListener.class).getMethod("JToolBarButtonActiveAlarms_actionPerformed", aParameterTypes);
+		} catch (Throwable exception) {
+			/* Since getMethod failed, call findMethod. */
+			handleException(exception);
+			aMethod = findMethod((com.cannontech.tdc.toolbar.AlarmToolBarListener.class), "JToolBarButtonActiveAlarms_actionPerformed", 1);
+		};
+		try {
+			/* Try creating the method descriptor with parameter descriptors. */
+			java.beans.ParameterDescriptor aParameterDescriptor1 = new java.beans.ParameterDescriptor();
+			aParameterDescriptor1.setName("arg1");
+			aParameterDescriptor1.setDisplayName("newEvent");
+			java.beans.ParameterDescriptor aParameterDescriptors[] = {
+				aParameterDescriptor1
+			};
+			aDescriptor = new java.beans.MethodDescriptor(aMethod, aParameterDescriptors);
+		} catch (Throwable exception) {
+			/* Try creating the method descriptor without parameter descriptors. */
+			handleException(exception);
+			aDescriptor = new java.beans.MethodDescriptor(aMethod);
+		};
+		aDescriptor.setDisplayName("JToolBarButtonActiveAlarms_actionPerformed(java.awt.event.ActionEvent)");
+		/* aDescriptor.setShortDescription("JToolBarButtonSilenceAlarmsAction_actionPerformed(java.awt.event.ActionEvent)"); */
+		/* aDescriptor.setExpert(false); */
+		/* aDescriptor.setHidden(false); */
+		/* aDescriptor.setValue("preferred", new Boolean(false)); */
+	} catch (Throwable exception) {
+		handleException(exception);
+	};
+	return aDescriptor;
+}
+
+
+
 /**
  * Gets the componentOrientation property descriptor.
  * @return java.beans.PropertyDescriptor
@@ -792,6 +840,53 @@ public java.beans.MethodDescriptor JToolBarButtonSilenceAlarmsAction_actionPerfo
 	};
 	return aDescriptor;
 }
+
+/**
+ * Gets the JToolBarButtonActiveAlarms_actionPerformed(java.awt.event.ActionEvent) method descriptor.
+ * @return java.beans.MethodDescriptor
+ */
+public java.beans.MethodDescriptor JToolBarButtonActiveAlarms_actionPerformed_javaawteventActionEventMethodEventDescriptor() {
+	java.beans.MethodDescriptor aDescriptor = null;
+	try {
+		/* Create and return the JToolBarButtonActiveAlarms_actionPerformed(java.awt.event.ActionEvent) method descriptor. */
+		java.lang.reflect.Method aMethod = null;
+		try {
+			/* Attempt to find the method using getMethod with parameter types. */
+			java.lang.Class aParameterTypes[] = {
+				java.util.EventObject.class
+			};
+			aMethod = (com.cannontech.tdc.toolbar.AlarmToolBarListener.class).getMethod("JToolBarButtonActiveAlarms_actionPerformed", aParameterTypes);
+		} catch (Throwable exception) {
+			/* Since getMethod failed, call findMethod. */
+			handleException(exception);
+			aMethod = findMethod((com.cannontech.tdc.toolbar.AlarmToolBarListener.class), "JToolBarButtonActiveAlarms_actionPerformed", 1);
+		};
+		try {
+			/* Try creating the method descriptor with parameter descriptors. */
+			java.beans.ParameterDescriptor aParameterDescriptor1 = new java.beans.ParameterDescriptor();
+			aParameterDescriptor1.setName("arg1");
+			aParameterDescriptor1.setDisplayName("newEvent");
+			java.beans.ParameterDescriptor aParameterDescriptors[] = {
+				aParameterDescriptor1
+			};
+			aDescriptor = new java.beans.MethodDescriptor(aMethod, aParameterDescriptors);
+		} catch (Throwable exception) {
+			/* Try creating the method descriptor without parameter descriptors. */
+			handleException(exception);
+			aDescriptor = new java.beans.MethodDescriptor(aMethod);
+		};
+		aDescriptor.setDisplayName("JToolBarButtonActiveAlarms_actionPerformed(java.awt.event.ActionEvent)");
+		/* aDescriptor.setShortDescription("JToolBarButtonSilenceAlarmsAction_actionPerformed(java.awt.event.ActionEvent)"); */
+		/* aDescriptor.setExpert(false); */
+		/* aDescriptor.setHidden(false); */
+		/* aDescriptor.setValue("preferred", new Boolean(false)); */
+	} catch (Throwable exception) {
+		handleException(exception);
+	};
+	return aDescriptor;
+}
+
+
 /**
  * Gets the main(java.lang.String[]) method descriptor.
  * @return java.beans.MethodDescriptor

@@ -237,7 +237,7 @@ private void handleMessage(com.cannontech.message.util.Message msg)
 		com.cannontech.message.dispatch.message.Signal signal =
 			(com.cannontech.message.dispatch.message.Signal) msg;
 
-		Long id = new Long( signal.getId() );
+		Long id = new Long( signal.getPointID() );
 		Long tags = new Long(signal.getTags());
 		
 		CTILogger.debug("Received signal id:  " + id + " tags:  " + signal.getTags() );

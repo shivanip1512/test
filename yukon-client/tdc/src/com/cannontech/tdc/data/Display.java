@@ -95,8 +95,7 @@ public static synchronized boolean isHistoryDisplay( long displayNum )
 	return 
 		displayNum == Display.HISTORY_EVENT_VIEWER_DISPLAY_NUMBER 
 		|| displayNum == Display.EVENT_VIEWER_DISPLAY_NUMBER
-		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER
-		|| isAlarmDisplay(displayNum);
+		|| displayNum == Display.RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER;
 }
 
 public static synchronized boolean isReadOnlyDisplay( long displayNum ) 

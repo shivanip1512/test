@@ -297,14 +297,11 @@ private void initReadOnlyData()
 	{
 		if( !isRowAlarmed() )
 		{
-			getAlarmPanel().setPointID( getEditorData().getPointID() );
 			getAlarmPanel().setVisible( false );
 		}
 		else
 		{
-			getAlarmPanel().getJLabelDescText().setText( getSignal().getDescription() );
-			getAlarmPanel().getJLabelUserText().setText( getSignal().getUserName() );
-			getAlarmPanel().setPointID( getEditorData().getPointID() );
+			getAlarmPanel().setSignal( getSignal() );
 		}
 	}
 }

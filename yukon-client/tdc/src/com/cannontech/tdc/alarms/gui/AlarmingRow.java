@@ -7,6 +7,7 @@ package com.cannontech.tdc.alarms.gui;
  * @Version: <version>
  */
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.clientutils.tags.TagUtils;
 
 public class AlarmingRow 
 {
@@ -85,16 +86,7 @@ public long getAlarmStateID()
 public int getOriginalColor() {
 	return originalColor;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/7/00 1:56:16 PM)
- * Version: <version>
- * @return int
- */
-public long getPointID()
-{
-	return getSignal().getId();
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/7/00 1:56:16 PM)
@@ -120,7 +112,7 @@ public com.cannontech.message.dispatch.message.Signal getSignal() {
  */
 public boolean isBlinking() 
 {
-	return ( com.cannontech.clientutils.tags.TagUtils.isAlarm(signal.getTags()) );
+	return ( TagUtils.isAlarmUnacked(signal.getTags()) );
 }
 /**
  * Insert the method's description here.

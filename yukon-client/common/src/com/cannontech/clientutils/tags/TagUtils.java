@@ -9,7 +9,7 @@ import com.cannontech.message.dispatch.message.Signal;
 
 public final class TagUtils {
 /**
- * AlarmUtils constructor comment.
+ * TagUtils constructor comment.
  */
 private TagUtils() {
 	super();
@@ -54,17 +54,18 @@ public static String getTagString(int tags)
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (8/9/00 3:35:39 PM)
- * @return boolean
- */
-/* returning true means the alarm is not cleared and is not blinking */
-public static boolean isAlarmAcked(int tags)
+ 	public final static int TAG_ACTIVE_ALARM					= 0x80000000; //active
+	public final static int TAG_UNACKNOWLEDGED_ALARM		= 0x40000000; //tag_unack
+* 
+ * true means the alarm is not cleared and has been ACKED 
+ **/
+public static boolean isAlarmActive(int tags)
 {
 	try
 	{
 		checkAlarmStateValidity(tags);
-		return ( isAnyAlarm(tags) && ((tags & Signal.TAG_ACKNOWLEDGED_ALARM) == Signal.TAG_ACKNOWLEDGED_ALARM) );
+		return
+			(tags & Signal.TAG_ACTIVE_ALARM) != 0;
 	}
 	catch( IllegalAlarmSateException e )
 	{
@@ -73,19 +74,19 @@ public static boolean isAlarmAcked(int tags)
 	}
 
 }
-
 /**
  * Insert the method's description here.
  * Creation date: (8/9/00 3:35:39 PM)
  * @return boolean
  */
 /* returning true means the alarm is not cleared and is blinking */
-public static boolean isAlarm(int tags) 
+public static boolean isAlarmUnacked(int tags) 
 {
 	try
 	{
 		checkAlarmStateValidity(tags);
-		return ( isAnyAlarm(tags) && ((tags & Signal.MASK_ANY_ALARM) == Signal.MASK_ANY_ALARM) );
+		return 
+			(tags & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0;
 	}
 	catch( IllegalAlarmSateException e )
 	{
@@ -134,7 +135,7 @@ public static boolean isControllablePoint(long tags )
  */
 public static boolean isDeviceControlInhibited(long tags) 
 {
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_CONTROL_BY_DEVICE) > 0 );	
+	return( (tags & Signal.TAG_DISABLE_CONTROL_BY_DEVICE) > 0 );	
 }
 /**
  * Insert the method's description here.
@@ -143,7 +144,7 @@ public static boolean isDeviceControlInhibited(long tags)
  */
 public static boolean isDeviceOutOfService(long tags) 
 {
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_DEVICE_BY_DEVICE) > 0 );	
+	return( (tags & Signal.TAG_DISABLE_DEVICE_BY_DEVICE) > 0 );	
 }
 /**
  * Insert the method's description here.
@@ -152,7 +153,7 @@ public static boolean isDeviceOutOfService(long tags)
  */
 public static boolean isPointControlInhibited(long tags) 
 {
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_CONTROL_BY_POINT) > 0 );
+	return( (tags & Signal.TAG_DISABLE_CONTROL_BY_POINT) > 0 );
 }
 /**
  * Insert the method's description here.
@@ -161,7 +162,7 @@ public static boolean isPointControlInhibited(long tags)
  */
 public static boolean isPointOutOfService(long tags) 
 {
-	return( (tags & com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT) > 0 );	
+	return( (tags & Signal.TAG_DISABLE_POINT_BY_POINT) > 0 );	
 }
 
 }

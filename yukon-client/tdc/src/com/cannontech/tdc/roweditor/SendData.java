@@ -182,12 +182,12 @@ public void sendSignal( Signal point )
 		point.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 		connection.write( point );
 
-		TDCMainFrame.messageLog.addMessage("Signal sent for point id " + point.getId() + " was sent successfully", MessageBoxFrame.INFORMATION_MSG );
+		TDCMainFrame.messageLog.addMessage("Signal sent for point id " + point.getPointID() + " was sent successfully", MessageBoxFrame.INFORMATION_MSG );
 	}
 	else
 	{
 		//connection = null;  // force this class to re-register next time
-		TDCMainFrame.messageLog.addMessage("Unable to send Signal change for id " + point.getId(), MessageBoxFrame.INFORMATION_MSG );
+		TDCMainFrame.messageLog.addMessage("Unable to send Signal change for id " + point.getPointID(), MessageBoxFrame.INFORMATION_MSG );
 	}
 	
 }

@@ -55,13 +55,13 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	Signal signal = (Signal) obj;
 
-	signal.setId(vstr.extractInt());
+	signal.setPointID(vstr.extractInt());
 	signal.setLogType( vstr.extractInt());
 	signal.setAlarmStateID( vstr.extractUnsignedInt() );
 	signal.setDescription( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	signal.setAction( (String) vstr.restoreObject( SimpleMappings.CString ));
 	signal.setTags( vstr.extractUnsignedInt() );
-	signal.setCondition( (int) vstr.extractUnsignedInt());
+	signal.setCondition(vstr.extractInt());
 }
 /**
  * saveGuts method comment.
@@ -71,12 +71,12 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	Signal signal = (Signal) obj;
 
-	vstr.insertLong( signal.getId() );
+	vstr.insertLong( signal.getPointID() );
 	vstr.insertInt( signal.getLogType() );
 	vstr.insertUnsignedInt( signal.getAlarmStateID() );	
 	vstr.saveObject( signal.getDescription(), SimpleMappings.CString );
 	vstr.saveObject( signal.getAction(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( signal.getTags() );
-	vstr.insertUnsignedInt( (long)signal.getCondition() & 0xFFFFFFFFL);
+	vstr.insertLong( signal.getCondition() );
 }
 }

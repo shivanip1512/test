@@ -33,4 +33,9 @@ void JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent event);
  */
 void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent);
 
+/**
+ * 
+ * @param newEvent java.util.EventObject
+ */
+void JToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject newEvent);
 }

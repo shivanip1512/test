@@ -62,14 +62,13 @@ public class AlarmHandler implements Observer
 
 		boolean foundSig = false;
 		int prevAlrmCnt = getSignalVector().size();//alarmCount;
-		boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags())
-								  && TagUtils.isAlarm(sig.getTags()); // Is Alarm UnAcked??
+		boolean addAlarm = TagUtils.isAnyAlarm(sig.getTags());
 
 		for( int i = 0; i < getSignalVector().size(); i++ )
 		{
 			Signal storedSig = (Signal)getSignalVector().get(i);
 
-			if( storedSig.getId() == sig.getId() ) //update the sig value
+			if( storedSig.equals(sig) ) //update the sig value
 			{
 				if( addAlarm )  //update the underlying signal
 				{

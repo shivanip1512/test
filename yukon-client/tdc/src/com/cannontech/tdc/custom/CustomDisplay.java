@@ -2,7 +2,6 @@ package com.cannontech.tdc.custom;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.UnitMeasureFuncs;
@@ -11,7 +10,7 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.tdc.utils.DataBaseInteraction;
+
 
 /**
  * @author rneuharth
@@ -33,7 +32,7 @@ public class CustomDisplay
 	public static final String COLUMN_TYPE_POINTSTATE = "PointState"; //Point ablement
 	public static final String COLUMN_TYPE_DEVICENAME = "DeviceName";	
 	public static final String COLUMN_TYPE_DEVICETYPE = "DeviceType";	
-	public static final String COLUMN_TYPE_DEVICECURRENTSTATE = "DeviceCurrentState"; //PAO Description
+	public static final String COLUMN_TYPE_TXT_MSG = "DeviceCurrentState"; //PAO Description
 	public static final String COLUMN_TYPE_DEVICEID = "DeviceID";
 	
 	// Column type names -DYNAMIC DATA
@@ -101,7 +100,7 @@ public class CustomDisplay
 				else
 					retValues[i] = CtiUtilities.STRING_NONE;
 			}
-			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_DEVICECURRENTSTATE) )
+			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_TXT_MSG) )
 			{
 				retValues[i] = litePAO.getPaoDescription();
 			}

@@ -158,7 +158,7 @@ public PointValues( Signal signal_, int ptType, String ptName, String[] colors,
 
 	setPointData( new PointData() );
 	getPointData().setTime( new java.util.Date() );		
-	getPointData().setId( signal_.getId() );
+	getPointData().setId( signal_.getPointID() );
 	getPointData().setType( ptType );
 	getPointData().setTime( new java.util.Date() );
 	getPointData().setTags( signal_.getTags() );
@@ -523,6 +523,15 @@ public String toString()
 		else
 			return getSignal().getAlarmStateID();
 	}
+
+	public int getCondition()
+	{
+		if( getSignal() == null )
+			return -1; //we are not alarming
+		else
+			return getSignal().getCondition();
+	}
+
 
 	public void setSOETag( int newTag_ ) 
 	{

@@ -8,49 +8,31 @@ package com.cannontech.tdc.roweditor;
  */
 import javax.swing.JPanel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.commandevents.ClearAlarm;
 
 
-public class AlarmPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer {
+public class AlarmPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer 
+{
 	private JPanel parentPanel = null;
 	private java.util.Observable observingData = null;
-	private long pointID = -1;
 	private javax.swing.JButton ivjJButtonAck = null;
 	private javax.swing.JLabel ivjJLabelDescription = null;
 	private javax.swing.JLabel ivjJLabelUser = null;
 	private javax.swing.JPanel ivjJPanelJButtons = null;
 	private javax.swing.JLabel ivjJLabelDescText = null;
 	private javax.swing.JLabel ivjJLabelUserText = null;
+
+	private Signal signal = null;
+
 /**
  * AlarmPanel constructor comment.
  */
 public AlarmPanel() {
 	super();
 	initialize();
-}
-/**
- * AlarmPanel constructor comment.
- * @param layout java.awt.LayoutManager
- */
-public AlarmPanel(java.awt.LayoutManager layout) {
-	super(layout);
-}
-/**
- * AlarmPanel constructor comment.
- * @param layout java.awt.LayoutManager
- * @param isDoubleBuffered boolean
- */
-public AlarmPanel(java.awt.LayoutManager layout, boolean isDoubleBuffered) {
-	super(layout, isDoubleBuffered);
-}
-/**
- * AlarmPanel constructor comment.
- * @param isDoubleBuffered boolean
- */
-public AlarmPanel(boolean isDoubleBuffered) {
-	super(isDoubleBuffered);
 }
 /**
  * Method to handle events for the ActionListener interface.
@@ -160,7 +142,7 @@ private javax.swing.JLabel getJLabelDescription() {
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public javax.swing.JLabel getJLabelDescText() {
+private javax.swing.JLabel getJLabelDescText() {
 	if (ivjJLabelDescText == null) {
 		try {
 			ivjJLabelDescText = new javax.swing.JLabel();
@@ -203,7 +185,7 @@ private javax.swing.JLabel getJLabelUser() {
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public javax.swing.JLabel getJLabelUserText() {
+private javax.swing.JLabel getJLabelUserText() {
 	if (ivjJLabelUserText == null) {
 		try {
 			ivjJLabelUserText = new javax.swing.JLabel();
@@ -260,24 +242,14 @@ private JPanel getParentPanel()
 		return parentPanel;
 }
 /**
- * Insert the method's description here.
- * Creation date: (4/10/00 5:45:43 PM)
- * Version: <version>
- * @param id long
- */
-public long getPointID()
-{
-	return pointID;
-}
-/**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
  */
-private void handleException(java.lang.Throwable exception) {
-
+private void handleException(java.lang.Throwable exception) 
+{
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
@@ -347,12 +319,31 @@ private void initialize() {
 
 	// user code end
 }
+
+public Signal getSignal()
+{
+	return signal;
+}
+
+public void setSignal( Signal signal_ )
+{
+	signal = signal_;
+
+	if( getSignal() != null )
+	{	
+		getJLabelDescText().setText( getSignal().getDescription() );
+		getJLabelUserText().setText( getSignal().getUserName() );
+	}
+		
+}
+
 /**
  * Comment
  */
 public void jButtonAck_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	AckAlarm.send( (int)pointID );
+	if( getSignal() != null )
+		AckAlarm.send( getSignal().getPointID(), getSignal().getCondition() );
 
 	return;
 }
@@ -361,7 +352,9 @@ public void jButtonAck_ActionPerformed(java.awt.event.ActionEvent actionEvent)
  */
 public void jButtonClearAlarm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	ClearAlarm.send( (int)pointID );
+	if( getSignal() != null )
+		ClearAlarm.send( getSignal().getPointID(), getSignal().getCondition() );
+
 	return;
 }
 /**
@@ -407,16 +400,7 @@ public void setParentPanel(javax.swing.JPanel panel)
 {
 	parentPanel = panel;	
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/10/00 5:45:43 PM)
- * Version: <version>
- * @param id long
- */
-public void setPointID(long id) 
-{
-	this.pointID = id;	
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/10/00 5:06:20 PM)
@@ -425,17 +409,17 @@ public void update( java.util.Observable originator, Object newValue )
 {
 	if( newValue instanceof Signal )
 	{
-		Signal signal = (Signal)newValue;
+		Signal sig = (Signal)newValue;
 
-		if( signal.getId() == getPointID() )
+		if( sig.equals(getSignal()) )
 		{
 			if( !this.isVisible() )
 			{
-				updateNonVisiblePanel( signal);				
+				updateNonVisiblePanel( sig );				
 			}
 			else
 			{
-				updateVisiblePanel( signal );
+				updateVisiblePanel( sig );
 			}
 
 			getParentPanel().revalidate();
@@ -451,7 +435,7 @@ public void update( java.util.Observable originator, Object newValue )
  */
 private void updateNonVisiblePanel(Signal signal) 
 {
-	if( (signal.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) > 0 )
+	if( (signal.getTags() & Signal.TAG_ACTIVE_ALARM) > 0 )
 	{
 		getJLabelDescText().setText( signal.getDescription() );
 		getJLabelUserText().setText( signal.getUserName() );
@@ -466,7 +450,7 @@ private void updateNonVisiblePanel(Signal signal)
 private void updateVisiblePanel(Signal signal) 
 {
 	// if some user acknowledged the alarm
-	if( (signal.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) > 0 )
+	if( (signal.getTags() & Signal.TAG_ACTIVE_ALARM) > 0 )
 	{					
 		// update the text fields just in case
 		getJLabelDescText().setText( signal.getDescription() );

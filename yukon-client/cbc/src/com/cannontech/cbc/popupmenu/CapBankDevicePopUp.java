@@ -9,6 +9,7 @@ import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.messages.CBCCommand;
+import com.cannontech.clientutils.tags.TagUtils;
 
 /**
  * Insert the type's description here.
@@ -600,13 +601,9 @@ public void jMenuItemOpenClose_ActionPerformed(java.awt.event.ActionEvent action
  */
 private void setAlarmMenuItems() 
 {
-	if( com.cannontech.clientutils.tags.TagUtils.isAlarm(getCapBankDevice().getTagControlStatus().intValue()) )
+	if( TagUtils.isAlarmUnacked(getCapBankDevice().getTagControlStatus().intValue()) )
 	{
 		getJMenuItemAckAlarm().setEnabled( true );
-	}
-	else if( com.cannontech.clientutils.tags.TagUtils.isAlarmAcked(getCapBankDevice().getTagControlStatus().intValue()) )
-	{
-		getJMenuItemAckAlarm().setEnabled( false );
 	}
 	else
 	{
