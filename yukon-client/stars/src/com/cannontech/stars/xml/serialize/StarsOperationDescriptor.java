@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperationDescriptor.java,v 1.35 2003/04/14 21:39:19 zyao Exp $
+ * $Id: StarsOperationDescriptor.java,v 1.36 2003/04/17 16:27:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.35 $ $Date: 2003/04/14 21:39:19 $
+ * @version $Revision: 1.36 $ $Date: 2003/04/17 16:27:44 $
 **/
 public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -2070,6 +2070,38 @@ public class StarsOperationDescriptor extends org.exolab.castor.xml.util.XMLClas
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsUpdateResidenceInformation
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsUpdateLMHardwareConfig
+        desc = new XMLFieldDescriptorImpl(StarsUpdateLMHardwareConfig.class, "_starsUpdateLMHardwareConfig", "stars-UpdateLMHardwareConfig", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsOperation target = (StarsOperation) object;
+                return target.getStarsUpdateLMHardwareConfig();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsOperation target = (StarsOperation) object;
+                    target.setStarsUpdateLMHardwareConfig( (StarsUpdateLMHardwareConfig) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsUpdateLMHardwareConfig();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsUpdateLMHardwareConfig
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

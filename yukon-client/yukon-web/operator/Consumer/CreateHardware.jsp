@@ -250,8 +250,8 @@ function changeAppSelection(chkBox) {
                         </tr>
                       </table>
                       <br>
-                      <span class="Main">Select appliances connected with 
-                      this hardware:</span><br>
+                      <span class="MainHeader">Select all programs controlled by this 
+                      hardware, and assign groups to them:</span><br>
                       <table width="300" border="1" cellspacing="0" cellpadding="3">
                         <tr> 
                           <td width="10%" class="HeaderCell">&nbsp; </td>

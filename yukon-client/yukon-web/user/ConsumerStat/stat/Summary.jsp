@@ -21,7 +21,7 @@
 <html>
 <head>
 <title>Consumer Energy Services</title>
-<link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../demostyle.css" type="text/css">
 <script language="JavaScript">
 	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
 </script>
@@ -37,7 +37,10 @@
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td id="Header" colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+<script language="JavaScript">
+	document.getElementById("Header").background = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
+</script>
               </tr>
               <tr> 
 				  <td width="265" height="28">&nbsp;</td>
@@ -72,32 +75,9 @@
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
-            <div align="center"><br> 
-              <table width="600" border="0" cellspacing="0">
-                <tr> 
-                  <td width="202"> 
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> 
-                          <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> 
-                          <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
-                      SUMMARY </span></b></div>
-                  </td>
-                  <td valign="top" width="205" align = "right">
-                    <%@ include file="Notice.jsp" %>
-                  </td>
-                </tr>
-              </table>
+            <div align="center"><br>
+              <% String header = ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_PROG_CTRL_SUM_TITLE); %>
+              <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
                   <td> 

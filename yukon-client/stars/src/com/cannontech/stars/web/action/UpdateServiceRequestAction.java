@@ -90,14 +90,6 @@ public class UpdateServiceRequestAction implements ActionBase {
 					if (companies != null) {
 						ServiceCompany company = new ServiceCompany();
 						company.setEntryID( Integer.parseInt(companies[i]) );
-						StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-						for (int j = 0; j < companyList.getStarsSelectionListEntryCount(); j++) {
-							StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(j);
-							if (entry.getEntryID() == company.getEntryID()) {
-								company.setContent( entry.getContent() );
-								break;
-							}
-						}
 						order.setServiceCompany( company );
 					}
 					

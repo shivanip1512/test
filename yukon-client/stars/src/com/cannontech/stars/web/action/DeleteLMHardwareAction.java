@@ -10,15 +10,17 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -101,11 +103,20 @@ public class DeleteLMHardwareAction implements ActionBase {
         	ArrayList liteApps = liteAcctInfo.getAppliances();
         	for (int i = 0; i < liteApps.size(); i++) {
         		LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-        		if (liteApp.getInventoryID() == liteHw.getInventoryID())
+        		if (liteApp.getInventoryID() == liteHw.getInventoryID()) {
         			liteApp.setInventoryID( 0 );
+	    			for (int j = 0; j < liteAcctInfo.getLmPrograms().size(); j++) {
+	    				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(j);
+	    				if (liteProg.getLmProgram().getProgramID() == liteApp.getLmProgramID()) {
+	    					liteProg.setGroupID( 0 );
+	    					break;
+	    				}
+	    			}
+        		}
         	}
         	
-        	if (liteAcctInfo.getThermostatSettings().getInventoryID() == liteHw.getInventoryID())
+        	if (liteAcctInfo.getThermostatSettings() != null &&
+        		liteAcctInfo.getThermostatSettings().getInventoryID() == liteHw.getInventoryID())
         		liteAcctInfo.setThermostatSettings( null );
         	
         	com.cannontech.database.data.stars.hardware.InventoryBase inv =
@@ -157,10 +168,18 @@ public class DeleteLMHardwareAction implements ActionBase {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
 			
-			StarsAppliances appliances = accountInfo.getStarsAppliances();
-			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-				if (appliances.getStarsAppliance(i).getInventoryID() == delHw.getInventoryID())
-					appliances.getStarsAppliance(i).setInventoryID( 0 );
+			for (int i = 0; i < accountInfo.getStarsAppliances().getStarsApplianceCount(); i++) {
+				StarsAppliance appliance = accountInfo.getStarsAppliances().getStarsAppliance(i);
+				if (appliance.getInventoryID() == delHw.getInventoryID()) {
+					appliance.setInventoryID( 0 );
+					for (int j = 0; j < accountInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
+						StarsLMProgram program = accountInfo.getStarsLMPrograms().getStarsLMProgram(j);
+						if (program.getProgramID() == appliance.getLmProgramID()) {
+							program.setGroupID( 0 );
+							break;
+						}
+					}
+				}
 			}
 			
 			StarsInventories inventories = accountInfo.getStarsInventories();

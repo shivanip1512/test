@@ -190,11 +190,11 @@ public class ServerUtils {
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
 			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 			
-			if (liteEvent.getActionID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
-				liteEvent.getActionID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
+				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
 				return true;
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ||
-				liteEvent.getActionID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
+				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
 				return false;
 		}
 		

@@ -192,8 +192,7 @@ MM_reloadPage(true);
                   </td>
                 </tr>
               </table>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span>"); %>
-			  <br>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			<form name="form1" method="POST" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">

@@ -301,7 +301,7 @@ public class ProgramSignUpAction implements ActionBase {
         		}
             }
     		
-    		/* Remove enrolled program for the rest of the appliances */
+    		// Remove enrolled program for all the remaining appliances
     		for (int i = 0; i < appList.size(); i++) {
     			LiteStarsAppliance liteApp = (LiteStarsAppliance) appList.get(i);
     			

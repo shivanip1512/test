@@ -79,13 +79,13 @@ function confirmSubmit(form) { //v1.0
 		   
               <p><table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td class="Main"><div align="center">If you would like to temporarily 
-                      opt out of all programs, select the time frame from the 
-                      <br>
-                      drop-down box below, then select Submit.</div></td>
+                  <td class="Main">
+				    <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_OPT_OUT_DESC %>"/>
+				  </td>
                 </tr>
               </table>
               <br>
+<cti:checkNoRole roleid="<%= RoleTypes.HIDE_OPT_OUT_BOX %>">
               <table  border="0" cellspacing="0" cellpadding="0">
                 <tr align = "center"> 
                   <td width="304" valign="top" align = "center"> 
@@ -122,13 +122,10 @@ function confirmSubmit(form) { //v1.0
                       </table>
                       <br>
                     </form>
-                    <p align="center" class="MainHeader">&nbsp;
                   </td>
-                  <form method="get" action="ProgramDetails.jsp">
-                  </form>
                 </tr>
               </table>
-              
+</cti:checkNoRole>              
             </div>
             <p>&nbsp;</p>
           </td>

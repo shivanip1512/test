@@ -2,7 +2,7 @@
 	// Map of page name / link text
 	String linkMap[][] = {{"General.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_GENERAL_LINK)},
 						  {"TOU.jsp", "Usage"},
-						  {"ProgramHist.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_CTRL_SUM_LINK)},
+						  {"ProgramHist.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_CTRL_HIST_LINK)},
 						  {"Util.jsp", "Contact Us"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_ENROLL_LINK)},
@@ -27,22 +27,6 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_THERMOSTAT %>">
-<%
-	if (dftThermoSettings != null) {	// Hide thermostat settings if it's not available
-%>
-  <tr>
-    <td height="65"><br>
-<div align="left"><span class="NavHeader">Thermostat</span><br>
-        <%= links.get("ThermSchedule.jsp") %><br>
-        <%= links.get("Thermostat.jsp") %><br>
-	  </div>
-    </td>
-  </tr>
-<%
-	}
-%>
-</cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT %>">
   <tr> 
     <td> 
@@ -54,6 +38,22 @@
 	  </div>
     </td>
   </tr>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_THERMOSTAT %>">
+<%
+	if (dftThermoSettings != null) {	// Hide thermostat settings if it's not available
+%>
+  <tr>
+    <td>
+<div align="left"><span class="NavHeader">Thermostat</span><br>
+        <%= links.get("ThermSchedule.jsp") %><br>
+        <%= links.get("Thermostat.jsp") %><br>
+	  </div>
+    </td>
+  </tr>
+<%
+	}
+%>
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING %>">
   <tr> 
@@ -88,8 +88,17 @@
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Questions</span><br>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_QUESTIONS_UTIL %>">
         <%= links.get("Util.jsp") %><br>
+</cti:checkRole>
+<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_QUESTIONS_FAQ %>">
+<cti:checkRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
+		<img src="<%= bulletImg2 %>" width="12" height="12"><a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
+</cti:checkRole>
+<cti:checkNoRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
         <%= links.get("FAQ.jsp") %><br>
+</cti:checkNoRole>
+</cti:checkRole>
 	  </div>
     </td>
   </tr>

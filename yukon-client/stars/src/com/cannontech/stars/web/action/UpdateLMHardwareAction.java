@@ -15,7 +15,6 @@ import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -29,7 +28,6 @@ import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsLMHardware;
 import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareResponse;
@@ -54,36 +52,27 @@ public class UpdateLMHardwareAction implements ActionBase {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
 			
 			LMDeviceType type = new LMDeviceType();
 			type.setContent( req.getParameter("DeviceType") );
-			updateHw.setLMDeviceType( type );	// Not Updatable (NU)
+			updateHw.setLMDeviceType( type );
 			
 			Voltage volt = new Voltage();
 			volt.setContent( req.getParameter("Voltage") );
-			updateHw.setVoltage( volt );	// NU
+			updateHw.setVoltage( volt );
 			
 			DeviceStatus status = new DeviceStatus();
 			status.setEntryID( Integer.parseInt(req.getParameter("Status")) );
-			updateHw.setDeviceStatus( status );		// NU
+			updateHw.setDeviceStatus( status );
 			
 			InstallationCompany company = new InstallationCompany();
 			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
-			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY );
-			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
-				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
-				if (entry.getEntryID() == company.getEntryID()) {
-					company.setContent( entry.getContent() );
-					break;
-				}
-			}
 			updateHw.setInstallationCompany( company );
 			
 			updateHw.setInventoryID( Integer.parseInt(req.getParameter("InvID")) );
-			updateHw.setCategory( "" );		// NU
+			updateHw.setCategory( "" );
 			updateHw.setManufactureSerialNumber( req.getParameter("SerialNo") );
 			updateHw.setAltTrackingNumber( req.getParameter("AltTrackNo") );
 			if (req.getParameter("ReceiveDate") != null && req.getParameter("ReceiveDate").length() > 0)
@@ -157,9 +146,8 @@ public class UpdateLMHardwareAction implements ActionBase {
             		Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
             StarsLiteFactory.setLiteLMHardware( liteHw, hw );
             
-            // Update the "install" and "config" event if necessary
+            // Update the "install" event if necessary
             int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
-            int configEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
             
             ArrayList hwHist = liteHw.getLmHardwareHistory();
             for (int i = 0; i < hwHist.size(); i++) {
@@ -180,23 +168,6 @@ public class UpdateLMHardwareAction implements ActionBase {
             					
             			StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
             		}
-            		
-            		if (++i < hwHist.size()) {
-		            	liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
-		            	if (liteEvent.getActionID() == configEntryID && Math.abs(installTime - liteEvent.getEventDateTime()) < 1000 && timeChanged) {
-		            		// "Config" event happened at the same time as the "install event"
-	            			com.cannontech.database.data.stars.event.LMHardwareEvent event =
-	            					(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
-	            			com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
-	            			
-	            			eventDB.setEventDateTime( updateHw.getInstallDate() );
-	            			eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-	            					Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
-	            					
-	            			StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
-		            	}
-            		}
-            		
             		break;
             	}
             }
@@ -249,7 +220,6 @@ public class UpdateLMHardwareAction implements ActionBase {
 			for (int i = 0; i < starsInvs.getStarsLMHardwareCount(); i++) {
 				if (starsInvs.getStarsLMHardware(i).getInventoryID() == hw.getInventoryID()) {
 					starsInvs.setStarsLMHardware(i, hw);
-					session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/Inventory.jsp?InvNo=" + String.valueOf(i) );
 					break;
 				}
 			}

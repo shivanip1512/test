@@ -147,39 +147,39 @@
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main">
-              <div align = "center" style = "border:solid 1px #666999;">
 <cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_DIRECT_CONTROL %>"> 
+              <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a>
+              </div>
 </cti:checkRole>
-              &nbsp;</div>
-            </td>
+            &nbsp;</td>
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;">
 <cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_CURTAILMENT %>"> 
+              <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.CURTAILMENT_TEXT %>"/></a>
+			  </div>
 </cti:checkRole>
-			  &nbsp;</div>
-            </td>
+            &nbsp;</td>
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-              <div align = "center" style = "border:solid 1px #666999;">
 <cti:checkRole roleid="<%= RoleTypes.CICUSTOMER_ENERGY_EXCHANGE %>"> 
+              <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/></a>
+			  </div>
 </cti:checkRole>
-			  &nbsp;</div>
-            </td>
+            &nbsp;</td>
 		  </form>
             <form method="post" action="Consumer/Odds.jsp">
             <td width = "110" class = "Main">
-              <div align = "center" style = "border:solid 1px #666999;">
 <cti:checkRole roleid="<%= RoleTypes.LOADCONTROL_CONTROL_ODDS %>">
+              <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "Consumer/Odds.jsp" class = "Link1" style = "text-decoration:none;">Odds for Control</a>
+			  </div>
 </cti:checkRole>
-			  &nbsp;</div>
-            </td>
+            &nbsp;</td>
 		  </form>
           </tr>
         <tr> 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.35 2003/04/14 21:39:14 zyao Exp $
+ * $Id: StarsOperation.java,v 1.36 2003/04/17 16:27:39 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.35 $ $Date: 2003/04/14 21:39:14 $
+ * @version $Revision: 1.36 $ $Date: 2003/04/17 16:27:39 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -169,6 +169,8 @@ public class StarsOperation implements java.io.Serializable {
     private StarsSendOddsForControl _starsSendOddsForControl;
 
     private StarsUpdateResidenceInformation _starsUpdateResidenceInformation;
+
+    private StarsUpdateLMHardwareConfig _starsUpdateLMHardwareConfig;
 
 
       //----------------/
@@ -720,6 +722,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateLMHardware;
     } //-- StarsUpdateLMHardware getStarsUpdateLMHardware() 
+
+    /**
+     * Returns the value of field 'starsUpdateLMHardwareConfig'.
+     * 
+     * @return the value of field 'starsUpdateLMHardwareConfig'.
+    **/
+    public StarsUpdateLMHardwareConfig getStarsUpdateLMHardwareConfig()
+    {
+        return this._starsUpdateLMHardwareConfig;
+    } //-- StarsUpdateLMHardwareConfig getStarsUpdateLMHardwareConfig() 
 
     /**
      * Returns the value of field 'starsUpdateLMHardwareResponse'.
@@ -1456,6 +1468,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateLMHardware = starsUpdateLMHardware;
     } //-- void setStarsUpdateLMHardware(StarsUpdateLMHardware) 
+
+    /**
+     * Sets the value of field 'starsUpdateLMHardwareConfig'.
+     * 
+     * @param starsUpdateLMHardwareConfig the value of field
+     * 'starsUpdateLMHardwareConfig'.
+    **/
+    public void setStarsUpdateLMHardwareConfig(StarsUpdateLMHardwareConfig starsUpdateLMHardwareConfig)
+    {
+        this._starsUpdateLMHardwareConfig = starsUpdateLMHardwareConfig;
+    } //-- void setStarsUpdateLMHardwareConfig(StarsUpdateLMHardwareConfig) 
 
     /**
      * Sets the value of field 'starsUpdateLMHardwareResponse'.

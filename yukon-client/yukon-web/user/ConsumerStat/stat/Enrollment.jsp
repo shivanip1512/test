@@ -121,8 +121,6 @@ function changeProgram(radioBtn, index) {
                       </td>
                     </tr>
 <%
-	boolean showNotification = false;
-	
 	for (int i = 0, idx = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		if (category.getStarsEnrLMProgramCount() == 0) continue;
@@ -164,12 +162,8 @@ function changeProgram(radioBtn, index) {
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
 				String checkStr = "";
-				if (program != null && prog.getProgramID() == program.getProgramID()) {
+				if (program != null && prog.getProgramID() == program.getProgramID())
 					checkStr = "checked";
-					// Check whether we should show the notification box
-					if (prog.getChanceOfControlID() != com.cannontech.common.util.CtiUtilities.NONE_ID)
-						showNotification = true;
-				}
 				/* Each row is a program in this category */
 %>
                                   <tr> 
@@ -199,8 +193,27 @@ function changeProgram(radioBtn, index) {
 	}
 %>
                   </table>
-                    <p>
+                    <p></p>
+<cti:checkNoRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>">
 <%
+	boolean showNotification = false;
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(j);
+			if (enrProg.getChanceOfControlID() == com.cannontech.common.util.CtiUtilities.NONE_ID) continue;
+			
+			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
+				if (programs.getStarsLMProgram(k).getProgramID() == enrProg.getProgramID()) {
+					showNotification = true;
+					break;
+				}
+			}
+			if (showNotification) break;
+		}
+		if (showNotification) break;
+	}
+
 	if (showNotification) {
 %> 
                      <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >   
@@ -218,6 +231,7 @@ function changeProgram(radioBtn, index) {
 <%
 	}
 %>
+</cti:checkNoRole>
 					<p>
                     <table width="50%" border="0">
                     <tr>

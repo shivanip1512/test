@@ -339,15 +339,18 @@ insert into energycompanyoperatorloginlist values(1,101)
 insert into YukonUser values (102,'thermostat','test',0,'1970-01-01','Enabled')
 insert into YukonUserGroup values (102,-211)
 
+insert into YukonRole values (-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(none)')
+insert into YukonRole values (-1001,'NEW_ACCOUNT_WIZARD','WebClient','(none)','(none)')
+insert into YukonRole values (-1002,'SWITCH_COMMAND_BATCH','WebClient','(none)','(none)')
+insert into YukonRole values (-1003,'NOTIFICATION_ON_GENERAL_PAGE','WebClient','(none)','(none)')
+insert into YukonRole values (-1004,'HIDE_OPT_OUT_BOX','WebClient','(none)','(none)')
+insert into YukonRole values (-1005,'CUSTOMIZED_FAQ_LINK','WebClient','(none)','(none)')
+insert into YukonRole values (-1006,'CUSTOMIZED_EMAIL_LINK','WebClient','(none)','(none)')
+
 /* Create a "super" web operator for some testing functions */
 insert into YukonUser values (100,'super','super',0,'1970-01-01','Enabled')
 insert into YukonUserGroup values (100,-210)
-insert into YukonRole values (-1000,'WEB_OPERATOR_SUPER','WebClient','(none)','(none)')
 insert into YukonUserRole values (100,-1000,'(none)')
-insert into YukonRole values (-1001,'NEW_ACCOUNT_WIZARD','WebClient','(none)','(none)')
-insert into YukonUserRole values (100,-1001,'(none)')
-insert into YukonRole values (-1002,'SWITCH_COMMAND_BATCH','WebClient','(none)','(none)')
-insert into YukonUserRole values (100,-1002,'SwitchCommands.txt')
 insert into energycompanyoperatorloginlist values(1,100)
 
 

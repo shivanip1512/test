@@ -97,6 +97,8 @@ public class ServletUtils {
     public static final String WEB_HEADER = "web_header";
     public static final String WEB_NAV_BULLET = "web_nav_bullet";
     public static final String WEB_NAV_BULLET2 = "web_nav_bullet2";
+    public static final String WEB_LINK_FAQ = "web_link_faq";
+    public static final String WEB_LINK_EMAIL = "web_link_email";
     public static final String WEB_TEXT_CONTROL = "web_text_control";
     public static final String WEB_TEXT_CONTROLLED = "web_text_controlled";
     public static final String WEB_TEXT_CONTROLLING = "web_text_controlling";
@@ -104,17 +106,19 @@ public class ServletUtils {
     public static final String WEB_TEXT_GENERAL_TITLE = "web_text_general_title";
     public static final String WEB_TEXT_THERM_SCHED_TITLE = "web_text_thermostat_schedule_title";
     public static final String WEB_TEXT_THERM_MANUAL_TITLE = "web_text_thermostat_manual_title";
-    public static final String WEB_TEXT_CTRL_SUM_TITLE = "web_text_control_summary_title";
     public static final String WEB_TEXT_CTRL_HIST_TITLE = "web_text_control_history_title";
+    public static final String WEB_TEXT_PROG_CTRL_HIST_TITLE = "web_text_program_ctrl_hist_title";
+    public static final String WEB_TEXT_PROG_CTRL_SUM_TITLE = "web_text_program_ctrl_sum_title";
     public static final String WEB_TEXT_ENROLL_TITLE = "web_text_enrollment_title";
     public static final String WEB_TEXT_OPT_OUT_TITLE = "web_text_opt_out_title";
     public static final String WEB_TEXT_UTIL_TITLE = "web_text_utility_title";
     public static final String WEB_TEXT_FAQ_TITLE = "web_text_faq_title";
     public static final String WEB_TEXT_CHG_PASSWD_TITLE = "web_text_change_password_title";
     public static final String WEB_TEXT_GENERAL_LINK = "web_text_general_link";
-    public static final String WEB_TEXT_CTRL_SUM_LINK = "web_text_control_summary_link";
+    public static final String WEB_TEXT_CTRL_HIST_LINK = "web_text_control_history_link";
     public static final String WEB_TEXT_ENROLL_LINK = "web_text_enrollment_link";
     public static final String WEB_TEXT_OPT_OUT_LINK = "web_text_opt_out_link";
+    public static final String WEB_TEXT_OPT_OUT_DESC = "web_text_opt_out_desc";
     
     private static final String DEFAULT_PROPERTY_FILE = "/default.config.properties";
     

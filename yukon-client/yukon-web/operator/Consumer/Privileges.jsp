@@ -14,7 +14,7 @@
   <tr>
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr bgcolor="#FFFFFF"> 
+        <tr> 
           <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="3" border="0">
@@ -24,8 +24,7 @@
 	document.getElementById("Header").background = '../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>';
 </script>
               </tr>
-              <tr bgcolor="666699"> 
-                <form method="get" action="">
+              <tr> 
                   <td width="265" height = "30" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
                     Account Information&nbsp;&nbsp;</td>
                   <td width="253" valign="middle">&nbsp;</td>
@@ -36,7 +35,6 @@
                     <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
-                </form>
               </tr>
             </table>
           </td>
@@ -47,7 +45,7 @@
   </tr>
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#666699" bordercolor="0">
+      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
           <td width="101" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>

@@ -43,6 +43,7 @@ import com.cannontech.stars.web.action.UpdateCallReportAction;
 import com.cannontech.stars.web.action.UpdateControlNotificationAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
+import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.UpdateLoginAction;
 import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
@@ -280,8 +281,18 @@ public class SOAPClient extends HttpServlet {
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
             errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
-        else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService") || action.equalsIgnoreCase("Config")) {
+        else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
             clientAction = new YukonSwitchCommandAction();
+            destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+            errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+        }
+        else if (action.equalsIgnoreCase("Config")) {
+        	MultiAction actions = new MultiAction();
+        	if (Boolean.valueOf( req.getParameter("ConfigChanged") ).booleanValue())
+        		actions.addAction( new UpdateLMHardwareConfigAction(), req, session );
+        	actions.addAction( new YukonSwitchCommandAction(), req, session );
+        		
+        	clientAction = (ActionBase) actions;
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
             errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
@@ -348,9 +359,14 @@ public class SOAPClient extends HttpServlet {
         	}
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
-        	clientAction = new UpdateLMHardwareAction();
-        	destURL = "/operator/Consumer/Inventory.jsp";
-        	errorURL = "/operator/Consumer/Inventory.jsp";
+        	MultiAction actions = new MultiAction();
+        	actions.addAction( new UpdateLMHardwareAction(), req, session );
+        	if (Boolean.valueOf( req.getParameter("ConfigChanged") ).booleanValue())
+        		actions.addAction( new UpdateLMHardwareConfigAction(), req, session );
+        		
+        	clientAction = (ActionBase) actions;
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("DeleteLMHardware")) {
         	clientAction = new DeleteLMHardwareAction();
@@ -385,6 +401,11 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new UpdateResidenceInfoAction();
         	destURL = "/operator/Consumer/Residence.jsp";
         	errorURL = "/operator/Consumer/Residence.jsp";
+        }
+        else if (action.equalsIgnoreCase("UpdateCtrlNotification")) {
+        	clientAction = new UpdateControlNotificationAction();
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");

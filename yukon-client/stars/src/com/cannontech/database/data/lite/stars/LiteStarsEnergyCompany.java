@@ -1250,11 +1250,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 com.cannontech.database.data.stars.event.LMProgramEvent[] events =
                 		com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents( accountDB.getAccountID(), new Integer(progID) );
                 if (events != null) {
-                	prog.setProgramHistory( new ArrayList() );
                 	for (int j = 0; j < events.length; j++) {
                 		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( events[j] );
                 		prog.getProgramHistory().add( liteEvent );
                 	}
+                	prog.setInService( ServerUtils.isInService(prog.getProgramHistory()) );
                 }
                 
                 getLMControlHistory( appliance.getLMHardwareConfig().getAddressingGroupID().intValue() );

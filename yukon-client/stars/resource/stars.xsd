@@ -377,7 +377,7 @@
 				<xs:element ref="stars-UpdateControlNotification" minOccurs="0"/>
 				<xs:element ref="stars-SendOddsForControl" minOccurs="0"/>
 				<xs:element ref="stars-UpdateResidenceInformation" minOccurs="0"/>
-			</xs:all>
+			<xs:element ref="stars-UpdateLMHardwareConfig" minOccurs="0"/></xs:all>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-SULMPrograms">
@@ -1129,4 +1129,5 @@
 	</xs:element>
 	<xs:element name="stars-ResidenceInformation" type="stars-CustResidence"/>
 	<xs:element name="stars-UpdateResidenceInformation" type="stars-CustResidence"/>
+	<xs:element name="stars-UpdateLMHardwareConfig"><xs:complexType><xs:sequence><xs:element ref="stars-LMHardwareConfig" minOccurs="0" maxOccurs="unbounded"/></xs:sequence><xs:attribute name="inventoryID" type="xs:int"/></xs:complexType></xs:element>
 </xs:schema>

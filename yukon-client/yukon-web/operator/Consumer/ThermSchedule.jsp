@@ -127,7 +127,7 @@ function MM_reloadPage(init) {  //reloads the window if Nav4 resized
 MM_reloadPage(true);
 // -->
 </script>
-<script language="JavaScript" src ="../drag.js">
+<script language="JavaScript" src ="drag.js">
 </script>
 <script language="JavaScript" src ="thermostat.js">
 </script>
@@ -189,8 +189,7 @@ MM_reloadPage(true);
             <div align="center">
               <% String header = "THERMOSTAT - SCHEDULE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-              <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <br>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			<form name="form1" method="POST" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
@@ -293,7 +292,7 @@ MM_reloadPage(true);
                       <br>
                     
                     <img src="TempBG.gif" style ="position:relative;">
-                      <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 373px"> 
+                      <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 355px"> 
                         <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -305,7 +304,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:2; top: 373px">
+                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:2; top: 355px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -317,7 +316,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:3; top: 373px">
+                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:3; top: 355px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -329,7 +328,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:4; top: 373px">
+                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:4; top: 355px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
