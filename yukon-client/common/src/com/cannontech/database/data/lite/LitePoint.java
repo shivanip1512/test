@@ -194,7 +194,7 @@ public void setStateGroupID(int newStateGroupID) {
  */
 public void setTags(long newtags)
 {
-	tags |= newtags;
+	tags = newtags;
 }
 /**
  * This method was created by Cannon Technologies Inc.
