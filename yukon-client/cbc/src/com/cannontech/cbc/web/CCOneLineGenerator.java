@@ -14,13 +14,11 @@ import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.StateImage;
-import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.esub.util.DrawingUpdater;
 
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
@@ -32,12 +30,7 @@ public class CCOneLineGenerator {
 
 	private static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	
-	public static void main(String[] args) {
-		
-		System.exit(0);
-	}
-
-	public static void generateSVGFileFromSubBus(SubBus subBus) {
+	public static Drawing generateSVGFileFromSubBus(SubBus subBus) {
 		
 		Drawing d = new Drawing();
 		LxGraph graph = d.getLxGraph();
@@ -49,7 +42,7 @@ public class CCOneLineGenerator {
 		double halfAcross = 512.0;
 		double halfDown = 400.0;
 		double labelTextHorzOffset = 20.0;
-		double valueTextHorzOffset = labelTextHorzOffset+20.0;
+		double valueTextHorzOffset = labelTextHorzOffset + 70.0;
 		double labelTextVertOffset = 15.0;
 		double subLineStart = 20.0;
 		double subLineLength = 100.0;
@@ -57,6 +50,11 @@ public class CCOneLineGenerator {
 		double feederHorzLineLength = 768.0;
 		double feederHorzLineStart = (1024.0 - feederHorzLineLength)/2;
 		double feederHorzLineStop = feederHorzLineStart + feederHorzLineLength;
+		if( subBus.getCcFeeders().size() == 1 )
+		{//special case when there is only feeder off the sub.
+			feederHorzLineStop = halfAcross;
+			feederHorzLineLength = feederHorzLineStop - feederHorzLineStart  ;
+		}
 		double feederVertLineLength = 800 - subLineStart - subLineLevel;
 		double feederVertLineStart = subLineLevel;
 		double feederVertLineStop = feederVertLineStart + feederVertLineLength;
@@ -70,6 +68,7 @@ public class CCOneLineGenerator {
 
 		//sub bus point data start
 		double labelTextHorzCenter = halfAcross+labelTextHorzOffset;
+		double valueTextHorzCenter = halfAcross+valueTextHorzOffset;
 		double textVertCenter = labelTextVertOffset;
 		if( subBus.getPowerFactorPointId().intValue() > 0 )
 		{
@@ -81,9 +80,9 @@ public class CCOneLineGenerator {
 			graph.add(subBusPFLabel);
 	
 			DynamicText subBusPFValue = new DynamicText();
-			subBusPFValue.setCenter(labelTextHorzCenter,textVertCenter);
+			subBusPFValue.setCenter(valueTextHorzCenter,textVertCenter);
 			subBusPFValue.setPointID(subBus.getPowerFactorPointId().intValue());
-			subBusPFValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+			subBusPFValue.setDisplayAttribs(PointAttributes.VALUE);
 			subBusPFValue.setFont(DEFAULT_FONT);
 			subBusPFValue.setPaint(Color.GREEN);
 			graph.add(subBusPFValue);
@@ -100,9 +99,9 @@ public class CCOneLineGenerator {
 			graph.add(subBusEstPFLabel);
 	
 			DynamicText subBusEstPFValue = new DynamicText();
-			subBusEstPFValue.setCenter(labelTextHorzCenter,textVertCenter);
+			subBusEstPFValue.setCenter(valueTextHorzCenter,textVertCenter);
 			subBusEstPFValue.setPointID(subBus.getEstimatedPowerFactorPointId().intValue());
-			subBusEstPFValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+			subBusEstPFValue.setDisplayAttribs(PointAttributes.VALUE);
 			subBusEstPFValue.setFont(DEFAULT_FONT);
 			subBusEstPFValue.setPaint(Color.GREEN);
 			graph.add(subBusEstPFValue);
@@ -119,9 +118,9 @@ public class CCOneLineGenerator {
 			graph.add(subBusKVARLabel);
 	
 			DynamicText subBusKVARValue = new DynamicText();
-			subBusKVARValue.setCenter(labelTextHorzCenter,textVertCenter);
+			subBusKVARValue.setCenter(valueTextHorzCenter,textVertCenter);
 			subBusKVARValue.setPointID(subBus.getCurrentVarLoadPointID().intValue());
-			subBusKVARValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+			subBusKVARValue.setDisplayAttribs(PointAttributes.VALUE);
 			subBusKVARValue.setFont(DEFAULT_FONT);
 			subBusKVARValue.setPaint(Color.GREEN);
 			graph.add(subBusKVARValue);
@@ -138,9 +137,9 @@ public class CCOneLineGenerator {
 			graph.add(subBusEstKVARLabel);
 	
 			DynamicText subBusEstKVARValue = new DynamicText();
-			subBusEstKVARValue.setCenter(labelTextHorzCenter,textVertCenter);
+			subBusEstKVARValue.setCenter(valueTextHorzCenter,textVertCenter);
 			subBusEstKVARValue.setPointID(subBus.getEstimatedVarLoadPointID().intValue());
-			subBusEstKVARValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+			subBusEstKVARValue.setDisplayAttribs(PointAttributes.VALUE);
 			subBusEstKVARValue.setFont(DEFAULT_FONT);
 			subBusEstKVARValue.setPaint(Color.GREEN);
 			graph.add(subBusEstKVARValue);
@@ -157,15 +156,22 @@ public class CCOneLineGenerator {
 			graph.add(subBusKWLabel);
 	
 			DynamicText subBusKWValue = new DynamicText();
-			subBusKWValue.setCenter(labelTextHorzCenter,textVertCenter);
+			subBusKWValue.setCenter(valueTextHorzCenter,textVertCenter);
 			subBusKWValue.setPointID(subBus.getCurrentWattLoadPointID().intValue());
-			subBusKWValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+			subBusKWValue.setDisplayAttribs(PointAttributes.VALUE);
 			subBusKWValue.setFont(DEFAULT_FONT);
 			subBusKWValue.setPaint(Color.GREEN);
 			graph.add(subBusKWValue);
 			textVertCenter += labelTextVertOffset;
 		}
 		//sub bus point data end
+
+		Vector feederVector =  subBus.getCcFeeders();
+		double feederSpacing = feederHorzLineLength / ((double)feederVector.size()-1);
+		if( feederVector.size() == 1 )
+		{
+			feederSpacing = 0.0;
+		}
 
 		//horizontal feeder line
 		LxLine feederDistributionLine = new LxLine();
@@ -174,8 +180,6 @@ public class CCOneLineGenerator {
 		feederDistributionLine.setLineColor(Color.WHITE);
 		graph.add(feederDistributionLine);
 
-		Vector feederVector =  subBus.getCcFeeders();
-		double feederSpacing = feederHorzLineLength / ((double)feederVector.size());
 		for(int i=0;i<feederVector.size();i++)
 		{
 			Feeder currentFeeder = (Feeder)feederVector.get(i);
@@ -190,6 +194,7 @@ public class CCOneLineGenerator {
 
 			//feeder point data start
 			labelTextHorzCenter = feederPosition+labelTextHorzOffset;
+			valueTextHorzCenter = feederPosition+valueTextHorzOffset;
 			textVertCenter = feederHorzLineStart+labelTextVertOffset;
 			if( currentFeeder.getPowerFactorPointID().intValue() > 0 )
 			{
@@ -201,9 +206,9 @@ public class CCOneLineGenerator {
 		        graph.add(feederPFLabel);
 		
 		        DynamicText feederPFValue = new DynamicText();
-		        feederPFValue.setCenter(labelTextHorzCenter,textVertCenter);
+		        feederPFValue.setCenter(valueTextHorzCenter,textVertCenter);
 		        feederPFValue.setPointID(currentFeeder.getPowerFactorPointID().intValue());
-		        feederPFValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+		        feederPFValue.setDisplayAttribs(PointAttributes.VALUE);
 		        feederPFValue.setFont(DEFAULT_FONT);
 		        feederPFValue.setPaint(Color.GREEN);
 		        graph.add(feederPFValue);
@@ -220,9 +225,9 @@ public class CCOneLineGenerator {
 		        graph.add(feederEstPFLabel);
 		
 		        DynamicText feederEstPFValue = new DynamicText();
-		        feederEstPFValue.setCenter(labelTextHorzCenter,textVertCenter);
+		        feederEstPFValue.setCenter(valueTextHorzCenter,textVertCenter);
 		        feederEstPFValue.setPointID(currentFeeder.getEstimatedPowerFactorPointID().intValue());
-		        feederEstPFValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+		        feederEstPFValue.setDisplayAttribs(PointAttributes.VALUE);
 		        feederEstPFValue.setFont(DEFAULT_FONT);
 		        feederEstPFValue.setPaint(Color.GREEN);
 		        graph.add(feederEstPFValue);
@@ -239,9 +244,9 @@ public class CCOneLineGenerator {
 		        graph.add(feederKVARLabel);
 		
 		        DynamicText feederKVARValue = new DynamicText();
-		        feederKVARValue.setCenter(labelTextHorzCenter,textVertCenter);
+		        feederKVARValue.setCenter(valueTextHorzCenter,textVertCenter);
 		        feederKVARValue.setPointID(currentFeeder.getCurrentVarLoadPointID().intValue());
-		        feederKVARValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+		        feederKVARValue.setDisplayAttribs(PointAttributes.VALUE);
 		        feederKVARValue.setFont(DEFAULT_FONT);
 		        feederKVARValue.setPaint(Color.GREEN);
 		        graph.add(feederKVARValue);
@@ -254,13 +259,13 @@ public class CCOneLineGenerator {
 		        feederEstKVARLabel.setCenter(labelTextHorzCenter,textVertCenter);
 		        feederEstKVARLabel.setFont(DEFAULT_FONT);
 		        feederEstKVARLabel.setPaint(Color.GREEN);
-		        feederEstKVARLabel.setText("PF:");
+		        feederEstKVARLabel.setText("Est KVAR:");
 		        graph.add(feederEstKVARLabel);
 		
 		        DynamicText feederEstKVARValue = new DynamicText();
-		        feederEstKVARValue.setCenter(labelTextHorzCenter,textVertCenter);
+		        feederEstKVARValue.setCenter(valueTextHorzCenter,textVertCenter);
 		        feederEstKVARValue.setPointID(currentFeeder.getEstimatedVarLoadPointID().intValue());
-		        feederEstKVARValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+		        feederEstKVARValue.setDisplayAttribs(PointAttributes.VALUE);
 		        feederEstKVARValue.setFont(DEFAULT_FONT);
 		        feederEstKVARValue.setPaint(Color.GREEN);
 		        graph.add(feederEstKVARValue);
@@ -273,13 +278,13 @@ public class CCOneLineGenerator {
 		        feederKWLabel.setCenter(labelTextHorzCenter,textVertCenter);
 		        feederKWLabel.setFont(DEFAULT_FONT);
 		        feederKWLabel.setPaint(Color.GREEN);
-		        feederKWLabel.setText("PF:");
+		        feederKWLabel.setText("KW:");
 		        graph.add(feederKWLabel);
 		
 		        DynamicText feederKWValue = new DynamicText();
-		        feederKWValue.setCenter(labelTextHorzCenter,textVertCenter);
+		        feederKWValue.setCenter(valueTextHorzCenter,textVertCenter);
 		        feederKWValue.setPointID(currentFeeder.getCurrentWattLoadPointID().intValue());
-		        feederKWValue.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+		        feederKWValue.setDisplayAttribs(PointAttributes.VALUE);
 		        feederKWValue.setFont(DEFAULT_FONT);
 		        feederKWValue.setPaint(Color.GREEN);
 		        graph.add(feederKWValue);
@@ -298,16 +303,23 @@ public class CCOneLineGenerator {
 					double capBankPosition = feederVertLineStart+(capBankSpacing*(((double)j)+1.0));
 					CapBankDevice currentCapBank = (CapBankDevice)capBankVector.get(j);
 					StateImage stateImage = new StateImage();
-					stateImage.setCenter(feederPosition,capBankPosition);
 					stateImage.setPointID(currentCapBank.getStatusPointID().intValue());
-					//stateImage.setLinkTo("capbankmanualchange.html");
 					graph.add(stateImage);
+					DrawingUpdater updater = new DrawingUpdater(d);
+					updater.updateDrawing();
+					stateImage.setCenter(feederPosition,capBankPosition);
+					//stateImage.setLinkTo("capbankmanualchange.html");
 				}
 			}
 		}
-		d.save("c:/Work_Files/test.jlx");
+		
+		return d;
+		/*		
+		String dirAndFile = "c:/Work_Files/";
+		dirAndFile = dirAndFile.concat(subBus.getCcName().trim());
+		dirAndFile = dirAndFile.concat(".jlx");
+		d.exportAs(dirAndFile);
 
-/*		
 		StaticText staticText = new StaticText();
 		staticText.setCenter(300.0,80.0);
 		staticText.setFont(DEFAULT_FONT);
@@ -324,7 +336,7 @@ public class CCOneLineGenerator {
 		DynamicText dynamicText = new DynamicText();
 		dynamicText.setCenter(400.0,95.0);
 		dynamicText.setPointID(146);
-		dynamicText.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
+		dynamicText.setDisplayAttribs(PointAttributes.VALUE);
 		dynamicText.setFont(DEFAULT_FONT);
 		dynamicText.setPaint(Color.PINK);		
 		dynamicText.setLinkTo("anotherpage.html");		
