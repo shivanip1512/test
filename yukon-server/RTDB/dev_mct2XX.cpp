@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/03/19 20:33:50 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/04/14 00:47:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,6 +115,12 @@ bool CtiDeviceMCT2XX::initCommandStore()
     cs._io      = IO_WRITE | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT_TSyncPos,
                              (int)MCT_TSyncLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_UniqueAddr;
+    cs._io      = IO_WRITE | Q_ARMC;
+    cs._funcLen = make_pair((int)MCT2XX_UniqAddrPos,
+                            (int)MCT2XX_UniqAddrLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/02/20 20:12:34 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/04/14 00:47:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,6 +97,12 @@ bool CtiDeviceMCT310::initCommandStore( )
     cs._io      = IO_READ;
     cs._funcLen = make_pair((int)MCT3XX_GroupAddrPos,
                             (int)MCT3XX_GroupAddrLen);
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_UniqueAddr;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair((int)MCT3XX_UniqAddrPos,
+                            (int)MCT3XX_UniqAddrLen);
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
