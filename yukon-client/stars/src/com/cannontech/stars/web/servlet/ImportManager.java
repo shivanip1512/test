@@ -1117,8 +1117,8 @@ public class ImportManager extends HttpServlet {
 	}
 	
 	/**
-	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID).
-	 * The ApplianceCategoryID and GroupID are optional, set them to -1 if you don't want to privide the value.
+	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID, LoadNumber).
+	 * The ApplianceCategoryID, GroupID, and LoadNumber are optional, set them to -1 if you don't want to privide the value.
 	 * @param liteInv The hardware the programs are attached to
 	 */
 	public static void programSignUp(int[][] programs, LiteStarsCustAccountInformation liteAcctInfo,
@@ -1133,6 +1133,8 @@ public class ImportManager extends HttpServlet {
 				suProg.setApplianceCategoryID( programs[i][1] );
 			if (programs[i][2] != -1)
 				suProg.setAddressingGroupID( programs[i][2] );
+			if (programs[i][3] != -1)
+				suProg.setLoadNumber( programs[i][3] );
 			suPrograms.addSULMProgram( suProg );
 		}
 		
