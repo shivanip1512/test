@@ -758,18 +758,20 @@ BOOL CtiLMProgramBase::isAvailableToday()
 {
     BOOL returnBool = TRUE;
 
-    RWTime now;
+   RWTime now;
     struct tm start_tm;
 
     now.extract(&start_tm);
 
-    if( _availableweekdays(start_tm.tm_wday) == 'N' ||
-        ( _availableweekdays(7) == 'N' && CtiHolidayManager::getInstance().isHoliday(getHolidayScheduleId()) ) ||
-	CtiSeasonManager::getInstance().isInSeason(RWDate(), getSeasonScheduleId()) )
+    bool is_holiday = CtiHolidayManager::getInstance().isHoliday(getHolidayScheduleId());
+    
+    if( (is_holiday &&_availableweekdays(7) == 'E') || //exclude
+        (_availableweekdays(start_tm.tm_wday) == 'N' && !(is_holiday && _availableweekdays(7) == 'F')) ||
+	  !CtiSeasonManager::getInstance().isInSeason(RWDate(), getSeasonScheduleId()) )
     {
         returnBool = FALSE;
     }
-
+    
     return returnBool;
 }
 
