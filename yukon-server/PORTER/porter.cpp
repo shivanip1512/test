@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2003/09/12 02:42:34 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2003/09/22 15:38:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -461,7 +461,7 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime()<< " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " Port Queue Entries:  " << QueEntCnt << endl;
+            dout << RWTime()<< " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " Port Queue Entries:  " << QueEntCnt;
 
             if(ptPort->getConnectedDevice())
             {
