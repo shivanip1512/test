@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/05/23 22:17:26 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/08/22 21:43:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -192,7 +192,7 @@ INT CtiDeviceBase::RefreshDevicePoints()
 
     if(_pointMgr != NULL)
     {
-        _pointMgr->RefreshListByPaoID( getID() );
+        _pointMgr->refreshList(isPoint, NULL, 0, getID());
     }
     else
     {

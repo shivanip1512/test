@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctpnt.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/22 21:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ DLLEXPORT BOOL isPointOnDeviceID(CtiPoint *pMemoryPoint, void* d)
    return bRet;
 }
 
-DLLEXPORT BOOL isPoint(CtiPoint *pMemoryPoint, void* d)
+DLLEXPORT BOOL isPoint(CtiPoint *pSp, void* d)
 {
    return TRUE;
 }
@@ -92,13 +92,6 @@ DLLEXPORT BOOL isAccumPoint(CtiPoint* pSp, void *arg)
    {
       bRet = TRUE;
    }
-
-   return bRet;
-}
-
-DLLEXPORT BOOL isAPoint(CtiPointBase* pSp, void *arg)
-{
-   BOOL bRet = TRUE;
 
    return bRet;
 }

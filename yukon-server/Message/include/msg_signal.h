@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/08/19 13:58:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/08/22 21:43:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ protected:
    unsigned    _tags;               // Alarm states;.. Bit field frome pointdefs.h
    RWCString   _user;               // Who caused this to happen?
 
-   unsigned    _condition;          // This is the alarm condition represented by this message
+   int         _condition;          // This is the alarm condition represented by this message
 
 
    unsigned    _logid;              // LogID in the systemlog... Zero when not in use or unknown.  No streaming.
@@ -73,8 +73,8 @@ public:
    unsigned getSignalCategory() const;
    CtiSignalMsg& setSignalCategory(const unsigned cls);
 
-   unsigned getCondition() const;
-   CtiSignalMsg& setCondition(const unsigned cls);
+   int getCondition() const;
+   CtiSignalMsg& setCondition(const int cls);
 
    unsigned getTags() const;
    CtiSignalMsg& setTags(const unsigned s);

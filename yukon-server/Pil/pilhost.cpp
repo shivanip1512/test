@@ -73,7 +73,7 @@ int main(int argc, char **argv)
       }
 
       RteMgr.RefreshList();
-      DevMgr.RefreshList();
+      DevMgr.refresh();
 
       /* Make routes associate with devices */
       attachRouteManagerToDevices(&DevMgr, &RteMgr);

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:07:53 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/22 21:43:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,55 +133,14 @@ void ApplyInitialDynamicConditions(const CtiHashKey *key, CtiPoint *&pTempPoint,
     return;
 }
 
-void CtiPointClientManager::RefreshPoint(LONG pointID)
-{
-    LockGuard  guard(monitor());
 
-    Inherited::RefreshPoint(pointID);   // Load Points on PAO!
-
-    CtiRTDBIterator itr(Map);
-
-    CtiPoint *pTempPoint = Map.findValue(&CtiHashKey(pointID));
-
-    if(pTempPoint)
-    {
-        verifyInitialDynamicData(pTempPoint);
-
-        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
-
-        if(pDyn != NULL)
-        {
-            if(pDyn->getDispatch().getUpdatedFlag() == FALSE)
-            {
-                RefreshDynamicData(pointID);
-
-                if( pDyn->getDispatch().Insert().errorCode() != RWDBStatus::ok )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unable to insert dynamicpointdata for " << pTempPoint->getName() << endl;
-                    }
-                }
-                pDyn->getDispatch().setUpdatedFlag();
-            }
-
-            if(pDyn->getDispatch().isDirty())
-            {
-                storeDirtyRecords();
-            }
-        }
-    }
-}
-
-
-void CtiPointClientManager::RefreshList(BOOL (*testFunc)(CtiPoint*,void*), void *arg)
+void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint*,void*), void *arg, LONG pntID, LONG paoID)
 {
     CtiPoint *pTempPoint = NULL;
 
     LockGuard  guard(monitor());
 
-    Inherited::RefreshList(testFunc, arg);                              // Load all points in the system
+    Inherited::refreshList(testFunc, arg, pntID, paoID);                // Load all points in the system
     Inherited::getMap().apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
     if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL)) != NULL) // If there is at least one nonupdated dynamic entry.
     {

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/06/10 20:57:33 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/08/22 21:43:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,7 +150,7 @@ void main(int argc, char **argv)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Loading points...." << endl;
             }
-            PointMgr.RefreshList();     // This should give me all the points in the box.
+            PointMgr.refreshList();     // This should give me all the points in the box.
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " .... Done" << endl;

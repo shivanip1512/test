@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/08/18 15:22:19 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/08/22 21:43:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2020,3 +2020,10 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
     return status;
 }
+
+INT CtiDeviceWelco::RefreshDevicePoints()
+{
+    setDeadbandsSent(false);                    // Make them go again on next general scan!!
+    return Inherited::RefreshDevicePoints();
+}
+

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:36:06 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/08/22 21:43:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -273,16 +273,24 @@ bool CtiPointNumeric::limitStateCheck( const int limitOrState, double val, int &
 {
    direction = LIMIT_IN_RANGE;          // This indicates that
 
-   if( val < getLowLimit(limitOrState) )
+   if(getLowLimit(limitOrState) >= getHighLimit(limitOrState))
    {
-      // Lo limit has been breached!
-      direction = LIMIT_EXCEEDS_LO;
+       direction = LIMIT_SETUP_ERROR;
    }
-   else if( getHighLimit(limitOrState) < val )
+   else
    {
-      // Hi limit has been breached!
-      direction = LIMIT_EXCEEDS_HI;
+       if( val < getLowLimit(limitOrState) )
+       {
+          // Lo limit has been breached!
+          direction = LIMIT_EXCEEDS_LO;
+       }
+       else if( getHighLimit(limitOrState) < val )
+       {
+          // Hi limit has been breached!
+           direction = LIMIT_EXCEEDS_HI;
+       }
    }
+
 
    return (direction != LIMIT_IN_RANGE);
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:02 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/22 21:43:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ void main(int argc, char** argv)
 
     for(int i = 0 ; i < cnt; i++)
     {
-        Manager.RefreshList(DeviceFactory);
+        Manager.refresh();
 
         DebugLevel = origDBL;
 

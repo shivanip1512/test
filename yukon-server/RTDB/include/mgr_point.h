@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/08/19 13:57:29 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/08/22 21:43:31 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -43,27 +43,21 @@ private:
 
     // RWDBConnection conn;
 
-    void RefreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-    void RefreshPointLimits(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-    void RefreshCalcElements(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-    void RefreshAlarming(bool &rowFound, LONG pid = 0);
+    void refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
+
+
+    // These are properties of already collected points.
+    void refreshPointProperties(LONG pntID = 0, LONG paoID = 0);
+    void refreshPointLimits(LONG pntID = 0, LONG paoID = 0);
+    void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
 
 public:
+
     CtiPointManager();
     virtual ~CtiPointManager();
 
 
-    virtual void RefreshList(BOOL (*fn)(CtiPointBase*,void*) = isAPoint, void *d = NULL);
-
-    /*
-     *  Reloads point with this pointid.
-     */
-    void RefreshPoint(LONG pointID);
-
-    /*
-     *  Reloads all points with this paoid as their owning object.
-     */
-    void RefreshListByPaoID( LONG paoID );
+    virtual void refreshList(BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
 
     virtual void DumpList(void);
     virtual void DeleteList(void);

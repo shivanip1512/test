@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/slctpnt.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/22 21:43:31 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,5 @@ IM_EX_PNTDB BOOL isAccumPoint(CtiPoint*,void*);
 IM_EX_PNTDB BOOL isCalcPoint(CtiPoint*,void*);
 
 IM_EX_PNTDB BOOL isPointEqual(CtiPoint* pSp, void *arg);
-IM_EX_PNTDB BOOL isAPoint(CtiPoint* pSp, void *arg);
 
 #endif // #ifndef __SLCTPNT_H__

@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.15 $
- * DATE         :  $Date: 2003/08/05 12:56:46 $
+ * REVISION     :  $Revision: 1.16 $
+ * DATE         :  $Date: 2003/08/22 21:43:31 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -42,13 +42,17 @@ private:
 
    // Inherit "List" from Parent
 
-   void RefreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &));
+   void refreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &));
    // void RefreshDeviceRoute(LONG id = 0);
-   void RefreshScanRates(LONG id = 0);
-   void RefreshDeviceWindows(LONG id = 0);
+   void refreshScanRates(LONG id = 0);
+   void refreshDeviceWindows(LONG id = 0);
 
    void refreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL, LONG paoID = 0);
    bool refreshDeviceByPao(CtiDeviceBase *&pDev, LONG paoID);
+   void refreshExclusions(LONG id = 0);
+   void refreshIONMeterGroups(LONG paoID = 0);
+   void refreshMacroSubdevices(LONG paoID = 0);
+   void refreshDeviceProperties(LONG paoID = 0);
 
 
 public:
@@ -65,17 +69,11 @@ public:
    CtiDeviceBase* RemoteGetEqual(LONG Remote);
    CtiDeviceBase* RemoteGetEqualbyName (const RWCString &RemoteName);
 
-   // Deprecated
-   void RefreshList(LONG paoID, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
-   void RefreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceBase*,void*) = isNotADevice, void *d = NULL);
-
    void setIncludeScanInfo();
    void resetIncludeScanInfo();
 
    bool mayDeviceExecuteExclusionFree(CtiDeviceBase *anxiousDevice, CtiTablePaoExclusion &deviceexclusion);
    bool removeDeviceExclusionBlocks(CtiDeviceBase *anxiousDevice);
-   void refreshExclusions(LONG id = 0);
-   void refreshIONMeterGroups(LONG paoID);
 
 };
 

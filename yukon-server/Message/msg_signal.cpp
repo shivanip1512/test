@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/08/19 13:58:45 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/08/22 21:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -155,7 +155,7 @@ CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, in
    _text(text),
    _additional(addl),
    _tags(tag),
-   _condition(0),
+   _condition(-1),
    _logid(0)
 {
    Inherited::setSOE(soe);
@@ -188,12 +188,12 @@ CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
    return *this;
 }
 
-unsigned CtiSignalMsg::getCondition() const
+int CtiSignalMsg::getCondition() const
 {
     return _condition;
 }
 
-CtiSignalMsg& CtiSignalMsg::setCondition(const unsigned cnd)
+CtiSignalMsg& CtiSignalMsg::setCondition(const int cnd)
 {
     _condition = cnd;
     return *this;

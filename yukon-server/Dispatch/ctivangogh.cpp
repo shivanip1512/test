@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2003/08/19 19:34:26 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2003/08/22 21:43:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -646,16 +646,30 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 if( !pPt->getAlarming().getNotifyOnAcknowledge() )
                                 {
-                                    pSigNew->setSignalCategory(SignalEvent);    // Don't want this to be another alarm..
+                                    pSigNew->setMessageTime( Cmd->getMessageTime() );
                                 }
 
                                 pSigNew->setMessagePriority( 15 );   // Max this out we want it to hurry.
                             }
 
                             // Mark it if there are other alarms on the point.
-                            UINT amask = _signalManager.getAlarmMask(pid);
-                            pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                            pDyn->getDispatch().setTags( amask );   // Mark it if there are other alarms on the point.
+                            UINT premask    = pDyn->getDispatch().getTags( ) & MASK_ANY_ALARM;
+                            UINT amask      = _signalManager.getAlarmMask(pid);
+
+                            if(premask != amask)
+                            {
+                                // Adjust the point tags to reflect the potentially new state of the alarm tags.
+                                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+                                pDyn->getDispatch().setTags( amask );
+
+                                // Hey fool you need to send out tags now!
+                                CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPt->getID(), Cmd->getSOE(), "Tag Update");
+                                pTagSig->setMessagePriority(15);
+                                pTagSig->setUser(Cmd->getUser());
+                                pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+                                postMessageToClients(pTagSig);
+                                delete pTagSig;
+                            }
 
                             if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                             {
@@ -672,14 +686,8 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     if(pSigNew != NULL)
                     {
                         // Make sure that anyone who cared about the first one gets the CTIDBG_new state of the tag!
-
-                        #if 1
                         postMessageToClients(pSigNew);
                         _signalMsgQueue.putQueue(pSigNew);
-                        #else
-                        MainQueue_.putQueue( pSigNew );
-                        #endif
-
                         pSigNew = 0;
                     }
                 }
@@ -2887,19 +2895,11 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap)
                     tagSignalAsAlarm(point, pSig, alarm);
                     aWrap.getMulti()->insert( pSig );
                 }
-                else if(!_signalManager.isAlarmActive(point.getID(), alarm))
-                {
-                    reactivatePointAlarm(alarm, aWrap, point, pDyn);
-                }
 
                 CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point.getID(), pDyn->getValue(), pDyn->getQuality(), point.getType(), "Non Updated", pDyn->getDispatch().getTags());
                 pDat->setTime(pDyn->getTimeStamp());
 
                 aWrap.getMulti()->insert( pDat );
-            }
-            else
-            {
-                deactivatePointAlarm(alarm,aWrap,point,pDyn);
             }
         }
 
@@ -3137,6 +3137,10 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                     {
                     case (CtiTablePointAlarming::nonUpdatedStatus):
                         {
+                            if(pDyn->getQuality() != NonUpdatedQuality)
+                            {
+                                deactivatePointAlarm(alarm,aWrap,point,pDyn);
+                            }
                             break;
                         }
                     case (CtiTablePointAlarming::abnormal):
@@ -3150,7 +3154,6 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                         }
                     case (CtiTablePointAlarming::commandFailure): // ANALOG CASE -> case (CtiTablePointAlarming::rateOfChange):
                         {
-                            // FIX FIX FIX 081603 CGP.... Does an alarm happen here???
                             checkStatusCommandFail(alarm, pData, aWrap, point, pDyn, pSig );
                             break;
                         }
@@ -3278,9 +3281,15 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                         checkNumericLimits( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
                         break;
                     }
+                case (CtiTablePointAlarming::nonUpdatedNumeric):    // alarm generated by commandMsgUpdateFailedHandler().
+                    {
+                        if(pDyn->getQuality() != NonUpdatedQuality)
+                        {
+                            deactivatePointAlarm(alarm,aWrap,point,pDyn);
+                        }
+                    }
                 case (CtiTablePointAlarming::highReasonability):    // These conditions must be evaluated prior to the for loop.  The may modify pData.
                 case (CtiTablePointAlarming::lowReasonability):     // These conditions must be evaluated prior to the for loop.  The may modify pData.
-                case (CtiTablePointAlarming::nonUpdatedNumeric):    // alarm generated by commandMsgUpdateFailedHandler().
                 default:
                     {
                         break;
@@ -3928,7 +3937,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 {
                     if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
-                        PointMgr.RefreshPoint(pChg->getId());
+                        PointMgr.refreshList(isPoint, NULL, pChg->getId());
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
@@ -3936,7 +3945,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
                     else
                     {
-                        PointMgr.RefreshList(isPoint);
+                        PointMgr.refreshList(isPoint);
                     }
                 }
                 else
@@ -4569,6 +4578,14 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
 
                     pDyn->getDispatch().resetTags(tagmask);
                     pDyn->getDispatch().setTags(newpttags);
+
+                    {
+                        CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Tag Update");
+                        pTagSig->setMessagePriority(15);
+                        pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
+                        postMessageToClients(pTagSig);
+                        delete pTagSig;
+                    }
                 }
             }
         }
@@ -5551,6 +5568,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
     CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
     dbChange->setUser(user);
     dbChange->setSource(DISPATCH_APPLICATION_NAME);
+    dbChange->setMessagePriority(15);
     Multi.insert(dbChange);
 
     return status;
@@ -5987,10 +6005,16 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", statelimit+1, val, pointNumeric.getLowLimit(statelimit));
                     text = RWCString(tstr);
                 }
-                else if(LIMIT_EXCEEDS_HI)
+                else if(exceeds == LIMIT_EXCEEDS_HI)
                 {
                     char tstr[120];
                     _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", statelimit+1, val, pointNumeric.getHighLimit(statelimit));
+                    text = RWCString(tstr);
+                }
+                else if(exceeds == LIMIT_SETUP_ERROR)
+                {
+                    char tstr[120];
+                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", statelimit+1, pointNumeric.getLowLimit(statelimit), val, pointNumeric.getHighLimit(statelimit));
                     text = RWCString(tstr);
                 }
                 else
@@ -6393,7 +6417,7 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
 
         aWrap.getMulti()->insert( pSigActive );
         pSigActive = 0;
@@ -6409,7 +6433,7 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
         pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS );
 
         aWrap.getMulti()->insert( pSigActive );
         pSigActive = 0;

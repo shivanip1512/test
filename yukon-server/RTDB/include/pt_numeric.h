@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/08/22 21:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,9 @@
 #include "tbl_pt_limit.h"
 
 #define  LIMIT_IN_RANGE    0
-#define  LIMIT_EXCEEDS_LO  -1
-#define  LIMIT_EXCEEDS_HI  1
+#define  LIMIT_EXCEEDS_LO  1
+#define  LIMIT_EXCEEDS_HI  2
+#define  LIMIT_SETUP_ERROR 3
 
 
 class IM_EX_PNTDB CtiPointNumeric : public CtiPointBase
