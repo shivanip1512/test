@@ -5,6 +5,7 @@ import java.util.Iterator;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
+import com.cannontech.database.data.lite.LitePointUnit;
 /**
  * Insert the type's description here.
  * Creation date: (3/26/2001 9:40:33 AM)
@@ -146,4 +147,18 @@ public static LitePoint[] getLitePointsByUOMID(int[] uomIDs)
 		return null;
 	}
 
+	public static LitePointUnit getPointUnit(int pointID) {
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) {
+			Iterator iter = cache.getAllPointsUnits().iterator();
+			while(iter.hasNext()) {
+				LitePointUnit lpu = (LitePointUnit) iter.next();
+				if( lpu.getPointID() == pointID ) {
+					return lpu;
+				}
+			}
+		}
+		return null;
+	}
 }
