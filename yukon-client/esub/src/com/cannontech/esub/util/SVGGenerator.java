@@ -147,11 +147,7 @@ public class SVGGenerator {
 			if( comp instanceof CurrentAlarmsTable ) {
 				elem = createAlarmsTable(doc, (CurrentAlarmsTable) comp);
 			}	
-			
-			//if(elem != null)	
-				//elem.setAttributeNS(null,"onclick","refreshDrawing()");
-			
-			//	elem.setAttributeNS(null,"onclick","editValue()");
+				
 			if( comp instanceof DrawingElement ) {
 				DrawingElement de = (DrawingElement) comp;
 				String link = de.getLinkTo();
@@ -167,12 +163,6 @@ public class SVGGenerator {
 		return elem;
 	}
 	
-	/*private Element createLink(SVGDocument doc, DrawingElement elem) {
-		Element linkElem = doc.createElementNS(svgNS, "a");
-		linkElem.setAttributeNS(null, "xlink:href", elem.getLinkTo());
-		return linkElem;		
-	}
-	*/
 	private Element createDynamicText(SVGDocument doc, DynamicText text)  {
 		//Ignore stroke color for now, always use fill color
 		//could become a problem, pay attention
@@ -214,31 +204,7 @@ public class SVGGenerator {
 	}
 
 	private Element createRectangle(SVGDocument doc, LxRectangle rect) {
-		/*LxAbstractStyle style = rect.getStyle();
-		Color strokeColor = style.getLineColor();
-		Color fillColor = (Color) style.getPaint();
 		
-		Rectangle2D r = rect.getStrokedBounds2D();
-		rect.getSh
-		int x = (int) r.getMinX() + 5; // fudge factor !
-		int y = (int) r.getMinY() + 5;
-		
-		int width = (int) r.getMaxX() - x - 4;
-		int height = (int) r.getMaxY() - y - 4;
-			
-		String fillStr = "none";
-		if( fillColor != null ) {
-			fillStr = "rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ")";
-		}
-		
-		Element rectElem = doc.createElementNS(svgNS, "rect");
-		rectElem.setAttributeNS(null, "id", rect.getName());
-		rectElem.setAttributeNS(null, "x", Integer.toString(x));
-		rectElem.setAttributeNS(null, "y", Integer.toString(y));
-		rectElem.setAttributeNS(null, "width", Integer.toString(width));
-		rectElem.setAttributeNS(null, "height", Integer.toString(height));
-		rectElem.setAttributeNS(null, "style", "fill:" + fillStr + ";stroke:rgb(" + strokeColor.getRed() + "," + strokeColor.getGreen() + "," + strokeColor.getBlue() + "); stroke-width:1.0");
-		*/
 		Color c = rect.getStyle().getLineColor();
 		Shape[] s = rect.getShape();
 		float opacity = rect.getStyle().getTransparency();
@@ -272,17 +238,12 @@ public class SVGGenerator {
 		lineElem.setAttributeNS(null, "id", line.getName());
 		lineElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
 		lineElem.setAttributeNS(null, "d", pathStr);
-	/*NamedNodeMap nnm = lineElem.getAttributes();
-	for(int i = 0; i < nnm.getLength(); i++ ) {
-		Node n = nnm.item(i);
-	n.getN
-	}*/
+
 		return lineElem;		
 	}
 	
 	private Element createDynamicGraph(SVGDocument doc, DynamicGraphElement graph) {
 			
-		//Rectangle2D r = graph.getStrokedBounds2D();
 		Rectangle2D r = graph.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
@@ -347,18 +308,10 @@ public class SVGGenerator {
 		int height = (int) r.getMaxY() - y;
 
 		String imgName = "X.gif";		
-		/*LiteState ls = img.getCurrentState();
-
-		if( ls != null ) {
-			LiteYukonImage lyi = YukonImageFuncs.getLiteYukonImage(ls.getImageID());			
-			if( lyi != null ) {
-				imgName = lyi.getImageName();
-			}
-		}*/
 
 		Element imgElem = doc.createElementNS(svgNS, "image");
 		imgElem.setAttributeNS(null, "id", Integer.toString(img.getPoint().getPointID()));
-		imgElem.setAttributeNS(null, "xlink:href", "X.gif"/*imgName*/);
+		imgElem.setAttributeNS(null, "xlink:href", imgName);
 		imgElem.setAttributeNS(null, "x", Integer.toString(x));
 		imgElem.setAttributeNS(null, "y", Integer.toString(y));
 		imgElem.setAttributeNS(null, "width", Integer.toString(width));
@@ -401,7 +354,7 @@ public class SVGGenerator {
 	}
 	
 	private Element createAlarmsTable(SVGDocument doc, CurrentAlarmsTable table) {
-		Rectangle2D r = table.getStrokedBounds2D();
+		Rectangle2D r = table.getBounds2D();
 		int x = (int) r.getMinX();
 		int y = (int) r.getMinY();
 
@@ -414,7 +367,6 @@ public class SVGGenerator {
 		Element retElement = null;
 				
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
-		//table.getTable().draw(svgGenerator,new Rectangle(width,height));
 		retElement = svgGenerator.getRoot();
 				
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
@@ -440,11 +392,9 @@ public class SVGGenerator {
 			retElement.appendChild(text);
 		}
 		
-		return retElement;
-		
+		return retElement;		
 	}
-		
-		
+			
 	/**
 	 * Builds up a svg path string given a shape and the center of the element.
 	 * @param s
