@@ -11,6 +11,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
@@ -28,7 +29,10 @@ public class YC
 	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
 	public final String DEFAULT_FILENAME = "default";	//serial number file name
 	public final String COLLECTION_GROUP_FILENAME = "CollectionGroup";	//serial number file name
+	public final String CICUSTOMER_FILENAME = "CICustomer";	//serial number file name
+
 	private String commandFileName = "commandFile";	//current command file, init only to NOT have null value
+	private String commandFileExt = ".txt";	//the extension used for command files.
 	
 	private String command;	//holds the current Command to execute
 	private String serialNumber;	// currently selected serial number (from tree or box)
@@ -323,7 +327,10 @@ public class YC
 		String command = getCommand();
 	
 		if ( DeviceTypesFuncs.isMCT(type) || DeviceTypesFuncs.isRepeater(type))
-			setCommand( command + getQueueCommandString());
+		{
+			if( command.indexOf("noqueue") < 0)
+				setCommand( command + getQueueCommandString());
+		}
 	
 		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
@@ -515,30 +522,30 @@ public class YC
 	{
 		String className = DEFAULT_FILENAME;
 	
-		if (item.toString() == SERIALNUMBER_FILENAME  ||item.toString() == ALT_SERIALNUMBER_FILENAME)	//get serial number class name (constant var)
-		{
-			className = (String) item;
-		}
-		else if (item.toString() == DEFAULT_FILENAME )
-		{
-			className = (String) item;
-		}
-		else if( item instanceof DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+		if( item instanceof DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
 		{
 			className = ((DeviceBase)item).getPAOType();
+		}
+		else if( item instanceof CICustomerBase)	//		ModelFactory.CICUSTOMER
+		{
+			className = CICUSTOMER_FILENAME;
 		}
 		else if(item instanceof DeviceMeterGroupBase)//		ModelFactory.DEVICE_METERNUMBER,		
 		{
 			int devID = ((DeviceMeterGroupBase)item).getDeviceMeterGroup().getDeviceID().intValue();
 			LiteYukonPAObject litePao = DeviceFuncs.getLiteDevice(devID);
 			className = PAOGroups.getDeviceTypeString(litePao.getType());
-		}		
+		}
+		else if (item instanceof String)	//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
+		{
+			className = (String) item;
+		}
 		else 
 		{
 			CTILogger.debug("FILENAME: undefined. Item instance of " + item.getClass());
 			CTILogger.debug(" THIS IS REALLY A BAD CATCH ALL HUH");
 		}
-		commandFileName = className + ".txt";
+		commandFileName = className + getCommandFileExt();
 		CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ commandFileName);
 		keysAndValuesFile = new KeysAndValuesFile(getCommandFileDirectory(), commandFileName);
 	}
@@ -719,4 +726,12 @@ public class YC
 	{
 		return currentUserMessageID;
 	}
+	/**
+	 * @return
+	 */
+	public String getCommandFileExt()
+	{
+		return commandFileExt;
+	}
+
 }
