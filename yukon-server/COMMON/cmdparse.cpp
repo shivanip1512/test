@@ -1690,9 +1690,17 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 }
             }
         }
-        if(!(CmdStr.match("armc")).isNull())
+        if(!(CmdStr.match(" armc")).isNull())
         {
             _cmd["armc"] = CtiParseValue("TRUE");
+        }
+        if(!(CmdStr.match(" arml")).isNull())
+        {
+            _cmd["arml"] = CtiParseValue("TRUE");
+        }
+        if(!(CmdStr.match(" arms")).isNull())
+        {
+            _cmd["arms"] = CtiParseValue("TRUE");
         }
         if(!(CmdStr.match("raw")).isNull())
         {
