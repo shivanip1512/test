@@ -326,7 +326,9 @@ public class LCUtils
 		switch( col )
 		{
 			case GroupTableModel.GROUP_NAME:
-				return grpVal.getName();
+				return grpVal.getName() +
+						(grpVal.isRampingIn() ? " (RI)" : 
+						(grpVal.isRampingOut() ? " (RO)" : ""));
 
 			case GroupTableModel.GROUP_STATE:
 				if( grpVal.getDisableFlag().booleanValue() )

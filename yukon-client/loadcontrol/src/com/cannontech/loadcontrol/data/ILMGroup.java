@@ -28,4 +28,7 @@ public interface ILMGroup
 
 	public Integer getOrder();
 
+	public boolean isRampingIn();
+
+	public boolean isRampingOut();
 }

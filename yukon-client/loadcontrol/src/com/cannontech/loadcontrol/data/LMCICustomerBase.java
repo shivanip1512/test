@@ -3,7 +3,8 @@ package com.cannontech.loadcontrol.data;
 /**
  * @author aaron
  */
-public class LMCICustomerBase {
+public class LMCICustomerBase 
+{
 	private Long customerID;
 	private String companyName;
 	private Double customerDemandLevel;
@@ -129,6 +130,16 @@ public class LMCICustomerBase {
 	 */
 	public String toString() {
 		return getCompanyName();
+	}
+
+	public boolean isRampingIn()
+	{
+		return false;
+	}
+
+	public boolean isRampingOut()
+	{
+		return false;
 	}
 
 }
