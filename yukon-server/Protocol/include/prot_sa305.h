@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/11/17 23:42:38 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/14 22:25:16 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.5  2004/12/14 22:25:16  cplender
+* Various to wring out config commands.  Should be pretty good.
+*
 * Revision 1.4  2004/11/17 23:42:38  cplender
 * Complete 305 for RTC transmitter
 *
@@ -230,6 +233,7 @@ public:
     CtiProtocolSA305& setRTCResponse( bool bv = true ); // Should the RTC respond to commands.
 
     RWCString getBitString() const;
+    RWCString  asString() const;
 
 };
 #endif // #ifndef __PROT_SA305_H__

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/11/24 17:11:16 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/14 22:25:15 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.7  2004/12/14 22:25:15  cplender
+* Various to wring out config commands.  Should be pretty good.
+*
 * Revision 1.6  2004/11/24 17:11:16  cplender
 * Working on the configuration of SA receivers.
 *
@@ -63,7 +66,8 @@ _rateHierarchy(0),
 _priority(0),
 _strategy(0),
 _functions(0),
-_rtcResponse(0x00)
+_rtcResponse(0x00),
+_repetitions(0)
 {
 }
 
@@ -85,7 +89,8 @@ _rateHierarchy(0),
 _priority(0),
 _strategy(0),
 _functions(0),
-_rtcResponse(0x00)
+_rtcResponse(0x00),
+_repetitions(0)
 {
     *this = aRef;
 }
@@ -120,38 +125,42 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
         if(parse.isKeyValid("sa_restore"))
         {
             strategy = 61;
-            _repetitions = parse.getiValue("sa_reps", 1);
+            _repetitions = parse.getiValue("sa_reps", 0);
         }
         else
         {
             int shed_seconds = parse.getiValue("shed", 0);
             int cycle_percent = parse.getiValue("cycle",0);
             int cycle_period = parse.getiValue("cycle_period");
-            int cycle_count = parse.getiValue("cycle_count");
+            int cycle_count = parse.getiValue("cycle_count", 0);
 
             if(shed_seconds)
             {
+                int period_sec;
                 _percentageOff = 100.0;
                 if(shed_seconds < 6300)            // This is 450 seconds * 14 repeats!
                 {
                     _period = 7.5;
-                    _repetitions = shed_seconds / 450;
+                    period_sec = 450;
                 }
                 else if(shed_seconds < 16800)       // This is 900 seconds * 14 repeats
                 {
                     _period = 20.0;
-                    _repetitions = shed_seconds / 1200;
+                    period_sec = 1200;
                 }
                 else if(shed_seconds < 25200)
                 {
                     _period = 30.0;
-                    _repetitions = shed_seconds / 1800;
+                    period_sec = 1800;
                 }
                 else if(shed_seconds < 50400)
                 {
                     _period = 60.0;
-                    _repetitions = shed_seconds / 3600;
+                    period_sec = 3600;
                 }
+
+                _repetitions = shed_seconds / period_sec - ( shed_seconds % period_sec ? 0 : 1);
+                if(_repetitions < 0) _repetitions = 0;
             }
             else if(cycle_percent > 0)
             {
@@ -1299,4 +1308,12 @@ RWCString CtiProtocolSA305::getBitString() const
     return _bitStr;
 }
 
+RWCString  CtiProtocolSA305::asString() const
+{
+    RWCString rstr;
+
+    rstr += "SA 305 - code. ";
+
+    return rstr;
+}
 

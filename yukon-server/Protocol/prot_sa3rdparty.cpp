@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/12/08 21:20:47 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/12/14 22:25:16 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.19  2004/12/14 22:25:16  cplender
+* Various to wring out config commands.  Should be pretty good.
+*
 * Revision 1.18  2004/12/08 21:20:47  cplender
 * Worked on the address config code
 * Worked on the repeat count work.. 0 - 7 = 1 - 8.
@@ -189,7 +192,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
 
                     _sa._function = sac_address_config;
 
-                    strncpy(_sa._serial205, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.data(), 33);
 
                     for(int i = 1; i <= 6; i++)     // Look for each slot assignment and add a blurb for it!
                     {
@@ -223,9 +226,9 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
 
                     _sa._function = sac_toos;
 
-                    strncpy(_sa._serial205, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.data(), 33);
 
-                    tempOutOfService205(_sa._buffer, &_sa._bufferLen, _sa._serial205, parse.getiValue("sa_offtime",0), _sa._transmitterAddress);
+                    tempOutOfService205(_sa._buffer, &_sa._bufferLen, _sa._serial, parse.getiValue("sa_offtime",0), _sa._transmitterAddress);
 
                     _messageReady = true;
                 }
@@ -242,7 +245,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                     _sa._buffer[0] = '/0';
                     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
-                    strncpy(_sa._serial205, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.data(), 33);
 
                     int i, clsec, clpCount;
                     for(i = 1; i <= 4; i++)
@@ -259,7 +262,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                                 slog << " Calling coldLoadPickup205(). Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
                             }
 
-                            coldLoadPickup205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial205, i, clpCount, _sa._transmitterAddress);
+                            coldLoadPickup205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial, i, clpCount, _sa._transmitterAddress);
                             _messageReady = true;
 
                             totalLen += _sa._bufferLen;                     // What's been accumulated
@@ -282,7 +285,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                     _sa._buffer[0] = '/0';
                     _sa._bufferLen = MAX_SA_MSG_SIZE;
 
-                    strncpy(_sa._serial205, serialstr.data(), 33);
+                    strncpy(_sa._serial, serialstr.data(), 33);
 
                     int i, tdCount;
                     for(i = 1; i <= 4; i++)
@@ -297,7 +300,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
                                 slog << " Calling tamperDetect205(). Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
                             }
 
-                            if(!tamperDetect205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial205, i, tdCount, _sa._transmitterAddress))
+                            if(!tamperDetect205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial, i, tdCount, _sa._transmitterAddress))
                             {
                                 _messageReady = true;
 
@@ -559,7 +562,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial205, slot, _sa._codeSimple, _sa._transmitterAddress);
+                retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial, slot, _sa._codeSimple, _sa._transmitterAddress);
                 dout << RWTime() << " config205() complete" << endl;
             }
             break;
@@ -601,12 +604,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
     // We only try to predict it if it has not already been fully identified for us.
     if(parse.isKeyValid("sa_restore"))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        _sa._repeats = parse.getiValue("sa_reps", 1);
+        _sa._repeats = parse.getiValue("sa_reps", 0);
         _sa._swTimeout = 450;
         _sa._cycleTime = 450;
         _sTime = 0;
@@ -1280,12 +1278,21 @@ void CtiProtocolSA3rdParty::getBuffer(BYTE *dest, ULONG &len) const
  *  len is both input and output.  It is assumed to indicate the current length of the dest buffer
  *  additional bytes shall be appended.
  */
-void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(BYTE *dest, ULONG &len) const
+void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(int transmitter,
+                                                         BYTE *dest,
+                                                         ULONG &len,
+                                                         BYTE delayToTx,
+                                                         BYTE maxTx,
+                                                         BYTE lbtMode)
 {
     int i = len;
     BYTE crc = 0;
 
-    BYTE maxTx = 0x3f;
+    _sa._transmitterAddress = transmitter;
+    _sa._delayToTx = delayToTx;
+    _sa._maxTxTime = maxTx;
+    _sa._lbt = lbtMode;
+
 
     dest[i] = 0xa0 | (_sa._transmitterAddress & 0x0f);
     crc ^= dest[i++];                                     // Compute CRC and advance i.
@@ -1345,13 +1352,6 @@ CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::setSAData(const CtiSAData &sa)
 }
 
 
-RWCString CtiProtocolSA3rdParty::decomposeMessage(BYTE *buf) const
-{
-    RWCString rstr;
-
-    return rstr;
-}
-
 RWCString CtiProtocolSA3rdParty::asString() const
 {
     RWCString rstr;
@@ -1360,7 +1360,7 @@ RWCString CtiProtocolSA3rdParty::asString() const
     {
     case PutConfigRequest:
         {
-            rstr += "SA 205 - config. Serial " + RWCString(_sa._serial205) + " - " + strategyAsString();
+            rstr += "SA 205 - config. Serial " + RWCString(_sa._serial) + " - " + strategyAsString();
             break;
         }
     case ControlRequest:

@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/14 20:39:09 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/14 22:25:16 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.8  2004/12/14 22:25:16  cplender
+* Various to wring out config commands.  Should be pretty good.
+*
 * Revision 1.7  2004/10/14 20:39:09  cplender
 * Added config205 and tamper205 and coldLoad205 to the party.
 *
@@ -130,14 +133,13 @@ public:
     void copyMessage(RWCString &str) const;
 
     void getBuffer(BYTE *dest, ULONG &len) const;
-    void appendVariableLengthTimeSlot(BYTE *dest, ULONG &len) const;
+    void appendVariableLengthTimeSlot(int transmitter,BYTE *dest,ULONG &len, BYTE dlyToTx = 0, BYTE maxTx = 0, BYTE lbtMode = 0);
 
     INT getSABufferLen() const;
     CtiSAData getSAData() const;
     CtiProtocolSA3rdParty& setSAData(const CtiSAData &sa);
 
     RWCString asString() const;
-    RWCString decomposeMessage(BYTE *buf) const;
     RWCString strategyAsString() const;
     RWCString functionAsString() const;
 
