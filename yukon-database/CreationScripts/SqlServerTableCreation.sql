@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/20/2002 10:08:51 AM                       */
+/* Created on:     11/21/2002 11:39:27 AM                       */
 /*==============================================================*/
 
 
@@ -294,34 +294,6 @@ if exists (select 1
            where  id = object_id('CustomerContact')
             and   type = 'U')
    drop table CustomerContact
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CustomerLogin')
-            and   name  = 'Indx_CstLogUsIDNm'
-            and   indid > 0
-            and   indid < 255)
-   drop index CustomerLogin.Indx_CstLogUsIDNm
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CustomerLogin')
-            and   name  = 'Indx_CstLogPassword'
-            and   indid > 0
-            and   indid < 255)
-   drop index CustomerLogin.Indx_CstLogPassword
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerLogin')
-            and   type = 'U')
-   drop table CustomerLogin
 go
 
 
@@ -1162,34 +1134,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('OperatorLogin')
-            and   name  = 'Index_OpLogNam'
-            and   indid > 0
-            and   indid < 255)
-   drop index OperatorLogin.Index_OpLogNam
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('OperatorLogin')
-            and   name  = 'Indx_OpLogPassword'
-            and   indid > 0
-            and   indid < 255)
-   drop index OperatorLogin.Indx_OpLogPassword
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('OperatorLogin')
-            and   type = 'U')
-   drop table OperatorLogin
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('OperatorLoginGraphList')
             and   type = 'U')
@@ -1517,6 +1461,22 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('YukonGroup')
+            and   type = 'U')
+   drop table YukonGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonGroupRole')
+            and   type = 'U')
+   drop table YukonGroupRole
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('YukonImage')
             and   type = 'U')
    drop table YukonImage
@@ -1538,6 +1498,58 @@ if exists (select 1
            where  id = object_id('YukonPAObject')
             and   type = 'U')
    drop table YukonPAObject
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonRole')
+            and   name  = 'Indx_YukRol_Nm'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonRole.Indx_YukRol_Nm
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonRole')
+            and   type = 'U')
+   drop table YukonRole
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonUser')
+            and   name  = 'Indx_YkUsIDNm'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonUser.Indx_YkUsIDNm
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonUser')
+            and   type = 'U')
+   drop table YukonUser
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonUserGroup')
+            and   type = 'U')
+   drop table YukonUserGroup
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('YukonUserRole')
+            and   type = 'U')
+   drop table YukonUserRole
 go
 
 
@@ -1974,43 +1986,6 @@ go
 
 insert into CustomerContact(contactID, contFirstName, contLastName, contPhone1, contPhone2, locationID,loginID)
 values (-1,'(none)','(none)','(none)','(none)',0,-1)
-
-/*==============================================================*/
-/* Table : CustomerLogin                                        */
-/*==============================================================*/
-create table CustomerLogin (
-LogInID              numeric              not null,
-UserName             varchar(20)          not null,
-Password             varchar(20)          not null,
-LoginType            varchar(25)          not null,
-LoginCount           numeric              not null,
-LastLogin            datetime             not null,
-Status               varchar(20)          not null,
-constraint PK_CUSTOMERLOGIN primary key  (LogInID)
-)
-go
-
-
-insert into CustomerLogin(LogInID,UserName,Password,LoginType,LoginCount,LastLogin,Status)
-values (-1,'(none)','(none)','(none)',0,'01-JAN-1990', 'Disabled');
-
-/*==============================================================*/
-/* Index: Indx_CstLogUsIDNm                                     */
-/*==============================================================*/
-create unique  index Indx_CstLogUsIDNm on CustomerLogin (
-UserName
-)
-go
-
-
-/*==============================================================*/
-/* Index: Indx_CstLogPassword                                   */
-/*==============================================================*/
-create   index Indx_CstLogPassword on CustomerLogin (
-Password
-)
-go
-
 
 /*==============================================================*/
 /* Table : CustomerLoginSerialGroup                             */
@@ -3589,40 +3564,6 @@ go
 insert into NotificationRecipient values(0,'(none)','(none)',1,'(none)','N', 'EMAIL');
 
 /*==============================================================*/
-/* Table : OperatorLogin                                        */
-/*==============================================================*/
-create table OperatorLogin (
-LoginID              numeric              not null,
-Username             varchar(30)          not null,
-Password             varchar(20)          null,
-LoginType            varchar(20)          not null,
-LoginCount           numeric              not null,
-LastLogin            datetime             not null,
-Status               varchar(20)          not null,
-constraint PK_OPERATORLOGIN primary key  (LoginID)
-)
-go
-
-
-/*==============================================================*/
-/* Index: Index_OpLogNam                                        */
-/*==============================================================*/
-create unique  index Index_OpLogNam on OperatorLogin (
-Username
-)
-go
-
-
-/*==============================================================*/
-/* Index: Indx_OpLogPassword                                    */
-/*==============================================================*/
-create   index Indx_OpLogPassword on OperatorLogin (
-Password
-)
-go
-
-
-/*==============================================================*/
 /* Table : OperatorLoginGraphList                               */
 /*==============================================================*/
 create table OperatorLoginGraphList (
@@ -4235,6 +4176,66 @@ go
 
 
 /*==============================================================*/
+/* Table : YukonGroup                                           */
+/*==============================================================*/
+create table YukonGroup (
+GroupID              numeric              not null,
+GroupName            varchar(120)         not null,
+constraint PK_YUKONGROUP primary key  (GroupID)
+)
+go
+
+
+insert into YukonGroup values(-1,'default users');
+
+/*==============================================================*/
+/* Table : YukonGroupRole                                       */
+/*==============================================================*/
+create table YukonGroupRole (
+GroupID              numeric              not null,
+RoleID               numeric              not null,
+Value                varchar(1000)        not null,
+constraint PK_YUKONGROUPROLE primary key  (GroupID, RoleID)
+)
+go
+
+
+insert into YukonGroupRole values(-1,-1,'true');
+insert into YukonGroupRole values(-1,-2,'true');
+insert into YukonGroupRole values(-1,-3,'true');
+insert into YukonGroupRole values(-1,-4,'false');
+insert into YukonGroupRole values(-1,-5,'true');
+insert into YukonGroupRole values(-1,-6,'127.0.0.1');
+insert into YukonGroupRole values(-1,-7,'1510');
+insert into YukonGroupRole values(-1,-8,'128.0.0.1');
+insert into YukonGroupRole values(-1,-9,'1540');
+insert into YukonGroupRole values(-1,-10,'127.0.0.1');
+insert into YukonGroupRole values(-1,-11,'1900');
+insert into YukonGroupRole values(-1,-12,'127.0.0.1');
+insert into YukonGroupRole values(-1,-13,'1910');
+insert into YukonGroupRole values(-1,-14,'127.0.0.1');
+insert into YukonGroupRole values(-1,-15,'1920');
+insert into YukonGroupRole values(-1,-16,'00000000');
+insert into YukonGroupRole values(-1,-17,'00000CCC');
+insert into YukonGroupRole values(-1,-18,'ludicrous_speed');
+insert into YukonGroupRole values(-1,-19,'500');
+insert into YukonGroupRole values(-1,-20,'900');
+insert into YukonGroupRole values(-1,-21,'4');
+insert into YukonGroupRole values(-1,-22,'30');
+insert into YukonGroupRole values(-1,-23,'c:\yukon\client\webgraphs');
+insert into YukonGroupRole values(-1,-24,'900');
+insert into YukonGroupRole values(-1,-25,'4');
+insert into YukonGroupRole values(-1,-26,'2');
+insert into YukonGroupRole values(-1,-27,'amfm');
+insert into YukonGroupRole values(-1,-28,'1-254');
+insert into YukonGroupRole values(-1,-29,'00000000');
+insert into YukonGroupRole values(-1,-30,'CBC %PAOName%');
+insert into YukonGroupRole values(-1,-31,'false');
+insert into YukonGroupRole values(-1,-32,'c:\yukon\client\bin\BillingIn.txt');
+insert into YukonGroupRole values(-1,-33,'INFO');
+insert into YukonGroupRole values(-1,-34,'false');
+
+/*==============================================================*/
 /* Table : YukonImage                                           */
 /*==============================================================*/
 create table YukonImage (
@@ -4276,6 +4277,117 @@ Category,
 PAOName,
 PAOClass,
 Type
+)
+go
+
+
+/*==============================================================*/
+/* Table : YukonRole                                            */
+/*==============================================================*/
+create table YukonRole (
+RoleID               numeric              not null,
+RoleName             varchar(120)         not null,
+Category             varchar(60)          not null,
+DefaultValue         varchar(1000)        not null,
+constraint PK_YUKONROLE primary key  (RoleID)
+)
+go
+
+
+insert into YukonRole values(-1,'point_id_edit','Client','true');	
+insert into YukonRole values(-2,'dbeditor_core','Client','true');
+insert into YukonRole values(-3,'dbeditor_lm','Client','true');
+insert into YukonRole values(-4,'dbeditor_cap_control','Client','false');
+insert into YukonRole values(-5,'dbeditor_system','Client','true');
+insert into YukonRole values(-6,'dispatch_machine','Client','127.0.0.1');
+insert into YukonRole values(-7,'dispatch_port','Client','1510');
+insert into YukonRole values(-8,'porter_machine','Client','127.0.0.1');
+insert into YukonRole values(-9,'porter_port','Client','1540');
+insert into YukonRole values(-10,'macs_machine','Client','127.0.0.1');
+insert into YukonRole values(-11,'macs_port','Client','1900');
+insert into YukonRole values(-12,'cap_control_machine','Client','127.0.0.1');
+insert into YukonRole values(-13,'cap_control_port','Client','1910');
+insert into YukonRole values(-14,'loadcontrol_machine','Client','127.0.0.1');
+insert into YukonRole values(-15,'loadcontrol_port','Client','1920');
+insert into YukonRole values(-16,'loadcontrol_edit','Client','00000000');
+insert into YukonRole values(-17,'macs_edit','Client','00000CCC');
+insert into YukonRole values(-18,'tdc_express','Client','ludicrous_speed');
+insert into YukonRole values(-19,'tdc_max_rows','Client','500');
+insert into YukonRole values(-20,'calc_historical_interval','Client','900');
+insert into YukonRole values(-21,'calc_historical_baseline_calctime','Client','4');
+insert into YukonRole values(-22,'calc_historical_daysprevioustocollect','Client','30');
+insert into YukonRole values(-23,'webgraph_home_directory','Client','c:\yukon\client\webgraphs');
+insert into YukonRole values(-24,'webgraph_run_interval','Client','900');
+insert into YukonRole values(-25,'graph_edit_graphdefinition','Client','true');
+insert into YukonRole values(-26,'decimal_places','Client','2');
+insert into YukonRole values(-27,'CAP_CONTROL_INTERFACE','Client','amfm');
+insert into YukonRole values(-28,'utility_id_range','Client','1-254');
+insert into YukonRole values(-29,'tdc_rights','Client','00000000');
+insert into YukonRole values(-30,'cbc_creation_name','Client','CBC %PAOName%');
+insert into YukonRole values(-31,'billing_wiz_activate','Client','false'	);
+insert into YukonRole values(-32,'billing_input_file','Client','c:\yukon\client\bin\BillingIn.txt');
+insert into YukonRole values(-33,'client_log_level','Client','INFO');
+insert into YukonRole values(-34,'client_log_file','Client','false');
+
+insert into YukonRole values(-100,'WEB_USER','WebClient','(none)');
+insert into YukonRole values(-101,'WEB_OPERATOR','WebClient','(none)');
+
+/*==============================================================*/
+/* Index: Indx_YukRol_Nm                                        */
+/*==============================================================*/
+create   index Indx_YukRol_Nm on YukonRole (
+RoleName
+)
+go
+
+
+/*==============================================================*/
+/* Table : YukonUser                                            */
+/*==============================================================*/
+create table YukonUser (
+UserID               numeric              not null,
+UserName             varchar(64)          not null,
+Password             varchar(64)          not null,
+LoginCount           numeric              not null,
+LastLogin            datetime             not null,
+Status               varchar(20)          not null,
+constraint PK_YUKONUSER primary key  (UserID)
+)
+go
+
+
+insert into YukonUser values(-1,'yukon','yukon',0,'01-JAN-00','Enabled');
+
+/*==============================================================*/
+/* Index: Indx_YkUsIDNm                                         */
+/*==============================================================*/
+create unique  index Indx_YkUsIDNm on YukonUser (
+UserName
+)
+go
+
+
+/*==============================================================*/
+/* Table : YukonUserGroup                                       */
+/*==============================================================*/
+create table YukonUserGroup (
+UserID               numeric              not null,
+GroupID              numeric              not null,
+constraint PK_YUKONUSERGROUP primary key  (UserID, GroupID)
+)
+go
+
+
+insert into YukonUserGroup values(-1,-1);
+
+/*==============================================================*/
+/* Table : YukonUserRole                                        */
+/*==============================================================*/
+create table YukonUserRole (
+UserID               numeric              not null,
+RoleID               numeric              not null,
+Value                varchar(1000)        not null,
+constraint PK_YUKONUSERROLE primary key  (UserID, RoleID)
 )
 go
 
@@ -4550,7 +4662,7 @@ go
 
 alter table CustomerContact
    add constraint FK_RefCstLg_CustCont foreign key (LogInID)
-      references CustomerLogin (LogInID)
+      references YukonUser (UserID)
 go
 
 
@@ -4838,7 +4950,7 @@ go
 
 alter table CustomerLoginSerialGroup
    add constraint FK_CsLgSG_CsL foreign key (LoginID)
-      references CustomerLogin (LogInID)
+      references YukonUser (UserID)
 go
 
 
@@ -5030,25 +5142,25 @@ go
 
 alter table EnergyCompanyOperatorLoginList
    add constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
-      references OperatorLogin (LoginID)
+      references YukonUser (UserID)
 go
 
 
 alter table LMMACSScheduleOperatorList
    add constraint FK_OpLgLMMcSchOpLs foreign key (OperatorLoginID)
-      references OperatorLogin (LoginID)
+      references YukonUser (UserID)
 go
 
 
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
-      references OperatorLogin (LoginID)
+      references YukonUser (UserID)
 go
 
 
 alter table LMDirectOperatorList
    add constraint FK_OpLg_LMDOpLs foreign key (OperatorLoginID)
-      references OperatorLogin (LoginID)
+      references YukonUser (UserID)
 go
 
 
@@ -5060,7 +5172,7 @@ go
 
 alter table OperatorSerialGroup
    add constraint FK_OpSGrp_OpLg foreign key (LoginID)
-      references OperatorLogin (LoginID)
+      references YukonUser (UserID)
 go
 
 
@@ -5124,9 +5236,45 @@ alter table LMThermoStatGear
 go
 
 
+alter table YukonGroupRole
+   add constraint FK_YkGrRl_YkGr foreign key (GroupID)
+      references YukonGroup (GroupID)
+go
+
+
+alter table YukonGroupRole
+   add constraint FK_YkGrRl_YkRl foreign key (RoleID)
+      references YukonRole (RoleID)
+go
+
+
 alter table STATE
    add constraint FK_YkIm_St foreign key (ImageID)
       references YukonImage (ImageID)
+go
+
+
+alter table YukonUserGroup
+   add constraint FK_YkUsGr_YkGr foreign key (GroupID)
+      references YukonGroup (GroupID)
+go
+
+
+alter table YukonUserGroup
+   add constraint FK_YUK_REF__YUK foreign key (UserID)
+      references YukonUser (UserID)
+go
+
+
+alter table YukonUserRole
+   add constraint FK_YkUsRl_YkRl foreign key (RoleID)
+      references YukonRole (RoleID)
+go
+
+
+alter table YukonUserRole
+   add constraint FK_YkUsRlr_YkUs foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 
