@@ -345,7 +345,9 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "loadfactor", "false");
 		retElement.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
 		retElement.setAttributeNS(null, "period", graph.getDisplayPeriod());
-		retElement.setAttributeNS(null, "onclick", "updateGraphChange(evt)");
+		if(genOptions.isScriptingEnabled()) {
+			retElement.setAttributeNS(null, "onclick", "updateGraphChange(evt)");
+		}
 		
 		return retElement;
 	}
@@ -444,6 +446,7 @@ public class SVGGenerator {
 		Element retElement = null;
 				
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
+		table.getTable().draw(svgGenerator, new Rectangle(width, height));
 		retElement = svgGenerator.getRoot();
 				
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
@@ -454,8 +457,8 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "height", Integer.toString(height));			
 		retElement.setAttributeNS(null, "object", "table");
 		retElement.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
- 		retElement.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
-		
+ 		retElement.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID()));
+				
 		if(genOptions.isEditEnabled()) {
 			Element text = doc.createElementNS(svgNS,"text");
 			text.setAttributeNS(null, "fill","rgb(0,125,122)");
