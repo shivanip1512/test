@@ -343,18 +343,14 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
     RWCRExpr   re_kvarh("kvarh");
 
     RWCRExpr   re_demand("dema|kw( |$)|kvar( |$)|kva( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
-    RWCRExpr   re_frozen("froz");                             //     at the end of the string or with whitespace following
-    RWCRExpr   re_peak  ("peak");
-    RWCRExpr   re_minmax("minmax");
-    RWCRExpr   re_voltage("volt(age)?");
 
-    RWCRExpr   re_lp("lp +channel +[0-9]+( +[0-9]+[/-][0-9]+([/-][0-9]+)?)? +[0-9]+:[0-9]+");  //  matches date (optional) and time
+    //  getvalue lp channel 1 12/14/04 12:00
+    //  getvalue lp channel 1 8-13-2005 14:45
+    RWCRExpr   re_lp("lp +channel +[0-9]+ +[0-9]+[/-][0-9]+[/-][0-9]+ +[0-9]+:[0-9]+");
+    //  getvalue lp peak daily channel 2 9/30/04 30
+    //  getvalue lp peak hour channel 3 10-15-2003 15
+    RWCRExpr   re_lp_peak("lp +peak +(day|hour|interval) +channel +[0-9]+ +[0-9]+[/-][0-9]+[/-][0-9]+ +[0-9]+");
     RWCRExpr   re_outage("outage +[0-9]+");
-
-
-    RWCRExpr   re_powerfail("power");
-
-    RWCRExpr   re_update("upd");
 
     RWCRExpr   re_offset("off(set)? *[0-9]+");
 
@@ -418,19 +414,54 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
                 }
             }
         }
+        else if(CmdStr.contains(" lp "))
+        {
+            if(!(token = CmdStr.match(re_lp)).isNull())
+            {
+                //  getvalue lp channel 1 12/14/04 12:00
+                //  getvalue lp channel 1 8-13-2005 14:45
+                RWCTokenizer cmdtok(token);
+
+                cmdtok();  //  move past lp
+                cmdtok();  //  move past channel
+
+                _cmd["lp_command"] = CtiParseValue("lp");
+                _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
+                _cmd["lp_date"]    = cmdtok();
+                _cmd["lp_time"]    = cmdtok();
+            }
+            else if(!(token = CmdStr.match(re_lp_peak)).isNull())
+            {
+                //  getvalue lp peak daily channel 2 9/30/04 30
+                //  getvalue lp peak hourly channel 3 10-15-2003 15
+                RWCTokenizer cmdtok(token);
+
+                cmdtok();  //  move past lp
+                cmdtok();  //  move past peak
+
+                _cmd["lp_peaktype"] = cmdtok();
+
+                cmdtok();  //  move past channel
+
+                _cmd["lp_command"] = CtiParseValue("peak");
+                _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
+                _cmd["lp_date"]    = cmdtok();
+                _cmd["lp_range"]   = atoi(RWCString(cmdtok()));
+            }
+        }
         else if(!(token = CmdStr.match(re_demand)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_GV_DEMAND;
         }
-        else if(!(token = CmdStr.match(re_peak)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(CmdStr.contains(" peak"))
         {
             flag |= CMD_FLAG_GV_PEAK;
         }
-        else if(!(token = CmdStr.match(re_minmax)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        else if(CmdStr.contains(" minmax"))
         {
             flag |= CMD_FLAG_GV_MINMAX;
         }
-        else if(!(token = CmdStr.match(re_voltage)).isNull())
+        else if(CmdStr.contains(" voltage"))
         {
             flag |= CMD_FLAG_GV_VOLTAGE;
         }
@@ -448,37 +479,16 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
                 offset = 0;
             }
         }
-        else if(CmdStr.contains(" lp "))
-        {
-            if(!(token = CmdStr.match(re_lp)).isNull())
-            {
-                RWCTokenizer cmdtok(token);
-                RWCString tmpstr;
-
-                cmdtok();  //  move past lp
-                cmdtok();  //  move past channel
-
-                _cmd["lp_channel"] = CtiParseValue(atoi(RWCString(cmdtok())));
-
-                tmpstr = cmdtok();
-
-                if( !tmpstr.contains(":") )
-                {
-                    _cmd["lp_date"] = CtiParseValue(tmpstr);
-                    tmpstr = cmdtok();
-                }
-
-                _cmd["lp_time"] = CtiParseValue(tmpstr);
-            }
-        }
         else if(CmdStr.contains(" outage "))
         {
             if(!(token = CmdStr.match(re_outage)).isNull())
             {
+                //  getvalue outage 1..6
                 RWCTokenizer cmdtok(token);
 
                 cmdtok();  //  move past "outage"
-                _cmd["outage"] = CtiParseValue(atoi(RWCString(cmdtok())));
+
+                _cmd["outage"] = atoi(RWCString(cmdtok()));
             }
         }
         else if(CmdStr.contains(" codes"))
@@ -503,21 +513,21 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
             else if(temp2[temp2.length() - 1] == 't')  flag |= CMD_FLAG_GV_RATET;
         }
 
-        if(!(token = CmdStr.match("ied")).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        if(CmdStr.contains(" ied"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_GV_IED;                     // Read data from the ied port, not internal counters!
         }
-        if(!(token = CmdStr.match(re_frozen)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        if(CmdStr.contains(" frozen"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_FROZEN;
         }
 
-        if(!(token = CmdStr.match(re_powerfail)).isNull())
+        if(CmdStr.contains(" power"))
         {
             flag |= CMD_FLAG_GV_PFCOUNT;
         }
 
-        if(!(token = CmdStr.match(re_update)).isNull())      // Sourcing from CmdStr, which is the entire command string.
+        if(CmdStr.contains(" update"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_UPDATE;
         }
