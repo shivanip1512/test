@@ -804,7 +804,7 @@ private void hitDatabase_Basic(int seriesTypeMask)
 private void hitDatabase_Date(int seriesTypeMask, int serieIndex) 
 {
 	java.util.Date timerStart = new java.util.Date();
-	GregorianCalendar tempCal = null;
+	GregorianCalendar tempCal = new GregorianCalendar();
 
 	if( trendSeries[serieIndex]== null)
 		return;
@@ -855,14 +855,13 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 
 			if ( day == -1 )
 						return;
-
-			tempCal = new GregorianCalendar();						
+						
 			tempCal.setTime(getStartDate());
 			tempCal.add(Calendar.DATE, - day);
 			startTS = tempCal.getTimeInMillis();
 			
 			tempCal.setTime(getStartDate());
-			tempCal.add(Calendar.DATE, - (day+1));
+			tempCal.add(Calendar.DATE, -day+1);
 			stopTS = tempCal.getTimeInMillis();
 			trendSeries[serieIndex].setLabel(trendSeries[serieIndex].getLabel() + " ["+ LEGEND_DATE_FORMAT.format(new java.util.Date(startTS))+"]");
 			
@@ -1036,6 +1035,9 @@ private List getPeakPointHistory(int serieIndex)
 	
 	try
 	{
+/*
+ * Deprecating this query as it sucks.  Takes too much time and kills trending.  Trying a new 
+ * approach of selecting everything but only allowing one row to be returned. SN 20040804
 		String sqlString = " SELECT RPH1.POINTID POINTID, RPH1.VALUE VALUE, MIN(RPH1.TIMESTAMP) TIMESTAMP " +
 			   " FROM RAWPOINTHISTORY RPH1 WHERE " +
 			   " RPH1.TIMESTAMP >= ? " +
@@ -1045,6 +1047,12 @@ private List getPeakPointHistory(int serieIndex)
 			   " AND RPH2.TIMESTAMP >= ? " +
 			   " AND RPH2.POINTID = " + getTrendSeries()[serieIndex].getPointId().intValue() +
 			   " ) GROUP BY RPH1.POINTID, RPH1.VALUE";
+*/
+		String sqlString = " SELECT RPH1.POINTID POINTID, RPH1.VALUE VALUE, RPH1.TIMESTAMP TIMESTAMP " +
+			   " FROM RAWPOINTHISTORY RPH1 WHERE " +
+			   " RPH1.TIMESTAMP >= ? " +
+			   " AND RPH1.POINTID = " + getTrendSeries()[serieIndex].getPointId().intValue()+
+			   " ORDER BY VALUE DESC, TIMESTAMP";
 
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 		
@@ -1057,9 +1065,10 @@ private List getPeakPointHistory(int serieIndex)
 		{
 			pstmt = conn.prepareStatement(sqlString.toString());
 			pstmt.setTimestamp(1, new Timestamp( Long.valueOf(trendSeries[serieIndex].getMoreData()).longValue()));
-			pstmt.setTimestamp(2, new Timestamp( Long.valueOf(trendSeries[serieIndex].getMoreData()).longValue()));
+			//pstmt.setTimestamp(2, new Timestamp( Long.valueOf(trendSeries[serieIndex].getMoreData()).longValue()));
 			CTILogger.info("PEAK START DATE > " + new Timestamp(Long.valueOf(trendSeries[serieIndex].getMoreData()).longValue()));
 		
+			pstmt.setMaxRows(1);
 			rset = pstmt.executeQuery();
 			
 			while (rset.next())
