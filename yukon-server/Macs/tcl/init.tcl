@@ -536,10 +536,8 @@ proc runBatchProgram { args } {
             dout "Invalid number of Args: runBatchProgram"
         }
     
-        return
     } result] {
         dout "Caught Error in: runBatchProgram"
-        return
     }
 
 }    
