@@ -152,7 +152,7 @@ public class LMControlHistory {
 				ctrlHists[i].setCurrentSeasonalTime( new Integer(((java.math.BigDecimal) row[8]).intValue()) );
 				ctrlHists[i].setCurrentAnnualTime( new Integer(((java.math.BigDecimal) row[9]).intValue()) );
 				ctrlHists[i].setActiveRestore( (String) row[10] );
-				ctrlHists[i].setReductionValue( new Double(((java.math.BigDecimal) row[11]).floatValue()) );
+				ctrlHists[i].setReductionValue( (Double) row[11] );
 			}
 			
 			return ctrlHists;
