@@ -76,7 +76,7 @@ public class LMControlHistoryFormat extends ExportFormatBase
 	 */
 	public void retrieveData()
 	{
-		retrieveDynamicExportData();
+//		retrieveDynamicExportData();
 		long timer = System.currentTimeMillis();
 	
 		StringBuffer sql = new StringBuffer("SELECT LMCTRLHISTID, PAOBJECTID, STARTDATETIME, SOE_TAG, CONTROLDURATION, CONTROLTYPE, ");
