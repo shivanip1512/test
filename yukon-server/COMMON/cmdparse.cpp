@@ -3021,6 +3021,11 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
             _cmd["xcrunprog"] = CtiParseValue( TRUE );
         }
 
+        if(CmdStr.contains(" hold"))
+        {
+            _cmd["xcholdprog"] = CtiParseValue( TRUE );
+        }
+
         if(!(temp = CmdStr.match(" fan +((on)|(off)|(auto))")).isNull())
         {
             if(temp.contains("on"))

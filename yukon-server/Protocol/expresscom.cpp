@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/01/06 23:08:38 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/07 20:31:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1007,11 +1007,12 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
         BYTE fanstate = (BYTE)parse.getiValue("xcfanstate", 0);
         BYTE sysstate = (BYTE)parse.getiValue("xcsysstate", 0);;
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
-        bool run = parse.isKeyValid("xcrunprog") ? true : false;
-
+        bool restore = parse.isKeyValid("xcrunprog") ? true : false;
+        bool temporary = parse.isKeyValid("xcholdprog") ? false : true;
 
         thermostatSetState( relaymask,
-                            run,
+                            temporary,
+                            restore,
                             parse.getiValue("xctimeout", -1),
                             parse.getiValue("xcsettemp", -1),
                             fanstate,
@@ -1281,7 +1282,7 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     return status;
 }
 
-INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool run, int timeout_min, int setpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
+INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, bool restore, int timeout_min, int setpoint, BYTE fanstate, BYTE sysstate, USHORT delay)
 {
     INT status = NoError;
     BYTE flaghi;
@@ -1292,7 +1293,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool run, int timeo
     {
         if(loadMask & (0x01 << (load - 1)))         // We have a message to be build up here!
         {
-            flaghi = ((fanstate & 0x03) | (sysstate & 0x1c) | (run ? 0x20 : 0x00));
+            flaghi = ( (temporary ? 0x80 : 0x00) | (fanstate & 0x03) | (sysstate & 0x1c) | (restore ? 0x20 : 0x00));
             flaglo = ( _celsiusMode ? 0x20 : 0x00) | (load & 0x0f);                  // Pick up the load designator;
 
             _message.push_back( mtThermostatSetState );
