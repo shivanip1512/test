@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/24 17:48:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/05/24 21:38:46 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -338,6 +338,7 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
     _address.DecodeDatabaseReader(rdr);
 
     _lmi.setAddress(_address.getSlaveAddress());
+    _lmi.setName(getName());
 }
 
 
@@ -349,9 +350,19 @@ bool CtiDeviceLMI::hasQueuedWork() const
 
 INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
-    _lmi.queueCode(atoi(OutMessage->Buffer.SASt._codeSimple));
+    int retval = NORMAL;
 
-    return QUEUED_TO_DEVICE;
+    if( getExclusion().hasExclusions() )
+    {
+        _lmi.queueCode(atoi(OutMessage->Buffer.SASt._codeSimple));
+
+        delete OutMessage;
+        OutMessage = 0;
+
+        retval = QUEUED_TO_DEVICE;
+    }
+
+    return retval;
 }
 
 
@@ -378,6 +389,8 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
         if( OutMessage )
         {
             delete OutMessage;
+
+            OutMessage = 0;
         }
     }
 
