@@ -685,8 +685,14 @@ public final static String getLogDirPath()
 	//Logs go different places depending on whether we are running
 	//as a client application or a server application
 	String yb = getYukonBase(); 
-	final String fs = System.getProperty("file.separator");	
-	if(isRunningAsClient()) 
+	final String fs = System.getProperty("file.separator");
+	String logDir = System.getProperty("yukon.logdir");
+	
+	if(logDir != null)
+	{
+		return logDir;
+	}
+	else if(isRunningAsClient()) 
 	{
 		return yb + fs + "client" + fs + "log" + fs;
 	}
