@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2004/09/29 17:47:48 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2004/10/08 20:38:06 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.cpp,v $
+      Revision 1.6  2004/10/08 20:38:06  dsutton
+      Text export was occasionally exporting default values from the point list
+      Happened consistently when there was a lot of database activity causing
+      reloads.  FDR would reload the database but the export timer would go off
+      before FDR received the new values from dispatch.  This list had defaulted
+      values (bad) and put those in the file instead.
+
       Revision 1.5  2004/09/29 17:47:48  dsutton
       Updated all interfaces to default the db reload rate to once a day (86400)
 
@@ -449,80 +456,6 @@ bool CtiFDR_TextExport::sendMessageToForeignSys ( CtiMessage *aMessage )
 
     return retVal;
 }
-#if 0
-bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
-{   
-    bool retVal = true;
-    CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
-    CtiFDRPoint point;
-
-    // need to update this in my list always
-    updatePointByIdInList (getSendToList(), localMsg);
-
-    // if this is a response to a registration, do nothing
-    if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
-    {
-        findPointIdInList (localMsg->getId(), getSendToList(), point);
-
-        if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " MOA registration tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
-        }
-        retVal = false;
-    }
-    else
-    {
-        // see if the point exists;
-        retVal = findPointIdInList (localMsg->getId(), getSendToList(), point);
-
-        if (retVal == false)
-        {
-            if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
-            }
-        }
-        else
-        {
-            /*******************************
-            * if the timestamp is less than 01-01-2000 (completely arbitrary number)
-            * then dont' route the point because it is uninitialized
-            * note: uninitialized points come across as 11-10-1990 
-            ********************************
-            */
-            if (point.getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
-            {
-                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " PointId " << point.getPointID();
-                    dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
-                }
-                retVal = false;
-            }
-            else
-            {
-                // if we haven't registered, don't bother
-                if (isRegistered())
-                {
-                    try 
-                    {
-                        retVal = buildAndWriteToForeignSystem (point);
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
-                    }
-                }
-            }
-        }
-    }
-   return retVal;
-}
-#endif
 /**************************************************************************
 * Function Name: CtiFDRT_TextExport::threadFunctionWriteToFile (void )
 *
@@ -594,43 +527,56 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                     {
                         translationPoint = myIterator.value();
 
-                        for (int x=0; x < translationPoint->getDestinationList().size(); x++)
+                        // if data is older than 2001, it can't be valid
+                        if (translationPoint->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
                         {
-                            if (translationPoint->getPointType() == StatusPointType)
+                            //if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
-                                _snprintf (workBuffer,500,"1,%s,%d,%c,%s,%c\n",
-                                           translationPoint->getDestinationList()[x].getTranslation(),
-                                           (int)translationPoint->getValue(),
-                                           YukonToForeignQuality(translationPoint->getQuality()),
-                                           YukonToForeignTime(translationPoint->getLastTimeStamp()),
-                                           YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
-                                           );
-
-                                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                    dout << " value " << (int)translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
-                                }
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " PointId " << translationPoint->getPointID();
+                                dout << " was not exported to  " << RWCString (fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
                             }
-                            else
+                        }
+                        else
+                        {
+                            for (int x=0; x < translationPoint->getDestinationList().size(); x++)
                             {
-                                _snprintf (workBuffer,500,"1,%s,%f,%c,%s,%c\n",
-                                           translationPoint->getDestinationList()[x].getTranslation(),
-                                           translationPoint->getValue(),
-                                           YukonToForeignQuality(translationPoint->getQuality()),
-                                           YukonToForeignTime(translationPoint->getLastTimeStamp()),
-                                           YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
-                                           );
-                                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                                if (translationPoint->getPointType() == StatusPointType)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                    dout << " value " << translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
-                                }
-                            }
+                                    _snprintf (workBuffer,500,"1,%s,%d,%c,%s,%c\n",
+                                               translationPoint->getDestinationList()[x].getTranslation(),
+                                               (int)translationPoint->getValue(),
+                                               YukonToForeignQuality(translationPoint->getQuality()),
+                                               YukonToForeignTime(translationPoint->getLastTimeStamp()),
+                                               YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
+                                               );
 
-                            fprintf (fptr,workBuffer);
+                                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
+                                        dout << " value " << (int)translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
+                                    }
+                                }
+                                else
+                                {
+                                    _snprintf (workBuffer,500,"1,%s,%f,%c,%s,%c\n",
+                                               translationPoint->getDestinationList()[x].getTranslation(),
+                                               translationPoint->getValue(),
+                                               YukonToForeignQuality(translationPoint->getQuality()),
+                                               YukonToForeignTime(translationPoint->getLastTimeStamp()),
+                                               YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
+                                               );
+                                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
+                                        dout << " value " << translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
+                                    }
+                                }
+
+                                fprintf (fptr,workBuffer);
+                            }
                         }
                     }
                     fclose(fptr);
