@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_commerrorhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/11/15 14:07:55 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/12/12 01:03:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ void CtiCommErrorHistoryMsg::dump() const
 }
 
 
-// Return a CTIDBG_new'ed copy of this message!
+// Return a new'ed copy of this message!
 CtiMessage* CtiCommErrorHistoryMsg::replicateMessage() const
 {
    CtiCommErrorHistoryMsg *ret = CTIDBG_new CtiCommErrorHistoryMsg(*this);

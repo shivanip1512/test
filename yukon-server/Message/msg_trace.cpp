@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_trace.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:07:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 01:03:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ CtiTraceMsg& CtiTraceMsg::operator=(const CtiTraceMsg& aRef)
 }
 
 
-// Return a CTIDBG_new'ed copy of this message!
+// Return a new'ed copy of this message!
 CtiMessage* CtiTraceMsg::replicateMessage() const
 {
    CtiTraceMsg *ret = CTIDBG_new CtiTraceMsg(*this);

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:07:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 01:03:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ CtiReturnMsg& CtiReturnMsg::setPointData(const RWOrdered& point_data)
     return *this;
 }
 
-// Return a CTIDBG_new'ed copy of this message!
+// Return a new'ed copy of this message!
 CtiMessage* CtiReturnMsg::replicateMessage() const
 {
    CtiReturnMsg *ret = CTIDBG_new CtiReturnMsg(*this);
@@ -273,8 +273,8 @@ CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
        for(int i = 0; i < aRef.PointData().entries(); i++)
        {
           // This guy creates a copy of himself and returns a CtiMessage pointer to the copy!
-          CtiMessage* CTIDBG_newp = ((CtiMessage*)aRef.PointData()[i])->replicateMessage();
-          PointData().insert(CTIDBG_newp);
+          CtiMessage* newp = ((CtiMessage*)aRef.PointData()[i])->replicateMessage();
+          PointData().insert(newp);
        }
     }
 

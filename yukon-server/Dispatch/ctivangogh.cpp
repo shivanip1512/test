@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2002/11/15 14:07:52 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2002/12/12 01:03:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4758,7 +4758,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
             if(pDyn != NULL)
             {
                 UINT currtags  = (pDyn->getDispatch().getTags() & (tagmask & MASK_ANY_DISABLE));        // All (dev & pnt) ablement tags.
-                UINT CTIDBG_newpttags = (setmask & (tagmask & MASK_ANY_DISABLE));
+                UINT newpttags = (setmask & (tagmask & MASK_ANY_DISABLE));
 
                 UINT currpttags = (currtags & (tagmask & MASK_ANY_POINT_DISABLE));                      // Point only ablement tags.
                 UINT pttags   = (setmask & (tagmask & MASK_ANY_POINT_DISABLE));
@@ -4766,7 +4766,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
                 UINT currdvtags = (currtags & (tagmask & MASK_ANY_DEVICE_DISABLE));                     // Device only ablement tags.
                 UINT dvtags   = (setmask & (tagmask & MASK_ANY_DEVICE_DISABLE));
 
-                if( currtags != CTIDBG_newpttags )      // Is anything different?
+                if( currtags != newpttags )      // Is anything different?
                 {
                     different = true;
 
@@ -4790,7 +4790,7 @@ bool CtiVanGogh::ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UIN
                     }
 
                     pDyn->getDispatch().resetTags(tagmask);
-                    pDyn->getDispatch().setTags(CTIDBG_newpttags);
+                    pDyn->getDispatch().setTags(newpttags);
                 }
             }
         }

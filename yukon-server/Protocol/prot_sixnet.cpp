@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 01:03:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1028,10 +1028,10 @@ int CtiProtocolSixnet::DlMoveTailProcess()
     {
 
         status = _error = get8(0);
-        uint32 CTIDBG_newtail = get32(1);
+        uint32 newtail = get32(1);
 
         if(getDebugLevel() & 0x20000000)
-            cerr << "tail moved to: " << CTIDBG_newtail << endl << flush;
+            cerr << "tail moved to: " << newtail << endl << flush;
 
 
         setAcked(true);

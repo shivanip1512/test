@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:08:07 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 01:03:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,9 +74,9 @@ INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPS
 
 void CtiProtocolFisherPierceCBC::advanceAndPrime(const FPSTRUCT &fTemp)
 {
-    FPSTRUCT *CTIDBG_newfpst = CTIDBG_new FPSTRUCT;
-    *CTIDBG_newfpst = fTemp;
-    _fst.insert(CTIDBG_newfpst);
+    FPSTRUCT *newfpst = CTIDBG_new FPSTRUCT;
+    *newfpst = fTemp;
+    _fst.insert(newfpst);
     _last = _fst.entries() - 1;
 
     return;

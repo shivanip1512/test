@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_multi.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:07:55 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/12/12 01:03:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ CtiMultiMsg&  CtiMultiMsg::setData(const RWOrdered& Data)
    return *this;
 }
 
-// Return a CTIDBG_new'ed copy of this message!
+// Return a new'ed copy of this message!
 CtiMessage* CtiMultiMsg::replicateMessage() const
 {
    CtiMultiMsg *ret = CTIDBG_new CtiMultiMsg(*this);
@@ -131,8 +131,8 @@ CtiMultiMsg& CtiMultiMsg::operator=(const CtiMultiMsg& aRef)
       for(int i = 0; i < aRef.getCount(); i++)
       {
          // This guy creates a copy of himself and returns a CtiMessage pointer to the copy!
-         CtiMessage* CTIDBG_newp = aRef[i]->replicateMessage();
-         _bag.insert(CTIDBG_newp);
+         CtiMessage* newp = aRef[i]->replicateMessage();
+         _bag.insert(newp);
       }
    }
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:08 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/12 01:03:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1713,9 +1713,9 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
 
 void CtiProtocolVersacom::advanceAndPrime(const VSTRUCT &vTemp)
 {
-    VSTRUCT *CTIDBG_newvst = CTIDBG_new VSTRUCT;
-    *CTIDBG_newvst = vTemp;
-    _vst.insert(CTIDBG_newvst);
+    VSTRUCT *newvst = CTIDBG_new VSTRUCT;
+    *newvst = vTemp;
+    _vst.insert(newvst);
     _last = _vst.entries() - 1;
 
     return;
