@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/05 17:41:59 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/06/11 21:25:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -687,7 +687,9 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                                                     InMessage->Return.TrxID,
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.MacroOffset,
-                                                    InMessage->Return.Attempt);
+                                                    InMessage->Return.Attempt,
+                                                    0,
+                                                    InMessage->Priority);
 
 
             pReq->setConnectionHandle( InMessage->Return.Connection );
