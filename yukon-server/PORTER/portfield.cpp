@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:39 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/06 20:06:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2078,9 +2078,25 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
         commFail(Device, (iscommfailed ? CLOSED : OPENED));
     }
 
+    if(OutMessage->TargetID != OutMessage->DeviceID)
+    {
+        // In this case, we need to account for the fail on the target device too..
+        CtiDevice *pTarget = DeviceManager.getEqual( OutMessage->TargetID );
+
+        if(pTarget)
+        {
+            iscommfailed = (CommResult == NORMAL);
+
+            if( pTarget->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ) )
+            {
+                commFail(pTarget, (iscommfailed ? CLOSED : OPENED));
+            }
+        }
+    }
+
     if( (CommResult != NORMAL) ||
-        (  (Port->getProtocol() == IDLC) &&
-           (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL)))
+        (  (Port->getProtocol() == IDLC) && (OutMessage->Remote == CCUGLOBAL || OutMessage->Remote == RTUGLOBAL) )
+      )
     {
         switch( Device->getType() )
         {
