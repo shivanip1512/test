@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/09/06 01:00:25 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/09/12 02:37:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,9 +143,7 @@ VOID PortPoolDialoutThread(void *pid)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Portpool  connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl;
-            dout << RWTime() << "                           OutMessage->Remote   = " << OutMessage->Remote << endl;
-            dout << RWTime() << "                           OutMessage->Port     = " << OutMessage->Port << endl;
+            dout << RWTime() << " Portpool read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
         }
 
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2003/09/03 18:10:59 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2003/09/12 02:37:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,6 +115,7 @@ using namespace std;
 
 #define INF_LOOP_COUNT 10000
 
+extern RWCString GetDeviceName( ULONG id );
 
 
 void my_echo( char ch )
@@ -265,8 +266,23 @@ VOID PortThread(void *pid)
             Port->getParentPort()->postParent();
 
             // Make sure the parent port can assign new work onto this port.
-            if(Port->queueCount() == 0)
+            if(Port->queueCount() == 0 && Port->getPoolAssignedGUID() != 0)
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Child port " << Port->getName() << " relinquishing GUID assignment";
+
+                    if(Port->getConnectedDevice())
+                    {
+                        dout << ". Connected To: " << GetDeviceName(Port->getConnectedDevice()) << endl;
+                    }
+                    else
+                    {
+                        dout << endl;
+                    }
+                }
+
+
                 Port->setPoolAssignedGUID(0);
             }
         }
@@ -330,9 +346,8 @@ VOID PortThread(void *pid)
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Portfield connection read OutMessage->DeviceID = " << OutMessage->DeviceID << endl;
-            dout << RWTime() << "                           OutMessage->Remote   = " << OutMessage->Remote << endl;
-            dout << RWTime() << "                           OutMessage->Port     = " << OutMessage->Port << endl;
+            dout << RWTime() << " " << Port->getName() << endl;
+            dout << RWTime() << " Portfield read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
         }
 
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
