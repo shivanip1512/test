@@ -9,7 +9,6 @@ import com.cannontech.yukon.IDBPersistent;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 
 /* Add this to DBPersistentHome class */
@@ -22,6 +21,8 @@ import com.cannontech.database.TransactionException;
 **/
 public class DBPersistentBean implements SessionBean, IDBPersistent
 {
+	protected static final int ORACLE_FLOAT_PRECISION = 126;
+	
    public static String sqlFileName = null; 
    //com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
 
@@ -380,7 +381,7 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
             if (temp instanceof java.math.BigDecimal)
             {
                // >>>>>>>>>> Watch this - synchronize with above!
-               if (rset.getMetaData().getPrecision(n + 1) == 126)
+               if (rset.getMetaData().getPrecision(n + 1) == ORACLE_FLOAT_PRECISION )
                   temp = new Double(((java.math.BigDecimal) v.elementAt(n)).doubleValue());
                else
                   temp = new Integer(((java.math.BigDecimal) v.elementAt(n)).intValue());

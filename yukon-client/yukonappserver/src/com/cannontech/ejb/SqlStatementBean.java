@@ -244,6 +244,16 @@ public class SqlStatementBean implements SessionBean, ISQLStatement
 							
 							if( o != null )
 								nonNullRow = true; // at least 1 value in the row is not null
+
+
+							if( o instanceof java.math.BigDecimal )
+							{
+								// >>>>>>>>>> Watch this - synchronize with above!
+								if( rset.getMetaData().getPrecision(i) == DBPersistentBean.ORACLE_FLOAT_PRECISION )
+									o = new Double( ((java.math.BigDecimal)o).doubleValue() );
+								//else
+									//o = new Integer( ((java.math.BigDecimal)o).intValue() );
+							}
 							
 							rowData.addElement( o );
 						}
