@@ -21,8 +21,8 @@ public class ActivityLog extends DBPersistent {
 	private Date _timestamp = new Date();
 	private Integer _userID = UNUSED_ID; 
 	private Integer _accountID = UNUSED_ID;
-	private Integer _customerID = UNUSED_ID;
 	private Integer _energyCompanyID = UNUSED_ID;
+	private Integer _customerID = UNUSED_ID;
     private Integer _paoID = UNUSED_ID;
     private String _action = "";
     private String _description = "";
@@ -31,7 +31,7 @@ public class ActivityLog extends DBPersistent {
     public static final String CONSTRAINT_COLUMNS[] = { "ActivityLogID" };
     public static final String COLUMNS[] = { 
 		"TIMESTAMP", "USERID", "ACCOUNTID",
-		"CUSTOMERID", "ENERGYCOMPANYID", "PAOID", "ACTION", "DESCRIPTION" };
+		"ENERGYCOMPANYID", "CUSTOMERID", "PAOID", "ACTION", "DESCRIPTION" };
         
 	public void add() throws SQLException {
 		if(getActivityLogID() == UNUSED_ID) {
@@ -39,7 +39,7 @@ public class ActivityLog extends DBPersistent {
 		}
 		Object addValues[] = { 
 			getActivityLogID(), getTimestamp(), getUserID(), getAccountID(),
-			getCustomerID(), getEnergyCompanyID(), getPaoID(), getAction(), getDescription()
+			getEnergyCompanyID(), getCustomerID(), getPaoID(), getAction(), getDescription()
 		};
 		add(TABLE_NAME, addValues);
 	}
@@ -59,8 +59,8 @@ public class ActivityLog extends DBPersistent {
 			setTimestamp((Date) results[1]);
 			setUserID((Integer) results[2]);
 			setAccountID((Integer) results[3]);
-			setCustomerID((Integer) results[4]);
-			setEnergyCompanyID((Integer) results[5]);
+			setEnergyCompanyID((Integer) results[4]);
+			setCustomerID((Integer) results[5]);
 			setPaoID((Integer) results[6]);
 			setAction((String) results[7]);
 			setDescription((String) results[8]);
@@ -236,14 +236,14 @@ public class ActivityLog extends DBPersistent {
 		
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-	
+		
 		String sql = "SELECT max(ActivityLogID)+1 " + "FROM " + TABLE_NAME;
 		int newID = 0;
 		
 		try	{
 			pstmt = conn.prepareStatement(sql.toString());
 			rset = pstmt.executeQuery();							
-	
+			
 			if( rset.next() ) {
 				newID = rset.getInt(1);
 			}

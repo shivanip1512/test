@@ -327,7 +327,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 									"Sleep:" + ((starsSched.getTemperature4() < 0)? "(NONE)" : starsSched.getTime4().toString().substring(0, 5) + "," + starsSched.getTemperature4() + tempUnit);
 						}
 						
-						ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), liteAcctInfo.getCustomer().getCustomerID(), energyCompany.getLiteID(),
+						ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 								"Thermostat Schedule", logMsg );
 					}
 				}

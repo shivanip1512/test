@@ -22,14 +22,14 @@ public class ActivityLogger {
 	 * The log method with every parameter (except the PaoID). If
 	 * you don't care about some of them, set their values to -1.
 	 */
-	public static void log(int userID, int accountID, int customerID, int energyCompanyID,
+	public static void log(int userID, int accountID, int energyCompanyID, int customerID,
 		String action, String description)
 	{
 		ActivityLog actLog = new ActivityLog();
 		actLog.setUserID( userID );
 		actLog.setAccountID( accountID );
-		actLog.setCustomerID( customerID );
 		actLog.setEnergyCompanyID( energyCompanyID );
+		actLog.setCustomerID( customerID );
 		actLog.setAction( action );
 		actLog.setDescription( description );
 		
