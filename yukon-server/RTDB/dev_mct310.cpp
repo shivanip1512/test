@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/18 21:32:06 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/23 21:06:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -464,11 +464,6 @@ INT CtiDeviceMCT310::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case (CtiProtocolEmetcon::Control_Conn):
         case (CtiProtocolEmetcon::Control_Disc):
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
             CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
                                  InMessage->Return.UserID,
