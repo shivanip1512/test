@@ -10,9 +10,13 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import com.cannontech.dbeditor.menu.*;
+import com.cannontech.dbeditor.editor.defaults.DefaultRoutes;
+import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.DatabaseTypes;
+import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.*;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelListener;
@@ -265,6 +269,11 @@ public void actionPerformed(ActionEvent event)
 	{
 		executeRegenerateButton_ActionPerformed( event);
 	}
+	else if( item == toolsMenu.defaultMenuItem ) 
+	{
+		executeDefaultButton_ActionPerformed(event);
+	}
+	
 	else
 	if( item == viewMenu.refreshMenuItem )
 	{
@@ -835,6 +844,69 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 				"You must select something to be copied", "Copy Error", 
 				JOptionPane.INFORMATION_MESSAGE);  
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/1/2002 8:57:21 AM)
+ */
+public void executeDefaultButton_ActionPerformed(ActionEvent event) {
+	
+	java.awt.Frame f = getParentFrame();
+	java.awt.Cursor savedCursor = f.getCursor();
+	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+
+	java.util.Vector defaults = DefaultRoutes.calculateDefaults();
+
+
+	java.util.Vector routes = (Vector)defaults.get(0);
+	java.util.Vector originalDefaults = (Vector)defaults.get(1);
+	
+	java.util.Vector displayRoutes = DefaultRoutes.getDisplayReady(routes, originalDefaults);
+	
+	DefaultRoutesDialog r = new DefaultRoutesDialog(f,"Default Routes", true);
+	
+	for (int i =0; i<displayRoutes.size(); i++) {
+		
+	r.addRow((Vector) displayRoutes.get(i));
+
+	}
+	
+	
+	
+	r.setLocationRelativeTo( f );
+	
+	f.setCursor(savedCursor);
+	
+	r.show();
+
+	savedCursor = f.getCursor();
+	f.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+	
+	
+	
+	if (r.getResponse() == r.PRESSED_UPDATE)
+	{
+		
+		Vector newDefaults = r.getRecommendedDefaults();
+		for (int i=0; i<routes.size(); i++) {
+			((RouteBase)routes.get(i)).setDefaultRoute(newDefaults.get(i).toString().toUpperCase());
+
+		}
+
+		DefaultRoutes.updateRouteDefaults(routes);
+		for (int i=0; i<routes.size(); i++) {
+			updateObject((DBPersistent) routes.get(i));
+		}
+	} 
+
+	
+
+	f.setCursor(savedCursor);
+	
+	
+	}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 5:28:42 PM)
@@ -1176,7 +1248,7 @@ public void executeRegenerateButton_ActionPerformed(ActionEvent event) {
 	if (r.getResponse() == r.PRESSED_OK)
 	{
 		boolean all = r.getRegenerateAll();
-		Vector routesChanged = RegenerateRoute.resetRptSettings(carrierRoutes,all,null);
+		Vector routesChanged = RegenerateRoute.resetRptSettings(carrierRoutes,all,null,false);
 		RegenerateRoute.updateRouteRoles(routesChanged);
 		for (int i=0; i<routesChanged.size(); i++) {
 			updateObject((com.cannontech.database.db.DBPersistent) routesChanged.get(i));

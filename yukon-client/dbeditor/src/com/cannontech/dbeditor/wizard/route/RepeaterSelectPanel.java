@@ -239,10 +239,10 @@ public Object getValue(Object val)
       
       repeaterVector.addElement( rRoute );   
    }
-/*
+
    java.util.Vector v = new java.util.Vector();
    v = RegenerateRoute.getAllCarrierRoutes();
-   RegenerateRoute.resetRptSettings(v,false,(DBPersistent)val);*/
+   RegenerateRoute.resetRptSettings(v,false,(DBPersistent)val, false);
    
    return val;
 }

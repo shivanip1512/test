@@ -383,7 +383,7 @@ public Object getValue(Object val) {
   String userLocked = route.getCarrierRoute().getUserLocked();
    if (userLocked.equalsIgnoreCase("N")) {
    	
-   	java.util.Vector routes = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(), false, route);
+   	java.util.Vector routes = RegenerateRoute.resetRptSettings(RegenerateRoute.getAllCarrierRoutes(), false, route, true);
 	val = (CCURoute)routes.elementAt(0);
 	this.objectToEdit = val;
    }

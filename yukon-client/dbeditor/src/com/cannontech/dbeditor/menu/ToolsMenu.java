@@ -12,6 +12,7 @@ public class ToolsMenu extends javax.swing.JMenu
 {
 
 	public CommandableMenuItem regenerateMenuItem;
+	public CommandableMenuItem defaultMenuItem;
 
 	/**
 	 * ToolsMenu constructor comment.
@@ -37,10 +38,15 @@ public class ToolsMenu extends javax.swing.JMenu
 		//java.awt.event.KeyEvent.VK_R,
 		//java.awt.Event.CTRL_MASK));
 
+		defaultMenuItem = new CommandableMenuItem("Default Routes");
+	    defaultMenuItem.setFont( font );
+		defaultMenuItem.setMnemonic('d');
+
 		setText("Tools");
 		setFont(font);
 		setMnemonic('t');
 		add(regenerateMenuItem);
+		add(defaultMenuItem);
 
 	}
 }
