@@ -31,6 +31,8 @@ public:
     CtiIONFloat &setValue( float value );
     float        getValue( void );
 
+    double       getNumericValue( void );
+
 private:
 
     float _float;

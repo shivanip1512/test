@@ -26,7 +26,7 @@ CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLen
         //  doggoned MSB ordering
         ((unsigned char *)&_bool)[0] = byteStream[0];
 
-        setValid( TRUE );
+        setValid(true);
     }
     else
     {
@@ -35,7 +35,7 @@ CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLen
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        setValid( FALSE );
+        setValid(false);
     }
 }
 
@@ -73,6 +73,12 @@ CtiIONBoolean &CtiIONBoolean::setValue( bool value )
 
 
 bool CtiIONBoolean::getValue( void )
+{
+    return _bool;
+}
+
+
+double CtiIONBoolean::getNumericValue( void )
 {
     return _bool;
 }

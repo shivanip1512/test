@@ -32,6 +32,8 @@ public:
     CtiIONSignedInt &setValue( long value );
     long             getValue( void );
 
+    double           getNumericValue( void );
+
 private:
 
     long _signedInt;

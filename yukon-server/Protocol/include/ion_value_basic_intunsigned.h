@@ -31,6 +31,8 @@ public:
     CtiIONUnsignedInt &setValue( unsigned int value );
     unsigned int       getValue( void );
 
+    double             getNumericValue( void );
+
 private:
 
     unsigned int _unsignedInt;

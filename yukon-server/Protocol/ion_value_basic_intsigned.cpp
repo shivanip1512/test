@@ -39,7 +39,7 @@ CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long strea
             ((unsigned char *)&_signedInt)[i] = byteStream[streamLength - i - 1];
         }
 
-        setValid( TRUE );
+        setValid(true);
     }
     else
     {
@@ -47,7 +47,7 @@ CtiIONSignedInt::CtiIONSignedInt( unsigned char *byteStream, unsigned long strea
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        setValid( FALSE );
+        setValid(false);
     }
 }
 
@@ -84,6 +84,12 @@ CtiIONSignedInt &CtiIONSignedInt::setValue( long value )
 
 
 long CtiIONSignedInt::getValue( void )
+{
+    return _signedInt;
+}
+
+
+double CtiIONSignedInt::getNumericValue( void )
 {
     return _signedInt;
 }

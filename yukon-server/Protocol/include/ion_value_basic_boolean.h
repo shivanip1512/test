@@ -33,6 +33,8 @@ public:
     CtiIONBoolean &setValue( bool value );
     bool           getValue( void );
 
+    double         getNumericValue( void );
+
 private:
 
     bool _bool;

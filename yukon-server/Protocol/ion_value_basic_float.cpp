@@ -34,7 +34,7 @@ CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength 
         ((unsigned char *)&_float)[2] = byteStream[1];
         ((unsigned char *)&_float)[3] = byteStream[0];
 
-        setValid( TRUE );
+        setValid(true);
     }
     else
     {
@@ -42,7 +42,7 @@ CtiIONFloat::CtiIONFloat( unsigned char *byteStream, unsigned long streamLength 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        setValid( FALSE );
+        setValid(false);
     }
 }
 
@@ -71,6 +71,12 @@ CtiIONFloat &CtiIONFloat::setValue( float value )
 
 
 float CtiIONFloat::getValue( void )
+{
+    return _float;
+}
+
+
+double CtiIONFloat::getNumericValue( void )
 {
     return _float;
 }
