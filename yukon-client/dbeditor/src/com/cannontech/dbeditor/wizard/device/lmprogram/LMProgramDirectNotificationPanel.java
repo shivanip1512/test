@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 /**
  * Insert the type's description here.
@@ -631,31 +632,31 @@ public Object getValue(Object o)
 	LMProgramDirect program = (LMProgramDirect)o;
 
 	if( getJTextFieldSubject().getText() == null || getJTextFieldSubject().getText().length() <= 0)
-		program.getDirectProgram().setHeading( "(none)" );
+		program.getDirectProgram().setHeading( CtiUtilities.STRING_NONE );
 	else
 		program.getDirectProgram().setHeading( getJTextFieldSubject().getText() );
 
 	if( getJTextPaneMsgHeader().getText() == null 
 		 || getJTextPaneMsgHeader().getText().length() <= 0 )
-		program.getDirectProgram().setMessageHeader("(none)");
+		program.getDirectProgram().setMessageHeader(CtiUtilities.STRING_NONE);
 	else
 		program.getDirectProgram().setMessageHeader( getJTextPaneMsgHeader().getText() );
 
 	if( getJTextPaneMsgFooter().getText() == null 
 		 || getJTextPaneMsgFooter().getText().length() <= 0 )
-		program.getDirectProgram().setMessageFooter("(none)");
+		program.getDirectProgram().setMessageFooter(CtiUtilities.STRING_NONE);
 	else
 		program.getDirectProgram().setMessageFooter( getJTextPaneMsgFooter().getText() );
 
 	if( getJTextPaneMsgCanceled().getText() == null 
 		 || getJTextPaneMsgCanceled().getText().length() <= 0 )
-		program.getDirectProgram().setCanceledMsg("(none)");
+		program.getDirectProgram().setCanceledMsg(CtiUtilities.STRING_NONE);
 	else
 		program.getDirectProgram().setCanceledMsg( getJTextPaneMsgCanceled().getText() );
 
 	if( getJTextPaneMsgStoppedEarly().getText() == null 
 		 || getJTextPaneMsgStoppedEarly().getText().length() <= 0 )
-		program.getDirectProgram().setStoppedEarlyMsg("(none)");
+		program.getDirectProgram().setStoppedEarlyMsg(CtiUtilities.STRING_NONE);
 	else
 		program.getDirectProgram().setStoppedEarlyMsg( getJTextPaneMsgStoppedEarly().getText() );
 
@@ -775,19 +776,19 @@ public void setValue(Object o)
 {
 	LMProgramDirect program = (LMProgramDirect)o;
 
-	if(program.getDirectProgram().getHeading().compareTo("(none)") != 0)
+	if(program.getDirectProgram().getHeading().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextFieldSubject().setText( program.getDirectProgram().getHeading() );
 	
-	if(program.getDirectProgram().getMessageHeader().compareTo("(none)") != 0)
+	if(program.getDirectProgram().getMessageHeader().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgHeader().setText( program.getDirectProgram().getMessageHeader() );
 		
-	if(program.getDirectProgram().getMessageFooter().compareTo("(none)") != 0)
+	if(program.getDirectProgram().getMessageFooter().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgFooter().setText( program.getDirectProgram().getMessageFooter() );
 		
-	if(program.getDirectProgram().getCanceledMsg().compareTo("(none)") != 0)
+	if(program.getDirectProgram().getCanceledMsg().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgCanceled().setText( program.getDirectProgram().getCanceledMsg() );
 	
-	if( program.getDirectProgram().getStoppedEarlyMsg().compareTo("(none)") != 0)
+	if( program.getDirectProgram().getStoppedEarlyMsg().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgStoppedEarly().setText( program.getDirectProgram().getStoppedEarlyMsg() );
 
 	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyInterval().intValue() / 60) );
