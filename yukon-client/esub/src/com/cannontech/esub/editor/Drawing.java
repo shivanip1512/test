@@ -78,6 +78,7 @@ public class Drawing implements Serializable {
 		setFileName(fileName);
 		do {		
 			try {
+				writeJLX(fileName);
 				writeSVG(fileName);
 				writeHTML(fileName);
 				writeImages(new File(fileName).getParent());
