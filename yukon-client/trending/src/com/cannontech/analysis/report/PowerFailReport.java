@@ -20,6 +20,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
 
@@ -32,6 +33,28 @@ import com.cannontech.analysis.tablemodel.PowerFailModel;
 public class PowerFailReport extends YukonReportBase
 {
 	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf PowerFailModel.
+	 * @param data_ - PowerFailModel TableModel data
+	 */
+	public PowerFailReport(PowerFailModel model_)
+	{
+		super();
+		model = model_;
+		model.setReportType(ReportTypes.POWER_FAIL_DATA);
+	}
+
+	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf PowerFailModel.
+	 * @param data_ - PowerFailModel TableModel data
+	 */
+	public PowerFailReport()
+	{
+		this(new PowerFailModel());
+	}
+		
+	/**
 	 * Runs this report and shows a preview dialog.
 	 * @param args the arguments (ignored).
 	 * @throws Exception if an error occurs (default: print a stack trace)
@@ -42,9 +65,19 @@ public class PowerFailReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
+		//Get a default start date of 90 days previous.
+		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+		cal.set(java.util.Calendar.MINUTE, 0);
+		cal.set(java.util.Calendar.SECOND, 0);
+		cal.set(java.util.Calendar.MILLISECOND, 0);
+		cal.add(java.util.Calendar.DATE, 1);
+		long stop = cal.getTimeInMillis();
+		cal.add(java.util.Calendar.DATE, -90);
+		long start = cal.getTimeInMillis();
+
 		PowerFailReport powerFailReport = new PowerFailReport();
-		
-		powerFailReport.setModel( new PowerFailModel());
+		powerFailReport.getModel().setStartTime(start);
 		powerFailReport.getModel().collectData();
 		
 		//Define the report Paper properties and format.

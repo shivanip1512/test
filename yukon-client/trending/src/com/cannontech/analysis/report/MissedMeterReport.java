@@ -20,6 +20,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.device.MissedMeter;
 import com.cannontech.analysis.tablemodel.MissedMeterModel;
 
@@ -31,6 +32,28 @@ import com.cannontech.analysis.tablemodel.MissedMeterModel;
  */
 public class MissedMeterReport extends YukonReportBase
 {
+	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf MissedMeterModel.
+	 * @param data_ - PowerFailModel TableModel data
+	 */
+	public MissedMeterReport(MissedMeterModel model_)
+	{
+		super();
+		model = model_;
+		model.setReportType(ReportTypes.MISSED_METER_DATA);
+	}
+
+	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf MissedMeterModel.
+	 * @param data_ - MissedMeterModel TableModel data
+	 */
+	public MissedMeterReport()
+	{
+		this(new MissedMeterModel());
+	}	
+	
 	/**
 	 * Runs this report and shows a preview dialog.
 	 * @param args the arguments (ignored).
@@ -54,7 +77,6 @@ public class MissedMeterReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 		
 		MissedMeterReport missedMeterReport = new MissedMeterReport();
-		missedMeterReport.setModel( new MissedMeterModel());
 		missedMeterReport.getModel().setStartTime(start);
 		missedMeterReport.getModel().collectData();
 		
