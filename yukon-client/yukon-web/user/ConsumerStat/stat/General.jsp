@@ -117,7 +117,7 @@
                                     <td width="8" background="dot.gif"> </td>
                                     <td width="128" class="Main"> 
                                       <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
-                                        <tr> 
+                                        <tr height="50"> 
                                           <td> <div align="center">
 <%		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { %>
                                             Out of Service 

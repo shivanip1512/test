@@ -209,7 +209,7 @@
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_QUESTIONS_FAQ %>">
 <cti:checkRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
-		<img src="<%= bulletImg2 %>" width="12" height="12"><a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
+		<img src="../<%= bulletImg2 %>" width="12" height="12"><a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
 </cti:checkRole>
 <cti:checkNoRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
         <%= links.get("FAQ.jsp") %><br>

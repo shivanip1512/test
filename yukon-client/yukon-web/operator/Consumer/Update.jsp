@@ -10,7 +10,7 @@
 
 <script language="JavaScript">
 function copyAddress(form) {
-	if (form.SameAsAbove.checked) {
+	if (form.CopyAddress.checked) {
 		form.BAddr1.value = form.SAddr1.value;
 		form.BAddr2.value = form.SAddr2.value;
 		form.BCity.value = form.SCity.value;

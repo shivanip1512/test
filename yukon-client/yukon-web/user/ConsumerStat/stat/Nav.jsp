@@ -41,7 +41,7 @@
 </cti:checkRole>
 <cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_THERMOSTAT %>">
 <%
-	if (dftThermoSettings != null) {	// Hide thermostat settings if it's not available
+	if (thermoSettings != null) {	// Hide thermostat settings if it's not available
 %>
   <tr>
     <td>
