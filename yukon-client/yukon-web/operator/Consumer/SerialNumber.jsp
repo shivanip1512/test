@@ -31,7 +31,6 @@
 			else {
 				// Came from CreateHardware.jsp when change button is clicked
 				inventory = (StarsInventory) session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
-				session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
 			}
 			
 			if (inventory != null) {
@@ -271,11 +270,9 @@ function confirmCancel() {
                   </tr>
                 </table>
                 </form>
-			  <% if (inWizard) { %>
-                <input type="button" name="Back" value="Back" onclick="location.href = 'New.jsp?Wizard=true'">
-			  <% } else if (invNo != null) { %>
+<% if (session.getAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP) != null) { %>
                 <input type="button" name="Cancel" value="Cancel" onclick="location.href = '<%= referer %>'">
-			  <% } %>
+<% } %>
               <p>&nbsp;</p>
               <p>&nbsp;</p>
             </div>

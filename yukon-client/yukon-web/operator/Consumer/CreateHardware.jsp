@@ -129,10 +129,6 @@ function validate(form) {
 	return true;
 }
 
-function changeSerialNo() {
-	document.snForm.submit();
-}
-
 function createMCT(form) {
 	if (form.CreateMCT.checked) {
 		form.MCTType.disabled = false;
@@ -256,7 +252,7 @@ function confirmCancel() {
                                 <td width="120" class="MainText"><%= deviceType %></td>
                                 <td width="80" rowspan="2">
 <%  if (inWizard) { %>
-                                  <input type="button" name="Change" value="Change" onclick="changeSerialNo()">
+                                  <input type="button" name="Change" value="Change" onclick="document.snForm.submit()">
 <%  } %>
                                 </td>
                               </tr>
@@ -576,7 +572,7 @@ function confirmCancel() {
 <% } %>
 			    <br>
               </form>
-              <form name="snForm" method="post" action="SerialNumber.jsp">
+              <form name="snForm" method="post" action="SerialNumber.jsp<% if (inWizard) out.print("?Wizard=true"); %>">
                 <input type="hidden" name="action" value="Change">
               </form>
             </div>

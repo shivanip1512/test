@@ -19,6 +19,8 @@
 		response.sendRedirect("../Operations.jsp");
 		return;
 	}
+	
+	String referer = request.getHeader("referer");
 %>
 
 <html>
@@ -69,7 +71,7 @@
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
-                      <input type="button" name="OK2" value="OK" onclick="history.back()">
+                      <input type="button" name="OK2" value="OK" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
@@ -86,7 +88,7 @@
                       <input type="submit" name="NewHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="history.back()">
+                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
@@ -102,7 +104,7 @@
                       <input type="submit" name="NewHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="history.back()">
+                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
@@ -119,7 +121,7 @@
                       <input type="submit" name="NewDevice" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="history.back()">
+                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
@@ -135,7 +137,7 @@
                       <input type="submit" name="SelectHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="history.back()">
+                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
@@ -148,7 +150,7 @@
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
-                      <input type="button" name="OK" value="OK" onclick="history.back()">
+                      <input type="button" name="OK" value="OK" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
@@ -189,7 +191,7 @@
                       <input type="submit" name="MoveHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="No" value="No" onclick="history.back()">
+                      <input type="button" name="No" value="No" onclick="location.href='<%= referer %>'">
                     </td>
                   </tr>
                 </table>
