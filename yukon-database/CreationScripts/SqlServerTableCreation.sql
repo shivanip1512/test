@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     8/20/2002 3:33:00 PM                         */
+/* Created on:     9/19/2002 10:04:52 AM                        */
 /*==============================================================*/
 
 
@@ -1521,6 +1521,7 @@ insert into BillingFileFormats values(3,'WLT-40');
 insert into BillingFileFormats values(4,'CTI-CSV');
 insert into BillingFileFormats values(5,'OPU');
 insert into BillingFileFormats values(6,'DAFRON');
+insert into BillingFileFormats values(7,'NCDC');
 insert into billingfileformats values( 11, 'MV_90 DATA Import');
 
 /*==============================================================*/
@@ -1754,7 +1755,10 @@ insert into CTIDatabase values('2.16', 'Ryan', '26-JUL-2002', 'Added the ImageID
 
 insert into CTIDatabase values('2.31', 'Ryan', '9-AUG-2002', 'Added DeviceDNP table.');
 
-insert into CTIDatabase values('2.33', 'Ryan', '16-AUG-2002', 'Added the ImageName to the StateImage table.');
+insert into CTIDatabase values('2.33', 'Ryan', '29-AUG-2002', 'Added some columns to capcontrol dynamic tables, add a contraint to BillingFileFormats');
+
+insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofile defaults, add column to DynamicPointDispatch, added a row to BillingFileFormats');
+
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
@@ -2284,7 +2288,8 @@ QUALITY              numeric              not null,
 VALUE                float                not null,
 TAGS                 numeric              not null,
 NEXTARCHIVE          datetime             not null,
-STALECOUNT           numeric              not null
+STALECOUNT           numeric              not null,
+LastAlarmLogID       numeric              not null
 )
 go
 
@@ -2395,6 +2400,8 @@ LastCapBankDeviceID  numeric              not null,
 BusOptimizedVarCategory numeric              not null,
 BusOptimizedVarOffset float                not null,
 CTITimeStamp         datetime             not null,
+PowerFactorValue     float                not null,
+KvarSolution         float                not null,
 constraint PK_DYNAMICCCFEEDER primary key  (FeederID)
 )
 go
@@ -2420,6 +2427,8 @@ VarValueBeforeControl float                not null,
 LastFeederPAOid      numeric              not null,
 LastFeederPosition   numeric              not null,
 CTITimeStamp         datetime             not null,
+PowerFactorValue     float                not null,
+KvarSolution         float                not null,
 constraint PK_DYNAMICCCSUBSTATIONBUS primary key  (SubstationBusID)
 )
 go
