@@ -2171,8 +2171,17 @@ public void setValue(Object val)
 	CtiUtilities.setCheckBoxState(getDisableFlagCheckBox(), disableFlag);
 	CtiUtilities.setCheckBoxState( getControlInhibitCheckBox(), controlInhibit );
 
+	//	CCU's cannot have addresses larger than 128
+	if(com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(getDeviceType()))
+	{
+		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0L, 128L) );
+	}
+	else
+		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
+
+
 	//This is a bit ugly
-	//The address could come from one of three differnet types of
+	//The address could come from one of three different types of
 	//devices even though they all have one
 	//Note also getValue(DBPersistent)
 	
@@ -2192,15 +2201,6 @@ public void setValue(Object val)
 		getPhysicalAddressLabel().setVisible(false);
 		getPhysicalAddressTextField().setVisible(false);
 	}
-
-	//CCU's cannot have addresses larger than 128
-	if(com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(getDeviceType()))
-	{
-		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0L, 128L) );
-	}
-	else
-		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
-
 
 	if( d.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_GROUP) )
 		getDisableFlagCheckBox().setVisible(false);
