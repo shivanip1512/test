@@ -91,10 +91,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setLastCurrentVarPointUpdateTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	subBus.setEstimatedVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setEstimatedVarLoadPointValue( new Double( vstr.extractDouble() ) );
-	subBus.setStatusReceivedFlag( 
+/*	subBus.setStatusReceivedFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
-	
+*/
+
 	subBus.setDailyOperationsAnalogPointId( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setPeakTimeFlag( 
@@ -164,10 +165,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( subBus.getLastCurrentVarPointUpdateTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( subBus.getEstimatedVarLoadPointID().intValue() );
 	vstr.insertDouble( subBus.getEstimatedVarLoadPointValue().doubleValue() );
-	vstr.insertUnsignedInt( 
+/*	vstr.insertUnsignedInt( 
 		(subBus.getStatusReceivedFlag().booleanValue() == true)
 		? 1 : 0 );
-	
+*/
+
 	vstr.insertUnsignedInt( subBus.getDailyOperationsAnalogPointId().intValue() );	
 	vstr.insertUnsignedInt( subBus.getCurrentDailyOperations().intValue() );
 	vstr.insertUnsignedInt( 

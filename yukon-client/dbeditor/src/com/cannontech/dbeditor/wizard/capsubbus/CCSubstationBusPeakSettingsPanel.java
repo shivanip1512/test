@@ -5,8 +5,8 @@ package com.cannontech.dbeditor.wizard.capsubbus;
  * 
  * CLASS NOT USED AS OF 7-5-2002  --RWN
  */
-
 import java.awt.Dimension;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
  
 public class CCSubstationBusPeakSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjOffPeakSetPointLabel = null;
@@ -272,13 +272,13 @@ private javax.swing.JComboBox getJComboBoxControlUnits() {
 			// user code begin {1}
 
 			ivjJComboBoxControlUnits.addItem( 
-					com.cannontech.database.db.capcontrol.CapControlSubstationBus.UNITS_KVAR );
+					CapControlSubBus.UNITS_KVAR );
 			
 			ivjJComboBoxControlUnits.addItem( 
-					com.cannontech.database.db.capcontrol.CapControlSubstationBus.UNITS_PF_KVAR );
+					CapControlSubBus.UNITS_PF_KVAR );
 
 			ivjJComboBoxControlUnits.addItem( 
-					com.cannontech.database.db.capcontrol.CapControlSubstationBus.UNITS_PF_KQ );
+					CapControlSubBus.UNITS_PF_KQ );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

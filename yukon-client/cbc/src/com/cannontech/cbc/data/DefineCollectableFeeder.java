@@ -71,9 +71,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setLastCurrentVarPointUpdateTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	feeder.setEstimatedVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setEstimatedVarLoadPointValue( new Double( vstr.extractDouble() ) );
-	feeder.setStatusReceivedFlag( 
-		((int)vstr.extractUnsignedInt() == 1)
-		? new Boolean(true) : new Boolean(false) );
+/*   feeder.setStatusReceivedFlag( 
+      ((int)vstr.extractUnsignedInt() == 1)
+      ? new Boolean(true) : new Boolean(false) );
+*/
 	
 	feeder.setDailyOperationsAnalogPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -127,9 +128,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( feeder.getLastCurrentVarPointUpdateTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( feeder.getEstimatedVarLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getEstimatedVarLoadPointValue().doubleValue() );
-	vstr.insertUnsignedInt( 
+/*	vstr.insertUnsignedInt( 
 		(feeder.getStatusReceivedFlag().booleanValue() == true)
 		? 1 : 0 );
+*/
 
 	vstr.insertUnsignedInt( feeder.getDailyOperationsAnalogPointID().intValue() );	
 	vstr.insertUnsignedInt( feeder.getCurrentDailyOperations().intValue() );

@@ -25,7 +25,6 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer currentDailyOperations = null;	
 	private java.util.Date lastStatusChangeTime = null;
 	private Integer tagControlStatus = null;
-	private Boolean statusReceivedFlag = null;
 /**
  * CapBankDevice constructor comment.
  */
@@ -152,14 +151,8 @@ public Integer getOperationAnalogPointID() {
 public Integer getStatusPointID() {
 	return statusPointID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 11:45:37 AM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getStatusReceivedFlag() {
-	return statusReceivedFlag;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 11:45:37 AM)
@@ -339,14 +332,8 @@ public void setOperationAnalogPointID(Integer newValue) {
 public void setStatusPointID(Integer newValue) {
 	statusPointID = newValue;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 11:45:37 AM)
- * @param newStatusReceivedFlag java.lang.Boolean
- */
-public void setStatusReceivedFlag(java.lang.Boolean newStatusReceivedFlag) {
-	statusReceivedFlag = newStatusReceivedFlag;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 11:45:37 AM)

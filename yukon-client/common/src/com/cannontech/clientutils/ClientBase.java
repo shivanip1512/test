@@ -99,18 +99,18 @@ private void getExternalResources()
 {
 	try
 	{
-		java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-		HOST = bundle.getString("dispatch_machine");
-		PORT = Integer.parseInt( bundle.getString("dispatch_port") );
-	}
-	catch( java.util.MissingResourceException mre)
-	{
-		handleException( mre );
-	}
-	catch( NumberFormatException ex )
-	{
-		handleException( ex );
-	}
+      HOST = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+               com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE, 
+               "127.0.0.1");
+         
+      PORT = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+               com.cannontech.common.util.CtiProperties.KEY_DISPATCH_PORT, 
+               "1510"))).intValue();         
+   }
+   catch( Exception e)
+   {
+      handleException( e );
+   }
 
 }
 /**

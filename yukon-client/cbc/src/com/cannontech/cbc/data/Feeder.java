@@ -24,7 +24,6 @@ public class Feeder extends StreamableCapObject
 	private Integer estimatedVarLoadPointID = null;
 	private Double estimatedVarLoadPointValue = null;
 
-	private Boolean statusReceivedFlag = null;
 	private Integer dailyOperationsAnalogPointID = null;
 	private Integer currentDailyOperations = null;
 	private Boolean recentlyControlledFlag = null;
@@ -199,14 +198,7 @@ public java.lang.Double getPeakSetPoint() {
 public java.lang.Boolean getRecentlyControlledFlag() {
 	return recentlyControlledFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 11:45:37 AM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getStatusReceivedFlag() {
-	return statusReceivedFlag;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 1:11:48 PM)
@@ -369,14 +361,8 @@ public void setPeakSetPoint(java.lang.Double newPeakSetPoint) {
 public void setRecentlyControlledFlag(java.lang.Boolean newRecentlyControlledFlag) {
 	recentlyControlledFlag = newRecentlyControlledFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 11:45:37 AM)
- * @param newStatusReceivedFlag java.lang.Boolean
- */
-public void setStatusReceivedFlag(java.lang.Boolean newStatusReceivedFlag) {
-	statusReceivedFlag = newStatusReceivedFlag;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 1:11:48 PM)

@@ -1477,20 +1477,18 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 		int port;
 		try
 		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			host = bundle.getString("dispatch_machine");
-			port = (new Integer(bundle.getString("dispatch_port"))).intValue();
-			
+         host = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+                  com.cannontech.common.util.CtiProperties.KEY_DISPATCH_MACHINE, 
+                  "127.0.0.1");
+            
+			port = (new Integer( com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+                  com.cannontech.common.util.CtiProperties.KEY_DISPATCH_PORT, 
+                  "1510"))).intValue();			
 		}
-		catch( java.util.MissingResourceException e)
+		catch( Exception e)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			host = "127.0.0.1";
-			port = 1510;
-		}
-		catch(NumberFormatException nfe)
-		{
-			com.cannontech.clientutils.CTILogger.error( nfe.getMessage(), nfe );
 			port = 1510;
 		}
 
@@ -2186,8 +2184,6 @@ private void initConnections()
 
 	//tell the cache we want to listen for DBChangeMessages
 	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);
-	//DBChangeMessageListener dbChangeMessageListener = new DBChangeMessageListener("EditorDBChangeMsgListener");
-	//dbChangeMessageListener.start();
 
 	
 	// add the mouselistener for the JTree
@@ -2243,9 +2239,8 @@ private void initialize(JRootPane rootPane)
 	
 	initConnections();
 
-
-	//fireMessage( new MessageEvent( this, "Not Connected to Message Dispatcher!", MessageEvent.ERROR_MESSAGE) );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 3:08:19 PM)
@@ -2353,47 +2348,39 @@ public static void main(String[] args) {
 
 	try
 	{
-//temp code
-java.util.Date timerStart = null;
-java.util.Date timerStop = null;
-//temp code
-		
-//temp code
-timerStart = new java.util.Date();
-//temp code
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor");
+		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 
 		//Set the width and height 85% of max
 		java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();	
 		f.setSize( (int) (d.width * .85), (int)( d.height * .85) );
 	
+      //set the location of the frame to the center of the screen
+      f.setLocation( (java.awt.Toolkit.getDefaultToolkit().getScreenSize().width - f.getSize().width) / 2,
+                     (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - f.getSize().height) / 2);
+
+      f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+
 	
 		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, "ctismall.gif");
 
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();
-
-		f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("dbEditorIcon.gif"));
+      /* Cache loads as needed, do not load it all here!! --RWN */
+		//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();
 	
 		DatabaseEditor editor = new DatabaseEditor();
 		f.addWindowListener(editor);
 		
 		editor.displayDatabaseEditor( f.getRootPane() );
 		f.show();
-
 		
-
-//temp code
-timerStop = new java.util.Date();
-com.cannontech.clientutils.CTILogger.info( 
-   (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for DatabaseEditor.main()" );
-//temp code
 	}
 	catch( Throwable t )
 	{
 		com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
 	}
+
 }
+
 /**
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent

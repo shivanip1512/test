@@ -7,10 +7,6 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
 	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
 	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
-
-	public static final String UNITS_KVAR = "KVAR";
-	public static final String UNITS_PF_KVAR = "PF BY KVAR";
-	public static final String UNITS_PF_KQ = "PF BY KQ";
 	
 	private Integer substationBusID = null;
 	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;
@@ -30,7 +26,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private String daysOfWeek = new String("YYYYYNNN");
 	private Integer mapLocationID = new Integer(0);  //not used as of 11-12-2001
 	private Double lowerBandwidth = new Double(0.0);
-	private String controlUnits = UNITS_KVAR;
+	private String controlUnits = com.cannontech.database.data.capcontrol.CapControlSubBus.UNITS_KVAR;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 

@@ -3,7 +3,8 @@ package com.cannontech.dbeditor.wizard.capsubbus;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
+import java.awt.Dimension;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
  
 public class CCSubstationBusMiscSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjControlIntervalLabel = null;
@@ -557,13 +558,13 @@ private javax.swing.JComboBox getJComboBoxControlUnits() {
 			// user code begin {1}
 
          ivjJComboBoxControlUnits.addItem( 
-               com.cannontech.database.db.capcontrol.CapControlSubstationBus.UNITS_KVAR );
+               CapControlSubBus.UNITS_KVAR );
                
          ivjJComboBoxControlUnits.addItem( 
-               com.cannontech.database.db.capcontrol.CapControlSubstationBus.UNITS_PF_KVAR );
+               CapControlSubBus.UNITS_PF_KVAR );
 
          ivjJComboBoxControlUnits.addItem( 
-               com.cannontech.database.db.capcontrol.CapControlSubstationBus.UNITS_PF_KQ );
+               CapControlSubBus.UNITS_PF_KQ );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

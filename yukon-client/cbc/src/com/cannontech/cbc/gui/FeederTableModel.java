@@ -27,7 +27,7 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 	public static final int AREA_NAME_COLUMN  = 0;
 	public static final int NAME_COLUMN = 1;
 	public static final int CURRENT_STATE_COLUMN  = 2;
-  	public static final int OP_RANGE_COLUMN  = 3;
+  	public static final int TARGET_COLUMN  = 3;
   	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
   	public static final int TIME_STAMP_COLUMN  = 5;
    public static final int POWER_FACTOR_COLUMN = 6;
@@ -40,7 +40,7 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"Area Name",
 		"Feeder Name",		
 		"State",
-		"Op Range",
+		"Target",
 		"VAR Load",
 		"Time",		
       "PFactor",
@@ -257,35 +257,34 @@ public Object getValueAt(int row, int col)
 				return state;
 			}
 
-			case OP_RANGE_COLUMN:
+			case TARGET_COLUMN:
 			{
 				// decide which set Point we are to use
 				if( getCurrentSubBus().getPeakTimeFlag().booleanValue() )
 				{
-					return (feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
-							 " to " + 
-							 (feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue()) + 
-							 " Pk";
+               if( getCurrentSubBus().isPowerFactorControlled() )
+                  return getPowerFactorText(feeder) + " Pk";
+               else
+   					return (feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
+   							 " to " + 
+   							 (feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue()) + 
+   							 " Pk";
 				}
 				else
 				{
-					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
-							 " to " + 
-							 (feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue()) + 
-							 " OffPk";
+               if( getCurrentSubBus().isPowerFactorControlled() )
+                  return getPowerFactorText(feeder) + " OffPk";
+               else
+   					return (feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue()) +
+   							 " to " + 
+   							 (feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue()) + 
+   							 " OffPk";
 				}
 
 			}
 
          case POWER_FACTOR_COLUMN:
-         {            
-            if( feeder.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
-               return "  NA";
-            else
-            
-               return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-                     feeder.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent
-         }
+            return getPowerFactorText(feeder);
          
 			case DAILY_OPERATIONS_COLUMN:
 				return feeder.getCurrentDailyOperations();
@@ -314,6 +313,16 @@ public Object getValueAt(int row, int col)
 		return null; /// MAYBE NOT A GOOD IDEA!!
 	
 }
+
+private String getPowerFactorText( Feeder feeder )
+{
+   if( feeder.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
+      return "  NA";
+   else   
+      return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
+            feeder.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent   
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean

@@ -37,7 +37,7 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	public static final int AREA_NAME_COLUMN  = 0;
 	public static final int SUB_NAME_COLUMN = 1;
 	public static final int CURRENT_STATE_COLUMN  = 2;
-  	public static final int OP_RANGE_COLUMN  = 3;
+  	public static final int TARGET_COLUMN  = 3;
   	public static final int CURRENT_VAR_LOAD_COLUMN  = 4;
   	public static final int TIME_STAMP_COLUMN  = 5;
 	public static final int POWER_FACTOR_COLUMN = 6;
@@ -51,7 +51,7 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		"Area Name",
 		"Sub Name",
 		"State",
-		"Op Range",
+		"Target",
 		"VAR Load",
 		"Time",		
 		"PFactor",
@@ -307,22 +307,32 @@ public Object getValueAt(int row, int col)
 			return state;
 		}
 
-		case OP_RANGE_COLUMN:
+		case TARGET_COLUMN:
 		{
 			// decide which set Point we are to use
 			if( sub.getPeakTimeFlag().booleanValue() )
 			{
-				return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
-						 " to " + 
-						 (sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue()) + 
-						 " Pk";
+            if( sub.isPowerFactorControlled() )
+            {
+               return getPowerFactorText(sub) + " Pk";
+            }
+            else
+				  return(sub.getPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
+   						 " to " + 
+   						 (sub.getUpperBandWidth().doubleValue() + sub.getPeakSetPoint().doubleValue()) + 
+   						 " Pk";
 			}
 			else
 			{
-				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
-						 " to " + 
-						 (sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue()) + 
-						 " OffPk";
+            if( sub.isPowerFactorControlled() )
+            {
+               return getPowerFactorText(sub) + " OffPk";
+            }
+            else
+   				return(sub.getOffPeakSetPoint().doubleValue() - sub.getLowerBandWidth().doubleValue()) +
+   						 " to " + 
+   						 (sub.getUpperBandWidth().doubleValue() + sub.getOffPeakSetPoint().doubleValue()) + 
+   						 " OffPk";
 			}
 
 		}
@@ -343,11 +353,7 @@ public Object getValueAt(int row, int col)
 
 		case POWER_FACTOR_COLUMN:
       {
-         if( sub.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
-            return "  NA";
-         else
-            return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
-                  sub.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent
+         return getPowerFactorText(sub);
       }
 			
 		case WATTS_COLUMN:
@@ -367,6 +373,16 @@ public Object getValueAt(int row, int col)
 
 	
 }
+
+private String getPowerFactorText( SubBus sub )
+{   
+   if( sub.getPowerFactorValue().doubleValue() <= CapControlConst.PF_INVALID_VALUE )
+      return "  NA";
+   else
+      return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces(
+            sub.getPowerFactorValue().doubleValue() * 100, 1 ) + "%"; //get percent   
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean

@@ -1,5 +1,6 @@
 package com.cannontech.cbc.data;
 
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 /**
  * Insert the type's description here.
  * Creation date: (8/18/00 4:23:32 PM)
@@ -38,7 +39,6 @@ public class SubBus extends StreamableCapObject
 	private java.util.Date lastCurrentVarPointUpdateTime = null;
 	private Integer estimatedVarLoadPointID = null;
 	private Double estimatedVarLoadPointValue = null;
-	private Boolean statusReceivedFlag = null;
 
 	private Integer dailyOperationsAnalogPointId = null;
 	private Integer currentDailyOperations = null;
@@ -76,6 +76,13 @@ public SubBus( Integer paoId_, String paoCategory_, String paoClass_,
 				paoType_, paoDescription_, paoDisableFlag_ );
 
 }
+
+public boolean isPowerFactorControlled()
+{
+   return( CapControlSubBus.UNITS_PF_KQ.equalsIgnoreCase(getControlUnits())
+            || CapControlSubBus.UNITS_PF_KVAR.equalsIgnoreCase(getControlUnits()) );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 12:01:28 PM)
@@ -332,14 +339,7 @@ public java.lang.Boolean getPeakTimeFlag() {
 public java.lang.Boolean getRecentlyControlledFlag() {
 	return recentlyControlledFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Boolean
- */
-public java.lang.Boolean getStatusReceivedFlag() {
-	return statusReceivedFlag;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 12:01:28 PM)
@@ -604,14 +604,7 @@ public void setPeakTimeFlag(java.lang.Boolean newPeakTimeFlag) {
 public void setRecentlyControlledFlag(java.lang.Boolean newRecentlyConrolledFlag) {
 	recentlyControlledFlag = newRecentlyConrolledFlag;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newStatusReceivedFlag java.lang.Boolean
- */
-public void setStatusReceivedFlag(java.lang.Boolean newStatusReceivedFlag) {
-	statusReceivedFlag = newStatusReceivedFlag;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 12:01:28 PM)
