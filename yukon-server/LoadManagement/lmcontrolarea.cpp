@@ -894,9 +894,14 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
             }
         }
 
-        if( getRequireAllTriggersActiveFlag() && ( triggersTripped == _lmcontrolareatriggers.entries() ) )
+        if( getRequireAllTriggersActiveFlag() && (triggersTripped > 0) && (triggersTripped < _lmcontrolareatriggers.entries()) )
         {
             returnLoadReductionNeeded = 0.0;
+            if( _LM_DEBUG & LM_DEBUG_CONTROL_PARAMS )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - LM Control Area: " << getPAOName() << " has at least one trigger active but cannot automatically start control because not all triggers are active in accordance with the RequireAllTriggersActiveFlag" << endl;
+            }
         }
     }
 
