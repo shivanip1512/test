@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2004/12/07 18:56:56 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/01/14 17:21:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1421,6 +1421,15 @@ INT CtiDeviceMCT310::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
             else
             {
                 options += "  Pulse input 3: 2-wire\n";
+            }
+
+            if( InMessage->Buffer.DSt.Message[3] & 0x04 )
+            {
+                options += "  Peak mode:  Min/Max\n";
+            }
+            else
+            {
+                options += "  Peak mode:  On/Off Peak\n";
             }
         }
 
