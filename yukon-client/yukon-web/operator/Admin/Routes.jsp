@@ -1,5 +1,20 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
+<%
+	LiteYukonPAObject[] inheritedRoutes = null;
+	if (liteEC.getParent() != null)
+		inheritedRoutes = liteEC.getParent().getAllRoutes();
+	LiteYukonPAObject[] routes = liteEC.getRoutes(inheritedRoutes);
+	
+	ArrayList assignedRoutes = new ArrayList();
+	for (int i = 0; i < routes.length; i++)
+		assignedRoutes.add(routes[i]);
+	
+	if (inheritedRoutes != null) {
+		for (int i = 0; i < inheritedRoutes.length; i++)
+			assignedRoutes.add(inheritedRoutes[i]);
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -7,64 +22,94 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
-function addRoutes(form) {
-	var assgnRtList = document.getElementById("RoutesAssigned");
-	var availRtList = document.getElementById("RoutesAvailable");
-	var insertIdx = assgnRtList.length;
+var defaultRouteSelected = false;
+var removeWarned = false;
+
+function isRemovable(routeID) {
+<%
+	if (inheritedRoutes != null) {
+		for (int i = 0; i < inheritedRoutes.length; i++) {
+%>
+	if (routeID == <%= inheritedRoutes[i].getYukonID() %>)
+		return false;
+<%
+		}
+	}
+%>
+	return true;
+}
+
+function selectionChanged(form) {
+	form.RemoveButton.disabled = false;
+	defaultRouteSelected = false;
 	
-	for (i = availRtList.length - 1; i >= 0; i--) {
-		var oOption = availRtList.options[i];
+	for (i = 0; i < form.RoutesAssigned.length; i++) {
+		var oOption = form.RoutesAssigned.options[i];
 		if (oOption.selected && oOption.value > 0) {
-			availRtList.options.remove(i);
-			assgnRtList.options.add(oOption, insertIdx);
+			if (!isRemovable(oOption.value)) {
+				form.RemoveButton.disabled = true;
+				return;
+			}
+			if (oOption.value == <%= liteEC.getDefaultRouteID() %>)
+				defaultRouteSelected = true;
+		}
+	}
+}
+
+function addRoutes(form) {
+	var insertIdx = 0;
+	if (form.RoutesAssigned.options[0].value == 0)
+		insertIdx = 1;
+	
+	for (i = form.RoutesAvailable.length - 1; i >= 0; i--) {
+		var oOption = form.RoutesAvailable.options[i];
+		if (oOption.selected && oOption.value > 0) {
+			form.RoutesAvailable.options.remove(i);
+			form.RoutesAssigned.options.add(oOption, insertIdx);
 		}
 	}
 	
-	if (availRtList.length == 0) {
+	if (form.RoutesAvailable.length == 0) {
 		var emptyOption = document.createElement("OPTION");
-		availRtList.options.add(emptyOption);
+		form.RoutesAvailable.options.add(emptyOption);
 		emptyOption.innerText = "<No Route Available>";
 		emptyOption.value = "0";
 	}
 	
-	if (assgnRtList.length > 1 && assgnRtList.options[0].value == 0)
-		assgnRtList.options.remove(0);
+	if (form.RoutesAssigned.length > 1 && form.RoutesAssigned.options[0].value == 0)
+		form.RoutesAssigned.options.remove(0);
 }
 
-var removeWarned = false;
-
 function removeRoutes(form) {
-	var assgnRtList = document.getElementById("RoutesAssigned");
-	var availRtList = document.getElementById("RoutesAvailable");
-	var insertIdx = availRtList.length;
+	var insertIdx = 0;
+	if (form.RoutesAvailable.options[0].value == 0)
+		insertIdx = 1;
 	
-	if (assgnRtList.value != "" && !removeWarned) {
-		removeWarned = true;
-		alert('If you remove a route and click "Submit", all LM Hardware currently assigned to this route will be re-assigned to the default route.');
+	if (defaultRouteSelected && !removeWarned) {
+		if (confirm('You are going to remove the default route "<%= PAOFuncs.getYukonPAOName(liteEC.getDefaultRouteID()) %>" from the energy company. ' +
+			'Doing so could cause severe problem to your system. Are you sure you want to continue?'))
+			removeWarned = true;
+		else
+			return;
 	}
 	
-	for (i = assgnRtList.length - 1; i >= 0; i--) {
-		var oOption = assgnRtList.options[i];
+	for (i = form.RoutesAssigned.length - 1; i >= 0; i--) {
+		var oOption = form.RoutesAssigned.options[i];
 		if (oOption.selected && oOption.value > 0) {
-			if (oOption.value == <%= liteEC.getDefaultRouteID() %>) {
-				alert("Cannot remove the default route!");
-				continue;
-			}
-			
-			assgnRtList.options.remove(i);
-			availRtList.options.add(oOption, insertIdx);
+			form.RoutesAssigned.options.remove(i);
+			form.RoutesAvailable.options.add(oOption, insertIdx);
 		}
 	}
 	
-	if (assgnRtList.length == 0) {
+	if (form.RoutesAssigned.length == 0) {
 		var emptyOption = document.createElement("OPTION");
-		assgnRtList.options.add(emptyOption);
+		form.RoutesAssigned.options.add(emptyOption);
 		emptyOption.innerText = "<No Route Assigned>";
 		emptyOption.value = "0";
 	}
 	
-	if (availRtList.length > 1 && availRtList.options[0].value == 0)
-		availRtList.options.remove(0);
+	if (form.RoutesAvailable.length > 1 && form.RoutesAvailable.options[0].value == 0)
+		form.RoutesAvailable.options.remove(0);
 }
 
 function init() {
@@ -73,10 +118,9 @@ function init() {
 }
 
 function prepareSubmit(form) {
-	var assgnRtList = document.getElementById("RoutesAssigned");
-	if (assgnRtList.options[0].value > 0) {
-		for (i = 0; i < assgnRtList.length; i++) {
-			var html = '<input type="hidden" name="RouteIDs" value="' + assgnRtList.options[i].value + '">';
+	if (form.RoutesAssigned.options[0].value > 0) {
+		for (i = 0; i < form.RoutesAssigned.length; i++) {
+			var html = '<input type="hidden" name="RouteIDs" value="' + form.RoutesAssigned.options[i].value + '">';
 			form.insertAdjacentHTML("beforeEnd", html);
 		}
 	}
@@ -129,11 +173,9 @@ function prepareSubmit(form) {
                                     <td width="45%" valign="top"> Available Routes<br>
                                       <select id="RoutesAvailable" name="RoutesAvailable" size="20" style="width:235" multiple>
 <%
-	ArrayList routeIDs = liteEC.getRouteIDs();
 	LiteYukonPAObject[] allRoutes = PAOFuncs.getAllLiteRoutes();
 	for (int i = 0; i < allRoutes.length; i++) {
-		if (routeIDs.contains( new Integer(allRoutes[i].getYukonID()) ))
-			continue;
+		if (assignedRoutes.contains(allRoutes[i])) continue;
 %>
                                         <option value="<%= allRoutes[i].getYukonID() %>"><%= allRoutes[i].getPaoName() %></option>
 <%
@@ -142,26 +184,24 @@ function prepareSubmit(form) {
                                       </select>
                                     </td>
                                     <td width="10%"> 
-                                      <input type="button" id="AddButton" name="Remove" value=" >> " onClick="addRoutes(this.form)">
+                                      <input type="button" id="AddButton" name="AddButton" value=" >> " onClick="addRoutes(this.form)">
                                       <br>
-                                      <input type="button" id="RemoveButton" name="Add" value=" << " onclick="removeRoutes(this.form)">
+                                      <input type="button" id="RemoveButton" name="RemoveButton" value=" << " onclick="removeRoutes(this.form)">
                                     </td>
                                     <td width="45%" valign="top"> Assigned Routes:<br>
-                                      <select id="RoutesAssigned" name="RoutesAssigned" size="20" style="width:235" multiple>
+                                      <select id="RoutesAssigned" name="RoutesAssigned" size="20" style="width:235" multiple onchange="selectionChanged(this.form)">
 <%
-	if (liteEC.getDefaultRouteID() > 0) {
-		LiteYukonPAObject dftRoute = PAOFuncs.getLiteYukonPAO( liteEC.getDefaultRouteID() );
-%>
-                                        <option value="<%= dftRoute.getYukonID() %>" style="color:#999999"><%= dftRoute.getPaoName() %> (Default)</option>
-<%
-	}
-	
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
 	for (int i = 0; i < routes.length; i++) {
-		if (routes[i].getYukonID() == liteEC.getDefaultRouteID()) continue;
 %>
                                         <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
 <%
+	}
+	if (inheritedRoutes != null) {
+		for (int i = 0; i < inheritedRoutes.length; i++) {
+%>
+                                        <option value="<%= inheritedRoutes[i].getYukonID() %>" style="color:#999999"><%= inheritedRoutes[i].getPaoName() %></option>
+<%
+		}
 	}
 %>
                                       </select>

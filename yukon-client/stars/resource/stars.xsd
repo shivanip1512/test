@@ -1100,6 +1100,7 @@
 				<xs:element name="PrimaryContact" type="stars-CustomerContact" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="companyID" type="xs:int"/>
+			<xs:attribute name="inherited" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ServiceCompanies">

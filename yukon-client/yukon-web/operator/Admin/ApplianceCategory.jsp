@@ -40,6 +40,8 @@
 		
 		if (!programFound) availPrograms.add( allPrograms[i] );
 	}
+	
+	String viewOnly = category.getInherited()? "disabled" : "";
 %>
 <html>
 <head>
@@ -64,17 +66,23 @@ function changeProgramIcons(form) {
 
 function sameAsName(form, checked) {
 	form.SameAsName.checked = checked;
+<% if (!category.getInherited()) { %>
 	form.DispName.disabled = checked;
+<% } %>
 }
 
 function sameAsProgName(form, checked) {
 	form.SameAsProgName.checked = checked;
+<% if (!category.getInherited()) { %>
 	form.ProgDispName.disabled = checked;
+<% } %>
 }
 
 function sameAsDispName(form, checked) {
 	form.SameAsDispName.checked = checked;
+<% if (!category.getInherited()) { %>
 	form.ProgShortName.disabled = checked;
+<% } %>
 }
 
 var progChanged = false;
@@ -284,7 +292,9 @@ function saveProgramConfig(form) {
 
 function clearProgramConfig(form) {
 	sameAsProgName(form, false);
+<% if (!category.getInherited()) { %>
 	form.SameAsProgName.disabled = false;
+<% } %>
 	sameAsDispName(form, false);
 	
 	form.ProgDispName.value = "";
@@ -305,6 +315,7 @@ function showProgramConfig(form) {
 	var progList = document.getElementById("Program");
 	
 	if (curProgIdx >= 0 && progChanged) {
+<% if (!category.getInherited()) { %>
 		if (confirm("Program configuration has been changed, do you want to save the changes?")) {
 			if (!saveProgramConfig(form)) {	// Failed to save the program configuration
 				for (i = 0; i < progList.length; i++) {
@@ -316,6 +327,7 @@ function showProgramConfig(form) {
 			}
 		}
 		else
+<% } %>
 			progChanged = false;
 	}
 	
@@ -329,11 +341,15 @@ function showProgramConfig(form) {
 		form.ProgDispName.value = dispName[curProgIdx];
 		if (deviceID[curProgIdx] > 0) {
 			sameAsProgName(form, dispName[curProgIdx] == "");
+<% if (!category.getInherited()) { %>
 			form.SameAsProgName.disabled = false;
+<% } %>
 		}
 		else {
 			sameAsProgName(form, false);
+<% if (!category.getInherited()) { %>
 			form.SameAsProgName.disabled = true;
+<% } %>
 		}
 		form.ProgShortName.value = shortName[curProgIdx];
 		sameAsDispName(form, shortName[curProgIdx] == "");
@@ -344,7 +360,9 @@ function showProgramConfig(form) {
 		form.IconNameControl.value = iconNameControl[curProgIdx];
 		form.IconNameEnvrn.value = iconNameEnvrn[curProgIdx];
 		changeProgramIcons(form);
+<% if (!category.getInherited()) { %>
 		form.SaveProgConfig.disabled = false;
+<% } %>
 	}
 }
 
@@ -369,6 +387,7 @@ function moveDown(form) {
 }
 
 function prepareSubmit(form) {
+<% if (!category.getInherited()) { %>
 	if (curProgIdx >= 0 && progChanged) {
 		if (confirm("Program configuration has been changed, do you want to save the changes?"))
 			if (!saveProgramConfig(form)) return false;
@@ -398,6 +417,9 @@ function prepareSubmit(form) {
 	}
 	
 	return true;
+<% } else { %>
+	return false;
+<% } %>
 }
 
 function init() {
@@ -456,7 +478,7 @@ function init() {
                           Name:</td>
                         <td width="85%" class="TableCell"> 
                           <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>">
-                          <input type="checkbox" name="SameAsName" value="true" onClick="sameAsName(this.form, this.checked)">
+                          <input type="checkbox" name="SameAsName" value="true" onClick="sameAsName(this.form, this.checked)" <%= viewOnly %>>
                           Same as category name </td>
                       </tr>
                       <tr> 
@@ -481,7 +503,7 @@ function init() {
                             <tr> 
                               <td width="50%"> 
                                 <input type="text" name="IconName" size="20" value="<%= category.getStarsWebConfig().getLogoLocation() %>">
-                                <input type="button" name="Preview" value="Preview" onClick="changeIcon(this.form)">
+                                <input type="button" name="Preview" value="Preview" onClick="changeIcon(this.form)" <%= viewOnly %>>
                               </td>
                               <td width="50%"> <img id="CategoryIcon" align="middle"></td>
                             </tr>
@@ -516,9 +538,9 @@ function init() {
                                       </select>
                                     </td>
                                     <td width="50" align="center"> 
-                                      <input type="button" id="AddButton" name="Remove" value=">>" onClick="addProgram(this.form)">
+                                      <input type="button" id="AddButton" name="Remove" value=">>" onClick="addProgram(this.form)" <%= viewOnly %>>
                                       <br>
-                                      <input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeProgram(this.form)">
+                                      <input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeProgram(this.form)" <%= viewOnly %>>
                                     </td>
                                     <td width="175" valign="top"> Assigned Programs:<br>
                                       <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165">
@@ -537,9 +559,9 @@ function init() {
                                       * means virtual program<br>
                                     </td>
                                     <td align="center"> 
-                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
+                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)" <%= viewOnly %>>
                                       <br>
-                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
+                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)" <%= viewOnly %>>
                                     </td>
                                   </tr>
                                 </table>
@@ -582,14 +604,14 @@ function init() {
                         <td width="15%" align="right">Display Name:</td>
                         <td width="85%"> 
                           <input type="text" name="ProgDispName" size="20" onchange="setProgramChanged()">
-                          <input type="checkbox" name="SameAsProgName" value="true" onclick="sameAsProgName(this.form, this.checked);setProgramChanged()">
+                          <input type="checkbox" name="SameAsProgName" value="true" onclick="sameAsProgName(this.form, this.checked);setProgramChanged()" <%= viewOnly %>>
                           Same as program name</td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Short Name:</td>
                         <td width="85%"> 
                           <input type="text" name="ProgShortName" size="20" onchange="setProgramChanged()">
-                          <input type="checkbox" name="SameAsDispName" value="true" onclick="sameAsDispName(this.form, this.checked);setProgramChanged()">
+                          <input type="checkbox" name="SameAsDispName" value="true" onclick="sameAsDispName(this.form, this.checked);setProgramChanged()" <%= viewOnly %>>
                           Same as display name </td>
                       </tr>
                       <tr> 
@@ -658,7 +680,7 @@ function init() {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
                                     <td> 
-                                      <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)">
+                                      <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)" <%= viewOnly %>>
                                     </td>
                                   </tr>
                                 </table>
@@ -692,10 +714,10 @@ function init() {
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 
-                    <input type="submit" name="Submit" value="Submit">
+                    <input type="submit" name="Submit" value="Submit" <%= viewOnly %>>
                   </td>
                   <td width="205"> 
-                    <input type="button" name="Reset" value="Reset" onclick="location.reload()">
+                    <input type="button" name="Reset" value="Reset" onclick="location.reload()" <%= viewOnly %>>
                   </td>
                   <td width="75" align="right"> 
                     <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">

@@ -100,6 +100,48 @@ public class StarsServiceCompanyDescriptor extends org.exolab.castor.xml.util.XM
         }
         desc.setValidator(fieldValidator);
         
+        //-- _inherited
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_inherited", "inherited", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsServiceCompany target = (StarsServiceCompany) object;
+                if(!target.hasInherited())
+                    return null;
+                return new Boolean(target.getInherited());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsServiceCompany target = (StarsServiceCompany) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteInherited();
+                        return;
+                    }
+                    target.setInherited( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _inherited
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _companyName

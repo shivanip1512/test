@@ -37,7 +37,9 @@ public class ServiceCompany extends DBPersistent {
 
     public void delete() throws java.sql.SQLException {
     	// delete from mapping table
-    	delete("ECToGenericMapping", "ItemID", getServiceCompany().getCompanyID());
+    	delete("ECToGenericMapping",
+				new String[] {"ItemID", "MappingCategory"},
+				new Object[] {getServiceCompany().getCompanyID(), "ServiceCompany"});
     	
         getServiceCompany().delete();
         

@@ -20,6 +20,9 @@ public class LiteServiceCompany extends LiteBase {
 	private int primaryContactID = 0;
 	private String hiType = null;
 	
+	// Direct owner of this service company, used to tell if it is inherited from the parent company
+	private LiteStarsEnergyCompany directOwner = null;
+	
 	public LiteServiceCompany() {
 		super();
 		setLiteType( LiteTypes.STARS_SERVICE_COMPANY );
@@ -133,6 +136,20 @@ public class LiteServiceCompany extends LiteBase {
 	 */
 	public void setPrimaryContactID(int primaryContactID) {
 		this.primaryContactID = primaryContactID;
+	}
+
+	/**
+	 * @return
+	 */
+	public LiteStarsEnergyCompany getDirectOwner() {
+		return directOwner;
+	}
+
+	/**
+	 * @param company
+	 */
+	public void setDirectOwner(LiteStarsEnergyCompany company) {
+		directOwner = company;
 	}
 
 }

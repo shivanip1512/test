@@ -152,13 +152,47 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 		
 		DefaultDatabaseCache.getInstance().releaseAllCache();
 		YukonListFuncs.releaseAllConstants();
+		
+		// Reload data into the cache if necessary
+		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+		if (CtiUtilities.isTrue( preloadData ))
+			StarsDatabaseCache.getInstance().loadData();
 	}
 
-	public void refreshCache(LiteStarsEnergyCompany company) {
-		company.clear();
+	public void refreshCache(LiteStarsEnergyCompany energyCompany) {
 		webConfigList = null;
-		
 		YukonListFuncs.releaseAllConstants();
+		
+		// release cache for all descendants of the current company as well
+		final ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			company.clear();
+		}
+		
+		// Reload data into the cache if necessary
+		String preloadData = RoleFuncs.getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
+		if (CtiUtilities.isTrue( preloadData )) {
+			getAllWebConfigurations();
+			
+			Thread initThrd = new Thread(new Runnable() {
+				public void run() {
+					for (int i = 0; i < descendants.size(); i++) {
+						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+						if (!ECUtils.isDefaultEnergyCompany( company )) {
+							// Fire the data loading threads off, and wait for all of them to stop
+							company.loadAllInventory( false );
+							company.loadAllCustomerAccounts( false );
+							company.loadAllWorkOrders( false );
+							company.loadAllInventory( true );
+							company.loadAllCustomerAccounts( true );
+							company.loadAllWorkOrders( true );
+						}
+					}
+				}
+			});
+			initThrd.start();
+		}
 	}
 
 	/*
@@ -356,7 +390,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 					contOwner = energyCompany;
 				}
 				else {
-					ArrayList servCompanies = energyCompany.getAllServiceCompanies();
+					ArrayList servCompanies = energyCompany.getServiceCompanies();
 					for (int j = 0; j < servCompanies.size(); j++) {
 						LiteServiceCompany servCompany = (LiteServiceCompany) servCompanies.get(j);
 						if (servCompany.getPrimaryContactID() == msg.getId()) {
@@ -488,11 +522,15 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 					StarsLiteFactory.setStarsEnergyCompany( starsEC, energyCompany );
 				}
 				else if (contOwner instanceof LiteServiceCompany) {
-					for (int i = 0; i < energyCompany.getStarsServiceCompanies().getStarsServiceCompanyCount(); i++) {
-						StarsServiceCompany starsSC = energyCompany.getStarsServiceCompanies().getStarsServiceCompany(i);
-						if (starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
-							StarsLiteFactory.setStarsCustomerContact( starsSC.getPrimaryContact(), liteContact );
-							break;
+					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+					for (int i = 0; i < descendants.size(); i++) {
+						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+						for (int j = 0; j < company.getStarsServiceCompanies().getStarsServiceCompanyCount(); j++) {
+							StarsServiceCompany starsSC = company.getStarsServiceCompanies().getStarsServiceCompany(j);
+							if (starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
+								StarsLiteFactory.setStarsCustomerContact( starsSC.getPrimaryContact(), liteContact );
+								break;
+							}
 						}
 					}
 				}

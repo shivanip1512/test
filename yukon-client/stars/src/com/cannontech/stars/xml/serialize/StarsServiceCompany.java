@@ -39,6 +39,13 @@ public class StarsServiceCompany implements java.io.Serializable {
     **/
     private boolean _has_companyID;
 
+    private boolean _inherited;
+
+    /**
+     * keeps track of state for field: _inherited
+    **/
+    private boolean _has_inherited;
+
     private java.lang.String _companyName;
 
     private java.lang.String _mainPhoneNumber;
@@ -71,6 +78,13 @@ public class StarsServiceCompany implements java.io.Serializable {
     } //-- void deleteCompanyID() 
 
     /**
+    **/
+    public void deleteInherited()
+    {
+        this._has_inherited= false;
+    } //-- void deleteInherited() 
+
+    /**
      * Returns the value of field 'companyAddress'.
      * 
      * @return the value of field 'companyAddress'.
@@ -99,6 +113,16 @@ public class StarsServiceCompany implements java.io.Serializable {
     {
         return this._companyName;
     } //-- java.lang.String getCompanyName() 
+
+    /**
+     * Returns the value of field 'inherited'.
+     * 
+     * @return the value of field 'inherited'.
+    **/
+    public boolean getInherited()
+    {
+        return this._inherited;
+    } //-- boolean getInherited() 
 
     /**
      * Returns the value of field 'mainFaxNumber'.
@@ -136,6 +160,13 @@ public class StarsServiceCompany implements java.io.Serializable {
     {
         return this._has_companyID;
     } //-- boolean hasCompanyID() 
+
+    /**
+    **/
+    public boolean hasInherited()
+    {
+        return this._has_inherited;
+    } //-- boolean hasInherited() 
 
     /**
     **/
@@ -204,6 +235,17 @@ public class StarsServiceCompany implements java.io.Serializable {
     {
         this._companyName = companyName;
     } //-- void setCompanyName(java.lang.String) 
+
+    /**
+     * Sets the value of field 'inherited'.
+     * 
+     * @param inherited the value of field 'inherited'.
+    **/
+    public void setInherited(boolean inherited)
+    {
+        this._inherited = inherited;
+        this._has_inherited = true;
+    } //-- void setInherited(boolean) 
 
     /**
      * Sets the value of field 'mainFaxNumber'.

@@ -46,13 +46,13 @@ import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 
 /**
@@ -63,6 +63,9 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
  */
 public class StarsAdminUtil {
 
+	public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
+	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
+	
 	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
 		if (energyCompany.getDefaultRouteID() != routeID) {
 			if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
@@ -117,7 +120,7 @@ public class StarsAdminUtil {
 	}
 	
 	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
-		String sql = "SELECT exc.LMGroupID, opgrp.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro, UserPaoOwner us " +
+		String sql = "SELECT exc.LMGroupID, us.PaoID FROM LMGroupExpressCom exc, GenericMacro macro, UserPaoOwner us " +
 				"WHERE us.UserID = " + energyCompany.getUserID() + " AND us.PaoID = macro.OwnerID " +
 				"AND macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -234,48 +237,53 @@ public class StarsAdminUtil {
 	public static void deleteServiceCompany(int companyID, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-		// set InstallationCompanyID = 0 for all inventory assigned to this service company
-		ArrayList inventory = energyCompany.getAllInventory();
-		
-		for (int j = 0; j < inventory.size(); j++) {
-			LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
+		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 			
-			if (liteInv.getInstallationCompanyID() == companyID) {
-				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-						new com.cannontech.database.db.stars.hardware.InventoryBase();
-				StarsLiteFactory.setInventoryBase( invDB, liteInv );
-				invDB.setInstallationCompanyID( new Integer(CtiUtilities.NONE_ID) );
+			// set InstallationCompanyID = 0 for all inventory assigned to this service company
+			ArrayList inventory = company.getAllInventory();
+			for (int j = 0; j < inventory.size(); j++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
 				
-				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
-	    		
-				liteInv.setInstallationCompanyID( CtiUtilities.NONE_ID );
+				if (liteInv.getInstallationCompanyID() == companyID) {
+					com.cannontech.database.db.stars.hardware.InventoryBase invDB =
+							new com.cannontech.database.db.stars.hardware.InventoryBase();
+					StarsLiteFactory.setInventoryBase( invDB, liteInv );
+					invDB.setInstallationCompanyID( new Integer(CtiUtilities.NONE_ID) );
+					
+					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
+							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+		    		
+					liteInv.setInstallationCompanyID( CtiUtilities.NONE_ID );
+				}
 			}
-		}
-		
-		// set ServiceCompanyID = 0 for all work orders assigned to this service company
-		ArrayList orders = energyCompany.getAllWorkOrders();
-		for (int j = 0; j < orders.size(); j++) {
-			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) orders.get(j);
-			if (liteOrder.getServiceCompanyID() == companyID) {
-				com.cannontech.database.db.stars.report.WorkOrderBase order =
-						(com.cannontech.database.db.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
-				order.setServiceCompanyID( new Integer(CtiUtilities.NONE_ID) );
+			
+			// set ServiceCompanyID = 0 for all work orders assigned to this service company
+			ArrayList orders = company.getAllWorkOrders();
+			for (int j = 0; j < orders.size(); j++) {
+				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) orders.get(j);
 				
-				order = (com.cannontech.database.db.stars.report.WorkOrderBase)
-						Transaction.createTransaction( Transaction.UPDATE, order ).execute();
-				
-				liteOrder.setServiceCompanyID( CtiUtilities.NONE_ID );
+				if (liteOrder.getServiceCompanyID() == companyID) {
+					com.cannontech.database.db.stars.report.WorkOrderBase order =
+							(com.cannontech.database.db.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
+					order.setServiceCompanyID( new Integer(CtiUtilities.NONE_ID) );
+					
+					order = (com.cannontech.database.db.stars.report.WorkOrderBase)
+							Transaction.createTransaction( Transaction.UPDATE, order ).execute();
+					
+					liteOrder.setServiceCompanyID( CtiUtilities.NONE_ID );
+				}
 			}
 		}
 		
 		LiteServiceCompany liteCompany = energyCompany.getServiceCompany( companyID );
 		
-		com.cannontech.database.data.stars.report.ServiceCompany company =
+		com.cannontech.database.data.stars.report.ServiceCompany servCompany =
 				new com.cannontech.database.data.stars.report.ServiceCompany();
-		StarsLiteFactory.setServiceCompany( company.getServiceCompany(), liteCompany );
+		StarsLiteFactory.setServiceCompany( servCompany.getServiceCompany(), liteCompany );
 		
-		Transaction.createTransaction( Transaction.DELETE, company ).execute();
+		Transaction.createTransaction( Transaction.DELETE, servCompany ).execute();
 		
 		energyCompany.deleteAddress( liteCompany.getAddressID() );
 		energyCompany.deleteServiceCompany( companyID );
@@ -283,19 +291,16 @@ public class StarsAdminUtil {
 		LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		
-		StarsServiceCompanies starsCompanies = energyCompany.getStarsServiceCompanies();
-		for (int i = 0; i < starsCompanies.getStarsServiceCompanyCount(); i++) {
-			if (starsCompanies.getStarsServiceCompany(i).getCompanyID() == companyID) {
-				starsCompanies.removeStarsServiceCompany(i);
-				break;
-			}
+		for (int i = 0; i < descendants.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			company.updateStarsServiceCompanies();
 		}
 	}
 	
 	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-		ArrayList companies = energyCompany.getAllServiceCompanies();
+		ArrayList companies = energyCompany.getServiceCompanies();
 		
 		for (int i = 0; i < companies.size(); i++) {
 			LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);

@@ -18,7 +18,7 @@
 		}
 	}
 	
-	String viewOnly = (liteEC.getParent() != null)? viewOnly = "disabled" : "";
+	String viewOnly = (liteEC.getParent() != null)? "disabled" : "";
 %>
 <html>
 <head>
@@ -238,6 +238,7 @@ function prepareSubmit(form) {
 <%	if (isOptOutPeriodCus) { %>
 function setSameAsOp(form, checked) {
 	form.SameAsOp.checked = checked;
+<% if (liteEC.getParent() == null) { %>
 	form.WhereIsList.disabled = checked;
 	form.Ordering.disabled = checked;
 	form.Label.disabled = checked;
@@ -249,14 +250,17 @@ function setSameAsOp(form, checked) {
 	form.EntryText.disabled = checked;
 	form.Save.disabled = checked;
 	form.DefaultListEntries.disabled = checked;
+<% } %>
 	if (!checked) showEntry(form);
 }
 <%	} %>
 
 function changeOrdering(form) {
+<% if (liteEC.getParent() == null) { %>
 	var disabled = (form.Ordering.value == "A");
 	form.MoveUp.disabled = disabled;
 	form.MoveDown.disabled = disabled;
+<% } %>
 }
 
 function init() {
@@ -314,7 +318,7 @@ function init() {
                               <td width="30%" class="MainText"><%= listName %></td>
                               <td width="70%" class="TableCell"> 
                                 <% if (isOptOutPeriodCus) { %>
-                                <input type="checkbox" name="SameAsOp" value="true" onClick="setSameAsOp(this.form, this.checked)">
+                                <input type="checkbox" name="SameAsOp" value="true" onClick="setSameAsOp(this.form, this.checked)" <%= viewOnly %>>
                                 Same As Operator Side List 
                                 <% } %>
                               </td>
@@ -427,7 +431,7 @@ function init() {
                                 </select>
                                 <br>
                                 <%	if (list.getListID() != LiteStarsEnergyCompany.FAKE_LIST_ID) { %>
-                                <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)">
+                                <input type="button" name="Default" value="Restore Default List" onclick="restoreDefault(this.form)" <%= viewOnly %>>
                                 <%	} %>
                               </td>
                               <td width="50%"> 

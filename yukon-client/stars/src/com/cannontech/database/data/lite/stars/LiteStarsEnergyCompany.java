@@ -604,6 +604,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			loadOrdersTaskID = 0;
 		}
 		
+		accountsLoaded = false;
+		inventoryLoaded = false;
+		workOrdersLoaded = false;
+		
 		custAccountInfos = null;
 		addresses = null;
 		pubPrograms = null;
@@ -622,8 +626,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		nextCallNo = 0;
 		nextOrderNo = 0;
-		inventoryLoaded = false;
-		workOrdersLoaded = false;
 		hierarchyLoaded = false;
 		
 		dftRouteID = CtiUtilities.NONE_ID;
@@ -773,7 +775,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized ArrayList getAllApplianceCategories() {
 		ArrayList appCats = new ArrayList( getApplianceCategories() );
 		if (getParent() != null)
-			appCats.addAll( 0, getParent().getApplianceCategories() );
+			appCats.addAll( 0, getParent().getAllApplianceCategories() );
     	
 		return appCats;
 	}
@@ -1149,19 +1151,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public synchronized ArrayList getAllServiceCompanies() {
+	public synchronized ArrayList getServiceCompanies() {
 		if (serviceCompanies == null) {
 			serviceCompanies = new ArrayList();
 			
 			com.cannontech.database.db.stars.report.ServiceCompany[] companies =
 					com.cannontech.database.db.stars.report.ServiceCompany.getAllServiceCompanies( getEnergyCompanyID() );
-			for (int i = 0; i < companies.length; i++)
-				serviceCompanies.add( StarsLiteFactory.createLite(companies[i]) );
+			for (int i = 0; i < companies.length; i++) {
+				LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite(companies[i]);
+				liteCompany.setDirectOwner( this );
+				serviceCompanies.add( liteCompany );
+			}
 			
 			CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyID() );
 		}
 		
 		return serviceCompanies;
+	}
+	
+	public synchronized ArrayList getAllServiceCompanies() {
+		ArrayList companies = new ArrayList( getServiceCompanies() );
+		if (getParent() != null)
+			companies.addAll( 0, getParent().getAllServiceCompanies() );
+		
+		return companies;
 	}
 	
 	public synchronized ArrayList getOperatorLoginIDs() {
@@ -1190,24 +1203,83 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return operatorLoginIDs;
 	}
 	
+	public LiteYukonPAObject[] getRoutes(LiteYukonPAObject[] inheritedRoutes) {
+		ArrayList routeList = new ArrayList();
+		ArrayList routeIDs = getRouteIDs();
+		
+		synchronized (routeIDs) {
+			Iterator it = routeIDs.iterator();
+			while (it.hasNext()) {
+				Integer routeID = (Integer) it.next();
+				LiteYukonPAObject liteRoute = PAOFuncs.getLiteYukonPAO( routeID.intValue() );
+				
+				// Check to see if the route is already assigned to the parent company, if so, remove it from the member
+				boolean foundInParent = false;
+				if (inheritedRoutes != null) {
+					for (int j = 0; j < inheritedRoutes.length; j++) {
+						if (inheritedRoutes[j].equals( liteRoute )) {
+							foundInParent = true;
+							break;
+						}
+					}
+				}
+				
+				if (foundInParent) {
+					ECToGenericMapping map = new ECToGenericMapping();
+					map.setEnergyCompanyID( getEnergyCompanyID() );
+					map.setItemID( routeID );
+					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
+					
+					try {
+						Transaction.createTransaction( Transaction.DELETE, map ).execute();
+					}
+					catch (TransactionException e) {
+						CTILogger.error( e.getMessage(), e );
+					}
+					
+					it.remove();
+				}
+				else
+					routeList.add( liteRoute );
+			}
+		}
+		
+		java.util.Collections.sort( routeList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		
+		LiteYukonPAObject[] routes = new LiteYukonPAObject[ routeList.size() ];
+		routeList.toArray( routes );
+		return routes;
+	}
+	
 	/**
 	 * Returns all routes assigned to this energy company (or all routes in yukon
-	 * if it is a single energy company system), ordered alphabetically
+	 * if it is a single energy company system), ordered alphabetically.
 	 */
-	public synchronized LiteYukonPAObject[] getAllRoutes() {
+	public LiteYukonPAObject[] getAllRoutes() {
 		if (Boolean.valueOf(getEnergyCompanySetting( EnergyCompanyRole.SINGLE_ENERGY_COMPANY )).booleanValue()) {
 			return PAOFuncs.getAllLiteRoutes();
 		}
 		else {
-			ArrayList routeIDs = getRouteIDs();
-			ArrayList rtList = new ArrayList();
-			for (int i = 0; i < routeIDs.size(); i++)
-				rtList.add( PAOFuncs.getLiteYukonPAO(((Integer)routeIDs.get(i)).intValue()) );
-			java.util.Collections.sort( rtList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+			ArrayList routeList = new ArrayList();
 			
-			LiteYukonPAObject[] routes = new LiteYukonPAObject[ rtList.size() ];
-			rtList.toArray( routes );
-			return routes;
+			LiteYukonPAObject[] inheritedRoutes = null;
+			if (getParent() != null)
+				inheritedRoutes = getParent().getAllRoutes();
+			
+			LiteYukonPAObject[] routes = getRoutes( inheritedRoutes );
+			for (int i = 0; i < routes.length; i++)
+				routeList.add( routes[i] );
+			
+			if (inheritedRoutes != null) {
+				for (int i = 0; i < inheritedRoutes.length; i++)
+					routeList.add( inheritedRoutes[i] );
+			}
+			
+			java.util.Collections.sort( routeList, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+			
+			LiteYukonPAObject[] allRoutes = new LiteYukonPAObject[ routeList.size() ];
+			routeList.toArray( allRoutes );
+			return allRoutes;
 		}
 	}
 	
@@ -1600,12 +1672,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public void addServiceCompany(LiteServiceCompany serviceCompany) {
-		ArrayList serviceCompanies = getAllServiceCompanies();
+		serviceCompany.setDirectOwner( this );
+		ArrayList serviceCompanies = getServiceCompanies();
 		synchronized (serviceCompanies) { serviceCompanies.add(serviceCompany); }
 	}
 	
 	public LiteServiceCompany deleteServiceCompany(int serviceCompanyID) {
-		ArrayList serviceCompanies = getAllServiceCompanies();
+		ArrayList serviceCompanies = getServiceCompanies();
 		synchronized (serviceCompanies) {
 			for (int i = 0; i < serviceCompanies.size(); i++) {
 				LiteServiceCompany serviceCompany = (LiteServiceCompany) serviceCompanies.get(i);
@@ -2839,10 +2912,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
+	public synchronized void updateStarsEnrollmentPrograms() {
+		if (starsEnrPrograms == null) return;
+		
+		StarsLiteFactory.setStarsEnrollmentPrograms( starsEnrPrograms, getAllApplianceCategories(), this );
+	}
+	
 	public synchronized StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
-		if (starsEnrPrograms == null)
-			starsEnrPrograms = StarsLiteFactory.createStarsEnrollmentPrograms(
-					getAllApplianceCategories(), this );
+		if (starsEnrPrograms == null) {
+			starsEnrPrograms = new StarsEnrollmentPrograms();
+			updateStarsEnrollmentPrograms();
+		}
 		return starsEnrPrograms;
 	}
 	
@@ -2852,24 +2932,31 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsCustFAQs;
 	}
 	
+	public synchronized void updateStarsServiceCompanies() {
+		if (starsServCompanies == null) return;
+		
+		starsServCompanies.removeAllStarsServiceCompany();
+		
+		// Always add a "(none)" to the service company list
+		StarsServiceCompany starsServCompany = new StarsServiceCompany();
+		starsServCompany.setCompanyID( 0 );
+		starsServCompany.setCompanyName( "(none)" );
+		starsServCompanies.addStarsServiceCompany( starsServCompany );
+		
+		ArrayList servCompanies = getAllServiceCompanies();
+		for (int i = 0; i < servCompanies.size(); i++) {
+			LiteServiceCompany liteServCompany = (LiteServiceCompany) servCompanies.get(i);
+			
+			starsServCompany = new StarsServiceCompany();
+			StarsLiteFactory.setStarsServiceCompany(starsServCompany, liteServCompany, this);
+			starsServCompanies.addStarsServiceCompany( starsServCompany );
+		}
+	}
+	
 	public synchronized StarsServiceCompanies getStarsServiceCompanies() {
 		if (starsServCompanies == null) {
 			starsServCompanies = new StarsServiceCompanies();
-			
-			// Always add a "(none)" to the service company list
-			StarsServiceCompany starsServCompany = new StarsServiceCompany();
-			starsServCompany.setCompanyID( 0 );
-			starsServCompany.setCompanyName( "(none)" );
-			starsServCompanies.addStarsServiceCompany( starsServCompany );
-			
-			ArrayList servCompanies = getAllServiceCompanies();
-			for (int i = 0; i < servCompanies.size(); i++) {
-				LiteServiceCompany liteServCompany = (LiteServiceCompany) servCompanies.get(i);
-				
-				starsServCompany = new StarsServiceCompany();
-				StarsLiteFactory.setStarsServiceCompany(starsServCompany, liteServCompany, this);
-				starsServCompanies.addStarsServiceCompany( starsServCompany );
-			}
+			updateStarsServiceCompanies();
 		}
 		
 		return starsServCompanies;

@@ -1609,6 +1609,7 @@ public class StarsLiteFactory {
 	
 	public static void setStarsServiceCompany(StarsServiceCompany starsCompany, LiteServiceCompany liteCompany, LiteStarsEnergyCompany energyCompany) {
 		starsCompany.setCompanyID( liteCompany.getCompanyID() );
+		starsCompany.setInherited( liteCompany.getDirectOwner() != energyCompany );
 		starsCompany.setCompanyName( ServerUtils.forceNotNull(liteCompany.getCompanyName()) );
 		starsCompany.setMainPhoneNumber( ServerUtils.forceNotNone(liteCompany.getMainPhoneNumber()) );
 		starsCompany.setMainFaxNumber( ServerUtils.forceNotNone(liteCompany.getMainFaxNumber()) );
@@ -2384,16 +2385,14 @@ public class StarsLiteFactory {
 		return starsCustSelLists;
 	}
 	
-	public static StarsEnrollmentPrograms createStarsEnrollmentPrograms(ArrayList liteAppCats, LiteStarsEnergyCompany energyCompany) {
-		StarsEnrollmentPrograms starsEnrPrograms = new StarsEnrollmentPrograms();
-        	
+	public static void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsAppCats, ArrayList liteAppCats, LiteStarsEnergyCompany energyCompany) {
+		starsAppCats.removeAllStarsApplianceCategory();
+		
 		for (int i = 0; i < liteAppCats.size(); i++) {
 			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-			starsEnrPrograms.addStarsApplianceCategory(
+			starsAppCats.addStarsApplianceCategory(
 				StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
 		}
-        
-		return starsEnrPrograms;
 	}
 	
 	public static StarsCustomerFAQs createStarsCustomerFAQs(ArrayList liteFAQs) {

@@ -223,8 +223,8 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				// Delete all service companies
 				currentAction = "Deleting service companies";
 				
-				for (int i = 0; i < energyCompany.getAllServiceCompanies().size(); i++) {
-					LiteServiceCompany liteCompany = (LiteServiceCompany) energyCompany.getAllServiceCompanies().get(i);
+				for (int i = 0; i < energyCompany.getServiceCompanies().size(); i++) {
+					LiteServiceCompany liteCompany = (LiteServiceCompany) energyCompany.getServiceCompanies().get(i);
 					com.cannontech.database.data.stars.report.ServiceCompany company =
 							new com.cannontech.database.data.stars.report.ServiceCompany();
 					StarsLiteFactory.setServiceCompany( company.getServiceCompany(), liteCompany );

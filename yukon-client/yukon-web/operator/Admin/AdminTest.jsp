@@ -202,11 +202,22 @@ function removeAllMembers(form) {
                                   <td class="TableCell" width="5%">&nbsp;</td>
                                   <td class="TableCell" width="70%"> 
 <%
-	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	LiteYukonPAObject[] inheritedRoutes = null;
+	if (liteEC.getParent() != null)
+		inheritedRoutes= liteEC.getParent().getAllRoutes();
+	LiteYukonPAObject[] routes = liteEC.getRoutes(inheritedRoutes);
+	
 	for (int i = 0; i < routes.length && i < 3; i++) {
 %>
                                     <%= routes[i].getPaoName() %><br>
 <%
+	}
+	if (routes.length < 3 && inheritedRoutes != null) {
+		for (int i = 0; i < inheritedRoutes.length && i < 3 - routes.length; i++) {
+%>
+                                    <%= inheritedRoutes[i].getPaoName() %> (Inherited)<br>
+<%
+		}
 	}
 	if (routes.length > 3) {
 %>
@@ -294,8 +305,9 @@ function removeAllMembers(form) {
                                     <%
 		if (category.getInherited()) {
 %>
-                                    <td width="25%" class="TableCell">(Inherited) 
-                                    </td>
+                                    <td width="25%" class="TableCell">
+                                      <input type="button" name="Edit9" value="View" onClick="location.href='ApplianceCategory.jsp?Category=<%= i %>'">
+                                      (Inherited) </td>
                                     <%
 		} else {
 %>
@@ -352,12 +364,24 @@ function removeAllMembers(form) {
                                   <tr> 
                                     <td class="TableCell" width="5%">&nbsp;</td>
                                     <td class="TableCell" width="70%"><%= company.getCompanyName() %></td>
+<%
+			if (company.getInherited()) {
+%>
+                                    <td width="25%" class="TableCell">
+                                      <input type="button" name="Edit8" value="View" onClick="editServiceCompany(this.form, <%= i %>)">
+                                      (Inherited) </td>
+<%
+			} else {
+%>
                                     <td width="10%" class="TableCell"> 
                                       <input type="button" name="Edit" value="Edit" onclick="editServiceCompany(this.form, <%= i %>)">
                                     </td>
                                     <td width="15%" class="TableCell"> 
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
                                     </td>
+<%
+			}
+%>
                                   </tr>
                                   <%
 		}
@@ -543,11 +567,18 @@ function removeAllMembers(form) {
                                     <hr width="90%" align="left">
                                   </td>
                                   <td class="TableCell" width="25%"> 
-<% if (liteEC.getParent() == null) { %>
+<%
+		if (liteEC.getParent() == null) {
+%>
                                     <input type="button" name="Edit" value="Edit" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
-<% } else { %>
+<%
+		} else {
+%>
                                     <input type="button" name="Edit" value="View" onclick="location.href='SelectionList.jsp?List=<%= list.getListName() %>'">
-<% } %>
+                                    (Inherited) 
+<%
+		}
+%>
                                   </td>
                                 </tr>
                                 <%

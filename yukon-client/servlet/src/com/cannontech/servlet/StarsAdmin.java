@@ -68,7 +68,6 @@ import com.cannontech.stars.xml.serialize.AnswerType;
 import com.cannontech.stars.xml.serialize.CompanyAddress;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.QuestionType;
-import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQ;
@@ -76,7 +75,6 @@ import com.cannontech.stars.xml.serialize.StarsCustomerFAQGroup;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
 import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
-import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
@@ -99,10 +97,6 @@ import com.cannontech.user.UserUtils;
  */
 public class StarsAdmin extends HttpServlet {
     
-	public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
-	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
-    
-	private static final String NEW_ADDRESS = "NEW_ADDRESS";
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     
 	private String referer = null;
@@ -301,11 +295,11 @@ public class StarsAdmin extends HttpServlet {
 			StarsCustomerAddress starsAddr = null;
 			
 			if (referer.equalsIgnoreCase("EnergyCompany.jsp")) {
-				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
+				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( StarsAdminUtil.ENERGY_COMPANY_TEMP );
 				starsAddr = ecTemp.getCompanyAddress();
 			}
 			else if (referer.startsWith("ServiceCompany.jsp")) {
-				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( SERVICE_COMPANY_TEMP );
+				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
 				starsAddr = scTemp.getCompanyAddress();
 			}
 			
@@ -441,7 +435,7 @@ public class StarsAdmin extends HttpServlet {
 			if (newContact) {
 				com.cannontech.database.db.customer.Address addr =
 						new com.cannontech.database.db.customer.Address();
-				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( ENERGY_COMPANY_TEMP );
+				StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( StarsAdminUtil.ENERGY_COMPANY_TEMP );
 				if (ecTemp != null)
 					StarsFactory.setCustomerAddress( addr, ecTemp.getCompanyAddress() );
 				else
@@ -532,7 +526,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			StarsLiteFactory.setStarsEnergyCompany( ec, energyCompany );
         	
-			session.removeAttribute( ENERGY_COMPANY_TEMP );
+			session.removeAttribute( StarsAdminUtil.ENERGY_COMPANY_TEMP );
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");
 		}
 		catch (Exception e) {
@@ -773,20 +767,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			for (int i = 0; i < descendants.size(); i++) {
 				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-				StarsEnrollmentPrograms starsAppCats = company.getStarsEnrollmentPrograms();
-				StarsApplianceCategory starsAppCat = StarsLiteFactory.createStarsApplianceCategory( liteAppCat, company );
-				
-				if (newAppCat) {
-					starsAppCats.addStarsApplianceCategory( starsAppCat );
-				}
-				else {
-					for (int j = 0; j < starsAppCats.getStarsApplianceCategoryCount(); j++) {
-						if (starsAppCats.getStarsApplianceCategory(j).getApplianceCategoryID() == appCatID) {
-							starsAppCats.setStarsApplianceCategory( j, starsAppCat );
-							break;
-						}
-					}
-				}
+				company.updateStarsEnrollmentPrograms();
 			}
 			
 			if (newAppCat)
@@ -806,15 +787,14 @@ public class StarsAdmin extends HttpServlet {
 		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
         
 		try {
-			ArrayList liteAppCats = energyCompany.getAllApplianceCategories();
+			ArrayList liteAppCats = energyCompany.getApplianceCategories();
 			
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
 			boolean deleteAll = (appCatID == -1);
 			
 			for (int i = 0; i < liteAppCats.size(); i++) {
 				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-				if (!deleteAll && liteAppCat.getApplianceCategoryID() != appCatID
-					|| liteAppCat.getDirectOwner() != energyCompany)
+				if (!deleteAll && liteAppCat.getApplianceCategoryID() != appCatID)
 					continue;
 				
 				int[] programIDs = new int[ liteAppCat.getPublishedPrograms().size() ];
@@ -890,18 +870,11 @@ public class StarsAdmin extends HttpServlet {
 					
 					StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
 				}
-				
-				for (int j = 0; j < descendants.size(); j++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
-					StarsEnrollmentPrograms starsAppCats = company.getStarsEnrollmentPrograms();
-					
-					for (int k = 0; k < starsAppCats.getStarsApplianceCategoryCount(); k++) {
-						if (starsAppCats.getStarsApplianceCategory(k).getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
-							starsAppCats.removeStarsApplianceCategory( k );
-							break;
-						}
-					}
-				}
+			}
+			
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+				company.updateStarsEnrollmentPrograms();
 			}
 			
 			if (deleteAll)
@@ -936,8 +909,6 @@ public class StarsAdmin extends HttpServlet {
 			LiteContact liteContact = null;
 			LiteAddress liteAddr = null;
 			
-			StarsServiceCompany starsCompany = null;
-			
 			if (!newCompany) {
 				liteCompany = energyCompany.getServiceCompany( companyID );
 				StarsLiteFactory.setServiceCompany( companyDB, liteCompany );
@@ -955,7 +926,7 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (newCompany) {
 				com.cannontech.database.db.customer.Address address = new com.cannontech.database.db.customer.Address();
-				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( SERVICE_COMPANY_TEMP );
+				StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
 				if (scTemp != null)
 					StarsFactory.setCustomerAddress( address, scTemp.getCompanyAddress() );
 				else
@@ -976,19 +947,13 @@ public class StarsAdmin extends HttpServlet {
 				liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company.getServiceCompany() );
 				energyCompany.addServiceCompany( liteCompany );
 				
-				starsCompany = new StarsServiceCompany();
-				starsCompany.setCompanyID( liteCompany.getCompanyID() );
-				starsCompanies.addStarsServiceCompany( starsCompany );
-				
 				PrimaryContact starsContact = new PrimaryContact();
 				StarsLiteFactory.setStarsCustomerContact(
 						starsContact, ContactFuncs.getContact(company.getPrimaryContact().getContactID().intValue()) );
-				starsCompany.setPrimaryContact( starsContact );
 				
 				CompanyAddress starsAddr = new CompanyAddress();
 				StarsLiteFactory.setStarsCustomerAddress(
 						starsAddr, energyCompany.getAddress(company.getAddress().getAddressID().intValue()) );
-				starsCompany.setCompanyAddress( starsAddr );
 			}
 			else {
 				contactDB = (com.cannontech.database.db.contact.Contact)
@@ -998,25 +963,15 @@ public class StarsAdmin extends HttpServlet {
 				companyDB = (com.cannontech.database.db.stars.report.ServiceCompany)
 						Transaction.createTransaction( Transaction.UPDATE, companyDB ).execute();
 				StarsLiteFactory.setLiteServiceCompany( liteCompany, companyDB );
-				
-				for (int i = 0; i < starsCompanies.getStarsServiceCompanyCount(); i++) {
-					if (starsCompanies.getStarsServiceCompany(i).getCompanyID() == companyID) {
-						starsCompany = starsCompanies.getStarsServiceCompany(i);
-						break;
-					}
-				}
-				if (starsCompany == null)
-					throw new Exception ("Cannot find the StarsServiceCompany object with companyID = " + companyID);
-				
-				starsCompany.getPrimaryContact().setLastName( liteContact.getContLastName() );
-				starsCompany.getPrimaryContact().setFirstName( liteContact.getContFirstName() );
 			}
 			
-			starsCompany.setCompanyName( liteCompany.getCompanyName() );
-			starsCompany.setMainPhoneNumber( liteCompany.getMainPhoneNumber() );
-			starsCompany.setMainFaxNumber( liteCompany.getMainFaxNumber() );
+			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
+				ec.updateStarsServiceCompanies();
+			}
         	
-			session.removeAttribute( SERVICE_COMPANY_TEMP );
+			session.removeAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
 			if (newCompany)
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company created successfully");
 			else
@@ -1854,6 +1809,14 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void deleteEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		if (energyCompany.getChildren().size() > 0) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot delete this energy company because its member list is not empty");
+			redirect = referer;
+			return;
+		}
+		
 		DeleteEnergyCompanyTask task = new DeleteEnergyCompanyTask(user);
 		long id = ProgressChecker.addTask( task );
 		
@@ -1912,6 +1875,8 @@ public class StarsAdmin extends HttpServlet {
 			for (int i = 0; i < oldRouteIDs.size(); i++) {
 				// Routes to be removed
 				int routeID = ((Integer) oldRouteIDs.get(i)).intValue();
+				if (routeID == energyCompany.getDefaultRouteID())
+					StarsAdminUtil.updateDefaultRoute( energyCompany, 0 );
 				StarsAdminUtil.removeRoute( energyCompany, routeID );
 			}
 		}

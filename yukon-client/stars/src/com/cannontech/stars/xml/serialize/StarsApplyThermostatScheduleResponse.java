@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplyThermostatScheduleResponse.java,v 1.13 2004/10/26 21:15:40 zyao Exp $
+ * $Id: StarsApplyThermostatScheduleResponse.java,v 1.14 2004/11/24 23:21:46 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.13 $ $Date: 2004/10/26 21:15:40 $
+ * @version $Revision: 1.14 $ $Date: 2004/11/24 23:21:46 $
 **/
 public class StarsApplyThermostatScheduleResponse implements java.io.Serializable {
 

@@ -52,6 +52,8 @@
 	
 	String address = ServletUtils.getOneLineAddress(sc.getCompanyAddress());
 	if (address.length() == 0) address = "(none)";
+	
+	String viewOnly = company.getInherited()? "disabled" : "";
 %>
 <html>
 <head>
@@ -94,7 +96,7 @@ function editAddress(form) {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="return <%= !company.getInherited() %>">
               <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td class="HeaderCell">Edit Service Company Information</td>
@@ -149,7 +151,7 @@ function editAddress(form) {
                             <tr> 
                               <td width="75%"><%= address %></td>
                               <td width="25%"> 
-                                <input type="button" name="EditAddress" value="Edit" onClick="editAddress(this.form)">
+                                <input type="button" name="EditAddress" value="Edit" onClick="editAddress(this.form)" <%= viewOnly %>>
                               </td>
                             </tr>
                           </table>
@@ -171,10 +173,10 @@ function editAddress(form) {
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 
-                    <input type="submit" name="Submit" value="Submit">
+                    <input type="submit" name="Submit" value="Submit" <%= viewOnly %>>
                   </td>
                   <td width="205"> 
-                    <input type="reset" name="Reset" value="Reset">
+                    <input type="reset" name="Reset" value="Reset" <%= viewOnly %>>
                   </td>
                   <td width="75" align="right"> 
                     <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: SA205Descriptor.java,v 1.7 2004/10/26 21:15:56 zyao Exp $
+ * $Id: SA205Descriptor.java,v 1.8 2004/11/24 23:22:03 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.7 $ $Date: 2004/10/26 21:15:56 $
+ * @version $Revision: 1.8 $ $Date: 2004/11/24 23:22:03 $
 **/
 public class SA205Descriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
