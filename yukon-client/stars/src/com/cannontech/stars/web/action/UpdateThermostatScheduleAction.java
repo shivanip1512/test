@@ -459,7 +459,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
             
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE,
-					"The new schedule has been sent. It may take a few minutes before the thermostat gets it.");
+					"The new schedule has been sent. It may take a few minutes before the thermostat receives it.");
             return 0;
         }
         catch (Exception e) {

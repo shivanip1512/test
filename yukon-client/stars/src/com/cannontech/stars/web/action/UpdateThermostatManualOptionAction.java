@@ -331,7 +331,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             }
             
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE,
-					"The manual option has been sent. It may take a few minutes before the thermostat gets it.");
+					"The manual option has been sent. It may take a few minutes before the thermostat receives it.");
             return 0;
         }
         catch (Exception e) {
