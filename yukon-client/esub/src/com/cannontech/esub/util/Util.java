@@ -24,6 +24,7 @@ import com.loox.jloox.LxRotatable;
  * @author: 
  */
 public class Util {
+	// The grey X that is displayed in place of an image that couldn't be found
 	public static byte[] DEFAULT_IMAGE_BYTES =
 		{
 			71,
