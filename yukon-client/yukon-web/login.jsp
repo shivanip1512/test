@@ -1,7 +1,6 @@
 
 <%
 String logo = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_LOGO);
-String email = (String) com.cannontech.common.util.CtiProperties.getInstance().get(com.cannontech.common.util.CtiProperties.KEY_LOGIN_PAGE_HELP_EMAIL);
 %>
 <html>
 <head>
@@ -75,7 +74,7 @@ self.name = "mainWin";
                 </tr>
               </table>
               <div align="center" class="MainText"><br>
-                If you need help or have forgotten your password, click <a href="mailto:<%= email %>">here</a>. 
+                If you need help or have forgotten your password, click <a href="<%=request.getContextPath()%>/pwordreq.jsp">here</a>.
                 <br>
                 <br>
                 <a href="javascript:popUp('https://digitalid.verisign.com/as2/68fabe0200effc6cf9cd5459ba6a1736')"> 
