@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2004/03/18 19:52:59 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2004/03/23 20:42:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1005,6 +1005,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
     RWTPtrSlist< CtiMessage > traceList;
 
+    extern CtiConnection VanGoghConnection;
 
     try
     {
@@ -1276,6 +1277,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             Port->close(0);         // 06062002 CGP  Make it reopen when needed.
                             Port->setTAP( FALSE );
+
+                            VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
                         }
                         catch(...)
                         {
@@ -1331,6 +1334,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         IED->freeDataBins();
                         Port->setTAP( FALSE );
+
+                        VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
 
                         break;
                     }
@@ -3187,11 +3192,6 @@ INT ClearExclusions(CtiDevice *Device)
         // CtiLockGuard  guard(ExclusionManager.getMux());
         //DeviceManager.removeDeviceExclusionBlocks(Device);
         //ExclusionManager.xyz();
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
     }
     catch(...)
     {

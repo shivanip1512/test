@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2004/03/18 19:56:42 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2004/03/23 20:42:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1161,5 +1161,10 @@ RWTime CtiDeviceBase::getLastExclusionGrant() const
 void CtiDeviceBase::setLastExclusionGrant(RWTime set)
 {
     return;
+}
+
+CtiMessage* CtiDeviceBase::rsvpToDispatch(bool clearMessage)
+{
+    return 0;
 }
 

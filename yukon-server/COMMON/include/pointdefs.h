@@ -14,6 +14,10 @@
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#define COMM_FAIL_OFFSET            2000
+#define PAGECOUNTOFFSET             2001
+#define PAGECHARCOUNTOFFSET         2002
+
 
 #define DAILYCONTROLHISTOFFSET      2500
 #define MONTHLYCONTROLHISTOFFSET    2501

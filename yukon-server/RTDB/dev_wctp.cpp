@@ -32,6 +32,7 @@
 
 #include "yukon.h"
 #include "pt_base.h"
+#include "pt_accum.h"
 
 #include "pointtypes.h"
 #include "connection.h"
@@ -68,6 +69,32 @@ CtiDeviceWctpTerminal::~CtiDeviceWctpTerminal()
     }
 }
 
+
+void CtiDeviceWctpTerminal::updatePageCountData(UINT addition)
+{
+    CtiPointAccumulator *pAccumPoint = 0;
+    ULONG curPulseValue;
+
+    /* Check if there is a pulse point */
+    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    {
+        /* Copy the pulses */
+        curPulseValue = pAccumPoint->getPointHistory().getPresentPulseCount() + 1;  // One page per call!
+        pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
+        pAccumPoint->getPointHistory().setPresentPulseCount(curPulseValue);
+    }
+
+    /* Check if there is a pulse point */
+    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    {
+        /* Copy the pulses */
+        curPulseValue = pAccumPoint->getPointHistory().getPresentPulseCount() + addition;
+        pAccumPoint->getPointHistory().setPreviousPulseCount(pAccumPoint->getPointHistory().getPresentPulseCount());
+        pAccumPoint->getPointHistory().setPresentPulseCount(curPulseValue);
+    }
+
+    return;
+}
 
 bool CtiDeviceWctpTerminal::allowPrefix() const
 {
@@ -704,6 +731,8 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
                     msgPayload[sendCnt++] = temp[i] & 0x7f;
                 }
             }
+
+            updatePageCountData(sendCnt + strlen(getPageBuffer()));
 
             replaceChars(getPageBuffer(), msgPayload + sendCnt);
 
@@ -1554,4 +1583,54 @@ void  SAXWctpHandler::warning (const SAXParseException &exception)
     throw exception;
 }
 
+
+CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
+{
+    CtiPointAccumulator *pAccumPoint = 0;
+    FLOAT PValue;
+    char tStr[128];
+
+    CtiPointDataMsg *pData = 0;
+    CtiReturnMsg *returnMsg = 0;    // Message sent to VanGogh, inherits from Multi
+
+    /* Check if there is a pulse point */
+    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    {
+        PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
+        PValue += pAccumPoint->getDataOffset();
+
+        _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+
+        pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+
+        if(pData != NULL)
+        {
+            if(!returnMsg) returnMsg = (CtiReturnMsg*) CTIDBG_new CtiReturnMsg(getID(), getName() + " rsvpToDispatch");
+
+            returnMsg->PointData().insert(pData);
+            pData = NULL;  // We just put it on the list...
+        }
+    }
+
+    /* Check if there is a pulse point */
+    if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(PAGECHARCOUNTOFFSET, PulseAccumulatorPointType)) != NULL)
+    {
+        PValue = (FLOAT) pAccumPoint->getPointHistory().getPresentPulseCount() * pAccumPoint->getMultiplier();
+        /* Apply offset */
+        PValue += pAccumPoint->getDataOffset();
+
+        _snprintf(tStr, 126, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
+
+        pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
+
+        if(pData != NULL)
+        {
+            if(!returnMsg) returnMsg = (CtiReturnMsg*) CTIDBG_new CtiReturnMsg(getID(), getName() + " rsvpToDispatch");
+            returnMsg->PointData().insert(pData);
+            pData = NULL;  // We just put it on the list...
+        }
+    }
+
+    return returnMsg;
+}
 

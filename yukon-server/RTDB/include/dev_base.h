@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/03/18 19:56:42 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/03/23 20:42:44 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,8 +46,6 @@ class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
 class CtiProtocolBase;
-
-#define COMM_FAIL_OFFSET 2000
 
 /*
  *  This is a class used as a base for all others.... currently he branches
@@ -242,6 +240,13 @@ public:
     virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage);
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
 
+    /*
+     *  The rsvpToDispatch method allows the device object to produce a message to dispatch.
+     *  This message may be the result of any number of events.  The callee has no option other than to assume the messages s
+     *  hould be relayed to dispatch
+     */
+    virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
+
 protected:
 
     INT                  _commFailCount;                        // Consecutive failures to this device.
@@ -327,7 +332,5 @@ inline CtiMutex& CtiDeviceBase::getExclusionMux() { return _exclusionMux; }
 inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return false;}
 inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage) { return NORMAL; }
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
-
-
 
 #endif // #ifndef __DEV_BASE_H__

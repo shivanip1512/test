@@ -132,6 +132,9 @@ public:
    bool devicePacingExceeded();
    bool allowPrefix() const;
    CtiDeviceWctpTerminal& setAllowPrefix(bool val = false);
+   void updatePageCountData(UINT addition);
+
+   virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
 
 private:
 

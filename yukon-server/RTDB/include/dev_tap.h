@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/03/18 19:42:59 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/03/23 20:42:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,6 +123,9 @@ public:
    bool blockedByPageRate() const;
    bool allowPrefix() const;
    CtiDeviceTapPagingTerminal& setAllowPrefix(bool val = false);
+   void updatePageCountData(UINT addition);
+
+   virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
 
 };
 
