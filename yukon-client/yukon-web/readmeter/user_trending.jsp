@@ -14,6 +14,14 @@
 <SCRIPT  LANGUAGE="JavaScript1.2" SRC="../JavaScript/Calendar1-82.js"></SCRIPT>
 
 </head>
+<%
+	graphBean.setGdefid( 
+		(request.getParameter("gdefid") == null 
+		 ? -1 : Integer.parseInt(request.getParameter("gdefid"))) );
+	graphBean.setPage( 
+		(request.getParameter("page") == null 
+		 ? 1 : Integer.parseInt(request.getParameter("page"))) );
+%>
 <body class="Background" leftmargin="0" topmargin="0" link="ffffff" alink="ffffff" vlink="ffffff" ONLOAD="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -83,7 +91,7 @@
                     }
                     else // "graph" is default
                     {%>
-                      <img id = "theGraph" src="/servlet/GraphGenerator?" > 
+                      <img id = "theGraph" src="/servlet/GraphGenerator?action=EncodeGraph" > 
                     <%}
                   %>
                   <br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>

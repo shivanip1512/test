@@ -2,11 +2,21 @@
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <%@ include file="include/metering_header.jsp" %>
 <%@ include file="../../include/trending_functions.jsp" %>
+<head>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <title>Metering</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<%
+	graphBean.setGdefid( 
+		(request.getParameter("gdefid") == null 
+		 ? -1 : Integer.parseInt(request.getParameter("gdefid")));
 
+	graphBean.setPage( 
+		(request.getParameter("page") == null 
+		 ? 1 : Integer.parseInt(request.getParameter("page")));
+%>
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" onload = "init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -87,7 +97,7 @@
 				}
 				else // "graph" is default
 				{%>
-					<img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?" > 
+					<img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph" > 
 				<%}
 				%>
 				<br><font size="-1"><cti:getProperty propertyid="<%= CommercialMeteringRole.TRENDING_DISCLAIMER%>"/></font>
