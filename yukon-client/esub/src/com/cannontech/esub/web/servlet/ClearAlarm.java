@@ -2,6 +2,8 @@ package com.cannontech.esub.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -16,7 +18,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.Command;
-import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.Signal;
 
 /**
@@ -24,7 +25,7 @@ import com.cannontech.message.dispatch.message.Signal;
  * Requires an instance of com.cannontech.esub.web.SessionInfo to be in the session
  * 
  * One of the following is required:
- * pointid		- The point id
+ * pointid		- The point id (NOT IMPLEMENTED YET)
  * deviceid		- The device id
  * @author alauinger
  */
@@ -45,13 +46,13 @@ public class ClearAlarm extends HttpServlet {
 		
 		String pointID = req.getParameter(POINT_ID); 
 				
-		if(pointID != null) {
+/*		if(pointID != null) {
 			clearPoint(Integer.parseInt(pointID), user);
 		}
-		
+*/		
 		String deviceID = req.getParameter(DEVICE_ID);
 		if(deviceID != null) {
-			clearDevice(Integer.parseInt(deviceID), user);
+			ackDevice(Integer.parseInt(deviceID), user);
 		}
 		
 		if(pointID == null && deviceID == null) {
@@ -61,41 +62,42 @@ public class ClearAlarm extends HttpServlet {
 }
 
 	private void clearPoint(int pointID, LiteYukonUser user) {
-		Command cmd = makeCommandMsg(pointID,user);
+/*		Command cmd = makeCommandMsg(pointID,user);
 		if(cmd != null) {
 			Util.getConnToDispatch().write(cmd);
 		}
+*/
 	}
 	
-	private void clearDevice(int deviceID, LiteYukonUser user) {
-		Multi multi = new Multi();
+	/** 
+	 * build up a command message to acknowledge all the points on a device
+	 * and send it
+	 * @param deviceID
+	 * @param user
+	 */
+	private void ackDevice(int deviceID, LiteYukonUser user) {
+		Command cmd = new Command();
+		cmd.setOperation(Command.ACKNOWLEGDE_ALARM);
+		Vector argList = new Vector();
+		cmd.setOpArgList(argList);
+		cmd.setUserName(user.getUsername());
+		
+		argList.add(new Integer(-1));
+		
 		LitePoint[] points = PAOFuncs.getLitePointsForPAObject(deviceID);
-		for(int i = 0; i < points.length; i++) {
-			Command cmd = makeCommandMsg(points[i].getPointID(),user);
-			if(cmd != null) {
-				multi.getVector().add(cmd);
+		PointChangeCache pcc = PointChangeCache.getPointChangeCache();
+		for(int i = points.length-1; i >= 0; i--) {
+			List sigList = (List) pcc.getSignals(points[i].getPointID());
+			if(sigList != null) {
+				Iterator iter = sigList.iterator();
+				while(iter.hasNext()) {
+					Signal sig = (Signal) iter.next();
+					argList.add(new Integer(sig.getPointID()));
+					argList.add(new Integer(sig.getCondition()));
+				}
 			}
 		}
 		
-		if(multi.getVector().size() > 0) {
-				Util.getConnToDispatch().write(multi);			
-		}
+		Util.getConnToDispatch().write(cmd);			
 	}
-	
-	private Command makeCommandMsg(int pointID, LiteYukonUser user) {
-		Signal sig = PointChangeCache.getPointChangeCache().getSignal(pointID);
-		if(sig != null) {
-			Command ackMsg = new Command();
-			ackMsg.setOperation(Command.CLEAR_ALARM);
-			Vector argList = new Vector();
-			argList.add(new Integer(-1));
-			argList.add(new Integer(pointID));
-			ackMsg.setOpArgList(argList);	
-			ackMsg.setUserName(user.getUsername());		
-			return ackMsg;
-		}
-		return null;
-	}
-			
-	
 }
