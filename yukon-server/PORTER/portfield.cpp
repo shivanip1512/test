@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/06/20 21:48:14 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/06/21 15:37:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2337,7 +2337,7 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
                 }
 
                 /* Lets check if this command needs to be queued again */
-                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE))
+                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
                 {
                     /* we need to reque this one  */
                     /* Drop the priority an notch so we don't hog the channel */
@@ -2360,7 +2360,7 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
             if(OutMessage->EventCode & VERSACOM)
             {
                 /* Lets check if this command needs to be queued again */
-                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5000QueFull)
+                if(!CommResult && (InMessage->Buffer.InMessage[4] & VCUOVERQUE) && !gIgnoreTCU5X00QueFull)
                 {
                     if(PorterDebugLevel & PORTER_DEBUG_VERSACOM)
                     {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/11 22:14:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/21 15:37:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@ IM_EX_PORTGLOB BOOL           cParmPorterServiceLog = FALSE;
 IM_EX_PORTGLOB UINT           PorterDebugLevel = 0x00000000;
 
 
-IM_EX_PORTGLOB bool           gIgnoreTCU5000QueFull = false;
+IM_EX_PORTGLOB bool           gIgnoreTCU5X00QueFull = false;
 IM_EX_PORTGLOB BOOL           PorterQuit = FALSE;
 
 CHAR* hPorterEventNames[] = {
