@@ -453,18 +453,6 @@ function confirmDeleteAllCompanies() {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
-/*	ArrayList selectionLists = new ArrayList();
-	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
-	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
-	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
-	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
-	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
-
-	for (int i = 0; i < selectionLists.size(); i++) {
-		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get(i);
-		if (list == null) continue;
-*/
-
 	com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany ec = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	for (int i = 0; i < ec.getAllSelectionLists().size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList =

@@ -1483,10 +1483,12 @@ public class StarsAdmin extends HttpServlet {
 					while (it.hasNext()) {
 						LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) it.next();
 						if (liteFAQ.getSubjectID() == subjectID) {
-							com.cannontech.database.data.stars.CustomerFAQ faq =
-									new com.cannontech.database.data.stars.CustomerFAQ();
+							com.cannontech.database.db.stars.CustomerFAQ faq =
+									new com.cannontech.database.db.stars.CustomerFAQ();
 							faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-							Transaction.createTransaction(Transaction.DELETE, faq).execute();
+							faq.setDbConnection( conn );
+							faq.delete();
+							
 							it.remove();
 						}
 					}
@@ -1515,17 +1517,15 @@ public class StarsAdmin extends HttpServlet {
 			
 			if (questions != null) {
 				for (int i = 0; i < questions.length; i++) {
-					com.cannontech.database.data.stars.CustomerFAQ faq =
-							new com.cannontech.database.data.stars.CustomerFAQ();
-					com.cannontech.database.db.stars.CustomerFAQ faqDB = faq.getCustomerFAQ();
-					faqDB.setSubjectID( new Integer(starsGroup.getSubjectID()) );
-					faqDB.setQuestion( questions[i] );
-					faqDB.setAnswer( answers[i] );
-					faq.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					faq = (com.cannontech.database.data.stars.CustomerFAQ)
-							Transaction.createTransaction(Transaction.INSERT, faq).execute();
+					com.cannontech.database.db.stars.CustomerFAQ faq =
+							new com.cannontech.database.db.stars.CustomerFAQ();
+					faq.setSubjectID( new Integer(starsGroup.getSubjectID()) );
+					faq.setQuestion( questions[i] );
+					faq.setAnswer( answers[i] );
+					faq.setDbConnection( conn );
+					faq.add();
 					
-					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faq.getCustomerFAQ() );
+					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faq );
 					synchronized (liteFAQs) { liteFAQs.add(liteFAQ); }
 					
 					StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
@@ -1575,8 +1575,8 @@ public class StarsAdmin extends HttpServlet {
 					while (it.hasNext()) {
 						LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) it.next();
 						if (liteFAQ.getSubjectID() == starsGroup.getSubjectID()) {
-							com.cannontech.database.data.stars.CustomerFAQ faq =
-									new com.cannontech.database.data.stars.CustomerFAQ();
+							com.cannontech.database.db.stars.CustomerFAQ faq =
+									new com.cannontech.database.db.stars.CustomerFAQ();
 							faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
 							faq.setDbConnection( conn );
 							faq.delete();
@@ -2090,8 +2090,8 @@ public class StarsAdmin extends HttpServlet {
 			// Delete all customer FAQs
 			for (int i = 0; i < energyCompany.getAllCustomerFAQs().size(); i++) {
 				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) energyCompany.getAllCustomerFAQs().get(i);
-				com.cannontech.database.data.stars.CustomerFAQ faq =
-						new com.cannontech.database.data.stars.CustomerFAQ();
+				com.cannontech.database.db.stars.CustomerFAQ faq =
+						new com.cannontech.database.db.stars.CustomerFAQ();
 				faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
 				faq.setDbConnection( conn );
 				faq.delete();

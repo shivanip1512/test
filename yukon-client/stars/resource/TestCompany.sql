@@ -90,15 +90,6 @@ insert into LMProgramWebPublishing values(7,11,22,1045);
 insert into InterviewQuestion values(1,1051,'What is your reason for overriding the current event?','N',1,1053,0);
 insert into InterviewQuestion values(2,1051,'Would you like to be contacted by the program manager for any reason concerning the pilot?','N',2,1053,0);
 
-/* CustomerFAQ */
-insert into CustomerFAQ values(1,1061,'How long does it take for my program to become effective after adding or changing a program?','Immediately! You can take advantage of energy savings the moment you decide to. Just make your selection on the "Programs - Add/Change" page, click the submit button, and select Yes at the prompt.');
-insert into CustomerFAQ values(2,1061,'How do I find out more about my program or other programs?','Go to the "Programs - Add/Change" page and click the Program Details button. You will find all of the information you need here regarding the program, amount of control, and savings.');
-insert into CustomerFAQ values(3,1061,'Can I sign up for more than one program?','Certainly! The more programs you enroll in, the more energy savings you will receive.');
-insert into CustomerFAQ values(4,1062,'Can I control my thermostat even if I do not know my current settings?','Yes. You may select the temperature change (up or down) in degrees without knowing the current temperature or simply set a new specific temperature. If pre-cooling, you may also select a new specific temperature or select the number of degress to decrease in temperature.');
-insert into CustomerFAQ values(5,1062,'What does the Fan setting do?','The fan setting controls the operation of the fan. <br>Auto - the fan runs only as necessary to maintain the current temperature settings. <br>On - the fan runs continuously. <br>Off - the fan does not run.');
-insert into CustomerFAQ values(6,1062,'Does the utility company have access to my thermostat?','The utility only has access to your thermostat for control based on the programs you have signed up for. When not being controlled, you have complete control of your thermostat.');
-insert into CustomerFAQ values(7,1063,'How much credit do I receive if I opt out while contolling?','You will receive credit for the protion of time you were controlled.');
-
 /* ECToGenericMapping */
 insert into ECToGenericMapping values (1, 1, 'Substation');
 insert into ECToGenericMapping values (1, 2, 'Substation');

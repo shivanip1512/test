@@ -150,6 +150,35 @@ public class CustomerFAQ extends DBPersistent {
 		
 		return null;
 	}
+	
+	public static CustomerFAQ[] getCustomerFAQs(Integer subjectID) {
+		String sql = "SELECT QuestionID, SubjectID, Question, Answer " +
+				"FROM " + TABLE_NAME + " WHERE SubjectID = " + subjectID +
+				" ORDER BY QuestionID";
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+			CustomerFAQ[] faqs = new CustomerFAQ[ stmt.getRowCount() ];
+			
+			for (int i = 0; i < faqs.length; i++) {
+				Object[] row = stmt.getRow(i);
+				faqs[i] = new CustomerFAQ();
+				faqs[i].setQuestionID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+				faqs[i].setSubjectID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				faqs[i].setQuestion( (String) row[2] );
+				faqs[i].setAnswer( (String) row[3] );
+			}
+			
+			return faqs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Returns the answer.
