@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/08/06 19:05:15 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/08/15 20:37:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1523,7 +1523,7 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
 
                 if( cmdStr.subString("noqueue",0,RWCString::ignoreCase).isNull() )  // Make sure we don't stuff it on there multiple times!
                 {
-                    _snprintf(OutMessage->Request.CommandStr, 254, "%s", cmdStr.data());
+                    _snprintf(OutMessage->Request.CommandStr, 254, "%s noqueue", cmdStr.data());
                 }
             }
 
