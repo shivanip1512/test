@@ -29,11 +29,11 @@ public final class LiteTypes
 	public final static int BASELINE				= 22;
 	public final static int TAG 					= 23;
 	public final static int CONFIG					= 24;
+	public final static int CUSTOMER				= 25;
 
 	
 	// Stars lite types
 	public final static int STARS_CUST_ACCOUNT_INFO = 100;
-	public final static int STARS_CUSTOMER = 101;
 	public final static int STARS_ADDRESS = 103;
 	public final static int STARS_LMPROGRAM = 104;
 	public final static int STARS_LMHARDWARE = 105;
