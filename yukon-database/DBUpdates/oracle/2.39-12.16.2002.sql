@@ -1,7 +1,7 @@
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
-insert into CTIDatabase values('2.39', 'Ryan', '16-DEC-2002', 'Added two columns to DynamicCCCapBank, YukonUser, PortDialback');
+insert into CTIDatabase values('2.39', 'Ryan', '20-DEC-2002', 'Added two columns to DynamicCCCapBank, YukonUser, PortDialback and others');
 
 
 insert into columntype values ( 14, 'PointImage' );
@@ -273,4 +273,11 @@ insert into YukonGroupRole values(-2,-101,'(none)');
 insert into YukonGroupRole values(-3,-102,'(none)');
 insert into YukonGroupRole values(-2,-100,'/user/user_trending.jsp?tab=graph');
 insert into YukonGroupRole values(-3,-100,'/operator/oper_trending.jsp?tab=graph');
+/
+
+
+INSERT INTO UnitMeasure VALUES( 51,'km/h',0,'Kilometers Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
+INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
+INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 /

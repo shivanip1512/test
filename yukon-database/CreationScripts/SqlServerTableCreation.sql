@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     12/16/2002 3:47:20 PM                        */
+/* Created on:     12/20/2002 3:05:26 PM                        */
 /*==============================================================*/
 
 
@@ -1569,6 +1569,8 @@ insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom 
 
 insert into CTIDatabase values('2.38', 'Ryan', '6-NOV-2002', 'Added a column to DynamicLMGroup and a Windows Service row to display');
 
+insert into CTIDatabase values('2.39', 'Ryan', '20-DEC-2002', 'Added two columns to DynamicCCCapBank, YukonUser, PortDialback and others');
+
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
 /*==============================================================*/
@@ -2349,8 +2351,7 @@ create table EnergyCompany (
 EnergyCompanyID      numeric              not null,
 Name                 varchar(60)          not null,
 RouteID              numeric              not null,
-constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID),
-constraint AK_CK_CNCMPNM_ENERGYCO2 unique ()
+constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
 )
 go
 
@@ -2419,8 +2420,7 @@ OptionLabel          varchar(20)          not null,
 Ordering             numeric              not null,
 OptionType           varchar(8)           not null,
 OptionValues         varchar(150)         not null,
-constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering),
-constraint AK_KEY_FDRLAB_FDRINTER unique (OptionLabel)
+constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
 )
 go
 
@@ -2533,8 +2533,7 @@ LeftMax              float                not null,
 RightMin             float                not null,
 RightMax             float                not null,
 Type                 char(1)              not null,
-constraint SYS_C0015109 primary key  (GRAPHDEFINITIONID),
-constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
+constraint SYS_C0015109 primary key  (GRAPHDEFINITIONID)
 )
 go
 
@@ -2681,8 +2680,7 @@ UserIDName           varchar(40)          not null,
 NameOfAckPerson      varchar(40)          not null,
 CurtailmentNotes     varchar(120)         not null,
 CurrentPDL           float                not null,
-AckLateFlag          char(1)              not null,
-constraint AK_KEY_LMCRCSAC_LMCURTAI unique ()
+AckLateFlag          char(1)              not null
 )
 go
 
@@ -3064,8 +3062,7 @@ GroupSelectionMethod varchar(30)          not null,
 MethodOptionType     varchar(30)          not null,
 MethodOptionMax      numeric              not null,
 GearID               numeric              not null,
-constraint PK_LMPROGRAMDIRECTGEAR primary key  (GearID),
-constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
+constraint PK_LMPROGRAMDIRECTGEAR primary key  (GearID)
 )
 go
 
@@ -3315,8 +3312,7 @@ PSEUDOFLAG           varchar(1)           not null,
 POINTOFFSET          numeric              not null,
 ARCHIVETYPE          varchar(12)          not null,
 ARCHIVEINTERVAL      numeric              not null,
-constraint Key_PT_PTID primary key  (POINTID),
-constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
+constraint Key_PT_PTID primary key  (POINTID)
 )
 go
 
@@ -3865,6 +3861,10 @@ INSERT INTO UnitMeasure VALUES( 47,'MPH',0,'Miles Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES( 48,'Inches',0,'Inches','(none)');
 INSERT INTO UnitMeasure VALUES( 49,'KPH',0,'Kilometers Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES( 50,'Milibars',0,'Milibars','(none)');
+INSERT INTO UnitMeasure VALUES( 51,'km/h',0,'Kilometers Per Hour','(none)');
+INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
+INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
+INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 
 /*==============================================================*/
 /* Table : VersacomRoute                                        */

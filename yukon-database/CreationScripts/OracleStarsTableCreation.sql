@@ -1,15 +1,15 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     12/16/2002 3:48:17 PM                        */
+/* Created on:     12/20/2002 3:09:14 PM                        */
 /*==============================================================*/
 
 
-drop table ApplianceAirConditioner cascade constraints
+drop table ECToInventoryMapping cascade constraints
 /
 
 
-drop table LMHardwareConfiguration cascade constraints
+drop table ECToCallReportMapping cascade constraints
 /
 
 
@@ -17,11 +17,27 @@ drop table LMProgramEvent cascade constraints
 /
 
 
-drop table ApplianceBase cascade constraints
+drop table ApplianceAirConditioner cascade constraints
 /
 
 
-drop table ECToCallReportMapping cascade constraints
+drop table LMHardwareEvent cascade constraints
+/
+
+
+drop table CallReportBase cascade constraints
+/
+
+
+drop table ECToAccountMapping cascade constraints
+/
+
+
+drop table LMHardwareConfiguration cascade constraints
+/
+
+
+drop table LMHardwareBase cascade constraints
 /
 
 
@@ -33,31 +49,11 @@ drop table LMThermostatSeason cascade constraints
 /
 
 
-drop table LMHardwareEvent cascade constraints
-/
-
-
-drop table LMHardwareBase cascade constraints
-/
-
-
-drop table ECToInventoryMapping cascade constraints
-/
-
-
-drop table CallReportBase cascade constraints
-/
-
-
 drop table InventoryBase cascade constraints
 /
 
 
-drop table ECToAccountMapping cascade constraints
-/
-
-
-drop table ECToLMCustomerEventMapping cascade constraints
+drop table ApplianceBase cascade constraints
 /
 
 
@@ -69,6 +65,10 @@ drop table AccountSite cascade constraints
 /
 
 
+drop table ECToLMCustomerEventMapping cascade constraints
+/
+
+
 drop table LMProgramWebPublishing cascade constraints
 /
 
@@ -77,11 +77,11 @@ drop table ECToWorkOrderMapping cascade constraints
 /
 
 
-drop table ApplianceCategory cascade constraints
+drop table SiteInformation cascade constraints
 /
 
 
-drop table SiteInformation cascade constraints
+drop table ApplianceCategory cascade constraints
 /
 
 
@@ -408,25 +408,6 @@ create table LMCustomerEventBase  (
 
 
 /*==============================================================*/
-/* Table : SiteInformation                                      */
-/*==============================================================*/
-
-
-create table SiteInformation  (
-   SiteID               NUMBER                           not null,
-   Feeder               VARCHAR2(20),
-   Pole                 VARCHAR2(20),
-   TransformerSize      VARCHAR2(20),
-   ServiceVoltage       VARCHAR2(20),
-   SubstationID         NUMBER,
-   constraint PK_SITEINFORMATION primary key (SiteID),
-   constraint FK_Sub_Si foreign key (SubstationID)
-         references Substation (SubstationID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : ApplianceCategory                                    */
 /*==============================================================*/
 
@@ -441,6 +422,25 @@ create table ApplianceCategory  (
          references CustomerListEntry (EntryID),
    constraint FK_CsWC_ApCt foreign key (WebConfigurationID)
          references CustomerWebConfiguration (ConfigurationID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : SiteInformation                                      */
+/*==============================================================*/
+
+
+create table SiteInformation  (
+   SiteID               NUMBER                           not null,
+   Feeder               VARCHAR2(20),
+   Pole                 VARCHAR2(20),
+   TransformerSize      VARCHAR2(20),
+   ServiceVoltage       VARCHAR2(20),
+   SubstationID         NUMBER,
+   constraint PK_SITEINFORMATION primary key (SiteID),
+   constraint FK_Sub_Si foreign key (SubstationID)
+         references Substation (SubstationID)
 )
 /
 
@@ -481,6 +481,23 @@ create table LMProgramWebPublishing  (
          references CustomerWebConfiguration (ConfigurationID),
    constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)
          references CustomerListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ECToLMCustomerEventMapping                           */
+/*==============================================================*/
+
+
+create table ECToLMCustomerEventMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   EventID              NUMBER                           not null,
+   constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID),
+   constraint FK_LCsEv_ECLmCs foreign key (EventID)
+         references LMCustomerEventBase (EventID),
+   constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID)
 )
 /
 
@@ -545,35 +562,50 @@ create index CstAccCstPro_FK on CustomerAccount (
 
 
 /*==============================================================*/
-/* Table : ECToLMCustomerEventMapping                           */
+/* Table : ApplianceBase                                        */
 /*==============================================================*/
 
 
-create table ECToLMCustomerEventMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   EventID              NUMBER                           not null,
-   constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID),
-   constraint FK_LCsEv_ECLmCs foreign key (EventID)
-         references LMCustomerEventBase (EventID),
-   constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID)
+create table ApplianceBase  (
+   ApplianceID          NUMBER                           not null,
+   AccountID            NUMBER                           not null,
+   ApplianceCategoryID  NUMBER                           not null,
+   LMProgramID          NUMBER,
+   YearManufactured     NUMBER,
+   ManufacturerID       NUMBER,
+   LocationID           NUMBER,
+   KWCapacity           NUMBER,
+   EfficiencyRating     NUMBER,
+   Notes                VARCHAR2(100),
+   constraint PK_APPLIANCEBASE primary key (ApplianceID),
+   constraint FK_CUS_CSTA_CUS4 foreign key (AccountID)
+         references CustomerAccount (AccountID),
+   constraint FK_APP_CSTL_APP foreign key (ApplianceCategoryID)
+         references ApplianceCategory (ApplianceCategoryID),
+   constraint FK_AppBs_LMPr foreign key (LMProgramID)
+         references LMPROGRAM (DEVICEID),
+   constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
+         references CustomerListEntry (EntryID),
+   constraint FK_CsLsEn_ApB2 foreign key (LocationID)
+         references CustomerListEntry (EntryID)
 )
 /
 
 
 /*==============================================================*/
-/* Table : ECToAccountMapping                                   */
+/* Index: CstAcc_CstLdInfo_FK                                   */
 /*==============================================================*/
+create index CstAcc_CstLdInfo_FK on ApplianceBase (
+   AccountID ASC
+)
+/
 
 
-create table ECToAccountMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   AccountID            NUMBER                           not null,
-   constraint PK_ECTOACCOUNTMAPPING primary key (EnergyCompanyID, AccountID),
-   constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_ECTAcc_CstAcc foreign key (AccountID)
-         references CustomerAccount (AccountID)
+/*==============================================================*/
+/* Index: CstLdTy_CstLdInf_FK                                   */
+/*==============================================================*/
+create index CstLdTy_CstLdInf_FK on ApplianceBase (
+   ApplianceCategoryID ASC
 )
 /
 
@@ -627,80 +659,6 @@ create index HrdInst_CstHrdBs_FK on InventoryBase (
 
 
 /*==============================================================*/
-/* Table : CallReportBase                                       */
-/*==============================================================*/
-
-
-create table CallReportBase  (
-   CallID               NUMBER                           not null,
-   CallNumber           VARCHAR2(20),
-   CallTypeID           NUMBER,
-   DateTaken            DATE,
-   TakenBy              VARCHAR2(30),
-   Description          VARCHAR2(300),
-   AccountID            NUMBER,
-   constraint PK_CALLREPORTBASE primary key (CallID),
-   constraint FK_CstB_CllR foreign key ()
-         references CustomerBase (CustomerID),
-   constraint FK_CstAc_ClRpB foreign key (AccountID)
-         references CustomerAccount (AccountID),
-   constraint FK_CstELs_ClRB foreign key (CallTypeID)
-         references CustomerListEntry (EntryID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : ECToInventoryMapping                                 */
-/*==============================================================*/
-
-
-create table ECToInventoryMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   InventoryID          NUMBER                           not null,
-   constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID),
-   constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_ECTInv_Enc2 foreign key (InventoryID)
-         references InventoryBase (InventoryID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMHardwareBase                                       */
-/*==============================================================*/
-
-
-create table LMHardwareBase  (
-   InventoryID          NUMBER                           not null,
-   ManufacturerSerialNumber VARCHAR2(30),
-   LMHardwareTypeID     NUMBER                           not null,
-   constraint PK_LMHARDWAREBASE primary key (InventoryID),
-   constraint FK_LMH_ISA__INV foreign key (InventoryID)
-         references InventoryBase (InventoryID),
-   constraint FK_LMH_REF__CUS foreign key (LMHardwareTypeID)
-         references CustomerListEntry (EntryID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMHardwareEvent                                      */
-/*==============================================================*/
-
-
-create table LMHardwareEvent  (
-   EventID              NUMBER                           not null,
-   InventoryID          NUMBER                           not null,
-   constraint PK_LMHARDWAREEVENT primary key (EventID),
-   constraint FK_IvB_LMHrEv foreign key (InventoryID)
-         references InventoryBase (InventoryID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : LMThermostatSeason                                   */
 /*==============================================================*/
 
@@ -740,85 +698,19 @@ create table LMThermostatSeasonEntry  (
 
 
 /*==============================================================*/
-/* Table : ECToCallReportMapping                                */
+/* Table : LMHardwareBase                                       */
 /*==============================================================*/
 
 
-create table ECToCallReportMapping  (
-   EnergyCompanyID      NUMBER                           not null,
-   CallReportID         NUMBER                           not null,
-   constraint PK_ECTOCALLREPORTMAPPING primary key (EnergyCompanyID, CallReportID),
-   constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_ECTSrv_Call foreign key (CallReportID)
-         references CallReportBase (CallID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : ApplianceBase                                        */
-/*==============================================================*/
-
-
-create table ApplianceBase  (
-   ApplianceID          NUMBER                           not null,
-   AccountID            NUMBER                           not null,
-   ApplianceCategoryID  NUMBER                           not null,
-   LMProgramID          NUMBER,
-   YearManufactured     NUMBER,
-   ManufacturerID       NUMBER,
-   LocationID           NUMBER,
-   KWCapacity           NUMBER,
-   EfficiencyRating     NUMBER,
-   Notes                VARCHAR2(100),
-   constraint PK_APPLIANCEBASE primary key (ApplianceID),
-   constraint FK_CUS_CSTA_CUS4 foreign key (AccountID)
-         references CustomerAccount (AccountID),
-   constraint FK_APP_CSTL_APP foreign key (ApplianceCategoryID)
-         references ApplianceCategory (ApplianceCategoryID),
-   constraint FK_AppBs_LMPr foreign key (LMProgramID)
-         references LMPROGRAM (DEVICEID),
-   constraint FK_CsLsEn_ApB foreign key (ManufacturerID)
-         references CustomerListEntry (EntryID),
-   constraint FK_CsLsEn_ApB2 foreign key (LocationID)
+create table LMHardwareBase  (
+   InventoryID          NUMBER                           not null,
+   ManufacturerSerialNumber VARCHAR2(30),
+   LMHardwareTypeID     NUMBER                           not null,
+   constraint PK_LMHARDWAREBASE primary key (InventoryID),
+   constraint FK_LMH_ISA__INV foreign key (InventoryID)
+         references InventoryBase (InventoryID),
+   constraint FK_LMH_REF__CUS foreign key (LMHardwareTypeID)
          references CustomerListEntry (EntryID)
-)
-/
-
-
-/*==============================================================*/
-/* Index: CstAcc_CstLdInfo_FK                                   */
-/*==============================================================*/
-create index CstAcc_CstLdInfo_FK on ApplianceBase (
-   AccountID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: CstLdTy_CstLdInf_FK                                   */
-/*==============================================================*/
-create index CstLdTy_CstLdInf_FK on ApplianceBase (
-   ApplianceCategoryID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMProgramEvent                                       */
-/*==============================================================*/
-
-
-create table LMProgramEvent  (
-   EventID              NUMBER                           not null,
-   AccountID            NUMBER                           not null,
-   LMProgramID          NUMBER,
-   constraint PK_LMPROGRAMEVENT primary key (EventID),
-   constraint FK_CstAc_LMPrEv foreign key (AccountID)
-         references CustomerAccount (AccountID),
-   constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-         references LMPROGRAM (DEVICEID)
 )
 /
 
@@ -862,6 +754,62 @@ create index CstLdIn_LMHrdCfg_FK on LMHardwareConfiguration (
 
 
 /*==============================================================*/
+/* Table : ECToAccountMapping                                   */
+/*==============================================================*/
+
+
+create table ECToAccountMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   AccountID            NUMBER                           not null,
+   constraint PK_ECTOACCOUNTMAPPING primary key (EnergyCompanyID, AccountID),
+   constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_ECTAcc_CstAcc foreign key (AccountID)
+         references CustomerAccount (AccountID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : CallReportBase                                       */
+/*==============================================================*/
+
+
+create table CallReportBase  (
+   CallID               NUMBER                           not null,
+   CallNumber           VARCHAR2(20),
+   CallTypeID           NUMBER,
+   DateTaken            DATE,
+   TakenBy              VARCHAR2(30),
+   Description          VARCHAR2(300),
+   AccountID            NUMBER,
+   constraint PK_CALLREPORTBASE primary key (CallID),
+   constraint FK_CstB_CllR foreign key ()
+         references CustomerBase (CustomerID),
+   constraint FK_CstAc_ClRpB foreign key (AccountID)
+         references CustomerAccount (AccountID),
+   constraint FK_CstELs_ClRB foreign key (CallTypeID)
+         references CustomerListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMHardwareEvent                                      */
+/*==============================================================*/
+
+
+create table LMHardwareEvent  (
+   EventID              NUMBER                           not null,
+   InventoryID          NUMBER                           not null,
+   constraint PK_LMHARDWAREEVENT primary key (EventID),
+   constraint FK_IvB_LMHrEv foreign key (InventoryID)
+         references InventoryBase (InventoryID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : ApplianceAirConditioner                              */
 /*==============================================================*/
 
@@ -877,6 +825,58 @@ create table ApplianceAirConditioner  (
          references CustomerListEntry (EntryID),
    constraint FK_CsLsE_Ac_ty foreign key (TypeID)
          references CustomerListEntry (EntryID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMProgramEvent                                       */
+/*==============================================================*/
+
+
+create table LMProgramEvent  (
+   EventID              NUMBER                           not null,
+   AccountID            NUMBER                           not null,
+   LMProgramID          NUMBER,
+   constraint PK_LMPROGRAMEVENT primary key (EventID),
+   constraint FK_CstAc_LMPrEv foreign key (AccountID)
+         references CustomerAccount (AccountID),
+   constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
+         references LMPROGRAM (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ECToCallReportMapping                                */
+/*==============================================================*/
+
+
+create table ECToCallReportMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   CallReportID         NUMBER                           not null,
+   constraint PK_ECTOCALLREPORTMAPPING primary key (EnergyCompanyID, CallReportID),
+   constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_ECTSrv_Call foreign key (CallReportID)
+         references CallReportBase (CallID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : ECToInventoryMapping                                 */
+/*==============================================================*/
+
+
+create table ECToInventoryMapping  (
+   EnergyCompanyID      NUMBER                           not null,
+   InventoryID          NUMBER                           not null,
+   constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID),
+   constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_ECTInv_Enc2 foreign key (InventoryID)
+         references InventoryBase (InventoryID)
 )
 /
 
