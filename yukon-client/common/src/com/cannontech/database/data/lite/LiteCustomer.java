@@ -1,9 +1,7 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 
 /**
@@ -27,7 +25,7 @@ public class LiteCustomer extends LiteBase {
 	// contains int ,Used for residential customers only
 	private java.util.Vector accountIDs = null;
 	private int energyCompanyID = -1;
-	private boolean extended = false;
+	
 	public LiteCustomer() {
 		super();
 		setLiteType( LiteTypes.CUSTOMER );
@@ -108,8 +106,6 @@ public class LiteCustomer extends LiteBase {
 					energyCompanyID = ((java.math.BigDecimal) stat.getRow(i)[1]).intValue();
 				}
 			}
-			
-			extended = true;
 		}
 		catch (Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -204,16 +200,6 @@ public class LiteCustomer extends LiteBase {
 	 */
 	public int getEnergyCompanyID() {
 		return energyCompanyID;
-	}
-	
-	/**
-	 * Returns false when the object is an instance of LiteCICustomer,
-	 * and the related residential information has not been retrieved yet.
-	 * The object will become "extended" after the retrieve() method
-	 * has been called. Otherwise, the method will return true.
-	 */
-	public boolean isExtended() {
-		return extended;
 	}
 
 	/**

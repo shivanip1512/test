@@ -92,12 +92,7 @@ public class ActivityLogger {
 					{								
 						customerID = liteCust.getCustomerID();
 					}
-				
-					if (!liteCust.isExtended())
-					{					
-						liteCust.retrieve( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-					}
-				
+					
 					java.util.Vector acctIDs = liteCust.getAccountIDs();
 					if (acctIDs.size() > 0) {
 						// This customer has residential information

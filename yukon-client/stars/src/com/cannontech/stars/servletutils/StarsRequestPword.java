@@ -148,8 +148,6 @@ public class StarsRequestPword extends RequestPword
 
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
 		LiteCustomer liteCust = ContactFuncs.getCustomer( lCont_.getContactID() );
-		if (!liteCust.isExtended())
-			liteCust.retrieve( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 		
 		if (liteCust.getEnergyCompanyID() != -1) {
 			LiteEnergyCompany liteComp = EnergyCompanyFuncs.getEnergyCompany( liteCust.getEnergyCompanyID() );
