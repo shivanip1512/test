@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/14 15:35:38 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/18 16:13:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -980,18 +980,9 @@ void CtiConnection::messagePeek( CtiMessage *MyMsg )
         int msgtype;
         CtiMultiMsg *pMulti = (CtiMultiMsg *)MyMsg;
 
-        for(int i = 0; i < pMulti->getCount() && i < 3; i++)                 // Only look at the first three entries
+        for(int i = 0; i < pMulti->getCount() && i < 3; i++)                // Only look at the first three entries
         {
-            msgtype = ((CtiMessage*)(pMulti->getData()[i]))->isA();
-
-            if(msgtype == MSG_REGISTER)
-            {
-                recordRegistration( ((CtiMessage*)(pMulti->getData()[i])) );
-            }
-            else if(msgtype == MSG_POINTREGISTRATION)
-            {
-                recordPointRegistration( ((CtiMessage*)(pMulti->getData()[i])) );
-            }
+            messagePeek(((CtiMessage*)(pMulti->getData()[i])));             // recurse.
         }
     }
 
