@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/03/17 17:49:36 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/03/18 20:40:37 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -499,6 +499,8 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                             else
                             {
+                                delete om;
+
                                 expired_codes++;
                             }
                         }
