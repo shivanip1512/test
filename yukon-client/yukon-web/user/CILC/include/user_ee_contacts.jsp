@@ -57,7 +57,7 @@
          %>
         <tr>
           <td width="150" class="TableCell" align = "right">
-            <cti:select name="notcat" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%="-1"%>"/></td>
+            <cti:select name="notcat" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="1"/></td>
           <td width="150" align="left" class="TableCell">
             <input type="text" name="textfield3">
           </td>

@@ -139,7 +139,7 @@
                           { %>
                           <tr>
                             <td width="50%" class="TableCell" align = "right">
-                              <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%="-1"%>"/></td>
+                              <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%="1"%>"/></td>
 	                            <td width="50%" align="left" class="TableCell">
                               <input type="text" name="textfield3">
                             </td>

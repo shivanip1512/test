@@ -1,7 +1,7 @@
 <html>
 <%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList"%>
-<%@ page import="com.cannontech.common.constants.YukonListFuncs"%>
+<%@ page import="com.cannontech.database.cache.functions.YukonListFuncs"%>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs"%>
 <%@ page import="com.cannontech.common.constants.YukonListEntry"%>
 <head>
@@ -152,7 +152,7 @@
                           { %>
                           <tr>
                             <td width="50%" class="TableCell" align = "right">
-                              <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="<%="-1"%>"/></td>
+                              <cti:select name="program" selectValues="<%= entryIDs %>" selectNames="<%= entryTexts %>" selectedValue="-1"/></td>
 	                            <td width="50%" align="left" class="TableCell">
                               <input type="text" name="textfield3">
                             </td>
