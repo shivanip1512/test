@@ -1058,6 +1058,11 @@ public Object getValue(Object val)
 	
 
 	String daysOfWeek = new String();	
+   if( getJCheckBoxSunday().isSelected() ) 
+      daysOfWeek += "Y";
+   else
+      daysOfWeek += "N";
+
 	if( getJCheckBoxMonday().isSelected() ) 
 		daysOfWeek += "Y";
 	else
@@ -1084,11 +1089,6 @@ public Object getValue(Object val)
 		daysOfWeek += "N";
 
 	if( getJCheckBoxSaturday().isSelected() ) 
-		daysOfWeek += "Y";
-	else
-		daysOfWeek += "N";
-
-	if( getJCheckBoxSunday().isSelected() ) 
 		daysOfWeek += "Y";
 	else
 		daysOfWeek += "N";
@@ -1303,20 +1303,20 @@ public void setValue(Object val)
 	getJTextFieldSubName().setText(subName);
 	getJTextFieldGeoName().setText(geoName);
 
-	if( Character.toUpperCase(daysOfWeek.charAt(0)) == 'Y' )
-		getJCheckBoxMonday().setSelected( true );
+   if( Character.toUpperCase(daysOfWeek.charAt(0)) == 'Y' )
+      getJCheckBoxSunday().setSelected( true );    
 	if( Character.toUpperCase(daysOfWeek.charAt(1)) == 'Y' )
-		getJCheckBoxTuesday().setSelected( true );
+		getJCheckBoxMonday().setSelected( true );
 	if( Character.toUpperCase(daysOfWeek.charAt(2)) == 'Y' )
-		getJCheckBoxWednesday().setSelected( true );
+		getJCheckBoxTuesday().setSelected( true );
 	if( Character.toUpperCase(daysOfWeek.charAt(3)) == 'Y' )
-		getJCheckBoxThursday().setSelected( true );
+		getJCheckBoxWednesday().setSelected( true );
 	if( Character.toUpperCase(daysOfWeek.charAt(4)) == 'Y' )
-		getJCheckBoxFriday().setSelected( true );
+		getJCheckBoxThursday().setSelected( true );
 	if( Character.toUpperCase(daysOfWeek.charAt(5)) == 'Y' )
-		getJCheckBoxSaturday().setSelected( true );
+		getJCheckBoxFriday().setSelected( true );
 	if( Character.toUpperCase(daysOfWeek.charAt(6)) == 'Y' )
-		getJCheckBoxSunday().setSelected( true );		
+		getJCheckBoxSaturday().setSelected( true );
 	if( Character.toUpperCase(daysOfWeek.charAt(7)) == 'Y' )
 		getJCheckBoxHoliday().setSelected( true );
 		
