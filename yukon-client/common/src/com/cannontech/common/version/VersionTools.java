@@ -78,7 +78,13 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
  */
 public static boolean starsExists()
 {
-	return VersionTools.tableExists("CustomerAccount");
+	//case sensitive in Oracle (very important)
+	return VersionTools.tableExists("CUSTOMERACCOUNT");
+}
+
+public static void main ( String[] args )
+{
+	starsExists();
 }
 
 /**
@@ -86,7 +92,7 @@ public static boolean starsExists()
  * Creation date: (6/25/2001 9:18:30 AM)
  * @return java.lang.String
  */
-public final static boolean tableExists( String tableName_ )
+private final static boolean tableExists( String tableName_ )
 {
 	java.sql.Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	java.sql.PreparedStatement stat = null;
@@ -102,7 +108,7 @@ public final static boolean tableExists( String tableName_ )
 								"%" );
 */
 		java.sql.ResultSet rs = conn.getMetaData().getTables( 
-							null, null, tableName_, null );
+							null, null, tableName_.toUpperCase(), null );
 
 		if( rs.next() )
 			retVal = true;
