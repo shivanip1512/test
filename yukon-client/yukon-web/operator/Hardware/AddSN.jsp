@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -62,14 +63,14 @@
                           </td>
                           <td width="75%"> 
                             <select name="DeviceType">
-                              <%
+<%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+<%
 	}
 %>
                             </select>
@@ -112,6 +113,24 @@
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
 %>
                               <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
+<%
+	}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width="25%">
+                            <div align="right">Route:</div>
+                          </td>
+                          <td width="75%">
+                            <select name="Route">
+                              <option value="0">(Default Route)</option>
+<%
+	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	for (int i = 0; i < routes.length; i++) {
+%>
+                              <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
 <%
 	}
 %>

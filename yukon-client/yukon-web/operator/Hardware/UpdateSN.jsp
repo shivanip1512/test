@@ -1,4 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -17,6 +18,7 @@ function init() {
 	form.ReceiveDate.disabled = !form.UpdateRecvDate.checked;
 	form.Voltage.disabled = !form.UpdateVoltage.checked;
 	form.ServiceCompany.disabled = !form.UpdateSrvCompany.checked;
+	form.Route.disabled = !form.UpdateRoute.checked;
 }
 </script>
 </head>
@@ -67,7 +69,7 @@ function init() {
                           </td>
                           <td width="70%"> 
                             <input type="text" name="From" size="10">
-                            &nbsp;to&nbsp;
+                            &nbsp;to&nbsp; 
                             <input type="text" name="To" size="10">
                           </td>
                         </tr>
@@ -78,14 +80,14 @@ function init() {
                           </td>
                           <td width="70%"> 
                             <select name="DeviceType" onchange="this.form.NewDeviceType.value = this.value">
-                              <%
+<%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) continue;
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+<%
 	}
 %>
                             </select>
@@ -100,12 +102,12 @@ function init() {
                           </td>
                           <td width="70%"> 
                             <select name="NewDeviceType">
-                              <%
+<%
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+<%
 	}
 %>
                             </select>
@@ -131,13 +133,13 @@ function init() {
                           </td>
                           <td width="70%"> 
                             <select name="Voltage">
-                              <%
+<%
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
+<%
 	}
 %>
                             </select>
@@ -152,12 +154,31 @@ function init() {
                           </td>
                           <td width="70%"> 
                             <select name="ServiceCompany">
-                              <%
+<%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
 %>
                               <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
-                              <%
+<%
+	}
+%>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width="5%">
+                            <input type="checkbox" name="UpdateRoute" value="true" onClick="updateField(this.form.Route, this.checked)">
+                          </td>
+                          <td width="25%">Route:</td>
+                          <td width="70%">
+                            <select name="Route">
+                              <option value="0">(Default Route)</option>
+<%
+	LiteYukonPAObject[] routes = liteEC.getAllRoutes();
+	for (int i = 0; i < routes.length; i++) {
+%>
+                              <option value="<%= routes[i].getYukonID() %>"><%= routes[i].getPaoName() %></option>
+<%
 	}
 %>
                             </select>

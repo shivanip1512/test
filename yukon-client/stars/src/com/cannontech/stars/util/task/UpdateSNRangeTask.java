@@ -46,8 +46,9 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	Integer devTypeID = null;
 	Integer newDevTypeID = null;
 	Date recvDate = null;
-	Integer companyID = null;
 	Integer voltageID = null;
+	Integer companyID = null;
+	Integer routeID = null;
 	HttpServletRequest request = null;
 	
 	ArrayList hardwareSet = new ArrayList();
@@ -55,15 +56,16 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 	int numToBeUpdated = 0;
 	
 	public UpdateSNRangeTask(Integer snFrom, Integer snTo, Integer devTypeID, Integer newDevTypeID,
-		Date recvDate, Integer companyID, Integer voltageID, HttpServletRequest request)
+		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
 	{
 		this.snFrom = snFrom;
 		this.snTo = snTo;
 		this.devTypeID = devTypeID;
 		this.newDevTypeID = newDevTypeID;
 		this.recvDate = recvDate;
-		this.companyID = companyID;
 		this.voltageID = voltageID;
+		this.companyID = companyID;
+		this.routeID = routeID;
 		this.request = request;
 	}
 
@@ -158,41 +160,32 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
+				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
 				
-				if (devTypeChanged) {
-					StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
-					hardware.getInventoryBase().setCategoryID(
-							new Integer(ECUtils.getInventoryCategoryID(newDevTypeID.intValue(), energyCompany)) );
-					hardware.getLMHardwareBase().setLMHardwareTypeID( newDevTypeID );
+				StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
+				if (newDevTypeID != null) {
+					invDB.setCategoryID( new Integer(ECUtils.getInventoryCategoryID(newDevTypeID.intValue(), energyCompany)) );
+					hwDB.setLMHardwareTypeID( newDevTypeID );
 				}
-				else {
-					StarsLiteFactory.setInventoryBase( invDB, liteHw );
-				}
-				
 				if (companyID != null)
 					invDB.setInstallationCompanyID( companyID );
 				if (recvDate != null)
 					invDB.setReceiveDate( recvDate );
 				if (voltageID != null)
 					invDB.setVoltageID( voltageID );
+				if (routeID != null)
+					hwDB.setRouteID( routeID );
 				
-				if (devTypeChanged) {
-					hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-							Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
-					
-					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-					if (liteHw.isExtended()) {
-						liteHw.updateThermostatType();
-						if (liteHw.isThermostat())
-							liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
-						else
-							liteHw.setThermostatSettings( null );
-					}
-				}
-				else {
-					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
-					StarsLiteFactory.setLiteInventoryBase( liteHw, invDB );
+				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+						Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
+				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
+				
+				if (devTypeChanged && liteHw.isExtended()) {
+					liteHw.updateThermostatType();
+					if (liteHw.isThermostat())
+						liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
+					else
+						liteHw.setThermostatSettings( null );
 				}
 				
 				if (liteHw.getAccountID() > 0) {
@@ -225,8 +218,9 @@ public class UpdateSNRangeTask implements TimeConsumingTask {
 		}
 		
 		String logMsg = "Serial Range:" + snFrom + ((snTo != null)? " - " + snTo : " and above")
-				+ ",Old Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText()
-				+ ",New Device Type:" + YukonListFuncs.getYukonListEntry(newDevTypeID.intValue()).getEntryText();
+				+ ",Old Device Type:" + YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getEntryText();
+		if (newDevTypeID != null)
+			logMsg += ",New Device Type:" + YukonListFuncs.getYukonListEntry(newDevTypeID.intValue()).getEntryText();
 		ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_UPDATE_RANGE, logMsg );
 		
 		status = STATUS_FINISHED;

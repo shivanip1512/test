@@ -213,7 +213,7 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
 		
 		int htmlStyle = Integer.parseInt( req.getParameter("style") );
-		if (htmlStyle == InventoryBean.HTML_STYLE_SELECT_INVENTORY) {
+		if ((htmlStyle & InventoryBean.HTML_STYLE_SELECT_INVENTORY) != 0) {
 			if (liteInv.getAccountID() == CtiUtilities.NONE_ID) {
 				// The hardware is in warehouse, so populate the hardware information
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
@@ -232,7 +232,7 @@ public class InventoryManager extends HttpServlet {
 				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 			}
 		}
-		else if (htmlStyle == InventoryBean.HTML_STYLE_SELECT_LM_HARDWARE) {
+		else if ((htmlStyle & InventoryBean.HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
 			session.setAttribute(INVENTORY_TO_CHECK, liteInv);
 			redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
 		}
@@ -494,6 +494,8 @@ public class InventoryManager extends HttpServlet {
 					UpdateLMHardwareAction.parseResponse( liteInv.getInventoryID(), starsInv, starsAcctInfo, null );
 				}
 			}
+			
+			session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -575,7 +577,7 @@ public class InventoryManager extends HttpServlet {
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration saved to batch" );
 			}
 			else {
-				YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
+				YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
 				
 				if (liteHw.getAccountID() > 0) {
 					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
@@ -627,6 +629,7 @@ public class InventoryManager extends HttpServlet {
 		
 		Integer voltageID = Integer.valueOf( req.getParameter("Voltage") );
 		Integer companyID = Integer.valueOf( req.getParameter("ServiceCompany") );
+		Integer routeID = Integer.valueOf( req.getParameter("Route") );
 		
 		Date recvDate = null;
 		String recvDateStr = req.getParameter("ReceiveDate");
@@ -640,7 +643,7 @@ public class InventoryManager extends HttpServlet {
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		AddSNRangeTask task = new AddSNRangeTask( snFrom, snTo, devTypeID, recvDate, voltageID, companyID, req );
+		AddSNRangeTask task = new AddSNRangeTask( snFrom, snTo, devTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -727,6 +730,8 @@ public class InventoryManager extends HttpServlet {
 				Integer.valueOf( req.getParameter("Voltage") ) : null;
 		Integer companyID = (req.getParameter("ServiceCompany") != null)?
 				Integer.valueOf( req.getParameter("ServiceCompany") ) : null;
+		Integer routeID = (req.getParameter("Route") != null)?
+				Integer.valueOf( req.getParameter("Route") ) : null;
 		
 		Date recvDate = null;
 		String recvDateStr = req.getParameter("ReceiveDate");
@@ -738,12 +743,12 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		
-		if (newDevTypeID == null && recvDate == null && voltageID == null && companyID == null)
+		if (newDevTypeID == null && recvDate == null && voltageID == null && companyID == null && routeID == null)
 			return;
 		
 		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		UpdateSNRangeTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, req );
+		UpdateSNRangeTask task = new UpdateSNRangeTask( snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, req );
 		long id = ProgressChecker.addTask( task );
 		
 		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
@@ -1275,7 +1280,7 @@ public class InventoryManager extends HttpServlet {
 		
 		SwitchCommandQueue.SwitchCommand[] commands = null;
 		if (invIDs == null) {
-			queue.getCommands( energyCompany.getLiteID(), true );
+			commands = queue.getCommands( energyCompany.getLiteID(), true );
 		}
 		else {
 			commands = new SwitchCommandQueue.SwitchCommand[ invIDs.length ];
@@ -1292,20 +1297,19 @@ public class InventoryManager extends HttpServlet {
 			try {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(commands[i].getInventoryID(), true);
 				
-				StarsCustAccountInformation starsAcctInfo = null;
-				if (liteHw.getAccountID() > 0)
-					starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-				
 				if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true );
+					YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, commands[i].getInfoString() );
 				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw );
+					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 				else if (commands[i].getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-					YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw );
+					YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
 				
-				if (starsAcctInfo != null) {
-					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
+				if (liteHw.getAccountID() > 0) {
+					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+					if (starsAcctInfo != null) {
+						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+						YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
+					}
 				}
 			}
 			catch (WebClientException e) {

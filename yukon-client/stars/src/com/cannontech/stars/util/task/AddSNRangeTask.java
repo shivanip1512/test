@@ -45,6 +45,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 	Date recvDate = null;
 	Integer voltageID = null;
 	Integer companyID = null;
+	Integer routeID = null;
 	HttpServletRequest request = null;
 	
 	ArrayList hardwareSet = new ArrayList();
@@ -52,7 +53,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	
 	public AddSNRangeTask(int snFrom, int snTo, Integer devTypeID, Date recvDate,
-		Integer voltageID, Integer companyID, HttpServletRequest request)
+		Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
 	{
 		this.snFrom = snFrom;
 		this.snTo = snTo;
@@ -60,6 +61,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 		this.recvDate = recvDate;
 		this.voltageID = voltageID;
 		this.companyID = companyID;
+		this.routeID = routeID;
 		this.request = request;
 	}
 	
@@ -156,6 +158,7 @@ public class AddSNRangeTask implements TimeConsumingTask {
 				invDB.setDeviceLabel( serialNo );
 				hwDB.setManufacturerSerialNumber( serialNo );
 				hwDB.setLMHardwareTypeID( devTypeID );
+				hwDB.setRouteID( routeID );
 				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
 				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
