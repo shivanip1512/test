@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/20 21:47:46 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/08/29 16:45:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,13 +42,11 @@
 #define TYPEMCT318                           68
 #define TYPEMCT310IL                         69
 #define TYPEMCT318L                          70
-#define TYPEMCT360                           75
-#define TYPEMCT370                           80
-#define TYPEDIALUP                           90
-
 /* new MCT devices as of 04-08-97   */
 #define TYPEMCT360                           75
 #define TYPEMCT370                           80
+
+#define TYPEDIALUP                           90
 
 
 #define TYPELMT100S                          200
@@ -75,6 +73,7 @@
 #define TYPE_ILEXRTU                         1100
 #define TYPE_WELCORTU                        1101
 #define TYPE_SES92RTU                        1102
+#define TYPE_DNPRTU                          1103
 #define TYPE_LCU415                          1200
 #define TYPE_LCU415LG                        1205
 #define TYPE_LCU415ER                        1210
@@ -131,9 +130,6 @@
 
 // Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
 
-
-#define MCTSCAN_ALPHA_RTDATA_FLAG    1   /* Flag the indicates the user wants Alpha data */
-#define MCTSCAN_LGS4_RTDATA_FLAG     4   /* Flag the indicates the user want S4 data */
 
 
 /*---------------------------------------------------------------------*
