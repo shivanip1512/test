@@ -64,9 +64,9 @@
 	String fanStr = "";
 	
 	if (curSettings != null) {
-		if (curSettings.getCoolSetpoint() > 0)
+		if (curSettings.hasCoolSetpoint())
 			coolSetpoint = curSettings.getCoolSetpoint();
-		if (curSettings.getHeatSetpoint() > 0)
+		if (curSettings.hasHeatSetpoint())
 			heatSetpoint = curSettings.getHeatSetpoint();
 		hold = curSettings.getSetpointHold();
 		if (curSettings.getMode() != null) {
@@ -74,9 +74,8 @@
 				setpoint = coolSetpoint;
 			else if (curSettings.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
 				setpoint = heatSetpoint;
-		}
-		if (curSettings.getMode() != null)
 			modeStr = curSettings.getMode().toString();
+		}
 		if (curSettings.getFan() != null)
 			fanStr = curSettings.getFan().toString();
 	}
@@ -414,7 +413,7 @@ function prepareSubmit() {
 		if (curSettings.getDisplayedTempUnit() != null)
 			unit = curSettings.getDisplayedTempUnit().substring(0,1);
 		String displayTemp = "(Unknown)";
-		if (curSettings.getDisplayedTemperature() > 0)
+		if (curSettings.hasDisplayedTemperature())
 			displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
 %>
                                       <span class="TitleHeader">Room: <%= displayTemp %></span><br>

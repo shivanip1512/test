@@ -1040,21 +1040,26 @@ public class StarsLiteFactory {
 	public static void setStarsThermostatDynamicData(StarsThermostatDynamicData starsDynData, LiteStarsGatewayEndDevice liteDynData, LiteStarsEnergyCompany energyCompany) {
 		if (liteDynData.getTimestamp() != 0)
 			starsDynData.setLastUpdatedTime( new Date(liteDynData.getTimestamp()) );
-		starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
+		if (liteDynData.getDisplayedTemperature() != Integer.MIN_VALUE)
+			starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
 		if (liteDynData.getDisplayedTempUnit() != null)
 			starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit().equalsIgnoreCase("C") ? "Celsius" : "Fahrenheit" );
 		starsDynData.setFan( ECUtils.getThermFanSetting(liteDynData.getFanSwitch()) );
 		starsDynData.setMode( ECUtils.getThermModeSetting(liteDynData.getSystemSwitch()) );
-		starsDynData.setCoolSetpoint( liteDynData.getCoolSetpoint() );
-		starsDynData.setHeatSetpoint( liteDynData.getHeatSetpoint() );
+		if (liteDynData.getCoolSetpoint() != Integer.MIN_VALUE)
+			starsDynData.setCoolSetpoint( liteDynData.getCoolSetpoint() );
+		if (liteDynData.getHeatSetpoint() != Integer.MIN_VALUE)
+			starsDynData.setHeatSetpoint( liteDynData.getHeatSetpoint() );
 		if (liteDynData.getSetpointStatus() != null &&
 			(liteDynData.getSetpointStatus().equalsIgnoreCase("HOLD") ||
 			liteDynData.getSetpointStatus().equalsIgnoreCase("VACATION")))
 			starsDynData.setSetpointHold( true );
 		else
 			starsDynData.setSetpointHold( false );
-		starsDynData.setLowerCoolSetpointLimit( liteDynData.getLowerCoolSetpointLimit() );
-		starsDynData.setUpperHeatSetpointLimit( liteDynData.getUpperHeatSetpointLimit() );
+		if (liteDynData.getLowerCoolSetpointLimit() != Integer.MIN_VALUE)
+			starsDynData.setLowerCoolSetpointLimit( liteDynData.getLowerCoolSetpointLimit() );
+		if (liteDynData.getUpperHeatSetpointLimit() != Integer.MIN_VALUE)
+			starsDynData.setUpperHeatSetpointLimit( liteDynData.getUpperHeatSetpointLimit() );
 		
 		starsDynData.removeAllInfoString();
 
@@ -1066,7 +1071,7 @@ public class StarsLiteFactory {
 		}
 		starsDynData.setMode( mode );
 		
-		if (liteDynData.getOutdoorTemperature() > 0) {
+		if (liteDynData.getOutdoorTemperature() != Integer.MIN_VALUE) {
 			String desc = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_GED_OUTDOOR_TEMP ).getEntryText();
 			starsDynData.addInfoString( desc + ": " + liteDynData.getOutdoorTemperature() + "&deg;" + ServerUtils.forceNotNull(liteDynData.getDisplayedTempUnit()) );
 		}

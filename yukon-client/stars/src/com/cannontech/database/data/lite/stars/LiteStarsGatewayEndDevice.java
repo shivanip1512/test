@@ -17,17 +17,17 @@ import com.cannontech.database.data.lite.LiteTypes;
 public class LiteStarsGatewayEndDevice extends LiteBase {
 	
 	private long timestamp = 0;
-	private int displayedTemperature = 0;
+	private int displayedTemperature = Integer.MIN_VALUE;
 	private String displayedTempUnit = null;
-	private int coolSetpoint = 0;
-	private int heatSetpoint = 0;
+	private int coolSetpoint = Integer.MIN_VALUE;
+	private int heatSetpoint = Integer.MIN_VALUE;
 	private String setpointStatus = null;
 	private int fanSwitch = CtiUtilities.NONE_ID;
 	private int systemSwitch = CtiUtilities.NONE_ID;
 	private int lastSystemSwitch = CtiUtilities.NONE_ID;
-	private int lowerCoolSetpointLimit = 0;
-	private int upperHeatSetpointLimit = 0;
-	private int outdoorTemperature = 0;
+	private int lowerCoolSetpointLimit = Integer.MIN_VALUE;
+	private int upperHeatSetpointLimit = Integer.MIN_VALUE;
+	private int outdoorTemperature = Integer.MIN_VALUE;
 	private int filterRemaining = 0;
 	private int filterRestart = 0;
 	private int coolRuntime = 0;
