@@ -396,6 +396,7 @@ private void syncButtons()
 			break;
 		
 		case LMProgramBase.STATUS_INACTIVE:
+		case LMProgramBase.STATUS_NON_CNTRL:
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
 			break;

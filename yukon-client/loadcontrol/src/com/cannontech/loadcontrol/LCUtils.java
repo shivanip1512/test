@@ -146,7 +146,8 @@ public class LCUtils
 			{
 				retColor = CELL_COLORS[3];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_INACTIVE )
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_INACTIVE
+			 			 || prg.getProgramStatus().intValue() == LMProgramBase.STATUS_NON_CNTRL )
 			{
 				retColor = CELL_COLORS[0];
 			}
@@ -499,6 +500,7 @@ public class LCUtils
 				return "Stop...";
 		
 			case LMProgramBase.STATUS_INACTIVE:
+			case LMProgramBase.STATUS_NON_CNTRL:
 			case LMProgramBase.STATUS_STOPPING: /*only used by the server*/
 				return "Start...";
 

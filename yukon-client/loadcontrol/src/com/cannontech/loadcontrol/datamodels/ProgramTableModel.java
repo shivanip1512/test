@@ -172,7 +172,8 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 			{
 				return cellColors[5];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_INACTIVE )
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_INACTIVE
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_NON_CNTRL )
 			{
 				return cellColors[0];
 			}
