@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/18 16:13:12 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/21 15:37:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,7 +409,8 @@ void CtiConnection::OutThread()
                     if( _valid )
                     {
                         Out() << *MyMsg;
-                        if(outQueue.entries() == 0) Out().vflush();
+                        // 20020620 CGP // if(outQueue.entries() == 0) Out().vflush();
+                        Out().vflush();
 
                         messagePeek( MyMsg );
 
