@@ -14,6 +14,10 @@ insert into YukonRoleProperty values(-1107,-2,'opt_out_verb','opt out of','Verbi
 insert into YukonRoleProperty values(-1108,-2,'opt_out_past','opted out','Past form of the customized term for opt out');
 insert into YukonRoleProperty values(-1109,-2,'term_reenable','reenable','Customized term for reenable');
 
+/* Operator Administrator Role Properties */
+insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
+insert into YukonRoleProperty values(-20001,-200,'Create Energy Company','false','Controls whether to allow creating a new energy company');
+
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20100,-201,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
 insert into YukonRoleProperty values(-20101,-201,'Account General','true','Controls whether to show the general account information');
