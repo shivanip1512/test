@@ -100,16 +100,12 @@ IM_EX_CTIBASE INT InitELog ()
 
 IM_EX_CTIBASE INT LogEvent(SYSTEMLOGMESS *LogMessage)
 {
-
-    ULONG i, WriteLength;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << *LogMessage << endl;              // Stupid trick.
+        dout << " " << *LogMessage << endl;              // Stupid trick.
     }
 
     return(NORMAL);
-
 }
 
 
