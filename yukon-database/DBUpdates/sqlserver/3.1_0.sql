@@ -169,12 +169,6 @@ go
 drop table portstatistics;
 go
 
-alter table LMProgramDirect add NotifyInterval numeric;
-go
-update LMProgramDirect set NotifyInterval = 0;
-go
-alter table LMProgramDirect alter column NotifyInterval numeric not null;
-go
 alter table LMProgramDirect add Heading varchar(40);
 go
 update LMProgramDirect set Heading = '(none)';

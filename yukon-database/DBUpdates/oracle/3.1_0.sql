@@ -138,10 +138,6 @@ alter table LMProgram drop column SeasonScheduleID;
 /* @error ignore */
 drop table portstatistics;
 
-alter table LMProgramDirect add NotifyInterval number;
-update LMProgramDirect set NotifyInterval = 0;
-alter table LMProgramDirect modify NotifyInterval numeric not null;
-
 alter table LMProgramDirect add Heading varchar2(40);
 update LMProgramDirect set Heading = '(none)';
 alter table LMProgramDirect modify Heading varchar2(40) not null;
