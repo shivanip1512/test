@@ -81,7 +81,7 @@ public class LiteLMConstraint extends LiteBase
 	   com.cannontech.database.SqlStatement s = 
 		  new com.cannontech.database.SqlStatement(
 			 "SELECT constraintID, constraintName"  + 
-				"FROM " + com.cannontech.database.db.device.lm.LMProgramConstraint.TABLE_NAME +
+				" FROM " + com.cannontech.database.db.device.lm.LMProgramConstraint.TABLE_NAME +
 				" where constraintID = " + getConstraintID(),
 			 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
