@@ -4,6 +4,7 @@ package com.cannontech.cbc.gui;
  * This type was created in VisualAge.
  */
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
@@ -954,13 +955,22 @@ public javax.swing.JTable getSubBusTable()
 						//Set the last selected row selected
 						if( sub != null )
 						{
-							for( int i = 0 ; i < getSubBusTableModel().getRowCount(); i++ )
+							int i = 0;
+							for( i = 0 ; i < getSubBusTableModel().getRowCount(); i++ )
 								if( getSubBusTableModel().getRowAt(i).equals(sub) )
 								{
 									getSubBusTable().getSelectionModel().setSelectionInterval( i, i );
 									prevSelectedSubRow = i;
 									break;
 								}
+
+							//if i is the last row, we need to add some more space for it
+							i = (i == getSubBusTableModel().getRowCount()-1 ? i+1: i);
+							getSubBusTable().scrollRectToVisible( 
+									new Rectangle( 
+										0, 
+										(getSubBusTable().getRowHeight() * i),
+										0, 0 ) );								
 						}
 						
 						getSubBusTable().repaint();
