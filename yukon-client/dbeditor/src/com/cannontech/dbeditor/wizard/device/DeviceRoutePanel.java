@@ -173,7 +173,11 @@ public class DeviceRoutePanel
 
 			int pointID = com.cannontech.database.cache.functions.PointFuncs.getMaxPointID();
 
-
+			double multiplier = 0.01;
+			//multiplier is 0.1 for 410LE, 0.01 for all older MCTs
+			if(val instanceof MCT410_KWH_Only )
+				multiplier = 0.1;
+			
 			//always create the PulseAccum point
          newVal.getDBPersistentVector().add( 
             PointFactory.createPulseAccumPoint(
@@ -182,7 +186,7 @@ public class DeviceRoutePanel
                new Integer(++pointID),
                PointTypes.PT_OFFSET_TOTAL_KWH,
                com.cannontech.database.data.point.PointUnits.UOMID_KWH,
-               .01) );
+               multiplier) );
 
 			//only certain devices get the DemandAccum point auto created
 			if( val instanceof MCT310IL
