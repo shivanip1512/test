@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:50 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/24 22:22:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -257,5 +257,10 @@ CtiDeviceCCU710& CtiDeviceCCU710::operator=(const CtiDeviceCCU710& aRef)
      Inherited::operator=(aRef);
   }
   return *this;
+}
+
+INT CtiDeviceCCU710::getProtocolWrap() const
+{
+   return ProtocolWrapNone;
 }
 
