@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
@@ -20,6 +21,8 @@ import com.loox.jloox.LxAbstractAction;
 class EditorMenus {
 
 	private JMenuBar menuBar;
+	private JPopupMenu popupMenu;
+	
 
 	// JMenuItem that listens to action propertychange for
 	// enabling disabling
@@ -51,9 +54,15 @@ private JMenuItem createMenuItem(String label, LxAbstractAction action) {
 	
 	return menuItem;	
 }
-	JMenuBar getMenuBar() {
-		return menuBar;
-	}
+
+JMenuBar getMenuBar() {
+	return menuBar;
+}
+
+JPopupMenu getPopupMenu() {
+	return popupMenu;
+}
+	
 /**
  * Creation date: (12/17/2001 2:15:13 PM)
  * @param actions com.cannontech.esub.editor.EditorActions
@@ -97,22 +106,68 @@ private void initialize(EditorActions actions) {
 	fileMenu.add(exitItem);
 
 	JMenu editMenu = new JMenu("Edit");
+	popupMenu = new JPopupMenu("Edit");
 	
 	action = actions.getAction(EditorActions.CUT_ELEMENT);
 	JMenuItem cutItem = createMenuItem(action.getLabel(), action);
+	JMenuItem cutPopupItem = createMenuItem(action.getLabel(), action);	
 	cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
 	
 	action = actions.getAction(EditorActions.COPY_ELEMENT);
 	JMenuItem copyItem = createMenuItem(action.getLabel(), action);
+	JMenuItem copyPopupItem = createMenuItem(action.getLabel(), action);
 	copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
 	
 	action = actions.getAction(EditorActions.PASTE_ELEMENT);
 	JMenuItem pasteItem = createMenuItem(action.getLabel(), action);
+	JMenuItem pastePopupItem = createMenuItem(action.getLabel(), action);
 	pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 
 	action = actions.getAction(EditorActions.DELETE_ELEMENT);
-	JMenuItem deleteItem = createMenuItem(action.getLabel(), action);	
+	JMenuItem deleteItem = createMenuItem(action.getLabel(), action);
+	JMenuItem deletePopupItem = createMenuItem(action.getLabel(), action);		
 			
+	JMenu alignSubMenu = new JMenu("Align");
+	JMenu alignPopupSubMenu = new JMenu("Align");
+		
+	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_LEFT);
+	JMenuItem alignLeftItem = createMenuItem(action.getLabel(), action);
+	JMenuItem alignLeftPopupItem = createMenuItem(action.getLabel(), action);
+	
+	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_RIGHT);
+	JMenuItem alignRightItem = createMenuItem(action.getLabel(), action);
+	JMenuItem alignRightPopupItem = createMenuItem(action.getLabel(), action);
+	
+	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_TOP);
+	JMenuItem alignTopItem = createMenuItem(action.getLabel(), action);
+	JMenuItem alignTopPopupItem = createMenuItem(action.getLabel(), action);
+		
+	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_BOTTOM);
+	JMenuItem alignBottomItem = createMenuItem(action.getLabel(), action);
+	JMenuItem alignBottomPopupItem = createMenuItem(action.getLabel(), action);
+	
+	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_VERTICAL);
+	JMenuItem alignVerticalItem = createMenuItem(action.getLabel(), action);
+	JMenuItem alignVerticalPopupItem = createMenuItem(action.getLabel(), action);
+	
+	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_HORIZONTAL);
+	JMenuItem alignHorizontalItem = createMenuItem(action.getLabel(), action);
+	JMenuItem alignHorizontalPopupItem = createMenuItem(action.getLabel(), action);
+	
+	alignSubMenu.add(alignLeftItem);
+	alignSubMenu.add(alignRightItem);
+	alignSubMenu.add(alignTopItem);
+	alignSubMenu.add(alignBottomItem);
+	alignSubMenu.add(alignVerticalItem);
+	alignSubMenu.add(alignHorizontalItem);
+	
+	alignPopupSubMenu.add(alignLeftPopupItem);
+	alignPopupSubMenu.add(alignRightPopupItem);
+	alignPopupSubMenu.add(alignTopPopupItem);
+	alignPopupSubMenu.add(alignBottomPopupItem);
+	alignPopupSubMenu.add(alignVerticalPopupItem);
+	alignPopupSubMenu.add(alignHorizontalPopupItem);
+	
 	JMenu rotateSubMenu = new JMenu("Rotate");
 	
 	action = actions.getAction(EditorActions.ROTATE_ELEMENT_90);
@@ -126,9 +181,11 @@ private void initialize(EditorActions actions) {
 	
 	action = actions.getAction(EditorActions.TO_FRONT_LAYER);
 	JMenuItem toFrontItem = createMenuItem(action.getLabel(), action);
+	JMenuItem toFrontPopupItem = createMenuItem(action.getLabel(), action);
 
 	action = actions.getAction(EditorActions.TO_BACK_LAYER);
 	JMenuItem toBackItem = createMenuItem(action.getLabel(), action);
+	JMenuItem toBackPopupItem = createMenuItem(action.getLabel(), action);
 
 	rotateSubMenu.add(rotateNinetyItem);
 	rotateSubMenu.add(rotateOneEightyItem);
@@ -139,10 +196,27 @@ private void initialize(EditorActions actions) {
 	editMenu.add(pasteItem);	
 	editMenu.add(deleteItem);
 	editMenu.add(new JSeparator());
-	editMenu.add(rotateSubMenu);
-	editMenu.add(new JSeparator());	
+	editMenu.add(alignSubMenu);	
+	editMenu.add(new JSeparator());
+/* TODO rotation is broken */
+//	editMenu.add(rotateSubMenu);
+//	editMenu.add(new JSeparator());	
 	editMenu.add(toFrontItem);
 	editMenu.add(toBackItem);
+	
+	popupMenu.add(cutPopupItem);
+	popupMenu.add(copyPopupItem);
+	popupMenu.add(pastePopupItem);	
+	popupMenu.add(deletePopupItem);
+	popupMenu.add(new JSeparator());
+	popupMenu.add(alignPopupSubMenu);	
+	popupMenu.add(new JSeparator());
+/* TODO rotation is broken */
+//	editMenu.add(rotateSubMenu);
+//	editMenu.add(new JSeparator());	
+	popupMenu.add(toFrontPopupItem);
+	popupMenu.add(toBackPopupItem);
+	
 	
 	// Add cut copy paste here
 
