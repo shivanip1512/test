@@ -608,6 +608,13 @@ insert into yukonroleproperty values(-60118, -601, 'Default Start Date Offset', 
 insert into yukonroleproperty values(-60119, -601, 'Default Time Period', '(none)', 'Default the time period.');
 
 
+drop table FDRTelegyrGroup;
+go
+update FDRInterfaceOption set optionlabel = 'Interval (sec)', optiontype = 'Text', optionvalues = '(none)' where interfaceid = 11 and ordering = 2;
+
+
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -508,6 +508,10 @@ insert into yukonroleproperty values(-60117, -601, 'Trending Usage', 'false', 'A
 insert into yukonroleproperty values(-60118, -601, 'Default Start Date Offset', '0', 'Offset the start date by this number.');
 insert into yukonroleproperty values(-60119, -601, 'Default Time Period', '(none)', 'Default the time period.');
 
+drop table FDRTelegyrGroup;
+update FDRInterfaceOption set optionlabel = 'Interval (sec)', optiontype = 'Text', optionvalues = '(none)' where interfaceid = 11 and ordering = 2;
+
+
 
 
 
