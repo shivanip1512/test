@@ -64,6 +64,7 @@ import com.cannontech.stars.web.action.UpdateLoginAction;
 import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ACType;
+import com.cannontech.stars.xml.serialize.AddressingGroup;
 import com.cannontech.stars.xml.serialize.AirConditioner;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.BinSize;
@@ -112,6 +113,7 @@ import com.cannontech.stars.xml.serialize.SoilType;
 import com.cannontech.stars.xml.serialize.SquareFeet;
 import com.cannontech.stars.xml.serialize.StandbySource;
 import com.cannontech.stars.xml.serialize.StarsApp;
+import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
@@ -120,6 +122,8 @@ import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
@@ -1197,8 +1201,13 @@ public class ImportManager extends HttpServlet {
 		app.setModelNumber( "" );
 		app.setEfficiencyRating( -1 );
 		
-		if (fields[IDX_YEAR_MADE].length() > 0)
-			app.setYearManufactured( Integer.parseInt(fields[IDX_YEAR_MADE]) );
+		if (fields[IDX_YEAR_MADE].length() > 0) {
+			try {
+				app.setYearManufactured( Integer.parseInt(fields[IDX_YEAR_MADE]) );
+			}
+			catch (NumberFormatException e) {}
+		}
+		
 		if (fields[IDX_APP_KW].length() > 0) {
 			int kwCap = (int) Double.parseDouble(fields[IDX_APP_KW]);
 			if (kwCap >= 0) app.setKWCapacity( kwCap );
@@ -1888,14 +1897,16 @@ public class ImportManager extends HttpServlet {
 		else if (listName.equals("LoadGroup")) {
 			if (text.equals("")) return null;
 			
-			ArrayList programs = energyCompany.getAllPrograms();
-			for (int i = 0; i < programs.size(); i++) {
-				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
-				if (liteProg.getGroupIDs() == null) continue;
-				
-				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-					if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( text ))
-						return new Integer(liteProg.getGroupIDs()[j]);
+			StarsEnrollmentPrograms programs = energyCompany.getStarsEnrollmentPrograms();
+			for (int i = 0; i < programs.getStarsApplianceCategoryCount(); i++) {
+				StarsApplianceCategory category = programs.getStarsApplianceCategory(i);
+				for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+					StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
+					for (int k = 0; k < program.getAddressingGroupCount(); k++) {
+						AddressingGroup group = program.getAddressingGroup(k);
+						if (group.getContent().equalsIgnoreCase( text ))
+							return new Integer( group.getEntryID() );
+					}
 				}
 			}
 		}
@@ -1959,6 +1970,28 @@ public class ImportManager extends HttpServlet {
 		}
 		
 		return ZERO;
+	}
+	
+	/**
+	 * For some string including a label (e.g. "R2-GROUP:WHH"), get the text part of it (i.e. "WHH").
+	 * If the text is empty or it represents the numerical value -1, return null.
+	 * Otherwise, the text is considered "meaningful", and is returned.
+	 */
+	private String getMeaningfulText(String str) {
+		if (str != null && str.length() > 0) {
+			String text = str.substring( str.indexOf(':') + 1 );
+			if (text.length() > 0) {
+				try {
+					if (Double.parseDouble(text) == -1.0)
+						return null;
+				}
+				catch (NumberFormatException e) {}
+				
+				return text;
+			}
+		}
+		
+		return null;
 	}
 	
 	/** Old STARS customer table
@@ -2035,36 +2068,44 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_TRFM_SIZE] = columns[5];
 		fields[IDX_SERV_VOLT] = columns[6];
 		if (columns[9].length() > 0 && userLabels.get(LABEL_SI_CHAR1) != null) {
-			String text = columns[9].substring( columns[9].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHAR1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[9] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHAR1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[10].length() > 0 && userLabels.get(LABEL_SI_CHAR2) != null) {
-			String text = columns[10].substring( columns[10].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHAR2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[10] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHAR2) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[11].length() > 0 && userLabels.get(LABEL_SI_DROPBOX1) != null) {
-			String text = columns[11].substring( columns[11].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[11] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[12].length() > 0 && userLabels.get(LABEL_SI_DROPBOX2) != null) {
-			String text = columns[12].substring( columns[12].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_DROPBOX2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[12] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_DROPBOX2) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[13].length() > 0 && userLabels.get(LABEL_SI_CHECKBOX1) != null) {
-			String text = columns[13].substring( columns[13].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHECKBOX1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[13] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHECKBOX1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[14].length() > 0 && userLabels.get(LABEL_SI_CHECKBOX2) != null) {
-			String text = columns[14].substring( columns[14].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHECKBOX2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[14] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHECKBOX2) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[15].length() > 0 && userLabels.get(LABEL_SI_NUMERIC1) != null) {
-			String text = columns[15].substring( columns[15].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_NUMERIC1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[15] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_NUMERIC1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[16].length() > 0 && userLabels.get(LABEL_SI_NUMERIC2) != null) {
-			String text = columns[16].substring( columns[16].indexOf(':')+1 );
-			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_NUMERIC2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[16] );
+			if (text != null)
+				fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_NUMERIC2) + ": " + text + LINE_SEPARATOR;
 		}
 		
 		return fields;
@@ -2108,14 +2149,15 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_RECEIVE_DATE] = columns[13];
 		fields[IDX_SERVICE_COMPANY] = columns[15];
 		if (columns[16].length() > 0 && userLabels.get(LABEL_DI_CHAR1) != null) {
-			String text = columns[16].substring( columns[16].indexOf(':')+1 );
-			fields[IDX_INV_NOTES] += userLabels.get(LABEL_DI_CHAR1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[16] );
+			if (text != null)
+				fields[IDX_INV_NOTES] += userLabels.get(LABEL_DI_CHAR1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[17].length() > 0 && userLabels.get(LABEL_DI_DROPBOX1) != null) {
-			String text = columns[17].substring( columns[17].indexOf(':')+1 );
-			fields[IDX_INV_NOTES] += userLabels.get(LABEL_DI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[17] );
+			if (text != null)
+				fields[IDX_INV_NOTES] += userLabels.get(LABEL_DI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
 		}
-		//TODO: Date entry label not found in INI file 
 		
 		return fields;
 	}
@@ -2141,22 +2183,26 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_INV_ID] = columns[1];
 		fields[IDX_INSTALL_DATE] = columns[2];
 		for (int i = 3; i <= 5; i++) {
-			if (columns[i].length() > 0)
+			if (columns[i].indexOf(':') < columns[i].length() - 1)
 				fields[IDX_INV_NOTES] += columns[i] + LINE_SEPARATOR;
 		}
 		if (columns[6].length() > 0)
 			fields[IDX_INV_NOTES] += "Technician: " + columns[6] + LINE_SEPARATOR;
 		if (columns[7].length() > 0)
 			fields[IDX_INV_NOTES] += "Location: " + columns[7] + LINE_SEPARATOR;
-		for (int i = 8; i <= 9; i++) {
-			if (columns[i].length() > 0)
-				fields[IDX_INV_NOTES] += columns[i] + LINE_SEPARATOR;
+		if (columns[8].length() > 0) {
+			if (getMeaningfulText(columns[8]) != null)
+				fields[IDX_INV_NOTES] += columns[8] + LINE_SEPARATOR;
 		}
+		if (columns[9].length() > 0)
+			fields[IDX_INV_NOTES] += columns[9] + LINE_SEPARATOR;
 		fields[IDX_DEVICE_STATUS] = columns[10];
 		for (int i = 0; i < 3; i++) {
 			fields[IDX_R1_GROUP + i] = columns[11+3*i].substring( "RX-GROUP:".length() );
-			if (columns[12+3*i].length() > 0)
-				fields[IDX_INV_NOTES] += columns[12+3*i] + LINE_SEPARATOR;
+			if (columns[12+3*i].length() > 0) {
+				if (getMeaningfulText(columns[12+3*i]) != null)
+					fields[IDX_INV_NOTES] += columns[12+3*i] + LINE_SEPARATOR;
+			}
 			fields[IDX_R1_STATUS + i] = columns[13+3*i].substring( "RX-STATUS:".length() );
 		}
 		
@@ -2229,36 +2275,44 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_AVAIL_FOR_CTRL] = columns[11];
 		fields[IDX_YEAR_MADE] = columns[12];
 		if (columns[13].length() > 0 && userLabels.get(LABEL_LI_CHAR1) != null) {
-			String text = columns[13].substring( columns[13].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHAR1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[13] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHAR1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[14].length() > 0 && userLabels.get(LABEL_LI_DROPBOX1) != null) {
-			String text = columns[14].substring( columns[14].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[14] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[15].length() > 0 && userLabels.get(LABEL_LI_DROPBOX2) != null) {
-			String text = columns[15].substring( columns[15].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[15] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX2) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[16].length() > 0 && userLabels.get(LABEL_LI_DROPBOX3) != null) {
-			String text = columns[16].substring( columns[16].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX3) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[16] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX3) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[17].length() > 0 && userLabels.get(LABEL_LI_CHECKBOX1) != null) {
-			String text = columns[17].substring( columns[17].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHECKBOX1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[17] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHECKBOX1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[18].length() > 0 && userLabels.get(LABEL_LI_CHECKBOX2) != null) {
-			String text = columns[18].substring( columns[18].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHECKBOX2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[18] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHECKBOX2) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[19].length() > 0 && userLabels.get(LABEL_LI_NUMERIC1) != null) {
-			String text = columns[19].substring( columns[19].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_NUMERIC1) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[19] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_NUMERIC1) + ": " + text + LINE_SEPARATOR;
 		}
 		if (columns[20].length() > 0 && userLabels.get(LABEL_LI_NUMERIC2) != null) {
-			String text = columns[20].substring( columns[20].indexOf(':')+1 );
-			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_NUMERIC2) + ": " + text + LINE_SEPARATOR;
+			String text = getMeaningfulText( columns[20] );
+			if (text != null)
+				fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_NUMERIC2) + ": " + text + LINE_SEPARATOR;
 		}
 		
 		return fields;
@@ -2278,7 +2332,7 @@ public class ImportManager extends HttpServlet {
 	 * 14		ACTION_TAKEN
 	 * 15		TIME_SCHEDULED
 	 * 16		DATE_SCHEDULED
-	 * 17-19	ORDER_NOTES
+	 * 17-19	ACTION_TAKEN
 	 * 20		SERVICE_COMPANY
 	 */
 	private String[] parseStarsWorkOrder(String line) throws Exception {
@@ -2300,10 +2354,17 @@ public class ImportManager extends HttpServlet {
 		if (fields[IDX_TIME_SCHEDULED].length() > 0)
 			fields[IDX_ORDER_DESC] += "Time Scheduled: " + fields[IDX_TIME_SCHEDULED];
 		fields[IDX_DATE_SCHEDULED] = columns[15];
-		if (columns[16].length() > 0)
-			fields[IDX_ACTION_TAKEN] += columns[16] + LINE_SEPARATOR;
-		if (columns[17].length() > 0)
-			fields[IDX_ACTION_TAKEN] += "Overtime Hours: " + columns[17] + LINE_SEPARATOR;
+		if (columns[16].length() > 0) {
+			String text = getMeaningfulText( columns[16] );
+			if (text != null && text.equalsIgnoreCase("YES")) {
+				fields[IDX_ACTION_TAKEN] += "Overtime: " + text + LINE_SEPARATOR;
+				try {
+					if (Double.parseDouble( columns[17] ) > 0)
+						fields[IDX_ACTION_TAKEN] += "Overtime Hours: " + columns[17] + LINE_SEPARATOR;
+				}
+				catch (NumberFormatException e) {}
+			}
+		}
 		if (columns[18].length() > 0)
 			fields[IDX_ACTION_TAKEN] += "Technician: " + columns[18];
 		fields[IDX_ORDER_CONTRACTOR] = columns[19];
@@ -2378,9 +2439,11 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_AC_TONNAGE] = columns[4];
-		fields[IDX_APP_NOTES] += "BTU_Hour: " + columns[5] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[5]) != null)
+			fields[IDX_APP_NOTES] += "BTU_Hour: " + columns[5] + LINE_SEPARATOR;
 		fields[IDX_APP_NOTES] += columns[6];
 			
 		return fields;
@@ -2407,11 +2470,13 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_WH_NUM_GALLONS] = columns[4];
 		fields[IDX_WH_NUM_ELEMENTS] = columns[5];
 		fields[IDX_WH_ENERGY_SRC] = columns[6];
-		fields[IDX_APP_NOTES] += "Location: " + columns[7] + LINE_SEPARATOR;
+		if (columns[7].length() > 0)
+			fields[IDX_APP_NOTES] += "Location: " + columns[7] + LINE_SEPARATOR;
 		fields[IDX_APP_NOTES] += columns[8];
 		
 		return fields;
@@ -2436,7 +2501,8 @@ public class ImportManager extends HttpServlet {
 		
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
-		fields[IDX_APP_NOTES] += "StandbyKW: " + columns[2] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[2]) != null)
+			fields[IDX_APP_NOTES] += "StandbyKW: " + columns[2] + LINE_SEPARATOR;
 		fields[IDX_GEN_FUEL_CAP] = columns[3];
 		fields[IDX_GEN_START_DELAY] = columns[4];
 		fields[IDX_GEN_CAPACITY] = columns[5];
@@ -2468,7 +2534,8 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_IRR_TYPE] = columns[4];
 		fields[IDX_IRR_ENERGY_SRC] = columns[5];
 		fields[IDX_IRR_HORSE_POWER] = columns[6];
@@ -2500,7 +2567,8 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_GDRY_TYPE] = columns[4];
 		fields[IDX_GDRY_ENERGY_SRC] = columns[5];
 		fields[IDX_GDRY_HORSE_POWER] = columns[6];
@@ -2531,7 +2599,8 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_HP_TYPE] = columns[4];
 		fields[IDX_HP_SIZE] = columns[5];
 		fields[IDX_HP_STANDBY_SRC] = columns[6];
@@ -2561,11 +2630,13 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_SH_TYPE] = columns[4];
 		fields[IDX_SH_CAPACITY] = columns[5];
 		fields[IDX_SH_RECHARGE_TIME] = columns[6];
-		fields[IDX_APP_NOTES] += "ContractHours: " + columns[7] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[7]) != null)
+			fields[IDX_APP_NOTES] += "ContractHours: " + columns[7] + LINE_SEPARATOR;
 		fields[IDX_APP_NOTES] += columns[8];
 		
 		return fields;
@@ -2591,8 +2662,10 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
-		fields[IDX_APP_NOTES] += "PrimarySize: " + columns[4] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[4]) != null)
+			fields[IDX_APP_NOTES] += "PrimarySize: " + columns[4] + LINE_SEPARATOR;
 		fields[IDX_DF_2ND_ENERGY_SRC] = columns[5];
 		fields[IDX_DF_2ND_CAPACITY] = columns[6];
 		fields[IDX_DF_SWITCH_OVER_TYPE] = columns[7];
@@ -2617,7 +2690,8 @@ public class ImportManager extends HttpServlet {
 		fields[IDX_ACCOUNT_ID] = columns[0];
 		fields[IDX_APP_ID] = columns[1];
 		fields[IDX_APP_KW] = columns[2];
-		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		if (getMeaningfulText(columns[3]) != null)
+			fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
 		fields[IDX_APP_NOTES] += columns[4];
 		
 		return fields;
@@ -2798,7 +2872,7 @@ public class ImportManager extends HttpServlet {
 			
 			Hashtable acctIDFields = new Hashtable();	// Map from account id(Integer) to fields(String[])
 			Hashtable invIDFields = new Hashtable();	// Map from inventory id(Integer) to fields(String[])
-			Hashtable appIDFields = new Hashtable();	// Map from appliance id(Integer) to fields(String[])
+			Hashtable acctIDAppFields = new Hashtable();	// Map from account id(Integer) to (Map from appliance id (Integer) to fields(String[]))
 			
 			ArrayList acctFieldsList = new ArrayList();		// List of all account fields(String[])
 			ArrayList invFieldsList = new ArrayList();		// List of all inventory fields(String[])
@@ -3021,6 +3095,12 @@ public class ImportManager extends HttpServlet {
 					
 					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					appFieldsList.add( fields );
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields == null) {
+						appIDFields = new Hashtable();
+						acctIDAppFields.put( fields[IDX_ACCOUNT_ID], appIDFields );
+					}
 					appIDFields.put( fields[IDX_APP_ID], fields );
 					
 					for (int j = 0; j < APP_LIST_FIELDS.length; j++) {
@@ -3039,7 +3119,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < acInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsACInfo( acInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						// Set the appliance category field (which will be used to decide the appliance type later)
@@ -3071,7 +3155,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < whInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsWHInfo( whInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER);
@@ -3102,7 +3190,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < genInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsGeneratorInfo( genInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR);
@@ -3133,7 +3225,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < irrInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsIrrigationInfo( irrInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION);
@@ -3164,7 +3260,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < gdryInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsGrainDryerInfo( gdryInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER);
@@ -3195,7 +3295,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < hpInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsHeatPumpInfo( hpInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP);
@@ -3226,7 +3330,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < shInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsStorageHeatInfo( shInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT);
@@ -3257,7 +3365,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < dfInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsDualFuelInfo( dfInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL);
@@ -3288,7 +3400,11 @@ public class ImportManager extends HttpServlet {
 				for (int i = 0; i < genlInfoLines.length; i++) {
 					lineNo = i + 1;
 					String[] fields = parseStarsGeneralInfo( genlInfoLines[i] );
-					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
+					String[] appFields = null;
+					
+					Hashtable appIDFields = (Hashtable) acctIDAppFields.get( fields[IDX_ACCOUNT_ID] );
+					if (appIDFields != null) 
+						appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT);
