@@ -37,9 +37,11 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.TagFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.Command;
@@ -52,6 +54,7 @@ import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.data.DisplayData;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.roweditor.AltScanRatePanel;
 import com.cannontech.tdc.roweditor.AnalogPanel;
 import com.cannontech.tdc.roweditor.EditorDialogData;
 import com.cannontech.tdc.roweditor.ManualEntryJPanel;
@@ -126,6 +129,7 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 
 	private javax.swing.JMenuItem jMenuItemGraph = null;
 	private javax.swing.JMenuItem jMenuItemCreateTag = null;
+	private javax.swing.JMenuItem jMenuItemAltScanRate = null;
 
 
 
@@ -167,6 +171,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if( e.getSource() == getJMenuItemGraph() ) 
 		jMenuItemGraph_ActionPerformed( e );
 
+	if( e.getSource() == getJMenuItemAltScanRate() ) 
+		jMenuItemAltScanRate_ActionPerformed( e );
 
 	if( e.getSource() == getJMenuItemInhibitDevice() ) 
 		jMenuItemInhibitDev_ActionPerformed(e);
@@ -1356,6 +1362,30 @@ private javax.swing.JMenuItem getJMenuItemGraph()
 	}
 	return jMenuItemGraph;
 }
+ 
+/**
+ * Return the jMenuItemAltScanRate property value.
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemAltScanRate() 
+{
+	if( jMenuItemAltScanRate == null ) 
+	{
+		try 
+		{
+			jMenuItemAltScanRate = new javax.swing.JMenuItem();
+			jMenuItemAltScanRate.setName("jMenuItemAltScanRate");
+			jMenuItemAltScanRate.setMnemonic('f');
+			jMenuItemAltScanRate.setText("Force Alt Scan...");
+		} 
+		catch (java.lang.Throwable ivjExc) 
+		{
+			handleException(ivjExc);
+		}
+	}
+	return jMenuItemAltScanRate;
+}
+
 
 /**
  * Return the JMenuAblement property value.
@@ -1394,6 +1424,7 @@ private javax.swing.JPopupMenu getJPopupMenuManual() {
 			// user code begin {1}
 
 			ivjJPopupMenuManual.add( getJMenuItemGraph() );
+			ivjJPopupMenuManual.add( getJMenuItemAltScanRate() );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1964,6 +1995,7 @@ private void initConnections() throws java.lang.Exception {
 	
 	getJMenuItemInhibitDevice().addActionListener( this );	
 	getJMenuItemGraph().addActionListener( this );
+	getJMenuItemAltScanRate().addActionListener( this );
 	getJMenuItemCreateTag().addActionListener(this);
 
 	// user code end
@@ -2408,6 +2440,40 @@ public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEven
 	jd.show();
 }
 
+public void jMenuItemAltScanRate_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+	RowEditorDialog d = new RowEditorDialog( 
+		CtiUtilities.getParentFrame(this) ); 
+
+	int selectedRow = getDisplayTable().getSelectedRow();
+	PointValues pt = getTableDataModel().getPointValue( selectedRow );
+
+	AltScanRatePanel panel =
+		new AltScanRatePanel(
+			new EditorDialogData(pt, pt.getAllText()) );
+
+
+	// should be put in its own method
+	java.awt.GridBagConstraints constraintsPanel = new java.awt.GridBagConstraints();
+	constraintsPanel.gridx = 0; constraintsPanel.gridy = 0;
+	constraintsPanel.fill = java.awt.GridBagConstraints.BOTH;
+	constraintsPanel.anchor = java.awt.GridBagConstraints.NORTH;
+	constraintsPanel.ipadx = 0; constraintsPanel.ipady = 0;
+	constraintsPanel.insets = new java.awt.Insets(0, 0, 0, 0);
+	constraintsPanel.weightx = 1.0; constraintsPanel.weighty = 1.0;
+
+	d.getContentPane().add(panel, constraintsPanel);
+	d.setResizable( false );
+	d.pack();
+	d.setTitle( panel.getPanelTitle() );
+	
+	d.addRowEditorDialogListener( panel );
+	
+	d.setLocationRelativeTo( this );		
+	d.setModal( true );		
+	d.show();
+}
+
 /**
  * Comment
  */
@@ -2655,9 +2721,12 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		
 		addTagMenuItems( selectedRow );
 
+		getJMenuItemAltScanRate().setEnabled( 
+			!Display.isCoreType(getCurrentDisplay().getType())
+			&& DeviceTypesFuncs.hasDeviceScanRate(
+				PAOGroups.getDeviceType(pv.getDeviceType()) ) );		
 
-		// we cant enter a manual entry from a system display
-		
+
 		// check to see if the point can be controlled AND its control is NOT disabled
 		getJMenuItemPopUpManualControl().setEnabled(
 				!Display.isCoreType(getCurrentDisplay().getType()) 
@@ -2672,6 +2741,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		getJMenuItemPopUpManualEntry().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
 		getJMenuItemGraph().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
 		getJMenuAbleDis().setEnabled( !Display.isCoreType(getCurrentDisplay().getType()) );
+
 	}
 	else
 	{
