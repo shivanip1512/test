@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/30 19:29:31 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/02/09 16:51:37 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -76,7 +76,7 @@ class IM_EX_PROT CtiTransdataApplication
       
       enum Sizes
       {
-         Storage_size      = 30000
+         Storage_size      = 50000
       };
 
       CtiTransdataTracker  _tracker;
