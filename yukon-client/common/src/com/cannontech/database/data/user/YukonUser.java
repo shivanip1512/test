@@ -2,6 +2,7 @@ package com.cannontech.database.data.user;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
 
@@ -12,20 +13,30 @@ public class YukonUser extends DBPersistent {
 	
 	private com.cannontech.database.db.user.YukonUser yukonUser;
 	
-	/* I didn't finish implementing the following since it is tedious and
-	 * i'm not sure it is needed.
-	 */
-	/*private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
-	private Vector yukonRoles;  //type = com.cannontech.database.db.user.YukonRole
-	*/
+	private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
+	//private Vector yukonRoles;  //type = com.cannontech.database.db.user.YukonRole
+	
 	public YukonUser() {
+	}
+	
+	public void setDbConnection(java.sql.Connection conn) {
+		setDbConnection( conn );
+		getYukonUser().setDbConnection( conn );
 	}
 	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		throw new Error("not implemented yet");		
+		getYukonUser().add();
+		getYukonUser().setDbConnection(null);
+		
+		for (int i = 0; i < getYukonGroups().size(); i++) {
+			Object[] addValues = {
+				getYukonUser().getUserID(), ((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
+			};
+			add( "YukonUserGroup", addValues );
+		}
 	}
 
 	/**
@@ -39,35 +50,35 @@ public class YukonUser extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
 	public void retrieve() throws SQLException {
-		com.cannontech.database.db.user.YukonUser dbUser = getYukonUser();
-		dbUser.setDbConnection(getDbConnection());
-		dbUser.retrieve();
-		dbUser.setDbConnection(null);
+		getYukonUser().retrieve();
+		getYukonUser().setDbConnection(null);
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		com.cannontech.database.db.user.YukonUser dbUser = getYukonUser();
-		dbUser.setDbConnection(getDbConnection());
-		dbUser.update();
-		dbUser.setDbConnection(null);
+		getYukonUser().update();
+		getYukonUser().setDbConnection(null);
 	}
 
 	/**
 	 * Returns the yukonGroups.
 	 * @return Vector
 	 */
-/*	public Vector getYukonGroups() {
+	public Vector getYukonGroups() {
+		if (yukonGroups == null)
+			yukonGroups = new Vector();
 		return yukonGroups;
 	}
-*/
+
 	/**
 	 * Returns the yukonRoles.
 	 * @return Vector
 	 */
 /*	public Vector getYukonRoles() {
+		if (yukonRoles == null)
+			yukonRoles = new Vector();
 		return yukonRoles;
 	}
 */
@@ -85,10 +96,10 @@ public class YukonUser extends DBPersistent {
 	 * Sets the yukonGroups.
 	 * @param yukonGroups The yukonGroups to set
 	 */
-/*	public void setYukonGroups(Vector yukonGroups) {
+	public void setYukonGroups(Vector yukonGroups) {
 		this.yukonGroups = yukonGroups;
 	}
-*/
+
 	/**
 	 * Sets the yukonRoles.
 	 * @param yukonRoles The yukonRoles to set
