@@ -17,11 +17,11 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.TransdataMarkV;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.port.DirectPort;
@@ -292,7 +292,7 @@ public Object getValue(Object val)
          smartDB.addDBPersistent( newPoint );
       }
       else
-         smartDB = createPoints( ((DeviceBase) val).getPAObjectID() );
+         smartDB = createPoints( (DeviceBase)val );
 
 
 		smartDB.addDBPersistent( (DeviceBase)val );
@@ -304,44 +304,58 @@ public Object getValue(Object val)
 		return val;
 }
 
-private SmartMultiDBPersistent createPoints( Integer paoID )
+private SmartMultiDBPersistent createPoints( DeviceBase val )
 {
+	if( val == null )
+		return null;
+
 	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
-	int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(4);
+	Integer paoID = val.getPAObjectID();
+
+	if( val instanceof TransdataMarkV )
+	{
+		//very special case since Transdata devices have unique points compared to
+		//other IEDs
+		smartDB = TransdataMarkV.createPoints( paoID );
+	}
+	else
+	{
+		//majority of the cases are the same
+		int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(4);
+		
+		//add all ther point to the smart object
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"Total kWh",
+				paoID,
+				new Integer(ids[0]),
+				PointTypes.PT_OFFSET_TOTAL_KWH,
+				com.cannontech.database.data.point.PointUnits.UOMID_KWH) );
 	
-	//add all ther point to the smart object
-	smartDB.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"Total kWh",
-			paoID,
-			new Integer(ids[0]),
-			PointTypes.PT_OFFSET_TOTAL_KWH,
-			com.cannontech.database.data.point.PointUnits.UOMID_KWH) );
-
-	smartDB.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"Total kVArh",
-			paoID,
-			new Integer(ids[1]),
-			PointTypes.PT_OFFSET_TOTAL_KVARH,
-			com.cannontech.database.data.point.PointUnits.UOMID_KVARH) );
-				
-	smartDB.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"LP kW Demand",
-			paoID,
-			new Integer(ids[2]),
-			PointTypes.PT_OFFSET_LP_KW_DEMAND,
-			com.cannontech.database.data.point.PointUnits.UOMID_KW) );
-
-	smartDB.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"LP kVAr Demand",
-			paoID,
-			new Integer(ids[3]),
-			PointTypes.PT_OFFSET_KVAR_DEMAND,
-			com.cannontech.database.data.point.PointUnits.UOMID_KVAR) );
-				
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"Total kVArh",
+				paoID,
+				new Integer(ids[1]),
+				PointTypes.PT_OFFSET_TOTAL_KVARH,
+				com.cannontech.database.data.point.PointUnits.UOMID_KVARH) );
+					
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"LP kW Demand",
+				paoID,
+				new Integer(ids[2]),
+				PointTypes.PT_OFFSET_LP_KW_DEMAND,
+				com.cannontech.database.data.point.PointUnits.UOMID_KW) );
+	
+		smartDB.addDBPersistent( 
+			PointFactory.createAnalogPoint(
+				"LP kVAr Demand",
+				paoID,
+				new Integer(ids[3]),
+				PointTypes.PT_OFFSET_KVAR_DEMAND,
+				com.cannontech.database.data.point.PointUnits.UOMID_KVAR) );
+	}				
 	
 	return smartDB;	
 }
