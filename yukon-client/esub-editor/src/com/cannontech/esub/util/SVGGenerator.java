@@ -128,7 +128,7 @@ public class SVGGenerator {
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
 		int x = (int) r.getMinX();
-		int y = (int) r.getMinY();
+		int y = (int) r.getMinY() + (int) ((r.getMaxY() - r.getMinY()) / 2);
 
 		LxAbstractStyle style = text.getStyle();
 		
@@ -235,7 +235,7 @@ public class SVGGenerator {
 		//could become a problem, pay attention
 		Rectangle2D r = text.getBounds2D();
 		int x = (int) r.getMinX();
-		int y = (int) r.getMinY();
+		int y = (int) r.getMinY() + (int) ((r.getMaxY() - r.getMinY()) / 2);
 
 		LxAbstractStyle style = text.getStyle();
 		
