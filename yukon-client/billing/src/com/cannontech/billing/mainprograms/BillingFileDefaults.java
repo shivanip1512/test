@@ -354,7 +354,7 @@ private void setBillGroup(String newBillGrpString)
 	int beginIndex = 0;
 	int endIndex = newBillGrpString.indexOf(",");
 
-	String temp = newBillGrpString.substring(beginIndex, endIndex);
+	String temp = newBillGrpString;
 
 	if( endIndex < 0)
 	{
