@@ -129,8 +129,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	return  ( currentPanel == getSeries300ConfigPanel() 
-            || currentPanel == getSeries200ConfigPanel() 
-            || currentPanel == getSeries400ConfigPanel());
+            || currentPanel == getSeries200ConfigPanel()); 
+         
 }
 
 

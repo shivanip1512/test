@@ -285,6 +285,7 @@ private javax.swing.JRadioButton getKY2WireButton() {
 			ivjKY2WireButton.setName("KY2WireButton");
 			ivjKY2WireButton.setText("2-Wire (KY)");
 			// user code begin {1}
+			ivjKY2WireButton.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -307,6 +308,7 @@ private javax.swing.JRadioButton getKYZ3WireButton() {
 			ivjKYZ3WireButton.setSelected(true);
 			ivjKYZ3WireButton.setText("3-Wire (KYZ)");
 			// user code begin {1}
+			ivjKYZ3WireButton.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -548,11 +550,11 @@ public Object getValue(Object o)
 	conMan.setConfigType(ConfigTwoWay.SERIES_200_TYPE); 
 		 
 	conMan.setConfigMode(ConfigTwoWay.MODE_NONE);
-	
+	/*
 	if(getKY2WireButton().isSelected())
 		conMan.setMCTWire1(ConfigTwoWay.TWOWIRE);
 	else
-		conMan.setMCTWire1(ConfigTwoWay.THREEWIRE);
+		conMan.setMCTWire1(ConfigTwoWay.THREEWIRE);*/
 	
 	conMan.setKe1(new Double( Double.parseDouble(getKeTextField().getText())) );
 		
@@ -696,7 +698,7 @@ public void setValue(Object val ) {
 		getNameTextField().setText(name);
 	}
 	
-	Integer temp = conMan.getMCTWire1();
+	/*Integer temp = conMan.getMCTWire1();
 	if( temp != null )
 	{
 		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
@@ -704,7 +706,7 @@ public void setValue(Object val ) {
 		else
 			getKYZ3WireButton().setSelected(true);
 		temp = null;
-	}		
+	}		*/
 	
 	Double temp2 = conMan.getKe1();
 	if( temp2 != null )
