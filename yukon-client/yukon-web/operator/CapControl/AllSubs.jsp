@@ -8,7 +8,8 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <meta http-equiv="refresh" content= <%= CapControlWebAnnex.REFRESH_SECONDS %> >
-<link rel="stylesheet" href="demostyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">

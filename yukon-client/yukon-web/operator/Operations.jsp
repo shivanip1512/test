@@ -1,16 +1,14 @@
 <%@ page import="com.cannontech.common.constants.RoleTypes" %>
+<%@ page import="com.cannontech.roles.operator.*"%>
+<%@ page import="com.cannontech.roles.*"%>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ include file="Consumer/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link id="StyleSheet" rel="stylesheet" href="demostyle.css" type="text/css">
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
-<script language="JavaScript">
-	document.getElementById("StyleSheet").href = '<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
-</script>
-</cti:checkRole>
+<link id="StyleSheet" rel="stylesheet" href="../WebConfig/CannonStyle.css" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0" link="#000000" vlink="#000000" alink="#000000">
@@ -19,12 +17,7 @@
     <td width="657"valign="bottom">
       <table width="657" border="0" cellspacing="0" cellpadding="3" height="102"> 
         <tr> 
-<cti:checkNoRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
-          <td id="Header" background="Header.gif" height="77" >&nbsp;</td>
-</cti:checkNoRole>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
-          <td id="Header" background="<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>" height="77" >&nbsp;</td>
-</cti:checkRole>
+          <td id="Header" background="<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>" height="77" >&nbsp;</td>
         </tr>
         <tr>
           <form name="form2" method="post" action="/login.jsp"><td>
@@ -43,7 +36,7 @@
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CONSUMER_INFO %>">
+<cti:checkRole roleid="<%= OperatorRoleDefs.CONSUMER_INFO_ROLEID %>">
   <tr> 
     <td width="102" background="Consumer/ConsumerImage.jpg" height="102">&nbsp;</td>
     <td width="555" bgcolor="#FFFFFF" height="102" valign="top"><img src="ConsumerHeader.gif" width="229" height="15" border="0"><br>
@@ -150,7 +143,7 @@
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main">
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_DIRECT_CONTROL %>"> 
+<cti:checkRole roleid="<%= OperatorRoleDefs.DIRECT_LOADCONTROL_ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
 			    <a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a>
               </div>
@@ -159,18 +152,18 @@
           </form>
           <form method="post" action="LoadControl/oper_mand.jsp">
             <td width="110" class = "Main"> 
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_CURTAILMENT %>"> 
+<cti:checkRole roleid="<%= OperatorRoleDefs.DIRECT_CURTAILMENT_ROLEID %>"> 
               <div align = "center" style = "border:solid 1px #666999;">
-			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.CURTAILMENT_TEXT %>"/></a>
+			    <a href = "LoadControl/oper_mand.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= DirectCurtailmentRole.CURTAILMENT_LABEL%>"/></a>
 			  </div>
 </cti:checkRole>
             &nbsp;</td>
           </form>
           <form method="post" action="LoadControl/oper_ee.jsp">
             <td width = "110" class = "Main"> 
-<cti:checkRole roleid="<%= RoleTypes.OPERATOR_ENERGY_EXCHANGE %>"> 
+<cti:checkRole roleid="<%= OperatorRoleDefs.ENERGY_BUYBACK_ROLEID%>"> 
               <div align = "center" style = "border:solid 1px #666999;">
-			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:text roleid="<%= RoleTypes.ENERGYEXCHANGE_TEXT %>"/></a>
+			    <a href = "LoadControl/oper_ee.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= EnergyBuybackRole.ENERGY_BUYBACK_LABEL%>"/></a>
 			  </div>
 </cti:checkRole>
             &nbsp;</td>
