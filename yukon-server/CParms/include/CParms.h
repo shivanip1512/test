@@ -52,8 +52,11 @@ public:
    void              HeadAndTail(char *source, char *dest, size_t len);
 
    RWCString         getValueAsString(RWCString Key);
-   BOOL              isOptUL(RWCString key);
-   RWCString         getValueAsStringUL(RWCString Key);
+   int               getValueAsInt(RWCString key, int defaultval = 0);
+   double            getValueAsDouble(RWCString key, double defaultval = 0.0);
+   ULONG             getValueAsULong(RWCString key, ULONG defaultval = 0L);
+
+
 };
 
 

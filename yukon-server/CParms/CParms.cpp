@@ -105,9 +105,9 @@ int CtiConfigParameters::RefreshConfigParameters()
       fclose(fp);
    }
 
-   if(isOptUL(ConfKeyRefreshRate))
+   if(isOpt(ConfKeyRefreshRate))
    {
-      RefreshRate = atoi(getValueAsStringUL(ConfKeyRefreshRate));
+      RefreshRate = atoi(getValueAsString(ConfKeyRefreshRate));
       // cout << "1. Expiring every " << RefreshRate << " seconds" << endl;
    }
    else
@@ -187,33 +187,41 @@ CtiConfigParameters::getValueAsString(RWCString key)
    return retStr;
 }
 
-BOOL CtiConfigParameters::isOptUL(RWCString key)
+int CtiConfigParameters::getValueAsInt(RWCString key, int defaultval)
 {
-   CtiConfigKey     Key(key);
-   CtiConfigValue   *Value;
+    int ret = defaultval;
 
-   checkForRefresh();
+    if(isOpt(key))
+    {
+        ret = atoi(getValueAsString(key));
+    }
 
-   Value = (CtiConfigValue*)mHash.findValue(&Key);
-
-   if(Value)
-      return TRUE;
-   else
-      return FALSE;
+    return ret;
 }
 
-RWCString
-CtiConfigParameters::getValueAsStringUL(RWCString key)
+ULONG CtiConfigParameters::getValueAsULong(RWCString key, ULONG defaultval)
 {
-   BOOL           bRet = TRUE;
-   CtiConfigKey   Key(key);
-   CtiConfigValue *Value;
+    char *ch;
+    ULONG ret = defaultval;
 
-   checkForRefresh();
+    if(isOpt(key))
+    {
+        ret = strtoul(getValueAsString(key).data(), &ch, 10);
+    }
 
-   Value = (CtiConfigValue*)mHash.findValue(&Key);
+    return ret;
+}
 
-   return Value->getValue();
+double CtiConfigParameters::getValueAsDouble(RWCString key, double defaultval)
+{
+    double ret = defaultval;
+
+    if(isOpt(key))
+    {
+        ret = atof(getValueAsString(key));
+    }
+
+    return ret;
 }
 
 #ifdef TESTOBJECT
