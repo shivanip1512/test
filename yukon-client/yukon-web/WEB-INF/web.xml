@@ -110,6 +110,14 @@
         <servlet-class>com.cannontech.stars.web.servlet.UpdateContacts</servlet-class>
         <load-on-startup>15</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>UpdateThermostat</servlet-name>
+        <display-name>UpdateThermostat</display-name>
+        <description>Update thermostat settings</description>
+        <servlet-class>com.cannontech.stars.web.servlet.UpdateThermostat</servlet-class>
+        <load-on-startup>16</load-on-startup>
+    </servlet>
 
     <session-config>
         <session-timeout>30</session-timeout>
