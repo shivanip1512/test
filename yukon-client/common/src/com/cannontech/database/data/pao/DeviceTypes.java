@@ -115,7 +115,7 @@ public interface DeviceTypes extends TypeBase
    public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
    public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
-	public static final String[] STRING_MCT_410_KWH_ONLY = {"MCT-410 kWh Only", "MCT410 kWh Only", "MCT410kWhOnly"};
+	public static final String[] STRING_MCT_410_KWH_ONLY = {"MCT-410iLE", "MCT410iLE"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};
