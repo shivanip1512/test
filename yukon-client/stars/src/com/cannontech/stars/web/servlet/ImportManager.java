@@ -1077,7 +1077,9 @@ public class ImportManager extends HttpServlet {
 		setStarsInventory( createHw, fields, energyCompany, problem );
 	    
 		liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+		
+		if (liteAcctInfo != null)
+			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	    
 		return liteInv;
 	}
@@ -1100,7 +1102,9 @@ public class ImportManager extends HttpServlet {
 		setStarsInventory( updateHw, fields, energyCompany, problem );
 		
 		UpdateLMHardwareAction.updateInventory( updateHw, liteInv, energyCompany );
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+		
+		if (liteAcctInfo != null)
+			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 		
 		return energyCompany.getInventory( liteInv.getInventoryID(), true );
 	}
@@ -2883,17 +2887,19 @@ public class ImportManager extends HttpServlet {
 						int listIdx = INV_LIST_FIELDS[j][0];
 						int fieldIdx = INV_LIST_FIELDS[j][1];
 						
-						String text = fields[fieldIdx];
 						if (fieldIdx == IDX_DEVICE_TYPE) {
-							text = (String) deviceTypes.get( fields[fieldIdx] );
+							String text = (String) deviceTypes.get( fields[fieldIdx] );
 							if (text == null)
 								throw new WebClientException( "Inventory file line #" + lineNo + ": invalid device type " + fields[fieldIdx] );
-							if (text.startsWith("MCT")) text = "MCT";
+							if (text.startsWith("MCT"))
+								fields[fieldIdx] = "MCT";
+							else
+								fields[fieldIdx] = text;
 						}
 						
-						if (!valueIDMaps[listIdx].containsKey( text )) {
-							Integer entryID = getTextEntryID( text, LIST_NAMES[listIdx][0], energyCompany );
-							if (entryID != null) valueIDMaps[listIdx].put( text, entryID );
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
 						}
 					}
 				}
@@ -2945,19 +2951,18 @@ public class ImportManager extends HttpServlet {
 								int listIdx = RECV_LIST_FIELDS[j][0];
 								int fieldIdx = RECV_LIST_FIELDS[j][1];
 								
-								String text = fields[fieldIdx];
 								if (fieldIdx == IDX_DEVICE_STATUS) {
-									if (text.equals("SwitchStatus:1"))
-										text = "Temp Unavail";
-									else if (text.equals("SwitchStatus:4"))
-										text = "Unavailable";
-									else if (text.equals("SwitchStatus:8"))
-										text = "Available";
+									if (fields[fieldIdx].equals("SwitchStatus:1"))
+										fields[fieldIdx] = "Temp Unavail";
+									else if (fields[fieldIdx].equals("SwitchStatus:4"))
+										fields[fieldIdx] = "Unavailable";
+									else if (fields[fieldIdx].equals("SwitchStatus:8"))
+										fields[fieldIdx] = "Available";
 								}
 								
-								if (!valueIDMaps[listIdx].containsKey( text )) {
-									Integer entryID = getTextEntryID( text, LIST_NAMES[listIdx][0], energyCompany );
-									if (entryID != null) valueIDMaps[listIdx].put( text, entryID );
+								if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+									Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+									if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
 								}
 							}
 						}
@@ -3310,22 +3315,21 @@ public class ImportManager extends HttpServlet {
 						int listIdx = ORDER_LIST_FIELDS[j][0];
 						int fieldIdx = ORDER_LIST_FIELDS[j][1];
 						
-						String text = fields[fieldIdx];
 						if (fieldIdx == IDX_ORDER_STATUS) {
-							text = (String) woStatus.get( fields[fieldIdx] );
+							String text = (String) woStatus.get( fields[fieldIdx] );
 							if (text == null)
 								throw new WebClientException( "Work order file line #" + lineNo + ": invalid work order status " + fields[fieldIdx] );
 							if (text.equalsIgnoreCase(WO_STATUS_CLOSED))
-								text = "Completed";
+								fields[fieldIdx] = "Completed";
 							else if (text.equalsIgnoreCase(WO_STATUS_SCHEDULED))
-								text = "Scheduled";
+								fields[fieldIdx] = "Scheduled";
 							else if (text.equalsIgnoreCase(WO_STATUS_OPEN) || text.equalsIgnoreCase(WO_STATUS_WAITING))
-								text = "Pending";
+								fields[fieldIdx] = "Pending";
 						}
 						
-						if (!valueIDMaps[listIdx].containsKey( text )) {
-							Integer entryID = getTextEntryID( text, LIST_NAMES[listIdx][0], energyCompany );
-							if (entryID != null) valueIDMaps[listIdx].put( text, entryID );
+						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
+							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
 						}
 					}
 				}

@@ -16,6 +16,8 @@ public class ImportProblem {
 	
 	public static final String NO_DEVICE_NAME = "No device name";
 	public static final String DEVICE_NAME_NOT_FOUND = "Device name not found in Yukon";
+	public static final String TOO_MANY_WARNINGS = "Too many warnings, please check the log file for detailed information";
+	public static final String TOO_MANY_ERRORS = "Too many errors, please check the log file for detailed information";
 	
 	private String problem = null;
 	

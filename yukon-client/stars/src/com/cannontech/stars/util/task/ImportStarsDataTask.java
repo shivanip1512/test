@@ -41,6 +41,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 public class ImportStarsDataTask implements TimeConsumingTask {
 
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+	private static final int ERROR_NUM_LIMIT = 20;
 	private static final int WARNING_NUM_LIMIT = 100;
 	
 	int status = STATUS_NOT_INIT;
@@ -232,7 +233,9 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		
 		String position = null;
 		java.io.PrintWriter fw = null;
+		
 		ArrayList stackTrace = null;
+		ArrayList errors = new ArrayList();
 		ArrayList warnings = new ArrayList();
 		ArrayList warnings2 = new ArrayList();
 		
@@ -248,23 +251,32 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				position = "customer file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
-				// To save database lookup time, only check for constraint for
-				// the first import entry, then assume there won't be any problem
-				ImportProblem problem = new ImportProblem();
-				LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount(fields, user, energyCompany, first, problem);
-				if (problem.getProblem() != null) {
-					warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
-					if (warnings.size() > WARNING_NUM_LIMIT)
-						throw new WebClientException( "Too many warnings, please check the import file(s)" );
+				try {
+					// To save database lookup time, only check for constraint for
+					// the first import entry, then assume there won't be any problem
+					ImportProblem problem = new ImportProblem();
+					LiteStarsCustAccountInformation liteAcctInfo = ImportManager.newCustomerAccount(fields, user, energyCompany, first, problem);
+					if (problem.getProblem() != null) {
+						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+						if (warnings.size() > WARNING_NUM_LIMIT)
+							throw new WebClientException( ImportProblem.TOO_MANY_WARNINGS );
+					}
+					
+					first = false;
+					
+					acctIDMap.put( Integer.valueOf(fields[ImportManager.IDX_ACCOUNT_ID]), liteAcctInfo );
+					fw.println(fields[ImportManager.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
+					
+					numAcctAdded++;
+					it.remove();	// Try to free up memory as we go
 				}
-				
-				first = false;
-				
-				acctIDMap.put( Integer.valueOf(fields[ImportManager.IDX_ACCOUNT_ID]), liteAcctInfo );
-				fw.println(fields[ImportManager.IDX_ACCOUNT_ID] + "," + liteAcctInfo.getAccountID());
-				
-				numAcctAdded++;
-				it.remove();	// Try to free up memory as we go
+				catch (Exception e) {
+					if (!(e instanceof WebClientException) || e.getMessage().equals( ImportProblem.TOO_MANY_WARNINGS ))
+						throw e;
+					errors.add( "ERROR at " + position + ": " + e.getMessage() );
+					if (errors.size() > ERROR_NUM_LIMIT)
+						throw new WebClientException( ImportProblem.TOO_MANY_ERRORS );
+				}
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -287,41 +299,121 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				position = "inventory file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				if (acctID.intValue() > 0) {	
-					Object obj = acctIDMap.get(acctID);
-					if (obj != null) {
-						if (obj instanceof LiteStarsCustAccountInformation) {
-							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+				try {
+					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					LiteStarsCustAccountInformation liteAcctInfo = null;
+					
+					if (acctID.intValue() > 0) {	
+						Object obj = acctIDMap.get(acctID);
+						if (obj != null) {
+							if (obj instanceof LiteStarsCustAccountInformation) {
+								liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+							}
+							else if (obj instanceof Integer) {
+								// This is loaded from file customer.map
+								liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+								if (liteAcctInfo != null)
+									acctIDMap.put(acctID, liteAcctInfo);
+							}
 						}
-						else if (obj instanceof Integer) {
-							// This is loaded from file customer.map
-							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-							if (liteAcctInfo != null)
-								acctIDMap.put(acctID, liteAcctInfo);
-						}
+						
+						if (liteAcctInfo == null)
+							throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 					}
 					
-					if (liteAcctInfo == null)
-						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
-				}
-				
-				LiteInventoryBase liteInv = null;
-				try {
 					ImportProblem problem = new ImportProblem();
-					liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first, problem );
+					LiteInventoryBase liteInv = ImportManager.insertLMHardware( fields, liteAcctInfo, energyCompany, first, problem );
 					if (problem.getProblem() != null) {
 						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
 						if (warnings.size() > WARNING_NUM_LIMIT)
-							throw new WebClientException( "Too many warnings, please check the import file(s)" );
+							throw new WebClientException( ImportProblem.TOO_MANY_WARNINGS );
 					}
+					
+					first = false;
+					it.remove();
+					
+					for (int i = 0; i < 3; i++) {
+						if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
+							warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " is out of service");
+						else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
+							warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " was out before switch placed out");
+					}
+					
+					if (liteAcctInfo != null) {
+						// If load groups for relays are specified, automatically add appliances through program enrollment
+						ArrayList appCats = energyCompany.getAllApplianceCategories();
+						ArrayList progList = new ArrayList();
+						
+						for (int i = 0; i < 3; i++) {
+							if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
+								continue;
+							
+							int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
+							int progID = 0;
+							int appCatID = 0;
+							int loadNo = i + 1;
+							
+							for (int j = 0; j < appCats.size(); j++) {
+								LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+								for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
+									LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
+									for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
+										if (liteProg.getGroupIDs()[l] == groupID) {
+											progID = liteProg.getProgramID();
+											appCatID = liteAppCat.getApplianceCategoryID();
+											break;
+										}
+									}
+									if (progID > 0) break;
+								}
+								if (progID > 0) break;
+							}
+							
+							if (progID == 0)
+								throw new WebClientException( "Cannot find LM program for load group id = " + groupID );
+							
+							progList.add( new int[] {progID, appCatID, groupID, loadNo} );
+						}
+						
+						if (progList.size() > 0) {
+							int[][] programs = new int[ progList.size() ][];
+							progList.toArray( programs );
+							ImportManager.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
+							
+							int[] appIDs = new int[3];
+							for (int i = 0; i < programs.length; i++) {
+								int loadNo = programs[i][3];
+								
+								for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
+									LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+									if (liteApp.getProgramID() == programs[i][0]) {
+										appIDs[loadNo - 1] = liteApp.getApplianceID();
+										break;
+									}
+								}
+								
+								if (appIDs[loadNo - 1] == 0)	// shouldn't happen
+									throw new WebClientException("Cannot find appliance with RelayNum = " + loadNo);
+							}
+							
+							appIDMap.put( Integer.valueOf(fields[ImportManager.IDX_INV_ID]), appIDs );
+							fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
+							
+							numAppAdded += programs.length;
+						}
+					}
+					
+					numInvAdded++;
+					if (liteInv instanceof LiteStarsLMHardware)
+						numRecvrAdded++;
+					else
+						numMeterAdded++;
 				}
-				catch (WebClientException e) {
+				catch (Exception e) {
+					if (!(e instanceof WebClientException) || e.getMessage().equals( ImportProblem.TOO_MANY_WARNINGS ))
+						throw e;
 					if (e.getMessage().equals( ImportProblem.NO_DEVICE_NAME )) {
 						numNoDeviceName++;
-						continue;
 					}
 					else if (e.getMessage().equals( ImportProblem.DEVICE_NAME_NOT_FOUND )) {
 						numDeviceNameNotFound++;
@@ -348,93 +440,13 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 										+ ") matches Yukon device (dev_id=" + deviceID + ",dev_name=" + litePao.getPaoName() + ") by serial number");
 							}
 						}
-						
-						continue;
 					}
-					else
-						throw e;
-				}
-				finally {
-					first = false;
-					it.remove();
-				}
-				
-				for (int i = 0; i < 3; i++) {
-					if (fields[ImportManager.IDX_R1_STATUS + i].equals("1"))
-						warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " is out of service");
-					else if (fields[ImportManager.IDX_R1_STATUS + i].equals("2"))
-						warnings2.add("Receiver (import_inv_id=" + fields[ImportManager.IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ",serial_no=" + fields[ImportManager.IDX_SERIAL_NO] + ") relay " + (i+1) + " was out before switch placed out");
-				}
-				
-				if (liteAcctInfo != null) {
-					// If load groups for relays are specified, automatically add appliances through program enrollment
-					ArrayList appCats = energyCompany.getAllApplianceCategories();
-					ArrayList progList = new ArrayList();
-					
-					for (int i = 0; i < 3; i++) {
-						if (fields[ImportManager.IDX_R1_GROUP + i].equals("") || fields[ImportManager.IDX_R1_GROUP + i].equals("0"))
-							continue;
-						
-						int groupID = Integer.parseInt( fields[ImportManager.IDX_R1_GROUP + i] );
-						int progID = 0;
-						int appCatID = 0;
-						int loadNo = i + 1;
-						
-						for (int j = 0; j < appCats.size(); j++) {
-							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
-							for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-								LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
-								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
-									if (liteProg.getGroupIDs()[l] == groupID) {
-										progID = liteProg.getProgramID();
-										appCatID = liteAppCat.getApplianceCategoryID();
-										break;
-									}
-								}
-								if (progID > 0) break;
-							}
-							if (progID > 0) break;
-						}
-						
-						if (progID == 0)
-							throw new WebClientException( "Cannot find LM program for load group id = " + groupID );
-						
-						progList.add( new int[] {progID, appCatID, groupID, loadNo} );
-					}
-					
-					if (progList.size() > 0) {
-						int[][] programs = new int[ progList.size() ][];
-						progList.toArray( programs );
-						ImportManager.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
-						
-						int[] appIDs = new int[3];
-						for (int i = 0; i < programs.length; i++) {
-							int loadNo = programs[i][3];
-							
-							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-								if (liteApp.getProgramID() == programs[i][0]) {
-									appIDs[loadNo - 1] = liteApp.getApplianceID();
-									break;
-								}
-							}
-							
-							if (appIDs[loadNo - 1] == 0)	// shouldn't happen
-								throw new WebClientException("Cannot find appliance with RelayNum = " + loadNo);
-						}
-						
-						appIDMap.put( Integer.valueOf(fields[ImportManager.IDX_INV_ID]), appIDs );
-						fw.println(fields[ImportManager.IDX_INV_ID] + "," + appIDs[0] + "," + appIDs[1] + "," + appIDs[2]);
-						
-						numAppAdded += programs.length;
+					else {
+						errors.add( "ERROR at " + position + ": " + e.getMessage() );
+						if (errors.size() > ERROR_NUM_LIMIT)
+							throw new WebClientException( ImportProblem.TOO_MANY_ERRORS );
 					}
 				}
-				
-				numInvAdded++;
-				if (liteInv instanceof LiteStarsLMHardware)
-					numRecvrAdded++;
-				else
-					numMeterAdded++;
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -451,62 +463,71 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				position = "loadinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				Object obj = acctIDMap.get(acctID);
-				if (obj != null) {
-					if (obj instanceof LiteStarsCustAccountInformation) {
-						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+				try {
+					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					LiteStarsCustAccountInformation liteAcctInfo = null;
+					
+					Object obj = acctIDMap.get(acctID);
+					if (obj != null) {
+						if (obj instanceof LiteStarsCustAccountInformation) {
+							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+						}
+						else if (obj instanceof Integer) {
+							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+							if (liteAcctInfo != null)
+								acctIDMap.put(acctID, liteAcctInfo);
+						}
 					}
-					else if (obj instanceof Integer) {
-						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-						if (liteAcctInfo != null)
-							acctIDMap.put(acctID, liteAcctInfo);
+					
+					if (liteAcctInfo == null)
+						throw new WebClientException("Cannot find customer account with id = " + acctID);
+					
+					Integer invID = Integer.valueOf( fields[ImportManager.IDX_INV_ID] );
+					int relayNum = Integer.parseInt( fields[ImportManager.IDX_RELAY_NUM] );
+					int appID = 0;
+					
+					if (relayNum > 0) {
+						int[] appIDs = (int[]) appIDMap.get( invID );
+						if (appIDs != null) appID = appIDs[relayNum - 1];
 					}
+					
+					if (appID > 0 && fields[ImportManager.IDX_AVAIL_FOR_CTRL].equalsIgnoreCase("Y"))
+						ImportManager.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
+					else
+						ImportManager.newAppliance( fields, liteAcctInfo, energyCompany );
+					
+					numAppImported++;
+					it.remove();
+					
+					if (fields[ImportManager.IDX_APP_CAT_DEF_ID].equals("")) continue;
+					int catDefID = Integer.parseInt( fields[ImportManager.IDX_APP_CAT_DEF_ID] );
+					
+					if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
+						numACImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
+						numWHImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR)
+						numGenImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
+						numIrrImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER)
+						numGDryImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP)
+						numHPImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT)
+						numSHImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL)
+						numDFImported++;
+					else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
+						numGenlImported++;
 				}
-				
-				if (liteAcctInfo == null)
-					throw new WebClientException("Cannot find customer account with id = " + acctID);
-				
-				Integer invID = Integer.valueOf( fields[ImportManager.IDX_INV_ID] );
-				int relayNum = Integer.parseInt( fields[ImportManager.IDX_RELAY_NUM] );
-				int appID = 0;
-				
-				if (relayNum > 0) {
-					int[] appIDs = (int[]) appIDMap.get( invID );
-					if (appIDs != null) appID = appIDs[relayNum - 1];
+				catch (Exception e) {
+					if (!(e instanceof WebClientException) || e.getMessage().equals( ImportProblem.TOO_MANY_WARNINGS ))
+						throw e;
+					errors.add( "ERROR at " + position + ": " + e.getMessage() );
+					if (errors.size() > ERROR_NUM_LIMIT)
+						throw new WebClientException( ImportProblem.TOO_MANY_ERRORS );
 				}
-				
-				if (appID > 0 && fields[ImportManager.IDX_AVAIL_FOR_CTRL].equalsIgnoreCase("Y"))
-					ImportManager.updateAppliance( fields, appID, liteAcctInfo, energyCompany );
-				else
-					ImportManager.newAppliance( fields, liteAcctInfo, energyCompany );
-				
-				numAppImported++;
-				it.remove();
-				
-				if (fields[ImportManager.IDX_APP_CAT_DEF_ID].equals("")) continue;
-				int catDefID = Integer.parseInt( fields[ImportManager.IDX_APP_CAT_DEF_ID] );
-				
-				if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
-					numACImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
-					numWHImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR)
-					numGenImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
-					numIrrImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER)
-					numGDryImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP)
-					numHPImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT)
-					numSHImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL)
-					numDFImported++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
-					numGenlImported++;
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -522,37 +543,45 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				position = "workorder file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				if (acctID.intValue() > 0) {
-					Object obj = acctIDMap.get(acctID);
-					if (obj instanceof LiteStarsCustAccountInformation) {
-						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-					}
-					else if (obj instanceof Integer) {
-						// This is loaded from file customer.map
-						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-						if (liteAcctInfo != null)
-							acctIDMap.put(acctID, liteAcctInfo);
+				try {
+					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					LiteStarsCustAccountInformation liteAcctInfo = null;
+					
+					if (acctID.intValue() > 0) {
+						Object obj = acctIDMap.get(acctID);
+						if (obj instanceof LiteStarsCustAccountInformation) {
+							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+						}
+						else if (obj instanceof Integer) {
+							// This is loaded from file customer.map
+							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+							if (liteAcctInfo != null)
+								acctIDMap.put(acctID, liteAcctInfo);
+						}
+						
+						if (liteAcctInfo == null)
+							throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 					}
 					
-					if (liteAcctInfo == null)
-						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
+					ImportProblem problem = new ImportProblem();
+					ImportManager.newServiceRequest(fields, liteAcctInfo, energyCompany, first, problem);
+					if (problem.getProblem() != null) {
+						warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
+						if (warnings.size() > WARNING_NUM_LIMIT)
+							throw new WebClientException( ImportProblem.TOO_MANY_WARNINGS );
+					}
+					
+					first = false;
+					numOrderAdded++;
+					it.remove();
 				}
-				
-				ImportProblem problem = new ImportProblem();
-				ImportManager.newServiceRequest(fields, liteAcctInfo, energyCompany, first, problem);
-				if (problem.getProblem() != null) {
-					warnings.add( "WARNING at " + position + ": " + problem.getProblem() );
-					if (warnings.size() > WARNING_NUM_LIMIT)
-						throw new WebClientException( "Too many warnings, please check the import file(s)" );
+				catch (Exception e) {
+					if (!(e instanceof WebClientException) || e.getMessage().equals( ImportProblem.TOO_MANY_WARNINGS ))
+						throw e;
+					errors.add( "ERROR at " + position + ": " + e.getMessage() );
+					if (errors.size() > ERROR_NUM_LIMIT)
+						throw new WebClientException( ImportProblem.TOO_MANY_ERRORS );
 				}
-				
-				first = false;
-				
-				numOrderAdded++;
-				it.remove();
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -567,29 +596,38 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				position = "resinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
-				Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				if (acctID.intValue() > 0) {
-					Object obj = acctIDMap.get(acctID);
-					if (obj instanceof LiteStarsCustAccountInformation) {
-						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-					}
-					else if (obj instanceof Integer) {
-						// This is loaded from file customer.map
-						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-						if (liteAcctInfo != null)
-							acctIDMap.put(acctID, liteAcctInfo);
+				try {
+					Integer acctID = Integer.valueOf( fields[ImportManager.IDX_ACCOUNT_ID] );
+					LiteStarsCustAccountInformation liteAcctInfo = null;
+					
+					if (acctID.intValue() > 0) {
+						Object obj = acctIDMap.get(acctID);
+						if (obj instanceof LiteStarsCustAccountInformation) {
+							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
+						}
+						else if (obj instanceof Integer) {
+							// This is loaded from file customer.map
+							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
+							if (liteAcctInfo != null)
+								acctIDMap.put(acctID, liteAcctInfo);
+						}
+						
+						if (liteAcctInfo == null)
+							throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
 					}
 					
-					if (liteAcctInfo == null)
-						throw new WebClientException("Cannot find customer account with id=" + acctID.intValue());
+					ImportManager.newResidenceInfo( fields, liteAcctInfo );
+					
+					numResAdded++;
+					it.remove();
 				}
-				
-				ImportManager.newResidenceInfo( fields, liteAcctInfo );
-				
-				numResAdded++;
-				it.remove();
+				catch (Exception e) {
+					if (!(e instanceof WebClientException) || e.getMessage().equals( ImportProblem.TOO_MANY_WARNINGS ))
+						throw e;
+					errors.add( "ERROR at " + position + ": " + e.getMessage() );
+					if (errors.size() > ERROR_NUM_LIMIT)
+						throw new WebClientException( ImportProblem.TOO_MANY_ERRORS );
+				}
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -616,17 +654,20 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				status = STATUS_ERROR;
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 				
-				stackTrace = new ArrayList();
-				stackTrace.add( "\t" + e.toString() );
-				for (int i = 0; i < e.getStackTrace().length; i++)
-					stackTrace.add( "\tat " + e.getStackTrace()[i].toString() );
-				
-				if (position != null)
-					errorMsg = "Error at " + position;
-				else
-					errorMsg = "Failed to import old STARS data";
-				if (e instanceof WebClientException)
-					errorMsg += ": " + e.getMessage();
+				if (e instanceof WebClientException) {
+					errorMsg = e.getMessage();
+				}
+				else {
+					if (position != null)
+						errorMsg = "Error at " + position;
+					else
+						errorMsg = "Failed to import old STARS data";
+					
+					stackTrace = new ArrayList();
+					stackTrace.add( "\t" + e.toString() );
+					for (int i = 0; i < e.getStackTrace().length; i++)
+						stackTrace.add( "\tat " + e.getStackTrace()[i].toString() );
+				}
 			}
 		}
 		finally {
@@ -707,6 +748,11 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				logMsg.add(numResAdded + " residence info imported successfully");
 			else
 				logMsg.add(numResAdded + " of " + resFieldsCnt + " residence information imported");
+		}
+		
+		if (errors.size() > 0) {
+			logMsg.add("");
+			logMsg.addAll( errors );
 		}
 		
 		if (warnings.size() > 0) {
