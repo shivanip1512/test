@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="src" path="gensrc"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
+    <classpathentry kind="lib" path="/third-party/altova.jar"/>
+    <classpathentry kind="lib" path="/third-party/junit.jar"/>
+    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
+    <classpathentry kind="src" path="/common"/>
+    <classpathentry kind="src" path="/yukonappserver"/>
+    <classpathentry kind="src" path="/yukonappclient"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
