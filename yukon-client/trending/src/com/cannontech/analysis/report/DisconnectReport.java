@@ -241,37 +241,7 @@ public class DisconnectReport extends YukonReportBase
 				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
 				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
-		/*
-		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setName("Device Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-		factory.setMinimumSize(new FloatDimension(200, 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(Disconnect.DEVICE_NAME_STRING);
-		items.addElement(factory.createElement());
 		
-		factory = new TextFieldElementFactory();
-		factory.setName("Point Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(200, 1));
-		factory.setMinimumSize(new FloatDimension(200, 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(Disconnect.POINT_NAME_STRING);
-		items.addElement(factory.createElement());
-		
-		factory = new DateFieldElementFactory();
-		factory.setName("Timestamp Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(350, 1));
-		factory.setMinimumSize(new FloatDimension(200, 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("MM/dd/yyyy");
-		factory.setFieldname(Disconnect.TIMESTAMP_STRING);
-		items.addElement(factory.createElement());
-		*/
 		
 		for (int i = 2; i < getModel().getColumnNames().length; i++)
 		{
