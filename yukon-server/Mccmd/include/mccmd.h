@@ -80,6 +80,9 @@ static int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 static int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+static int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+static int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+
 static int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int importCommandFile(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 

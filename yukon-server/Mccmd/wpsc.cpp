@@ -107,7 +107,7 @@ bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
     char l_buf[1000];  
 
     if( ordered == NULL )
-        return false;
+        return true;
  
     if( (fptr = fopen( file, "r")) == NULL )
     {
@@ -132,6 +132,74 @@ bool DecodeWepcoFile(const RWCString& file, RWOrdered* ordered)
 
     return true;
 }
+
+bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results)
+{
+    FILE* fptr;
+    char l_buf[1000];  
+
+    if ( results == NULL )
+        return true;
+
+    if ( (fptr = fopen( file, "r")) == NULL )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "unable to open file" << endl;
+        return false;
+    }
+
+    while ( fgets( (char*) l_buf, 1000, fptr) != NULL )
+    {
+        if ( DecodeWepcoServiceLine( l_buf, results ) == false)
+        {
+            fclose(fptr);
+            break;
+        }
+    }
+
+    fclose(fptr);
+
+    if ( ferror( fptr ) != 0 )
+        return false;
+
+    return true;
+
+}
+
+
+bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results)
+{
+    FILE* fptr;
+    char l_buf[1000];  
+
+    if ( results == NULL )
+        return false;
+
+    if ( (fptr = fopen( file, "r")) == NULL )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "unable to open file" << endl;
+        return false;
+    }
+
+    while ( fgets( (char*) l_buf, 1000, fptr) != NULL )
+    {
+        if ( DecodeWepcoConfigLine( l_buf, results ) == false)
+        {
+            fclose(fptr);
+            break;
+        }
+    }
+
+    fclose(fptr);
+
+    if ( ferror( fptr ) != 0 )
+        return false;
+
+    return true;
+
+}
+
 
 
 bool DecodeCFDATALine( char* line, RWCString* decoded )
@@ -523,3 +591,132 @@ RWCString GetSelectCustomRouteID(long serial_num) {
         
     return cmd;    
 }
+
+bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
+{
+    char* token;
+    char* delim = ",";
+    
+    int func;
+    long serial_num;
+    unsigned short class_id;
+    unsigned short div_id;
+
+    char buf[80];
+    int temp;
+   
+    RWCString serviceCmd("set MessagePriority 6 ; putconfig versacom serial ");
+    
+    // function
+    if( (token = strtok(line,delim)) == NULL )
+        return false;
+
+    func = atoi(token);
+
+    //should catch the last line which is xx,xx,xx....
+    if( func == 0 )
+        return false;
+
+    if( (token = strtok(NULL,delim)) == NULL )
+        return false;
+
+    serial_num = atol(token);
+    
+    serviceCmd += token;    
+    
+    if( func == 3 ) 
+    {
+        serviceCmd += " service in ";
+        serviceCmd += GetSelectCustomRouteID(serial_num);
+        results->insert(new RWCollectableString(serviceCmd));
+    }
+    else
+    if( func == 5 )
+    {
+        serviceCmd += " service out ";
+        serviceCmd += GetSelectCustomRouteID(serial_num);
+        results->insert(new RWCollectableString(serviceCmd));
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
+}
+
+
+bool DecodeWepcoConfigLine( char* line, RWOrdered* results )
+{
+    char* token;
+    char* delim = ",";
+    
+    int func;
+    long serial_num;
+    unsigned short class_id;
+    unsigned short div_id;
+
+    char buf[80];
+    int temp;
+   
+    RWCString configCmd("set MessagePriority 5 ; putconfig versacom serial ");
+
+    // function
+    if( (token = strtok(line,delim)) == NULL )
+        return false;
+
+    func = atoi(token);
+
+    //should catch the last line which is xx,xx,xx....
+    if( func == 0 )
+        return false;
+
+    // nothing to do on a service out command
+    if( func == 5 )
+        return true;
+
+    if( (token = strtok(NULL,delim)) == NULL )
+        return false;
+
+    serial_num = atol(token);
+       
+    configCmd += token;
+      
+    //Utility ID
+    if( (token = strtok(NULL,delim)) == NULL )
+        return false;
+    
+    configCmd += " aux ";
+    configCmd += token;        
+    
+    //Section
+    if( (token = strtok(NULL,delim)) == NULL )
+        return false;
+
+    configCmd += " section ";
+    configCmd += token;
+
+    //Class
+    if( (token = strtok(NULL,delim)) == NULL )
+        return false;
+
+    configCmd += " class ";
+    configCmd += token;
+
+    //Division
+    if( (token = strtok(NULL,delim)) == NULL )
+        return false;
+
+    configCmd += " division ";
+    configCmd += token;
+
+    RWCString route_select = GetSelectCustomRouteID(serial_num);        
+    if( route_select.length() > 0 ) {
+        configCmd += " ";
+        configCmd += route_select;
+    }
+    
+    results->insert(new RWCollectableString(configCmd));
+    return true;
+}
+

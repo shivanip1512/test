@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/05/15 18:43:52 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/05/17 15:23:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -442,6 +442,8 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "mcu8100", mcu8100, NULL, NULL );
     Tcl_CreateCommand( interp, "mcu9000eoi", mcu9000eoi, NULL, NULL );
     Tcl_CreateCommand( interp, "mcu8100wepco", mcu8100wepco, NULL, NULL );
+    Tcl_CreateCommand( interp, "mcu8100service", mcu8100service, NULL, NULL );
+    Tcl_CreateCommand( interp, "mcu8100program", mcu8100program, NULL, NULL );
 
     Tcl_CreateCommand( interp, "PMSI", pmsi, NULL, NULL );
     Tcl_CreateCommand( interp, "pmsi", pmsi, NULL, NULL );
@@ -706,6 +708,93 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     return tcl_ret;
 }
 
+int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+    int tcl_ret = TCL_OK;
+
+    if( argc != 2 )
+    {
+        WriteOutput("Usage: mcu8100service filename");
+        return TCL_ERROR;
+    }
+
+    RWCString file = argv[1];
+    RWOrdered results;
+
+    if( DecodeWepcoFileService( file, &results) == false )
+    {
+        WriteOutput("Error decoding file");
+        return TCL_ERROR;
+    }
+
+    int num_sent = 0;
+    RWOrderedIterator iter(results);
+
+    while( iter() )
+    {
+        RWCollectableString* str = (RWCollectableString*) iter.key();
+        Tcl_Eval( interp, (char*) str->data());
+        num_sent++;
+        Sleep(100); // CGP 051302  Buy some sanity.
+
+        if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
+        {
+            Tcl_SetResult( interp, "interrupted", NULL );
+            tcl_ret = TCL_ERROR;
+            break;
+        }
+    }
+
+    results.clearAndDestroy();
+
+    // set the number of pil requests sent to be the return val
+    Tcl_SetResult( interp, CtiNumStr(num_sent), NULL);
+    return tcl_ret;
+}
+
+int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+    int tcl_ret = TCL_OK;
+
+    if( argc != 2 )
+    {
+        WriteOutput("Usage: mcu8100program filename");
+        return TCL_ERROR;
+    }
+
+    RWCString file = argv[1];
+    RWOrdered results;
+
+    if( DecodeWepcoFileConfig( file, &results) == false )
+    {
+        WriteOutput("Error decoding file");
+        return TCL_ERROR;
+    }
+
+    int num_sent = 0;
+    RWOrderedIterator iter(results);
+
+    while( iter() )
+    {
+        RWCollectableString* str = (RWCollectableString*) iter.key();
+        Tcl_Eval( interp, (char*) str->data());
+        num_sent++;
+        Sleep(100); // CGP 051302  Buy some sanity.
+
+        if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
+        {
+            Tcl_SetResult( interp, "interrupted", NULL );
+            tcl_ret = TCL_ERROR;
+            break;
+        }
+    }
+
+    results.clearAndDestroy();
+
+    // set the number of pil requests sent to be the return val
+    Tcl_SetResult( interp, CtiNumStr(num_sent), NULL);
+    return tcl_ret;
+}
 
 int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {

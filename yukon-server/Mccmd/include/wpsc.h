@@ -37,9 +37,16 @@ bool DecodeCFDATAFile(const RWCString& file, RWOrdered* results);
 bool DecodeEOIFile(const RWCString& file, RWOrdered* results);
 bool DecodeWepcoFile(const RWCString& file, RWOrdered* results);
 
+// These two functions are DecodeWepcoFile split into two
+bool DecodeWepcoFileService(const RWCString& file, RWOrdered* results);                                  
+bool DecodeWepcoFileConfig(const RWCString& file, RWOrdered* results);
+
 static bool DecodeCFDATALine( char* line, RWCString* decoded );
 static bool DecodeEOILine(char* line, RWOrdered* results );
 static bool DecodeWepcoLine( char* line, RWOrdered* results );
+
+static bool DecodeWepcoServiceLine( char* line, RWOrdered* results );
+static bool DecodeWepcoConfigLine( char* line, RWOrdered* results );
 
 static RWCString GetSelectCustomRouteID(long serial_num);
 #endif
