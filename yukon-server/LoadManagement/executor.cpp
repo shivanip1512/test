@@ -116,7 +116,9 @@ void CtiLMCommandExecutor::Execute()
         case CtiLMCommand::CONFIRM_GROUP:
             ConfirmGroup();
             break;
-
+         case CtiLMCommand::RESET_PEAK_POINT_VALUE:
+	    ResetPeakPointValue();
+	    break;
         default:
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1047,6 +1049,56 @@ void CtiLMCommandExecutor::ConfirmGroup()
     }
 }
 
+/*
+ * Resets the peak point value for a control area trigger.
+ */
+void CtiLMCommandExecutor::ResetPeakPointValue()
+{
+    LONG commandPAOID = _command->getPAOId();
+    LONG triggerNumber = _command->getNumber();
+    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    RWOrdered& controlAreas = *(store->getControlAreas(RWDBDateTime().seconds()));
+
+    for(LONG i=0;i<controlAreas.entries();i++)
+    {
+        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
+        if( currentLMControlArea->getPAOId() == commandPAOID )
+        {
+            RWOrdered& triggers = currentLMControlArea->getLMControlAreaTriggers();
+            for(LONG j=0;j<triggers.entries();j++)
+            {
+                CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers[j];
+                if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
+                {
+		    currentLMControlAreaTrigger->setPeakPointValue(0.0);
+                    CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentLMControlArea, currentLMControlAreaTrigger);
+                    currentLMControlArea->setUpdatedFlag(TRUE);
+                    {
+                        char tempchar[80] = "";
+                        RWCString text = RWCString("User Peak Point Value Reset");
+                        RWCString additional = RWCString("Peak Point Value Reset for Trigger: ");
+                        _snprintf(tempchar,80,"%d",triggerNumber);
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - " << text << ", " << additional << endl;
+                        }
+                    }
+                    break;
+                }
+            }
+            currentLMControlArea->setUpdatedFlag(TRUE);	    
+            break;
+        }
+    }
+    
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " - " << "Received user peak point value reset for control area id: " << commandPAOID << " trigger: " << triggerNumber << endl;
+	dout << RWTime() << " but couldn't locate the correct trigger." << endl;
+    }
+}
 
 /*---------------------------------------------------------------------------
     Execute

@@ -71,7 +71,8 @@ public:
         RESTORE_GROUP,
         ENABLE_GROUP,
         DISABLE_GROUP,
-        CONFIRM_GROUP
+        CONFIRM_GROUP,
+	RESET_PEAK_POINT_VALUE
     };
 
     CtiLMCommand() { }; //provided for polymorphic persitence only

@@ -64,6 +64,7 @@ private:
     void EnableGroup();
     void DisableGroup();
     void ConfirmGroup();
+    void ResetPeakPointValue();    
 
     CtiLMCommand* _command;
 };
