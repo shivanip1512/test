@@ -55,8 +55,10 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 		String username = req.getParameter(USERNAME);
 		String password = req.getParameter(PASSWORD);	
 		LiteYukonUser user = AuthFuncs.login(username,password);
+		String home_url = null;
 		
-		if(user != null) {
+		if(user != null && 
+			(home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
 			HttpSession session = req.getSession(true);
 			try {						
 				initSession(user, session);
@@ -65,7 +67,6 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 
-			String home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL);
 			resp.sendRedirect(home_url);
 		}
 		else {
