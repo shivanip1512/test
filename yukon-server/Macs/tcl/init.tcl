@@ -640,3 +640,22 @@ proc exportBillingFile { args } {
 #
 # End Proc: exportBillingFile
 #*******************************************************************
+
+#*******************************************************************
+# Start Proc: getTodaysFileName --> Determine a filename that is
+# unique for today.
+#
+# Arguments: prefix    - string to prefix the file name with
+#            suffix    - string to suffix the file name with
+#
+# Example:
+# set missedFileName [getTodaysFileName "missed" ".txt"]
+proc getTodaysFileName { prefix suffix } {
+    set fileName $prefix
+    append fileName [clock format [clock seconds] -format %m%d%y] $suffix
+    return $fileName
+}
+
+#
+# End Proc: getTodaysFileName
+#*******************************************************************
