@@ -18,6 +18,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
@@ -763,13 +764,20 @@ public int createRowsForRawPointHistoryView(java.util.Date date, int page)
 		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTVALUE) )
 			newRow.setElementAt( CommonUtils.createString( rowData[i][3] ), columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE));
 
-		// set Quality
-		if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
-			newRow.setElementAt( 
-						com.cannontech.database.data.point.PointQualities.getQuality(
-						Integer.parseInt(CommonUtils.createString(rowData[i][4]))), 
-						columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
-	
+		try
+		{
+			// set Quality
+			if( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
+				newRow.setElementAt( 
+							com.cannontech.database.data.point.PointQualities.getQuality(
+							Integer.parseInt(CommonUtils.createString(rowData[i][4]))), 
+							columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
+		}
+		catch( CTIPointQuailtyException ex )
+		{
+			handleException( ex );
+		}	
+
 
 		checkRowExceedance();
 
@@ -2142,13 +2150,20 @@ private void setCorrectRowValue( PointData point, java.util.Date timeStamp, int 
 
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 		{
- 			dataRow.setElementAt(
-		 			com.cannontech.database.data.point.PointQualities.getQualityAbreviation( (int)point.getQuality() )
-		 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
-		 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY), 
-		 			ObservedPointDataChange.POINT_QUALITY_TYPE, point.getId(), 
-		 			isRowInAalarmVector( location ),
-					(int)point.getTags() );
+			try
+			{
+	 			dataRow.setElementAt(
+			 			com.cannontech.database.data.point.PointQualities.getQualityAbreviation( (int)point.getQuality() )
+			 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
+			 			columnTypeName.indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY), 
+			 			ObservedPointDataChange.POINT_QUALITY_TYPE, point.getId(), 
+			 			isRowInAalarmVector( location ),
+						(int)point.getTags() );
+			}
+			catch( CTIPointQuailtyException ex )
+			{
+				handleException( ex );
+			}
 		}
 	
 		if ( columnTypeName.contains(CustomDisplay.COLUMN_TYPE_TAGS) )
