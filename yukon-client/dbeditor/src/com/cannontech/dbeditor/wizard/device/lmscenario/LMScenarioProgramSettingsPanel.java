@@ -512,7 +512,7 @@ public Object getValue(Object o)
 }
 		newScenarioProgram.setProgramID(new Integer(progID));
 		
-		newScenarioProgram.setStartOffset(getTableModel().getStartOffsetAt(j));
+		newScenarioProgram.setStartDelay(getTableModel().getStartOffsetAt(j));
 		
 		newScenarioProgram.setStartGear(new Integer(((LiteGear)getTableModel().getStartGearAt(j)).getGearNumber()));
 		
@@ -817,7 +817,7 @@ public void setValue(Object o)
 		}
 		
 		//add the new row
-		getTableModel().addRowValue( programName, lightProgram.getStartOffset(), 
+		getTableModel().addRowValue( programName, lightProgram.getStartDelay(),
 			startingGear);
 			
 		
