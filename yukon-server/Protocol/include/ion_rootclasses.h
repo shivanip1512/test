@@ -49,7 +49,7 @@ public:
 
     virtual void putSerialized( unsigned char *buf ) const;
     virtual unsigned int getSerializedLength( void ) const;
-    unsigned char *getSerialized( void );
+    unsigned char *getSerialized( void ) const;
 };
 
 
@@ -62,7 +62,7 @@ public:
 
     enum IONValueTypes;
 
-    IONValueTypes getType( void )   { return _valueType; };
+    IONValueTypes getType( void ) const   { return _valueType; };
     int           isNumeric( void );
     int           isValid( void )   { return _valid; };
 
@@ -94,16 +94,16 @@ protected:
     friend class CtiIONArray;
     friend class CtiIONStructArray;
 
-    void putSerialized( unsigned char *buf );
-    unsigned int getSerializedLength( void );
+    void putSerialized( unsigned char *buf ) const;
+    unsigned int getSerializedLength( void ) const;
 
-    virtual void putSerializedHeader( unsigned char *buf );
-    virtual unsigned int getSerializedHeaderLength( void );
+    virtual void putSerializedHeader( unsigned char *buf ) const;
+    virtual unsigned int getSerializedHeaderLength( void ) const;
 
-    virtual void putSerializedValue( unsigned char *buf ) = 0;
-    virtual unsigned int getSerializedValueLength( void ) = 0;
+    virtual void putSerializedValue( unsigned char *buf ) const = 0;
+    virtual unsigned int getSerializedValueLength( void ) const = 0;
 
-    virtual unsigned char *putClassSize( unsigned char key, unsigned char *buf );
+    virtual unsigned char *putClassSize( unsigned char key, unsigned char *buf ) const;
 
     static CtiIONValue *restoreObject( unsigned char *&byteStream, unsigned long &streamLength );
 
@@ -121,12 +121,12 @@ public:
     ~CtiIONDataStream( );
 
     void clear( void );
-    CtiIONValue *getItem( int index );
-    int getItemCount( void );
+    const CtiIONValue &getItem( int index ) const;
+    int getItemCount( void ) const;
     CtiIONDataStream &appendItem( CtiIONValue *toInsert );
 
-    virtual void putSerialized( unsigned char *buf );
-    virtual unsigned int getSerializedLength( void );
+    virtual void putSerialized( unsigned char *buf ) const;
+    virtual unsigned int getSerializedLength( void ) const;
 
 private:
     void parseByteStream( unsigned char *byteStream, unsigned long streamLength );
@@ -152,8 +152,8 @@ public:
 
     int isValid( void )  { return _valid; };
 
-    unsigned int getSerializedValueLength( void );
-    void putSerializedValue( unsigned char *buf );
+    unsigned int getSerializedValueLength( void ) const;
+    void putSerializedValue( unsigned char *buf ) const;
 
     enum IONSimpleMethods
     {
@@ -181,6 +181,7 @@ public:
 
     enum IONExtendedMethods
     {
+        NoExtendedMethod             = 0x0000,
         WriteIONLabel                = 0x0080,
         ReadSecurityLevel            = 0x0081,
         ReadAllSecurityLevels        = 0x0082,
@@ -222,8 +223,7 @@ private:
 
     unsigned char   _valid;
     unsigned char   _methodNum;
-    unsigned short  _extendedMethod;
-    unsigned char   _valueIncluded;
+    unsigned short  _extendedMethodNum;
     CtiIONValue    *_parameter;
 
 };
@@ -247,8 +247,8 @@ public:
     void setMethod( CtiIONMethod *method );
     CtiIONMethod getMethod( void );
 
-    unsigned int getSerializedValueLength( void );
-    void putSerializedValue( unsigned char *buf );
+    unsigned int getSerializedValueLength( void ) const;
+    void putSerializedValue( unsigned char *buf ) const;
 
 private:
 

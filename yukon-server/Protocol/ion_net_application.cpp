@@ -24,6 +24,8 @@ CtiIONApplicationLayer::CtiIONApplicationLayer( )
 {
     _appOut.IONData = NULL;
     _appIn.IONData  = NULL;
+
+    _ioState = Uninitialized;
 }
 
 
@@ -68,6 +70,8 @@ void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
 
     freeOutPacketMemory( );
     initOutPacketReserved( );
+
+    _ioState = Output;
 
     dataLength = payload.getSerializedLength( );
 
@@ -171,7 +175,7 @@ int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 
 bool CtiIONApplicationLayer::isTransactionComplete( void )
 {
-    return _ioState == Complete;
+    return _ioState == Complete || _ioState == Uninitialized;
 }
 
 
@@ -199,7 +203,7 @@ void CtiIONApplicationLayer::freeOutPacketMemory( void )
 }
 
 
-void CtiIONApplicationLayer::putSerialized( unsigned char *buf )
+void CtiIONApplicationLayer::putSerialized( unsigned char *buf ) const
 {
     int appOutDataLen, offset;
 
@@ -214,7 +218,7 @@ void CtiIONApplicationLayer::putSerialized( unsigned char *buf )
 }
 
 
-unsigned int CtiIONApplicationLayer::getSerializedLength( void )
+unsigned int CtiIONApplicationLayer::getSerializedLength( void ) const
 {
     int appOutSize = 0;
 

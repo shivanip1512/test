@@ -63,6 +63,12 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
 }
 
 
+CtiProtocolBase *CtiDeviceION::getProtocol( void ) const
+{
+    return (CtiProtocolBase *)&_ion;
+}
+
+
 /*****************************************************************************
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device

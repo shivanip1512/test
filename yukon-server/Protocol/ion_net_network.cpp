@@ -22,6 +22,8 @@ CtiIONNetworkLayer::CtiIONNetworkLayer( )
 {
     _netOut.data = NULL;
     _netIn.data  = NULL;
+
+    _msgCount = 0;
 }
 
 
@@ -105,6 +107,8 @@ void CtiIONNetworkLayer::setOutPayload( CtiIONSerializable &payload )
     if( _netOut.data != NULL )
     {
         payload.putSerialized( _netOut.data );
+
+        _datalinkLayer.setToOutput(*this);
     }
     else
     {
@@ -152,7 +156,7 @@ void CtiIONNetworkLayer::freeInPacketMemory( void )
 }
 
 
-void CtiIONNetworkLayer::putSerialized( unsigned char *buf )
+void CtiIONNetworkLayer::putSerialized( unsigned char *buf ) const
 {
     //  copy the header
     memcpy( buf, &(_netOut.header), sizeof(_netOut.header) );
@@ -161,7 +165,7 @@ void CtiIONNetworkLayer::putSerialized( unsigned char *buf )
 }
 
 
-unsigned int CtiIONNetworkLayer::getSerializedLength( void )
+unsigned int CtiIONNetworkLayer::getSerializedLength( void ) const
 {
     int tmpLength;
 
@@ -179,7 +183,7 @@ void CtiIONNetworkLayer::putPayload( unsigned char *buf )
 }
 
 
-int CtiIONNetworkLayer::getPayloadLength( void )
+int CtiIONNetworkLayer::getPayloadLength( void ) const
 {
     return getSerializedLength( ) - sizeof(_netIn.header);
 }

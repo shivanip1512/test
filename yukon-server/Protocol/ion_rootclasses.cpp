@@ -21,7 +21,10 @@
 
 void CtiIONSerializable::putSerialized( unsigned char *buf ) const
 {
-
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 unsigned int CtiIONSerializable::getSerializedLength( void ) const
@@ -30,7 +33,7 @@ unsigned int CtiIONSerializable::getSerializedLength( void ) const
 }
 
 
-unsigned char *CtiIONSerializable::getSerialized( void )
+unsigned char *CtiIONSerializable::getSerialized( void ) const
 {
     unsigned char *retData;
     int            retDataLength;
@@ -73,20 +76,20 @@ int CtiIONValue::isNumeric( void )
     return retVal;
 }
 
-void CtiIONValue::putSerialized( unsigned char *buf )
+void CtiIONValue::putSerialized( unsigned char *buf ) const
 {
     putSerializedHeader( buf );
     putSerializedValue( buf + getSerializedHeaderLength( ) );
 }
 
 
-unsigned int CtiIONValue::getSerializedLength( void )
+unsigned int CtiIONValue::getSerializedLength( void ) const
 {
     return getSerializedHeaderLength( ) + getSerializedValueLength( );
 }
 
 
-void CtiIONValue::putSerializedHeader( unsigned char *buf )
+void CtiIONValue::putSerializedHeader( unsigned char *buf ) const
 {
     unsigned char key = 0, extendedValue;
 
@@ -129,7 +132,7 @@ void CtiIONValue::putSerializedHeader( unsigned char *buf )
 }
 
 
-unsigned int CtiIONValue::getSerializedHeaderLength( void )
+unsigned int CtiIONValue::getSerializedHeaderLength( void ) const
 {
     unsigned long tmpLength = getSerializedValueLength( );
     unsigned int tmpHeaderLength;
@@ -145,7 +148,7 @@ unsigned int CtiIONValue::getSerializedHeaderLength( void )
 }
 
 
-unsigned char *CtiIONValue::putClassSize( unsigned char key, unsigned char *buf )
+unsigned char *CtiIONValue::putClassSize( unsigned char key, unsigned char *buf ) const
 {
     unsigned long tmpLength = getSerializedValueLength( );
 
@@ -310,9 +313,9 @@ void CtiIONDataStream::clear( void )
 }
 
 
-CtiIONValue *CtiIONDataStream::getItem( int index )
+const CtiIONValue &CtiIONDataStream::getItem( int index ) const
 {
-    return _streamValues[index];
+    return *(_streamValues[index]);
 }
 
 
@@ -323,51 +326,54 @@ CtiIONDataStream &CtiIONDataStream::appendItem( CtiIONValue *toInsert )
 }
 
 
-int CtiIONDataStream::getItemCount( void )
+int CtiIONDataStream::getItemCount( void ) const
 {
     return _streamValues.size( );
 }
 
 
-void CtiIONDataStream::putSerialized( unsigned char *buf )
+void CtiIONDataStream::putSerialized( unsigned char *buf ) const
 {
     int            itemNum,
                    dataOffset;
     unsigned char *retData;
     CtiIONValue   *tmpItem;
 
-    //  concatenate all items into the buffer
-    for( itemNum = 0; itemNum < getItemCount( ); itemNum++ )
-    {
-        tmpItem = getItem( itemNum );
-        tmpItem->putSerialized( buf + dataOffset );
+    dataOffset = 0;
 
-        dataOffset += tmpItem->getSerializedLength( );
+    //  concatenate all items into the buffer
+    for( itemNum = 0; itemNum < getItemCount(); itemNum++ )
+    {
+        getItem(itemNum).putSerialized(buf + dataOffset);
+
+        dataOffset += getItem(itemNum).getSerializedLength( );
     }
 }
 
 
-unsigned int CtiIONDataStream::getSerializedLength( void )
+unsigned int CtiIONDataStream::getSerializedLength( void ) const
 {
     int itemNum;
     unsigned int totalDataLength = 0;
 
     //  sum all of the data sizes
-    for( itemNum = 0; itemNum < getItemCount( ); itemNum++ )
-        totalDataLength += getItem( itemNum )->getSerializedLength( );
+    for( itemNum = 0; itemNum < getItemCount(); itemNum++ )
+    {
+        totalDataLength += getItem(itemNum).getSerializedLength( );
+    }
 
     return totalDataLength;
 }
 
 
 
-unsigned int CtiIONStatement::getSerializedValueLength( void )
+unsigned int CtiIONStatement::getSerializedValueLength( void ) const
 {
     return sizeof(short) + _method->getSerializedValueLength( );  //  sizeof(short) == 2
 }
 
 
-void CtiIONStatement::putSerializedValue( unsigned char *buf )
+void CtiIONStatement::putSerializedValue( unsigned char *buf ) const
 {
     *((short *)buf) = (short)_handle;
     _method->putSerializedValue( buf + sizeof(short) );  //  sizeof(short) == 2
@@ -381,17 +387,19 @@ CtiIONMethod::CtiIONMethod( IONSimpleMethods method, CtiIONValue *parameter )
     {
         case WriteRegisterValue:
         case WriteValue:
+        {
             _parameter = parameter;
-            _valueIncluded = TRUE;
             break;
+        }
 
         default:
+        {
             _parameter = NULL;
-            _valueIncluded = FALSE;
             break;
+        }
     }
 
-    _extendedMethod = FALSE;
+    _extendedMethodNum = NoExtendedMethod;
     _methodNum = method;
 
     _valid = TRUE;
@@ -400,15 +408,15 @@ CtiIONMethod::CtiIONMethod( IONSimpleMethods method, CtiIONValue *parameter )
 
 CtiIONMethod::CtiIONMethod( IONExtendedMethods method, CtiIONValue *parameter )
 {
-    if( parameter != NULL )
-        _valueIncluded = TRUE;
-    else
-        _valueIncluded = FALSE;
+    _methodNum = ExtendedMethod;
+    _extendedMethodNum = method;
 
     _parameter = parameter;
 
-    _extendedMethod = method;
-    _methodNum = ExtendedMethod;
+    if( _parameter != NULL )
+    {
+        _extendedMethodNum |= 0x8000;
+    }
 
     _valid = TRUE;
 }
@@ -433,8 +441,8 @@ CtiIONMethod::CtiIONMethod( unsigned char *byteStream, unsigned long streamLengt
         {
             if( (streamPos + 2) <= streamLength )
             {
-                _extendedMethod  = byteStream[streamPos++];
-                _extendedMethod |= byteStream[streamPos++];
+                _extendedMethodNum  = byteStream[streamPos++];
+                _extendedMethodNum |= byteStream[streamPos++];
             }
             else
             {
@@ -443,14 +451,12 @@ CtiIONMethod::CtiIONMethod( unsigned char *byteStream, unsigned long streamLengt
         }
         else
         {
-            _extendedMethod = 0;
+            _extendedMethodNum = NoExtendedMethod;
         }
 
         //  if there's a value included (highest bit set to 1)
-        if( _extendedMethod & 0x8000 || _methodNum == ReadValue || _methodNum == WriteValue )
+        if( _extendedMethodNum & 0x8000 || _methodNum == ReadValue || _methodNum == WriteValue )
         {
-            _valueIncluded = TRUE;
-
             //  just making sure data's available to read...
             if( streamPos < streamLength )
             {
@@ -479,37 +485,38 @@ CtiIONMethod::CtiIONMethod( unsigned char *byteStream, unsigned long streamLengt
 }
 
 
-unsigned int CtiIONMethod::getSerializedValueLength( void )
+unsigned int CtiIONMethod::getSerializedValueLength( void ) const
 {
     int size = 1;
 
-    if( _extendedMethod )
+    if( _methodNum == ExtendedMethod )
+    {
         size += 2;
+    }
 
-    if( _valueIncluded )
+    if( _parameter != NULL )
+    {
         size += _parameter->getSerializedValueLength( );
+    }
 
     return size;
 }
 
 
-void CtiIONMethod::putSerializedValue( unsigned char *buf )
+void CtiIONMethod::putSerializedValue( unsigned char *buf ) const
 {
     int offset = 0;
 
     memcpy( buf + offset, &_methodNum, 1 );
     offset += 1;
 
-    if( _extendedMethod )
+    if( _methodNum == ExtendedMethod )
     {
-        if( _valueIncluded )
-            _extendedMethod |= 0x8000;  //  bit 15 means "value included" for extended methods
-
-        memcpy( buf + offset, &_extendedMethod, 2 );
+        memcpy( buf + offset, &_extendedMethodNum, 2 );
         offset += 2;
     }
 
-    if( _valueIncluded )
+    if( _parameter != NULL )
     {
         _parameter->putSerialized( buf + offset );
     }

@@ -41,8 +41,8 @@ protected:
 
     CtiIONChar( unsigned char *byteStream, unsigned long streamLength );
 
-    unsigned int getSerializedValueLength( void ) { return 1; };
-    void putSerializedValue( unsigned char *buf ) { memcpy( buf, &_char, getSerializedValueLength( ) ); };
+    unsigned int getSerializedValueLength( void ) const { return 1; };
+    void putSerializedValue( unsigned char *buf ) const { memcpy( buf, &_char, getSerializedValueLength( ) ); };
 
 private:
 
@@ -72,8 +72,8 @@ public:
     CtiIONFloat( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONFloat( ) { };
 
-    unsigned int getSerializedValueLength( void ) { return 4; };
-    void putSerializedValue( unsigned char *buf ) { memcpy( buf, &_float, getSerializedValueLength( ) ); };
+    unsigned int getSerializedValueLength( void ) const { return 4; };
+    void putSerializedValue( unsigned char *buf ) const { memcpy( buf, &_float, getSerializedValueLength( ) ); };
 
     CtiIONFloat &setValue( float value ) { _float = value;  return *this; };
     float        getValue( void )       { return _float; };
@@ -96,8 +96,8 @@ public:
     CtiIONSignedInt( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONSignedInt( ) { };
 
-    unsigned int getSerializedValueLength( void ) { return 4; };
-    void putSerializedValue( unsigned char *buf ) { memcpy( buf, &_signedInt, getSerializedValueLength( ) ); };
+    unsigned int getSerializedValueLength( void ) const { return 4; };
+    void putSerializedValue( unsigned char *buf ) const { memcpy( buf, &_signedInt, getSerializedValueLength( ) ); };
 
     CtiIONSignedInt &setValue( long value ) { _signedInt = value;  return *this; };
     long             getValue( void )       { return _signedInt; };
@@ -120,8 +120,8 @@ public:
     CtiIONUnsignedInt( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONUnsignedInt( ) { };
 
-    unsigned int getSerializedValueLength( void ) { return 4; };
-    void putSerializedValue( unsigned char *buf ) { memcpy( buf, &_unsignedInt, getSerializedValueLength( ) ); };
+    unsigned int getSerializedValueLength( void ) const { return 4; };
+    void putSerializedValue( unsigned char *buf ) const { memcpy( buf, &_unsignedInt, getSerializedValueLength( ) ); };
 
     CtiIONUnsignedInt &setValue( unsigned int value ) { _unsignedInt = value;  return *this; };
     unsigned int       getValue( void )               { return _unsignedInt; };
@@ -144,8 +144,8 @@ public:
     CtiIONBoolean( unsigned char *byteStream, unsigned long streamLength );
     ~CtiIONBoolean( ) { };
 
-    unsigned int getSerializedValueLength( void ) { return 0; };  //  it's all in the header
-    void putSerializedValue( unsigned char *buf ) { };            //
+    unsigned int getSerializedValueLength( void ) const { return 0; };  //  it's all in the header
+    void putSerializedValue( unsigned char *buf ) const { };            //
 
     CtiIONBoolean &setValue( int value ) { _bool = value;  return *this; };
     int           getValue( void )       { return _bool; };
@@ -178,8 +178,8 @@ public:
 
 protected:
 
-    unsigned int getSerializedValueLength( void ) { return 8; };
-    void putSerializedValue( unsigned char *buf );
+    unsigned int getSerializedValueLength( void ) const;
+    void putSerializedValue( unsigned char *buf ) const;
 
 private:
 
@@ -204,7 +204,7 @@ public:
         IONStructArray  //    and never numerically use these enum values
     };
 
-    IONArrayTypes getArrayType( void )   { return _arrayType; };
+    IONArrayTypes getArrayType( void ) const   { return _arrayType; };
     int isNumericArray( void );
 
 protected:
@@ -219,17 +219,17 @@ protected:
     ~CtiIONArray( )
         {  clearArrayElements( );  };
 
-    virtual unsigned int getSerializedValueLength( void );
-    virtual void putSerializedValue( unsigned char *buf );
+    virtual unsigned int getSerializedValueLength( void ) const;
+    virtual void putSerializedValue( unsigned char *buf ) const;
 
-    virtual unsigned int getSerializedHeaderLength( void );
-    virtual void putSerializedHeader( unsigned char *buf );
+    virtual unsigned int getSerializedHeaderLength( void ) const;
+    virtual void putSerializedHeader( unsigned char *buf ) const;
 
     static CtiIONArray *restoreStruct( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
     static CtiIONArray *restoreStructArray( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
     static CtiIONArray *restoreFixedArray( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
 
-    unsigned char *putClassSize( unsigned char key, unsigned char *buf );
+    unsigned char *putClassSize( unsigned char key, unsigned char *buf ) const;
     unsigned char getArrayKey( void );
 
     int getSize( void )
@@ -269,8 +269,8 @@ public:
         return *this;
     };
 
-    unsigned int getSerializedValueLength( void );
-    void putSerializedValue( unsigned char *buf );
+    unsigned int getSerializedValueLength( void ) const;
+    void putSerializedValue( unsigned char *buf ) const;
 
 private:
 

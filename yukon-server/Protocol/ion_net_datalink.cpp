@@ -18,11 +18,13 @@
 
 #include "ion_net_datalink.h"
 
+
 CtiIONDataLinkLayer::CtiIONDataLinkLayer( )
 {
-    _valid = false;
+    _valid  = false;
     _status = Uninitialized;
-    _data = NULL;
+    _data       = NULL;
+    _tmpIOFrame = NULL;
 }
 
 CtiIONDataLinkLayer::~CtiIONDataLinkLayer( )
@@ -55,10 +57,10 @@ void CtiIONDataLinkLayer::setToOutput( CtiIONSerializable &payload )
 
     _valid = TRUE;
 
-    _dataSent = 0;
-    _status = OutDataReady;
+    _dataSent  = 0;
+    _status    = OutDataReady;
     _direction = Output;
-    _retries = IONRetries;
+    _retries   = IONRetries;
 
     _dataLength = payload.getSerializedLength( );
     _data = new unsigned char[_dataLength];
@@ -97,19 +99,24 @@ void CtiIONDataLinkLayer::freeMemory( void )
 {
     int i;
 
-    if( _frameVector.size( ) )
+    while( !_inputFrameVector.empty( ) )
     {
-        for( i = 0; i < _frameVector.size( ); i++ )
-        {
-            //  delete all new'd instances
-            delete _frameVector[i];
-        }
+        //  delete all new'd instances
+        delete _inputFrameVector.back();
+
+        _inputFrameVector.pop_back();
+    }
+
+    if( _tmpIOFrame != NULL )
+    {
+        delete _tmpIOFrame;
     }
 
     if( _data != NULL )
+    {
         delete [] _data;
-
-    _data = NULL;
+        _data = NULL;
+    }
 }
 
 
@@ -117,22 +124,14 @@ void CtiIONDataLinkLayer::putPayload( unsigned char *buf )
 {
     int i, offset;
 
-    switch( _direction )
-    {
-        case Input:
-            {
-                offset = 0;
-                for( i = 0; i < _frameVector.size( ); i++ )
-                {
-                    _frameVector[i]->putPayload( buf + offset );
-                    offset += _frameVector[i]->getPayloadLength( );
-                }
-            }
+    offset = 0;
 
-        case Output:
-            {
-                memcpy( buf, _data, getPayloadLength( ) );
-            }
+    //  if this function is called during output mode, the payload will be empty and nothing will be copied.
+
+    for( i = 0; i < _inputFrameVector.size( ); i++ )
+    {
+        _inputFrameVector[i]->putPayload( buf + offset );
+        offset += _inputFrameVector[i]->getPayloadLength( );
     }
 }
 
@@ -141,21 +140,9 @@ int CtiIONDataLinkLayer::getPayloadLength( void )
 {
     int i, payloadLength = 0;
 
-    switch( _direction )
+    for( i = 0; i < _inputFrameVector.size( ); i++ )
     {
-        case Input:
-            {
-                for( i = 0; i < _frameVector.size( ); i++ )
-                {
-                    payloadLength += _frameVector[i]->getPayloadLength( );
-                }
-                break;
-            }
-
-        case Output:
-            {
-                payloadLength = _dataLength;
-            }
+        payloadLength += _inputFrameVector[i]->getPayloadLength( );
     }
 
     return payloadLength;
@@ -166,70 +153,73 @@ int CtiIONDataLinkLayer::inFrame( unsigned char *data, unsigned long dataLength 
 {
     CtiIONFrame *tmpFrame;
 
-    tmpFrame = new CtiIONFrame( data, dataLength );
+    tmpFrame = new CtiIONFrame();
 
     if( tmpFrame != NULL )
     {
+        tmpFrame->initInputFrame( data, dataLength );
+
         if( tmpFrame->crcIsValid( ) )
         {
             switch( _direction )
             {
                 case Input:
-                    {
-                        //  ADD CODE HERE:  do SRC and DST need checking?
+                {
+                    //  ADD CODE HERE:  do SRC and DST need checking?
 
-                        //  if claims to be the first frame and we're expecting the first frame
-                        if( tmpFrame->isFirstFrame( ) && _currentFrame < 0 )
-                        {
-                            //  frame count to expect
-                            _currentFrame = tmpFrame->getCounter( );
-                            //  put the frame in the list
-                            _frameVector.push_back( tmpFrame );
-                            //  we're ready to send an ACK
-                            _status = OutAckReady;
-                        }
-                        //  if it's the right frame
-                        else if( _currentFrame == tmpFrame->getCounter( ) )
-                        {
-                            //  put the frame in the list
-                            _frameVector.push_back( tmpFrame );
-                            //  we're ready to send an ACK
-                            _status = OutAckReady;
-                        }
-                        else
-                        {
-                            _retries--;
-                            _status = OutNakReady;
-                            delete tmpFrame;
-                        }
-                        break;
+                    //  if claims to be the first frame and we're expecting the first frame
+                    if( tmpFrame->isFirstFrame( ) && _currentFrame < 0 )
+                    {
+                        //  frame count to expect
+                        _currentFrame = tmpFrame->getCounter( );
+                        //  put the frame in the list
+                        _inputFrameVector.push_back( tmpFrame );
+                        //  we're ready to send an ACK
+                        _status = OutAckReady;
                     }
-                case Output:
+                    //  if it's the right frame
+                    else if( _currentFrame == tmpFrame->getCounter( ) )
                     {
-                        //  ADD CODE HERE:  do SRC and DST need checking?
-
-                        if( tmpFrame->getFrameType( ) == CtiIONFrame::AcknakACK &&  //  make sure it's an ACK frame
-                            tmpFrame->getCounter( ) == _currentFrame )          //  make sure they're ACKing the frame we just sent
-                        {
-                            _dataSent += _bytesInLastFrame;
-                            if( _currentFrame == 0 )
-                            {
-                                _status = OutDataComplete;
-                            }
-                            else
-                            {
-                                _currentFrame--;
-                                _status = OutDataReady;
-                            }
-                        }
-                        else
-                        {
-                            _retries--;
-                            _status = OutDataRetry;
-                        }
-
+                        //  put the frame in the list
+                        _inputFrameVector.push_back( tmpFrame );
+                        //  we're ready to send an ACK
+                        _status = OutAckReady;
+                    }
+                    else
+                    {
+                        _retries--;
+                        _status = OutNakReady;
                         delete tmpFrame;
                     }
+                    break;
+                }
+
+                case Output:
+                {
+                    //  ADD CODE HERE:  do SRC and DST need checking?
+
+                    if( tmpFrame->getFrameType( ) == CtiIONFrame::AcknakACK &&  //  make sure it's an ACK frame
+                        tmpFrame->getCounter( ) == _currentFrame )          //  make sure they're ACKing the frame we just sent
+                    {
+                        _dataSent += _bytesInLastFrame;
+                        if( _currentFrame == 0 )
+                        {
+                            _status = OutDataComplete;
+                        }
+                        else
+                        {
+                            _currentFrame--;
+                            _status = OutDataReady;
+                        }
+                    }
+                    else
+                    {
+                        _retries--;
+                        _status = OutDataRetry;
+                    }
+
+                    delete tmpFrame;
+                }
             }
         }
         else
@@ -255,7 +245,7 @@ int CtiIONDataLinkLayer::inFrame( unsigned char *data, unsigned long dataLength 
 }
 
 
-int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
+CtiIONFrame *CtiIONDataLinkLayer::outFrame( void )
 {
     int bytesInNewFrame, numFrames, tmpCRC;
 
@@ -264,23 +254,22 @@ int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
     //  all fields in here are set as master-oriented parameters (always setting frame to be
     //    from master to slave, etc)
 
-    cout << "in outFrame" << endl;
-
-    tmpFrame = new CtiIONFrame;
+    tmpFrame = new CtiIONFrame();
 
     if( tmpFrame != NULL )
     {
-        cout << "tmpFrame != NULL " << endl;
+        tmpFrame->initOutputFrame();
 
         switch( _direction )
         {
             case Output:
             {
-                cout << "in output" << endl;
-
                 bytesInNewFrame = _dataLength - _dataSent;
+
                 if( bytesInNewFrame > CtiIONFrame::MaxPayloadLength )
+                {
                     bytesInNewFrame = CtiIONFrame::MaxPayloadLength;
+                }
 
                 if( _dataSent == 0 )
                 {
@@ -307,11 +296,6 @@ int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
 
                 tmpFrame->setCRC( );
 
-                tmpFrame->putSerialized( data );
-                *len = tmpFrame->getSerializedLength( );
-
-                cout << "len = " << *len << endl;
-
                 _bytesInLastFrame = bytesInNewFrame;
 
                 break;
@@ -319,8 +303,6 @@ int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
 
             case Input:
             {
-                cout << "in input" << endl;
-
                 switch( _status )
                 {
                     case OutAckReady:
@@ -342,47 +324,71 @@ int CtiIONDataLinkLayer::outFrame( unsigned char *data, unsigned long *len )
 
                 tmpFrame->setCRC( );
 
-                tmpFrame->putSerialized( data );
-                *len = tmpFrame->getSerializedLength( );
-
                 break;
             }
         }
     }
     else
     {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << sizeof( CtiIONFrame ) << " bytes in CtiIONDataLinkLayer inFrame;"
-                                                                 << "  setting status = Abort" << endl;
+        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << sizeof( CtiIONFrame ) << " bytes in CtiIONDataLinkLayer inFrame" << endl;
         _status = Abort;
     }
-    return _status;
+
+    return tmpFrame;
 }
 
 
 int CtiIONDataLinkLayer::generate( CtiXfer &xfer )
 {
-/*    if( _netLayer.isTransactionComplete() )
-    {
+    int retVal = NoError;
 
+    CtiIONFrame *tmpOutFrame;
+
+    tmpOutFrame = outFrame();
+
+    if( tmpOutFrame != NULL )
+    {
+        tmpOutFrame->putSerialized(_outBuffer);
+
+        xfer.setOutBuffer(_outBuffer);
+
+        xfer.setOutCount(tmpOutFrame->getSerializedLength());
+        xfer.setCRCFlag(0);
+
+        //  ACH: this will need to be changed when secondary ACK/NACK packets are included,
+        //    but for now we ignore any incoming until we're done sending
+        //  (er?  is this correct?)
+        xfer.setInBuffer(_inBuffer);
+        xfer.setInCountExpected(0);
+        xfer.setInCountActual(&_inActual);
+        xfer.setNonBlockingReads(false);
+
+        xfer.setInCountExpected(CtiIONFrame::EmptyPacketLength);
     }
-*/
-    return 0; //_datalinkLayer.generate( xfer );
+    else
+    {
+        retVal = MemoryError;
+    }
+
+    return retVal;
 }
 
 
 int CtiIONDataLinkLayer::decode( CtiXfer &xfer, int status )
 {
-    return 0; //_datalinkLayer.decode( xfer, status );
+    int retVal = NoError;
+
+    return inFrame(_inBuffer, *(xfer.getInCountActual()));
 }
 
 
 
+CtiIONFrame::CtiIONFrame( )     {   }
+
+CtiIONFrame::~CtiIONFrame( )    {   }
 
 
-
-
-
-CtiIONFrame::CtiIONFrame( )
+CtiIONFrame::initOutputFrame( )
 {
     initReserved( );
     _frame.header.sync = 0x14;  //  start of data
@@ -391,7 +397,7 @@ CtiIONFrame::CtiIONFrame( )
 }
 
 
-CtiIONFrame::CtiIONFrame( unsigned char *rawFrame, int rawFrameLength )
+CtiIONFrame::initInputFrame( unsigned char *rawFrame, int rawFrameLength )
 {
     //  only copy what we have room for...
     if( rawFrameLength > MaxFrameLength )
@@ -399,9 +405,6 @@ CtiIONFrame::CtiIONFrame( unsigned char *rawFrame, int rawFrameLength )
 
     memcpy( &_frame, rawFrame, rawFrameLength );
 }
-
-
-CtiIONFrame::~CtiIONFrame( )    {   }
 
 
 void CtiIONFrame::initReserved( void )
@@ -415,13 +418,13 @@ void CtiIONFrame::initReserved( void )
 
 
 
-void CtiIONFrame::putSerialized( unsigned char *buf )
+void CtiIONFrame::putSerialized( unsigned char *buf ) const
 {
     memcpy( buf, &_frame, getSerializedLength( ) );
 }
 
 
-unsigned int CtiIONFrame::getSerializedLength( void )
+unsigned int CtiIONFrame::getSerializedLength( void ) const
 {
     return _frame.header.len + UncountedHeaderBytes;
 }
@@ -463,7 +466,7 @@ void CtiIONFrame::setCRC( void )
     frameCRC = crc16( _frame.data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
     _frame.data[dataLen]   =  frameCRC & 0x00FF;        //  the bytes right after the data ends
-    _frame.data[dataLen+1] = (frameCRC & 0xFF00) << 8;  //
+    _frame.data[dataLen+1] = (frameCRC & 0xFF00) >> 8;  //
 }
 
 
@@ -490,10 +493,10 @@ unsigned int CtiIONFrame::crc16( unsigned char *data, int length )
     //    from http://www.programmingparadise.com/vs/?crc/crcfast.c.html
     //    original author unknown, so i figured it was okay to use.
 
-    unsigned int tmp,
-                 crc = 0;
+    unsigned short tmp,
+                   crc = 0xffff;
 
-    unsigned int crc16table[256] =
+    unsigned short crc16table[256] =
     {
         0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
         0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -531,7 +534,7 @@ unsigned int CtiIONFrame::crc16( unsigned char *data, int length )
 
     for( int i = 0; i < length; i++ )
     {
-        tmp = crc ^ (unsigned int)data[i];
+        tmp = crc ^ (unsigned short)data[i];
         crc = (crc >> 8) ^ crc16table[tmp & 0x00FF];
     }
 

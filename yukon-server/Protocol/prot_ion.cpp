@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/11/04 21:41:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/07 17:29:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@
 
 CtiProtocolION::CtiProtocolION()
 {
-    setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
+    //  setAddresses(DefaultYukonIONMasterAddress, DefaultSlaveAddress);
 }
 
 
@@ -339,8 +339,10 @@ void CtiDeviceION::resolveNextStateLoadProfile( void )
 
 void CtiProtocolION::setAddresses( unsigned short srcID, unsigned short dstID )
 {
-    _srcID = srcID;
-    _dstID = dstID;
+    _srcID = 10000;
+    _dstID =   100;
+//    _srcID = srcID;
+//    _dstID = dstID;
 
     _appLayer.setAddresses(_srcID, _dstID);
 }
@@ -625,7 +627,7 @@ int CtiProtocolION::recvCommRequest( OUTMESS *OutMessage )
 bool CtiProtocolION::isTransactionComplete( void )
 {
     //  ACH: factor in application layer retries... ?
-    return _appLayer.isTransactionComplete() | _appLayer.errorCondition();
+    return _ionState == IONStateComplete;  //  _appLayer.isTransactionComplete() | _appLayer.errorCondition();
 }
 
 

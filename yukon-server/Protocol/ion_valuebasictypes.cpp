@@ -13,11 +13,11 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
- 
+
 #include "ion_valuebasictypes.h"
 #include "ion_valuestructtypes.h"
- 
- 
+
+
 CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) :
     CtiIONValue(IONChar)
 {
@@ -43,7 +43,7 @@ CtiIONBoolean::CtiIONBoolean( unsigned char *byteStream, unsigned long streamLen
     {
         //  doggoned MSB ordering
         ((unsigned char *)&_bool)[0] = byteStream[0];
-        
+
         setValid( TRUE );
     }
     else
@@ -151,27 +151,32 @@ CtiIONTime::CtiIONTime( unsigned char *byteStream, unsigned long streamLength ) 
 }
 
 
-CtiIONTime &CtiIONTime::setFractionalSeconds( unsigned long value )  
-{ 
-    //  copy the bits that're less than 2^31 - we only have 31 bits 
+CtiIONTime &CtiIONTime::setFractionalSeconds( unsigned long value )
+{
+    //  copy the bits that're less than 2^31 - we only have 31 bits
     _fractionalSeconds = value & 0x7FFFFFFF;
-    return *this; 
+    return *this;
 };
 
 
-void CtiIONTime::putSerializedValue( unsigned char *buf )
-{ 
+unsigned int CtiIONTime::getSerializedValueLength( void ) const
+{
+    return 8;
+}
+
+void CtiIONTime::putSerializedValue( unsigned char *buf ) const
+{
     unsigned long tmpSeconds;
-     
+
     tmpSeconds = _fractionalSeconds | ((_seconds & 0x01) << 31);
-    
+
     buf[0] = ((unsigned char *)&tmpSeconds)[3];
     buf[1] = ((unsigned char *)&tmpSeconds)[2];
     buf[2] = ((unsigned char *)&tmpSeconds)[1];
     buf[3] = ((unsigned char *)&tmpSeconds)[0];
 
     tmpSeconds = _seconds >> 1;  //  shift bits down, high bit (31) defaulted to 0
-    
+
     buf[4] = ((unsigned char *)&tmpSeconds)[3];
     buf[5] = ((unsigned char *)&tmpSeconds)[2];
     buf[6] = ((unsigned char *)&tmpSeconds)[1];
@@ -208,9 +213,9 @@ CtiIONArray &CtiIONArray::appendArrayElement( CtiIONValue *toAppend )
 
 
 CtiIONValue *CtiIONArray::getArrayElement( unsigned long index )
-{ 
+{
     CtiIONValue *tmp = NULL;
-    
+
     if( index < _array.size( ) )
         tmp = _array[index];
 
@@ -232,11 +237,10 @@ void CtiIONArray::clearArrayElements( void )
 
 
 
-void CtiIONArray::putSerializedValue( unsigned char *buf )
+void CtiIONArray::putSerializedValue( unsigned char *buf ) const
 {
-    int i,
-        bytesWritten;
-    
+    int i, bytesWritten;
+
     bytesWritten = 0;
     for( i = 0; i < _array.size( ); i++ )
     {
@@ -246,11 +250,11 @@ void CtiIONArray::putSerializedValue( unsigned char *buf )
 }
 
 
-unsigned int CtiIONArray::getSerializedValueLength( void )
+unsigned int CtiIONArray::getSerializedValueLength( void ) const
 {
     int i,
         totalLength;
-    
+
     totalLength = 0;
     for( i = 0; i < _array.size( ); i++ )
     {
@@ -267,20 +271,20 @@ unsigned char CtiIONArray::getArrayKey( void )
 
     switch( getArrayType( ) )
     {
-        case IONCharArray:          
-        case IONBooleanArray:       
-        case IONFloatArray:         
-        case IONSignedIntArray:     
-        case IONUnsignedIntArray:   
+        case IONCharArray:
+        case IONBooleanArray:
+        case IONFloatArray:
+        case IONSignedIntArray:
+        case IONUnsignedIntArray:
             key  = 0xF0;
             key |= getArrayType( );
             break;
 
-        case IONStruct:             
+        case IONStruct:
             key = ((CtiIONStruct *)this)->getStructKey( );
             break;
 
-        case IONStructArray:  
+        case IONStructArray:
             key = ((CtiIONStructArray *)this)->getStructArrayKey( );
             break;
     }
@@ -289,14 +293,14 @@ unsigned char CtiIONArray::getArrayKey( void )
 }
 
 
-unsigned int CtiIONArray::getSerializedHeaderLength( void )
+unsigned int CtiIONArray::getSerializedHeaderLength( void ) const
 {
     unsigned int tmpHeaderLength;
     unsigned long tmpLength = getSerializedValueLength( );
     unsigned long tmpItems  = _array.size( );
 
     tmpHeaderLength = 1;
-    
+
     if( getArrayType( ) != IONStruct )
     {
         if( tmpItems > 13 )
@@ -314,20 +318,20 @@ unsigned int CtiIONArray::getSerializedHeaderLength( void )
 }
 
 
-void CtiIONArray::putSerializedHeader( unsigned char *buf )
+void CtiIONArray::putSerializedHeader( unsigned char *buf ) const
 {
     unsigned long tmpLength = getSerializedValueLength( ),
                   streamPos;
     unsigned long tmpItems  = _array.size( );
-    
+
     unsigned char tmpbuf, tmp8b, tmp32b[4];
 
     streamPos = 0;
 
     //  notation following - (nibble 1, nibble 0)
-    
+
     memcpy( tmp32b, &tmpItems, 4 );
-    
+
     if( tmpItems <= 0xD )
     {
         tmp8b = (tmp32b[0] & 0x0F) << 4;   //  n1 = item count
@@ -347,7 +351,7 @@ void CtiIONArray::putSerializedHeader( unsigned char *buf )
         tmp8b  = 0xF << 4;                 //  n1 = header key
         tmp8b |= (tmp32b[3] & 0xF0) >> 4;  //  n0 = item count (bits 31-28)
         buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
- 
+
         tmp8b  = (tmp32b[3] & 0x0F) << 4;  //  n1 = item count (bits 27-24)
         tmp8b |= (tmp32b[2] & 0xF0) >> 4;  //  n0 = item count (bits 23-20)
         buf[streamPos++] = tmp8b;          //  ------ (n1,n0) written
@@ -363,8 +367,8 @@ void CtiIONArray::putSerializedHeader( unsigned char *buf )
         tmp8b  = (tmp32b[0] & 0x0F) << 4;  //  n1 = item count (bits  3- 0)
         //  note:  tmp8b == ([item count bits 3-0],[0x0])
     }
-        
-    
+
+
     memcpy( tmp32b, &tmpLength, 4 );
 
     if( tmpLength <= 0xC )
@@ -376,14 +380,14 @@ void CtiIONArray::putSerializedHeader( unsigned char *buf )
     {
         tmp8b |= 0x0D;              //  n0 = header key
         buf[streamPos++] = tmp8b;   //  ------ (n1,n0) written
-        
+
         buf[streamPos++] = tmp32b[0];  //  byte 0 written
     }
     else
     {
         tmp8b |= 0x0E;              //  n0 = header key
         buf[streamPos++] = tmp8b;   //  ------ (n1,n0) written
-        
+
         buf[streamPos++] = tmp32b[3];  //  byte 3 written
         buf[streamPos++] = tmp32b[2];  //  byte 2 written
         buf[streamPos++] = tmp32b[1];  //  byte 1 written
@@ -395,7 +399,7 @@ void CtiIONArray::putSerializedHeader( unsigned char *buf )
 CtiIONArray *CtiIONArray::restoreStruct( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength )
 {
     CtiIONArray *newVal = NULL;
-    
+
     newVal = CtiIONStruct::restoreObject( classDescriptor, byteStream, streamLength );
 
     return newVal;
@@ -426,7 +430,7 @@ CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsi
 
     tmp8b = byteStream[streamPos++];
     tmp4b = (tmp8b & 0xF0) >> 4;  //  high nibble of the byte
-        
+
     if( tmp4b <= 0xD )
     {
         //  item count = value
@@ -506,14 +510,14 @@ CtiIONArray *CtiIONArray::restoreFixedArray( unsigned char classDescriptor, unsi
                 newVal = new CtiIONUnsignedIntArray( itemCount, itemLength, byteStream );
                 break;
         }
-        
+
     }
-    
+
     return newVal;
 }
 
 
-unsigned char *CtiIONArray::putClassSize( unsigned char key, unsigned char *buf )
+unsigned char *CtiIONArray::putClassSize( unsigned char key, unsigned char *buf ) const
 {
     unsigned long tmpLength = getSerializedValueLength( );
     unsigned long tmpItems  = _array.size( );
@@ -571,7 +575,7 @@ unsigned char *CtiIONArray::putClassSize( unsigned char key, unsigned char *buf 
             *(buf++) = tmpLength & 0xFF;
         }
     }
-    
+
     return buf;
 }
 
@@ -579,8 +583,8 @@ unsigned char *CtiIONArray::putClassSize( unsigned char key, unsigned char *buf 
 
 CtiIONProgram::CtiIONProgram( CtiIONStatement *initial ) :
     CtiIONValue(IONProgram)
-{ 
-    addStatement( initial ); 
+{
+    addStatement( initial );
 };
 
 
@@ -601,7 +605,7 @@ CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLen
         handle |= byteStream[streamPos++] << 8;
 
         tmpMethod = new CtiIONMethod( byteStream, streamLength - streamPos );
-        
+
         //  make sure we read the method out okay
         if( tmpMethod != NULL && tmpMethod->isValid( ) )
         {
@@ -623,21 +627,21 @@ CtiIONProgram::CtiIONProgram( unsigned char *byteStream, unsigned long streamLen
 }
 
 
-unsigned int CtiIONProgram::getSerializedValueLength( void )
+unsigned int CtiIONProgram::getSerializedValueLength( void ) const
 {
-    unsigned int length;
-    
+    unsigned int length = 0;
+
     for( int i = 0; i < _statements.size( ); i++ )
         length += _statements[i]->getSerializedValueLength( );
-    
+
     return length;
 }
 
 
-void CtiIONProgram::putSerializedValue( unsigned char *buf )
+void CtiIONProgram::putSerializedValue( unsigned char *buf ) const
 {
     unsigned int pos = 0;
-    
+
     for( int i = 0; i < _statements.size( ); i++ )
     {
         _statements[i]->putSerializedValue( buf + pos );

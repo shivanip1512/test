@@ -95,7 +95,7 @@ public:
     void setOutPayload( CtiIONSerializable &payload );
 
     void putPayload( unsigned char *buf );
-    int  getPayloadLength( void );
+    int  getPayloadLength( void ) const;
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
@@ -103,8 +103,8 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    void putSerialized( unsigned char *buf );
-    unsigned int getSerializedLength( void );
+    void putSerialized( unsigned char *buf ) const;
+    unsigned int getSerializedLength( void ) const;
 
     int isValid( void ) { return _valid; };
 

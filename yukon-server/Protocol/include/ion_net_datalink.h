@@ -25,7 +25,7 @@
 #include "ion_rootclasses.h"
 #include "ion_valuebasictypes.h"
 
-//  predefining for all following classes
+
 class CtiIONFrame;
 
 //  necessary to preserve byte alignment;  makes for easy memcpy initialization and serialization
@@ -33,6 +33,47 @@ class CtiIONFrame;
 
 class IM_EX_PROT CtiIONDataLinkLayer
 {
+    enum DLLExternalStatus;
+
+private:
+
+    void freeMemory( void );
+
+    int _currentFrame;
+    int _src, _dst;
+
+    unsigned char _outBuffer[250], _inBuffer[250];
+
+    CtiIONFrame *_tmpIOFrame;
+
+    vector<CtiIONFrame *> _inputFrameVector;
+
+    unsigned char *_data;
+    int            _dataLength, _dataSent;
+    int            _bytesInLastFrame;
+    int            _retries;
+    unsigned long _inActual;
+
+    enum Direction
+    {
+       Input,
+       Output
+    } _direction;
+
+    enum
+    {
+        IONRetries = 5
+    };
+
+    DLLExternalStatus _status;
+
+    int _valid;
+
+protected:
+
+    CtiIONFrame *outFrame( void );
+    int inFrame( unsigned char *data, unsigned long len );
+
 public:
 
     CtiIONDataLinkLayer( );
@@ -46,13 +87,8 @@ public:
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-    int outFrame( unsigned char *data, unsigned long *len );
-    int inFrame( unsigned char *data, unsigned long len );
-
     void putPayload( unsigned char *buf );
     int  getPayloadLength( void );
-
-    enum DLLExternalStatus;
 
     DLLExternalStatus getStatus( void );
 
@@ -75,34 +111,6 @@ public:
         ErrorStates,      //  and again
         Uninitialized
     };
-
-private:
-
-    void freeMemory( void );
-
-    int _currentFrame;
-    int _src, _dst;
-
-    vector<CtiIONFrame *> _frameVector;
-    unsigned char *_data;
-    int            _dataLength, _dataSent;
-    int            _bytesInLastFrame;
-    int            _retries;
-
-    enum Direction
-    {
-       Input,
-       Output
-    } _direction;
-
-    enum
-    {
-        IONRetries = 5
-    };
-
-    DLLExternalStatus _status;
-
-    int _valid;
 };
 
 
@@ -139,12 +147,14 @@ protected:
 
 public:
 
-    CtiIONFrame( void );
-    CtiIONFrame( unsigned char *rawFrame, int rawFrameLength );
-    ~CtiIONFrame( void );
+    CtiIONFrame( );
+    ~CtiIONFrame( );
 
-    void putSerialized( unsigned char *buf );
-    unsigned int getSerializedLength( void );
+    initInputFrame( unsigned char *rawFrame, int rawFrameLength );
+    initOutputFrame( void );
+
+    void putSerialized( unsigned char *buf ) const;
+    unsigned int getSerializedLength( void ) const;
 
     int crcIsValid( void );
     void setCRC( void );
@@ -169,15 +179,15 @@ public:
 
     void setPayload( unsigned char *buf, int count );
     void putPayload( unsigned char *buf );
-    int getPayloadLength( void ) { return _frame.header.len - EmptyPacketLength; };  //  len = data length + 7
+    int  getPayloadLength( void ) { return _frame.header.len - EmptyPacketLength; };  //  len = data length + 7
 
     void setDstID( unsigned short dstID ) { _frame.header.dstid = dstID; };
     unsigned short getDstID( void ) { return _frame.header.dstid; };
 
     void setFirstFrame( int firstFrame ) { _frame.header.tranfirstframe = firstFrame; };
-    int isFirstFrame( void ) { return _frame.header.tranfirstframe; };
+    int  isFirstFrame( void ) { return _frame.header.tranfirstframe; };
 
-    int getCounter( void ) { return _frame.header.trancounter; };
+    int  getCounter( void ) { return _frame.header.trancounter; };
     void setCounter( int counter ) { _frame.header.trancounter = counter; };
 
     enum FrameType
