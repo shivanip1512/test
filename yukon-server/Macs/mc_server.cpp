@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/19 21:06:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -508,9 +508,7 @@ void CtiMCServer::releaseInterpreters()
 void CtiMCServer::checkRunningScripts()
 {
     RWTime now( stripSeconds(RWTime::now()) );
-
-    now += 60;
-
+    
     map< long, CtiMCInterpreter* >::iterator iter;
     for( iter = _running_scripts.begin();
          iter != _running_scripts.end();
