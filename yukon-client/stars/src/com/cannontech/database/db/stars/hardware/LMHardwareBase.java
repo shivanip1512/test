@@ -75,13 +75,13 @@ public class LMHardwareBase extends DBPersistent {
     	java.sql.Statement stmt = conn.createStatement();
     	java.sql.ResultSet rset = stmt.executeQuery( sql );
     	
-		int rowCnt = (rset.last())? rset.getRow() : 0;
-		int[] invIDs = new int[rowCnt];
-		
-		rset.beforeFirst();
-		int i = 0;
-		while (rset.next())
-			invIDs[i++] = rset.getInt(1);
+		java.util.ArrayList invIDList = new java.util.ArrayList();
+    	while (rset.next())
+    		invIDList.add( new Integer(rset.getInt(1)) );
+    	
+    	int[] invIDs = new int[ invIDList.size() ];
+    	for (int i = 0; i < invIDList.size(); i++)
+    		invIDs[i] = ((Integer) invIDList.get(i)).intValue();
 		
 		return invIDs;
     }
@@ -109,26 +109,23 @@ public class LMHardwareBase extends DBPersistent {
 		return snTable;
     }
     
-    public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
+    public static int[] searchBySerialNumber(String serialNo, int energyCompanyID, java.sql.Connection conn)
+    throws java.sql.SQLException {
     	String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
     			"WHERE UPPER(ManufacturerSerialNumber) = UPPER('" + serialNo + "') AND inv.InventoryID >= 0 " +
     			"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
-    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-    			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	java.sql.Statement stmt = conn.createStatement();
+    	java.sql.ResultSet rset = stmt.executeQuery( sql );
     	
-    	try {
-    		stmt.execute();
-    		int[] invIDs = new int[ stmt.getRowCount() ];
-    		
-    		for (int i = 0; i < invIDs.length; i++)
-    			invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-    		return invIDs;
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
+		java.util.ArrayList invIDList = new java.util.ArrayList();
+		while (rset.next())
+			invIDList.add( new Integer(rset.getInt(1)) );
     	
-    	return null;
+		int[] invIDs = new int[ invIDList.size() ];
+		for (int i = 0; i < invIDList.size(); i++)
+			invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+		
+		return invIDs;
     }
 
     public Integer getInventoryID() {
