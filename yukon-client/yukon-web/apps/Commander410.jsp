@@ -81,8 +81,8 @@ function setCommand(cmd)
           <input type="hidden" name="deviceID" value="<%=deviceID%>">
           <input type="hidden" name="command" value="">
           <input type="hidden" name="timeOut" value="8000">
-          <input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
-          <input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
+          <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
+          <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <% String header = "MCT 410 - CONTROL COMMANDS"; %>
@@ -302,6 +302,6 @@ function setCommand(cmd)
               </table>
               <br>
             </div>
-			<a href="<%= request.getRequestURI()%>?InvNo=<%=invNo %>&clearids" class="Link3">.</a>
+			<a href="<%=referrer%>&clearids" class="Link3">.</a>
           </td>
           </form>
