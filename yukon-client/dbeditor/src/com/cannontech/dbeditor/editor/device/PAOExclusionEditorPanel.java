@@ -113,16 +113,16 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC4(java.util.EventObject arg1) {
    try {
-      // user code begin {1}
-      // user code end
-      this.fireInputUpdate();
-      // user code begin {2}
+	  // user code begin {1}
+	  // user code end
+	  this.fireInputUpdate();
+	  // user code begin {2}
    
-      // user code end
+	  // user code end
    } catch (java.lang.Throwable ivjExc) {
-      // user code begin {3}
-      // user code end
-      handleException(ivjExc);
+	  // user code begin {3}
+	  // user code end
+	  handleException(ivjExc);
    }
 }
 
@@ -158,9 +158,9 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanelPAOExcl()
 			ivjAddRemovePanelPAOExcl = new com.cannontech.common.gui.util.AddRemovePanel();
 			ivjAddRemovePanelPAOExcl.setName("AddRemovePanelPAOExcl");
 			// user code begin {1}
-         ivjAddRemovePanelPAOExcl.setMode(com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE);
-         ivjAddRemovePanelPAOExcl.leftListLabelSetText( "Available Items" );
-         ivjAddRemovePanelPAOExcl.rightListLabelSetText( "Exclusion Items" );
+		 ivjAddRemovePanelPAOExcl.setMode(com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE);
+		 ivjAddRemovePanelPAOExcl.leftListLabelSetText( "Available Items" );
+		 ivjAddRemovePanelPAOExcl.rightListLabelSetText( "Exclusion Items" );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -339,7 +339,7 @@ public Object getValue(Object val)
 				pao.getPAObjectID(),
 				new Integer(getJComboBoxRequeue().getSelectedIndex()) );
       
-      pao.getPAOExclusionVector().add( paoExcl );
+	  pao.getPAOExclusionVector().add( paoExcl );
 	  pao.getPAOExclusionVector().add( correspondingPaoExcl );
    }
 
@@ -585,41 +585,41 @@ public void setValue(Object val)
    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
    synchronized(cache)
    {
-      java.util.List paos = cache.getAllYukonPAObjects();
-      Collections.sort( paos, LiteComparators.liteStringComparator );
+	  java.util.List paos = cache.getAllYukonPAObjects();
+	  Collections.sort( paos, LiteComparators.liteStringComparator );
 
-      LiteYukonPAObject litePAO = null;
-      int paoCat = PAOGroups.getCategory( pao.getPAOCategory() );
+	  LiteYukonPAObject litePAO = null;
+	  int paoCat = PAOGroups.getCategory( pao.getPAOCategory() );
       
 
-      for(int i = 0; i < currExcluded.size(); i++)
-      {
-         for(int j = 0; j < paos.size(); j++)
-         {
-            litePAO = (LiteYukonPAObject)paos.get(j);
-            if( litePAO.getYukonID() == ((PAOExclusion)currExcluded.get(i)).getExcludedPaoID().intValue() )
-            {
-               assignedPAOs.addElement( litePAO );
-               break;
-            }
-         }
-      }
+	  for(int i = 0; i < currExcluded.size(); i++)
+	  {
+		 for(int j = 0; j < paos.size(); j++)
+		 {
+			litePAO = (LiteYukonPAObject)paos.get(j);
+			if( litePAO.getYukonID() == ((PAOExclusion)currExcluded.get(i)).getExcludedPaoID().intValue() 
+				&& litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID())
+			{
+			   assignedPAOs.addElement( litePAO );
+			   break;
+			}
+		 }
+	  }
 
-
-      for(int i = 0; i < paos.size(); i++)
-      {
-         litePAO = (LiteYukonPAObject)paos.get(i);
+	  for(int i = 0; i < paos.size(); i++)
+	  {
+		 litePAO = (LiteYukonPAObject)paos.get(i);
          
-         //be sure we have a pao that is similar to ourself by category 
-         //  AND that it is not our self!
-         if( litePAO.getCategory() == PAOGroups.getCategory(pao.getPAOCategory())
-         	 && litePAO.getYukonID() != pao.getPAObjectID().intValue()
-         	 && litePAO.getPaoClass() != PAOGroups.getPAOClass(PAOGroups.STRING_CAT_DEVICE, DeviceClasses.STRING_CLASS_GROUP))
-         {
-            if( !assignedPAOs.contains(litePAO) )
-               availablePAOs.addElement( litePAO );
-         }
-      }
+		 //be sure we have a pao that is similar to ourself by category 
+		 //  AND that it is not our self!
+		 if( litePAO.getCategory() == PAOGroups.getCategory(pao.getPAOCategory())
+			 && litePAO.getYukonID() != pao.getPAObjectID().intValue()
+			 && litePAO.getPaoClass() != PAOGroups.getPAOClass(PAOGroups.STRING_CAT_DEVICE, DeviceClasses.STRING_CLASS_GROUP))
+		 {
+			if( !assignedPAOs.contains(litePAO) && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID())
+			   availablePAOs.addElement( litePAO );
+		 }
+	  }
    }
 
    getAddRemovePanelPAOExcl().rightListSetListData( assignedPAOs );
