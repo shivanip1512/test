@@ -25,6 +25,7 @@ class PHConverter2 {
 	private long lastTimestamp = 0;
 	private int changeID = 0;
 	
+	
 /**
  * PHConverter constructor comment.
  */
@@ -349,7 +350,7 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 				continue;
 				
 			java.sql.Timestamp timestamp = new java.sql.Timestamp( (long) data[i].time*1000L);
-			double value = data[i].value;
+			double value = data[i].value * multiplier;
 			int quality = getQuality(data[i].quality);
 				
 			if(timestamp.getTime() <= lastTimestamp)	
