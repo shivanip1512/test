@@ -28,7 +28,7 @@ public interface ConsumerInfoRole {
 	
 	public static final int SUPER_OPERATOR = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 30;
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 31;
-	public static final int CUSTOMIZED_FAQ_LINK= ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 32;
+	public static final int CUSTOMIZED_FAQ_LINK= OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 32;
 	
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
 	public static final int WEB_TEXT_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
