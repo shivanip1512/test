@@ -260,13 +260,13 @@ LONG CtiCCCapBank::getOperationAnalogPointId() const
 }
 
 /*---------------------------------------------------------------------------
-    getCurrentDailyOperations
+    getTotalOperations
 
     Returns the number operations performed on the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getCurrentDailyOperations() const
+LONG CtiCCCapBank::getTotalOperations() const
 {
-    return _currentdailyoperations;
+    return _totaloperations;
 }
 
 /*---------------------------------------------------------------------------
@@ -570,13 +570,13 @@ CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(LONG operationpointid)
 }
 
 /*---------------------------------------------------------------------------
-    setCurrentDailyOperations
+    setTotalOperations
 
     Sets the number of operations performed on this capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
+CtiCCCapBank& CtiCCCapBank::setTotalOperations(LONG operations)
 {
-    if( _currentdailyoperations != operations )
+    if( _totaloperations != operations )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -584,7 +584,7 @@ CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
         }*/
         _dirty = TRUE;
     }
-    _currentdailyoperations = operations;
+    _totaloperations = operations;
     return *this;
 }
 
@@ -696,7 +696,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _statuspointid
     >> _controlstatus
     >> _operationanalogpointid
-    >> _currentdailyoperations
+    >> _totaloperations
     >> tempTime1
     >> _tagscontrolstatus
     >> _originalfeederid;
@@ -734,7 +734,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _statuspointid
     << _controlstatus
     << _operationanalogpointid
-    << _currentdailyoperations
+    << _totaloperations
     << _laststatuschangetime.rwtime()
     << _tagscontrolstatus
     << _originalfeederid;
@@ -768,7 +768,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _statuspointid = right._statuspointid;
         _controlstatus = right._controlstatus;
         _operationanalogpointid = right._operationanalogpointid;
-        _currentdailyoperations = right._currentdailyoperations;
+        _totaloperations = right._totaloperations;
         _laststatuschangetime = right._laststatuschangetime;
         _tagscontrolstatus = right._tagscontrolstatus;
         _originalfeederid = right._originalfeederid;
@@ -838,7 +838,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     if( !isNull )
     {
         rdr["controlstatus"] >> _controlstatus;
-        rdr["currentdailyoperations"] >> _currentdailyoperations;
+        rdr["currentdailyoperations"] >> _totaloperations;
         rdr["laststatuschangetime"] >> _laststatuschangetime;
         rdr["tagscontrolstatus"] >> _tagscontrolstatus;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
@@ -851,7 +851,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     else
     {
         //initialize dynamic data members
-        setCurrentDailyOperations(0);
+        setTotalOperations(0);
         setLastStatusChangeTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setControlStatus(CtiCCCapBank::Open);
         setTagsControlStatus(0);
@@ -958,7 +958,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);
 
             updater << dynamicCCCapBankTable["controlstatus"].assign( _controlstatus )
-            << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
+            << dynamicCCCapBankTable["currentdailyoperations"].assign( _totaloperations )
             << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)_laststatuschangetime )
             << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
             << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
@@ -1000,7 +1000,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
 
             inserter << _paoid
             << _controlstatus
-            << _currentdailyoperations
+            << _totaloperations
             << _laststatuschangetime
             << _tagscontrolstatus
             << currentDateTime

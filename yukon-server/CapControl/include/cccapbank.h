@@ -57,7 +57,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     LONG getStatusPointId() const;
     LONG getControlStatus() const;
     LONG getOperationAnalogPointId() const;
-    LONG getCurrentDailyOperations() const;
+    LONG getTotalOperations() const;
     const RWDBDateTime& getLastStatusChangeTime() const;
     LONG getTagsControlStatus() const;
     LONG getOriginalFeederId() const;
@@ -85,7 +85,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
     CtiCCCapBank& setControlStatus(LONG status);
     CtiCCCapBank& setOperationAnalogPointId(LONG operationpoint);
-    CtiCCCapBank& setCurrentDailyOperations(LONG operations);
+    CtiCCCapBank& setTotalOperations(LONG operations);
     CtiCCCapBank& setLastStatusChangeTime(const RWDBDateTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(LONG tags);
     CtiCCCapBank& setOriginalFeederId(LONG origfeeder);
@@ -146,7 +146,7 @@ private:
     LONG _statuspointid;
     LONG _controlstatus;
     LONG _operationanalogpointid;
-    LONG _currentdailyoperations;
+    LONG _totaloperations;
     RWDBDateTime _laststatuschangetime;
     LONG _tagscontrolstatus;
     LONG _originalfeederid;
