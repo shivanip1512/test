@@ -16,7 +16,7 @@ alter table ApplianceHeatPump add PumpSizeID numeric;
 go
 alter table ApplianceHeatPump
    add constraint FK_AppHtPm_YkLst3 foreign key (PumpSizeID)
-      references YukonListEntry (EntryID)
+      references YukonListEntry (EntryID);
 go
 
 alter table CustomerAccount drop constraint FK_YkUs_CstAcc;
