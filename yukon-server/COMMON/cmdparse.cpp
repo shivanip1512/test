@@ -78,6 +78,14 @@ void  CtiCommandParser::doParse(RWCString Cmd)
 
     RWCTokenizer    tok(CmdStr);
 
+    if(CmdStr.contains("pil "))
+    {
+        tok();  // Get past this so that pil can process this correctly!
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << CmdStr << endl;
+        }
+    }
 
     if(CmdStr.contains(" serial"))
     {
@@ -811,7 +819,7 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
          */
         if(!(token = CmdStr.match("(relay)|(load)")).isNull())
         {
-            if(!(token = CmdStr.match("(relay)|(load) +[0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(token = CmdStr.match("((relay)|(load)) +[0-9]+( *, *[0-9]+)*")).isNull())
             {
                 INT i;
                 INT mask = 0;
@@ -3174,7 +3182,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _actionItems.insert(tbuf);
             }
 
-            if(!(token = CmdStr.match("(relay)|(load) +[0-9]+( *, *[0-9]+)*")).isNull())
+            if(!(token = CmdStr.match("((relay)|(load)) +[0-9]+( *, *[0-9]+)*")).isNull())
             {
                 INT i;
                 INT mask = 0;
@@ -3238,7 +3246,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             _cmd["xctservicecancel"] = CtiParseValue( cancel );
             _actionItems.insert(tbuf);
         }
-        else if(!(token = CmdStr.match("serv(ice)? +((in)|(out)|(enable)|(disable))( +((relay)|(load))? *[0-9]+)?")).isNull())
+        else if(!(token = CmdStr.match("serv(ice)? +((in)|(out)|(enable)|(disable))( +((relay)|(load))? +[0-9]+)?")).isNull())
         {
             CHAR tbuf[80];
             INT flag = 0;
@@ -3254,7 +3262,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
             }
 
-            if(!(str = token.match("((relay)|(load)) *[0-9]+)?")).isNull())
+            if(!(str = token.match("((relay)|(load)) +[0-9]+)?")).isNull())
             {
                 RWCTokenizer   tok2(str);
                 tok2();  // hop over relay | load.
