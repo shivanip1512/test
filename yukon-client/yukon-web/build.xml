@@ -67,8 +67,6 @@
 		<!--*********************************************************
 		*  The old build target starts here
 		**********************************************************-->
-<!--
-        <mkdir dir="build"/>
         <copy todir="build">
             <fileset dir=".">
                 <exclude name="build/**" />
@@ -96,7 +94,6 @@
 	        webxml="WEB-INF/web.xml"
 	        duplicate="preserve">
 	    </war>
--->
 
 <!--
 		<copy todir="jspbuild/WEB-INF">
