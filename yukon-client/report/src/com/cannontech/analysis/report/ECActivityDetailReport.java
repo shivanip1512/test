@@ -30,6 +30,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -40,7 +41,6 @@ import com.cannontech.util.ServletUtil;
  */
 public class ECActivityDetailReport extends YukonReportBase
 {
-	private boolean showDetail = true;
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
@@ -78,14 +78,15 @@ public class ECActivityDetailReport extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);	//default stop date is tomorrow
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 
 		cal.set(java.util.Calendar.DATE, 1);
 		cal.set(java.util.Calendar.MONTH, 0);
-		long start = cal.getTimeInMillis();	//default start date is begining of year
+		Date start = cal.getTime();	//default start date is begining of year
 
 		ActivityDetailModel model = new ActivityDetailModel(start, stop);
 
+		model.setActionGroupTypes(ActivityLogActions.LOGIN_ACTIONS);
 		boolean detail = false; 
 		for (int i = 0; i < args.length; i++)
 		{
@@ -97,17 +98,17 @@ public class ECActivityDetailReport extends YukonReportBase
 			
 			if( arg.startsWith("ec"))
 				model.setECIDs(Integer.valueOf(subString));
-			else if( arg.startsWith("program"))
-				model.setProgramInfoOnly(Boolean.valueOf(subString).booleanValue());
+//			else if( arg.startsWith("program"))
+//				model.setProgramInfoOnly(Boolean.valueOf(subString).booleanValue());
 			else if( arg.startsWith("start"))
 			{
 				Date startDate = ServletUtil.parseDateStringLiberally(subString);
-				model.setStartTime(startDate.getTime());
+				model.setStartDate(startDate);
 			}
 			else if( arg.startsWith("stop"))
 			{
 				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
-				model.setStartTime(stopDate.getTime());
+				model.setStartDate(stopDate);
 			}			
 			else if( arg.startsWith("detail"))
 			{
@@ -116,7 +117,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		}
 
 		YukonReportBase report = new ECActivityDetailReport(model);
-		((ECActivityDetailReport)report).setShowDetail(detail);
+		((ActivityDetailModel)model).setShowDetail(detail);
 		report.getModel().collectData();
 
 		//Create the report
@@ -190,7 +191,7 @@ public class ECActivityDetailReport extends YukonReportBase
 			{
 				// dataRow is predefined and allows access to the 
 				// current row of the tablemodel ... 
-				if (getDataRow() == null) return null;
+				if (getDataRow() == null || getDataRow().get(ActivityDetailModel.DATE_TIME_STRING) == null) return null;
 	
 				//Hard code the pattern to be the actual text we want!
 				SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy");
@@ -260,7 +261,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		tsGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
 		tsGroup.addField(getModel().getColumnName(colIndex));
 
-		if( isShowDetail())
+		if( ((ActivityDetailModel)getModel()).isShowDetail())
 		{
 			GroupHeader header = ReportFactory.createGroupHeaderDefault();
 			header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28)));
@@ -324,7 +325,7 @@ public class ECActivityDetailReport extends YukonReportBase
 	protected ItemBand createItemBand()
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
-		if( isShowDetail())
+		if( ((ActivityDetailModel)getModel()).isShowDetail())
 		{		
 			if( showBackgroundColor )
 			{
@@ -346,6 +347,10 @@ public class ECActivityDetailReport extends YukonReportBase
 				items.addElement(factory.createElement());
 			}
 		}//end if showDetail
+		else
+		{
+//			items.setVisible(false);
+		}
 		return items;
 	}
 	
@@ -358,20 +363,4 @@ public class ECActivityDetailReport extends YukonReportBase
 		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
 		return pageFormat;
 	}
-	/**
-	 * @return
-	 */
-	public boolean isShowDetail()
-	{
-		return showDetail;
-	}
-
-	/**
-	 * @param b
-	 */
-	public void setShowDetail(boolean b)
-	{
-		showDetail = b;
-	}
-
 }

@@ -3,6 +3,7 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.Group;
@@ -64,9 +65,9 @@ public class LGAccountingReport extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 		cal.add(java.util.Calendar.DATE, -30);
-		long start = cal.getTimeInMillis();
+		Date start = cal.getTime();
 
 		//Initialize the report data and populate the TableModel (collectData).
 		LoadGroupModel model = new LoadGroupModel(start, stop);

@@ -1,12 +1,16 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -43,6 +47,8 @@ public class MeterReadModel extends ReportModelBase
 	public final static int MISSED_METER_READ_TYPE = 2;
 	public  final static int SUCCESS_METER_READ_TYPE = 1;
 	private int meterReadType = MISSED_METER_READ_TYPE;
+	
+	private static String ATT_METER_READ_TYPE = "meterReadType";
 	/**
 	 * 
 	 */
@@ -56,23 +62,23 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public MeterReadModel(int readType)
 	{
-		this(readType, Long.MIN_VALUE);
+		this(readType, null);
 	}
 	/**
 	 * 
 	 */
-	public MeterReadModel(long startTime_)
+	public MeterReadModel(Date start_)
 	{
 		//Long.MIN_VALUE is the default (null) value for time
-		this(MISSED_METER_READ_TYPE, Long.MIN_VALUE);
+		this(MISSED_METER_READ_TYPE, null);
 	}	
 	/**
 	 * 
 	 */
-	public MeterReadModel(int readType_, long startTime_)
+	public MeterReadModel(int readType_, Date start_)
 	{
 		//Long.MIN_VALUE is the default (null) value for time
-		super(startTime_, Long.MIN_VALUE);
+		super(start_, null);
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -115,19 +121,17 @@ public class MeterReadModel extends ReportModelBase
 			" AND P.PAOBJECTID = PAO.PAOBJECTID " +
 			" AND PAO.PAOCLASS = 'CARRIER' ");
 			
-		if(getCollectionGroups() != null)
+		if( getBillingGroups() != null && getBillingGroups().length > 0)
 		{
-			sql.append(" AND DMG.COLLECTIONGROUP IN ('" + getCollectionGroups()[0] + "'");
-
-			for (int i = 1; i < getCollectionGroups().length; i++)
-			{
-				sql.append(",'" + getCollectionGroups()[i]+"'");
-			}
-			sql.append(")");
+			sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+			for (int i = 1; i < getBillingGroups().length; i++)
+				sql.append("', '" + getBillingGroups()[i]);
+			sql.append("') ");
 		}
+
 	 
 		sql.append(" AND P.POINTID " + getInclusiveSQLString() +
-				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ?)" +
+				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )" +
 				" ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
 
 		return sql;
@@ -139,8 +143,10 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+				
 		int rowCount = 0;
-		
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -160,8 +166,9 @@ public class MeterReadModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
+				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
 				rset = pstmt.executeQuery();
 				
 				while( rset.next())
@@ -197,9 +204,8 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	 public String getDateRangeString()
 	 {
-		 java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		 return (format.format(new java.util.Date(getStartTime())) + " through " +
-					(format.format(new java.util.Date(getStopTime()))));
+		 return (getDateFormat().format(getStartDate()) + " through " +
+					(getDateFormat().format(getStopDate())));
 	 }
 	 
 	 private String getInclusiveSQLString()
@@ -319,6 +325,53 @@ public class MeterReadModel extends ReportModelBase
 	public void setMeterReadType(int i)
 	{
 		meterReadType = i;
+	}
+
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td align='center'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Meter Read Status</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + MISSED_METER_READ_TYPE + "' checked>Missed Read" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + SUCCESS_METER_READ_TYPE + "' >Successful Read" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_METER_READ_TYPE);
+			if( param != null)
+				setMeterReadType(Integer.valueOf(param).intValue());
+			else
+				setMeterReadType(MISSED_METER_READ_TYPE);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
+	 */
+	public boolean useBillingGroup()
+	{
+		return true;
 	}
 
 }

@@ -40,16 +40,7 @@ public class RouteMacroReport extends YukonReportBase
 	{
 		this(new RouteMacroModel());
 	}
-	
-	/**
-	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseModel.
-	 * @param String paoClass_ (YukonPaoclass.paoclass)
-	 */
-	public RouteMacroReport(String paoClass_)
-	{
-		this( new RouteMacroModel(paoClass_));
-	}
+
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf DatabaseModel.

@@ -2,8 +2,11 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
@@ -16,7 +19,7 @@ import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
-//import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -55,53 +58,80 @@ public class PointDataIntervalModel extends ReportModelBase
 	private static String title = "Interval Data Report";
 
 	//Extensions of PointTypes
-//	public final static int ALL_POINT_TYPE = -100;
 	public final static int LOAD_PROFILE_POINT_TYPE = 101;	//some "unused" PointType int
 	public final static int CALC_POINT_TYPE = PointTypes.CALCULATED_POINT;
 	public final static int ANALOG_POINT_TYPE = PointTypes.ANALOG_POINT;
 	public final static int DEMAND_ACC_POINT_TYPE = PointTypes.DEMAND_ACCUMULATOR_POINT;
 	public final static int STATUS_POINT_TYPE = PointTypes.STATUS_POINT;
 	
+	public final static String LOAD_PROFILE_POINT_TYPE_STRING = "All Load Profile";	//some "unused" PointType int
+	public final static String CALC_POINT_TYPE_STRING = "All Calculated";
+	public final static String ANALOG_POINT_TYPE_STRING = "All Analog";
+	public final static String DEMAND_ACC_POINT_TYPE_STRING = "All Demand Accumulator";
+	public final static String STATUS_POINT_TYPE_STRING = "All Status";
+
+	private final static int[] ALL_POINT_TYPES = new int[]
+	{
+		LOAD_PROFILE_POINT_TYPE,
+		CALC_POINT_TYPE,
+		ANALOG_POINT_TYPE,
+		DEMAND_ACC_POINT_TYPE,
+		STATUS_POINT_TYPE	
+	};
+	
 	private int pointType = LOAD_PROFILE_POINT_TYPE;	//default to Load Profile PointTypes
 	
-	private static final int ORDER_BY_TIMESTAMP = 0;
-	private static final int ORDER_BY_VALUE = 1;
+	public static final int ORDER_BY_TIMESTAMP = 0;
+	public static final int ORDER_BY_VALUE = 1;
 	private int orderBy = ORDER_BY_TIMESTAMP;	//default
-	
-	private static final int ASCENDING = 0;
-	private static final int DESCENDING = 1;
+	private static final int[] ALL_ORDER_BYS = new int[]
+	{
+		ORDER_BY_TIMESTAMP, ORDER_BY_VALUE
+	};
+	public  static final int ASCENDING = 0;
+	public static final int DESCENDING = 1;
 	private int sortOrder = ASCENDING;
-	
+	private static final int[] ALL_SORT_ORDERS = new int[]
+	{
+		ASCENDING, DESCENDING
+	};
+
+	//servlet attributes/parameter strings
+	private static final String ATT_POINT_TYPE = "pointType";
+	private static final String ATT_ORDER_BY = "orderBy";
+	private static final String ATT_SORT_ORDER = "sortOrder";
+
 	/**
 	 * Default Constructor
 	 */
 	public PointDataIntervalModel()
 	{
-		super();
+		this(null, null, LOAD_PROFILE_POINT_TYPE, ORDER_BY_TIMESTAMP, ASCENDING);
 	}
 	/**
 	 * Constructor class
 	 * @param startTime_ rph.timestamp
 	 * @param stopTime_ rph.timestamp
 	 */
-	public PointDataIntervalModel(long startTime_, long stopTime_)
+	public PointDataIntervalModel(Date start_, Date stop_)
 	{
-		this(startTime_, stopTime_, LOAD_PROFILE_POINT_TYPE, ORDER_BY_TIMESTAMP, ASCENDING);
+		this(start_, stop_, LOAD_PROFILE_POINT_TYPE, ORDER_BY_TIMESTAMP, ASCENDING);
 	}
 	
-	public PointDataIntervalModel(long startTime_, long stopTime_, int intervalPointType)
+	public PointDataIntervalModel(Date start_, Date stop_, int intervalPointType)
 	{
-		this(startTime_, stopTime_, intervalPointType, ORDER_BY_TIMESTAMP, ASCENDING);
+		this(start_, stop_, intervalPointType, ORDER_BY_TIMESTAMP, ASCENDING);
 	}
 	
-	public PointDataIntervalModel(long startTime_, long stopTime_, int intervalPointType, int orderBy_)
+	public PointDataIntervalModel(Date start_, Date stop_, int intervalPointType, int orderBy_)
 	{
-		this(startTime_, stopTime_, intervalPointType, orderBy_, ASCENDING);
+		this(start_, stop_, intervalPointType, orderBy_, ASCENDING);
 	}
 
-	public PointDataIntervalModel(long startTime_, long stopTime_, int intervalPointType, int orderBy_, int sortOrder_)
+	public PointDataIntervalModel(Date start_, Date stop_, int intervalPointType, int orderBy_, int sortOrder_)
 	{
-		super(startTime_, stopTime_);
+		super(start_, stop_);
+		setDateFormat(new SimpleDateFormat("MMM dd, yyyy HH:mm:ss"));
 		setPointType(intervalPointType);
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
@@ -145,11 +175,11 @@ public class PointDataIntervalModel extends ReportModelBase
 			" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
  
 			//Use paoIDs in query if they exist
-			if( getCollectionGroups() != null && getCollectionGroups().length > 0)
+			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
-				sql.append(" AND COLLECTIONGROUP IN ( '" + getCollectionGroups()[0]);
-				for (int i = 1; i < getCollectionGroups().length; i++)
-					sql.append("', '" + getCollectionGroups()[i]);
+				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+				for (int i = 1; i < getBillingGroups().length; i++)
+					sql.append("', '" + getBillingGroups()[i]);
 				sql.append("') ");
 			}
 			if( getPaoIDs() != null && getPaoIDs().length > 0)
@@ -197,6 +227,9 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -217,9 +250,9 @@ public class PointDataIntervalModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -258,10 +291,9 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date());
+		return getDateFormat().format(getStartDate()) + " through "+ getDateFormat().format(getStopDate());
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
@@ -352,10 +384,10 @@ public class PointDataIntervalModel extends ReportModelBase
 			columnProperties = new ColumnProperties[]{
 				new ColumnProperties(0, 1, 175, null),
 				new ColumnProperties(0, 1, 100, null),
-				new ColumnProperties(0, 1, 100, "MM-dd-yyyy"),
-				new ColumnProperties(100, 1, 100, "HH:mm:ss"),
-				new ColumnProperties(200, 1, 100, "0.00#"),
-				new ColumnProperties(300, 1, 100, null)
+				new ColumnProperties(100, 1, 100, "MM-dd-yyyy"),
+				new ColumnProperties(200, 1, 100, "HH:mm:ss"),
+				new ColumnProperties(300, 1, 100, "0.00#"),
+				new ColumnProperties(400, 1, 100, null)
 			};
 		}
 		return columnProperties;
@@ -416,4 +448,147 @@ public class PointDataIntervalModel extends ReportModelBase
 		pointType = i;
 	}
 
+	public String getPointTypeString(int pointTypeID)
+	{
+		switch (pointTypeID)
+		{
+			case LOAD_PROFILE_POINT_TYPE:
+				return LOAD_PROFILE_POINT_TYPE_STRING;
+			case CALC_POINT_TYPE:
+				return CALC_POINT_TYPE_STRING;
+			case ANALOG_POINT_TYPE:
+				return ANALOG_POINT_TYPE_STRING;
+			case DEMAND_ACC_POINT_TYPE:
+				return DEMAND_ACC_POINT_TYPE_STRING;
+			case STATUS_POINT_TYPE:
+				return STATUS_POINT_TYPE_STRING;
+		}
+		return "UNKNOWN";
+	}
+	/**
+	 * @return
+	 */
+	public static int[] getAllPointTypes()
+	{
+		return ALL_POINT_TYPES;
+	}
+	public String getOrderByString(int orderBy)
+	{
+		switch (orderBy)
+		{
+			case ORDER_BY_TIMESTAMP:
+				return "Order By Timestamp";
+			case ORDER_BY_VALUE:
+				return "Order By Value";
+		}
+		return "UNKNOWN";
+	}
+	public static int[] getAllOrderBys()
+	{
+		return ALL_ORDER_BYS;
+	}
+	public String getSortOrderString(int sortOrder)
+	{
+		switch (sortOrder)
+		{
+			case ASCENDING:
+				return "Ascending";
+			case DESCENDING:
+				return "Descending";
+		}
+		return "UNKNOWN";
+	}	
+	public static int[] getAllSortOrders()
+	{
+		return ALL_SORT_ORDERS;
+	}
+	
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<table align='center' width='100%' border='0'cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllPointTypes().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" + ATT_POINT_TYPE +"' value='" + getAllPointTypes()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getPointTypeString(getAllPointTypes()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllOrderBys().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllSortOrders().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" +ATT_SORT_ORDER + "' value='" + getAllSortOrders()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getSortOrderString(getAllSortOrders()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+	
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_POINT_TYPE);
+			if( param != null)
+				setPointType(Integer.valueOf(param).intValue());
+			else
+				setPointType(LOAD_PROFILE_POINT_TYPE);
+			
+			param = req.getParameter(ATT_ORDER_BY);
+			if( param != null)
+				setOrderBy(Integer.valueOf(param).intValue());
+			else
+				setOrderBy(ORDER_BY_TIMESTAMP);
+				
+			param = req.getParameter(ATT_SORT_ORDER);
+			if( param != null)
+				setSortOrder(Integer.valueOf(param).intValue());
+			else
+				setSortOrder(ASCENDING);
+			
+		}
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
+	 */
+	public boolean useBillingGroup()
+	{
+		return true;
+	}
 }

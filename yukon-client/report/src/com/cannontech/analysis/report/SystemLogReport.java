@@ -3,6 +3,7 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.Group;
@@ -54,9 +55,9 @@ public class SystemLogReport extends YukonReportBase
 	 * @param logType_ - SystemLog.TYPE_x, type of logging to report on. 
 	 * 
 	 */
-	public SystemLogReport(long startTime_, long stopTime_, Integer logType_)
+	public SystemLogReport(Date start_, Date stop_, Integer logType_)
 	{
-		this(new SystemLogModel( startTime_, stopTime_,  logType_));
+		this(new SystemLogModel( start_, stop_,  logType_));
 	}
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -76,9 +77,9 @@ public class SystemLogReport extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 		cal.add(java.util.Calendar.DATE, -90);
-		long start = cal.getTimeInMillis();
+		Date start = cal.getTime();
 
 //		SystemLogModel model = new SystemLogModel(start, stop);
 		LMControlLogModel model = new LMControlLogModel(start, stop);

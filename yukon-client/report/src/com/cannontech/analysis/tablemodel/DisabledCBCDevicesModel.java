@@ -56,8 +56,10 @@ public class DisabledCBCDevicesModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
-		int rowCount = 0;
+		//Reset all objects, new data being collected!
+		setData(null);
 		
+		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -166,8 +168,8 @@ public class DisabledCBCDevicesModel extends ReportModelBase
 	 public String getDateRangeString()
 	 {
 		 java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		 return (format.format(new java.util.Date(getStartTime())) + " through " +
-		 			(format.format(new java.util.Date(getStopTime()))));
+		 return (format.format(getStartDate()) + " through " +
+		 			(format.format(getStopDate())));
 	 }
 
 

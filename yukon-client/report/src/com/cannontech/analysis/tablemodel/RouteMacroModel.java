@@ -2,13 +2,14 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.CarrierRouteMacro;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.DeviceClasses;
-;
 
 /**
  * Created on Dec 15, 2003
@@ -51,25 +52,17 @@ public class RouteMacroModel extends ReportModelBase
 	private static String title = "Database Report - Route Macro";
 
 	/** Class fields */
-	private String paoClass = null;
+//	private String paoClass = null;
 	
 	private Integer macroRouteID = null; 
-	/**
-	 * Default Constructor
-	 */
-	public RouteMacroModel()
-	{
-		this(DeviceClasses.STRING_CLASS_CARRIER);
-	}
-
+	
 	/**
 	 * Constructor.
 	 * @param paoClass_ = YukonPaobject.paoClass
 	 */
-	public RouteMacroModel(String paoClass_)
+	public RouteMacroModel()
 	{
 		super();
-		setPaoClass(paoClass_);
 	}	
 		
 	/**
@@ -127,8 +120,10 @@ public class RouteMacroModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
-		int rowCount = 0;
+		//Reset all objects, new data being collected!
+		setData(null);
 		
+		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 	
@@ -184,7 +179,7 @@ public class RouteMacroModel extends ReportModelBase
 	 */
 	private String getPaoClass()
 	{
-		return paoClass;
+		return DeviceClasses.STRING_CLASS_CARRIER;
 	}
 
 
@@ -193,16 +188,7 @@ public class RouteMacroModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return "Run Date: " + format.format(new java.util.Date());
-	}
-	/**
-	 * Set the paoClass (YukonPaobject.paoClass)
-	 * @param string paoClass_
-	 */
-	public void setPaoClass(String paoClass_)
-	{
-		paoClass = paoClass_;
+		return "Run Date: " + getDateFormat().format(new java.util.Date());
 	}
 
 	/**
@@ -326,6 +312,31 @@ public class RouteMacroModel extends ReportModelBase
 	public String getTitleString()
 	{
 		return title;
+	}
+
+	public String getHTMLOptionsTable()
+	{
+		return super.getHTMLOptionsTable();
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
+	 */
+	public boolean useStartDate()
+	{
+		return false;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
+	 */
+	public boolean useStopDate()
+	{
+		return false;
 	}
 
 }

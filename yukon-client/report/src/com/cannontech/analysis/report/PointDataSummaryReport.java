@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.Group;
@@ -82,10 +83,10 @@ public class PointDataSummaryReport extends YukonReportBase
 		cal.set(Calendar.YEAR, 2004);
 		cal.set(Calendar.MONTH, 11);
 		cal.set(Calendar.DATE, 13);
-		long start = cal.getTimeInMillis();
+		Date start = cal.getTime();
 		
 		cal.set(Calendar.DATE, 15);
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 		
 		
 		PointDataSummaryModel reportModel = new PointDataSummaryModel(start, stop, PointDataSummaryModel.LOAD_PROFILE_POINT_TYPE);

@@ -3,6 +3,7 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -65,10 +66,10 @@ public class DailyPeaksReport extends YukonReportBase
 		cal.set(java.util.Calendar.MINUTE, 0);
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
-		long start = cal.getTimeInMillis();
+		Date start = cal.getTime();
 		
 		cal.add(java.util.Calendar.DATE, 1);
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 		
 		DailyPeaksModel reportModel = new DailyPeaksModel(start, stop);
 		YukonReportBase dbReport = new DailyPeaksReport(reportModel);

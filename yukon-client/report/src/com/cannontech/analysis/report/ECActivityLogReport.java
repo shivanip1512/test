@@ -74,16 +74,14 @@ public class ECActivityLogReport extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);	//default stop date is tomorrow
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 
 		cal.set(java.util.Calendar.DATE, 1);
 		cal.set(java.util.Calendar.MONTH, 0);
-		long start = cal.getTimeInMillis();	//default start date is begining of year
+		Date start = cal.getTime();	//default start date is begining of year
 
 
 		ActivityModel model = new ActivityModel(start, stop);
-		model.setStartTime(start);
-		model.setStopTime(stop);
 
 		for (int i = 0; i < args.length; i++)
 		{
@@ -98,12 +96,12 @@ public class ECActivityLogReport extends YukonReportBase
 			else if( arg.startsWith("start"))
 			{
 				Date startDate = ServletUtil.parseDateStringLiberally(subString);
-				model.setStartTime(startDate.getTime());
+				model.setStartDate(startDate);
 			}
 			else if( arg.startsWith("stop"))
 			{
 				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
-				model.setStartTime(stopDate.getTime());
+				model.setStartDate(stopDate);
 			}			
 		}
 		
@@ -156,7 +154,7 @@ public class ECActivityLogReport extends YukonReportBase
 		hideItem.setProperty("field", ActivityModel.USERNAME_STRING);
 		hideItem.setProperty("element", ActivityModel.USERNAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
-				
+		
 		return expressions;
 	}
 
@@ -253,7 +251,7 @@ public class ECActivityLogReport extends YukonReportBase
 		{
 			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			if( i == ActivityModel.ACTION_COUNT_COLUMN )
-				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+				factory.setHorizontalAlignment(ElementAlignment.CENTER);
 			else 
 				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 			items.addElement(factory.createElement());
@@ -278,9 +276,11 @@ public class ECActivityLogReport extends YukonReportBase
 
 		factory = ReportFactory.createGroupLabelElementDefault(getModel(), ActivityModel.ACTION_COUNT_COLUMN);
 		footer.addElement(factory.createElement());
-
+		
+		
 		Iterator iter = ((ActivityModel)getModel()).getTotals().entrySet().iterator();
 		int offset = 8;
+		
 		while( iter.hasNext())
 		{
 			offset += 10;
@@ -294,7 +294,7 @@ public class ECActivityLogReport extends YukonReportBase
 			factory = ReportFactory.createGroupLabelElementDefault(entry.getValue().toString(), 
 				getModel().getColumnProperties(ActivityModel.ACTION_COUNT_COLUMN).getPositionX(), 
 				offset, getModel().getColumnProperties(ActivityModel.ACTION_COUNT_COLUMN).getWidth());
-			factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+			factory.setHorizontalAlignment(ElementAlignment.CENTER);
 			footer.addElement(factory.createElement());
 		}
 		offset += 20;
@@ -302,7 +302,7 @@ public class ECActivityLogReport extends YukonReportBase
 		footer.addElement(ReportFactory.createBasicLine("rfLine",0.5f, 20));
 		
 		factory = new LabelElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, offset));
+		factory.setAbsolutePosition(new Point2D.Float(0, offset));
 		factory.setMinimumSize(new FloatDimension(-100, 16));
 		factory.setHorizontalAlignment(ElementAlignment.CENTER);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);

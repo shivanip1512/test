@@ -1,12 +1,17 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -28,19 +33,20 @@ public class PowerFailModel extends ReportModelBase
 	public final static int COLL_GROUP_NAME_COLUMN = 0;
 	public final static int DEVICE_NAME_COLUMN = 1;
 	public final static int POINT_NAME_COLUMN = 2;
-	public final static int POINT_ID_COLUMN = 3;
-	public final static int POWER_FAIL_COUNT_COLUMN = 4;
+	public final static int DATE_COLUMN = 3;
+	public final static int TIME_COLUMN = 4;
+	public final static int POWER_FAIL_COUNT_COLUMN = 5;
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String POINT_NAME_STRING = "Point Name";
-	public final static String POINT_ID_STRING = "Point ID";
+	public final static String DATE_STRING = "Date";
+	public final static String TIME_STRING = "Time";
 	public final static String POWER_FAIL_COUNT_STRING = "Power Fail Count";
 
 	/** A string for the title of the data */
 	private static String title = "Power Fail Count By Collection Group";
-	
 	/**
 	 * 
 	 */
@@ -52,9 +58,9 @@ public class PowerFailModel extends ReportModelBase
 	/**
 	 * 
 	 */
-	public PowerFailModel(long startTime_)
+	public PowerFailModel(Date start_, Date stop_)
 	{
-		super(startTime_, Long.MIN_VALUE);
+		super(start_, stop_);
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -66,10 +72,10 @@ public class PowerFailModel extends ReportModelBase
 		{
 			String collGrp = rset.getString(1);
 			String paoName = rset.getString(2);
-			String pointName = rset.getString(3);					
-			Integer pointID = new Integer(rset.getInt(4));
+			String pointName = rset.getString(3);
+			Timestamp timestamp = rset.getTimestamp(4);
 			Integer powerFailCount = new Integer(rset.getInt(5));
-			PowerFail powerFail = new PowerFail(collGrp, paoName, pointName, pointID, powerFailCount);
+			PowerFail powerFail = new PowerFail(collGrp, paoName, pointName, new Date(timestamp.getTime()), powerFailCount);
 
 			getData().add(powerFail);
 		}
@@ -85,24 +91,21 @@ public class PowerFailModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, P.POINTID, " + 
-			" RPH.VALUE " +
+		StringBuffer sql = new StringBuffer	("SELECT DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE " + 
 			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH "+
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID  AND P.POINTID = RPH.POINTID"+
 			" AND P.PAOBJECTID = PAO.PAOBJECTID AND P.POINTOFFSET = 20 ");
 			
-		if(getCollectionGroups() != null)
-				{
-					sql.append(" AND DMG.COLLECTIONGROUP IN ('" + getCollectionGroups()[0]);
-	
-					for (int i = 1; i < getCollectionGroups().length; i++)
-					{
-						sql.append("','" + getCollectionGroups()[i]);
-					}
-					sql.append("')");
-				}
+		if( getBillingGroups() != null && getBillingGroups().length > 0)
+		{
+			sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+			for (int i = 1; i < getBillingGroups().length; i++)
+				sql.append("', '" + getBillingGroups()[i]);
+			sql.append("') ");
+		}
+
 			 
-			sql.append(" AND RPH.TIMESTAMP > ? ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
+			sql.append(" AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
 		return sql;
 	
 	}
@@ -113,8 +116,10 @@ public class PowerFailModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+				
 		int rowCount = 0;
-		
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -134,8 +139,9 @@ public class PowerFailModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
+				CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				
 				while( rset.next())
@@ -168,15 +174,6 @@ public class PowerFailModel extends ReportModelBase
 	}
 
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	public String getDateRangeString()
-	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date(getStartTime()));
-	}
-
-	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
 	public Object getAttribute(int columnIndex, Object o)
@@ -195,8 +192,11 @@ public class PowerFailModel extends ReportModelBase
 				case POINT_NAME_COLUMN:
 					return meter.getPointName();
 	
-				case POINT_ID_COLUMN:
-					return meter.getPointID();
+				case DATE_COLUMN:
+					return meter.getTimestamp();
+
+				case TIME_COLUMN:
+					return meter.getTimestamp();
 					
 				case POWER_FAIL_COUNT_COLUMN:
 					return meter.getPowerFailCount();
@@ -216,7 +216,8 @@ public class PowerFailModel extends ReportModelBase
 				COLL_GROUP_NAME_STRING,
 				DEVICE_NAME_STRING,
 				POINT_NAME_STRING,
-				POINT_ID_STRING,
+				DATE_STRING,
+				TIME_STRING,
 				POWER_FAIL_COUNT_STRING
 			};
 		}
@@ -234,7 +235,8 @@ public class PowerFailModel extends ReportModelBase
 				String.class,
 				String.class,
 				String.class,
-				Integer.class,
+				Date.class,
+				Date.class,
 				Integer.class
 			};
 		}
@@ -250,11 +252,12 @@ public class PowerFailModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, null),
-				new ColumnProperties(100, 1, 100, null),
-				new ColumnProperties(200, 1, 100, null),
-				new ColumnProperties(300, 1, 100, "#"),
-				new ColumnProperties(400, 1, 100, "#")
+				new ColumnProperties(0, 1, 200, null),
+				new ColumnProperties(0, 1, 160, null),
+				new ColumnProperties(160, 1, 160, null),
+				new ColumnProperties(320, 1, 75, "MM/dd/yyyy"),
+				new ColumnProperties(395, 1, 75, "HH:mm:ss"),
+				new ColumnProperties(470, 1, 80, "#")
 			};
 		}
 		return columnProperties;
@@ -266,5 +269,22 @@ public class PowerFailModel extends ReportModelBase
 	public String getTitleString()
 	{
 		return title;
+	}
+	
+	public String getHTMLOptionsTable()
+	{
+		return super.getHTMLOptionsTable();
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
+	 */
+	public boolean useBillingGroup()
+	{
+		return true;
 	}
 }

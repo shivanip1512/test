@@ -1,7 +1,10 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
@@ -140,9 +143,9 @@ public class ActivityModel extends ReportModelBase
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityModel(long startTime_, long stopTime_)
+	public ActivityModel(Date start_, Date stop_)
 	{
-		super(startTime_, stopTime_);//default type
+		super(start_, stop_);//default type
 	}
 
 	/**
@@ -178,6 +181,10 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+		totals = null;
+
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
@@ -198,8 +205,9 @@ public class ActivityModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -244,7 +252,7 @@ public class ActivityModel extends ReportModelBase
 		" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " + 
 		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
 		" ON CA.ACCOUNTID = AL.ACCOUNTID " + 
-		" WHERE AL.TIMESTAMP >= ?");
+		" WHERE AL.TIMESTAMP > ? AND AL.TIMESTAMP <= ?");
 		if( getECIDs() != null )
 		{
 			sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
@@ -296,11 +304,11 @@ public class ActivityModel extends ReportModelBase
 				sql = new StringBuffer("SELECT ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION, " + 
 					" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " +
 					" FROM ACTIVITYLOG " +
-					" WHERE TIMESTAMP >= ? ");
+					" WHERE TIMESTAMP > ? AND TIMESTAMP <= ?");
 
 				if( getECIDs() != null )
 				{
-					sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
+					sql.append(" AND ENERGYCOMPANYID IN (" + getECIDs()[0]);
 					for (int i = 1; i < getECIDs().length; i++)
 						sql.append(", " + getECIDs()[i]);
 					sql.append(")");
@@ -310,8 +318,9 @@ public class ActivityModel extends ReportModelBase
 							" ORDER BY ENERGYCOMPANYID, CUSTOMERID, USERID, ACCOUNTID, ACTION");
 				
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -541,7 +550,7 @@ public class ActivityModel extends ReportModelBase
 				new ColumnProperties(150, 1, 100, null),
 				new ColumnProperties(250, 1, 100, null),
 				new ColumnProperties(350, 1, 150, null),
-				new ColumnProperties(500, 1, 30, "#")
+				new ColumnProperties(500, 1, 50, "#")
 			};				
 		}
 		return columnProperties;
@@ -567,5 +576,14 @@ public class ActivityModel extends ReportModelBase
 		}
 		return totals;
 	}
+	
+	public String getHTMLOptionsTable()
+	{
+		return super.getHTMLOptionsTable();
+	}
 
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+	}
 }

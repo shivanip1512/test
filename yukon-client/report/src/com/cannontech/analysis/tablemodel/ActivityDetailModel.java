@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
@@ -66,7 +68,13 @@ public class ActivityDetailModel extends ReportModelBase
 	private HashMap totals = null;
 
 	/** Flag for program related activities only */
-	private boolean programInfoOnly = false;	
+	private int[] actionGroupTypes = null;
+	
+	//Flag for displaying all detail data, when false only the summary data displays.
+	private boolean showDetail = true;
+	
+	private static final String ATT_ACTION_GROUP_TYPE = "actionGroupType";
+	private static final String ATT_SHOW_DETAIL = "showDetail";	
 
 	public static java.util.Comparator actLogComparator = new java.util.Comparator()
 	{
@@ -123,9 +131,9 @@ public class ActivityDetailModel extends ReportModelBase
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ActivityDetailModel(long startTime_, long stopTime_)
+	public ActivityDetailModel(Date start_, Date stop_)
 	{
-		super(startTime_, stopTime_);//default type
+		super(start_, stop_);//default type
 	}
 
 	/**
@@ -162,6 +170,10 @@ public class ActivityDetailModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+		totals = null;
+		
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
@@ -182,8 +194,9 @@ public class ActivityDetailModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -230,7 +243,7 @@ public class ActivityDetailModel extends ReportModelBase
 		" TIMESTAMP, DESCRIPTION " + 
 		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
 		" ON CA.ACCOUNTID = AL.ACCOUNTID " +
-		" WHERE AL.TIMESTAMP >= ? ");
+		" WHERE AL.TIMESTAMP > ? AND AL.TIMESTAMP <= ? ");
 		if( getECIDs() != null )
 		{
 			sql.append(" AND AL.ENERGYCOMPANYID IN (" + getECIDs()[0]);
@@ -238,12 +251,27 @@ public class ActivityDetailModel extends ReportModelBase
 				sql.append(", " + getECIDs()[i]);
 			sql.append(")");
 		}
-		if( isProgramInfoOnly())
+		if( getActionGroupTypes() != null && getActionGroupTypes().length > 0)
 		{
-			sql.append(" AND AL.ACTION IN ('" +ActivityLogActions.PROGRAM_ENROLLMENT_ACTION + "', '"
-											+ActivityLogActions.PROGRAM_OPT_OUT_ACTION + "', '"
-											+ActivityLogActions.PROGRAM_REENABLE_ACTION+ "')");
-		}		
+			String tempSql = "AND AL.ACTION IN ( ";
+			for (int i = 0; i < getActionGroupTypes().length; i++)
+			{
+				String[] actionString = ActivityLogActions.ACTION_GROUPS[getActionGroupTypes()[i]];
+				if( actionString != null)
+				{
+					if( i > 0 )
+						tempSql += ", ";
+					tempSql += "'" + actionString[0] + "'";
+					for (int j = 1; j < actionString.length; j++)
+					{
+						tempSql += ", '" + actionString[j]+"'";
+					}
+				}
+			}
+			tempSql += " )";
+			if (tempSql.indexOf("'") > 0 )	//we know this only exists when there are entries in the "IN" clause, otherwise don't add the tempSQL
+				sql.append(tempSql);
+		}
 
 		sql.append(" ORDER BY AL.ENERGYCOMPANYID, TIMESTAMP, CA.ACCOUNTNUMBER, AL.CUSTOMERID, AL.USERID, ACTION, DESCRIPTION");
 		return sql;
@@ -288,7 +316,7 @@ public class ActivityDetailModel extends ReportModelBase
 				sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, USERID, CUSTOMERID, ACCOUNTID, ACTION, " + 
 					" TIMESTAMP, DESCRIPTION " +
 					" FROM ACTIVITYLOG AL" +
-					" WHERE TIMESTAMP >= ? ");
+					" WHERE TIMESTAMP >= ? AND TIMESTAMP < ?");
 
 				if( getECIDs() != null )
 				{
@@ -297,18 +325,33 @@ public class ActivityDetailModel extends ReportModelBase
 						sql.append(", " + getECIDs()[i]);
 					sql.append(")");
 				}
-				if( isProgramInfoOnly())
+				if( getActionGroupTypes() != null && getActionGroupTypes().length > 0)
 				{
-					sql.append(" AND AL.ACTION IN ('" +ActivityLogActions.PROGRAM_ENROLLMENT_ACTION + "', '"
-													+ActivityLogActions.PROGRAM_OPT_OUT_ACTION + "', '"
-													+ActivityLogActions.PROGRAM_REENABLE_ACTION+ "')");
-				}									
-
+					String tempSql = "AND AL.ACTION IN ( ";
+					for (int i = 0; i < getActionGroupTypes().length; i++)
+					{
+						String[] actionString = ActivityLogActions.ACTION_GROUPS[getActionGroupTypes()[i]];
+						if( actionString != null)
+						{
+							if( i > 0 )
+								tempSql += ", ";
+							tempSql += "'" + actionString[0] + "'";
+							for (int j = 1; j < actionString.length; j++)
+							{
+								tempSql += ", '" + actionString[j]+"'";
+							}
+						}
+					}
+					tempSql += " )";
+					if (tempSql.indexOf("'") > 0 )	//we know this only exists when there are entries in the "IN" clause, otherwise don't add the tempSQL
+						sql.append(tempSql);
+				}
 				sql.append(" ORDER BY AL.ENERGYCOMPANYID, TIMESTAMP, ACCOUNTID, AL.CUSTOMERID, AL.USERID, ACTION, DESCRIPTION ");
 				
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -536,22 +579,20 @@ public class ActivityDetailModel extends ReportModelBase
 		}
 		return columnProperties;
 	}
-	/**
-	 * @return
-	 */
-	public boolean isProgramInfoOnly()
+
+	public void setActionGroupTypes(int [] actionGroupTypes_)
 	{
-		return programInfoOnly;
+		actionGroupTypes = actionGroupTypes_;
+	}
+	public void setActionGroupTypes(int actionGroupType_)
+	{
+		setActionGroupTypes(new int[]{actionGroupType_ });
 	}
 
-	/**
-	 * @param b
-	 */
-	public void setProgramInfoOnly(boolean programInfo_)
+	public int[] getActionGroupTypes()
 	{
-		programInfoOnly = programInfo_;
+		return actionGroupTypes;	
 	}
-	
 	public HashMap getTotals()
 	{
 		if (totals == null)
@@ -576,4 +617,98 @@ public class ActivityDetailModel extends ReportModelBase
 		}
 		return totals;
 	}
+	
+	
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<script>" + LINE_SEPARATOR;
+		
+		html += "function enableGroup(form) {" + LINE_SEPARATOR;
+		html += "  for (var i = 1; i < " + ActivityLogActions.ACTION_GROUPS_STRING.length + "; i++) {" + LINE_SEPARATOR;
+		html += "    if (form." + ATT_ACTION_GROUP_TYPE + "[0].checked) {" + LINE_SEPARATOR;		
+		html += "      form." + ATT_ACTION_GROUP_TYPE + "[i].checked = false;" + LINE_SEPARATOR;
+		html += "    }" + LINE_SEPARATOR;
+		html += "    form." + ATT_ACTION_GROUP_TYPE + "[i].disabled = form." + ATT_ACTION_GROUP_TYPE + "[0].checked;" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+		html += "</script>" + LINE_SEPARATOR;
+		
+		
+		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td align='center'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < ActivityLogActions.ACTION_GROUPS_STRING.length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='checkbox' name='" + ATT_ACTION_GROUP_TYPE +"' value='" + i + "' " +  
+			 (i==0? "checked" : "") + (i==0? " onclick='enableGroup(document.MForm);'" : "") +
+			 (i != 0? "disabled" : "") +  
+			  ">" + ActivityLogActions.ACTION_GROUPS_STRING[i]+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Display Options</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' name='" +ATT_SHOW_DETAIL + "' value='showDetail'>Show Summary Only" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td" + LINE_SEPARATOR;
+
+		
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String[] paramArray = req.getParameterValues(ATT_ACTION_GROUP_TYPE);
+			if( paramArray != null)
+			{
+				int [] typesArray = new int[paramArray.length];
+				for (int i = 0; i < paramArray.length; i++)
+				{
+					typesArray[i] = Integer.valueOf(paramArray[i]).intValue();
+				}
+				setActionGroupTypes(typesArray);
+			}
+			else
+				setActionGroupTypes(null);
+			
+			String param = req.getParameter(ATT_SHOW_DETAIL);
+			setShowDetail(param == null);	//opposite boolean value, since wording for option is "backwards"
+		}
+	}
+	
+	/**
+	 * @return
+	 */
+	public boolean isShowDetail()
+	{
+		return showDetail;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowDetail(boolean b)
+	{
+		showDetail = b;
+	}	
 }

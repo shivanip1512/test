@@ -2,8 +2,10 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.util.Date;
 
 import org.jfree.report.Boot;
+import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
@@ -68,11 +70,11 @@ public class PowerFailReport extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);
-		long stop = cal.getTimeInMillis();
-		cal.add(java.util.Calendar.DATE, -10);
-		long start = cal.getTimeInMillis();
+		Date stop = cal.getTime();
+		cal.add(java.util.Calendar.DATE, -1);
+		Date start = cal.getTime();
 
-		PowerFailModel model = new PowerFailModel(start);
+		PowerFailModel model = new PowerFailModel(start, stop);
 		
 		YukonReportBase powerFailReport = new PowerFailReport(model);
 		powerFailReport.getModel().collectData();
@@ -115,7 +117,7 @@ public class PowerFailReport extends YukonReportBase
 		header.addElement(factory.createElement());
 		
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PowerFailModel.COLL_GROUP_NAME_COLUMN);
-		tfactory.setAbsolutePosition(new Point2D.Float(110, 1));
+		tfactory.setAbsolutePosition(new Point2D.Float(80, 1));
 		header.addElement(tfactory.createElement());
 		
 		header.addElement(ReportFactory.createBasicLine("cgGroupLine", 0.5f, 20));
@@ -130,29 +132,31 @@ public class PowerFailReport extends YukonReportBase
 	 * Create a Group for Device, (by collectionGroup).  
 	 * @return Group
 	 */
-	private Group createDeviceGroup()
+	private Group createColHeadingsGroup()
 	{
-		final Group collGrpGroup = new Group();
-		collGrpGroup.setName(PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
-		collGrpGroup.addField(PowerFailModel.COLL_GROUP_NAME_STRING);
-		collGrpGroup.addField(PowerFailModel.DEVICE_NAME_STRING);
-		  
+		final Group colHdgGroup = new Group();
+		colHdgGroup.setName(PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
+		colHdgGroup.addField(PowerFailModel.COLL_GROUP_NAME_STRING);
+		colHdgGroup.addField(PowerFailModel.DEVICE_NAME_STRING);
+	  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PowerFailModel.DEVICE_NAME_COLUMN);
-		factory.setText(factory.getText() + ":");
-		header.addElement(factory.createElement());
+		LabelElementFactory factory;
+		for (int i = PowerFailModel.DEVICE_NAME_COLUMN; i <= PowerFailModel.POWER_FAIL_COUNT_COLUMN; i++)
+		{
+			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+			if( i == PowerFailModel.POWER_FAIL_COUNT_COLUMN)
+				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 
-		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PowerFailModel.DEVICE_NAME_COLUMN);
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
-		header.addElement(tfactory.createElement());
-
-		header.addElement(ReportFactory.createBasicLine("dGroupHeadLine", 0.5f, 20));
+			header.addElement(factory.createElement());
+		}
+		
+		colHdgGroup.setHeader(header);
 
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 //		footer.addElement(ReportFactory.createBasicLine("dGroupFootLine", 0.5f, 4));
-		collGrpGroup.setFooter(footer);
-		return collGrpGroup;
+		colHdgGroup.setFooter(footer);
+		return colHdgGroup;
 	}
 
 
@@ -166,9 +170,15 @@ public class PowerFailReport extends YukonReportBase
 		super.getExpressions();
 		
 		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName("hideItem");
+		hideItem.setName("hideDevice");
 		hideItem.setProperty("field", PowerFailModel.DEVICE_NAME_STRING);
 		hideItem.setProperty("element", PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
+		expressions.add(hideItem);
+
+		hideItem = new ItemHideFunction();
+		hideItem.setName("hidePoint");
+		hideItem.setProperty("field", PowerFailModel.POINT_NAME_STRING);
+		hideItem.setProperty("element", PowerFailModel.POINT_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		return expressions;
@@ -183,7 +193,7 @@ public class PowerFailReport extends YukonReportBase
 	{
 		final GroupList list = new GroupList();
 		list.add(createCollGrpGroup());
-		list.add(createDeviceGroup());
+		list.add(createColHeadingsGroup());
 		return list;
 	}
 
@@ -209,14 +219,13 @@ public class PowerFailReport extends YukonReportBase
 				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
 
-		TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), PowerFailModel.DEVICE_NAME_COLUMN);
-		items.addElement(factory.createElement());
-
-		factory = ReportFactory.createTextFieldElementDefault(getModel(), PowerFailModel.POINT_NAME_COLUMN);
-		items.addElement(factory.createElement());
-		
-		factory = ReportFactory.createTextFieldElementDefault(getModel(), PowerFailModel.POWER_FAIL_COUNT_COLUMN);
-		items.addElement(factory.createElement());
+		for (int i = PowerFailModel.DEVICE_NAME_COLUMN; i <= PowerFailModel.POWER_FAIL_COUNT_COLUMN; i++)
+		{
+			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			if( i == PowerFailModel.POWER_FAIL_COUNT_COLUMN)
+				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+			items.addElement(factory.createElement());
+		}
 	
 		return items;
 	}

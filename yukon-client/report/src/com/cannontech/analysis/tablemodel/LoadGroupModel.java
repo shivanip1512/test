@@ -1,10 +1,12 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
@@ -14,6 +16,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.database.db.user.UserPaoOwner;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -74,6 +77,7 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	private boolean showAllActiveRestore = false;
 	
+	private static final String ATT_ALL_RESTORE_TYPES = "allRestoreTypes";
 	
 	public static Comparator lmControlHistoryPAONameComparator = new java.util.Comparator()
 	{
@@ -101,9 +105,9 @@ public class LoadGroupModel extends ReportModelBase
 	 * 
 	 * A null loadGroup is specified, which means ALL Load Groups!
 	 */
-	public LoadGroupModel(long startTime_, long stopTime_)
+	public LoadGroupModel(Date start_, Date stop_)
 	{
-		this(null, startTime_, stopTime_);
+		this(null, start_, stop_);
 	}	
 	
 	/**
@@ -112,10 +116,12 @@ public class LoadGroupModel extends ReportModelBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTime
 	 */
-	public LoadGroupModel( int[] paoIDs_,long startTime_, long stopTime_)
+	public LoadGroupModel( int[] paoIDs_, Date start_, Date stop_)
 	{
-		super(startTime_, stopTime_);
+		super(start_, stop_);
 		setPaoIDs(paoIDs_);
+		setPaoModelTypes(new int[]{ModelFactory.LMGROUPS});
+		setPaoModelType(getPaoModelTypes()[0]);
 	}	
 		
 	/**
@@ -168,7 +174,7 @@ public class LoadGroupModel extends ReportModelBase
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
 				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME, LMCH.ACTIVERESTORE "+
 				" FROM LMCONTROLHISTORY LMCH " + 
-				" WHERE (LMCH.StartDateTime > ?) AND (LMCH.StopDateTime <= ?) ");
+				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
 
 //				DAVID - 7/29/04 I think the only records you need are the ones with a T, M, O or R.  The N or C (which are the other options I think) aren't necessary				
 				if(!isShowAllActiveRestore())
@@ -206,8 +212,10 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+				
 		int rowCount = 0;
-			
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -227,9 +235,9 @@ public class LoadGroupModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime()));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
-				CTILogger.info("START DATE > " + new Timestamp(getStartTime()) + "  -  STOP DATE <= " + new Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				
 				rset = pstmt.executeQuery();
 				while( rset.next())
@@ -416,6 +424,56 @@ public class LoadGroupModel extends ReportModelBase
 	public void setShowAllActiveRestore(boolean showAll)
 	{
 		showAllActiveRestore = showAll;
+	}
+	
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<script>" + LINE_SEPARATOR;
+		html += "function selectAllGroup(form, value) {" + LINE_SEPARATOR;
+		html += "  var typeGroup = form.logType;" + LINE_SEPARATOR;
+		html += "  for (var i = 0; i < typeGroup.length; i++){" + LINE_SEPARATOR;
+		html += "    typeGroup[i].checked = value;" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+		html += "</script>" + LINE_SEPARATOR;
+		
+		html += "<table align='center' width='90%' border='0'cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Restore Types</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" +ATT_ALL_RESTORE_TYPES + "' value='false' checked>Standard Restore Types (R, T, O, M)" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" +ATT_ALL_RESTORE_TYPES + "' value='true'>All Restore Types (R, T, O, M, N, C)" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+	
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+
+			String param = req.getParameter(ATT_ALL_RESTORE_TYPES);
+			if( param != null)
+				setShowAllActiveRestore(Boolean.valueOf(param).booleanValue());
+			else 
+				setShowAllActiveRestore(false);
+		}
 	}
 }
 	

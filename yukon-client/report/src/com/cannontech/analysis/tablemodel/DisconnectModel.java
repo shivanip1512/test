@@ -4,12 +4,15 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.Disconnect;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Feb 18, 2004
@@ -59,6 +62,11 @@ public class DisconnectModel extends ReportModelBase
 	private boolean showDisconnected = true;
 	//flag for displaying the history of disconnect meters
 	private boolean showHistory = false;
+	
+	private static final String ATT_SHOW_CONNECTED = "connected";
+	private static final String ATT_SHOW_DISCONNECTED = "disconnected";
+	private static final String ATT_SHOW_HISTORY = "history";
+
 
 	/**
 	 * Constructor class
@@ -85,8 +93,10 @@ public class DisconnectModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
-		int rowCount = 0;
+		//Reset all objects, new data being collected!
+		setData(null);
 		
+		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -108,10 +118,10 @@ public class DisconnectModel extends ReportModelBase
 				pstmt = conn.prepareStatement(sql.toString());
 				if( isShowHistory())
 				{
-					pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-					pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime() ));
-					CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()));
-					CTILogger.info("STOP DATE < " + new java.sql.Timestamp(getStopTime()));
+					pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+					pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
+					CTILogger.info("START DATE > " + getStartDate());
+					CTILogger.info("STOP DATE <= " + getStopDate());
 				}
 				rset = pstmt.executeQuery();
 				
@@ -161,15 +171,13 @@ public class DisconnectModel extends ReportModelBase
 				" AND P.POINTID = RPH1.POINTID " +
 				" AND P.POINTOFFSET = 1 " +
 				" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.STATUS_POINT) + "' ");
-		if(getCollectionGroups() != null)
+
+		if( getBillingGroups() != null && getBillingGroups().length > 0)
 		{
-			sql.append(" AND DMG.COLLECTIONGROUP IN ('" + getCollectionGroups()[0] + "'");
-	
-			for (int i = 1; i < getCollectionGroups().length; i++)
-			{
-				sql.append(", '" + getCollectionGroups()[i]+ "'");
-			}
-			sql.append(")");
+			sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+			for (int i = 1; i < getBillingGroups().length; i++)
+				sql.append("', '" + getBillingGroups()[i]);
+			sql.append("') ");
 		}
 
 		if( isShowHistory())
@@ -238,9 +246,16 @@ public class DisconnectModel extends ReportModelBase
 	 */
 	 public String getDateRangeString()
 	 {
-		 java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		 return (format.format(new java.util.Date(getStartTime())) + " through " +
-		 			(format.format(new java.util.Date(getStopTime()))));
+	 	if( isShowHistory())
+	 	{
+			return (getDateFormat().format(getStartDate()) + " through " +
+								(getDateFormat().format(getStopDate())));
+	 	}
+	 	else 
+	 	{
+			return ( getDateFormat().format(new Date()));	//use current date
+	 	}
+		 
 	 }
 
 
@@ -337,19 +352,18 @@ public class DisconnectModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
+		if( isShowAll())
+			title = "All Disconnect";
+		else if (isShowConnected())
+			title = "Connected";
+		else if (isShowDisconnected())
+			title = "Disconnected";
+
 		if( isShowHistory())
-			title = "Disconnect Meter History Report";
-		else 
-		{
-			if( isShowAll())
-				title = "All Disconnect - ";
-			else if (isShowConnected())
-				title = "Connected - ";
-			else if (isShowDisconnected())
-				title = "Disconnected - ";
-				
-			title += "Current Status Report";
-		}
+			title += " - Meter History Report";
+		else
+			title += " - Current Status Report";
+			
 		return title;
 	}
 	/**
@@ -412,5 +426,75 @@ public class DisconnectModel extends ReportModelBase
 	{
 		showHistory = b;
 	}
+	
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<script>" + LINE_SEPARATOR;
+		html += "function enableCheckBox(value){" + LINE_SEPARATOR;
+		html += "  if( value) {" + LINE_SEPARATOR;
+		html += "    document.MForm.connected.checked = !value;" + LINE_SEPARATOR;
+		html += "    document.MForm.disconnected.checked = !value;" + LINE_SEPARATOR;		
+		html += "  }" + LINE_SEPARATOR;
+		html += "  document.MForm.connected.disabled = value;" + LINE_SEPARATOR;
+		html += "  document.MForm.disconnected.disabled = value;" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+		html += "</script>" + LINE_SEPARATOR;
+		
+		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Data Display</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' name='" + ATT_SHOW_HISTORY +"' checked  value='history' onclick='enableDates(this.checked);enableCheckBox(this.checked)'>Historical" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
 
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Disconnect Status</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' name='" +ATT_SHOW_CONNECTED+ "' value='connnected' disabled >Show All Connected</td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;		
+		html += "          <td><input type='checkbox' name='" +ATT_SHOW_DISCONNECTED + "' value='disconnected' disabled >Show All Disconnected</td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td" + LINE_SEPARATOR;
+		
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_SHOW_CONNECTED);
+			setShowConnected(param != null);
+			
+			param = req.getParameter(ATT_SHOW_DISCONNECTED);
+			setShowDisconnected(param != null);
+			
+			param = req.getParameter(ATT_SHOW_HISTORY);
+			setShowHistory(param != null);	//opposite boolean value, since wording for option is "backwards"
+			
+		}
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
+	 */
+	public boolean useBillingGroup()
+	{
+		return true;
+	}
 }

@@ -3,6 +3,8 @@
  */
 package com.cannontech.analysis.data.device;
 
+import java.util.Date;
+
 
 /**
  * @author bjonasson
@@ -16,7 +18,7 @@ public class PowerFail
 	private String collGroup = null;
 	private String deviceName = null;
 	private String pointName = null;
-	private Integer pointID = null;
+	private Date timestamp = null;
 	private Integer powerFailCount = null;
 
 	/**
@@ -34,12 +36,12 @@ public class PowerFail
 	 * @param pointID_
 	 * @param powerFailCount_
 	 */
-	public PowerFail(String collGroup_, String deviceName_, String pointName_, Integer pointID_, Integer powerFailCount_)
+	public PowerFail(String collGroup_, String deviceName_, String pointName_, Date timestamp_, Integer powerFailCount_)
 	{
 		collGroup = collGroup_;
 		deviceName = deviceName_;
 		pointName = pointName_;
-		pointID = pointID_;
+		timestamp = timestamp_;
 		powerFailCount = powerFailCount_;			
 	}
 
@@ -54,6 +56,22 @@ public class PowerFail
 	/**
 	 * @return
 	 */
+	public Integer getPowerFailCount()
+	{
+		return powerFailCount;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getTimestamp()
+	{
+		return timestamp;
+	}
+
+	/**
+	 * @return
+	 */
 	public String getDeviceName()
 	{
 		return deviceName;
@@ -62,25 +80,9 @@ public class PowerFail
 	/**
 	 * @return
 	 */
-	public Integer getPointID()
-	{
-		return pointID;
-	}
-
-	/**
-	 * @return
-	 */
 	public String getPointName()
 	{
 		return pointName;
-	}
-
-	/**
-	 * @return
-	 */
-	public Integer getPowerFailCount()
-	{
-		return powerFailCount;
 	}
 
 }

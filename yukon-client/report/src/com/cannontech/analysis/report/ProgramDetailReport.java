@@ -69,9 +69,9 @@ public class ProgramDetailReport extends YukonReportBase
 	 * @param stopTime_ - stopTime in millis for data query
 	 * 
 	 */
-	public ProgramDetailReport(long stopTime_)
+	public ProgramDetailReport(Date stop_)
 	{
-		this(new ProgramDetailModel(stopTime_ ));
+		this(new ProgramDetailModel(stop_ ));
 		
 	}
 	/**
@@ -92,7 +92,7 @@ public class ProgramDetailReport extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);	//default stop date is tomorrow
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 
 		//Define start and stop parameters for a default 90 day report.
 		ProgramDetailModel model = new ProgramDetailModel(stop);
@@ -110,7 +110,7 @@ public class ProgramDetailReport extends YukonReportBase
 			else if( arg.startsWith("stop"))
 			{
 				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
-				model.setStopTime(stopDate.getTime());
+				model.setStopDate(stopDate);
 			}
 			else if( arg.startsWith("notEnroll"))	//when true, show those "Not Enrolled"			
 			{

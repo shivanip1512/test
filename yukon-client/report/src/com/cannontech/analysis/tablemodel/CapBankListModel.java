@@ -2,6 +2,8 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -44,6 +46,8 @@ public class CapBankListModel extends ReportModelBase
 	public final static String SUB_NAME_STRING = "Sub";
 
 	private String orderBy = null;
+
+	protected static final String ATT_ORDER_BY = "orderBy";
 
 	/** A string for the title of the data */
 	private static String title = "Capacitor Bank Report";
@@ -118,8 +122,10 @@ public class CapBankListModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+
 		int rowCount = 0;
-		
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -273,5 +279,57 @@ public class CapBankListModel extends ReportModelBase
 	 */
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
+	}
+	
+	
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		
+		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Order By</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for( int i = 0; i < CBCOrderByTreeModel.ORDER_TYPE_STRINGS.length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" + ATT_ORDER_BY +"' value='" + CBCOrderByTreeModel.ORDER_TYPE_STRINGS[i] + "'>" + CBCOrderByTreeModel.ORDER_TYPE_STRINGS[i] + LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_ORDER_BY);
+			setOrderBy(param);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
+	 */
+	public boolean useStartDate()
+	{
+		return false;	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
+	 */
+	public boolean useStopDate()
+	{
+		return false;
 	}
 }

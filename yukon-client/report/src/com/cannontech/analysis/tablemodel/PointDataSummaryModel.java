@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.clientutils.CTILogger;
@@ -21,6 +23,7 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -138,14 +141,31 @@ public class PointDataSummaryModel extends ReportModelBase
 	private static String title = "Load Profile Summary Report";
 
 	//Extensions of PointTypes
-	public final static int ALL_POINT_TYPE = -100;
 	public final static int LOAD_PROFILE_POINT_TYPE = 101;	//some "unused" PointType int
 	public final static int CALC_POINT_TYPE = PointTypes.CALCULATED_POINT;
 	public final static int ANALOG_POINT_TYPE = PointTypes.ANALOG_POINT;
 	public final static int DEMAND_ACC_POINT_TYPE = PointTypes.DEMAND_ACCUMULATOR_POINT;
 	public final static int STATUS_POINT_TYPE = PointTypes.STATUS_POINT;
 	
-	private int pointType = ALL_POINT_TYPE;	//default to Load Profile PointTypes
+	public final static String LOAD_PROFILE_POINT_TYPE_STRING = "All Load Profile";	//some "unused" PointType int
+	public final static String CALC_POINT_TYPE_STRING = "All Calculated";
+	public final static String ANALOG_POINT_TYPE_STRING = "All Analog";
+	public final static String DEMAND_ACC_POINT_TYPE_STRING = "All Demand Accumulator";
+	public final static String STATUS_POINT_TYPE_STRING = "All Status";
+	
+	private int pointType = LOAD_PROFILE_POINT_TYPE;	//default to Load Profile PointTypes
+	
+	private final static int[] ALL_POINT_TYPES = new int[]
+	{
+		LOAD_PROFILE_POINT_TYPE,
+		CALC_POINT_TYPE,
+		ANALOG_POINT_TYPE,
+		DEMAND_ACC_POINT_TYPE,
+		STATUS_POINT_TYPE	
+	};
+
+	//servlet attributes/parameter strings
+	private static final String ATT_POINT_TYPE = "pointType";
 
 	public static Comparator rphValueComparator = new Comparator()
 	{
@@ -173,9 +193,9 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param startTime_ rph.timestamp
 	 * @param stopTime_ rph.timestamp
 	 */
-	public PointDataSummaryModel(long startTime_, long stopTime_, int summaryPointType)
+	public PointDataSummaryModel(Date start_, Date stop_, int summaryPointType)
 	{
-		super(startTime_, stopTime_);
+		super(start_, stop_);
 		setPointType(summaryPointType);
 	}
 	/**
@@ -183,9 +203,9 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param startTime_ rph.timestamp
 	 * @param stopTime_ rph.timestamp
 	 */
-	public PointDataSummaryModel(long startTime_, long stopTime_)
+	public PointDataSummaryModel(Date start_, Date stop_)
 	{
-		this(startTime_, stopTime_, ALL_POINT_TYPE);
+		this(start_, stop_, LOAD_PROFILE_POINT_TYPE);
 	}
 	/**
 	 * Add CarrierData objects to data, retrieved from rset.
@@ -249,11 +269,11 @@ public class PointDataSummaryModel extends ReportModelBase
 					" OR P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT) + "' )");
 			}
 			//Use paoIDs in query if they exist
-			if( getCollectionGroups() != null && getCollectionGroups().length > 0)
+			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
-				sql.append(" AND COLLECTIONGROUP IN ( '" + getCollectionGroups()[0]);
-				for (int i = 1; i < getCollectionGroups().length; i++)
-					sql.append("', '" + getCollectionGroups()[i]);
+				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+				for (int i = 1; i < getBillingGroups().length; i++)
+					sql.append("', '" + getBillingGroups()[i]);
 				sql.append("') ");
 			}
 			if( getPaoIDs() != null && getPaoIDs().length > 0)
@@ -273,8 +293,12 @@ public class PointDataSummaryModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
-		int rowCount = 0;
+		//Reset all objects, new data being collected!
+		setData(null);
+		allRPHLows = new HashMap();
+		allRPHPeaks = new HashMap();		
 		
+		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -294,9 +318,9 @@ public class PointDataSummaryModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				
 				int currentPointid = -1;
@@ -737,11 +761,74 @@ public class PointDataSummaryModel extends ReportModelBase
 		pointType = i;
 	}
 	
-	public Vector getPeakRPH(int pointID)
+	public String getPointTypeString(int pointTypeID)
 	{
-		Vector peaks = new Vector();
-		
-		return peaks;
+		switch (pointTypeID)
+		{
+			case LOAD_PROFILE_POINT_TYPE:
+				return LOAD_PROFILE_POINT_TYPE_STRING;
+			case CALC_POINT_TYPE:
+				return CALC_POINT_TYPE_STRING;
+			case ANALOG_POINT_TYPE:
+				return ANALOG_POINT_TYPE_STRING;
+			case DEMAND_ACC_POINT_TYPE:
+				return DEMAND_ACC_POINT_TYPE_STRING;
+			case STATUS_POINT_TYPE:
+				return STATUS_POINT_TYPE_STRING;
+		}
+		return "UNKNOWN";
+	}
+	/**
+	 * @return
+	 */
+	public static int[] getAllPointTypes()
+	{
+		return ALL_POINT_TYPES;
 	}
 
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td align='center'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllPointTypes().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" + ATT_POINT_TYPE +"' value='" + getAllPointTypes()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getPointTypeString(getAllPointTypes()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_POINT_TYPE);
+			if( param != null)
+				setPointType(Integer.valueOf(param).intValue());
+			else
+				setPointType(LOAD_PROFILE_POINT_TYPE);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
+	 */
+	public boolean useBillingGroup()
+	{
+		return true;
+	}
 }

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -85,14 +86,14 @@ public class WorkOrder extends YukonReportBase
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);
-		long stop = cal.getTimeInMillis();
+		Date stop = cal.getTime();
 		cal.add(java.util.Calendar.DATE, -90);
-		long start = cal.getTimeInMillis();
+		Date start = cal.getTime();
 
 		//Initialize the report data and populate the TableModel (collectData).
 		WorkOrderModel model = new WorkOrderModel();
-		model.setStartTime(start);
-		model.setStopTime(stop);
+		model.setStartDate(start);
+		model.setStopDate(stop);
 		model.setECIDs(new Integer(0));
 //		model.setAccountID(new Integer(1));
 //		model.setSearchColumn(WorkOrderModel.SEARCH_COL_DATE_CLOSED);

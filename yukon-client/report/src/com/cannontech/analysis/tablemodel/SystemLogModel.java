@@ -2,7 +2,10 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
@@ -54,14 +57,29 @@ public class SystemLogModel extends ReportModelBase
 	
 	/** Class fields */
 	/** Flag indicating data to be ordered ASC or DESC in tableModel*/
-	private boolean orderDescending = false;
+//	private boolean orderDescending = false;
+	
+	public  static final int ASCENDING = 0;
+	public static final int DESCENDING = 1;
+	private int sortOrder = ASCENDING;
+	private static final int[] ALL_SORT_ORDERS = new int[]
+	{
+		ASCENDING, DESCENDING
+	};
 	
 	/**
 	 * Type int from com.cannontech.database.db.point.SystemLog.type
 	 * Allows for reporting by type, null value results in all types.
 	 */
 	private int[] logTypes = null;
-	
+
+	private static final int ALL_LOG_TYPES = -1;	//use some invalid number
+
+	//	servlet attributes/parameter strings
+	protected static final String ATT_LOG_TYPE = "logType";
+	protected static final String ATT_All_LOG_TYPE = "logTypeAll";
+	protected static final String ATT_SORT_ORDER = "sortOrder";
+		
 	/**
 	 * PointId int from com.cannontech.database.db.point.SystemLog.pointID
 	 * Allows for reporting by a pointid, null value results in all points.
@@ -73,9 +91,9 @@ public class SystemLogModel extends ReportModelBase
 	 * @param startTime_ SYSTEMLOG.dateTime
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 */
-	public SystemLogModel(long startTime_, long stopTime_)
+	public SystemLogModel(Date start_, Date stop_)
 	{
-		this(startTime_, stopTime_, null, null);
+		this(start_, stop_, null, null);
 	}	
 	/**
 	 * Constructor class
@@ -83,9 +101,9 @@ public class SystemLogModel extends ReportModelBase
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 * @param logType_ SYSTEMLOG.pointID
 	 */
-	public SystemLogModel(long startTime_, long stopTime_, Integer logType_)
+	public SystemLogModel(Date start_, Date stop_, Integer logType_)
 	{
-		this(startTime_, stopTime_, logType_, null);
+		this(start_, stop_, logType_, null);
 	}
 	/**
 	 * Constructor class
@@ -102,11 +120,9 @@ public class SystemLogModel extends ReportModelBase
 	 * @param pointID_ SYSTEM.pointID
 	 * @param logType_ SYSTEMLOG.type
 	 */
-	public SystemLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_)
+	public SystemLogModel(Date start_, Date stop_, Integer logType_, Integer pointID_)
 	{
-		super();
-		setStartTime(startTime_);
-		setStopTime(stopTime_);
+		super(start_, stop_);
 		if( logType_!= null)
 			setLogType(logType_.intValue());
 		setPointID(pointID_);
@@ -179,7 +195,10 @@ public class SystemLogModel extends ReportModelBase
 				if( getPointID() != null)
 					sql.append(" AND SL.POINTID = " + getPointID().intValue());
 			}
-			sql.append(" ORDER BY DATETIME " + getOrderByString());
+			sql.append(" ORDER BY DATETIME ");
+			if( getSortOrder() == DESCENDING )
+				sql.append(" DESC " );
+
 		return sql;
 	}
 	
@@ -188,8 +207,10 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+				
 		int rowCount = 0;
-			
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -209,9 +230,9 @@ public class SystemLogModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
-				CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
+				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -243,33 +264,6 @@ public class SystemLogModel extends ReportModelBase
 	}
 
 	/**
-	 * Returns orderByDirection
-	 * @return boolean true if descending order desired
-	 */
-	private boolean getOrderDescending()
-	{
-		return orderDescending;
-	}
-	/**
-	 * Returns SQL string value of order by direction.
-	 * @return String ASC | DESC
-	 */
-	private String getOrderByString()
-	{
-		if( orderDescending )
-			return "DESC";
-		return "ASC";
-	}
-	/**
-	 * Return the order by direction for the SQLStatement
-	 * @param bollean orderDescending
-	 */
-	public void setOrderDescending(boolean orderDesc_)
-	{
-		orderDescending = orderDesc_;
-	}
-
-	/**
 	 * Returns the logType
 	 * @return Intger logType
 	 */
@@ -285,14 +279,14 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public void setLogType(int type_)
 	{
-		setLogTypes(new int[]{type_});
+		setLogType(new int[]{type_});
 	}
 	/**
 	 * Sets the logType
 	 * Valid types are found in com.cannontech.database.db.point.SYSTEMLOG
 	 * @param type Integer
 	 */
-	public void setLogTypes(int[] types_)
+	public void setLogType(int[] types_)
 	{
 		logTypes = types_;
 	}
@@ -319,10 +313,8 @@ public class SystemLogModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");
-		
-		return format.format( new java.util.Date(getStartTime())) +  "  -  " +
-				format.format( new java.util.Date(getStopTime()));
+		return getDateFormat().format( getStartDate()) +  "  -  " +
+				getDateFormat().format( getStopDate());
 	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
@@ -431,5 +423,125 @@ public class SystemLogModel extends ReportModelBase
 	public String getTitleString()
 	{
 		return title;
+	}
+	/**
+	 * @return
+	 */
+	public int getSortOrder()
+	{
+		return sortOrder;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setSortOrder(int i)
+	{
+		sortOrder = i;
+	}
+	public String getSortOrderString(int sortOrder)
+	{
+		switch (sortOrder)
+		{
+			case ASCENDING:
+				return "Ascending";
+			case DESCENDING:
+				return "Descending";
+		}
+		return "UNKNOWN";
+	}	
+	public static int[] getAllSortOrders()
+	{
+		return ALL_SORT_ORDERS;
+	}	
+
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<script>" + LINE_SEPARATOR;
+		html += "function selectAllGroup(form, value) {" + LINE_SEPARATOR;
+		html += "  var typeGroup = form.logType;" + LINE_SEPARATOR;
+		html += "  for (var i = 0; i < typeGroup.length; i++){" + LINE_SEPARATOR;
+		html += "    typeGroup[i].checked = value;" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+		html += "</script>" + LINE_SEPARATOR;
+		
+		html += "<table align='center' width='90%' border='0'cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < SystemLog.LOG_TYPES.length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='checkbox' name='" + ATT_LOG_TYPE +"' value='" + SystemLog.LOG_TYPES[i] + "' onclick='document.MForm."+ATT_All_LOG_TYPE+".checked = false;'" +  
+			 				">" + SystemLog.getLogTypeStringFromID(SystemLog.LOG_TYPES[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' name='" + ATT_All_LOG_TYPE +"' value='" + ALL_LOG_TYPES + "' onclick='selectAllGroup(document.MForm, this.checked)'>Select All" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllSortOrders().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" +ATT_SORT_ORDER + "' value='" + getAllSortOrders()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getSortOrderString(getAllSortOrders()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+	
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+
+			String param = req.getParameter(ATT_All_LOG_TYPE);
+			if( param != null)
+				setLogType(null);	//ALL Of them!
+			else 
+			{			
+				String[] paramArray = req.getParameterValues(ATT_LOG_TYPE);
+				if( paramArray != null)
+				{
+					int [] typesArray = new int[paramArray.length];
+					for (int i = 0; i < paramArray.length; i++)
+					{
+						typesArray[i] = Integer.valueOf(paramArray[i]).intValue();
+					}
+					setLogType(typesArray);
+				}
+				else
+					setLogType(null);
+			}
+				
+			
+			param = req.getParameter(ATT_SORT_ORDER);
+			if( param != null)
+				setSortOrder(Integer.valueOf(param).intValue());
+			else
+				setSortOrder(ASCENDING);
+			
+		}
 	}
 }

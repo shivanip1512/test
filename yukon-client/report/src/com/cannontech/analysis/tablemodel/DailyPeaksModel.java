@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
@@ -25,6 +27,7 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.device.lm.LMControlArea;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.database.model.ModelFactory;
 /**
  * @author stacey
  *
@@ -69,10 +72,6 @@ public class DailyPeaksModel extends ReportModelBase
 
 	/** A string for the title of the data */
 	private static String title = "Daily Peaks Report";
-
-	/** Array of IDs (of controlAreas paobjectIDs)*/
-	private int controlAreas[] = null;
-	
 	private Double currentPeakValue = null;
 	private GregorianCalendar currentPeakTimestamp = null;
 	
@@ -121,7 +120,7 @@ public class DailyPeaksModel extends ReportModelBase
 	}	
 	public DailyPeaksModel()
 	{
-		super();
+		this(null, null);
 	}	
 
 	/**
@@ -131,9 +130,9 @@ public class DailyPeaksModel extends ReportModelBase
 	 * 
 	 * A null loadGroup is specified, which means ALL Load Groups!
 	 */
-	public DailyPeaksModel(long startTime_, long stopTime_)
+	public DailyPeaksModel(Date start_, Date stop_)
 	{
-		this(null, startTime_, stopTime_);
+		this(null, start_, stop_);
 	}	
 	
 	/**
@@ -142,16 +141,22 @@ public class DailyPeaksModel extends ReportModelBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTime
 	 */
-	public DailyPeaksModel( int[] paoIDs_,long startTime_, long stopTime_)
+	public DailyPeaksModel( int[] paoIDs_,Date start_, Date stop_)
 	{
-		super(startTime_, stopTime_);
+		super(start_, stop_);
 		setPaoIDs(paoIDs_);
+		setPaoModelTypes(new int[]{ModelFactory.LMCONTROLAREA});
+		setPaoModelType(getPaoModelTypes()[0]);
 	}
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#collectData()
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+		
 		java.sql.Connection conn = null;
 		try
 		{
@@ -167,6 +172,15 @@ public class DailyPeaksModel extends ReportModelBase
 			StringBuffer sqlString = new StringBuffer("select ca.deviceid, defdailystarttime, defdailystoptime, threshold, peakpointid " +
 							"from lmcontrolarea ca, lmcontrolareatrigger trig " +
 							"where ca.deviceid = trig.deviceid and peakpointid > 0");
+				if( getPaoIDs() != null)
+				{
+					sqlString.append(" and ca.deviceid in (" + getPaoIDs()[0]);
+					for (int i = 1; i < getPaoIDs().length; i++)
+					{
+						sqlString.append(", " + getPaoIDs()[i]);
+					}
+					sqlString.append(") ");
+				}
 
 			java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlString.toString());
 			rset = pstmt.executeQuery();
@@ -201,8 +215,8 @@ public class DailyPeaksModel extends ReportModelBase
 
 				java.sql.PreparedStatement pstmt2 = conn.prepareStatement(sqlString2.toString());
 				pstmt2.setInt(1,((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getPeakPointID().intValue());
-				pstmt2.setObject(2, new Timestamp(getStartTime()));
-				pstmt2.setObject(3,new Timestamp(getStopTime()));
+				pstmt2.setObject(2, new Timestamp(getStartDate().getTime()));
+				pstmt2.setObject(3,new Timestamp(getStopDate().getTime()));
 
 				rset = pstmt2.executeQuery();
 				if( rset != null )
@@ -521,4 +535,17 @@ public class DailyPeaksModel extends ReportModelBase
 	{
 		currentPeakValue = double1;
 	}
+	
+	
+	public String getHTMLOptionsTable()
+	{
+		return super.getHTMLOptionsTable();
+	}
+	
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+
+	}
+
 }

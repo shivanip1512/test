@@ -1,7 +1,8 @@
 package com.cannontech.analysis.report;
 
+import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
-import java.util.Calendar;
+import java.util.Date;
 
 import org.jfree.report.Boot;
 import org.jfree.report.Group;
@@ -11,18 +12,13 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.elementfactory.LabelElementFactory;
+import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemMaxFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
-import com.cannotech.analysis.jfreereport.ItemMaxValueFunction;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -69,15 +65,19 @@ public class PointDataIntervalReport extends YukonReportBase
 		cal.set(java.util.Calendar.MINUTE, 0);
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
-//		cal.add(java.util.Calendar.DATE, 1);
-		cal.set(java.util.Calendar.DATE, 23);
-		cal.set(java.util.Calendar.MONTH, Calendar.JANUARY);
-		long stop = cal.getTimeInMillis();
+		cal.set(java.util.Calendar.DATE, 28);
+		Date stop = cal.getTime();
 		cal.add(java.util.Calendar.DATE, -1);
-		long start = cal.getTimeInMillis();
+		Date start = cal.getTime();
 		
 		PointDataIntervalModel reportModel = new PointDataIntervalModel(start, stop);
 		YukonReportBase dbReport = new PointDataIntervalReport(reportModel);
+		
+		reportModel.setOrderBy(PointDataIntervalModel.ORDER_BY_VALUE);
+		reportModel.setPointType(PointDataIntervalModel.LOAD_PROFILE_POINT_TYPE);
+		reportModel.setSortOrder(PointDataIntervalModel.DESCENDING);
+		reportModel.setBillingGroupType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
+		reportModel.setBillingGroups(new String[]{"Default"});
 		dbReport.getModel().collectData();
 	
 		//Create the report
@@ -149,26 +149,17 @@ public class PointDataIntervalReport extends YukonReportBase
 		tfactory.setAbsolutePosition(new Point2D.Float(75, 1));
 		header.addElement(tfactory.createElement());
 
-//		for (int i = PointDataIntervalModel.DATE_COLUMN; i <= PointDataIntervalModel.QUALITY_COLUMN; i++)
-//		{
-//			factory = ReportFactory.createGroupLabelElementDefault(model, i);
-//			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
-//			header.addElement(factory.createElement());
-//		}
+		for (int i = PointDataIntervalModel.DATE_COLUMN; i <= PointDataIntervalModel.QUALITY_COLUMN; i++)
+		{
+			factory = ReportFactory.createGroupLabelElementDefault(model, i);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
+			header.addElement(factory.createElement());
+		}
 	
 		header.addElement(ReportFactory.createBasicLine("pointGrpLine", 0.5f, 20));
 		pointGroup.setHeader(header);
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		
-		tfactory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataIntervalModel.VALUE_COLUMN);
-		tfactory.setFieldname("X"+PointDataIntervalModel.VALUE_STRING + ReportFactory.NAME_ELEMENT);
-		footer.addElement(tfactory.createElement());
-		pointGroup.setFooter(footer);
-		
-		tfactory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataIntervalModel.TIME_COLUMN);
-		tfactory.setFieldname("X"+PointDataIntervalModel.TIME_STRING + ReportFactory.NAME_ELEMENT);
-		footer.addElement(tfactory.createElement());
 		pointGroup.setFooter(footer);
 		
 		return pointGroup;
@@ -193,72 +184,28 @@ public class PointDataIntervalReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-//		ItemBand items = ReportFactory.createItemBandDefault();
-		ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE,  new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty( new FontDefinition("Serif", 10, false, false, false, false));
-		items.setVisible(false);
+		ItemBand items = ReportFactory.createItemBandDefault();
 	
-//		if( showBackgroundColor )
-//		{
-//			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-//				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-//					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-//			items.addElement(StaticShapeElementFactory.createLineShapeElement
-//				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-//					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-//			items.addElement(StaticShapeElementFactory.createLineShapeElement
-//				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-//					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
-//		}
+		if( showBackgroundColor )
+		{
+			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
+				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
+					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
+			items.addElement(StaticShapeElementFactory.createLineShapeElement
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
+					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
+			items.addElement(StaticShapeElementFactory.createLineShapeElement
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
+					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+		}
 			
-//		TextFieldElementFactory factory;
-//		factory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataIntervalModel.VALUE_COLUMN);
-//		factory.setFieldname("X"+PointDataIntervalModel.VALUE_STRING + ReportFactory.NAME_ELEMENT);
-//		items.addElement(factory.createElement());
-	
-//		for (int i = PointDataIntervalModel.DATE_COLUMN; i <= PointDataIntervalModel.QUALITY_COLUMN; i++)
-//		{
-//			factory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataIntervalModel.VALUE_COLUMN);
-//			items.addElement(factory.createElement());
-//		}
+		TextFieldElementFactory factory;	
+		for (int i = PointDataIntervalModel.DATE_COLUMN; i <= PointDataIntervalModel.QUALITY_COLUMN; i++)
+		{
+			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			items.addElement(factory.createElement());
+		}
 
 		return items;
-	}
-	
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{ 
-		super.getExpressions();
-		
-		ItemMaxFunction totalItem = new ItemMaxFunction();
-		totalItem.setName("X"+PointDataIntervalModel.VALUE_STRING + ReportFactory.NAME_ELEMENT);
-		totalItem.setProperty("group", PointDataIntervalModel.POINT_NAME_STRING + ReportFactory.NAME_GROUP);
-		totalItem.setProperty("field", PointDataIntervalModel.VALUE_STRING);
-		totalItem.setProperty("element", PointDataIntervalModel.VALUE_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(totalItem);
-		
-		ItemMaxValueFunction totalValueItem = new ItemMaxValueFunction();
-		totalValueItem.setName("X"+PointDataIntervalModel.TIME_STRING + ReportFactory.NAME_ELEMENT);
-		totalValueItem.setDataField(PointDataIntervalModel.TIME_STRING);
-		totalValueItem.setProperty("group", PointDataIntervalModel.POINT_NAME_STRING + ReportFactory.NAME_GROUP);
-		totalValueItem.setProperty("field", PointDataIntervalModel.VALUE_STRING);
-		totalValueItem.setProperty("element", PointDataIntervalModel.TIME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(totalValueItem);
-
-//	
-//		ItemHideFunction hideItem = new ItemHideFunction();
-//		hideItem.setName("hideItem");
-//		hideItem.setProperty("field", PointDataIntervalModel.VALUE_STRING);
-//		hideItem.setProperty("element", PointDataIntervalModel.VALUE_STRING+ ReportFactory.NAME_ELEMENT);
-//		expressions.add(hideItem);
-
-		return expressions;
-		
-		
 	}
 }

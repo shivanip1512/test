@@ -1,5 +1,9 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.database.db.point.SystemLog;
 
@@ -42,19 +46,19 @@ public class LMControlLogModel extends SystemLogModel
 	 * @param startTime_ SYSTEMLOG.dateTime
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 */
-	public LMControlLogModel(long startTime_, long stopTime_)
-	{
-		super(startTime_, stopTime_, null, null);
-	}	
+//	public LMControlLogModel(Date start_, Date stop_)
+//	{
+//		super(start_, stop_, null, null);
+//	}	
 	/**
 	 * Constructor class
 	 * @param startTime_ SYSTEMLOG.dateTime
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 * @param logType_ SYSTEMLOG.pointID
 	 */
-	public LMControlLogModel(long startTime_, long stopTime_, Integer logType_)
+	public LMControlLogModel(Date start_, Date stop_)
 	{
-		this(startTime_, stopTime_, logType_, null);
+		this(start_, stop_, null);
 	}
 	/**
 	 * Constructor class
@@ -71,9 +75,9 @@ public class LMControlLogModel extends SystemLogModel
 	 * @param pointID_ SYSTEM.pointID
 	 * @param logType_ SYSTEMLOG.type
 	 */
-	public LMControlLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_)
+	public LMControlLogModel(Date start_, Date stop_, Integer pointID_)
 	{
-		super(startTime_, stopTime_, logType_, pointID_);
+		super(start_, stop_, new Integer(SystemLog.TYPE_LOADMANAGEMENT), pointID_);
 	}
 
 	/* (non-Javadoc)
@@ -153,5 +157,36 @@ public class LMControlLogModel extends SystemLogModel
 	public String getTitleString()
 	{
 		return title;
+	}
+	
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		html += "<table align='center' width='90%' border='0'cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllSortOrders().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" +ATT_SORT_ORDER + "' value='" + getAllSortOrders()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getSortOrderString(getAllSortOrders()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+	
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
 	}	
 }

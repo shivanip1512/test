@@ -1,11 +1,21 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.model.DBTreeModel;
+import com.cannontech.database.model.ModelFactory;
+import com.cannontech.util.ServletUtil;
 
 
 /**
@@ -27,6 +37,11 @@ import com.cannontech.analysis.Reportable;
  */
 public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
 {
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+	private TimeZone timeZone = TimeZone.getDefault();		
+	
 	/** Array of String values representing the column names. */
 	protected String[] columnNames;
 	
@@ -41,22 +56,30 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	
 	/** Yukon.paobjectid's to query for, null means all */
 	private int[] paoIDs = null;
-	
-	/** Yukon.DeviceMeterGroup's to query for, null means all */
-	private String [] collectionGroups = null;
+	private int paoModelType = -1;	//default to invalid?	, the currently selected model
+	private int[] paoModelTypes = null;	//all models valid for a report type (ONLY PAOBJECTS TODAY!)
 
+	/** Yukon.DeviceMeterGroup's to query for, null means all */
+	private String [] billingGroups = null;
+	private int billingGroupType = DeviceMeterGroup.COLLECTION_GROUP;
+	
 	/** Vector of data (of inner class type from implementors)*/
 	protected java.util.Vector data = new java.util.Vector(100);
 
-	/** Start time for query in millis */
-	private long startTime = Long.MIN_VALUE;
-	
-	/** Stop time for query in millis */
-	private long stopTime = Long.MIN_VALUE;	
-	
+	private Date startDate = null;
+	private Date stopDate = null;
 	/** Class fields */
 	private int[] ecIDs = null;
 	
+	protected static final String ATT_START_DATE = "startDate";
+	protected static final String ATT_STOP_DATE = "stopDate";
+	protected static final String ATT_EC_ID = "ecID";	//ONLY TAKES ONE ID, BUT MORE CAN BE SET USING THE STRING[] setter
+	protected static final String ATT_BILLING_GROUP_VALUES = "billGroupValues";
+	protected static final String ATT_PAOBJECT_IDS = "paoIDs";
+	
+	protected static final String ATT_BILLING_GROUP_TYPE = "billGroupType";
+	protected static final String ATT_PAOBJECT_MODEL_TYPE = "paoModelType";
+	 
 	/**
 	 * Default Constructor
 	 */
@@ -68,11 +91,11 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * Default Constructor
 	 */
-	public ReportModelBase(long startTime_, long stopTime_)
+	public ReportModelBase(Date startDate_, Date stopDate_)
 	{
 		this();
-		setStartTime(startTime_);
-		setStopTime(stopTime_);
+		setStartDate(startDate_);
+		setStopDate(stopDate_);
 	}	
 	/**
 	 * Implement this method to add/populate row items to the data Vector.
@@ -121,6 +144,15 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		return getData().size();
 	}
 
+	public void setTimeZone(TimeZone tz)
+	{
+		if( timeZone.getID() != tz.getID())
+		{
+			timeZone = tz;
+			getDateFormat().setTimeZone(timeZone);
+		}
+	}
+	
 	/**
 	 * Return the date information for the data.
 	 * OVERRIDE FOR ALL EXTENDERS USING START/STOP DATE INTERVALS.
@@ -128,9 +160,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 */
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return (format.format(new java.util.Date(getStartTime())) + " through " +
-				   (format.format(new java.util.Date(getStopTime()))));
+		return (getDateFormat().format(getStartDate())) + " through " +
+				   (getDateFormat().format(getStopDate()));
 	}	
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnName(int)
@@ -180,71 +211,54 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		paoIDs = is;
 	}
 
-	/**
-	 * Returns the startTime in millis
-	 * @return long startTime
-	 */
-	public long getStartTime()
+	public Date getStartDate()
 	{
-		if( startTime < 0 )
+		if (startDate == null)
 		{
-			GregorianCalendar tempCal = new GregorianCalendar();
-			tempCal.set(Calendar.HOUR_OF_DAY, 0);
-			tempCal.set(Calendar.MINUTE, 0);
-			tempCal.set(Calendar.SECOND, 0);
-			tempCal.set(Calendar.MILLISECOND, 0);
-			tempCal.add(Calendar.DATE, -1);
-			startTime = tempCal.getTime().getTime();				
+			startDate = ServletUtil.getYesterday();
 		}
-		return startTime;
+		return startDate;
 	}
 
-	/**
-	 * Returns the stopTime in millis
-	 * @return long stopTime
-	 */
-	public long getStopTime()
+	public Date getStopDate()
 	{
-		if( stopTime < 0 )
+		if( stopDate == null)
 		{
-			GregorianCalendar tempCal = new GregorianCalendar();
-			tempCal.setTimeInMillis(getStartTime());
-			tempCal.add(java.util.Calendar.DATE, 1);
-			stopTime = tempCal.getTime().getTime();				
+			stopDate = ServletUtil.getTomorrow();
 		}
-		return stopTime;
+		return stopDate;		
 	}
 	/**
-	 * Set the startTime in millis
-	 * @param long time
+	 * Set the startDate
+	 * @param Date date 
 	 */
-	public void setStartTime(long time)
+	public void setStartDate(Date startDate_)
 	{
-		startTime = time;
+		startDate = startDate_;
 	}
 	/**
-	 * Set the stopTime in millis
-	 * @param long time
+	 * Set the stopDate
+	 * @param Date date
 	 */
-	public void setStopTime(long time)
+	public void setStopDate(Date stopDate_)
 	{
-		stopTime = time;
+		stopDate = stopDate_;
 	}
 
 	/**
 	 * @return
 	 */
-	public String[] getCollectionGroups()
+	public String[] getBillingGroups()
 	{
-		return collectionGroups;
+		return billingGroups;
 	}
 
 	/**
 	 * @param strings
 	 */
-	public void setCollectionGroups(String[] strings)
+	public void setBillingGroups(String[] strings)
 	{
-		collectionGroups = strings;
+		billingGroups = strings;
 	}
 
 	/**
@@ -276,5 +290,365 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		ecIDs = is;
 	}
+
+	/**
+	 * Override this method to build an html table for a model's "options".
+	 * @return
+	 */
+	public String getHTMLOptionsTable()
+	{
+		String html = "N/A";
+//		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell' height='100%'>" + LINE_SEPARATOR;
+//		html += "  <tr>" + LINE_SEPARATOR;
+//		html += "    <td align='center' valign='middle'>None" + LINE_SEPARATOR;
+//		html += "    </td>" + LINE_SEPARATOR;
+//		html += "  </tr>" + LINE_SEPARATOR;
+//		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
 	
+	/**
+	 * Generatest the HTML for base options used at the ReportModelBase level (aka options for all reports)
+	 * @return
+	 */
+	public String getHTMLBaseOptionsTable()
+	{
+		String html = "";
+		
+		html += "<SCRIPT>" + LINE_SEPARATOR;
+		html += "function disableGroup(form){" + LINE_SEPARATOR;
+		html += "  if (form.paoIDs) {" + LINE_SEPARATOR;
+		html += "    var typeGroup = form.paoIDs;" + LINE_SEPARATOR;
+		html += "    for (var i = 0; i < typeGroup.length; i++) {" + LINE_SEPARATOR;
+		html += "      typeGroup[i].disabled = form.selectAll.checked;" + LINE_SEPARATOR;
+		html += "      typeGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
+		html += "    }" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "  if (form.billGroupValues) {" + LINE_SEPARATOR;
+		html += "    var billGroup = form.billGroupValues;" + LINE_SEPARATOR;
+		html += "    for (var i = 0; i < billGroup.length; i++) {" + LINE_SEPARATOR;
+		html += "      billGroup[i].disabled = form.selectAll.checked;" + LINE_SEPARATOR;
+		html += "      billGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
+		html += "    }" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+
+		if (useBillingGroup())
+		{
+			html += "function changeFilter(filterBy) {" + LINE_SEPARATOR;
+			html += "  document.getElementById('selectAll').disabled = (filterBy == -1);" + LINE_SEPARATOR;
+			html += "  var typeGroup = document.reportForm.billGroupValues;" + LINE_SEPARATOR;
+			html += "  for (var i = 0; i < typeGroup.length; i++) {" + LINE_SEPARATOR;
+			html += "    typeGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
+			html += "  }" + LINE_SEPARATOR + LINE_SEPARATOR;
+			html += "  document.getElementById('DivCollGroup').style.display = (filterBy == " + DeviceMeterGroup.COLLECTION_GROUP + ")? \"\" : \"none\";" + LINE_SEPARATOR;
+			html += "  document.getElementById('DivAltGroup').style.display = (filterBy == " + DeviceMeterGroup.TEST_COLLECTION_GROUP + ")? \"\" : \"none\";" + LINE_SEPARATOR;
+			html += "  document.getElementById('DivBillGroup').style.display = (filterBy == " + DeviceMeterGroup.BILLING_GROUP + ")? \"\" : \"none\";" + LINE_SEPARATOR;
+			html += "}" + LINE_SEPARATOR + LINE_SEPARATOR;
+		}
+		if (usePaobjects())
+		{
+			html += "function changePaoFilter(filterBy) {" + LINE_SEPARATOR;
+			html += "  document.getElementById('selectAll').disabled = (filterBy == -1);" + LINE_SEPARATOR;
+			html += "  var typeGroup = document.reportForm.paoIDs;" + LINE_SEPARATOR;
+			html += "  for (var i = 0; i < typeGroup.length; i++) {" + LINE_SEPARATOR;
+			html += "    typeGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
+			html += "  }" + LINE_SEPARATOR + LINE_SEPARATOR;
+			html += "  document.getElementById('DivControlArea').style.display = (filterBy == " + ModelFactory.LMCONTROLAREA + ")? \"\" : \"none\";" + LINE_SEPARATOR;
+			html += "  document.getElementById('DivMCT').style.display = (filterBy == " + ModelFactory.MCT + ")? \"\" : \"none\";" + LINE_SEPARATOR;
+			html += "}" + LINE_SEPARATOR;
+		}
+		html += "</SCRIPT>" + LINE_SEPARATOR + LINE_SEPARATOR;
+
+		html += "<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td class='main' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
+		
+		if( useBillingGroup() )
+		{
+			html += "      <div id='DivBillGroupType' style='display:true'>" + LINE_SEPARATOR;
+			html += "        <select id='billGroupType' name='billGroupType' onChange='changeFilter(this.value)'>" + LINE_SEPARATOR;
+			String [] billGroupTypes = DeviceMeterGroup.getValidBillGroupTypeDisplayStrings();
+			for (int i = 0; i < billGroupTypes.length; i++)
+			{
+				html += "          <option value='" + DeviceMeterGroup.getValidBillGroupTypeIDs()[i] +"'>" + billGroupTypes[i] + "</option>"  + LINE_SEPARATOR;
+			}
+			html += "        </select>" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+		}
+		if( usePaobjects() )
+		{
+			html += "      <div id='DivPaoModelType' style='display:true'>" + LINE_SEPARATOR;
+			if( getPaoModelTypes() != null)
+			{
+				html += "        <select id='paoModelType' name='paoModelType'  onChange='changePaoFilter(this.value)'>" + LINE_SEPARATOR;
+				for(int i = 0; i < getPaoModelTypes().length; i++)
+				{					
+					html += "          <option value='" + getPaoModelTypes()[i] + "'>" + ((DBTreeModel) ModelFactory.create(getPaoModelTypes()[i])).toString() + "</option>" + LINE_SEPARATOR;
+				}
+				html += "        </select>" + LINE_SEPARATOR;
+			}
+			html += "      </div>" + LINE_SEPARATOR;
+		}
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "  <tr><td height='9'></td></tr>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
+		
+		if( useBillingGroup())
+		{
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			List collGroups = cache.getAllDMG_CollectionGroups();
+			List altGroups = cache.getAllDMG_AlternateGroups();
+			List billGroups = cache.getAllDMG_BillingGroups();
+			
+			html += "      <div id='DivCollGroup' style='display:true'>" + LINE_SEPARATOR;
+			html += "        <select name='billGroupValues' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+			for (int i = 0; i < collGroups.size(); i++)
+			{
+				String val = (String)collGroups.get(i);
+				html += "          <option value='" + val + "'>" + val + "</option>" + LINE_SEPARATOR;
+			}
+			html += "        </select>" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+	
+			html += "      <div id='DivAltGroup' style='display:none'>" + LINE_SEPARATOR;
+			html += "        <select name='billGroupValues' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+
+			for (int i = 0; i < altGroups.size(); i++)
+			{
+				String val = (String)altGroups.get(i);
+				html += "          <option value='" + val + "'>" + val + "</option>" + LINE_SEPARATOR;
+			}
+			html += "        </select>" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+			
+			html += "      <div id='DivBillGroup' style='display:none'>" + LINE_SEPARATOR;
+			html += "        <select name='billGroupValues' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+			for (int i = 0; i < billGroups.size(); i++)
+			{
+				String val = (String)billGroups.get(i);
+				html += "          <option value='" + val + "'>" + val + "</option>" + LINE_SEPARATOR;
+			}
+			html += "        </select>" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+		}
+		
+		if( usePaobjects() )
+		{
+			html += "      <div id='DivControlArea' style='display:" + (usePaobjects() ? "true" : "none") + "'>" + LINE_SEPARATOR;
+			html += "        <select name='paoIDs' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+			List litePaos = getPaobjectsByModel(ModelFactory.LMCONTROLAREA);
+			if( litePaos != null) {
+				for (int i = 0; i < litePaos.size(); i++) {
+					LiteYukonPAObject lpao = (LiteYukonPAObject)litePaos.get(i);
+					html += "          <option value='" + lpao.getYukonID() + "'>" + lpao.getPaoName() + "</option>" + LINE_SEPARATOR;
+				}
+			}
+			html += "        </select>" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+			html += "      <div id='DivMCT' style='display:none'>" + LINE_SEPARATOR;
+			html += "        <select name='paoIDs' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+	
+			litePaos = getPaobjectsByModel(ModelFactory.MCT);
+			if( litePaos != null) {
+				for (int i = 0; i < litePaos.size(); i++) {
+					LiteYukonPAObject lpao = (LiteYukonPAObject)litePaos.get(i);
+					html += "          <option value='" + lpao.getYukonID() + "'>" + lpao.getPaoName() + "</option>" + LINE_SEPARATOR;
+				}
+			}
+			html += "        </select>" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+		}
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td class='main' height='10' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
+		if( useBillingGroup() || usePaobjects())
+		{
+			html += "      <div id='DivSelectAll' style='displaytrue'>" + LINE_SEPARATOR;
+			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='disableGroup(document.reportForm);'>Select All" + LINE_SEPARATOR;
+			html += "      </div>" + LINE_SEPARATOR;
+		}
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_EC_ID);
+			if( param != null)
+				setECIDs(Integer.valueOf(param));
+			else
+				setECIDs((int[])null);
+				
+			param = req.getParameter(ATT_START_DATE);
+			if( param != null)
+				setStartDate(ServletUtil.parseDateStringLiberally(param, getTimeZone()));				
+			else
+				setStartDate(null);
+			
+			param = req.getParameter(ATT_STOP_DATE);
+			if( param != null)
+				setStopDate(ServletUtil.parseDateStringLiberally(param, getTimeZone()));
+			else
+				setStopDate(null);
+				
+			param = req.getParameter(ATT_BILLING_GROUP_TYPE);
+			if( param != null)
+				setBillingGroupType(Integer.valueOf(param).intValue());
+			else
+				setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+			
+			String[] paramArray = req.getParameterValues(ATT_BILLING_GROUP_VALUES);
+			if( paramArray != null)
+				setBillingGroups(paramArray);
+			else
+				setBillingGroups(null);
+				
+			param = req.getParameter(ATT_PAOBJECT_MODEL_TYPE);
+			if( param != null)
+				setPaoModelType(Integer.valueOf(param).intValue());
+			else
+				setPaoModelType(-1);
+								
+			paramArray = req.getParameterValues(ATT_PAOBJECT_IDS);
+			if( paramArray != null)
+			{
+				int [] idsArray = new int[paramArray.length];
+				for (int i = 0; i < paramArray.length; i++)
+				{
+					idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
+				}
+				setPaoIDs(idsArray);
+			}
+			else
+				setPaoIDs(null);				
+		}
+	}
+	/**
+	 * @return
+	 */
+	public SimpleDateFormat getDateFormat()
+	{
+		return dateFormat;
+	}
+
+	/**
+	 * @return
+	 */
+	public TimeZone getTimeZone()
+	{
+		return timeZone;
+	}
+
+	/**
+	 * @param format
+	 */
+	public void setDateFormat(SimpleDateFormat format)
+	{
+		dateFormat = format;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getBillingGroupType()
+	{
+		return billingGroupType;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setBillingGroupType(int billGroupType)
+	{
+		if( billingGroupType != billGroupType)
+			billingGroupType = billGroupType;
+	}
+	/**
+	 * @return
+	 */
+	public int getPaoModelType()
+	{
+		return paoModelType;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPaoModelType(int paoModelType_)
+	{
+		if( paoModelType != paoModelType_)
+			paoModelType = paoModelType_;
+	}
+	/**
+	 * Override this function if an extended model does not have a Billing Group
+	 * @return
+	 */
+	public boolean useBillingGroup()
+	{
+		return false;
+	}
+	/**
+	 * Override this function if an extended model does not use a Start Date
+	 * @return
+	 */
+	public boolean useStartDate()
+	{
+		return true;
+	}
+	/**
+	 * Override this function if an extended model does not use a Stop Date
+	 * @return
+	 */
+	public boolean useStopDate()
+	{
+		return true;
+	}
+	/**
+	 * @return
+	 */
+	public boolean usePaobjects()
+	{
+		return (getPaoModelTypes() != null);
+	}
+	
+	/**
+	 * @return
+	 */
+	public int[] getPaoModelTypes()
+	{
+		return paoModelTypes;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setPaoModelTypes(int[] is)
+	{
+		paoModelTypes = is;
+	}
+
+	public List getPaobjectsByModel(int model)
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		List litePaos = null;
+		if( model == ModelFactory.LMCONTROLAREA)
+		{
+			litePaos = cache.getAllLMControlAreas();
+		}
+		else if( model == ModelFactory.MCT)
+		{
+			litePaos = cache.getAllMCTs();
+		}
+		return litePaos;
+	}
+
 }

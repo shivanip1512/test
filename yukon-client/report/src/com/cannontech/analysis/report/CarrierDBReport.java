@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.print.PageFormat;
 
 import org.jfree.report.Boot;
 import org.jfree.report.Group;
@@ -152,4 +153,14 @@ public class CarrierDBReport extends YukonReportBase
 
 		return items;
 	}
+	
+	/**
+	 * @return
+	 */
+	public PageFormat getPageFormat()
+	{
+		super.getPageFormat();
+		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
+		return pageFormat;
+	}	
 }

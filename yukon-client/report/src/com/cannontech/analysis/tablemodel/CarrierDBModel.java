@@ -2,12 +2,15 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -89,6 +92,16 @@ public class CarrierDBModel extends ReportModelBase
 			" AND PAO1.PAOBJECTID = DR.DEVICEID " + 
 			" AND PAO2.PAOBJECTID = DR.ROUTEID " +
 			" AND PAO1.PAOBJECTID = DCS.DEVICEID ");
+
+			//billing group selection
+			if( getBillingGroups() != null && getBillingGroups().length > 0)
+			{
+				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+				for (int i = 1; i < getBillingGroups().length; i++)
+					sql.append("', '" + getBillingGroups()[i]);
+				sql.append("') ");
+			}
+			
 			//Use paoIDs in query if they exist
 			if( getPaoIDs() != null && getPaoIDs().length > 0)
 			{
@@ -109,8 +122,10 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
-		int rowCount = 0;
+		//Reset all objects, new data being collected!
+		setData(null);
 		
+		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -174,8 +189,8 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date());
+		//Use current date 
+		return getDateFormat().format(new java.util.Date());
 	}
 
 	/* (non-Javadoc)
@@ -256,12 +271,12 @@ public class CarrierDBModel extends ReportModelBase
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(0, 1, 175, null),
-				new ColumnProperties(175, 1, 75, null),
-				new ColumnProperties(250, 1, 50, null),
-				new ColumnProperties(300, 1, 100, null),
-				new ColumnProperties(400, 1, 75, null),
-				new ColumnProperties(477, 1, 75, null)
+				new ColumnProperties(0, 1, 200, null),
+				new ColumnProperties(200, 1, 75, null),
+				new ColumnProperties(275, 1, 75, null),
+				new ColumnProperties(350, 1, 200, null),
+				new ColumnProperties(550, 1, 80, null),
+				new ColumnProperties(630, 1, 80, null)
 			};
 		}
 		return columnProperties;
@@ -274,4 +289,39 @@ public class CarrierDBModel extends ReportModelBase
 	{
 		return title + " - " +getPaoClass();
 	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
+	 */
+	public boolean useBillingGroup()
+	{
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
+	 */
+	public boolean useStartDate()
+	{
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
+	 */
+	public boolean useStopDate()
+	{
+		return false;
+	}
+
+	public String getHTMLOptionsTable()
+	{
+		return super.getHTMLOptionsTable();
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+	}
+
 }

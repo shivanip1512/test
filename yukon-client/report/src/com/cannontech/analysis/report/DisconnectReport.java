@@ -63,13 +63,12 @@ public class DisconnectReport extends YukonReportBase
 		
 		//start and stop time are only valid when model.showHist is false
 		GregorianCalendar cal = new GregorianCalendar();
-		model.setStopTime(cal.getTime().getTime());
+		model.setStopDate(cal.getTime());
+
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
-	
-		model.setStartTime(cal.getTime().getTime());
+		model.setStartDate(cal.getTime());
 //		model.setCollectionGroups(new String[] {"Cycle 1"});
-
 
 		model.setShowConnected(true);
 		model.setShowDisconnected(true);

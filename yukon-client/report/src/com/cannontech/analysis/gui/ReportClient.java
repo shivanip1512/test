@@ -46,7 +46,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.model.Checkable;
 import com.cannontech.database.model.CommChannelCheckBoxTreeModel;
@@ -278,7 +278,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 		{
 			//TODO
 			loadTreeModels(DB_REPORTS_MODELS);
-			tempModel = new RouteMacroModel(DeviceClasses.STRING_CLASS_CARRIER);
+			tempModel = new RouteMacroModel();
 		}
 		else if (event.getSource() == getReportsMenu().getCBCCapBankMenuItem())
 		{
@@ -303,8 +303,8 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			YukonReportBase report = null;
 			getModel().setData(null);
 			
-			getModel().setStartTime(getStartDate().getTime());
-			getModel().setStopTime(getEndDate().getTime());
+			getModel().setStartDate(getStartDate());
+			getModel().setStopDate(getEndDate());
 
 			if (model instanceof ActivityModel)
 			{
@@ -322,7 +322,8 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			else if (model instanceof DisconnectModel)
 			{
 				String[] collGrps = getStringsFromNodes();
-				model.setCollectionGroups(collGrps);
+				model.setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				model.setBillingGroups(collGrps);
 				report = new DisconnectReport();
 			}
 			else if (model instanceof LoadGroupModel)
@@ -334,13 +335,15 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			else if (model instanceof MeterReadModel)
 			{
 				String[] collGrps = getStringsFromNodes();
-				model.setCollectionGroups(collGrps);
+				model.setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				model.setBillingGroups(collGrps);
 				report = new MeterReadReport();
 			}
 			else if (model instanceof PowerFailModel)
 			{
 				String[] collGrps = getStringsFromNodes();
-				model.setCollectionGroups(collGrps);
+				model.setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				model.setBillingGroups(collGrps);
 				report = new PowerFailReport();
 			}
 			else if (model instanceof RouteMacroModel)
@@ -392,10 +395,10 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 					for (int i = 0; i < logTypeIDs.length; i++)
 						logTypeIDs[i] = SystemLog.getLogTypeIDFromString(logTypes[i]);
 	
-					((SystemLogModel)getModel()).setLogTypes(logTypeIDs);
+					((SystemLogModel)getModel()).setLogType(logTypeIDs);
 				}
 				else
-					((SystemLogModel)getModel()).setLogTypes(null);
+					((SystemLogModel)getModel()).setLogType(null);
 				report = new SystemLogReport();
 			}
 			else

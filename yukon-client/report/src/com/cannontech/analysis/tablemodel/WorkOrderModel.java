@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.clientutils.CTILogger;
@@ -136,6 +138,8 @@ public class WorkOrderModel extends ReportModelBase {
 	private Integer accountID = null;
 	private Integer serviceStatus = null;
 	
+	private final String ATT_SEARCH_COL = "searchCol";
+	
 	private HashMap accountIDToMeterNumberMap = null;
 	
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -226,20 +230,18 @@ public class WorkOrderModel extends ReportModelBase {
 	}
 	
 	public WorkOrderModel(Integer ecID) {
-		this();
-		setECIDs( ecID );
+		this(ecID, null, SEARCH_COL_NONE, null, null);
 	}
 	
 	public WorkOrderModel(Integer ecID, Integer orderID) {
-		this( ecID );
-		setOrderID( orderID );
+		this( ecID , orderID, SEARCH_COL_NONE, null, null);
 	}
 	
-	public WorkOrderModel(Integer ecID, int searchColumn, long startTime, long stopTime) {
-		this( ecID );
+	public WorkOrderModel(Integer ecID, Integer orderID, int searchColumn, Date start_, Date stop_) {
+		super(start_, stop_);
+		setECIDs( ecID );
+		setOrderID( orderID );
 		setSearchColumn( searchColumn );
-		setStartTime( startTime );
-		setStopTime( stopTime );
 	}
 
 	/**
@@ -377,6 +379,10 @@ public class WorkOrderModel extends ReportModelBase {
 	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#collectData()
 	 */
 	public void collectData() {
+		
+		//Reset all objects, new data being collected!
+		setData(null);
+		
 		if (getECIDs() == null) return;
 		
 		for (int i = 0; i < getECIDs().length; i++) {
@@ -424,7 +430,7 @@ public class WorkOrderModel extends ReportModelBase {
 					else if (getSearchColumn() == SEARCH_COL_DATE_CLOSED)
 						timestamp = liteOrder.getDateCompleted();
 					
-					if (timestamp < getStartTime() || timestamp > getStopTime())
+					if (timestamp < getStartDate().getTime() || timestamp > getStopDate().getTime())
 						it.remove();
 				}
 			}
@@ -778,4 +784,51 @@ public class WorkOrderModel extends ReportModelBase {
 		return title;
 	}
 
+	public String getHTMLOptionsTable()
+	{
+		String html = "";
+		
+		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "  <tr>" + LINE_SEPARATOR;
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Search BY Column</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_SEARCH_COL +"' value='" + SEARCH_COL_DATE_CLOSED + "'>Date Closed" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_SEARCH_COL +"' value='" + SEARCH_COL_DATE_REPORTED+ "'>Date Reported" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_SEARCH_COL +"' value='" + SEARCH_COL_DATE_SCHEDULED + "'>Date Scheduled" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_SEARCH_COL +"' value='" + SEARCH_COL_NONE+ "' checked >None" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+		html += "  </tr>" + LINE_SEPARATOR;
+		html += "</table>" + LINE_SEPARATOR;
+		return html;
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+		if( req != null)
+		{
+			String param = req.getParameter(ATT_SEARCH_COL);
+			if( param != null)
+				setSearchColumn(Integer.valueOf(param).intValue());
+			else
+				setSearchColumn(SEARCH_COL_NONE);
+		}
+	}
 }

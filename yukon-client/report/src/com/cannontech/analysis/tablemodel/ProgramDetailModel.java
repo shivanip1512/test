@@ -1,9 +1,11 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.Date;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.stars.ProgramDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -58,10 +60,10 @@ public class ProgramDetailModel extends ReportModelBase
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
-	public ProgramDetailModel(long stopTime_)
+	public ProgramDetailModel(Date stop_)
 	{
 		//use the stop (max) time for both date entries.
-		super(Long.MIN_VALUE, stopTime_);//default type
+		super(null, stop_);//default type
 	}
 
 	/**
@@ -88,7 +90,7 @@ public class ProgramDetailModel extends ReportModelBase
 	 */
 	public ProgramDetailModel(Integer ecID_)
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default type
+		this();//default type
 		setECIDs(ecID_);
 	}
 	
@@ -97,6 +99,9 @@ public class ProgramDetailModel extends ReportModelBase
 	 */
 	public void collectData()
 	{
+		//Reset all objects, new data being collected!
+		setData(null);
+				
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
@@ -371,8 +376,8 @@ public class ProgramDetailModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStopTime() ));
-				CTILogger.info("MAX STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStopDate().getTime() ));
+				CTILogger.info("MAX STOP DATE <= " + getStopDate());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -431,8 +436,33 @@ public class ProgramDetailModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return (format.format(new java.util.Date(getStopTime())));
+		return (getDateFormat().format(getStopDate()));
 	}	
+
+	public String getHTMLOptionsTable()
+	{
+		return super.getHTMLOptionsTable();
+	}
+
+	public void setParameters( HttpServletRequest req )
+	{
+		super.setParameters(req);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
+	 */
+	public boolean useStartDate()
+	{
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStopDate()
+	 */
+	public boolean useStopDate()
+	{
+		return false;
+	}
 
 }
