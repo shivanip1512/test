@@ -610,6 +610,15 @@ public void setValue(Object o) {
 		LMGroupGolay golay = (LMGroupGolay) o;
 		
 		StringBuffer address = new StringBuffer(golay.getLMGroupSASimple().getOperationalAddress());
+		if(address.length() < 6)
+		{
+			address.reverse();
+			for(int j = address.length(); j > 0; j--)
+			{
+				address.append("0");
+			}
+			address.reverse();
+		}
 		getOpAddressJTextField1().setText(address.substring(0,2));
 		getOpAddressJTextField2().setText(address.substring(2,4));
 		getOpAddressJTextField3().setText(address.substring(4,6));
