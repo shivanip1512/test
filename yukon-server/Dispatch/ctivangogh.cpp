@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2004/08/18 22:04:49 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2004/08/19 15:44:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5864,7 +5864,7 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                         ppc.getControl().setActiveRestore( LMAR_DISPATCH_SHUTDOWN );
                         ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
 
-                        ppc.dump();
+                        // ppc.dump();
 
                         insertControlHistoryRow(ppc, now);
                         postControlHistoryPoints(ppc,now);
