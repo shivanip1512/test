@@ -1,5 +1,6 @@
 package com.cannontech.export;
 
+import com.cannontech.export.record.RecordBase;
 /**
  * Base class for export file format types.
  * Creation date: (4/8/2002 11:11:48 AM)
@@ -11,15 +12,24 @@ public abstract class ExportFormatBase
 	private static com.cannontech.common.util.LogWriter logger = null;	//Log writer for export formats.
 	private static Thread sleepThread = new Thread();		//sleeper thread for main do/while loop.
 	private static boolean isService = true;		//is Export format being ran as a service.
+	private boolean isAppend = false;
+	
+	private java.util.Vector importStringVector = null;	//contains the (String) elements read from the import file.
+	private String importDirectory = null;	//directory for import file deployment.
+	private String importFileName = "import.csv";	//fileName for importdata.
 
 	private java.util.Vector recordVector = null;	//contains the (String) elements to write to the export file.
-	private String directory = null;	//directory for export file deployment.
-
+	private String exportDirectory = null;	//directory for export file deployment.
+	private String exportFileName = "export.csv";	//fileName for exportdata.
+	private String lastIDFileName = "\\LASTID.dat";	//dat file for last id exported.
+	
 	public java.util.GregorianCalendar nextRunTime = null;	//Next run time the application will create a file.
 	private long runTimeIntervalInMillis = 86400000;	//Interval between run times.
 
 	private com.cannontech.database.db.notification.NotificationGroup emailGroup = null;	//not implemented 2/20/03
 	
+	public static final String CONFIG_DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();	
+
 	/**
 	 * ExportFormatBase constructor comment.
 	 */
@@ -48,6 +58,14 @@ public abstract class ExportFormatBase
 		else if( formatID == ExportFormatTypes.IONEVENTLOG_FORMAT)
 		{
 			returnFormat = new IONEventLogFormat();
+		}
+		else if( formatID == ExportFormatTypes.LMCTRLHIST_EXPORT_FORMAT)
+		{
+			returnFormat = new LMControlHistoryFormat();
+		}
+		else if( formatID == ExportFormatTypes.LMCTRLHIST_IMPORT_FORMAT)
+		{
+			returnFormat = new LMControlHistoryImportFormat();
 		}
 		else
 		{
@@ -87,26 +105,26 @@ public abstract class ExportFormatBase
 	 * Method getDirectory.
 	 * @return String
 	 */
-	public String getDirectory()
+	public String getExportDirectory()
 	{
-		if( directory == null)
+		if( exportDirectory == null)
 		{
 			try
 			{
 				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				directory = bundle.getString("export_file_directory");
-				logEvent("Export File Directory (config.prop): " + directory, com.cannontech.common.util.LogWriter.INFO);
+				exportDirectory = bundle.getString("export_file_directory");
+				logEvent("Export File Directory (config.prop): " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
 			}
 			catch( Exception e)
 			{
-				directory = com.cannontech.common.util.CtiUtilities.getExportDirPath();
+				exportDirectory = com.cannontech.common.util.CtiUtilities.getExportDirPath();
 				logEvent("Config.properties export_file_directory key NOT found.", com.cannontech.common.util.LogWriter.ERROR);
-				logEvent("Export File Directory  default value: " + directory, com.cannontech.common.util.LogWriter.INFO);
+				logEvent("Export File Directory  default value: " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
 			}
-			java.io.File file = new java.io.File( directory );
+			java.io.File file = new java.io.File( exportDirectory);
 			file.mkdirs();
 		}
-		return directory;
+		return exportDirectory;
 	}
 	
 	/**
@@ -122,7 +140,19 @@ public abstract class ExportFormatBase
 	 * Return fileName to write exportFormat to.
 	 * @return String
 	 */
-	public abstract String getFileName();
+	public String getExportFileName()
+	{
+		return exportFileName;
+	}
+
+	/**
+	 * Return fileName to write the lastID exported to.
+	 * @return String
+	 */
+	public String getLastIDFileName()
+	{
+		return lastIDFileName;
+	}
 	
 	/**
 	 * Return ExportFormatTypes.formatDatFileName according to exportProperites.getFormatID().
@@ -268,9 +298,18 @@ public abstract class ExportFormatBase
 	
 			if (formatBase.getNextRunTime().getTime().compareTo(now) <= 0)
 			{
-				formatBase.retrieveExportData();
-				formatBase.writeToFile();
+				if( formatBase.getExportProperties().getFormatID() == ExportFormatTypes.LMCTRLHIST_IMPORT_FORMAT )
+				{
+					formatBase.retrieveData();
+					formatBase.updateDatabase();
+				}
+				else
+				{	
+					formatBase.retrieveData();
+					formatBase.writeToFile();
+				}				
 				formatBase.figureNextRunTime();
+
 	//			com.cannontech.message.dispatch.message.EmailMsg emailMsg = new com.cannontech.message.dispatch.message.EmailMsg();
 	//			emailMsg.setSender("snebben@cannontech.com");
 			}
@@ -302,11 +341,15 @@ public abstract class ExportFormatBase
 	 */
 	public abstract void parseDatFile();
 		
+	public void updateDatabase()
+	{
+		com.cannontech.clientutils.CTILogger.info("updateDatabase() - Not implemented by all extendors yet!");
+	}
 	/**
 	 * Query the database for export Data.
 	 * Populate recordVector for each valid record created.
 	 */
-	abstract public void retrieveExportData();
+	abstract public void retrieveData();
 	
 	/**
 	 * Main method for use with a GUI implementation (such as com.cannontech.export.gui.ExportGUI.
@@ -331,10 +374,18 @@ public abstract class ExportFormatBase
 			ie.printStackTrace();
 		}
 	
-		formatBase.retrieveExportData();
-		formatBase.writeToFile();
+		if( formatBase.getExportProperties().getFormatID() == ExportFormatTypes.LMCTRLHIST_IMPORT_FORMAT )
+		{
+			formatBase.retrieveData();
+			formatBase.updateDatabase();
+		}
+		else
+		{	
+			formatBase.retrieveData();
+			formatBase.writeToFile();
+		}
 		formatBase.figureNextRunTime();
-	
+		
 		System.gc();
 	
 		formatBase.logEvent("Finished " + formatBase.getClass().getName() + " File Export.", com.cannontech.common.util.LogWriter.INFO);
@@ -367,13 +418,13 @@ public abstract class ExportFormatBase
 	 * Set directory, create directory if it does not already exist.
 	 * @param newDirectory java.lang.String
 	 */
-	public void setDirectory(String newDirectory)
+	public void setExportDirectory(String newExpDir)
 	{
-		directory = newDirectory;
-		java.io.File file = new java.io.File( directory );
+		exportDirectory = newExpDir;
+		java.io.File file = new java.io.File( exportDirectory );
 		file.mkdirs();
 		
-		logEvent("Files exported to directory: " + directory, com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Files exported to directory: " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
 	}
 	
 	/**
@@ -402,40 +453,99 @@ public abstract class ExportFormatBase
 	 */
 	public void writeToFile()
 	{
-		if( recordVector != null)
+		try
 		{
+			java.io.FileWriter outputFileWriter = new java.io.FileWriter(getExportDirectory() + getExportFileName(), isAppend() );
+			outputFileWriter.write( getOutputAsStringBuffer().toString() );
+			outputFileWriter.flush();
+			outputFileWriter.close();		
+		}
+		catch (java.io.IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
+		finally
+		{
+			if( recordVector.size() <=0)
+				logEvent("...Exported * 0 * Records.  No file generated.", com.cannontech.common.util.LogWriter.INFO);
 			
-			StringBuffer returnBuffer = new StringBuffer();
-			for (int i = 0; i < recordVector.size(); i++)
-			{
-				String dataString = (String)recordVector.get(i);
-				if( dataString != null)
-					returnBuffer.append(dataString);
-			}
-	
-			try
-			{
-				java.io.FileWriter outputFileWriter = new java.io.FileWriter( getDirectory() + getFileName() );
-				outputFileWriter.write( returnBuffer.toString() );
-				outputFileWriter.flush();
-				outputFileWriter.close();
-			}
-			catch (java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-			finally
+			else
 			{
 				//DISCARD ALL RECORD DATA SO WE CAN START OVER AGAIN.
-				logEvent("...Exported * "+ recordVector.size() + " * Records to file " + getDirectory() + getFileName(), com.cannontech.common.util.LogWriter.INFO);			
+				logEvent("...Exported * "+ recordVector.size() + " * Records to file " + getExportDirectory() + getExportFileName(), com.cannontech.common.util.LogWriter.INFO);			
 				recordVector = null;
 			}
 		}
-		else
-		{
-			logEvent("...Exported * 0 * Records.  No file generated.", com.cannontech.common.util.LogWriter.INFO);
-		}
 	}
+	
+	/**
+	 * Write the greatest logid to file LASTLOGID_FILENAME
+	 * @param maxLogID
+	 */
+	public void writeLastIDToFile(int maxID)
+	{
+		try
+		{
+			java.io.File file = new java.io.File( getCONFIG_DIRECTORY() );
+			file.mkdirs();
+			
+			java.io.FileWriter writer = new java.io.FileWriter( file.getPath() + getLastIDFileName());
+
+			// write the max log id recorded
+	 		writer.write( String.valueOf( maxID ) + "\r\n");
+	
+			writer.close();
+		}
+		catch ( java.io.IOException e )
+		{
+			System.out.print(" IOException in writeLastLogIDToFile()");
+			e.printStackTrace();
+		}
+	}	
+
+	/**
+	 * Return the lastLogID used for generating the export format.
+	 * Reads the logId from LASTLOGID_FILENAME.
+	 * @return int
+	 */
+	public int getLastID()
+	{
+		int lastLogID = -1;
+		java.io.RandomAccessFile raFile = null;
+		java.io.File inFile = new java.io.File( getCONFIG_DIRECTORY() + getLastIDFileName());
+		try
+		{
+			// open file		
+			if( inFile.exists() )
+			{
+				raFile = new java.io.RandomAccessFile( inFile, "r" );
+
+				//Believe we should only have one line to read!		
+				String line = raFile.readLine();  // read a line in
+				lastLogID = Integer.valueOf(line).intValue();
+
+				// Close file
+				raFile.close();						
+			}
+		}
+		catch(java.io.IOException ex)
+		{
+			System.out.print("IOException in getLastID()");
+			ex.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				//Try to close the file, again.
+				if( inFile.exists() )
+					raFile.close();
+			}
+			catch( java.io.IOException ex )
+			{}		
+		}
+		return lastLogID;
+	}	
 
 	/**
 	 * Method buildKeysAndValues.
@@ -501,5 +611,128 @@ public abstract class ExportFormatBase
 	public String toString()
 	{
 		return ExportFormatTypes.getFormatTypeName(getExportProperties().getFormatID());
+	}
+	/**
+	 * Returns the CONFIG_DIRECTORY.
+	 * @return String
+	 */
+	public static String getCONFIG_DIRECTORY()
+	{
+		return CONFIG_DIRECTORY;
+	}
+
+	/**
+	 * Sets the exportFileName.
+	 * @param exportFileName The exportFileName to set
+	 */
+	public void setExportFileName(String exportFileName)
+	{
+		this.exportFileName = exportFileName;
+	}
+
+	/**
+	 * Sets the lastIDFileName.
+	 * @param lastIDFileName The lastIDFileName to set
+	 */
+	public void setLastIDFileName(String lastIDFileName)
+	{
+		this.lastIDFileName = lastIDFileName;
+	}
+
+	/**
+	 * Returns the importRecordVector.
+	 * @return java.util.Vector
+	 */
+	public java.util.Vector getImportStringVector()
+	{
+		if(importStringVector == null)
+		{
+			importStringVector = new java.util.Vector();
+		}
+		return importStringVector;
+	}
+
+	/**
+	 * Sets the importRecordVector.
+	 * @param importRecordVector The importRecordVector to set
+	 */
+	public void setImportStringVector(java.util.Vector importStringVector)
+	{
+		this.importStringVector = importStringVector;
+	}
+	
+	/**
+	 * Returns the record vector as a string buffer formatted
+	 *  by each RecordBase dataToString() format.
+	 * Creation date: (11/29/00)
+	 * @return java.lang.StringBuffer
+	 */
+	public StringBuffer getOutputAsStringBuffer()
+	{
+		StringBuffer returnBuffer = new StringBuffer();
+		java.util.Vector records = getRecordVector();
+		
+		for(int i=0;i<records.size();i++)
+		{
+			String dataString = ((RecordBase)records.get(i)).dataToString();
+			if( dataString != null)
+				returnBuffer.append(dataString);
+		}
+	
+		return returnBuffer;
+	}
+	/**
+	 * Returns the importDirectory.
+	 * @return String
+	 */
+	public String getImportDirectory()
+	{
+		if( importDirectory == null)
+		{
+			importDirectory = getExportDirectory();//com.cannontech.common.util.CtiUtilities.getExportDirPath();
+		}
+		return importDirectory;
+	}
+
+	/**
+	 * Returns the importFileName.
+	 * @return String
+	 */
+	public String getImportFileName()
+	{
+		return importFileName;
+	}
+
+	/**
+	 * Sets the importDirectory.
+	 * @param importDirectory The importDirectory to set
+	 */
+	public void setImportDirectory(String importDirectory)
+	{
+		this.importDirectory = importDirectory;
+	}
+
+	/**
+	 * Sets the importFileName.
+	 * @param importFileName The importFileName to set
+	 */
+	public void setImportFileName(String importFileName)
+	{
+		this.importFileName = importFileName;
+	}
+	/**
+	 * Returns the isAppend.
+	 * @return boolean
+	 */
+	public boolean isAppend() {
+		return isAppend;
+	}
+
+	/**
+	 * Sets the isAppend.
+	 * @param isAppend The isAppend to set
+	 */
+	public void setIsAppend(boolean isAppend) {
+		this.isAppend = isAppend;
 	}
 }

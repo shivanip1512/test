@@ -51,8 +51,8 @@ public class CSVBillingFormat extends ExportFormatBase
 			{
 				if(keys[i].equalsIgnoreCase("DIR"))
 				{
-					setDirectory(values[i].toString());
-					java.io.File file = new java.io.File( getDirectory() );
+					setExportDirectory(values[i].toString());
+					java.io.File file = new java.io.File( getExportDirectory() );
 					file.mkdirs();
 				}
 				else if( keys[i].equalsIgnoreCase("ENERGYFILE"))
@@ -141,8 +141,8 @@ public class CSVBillingFormat extends ExportFormatBase
 		else
 		{
 			// MODIFY THE LOG EVENT HERE!!!
-			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ int=30", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> energyfile=<energyDataFile> delimiter=<delChar> headings=<boolean> start=<mm/dd/yyyy> stop=<mm/dd/yyyy>", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Ex.	  format=0 dir=c:/yukon/client/export/ energyfile=c:/yukon/client/config/nums.txt delimiter=',' headings=false start=mm/dd/yyyy stop=mm/dd/yyyy", com.cannontech.common.util.LogWriter.INFO);
 			logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
 		}
 		
@@ -161,7 +161,7 @@ public class CSVBillingFormat extends ExportFormatBase
 		values[i++] = String.valueOf(ExportFormatTypes.CSVBILLING_FORMAT);
 		
 		keys[i] = "DIR";
-		values[i++] = getDirectory();
+		values[i++] = getExportDirectory();
 	
 		keys[i] = "ENERGYFILE";
 		values[i++] = getExportProperties().getEnergyFileName();
@@ -181,19 +181,6 @@ public class CSVBillingFormat extends ExportFormatBase
 		return new String[][]{keys, values};
 	}
 	
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#getFileName()
-	 */
-	public String getFileName()
-	{
-		String name = new String();
-		name += filePrefix;
-		name += FILENAME_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
-		name += fileExtension;
-	
-		return name;
-	}
-
 	/**
 	 * Method retrieveBaselineData.
 	 * @param baselinePointID
@@ -375,9 +362,8 @@ public class CSVBillingFormat extends ExportFormatBase
 						csvBillingRec.setADL(value);
 	
 						csvBillingRec.setDelimiter(getExportProperties().getDelimiter());
-						
-						String dataString = csvBillingRec.dataToString();
-						getRecordVector().add(dataString);
+			
+						getRecordVector().add(csvBillingRec);
 					}
 					
 				}
@@ -569,8 +555,14 @@ public class CSVBillingFormat extends ExportFormatBase
 	 * Creation date: (1/8/2002 5:07:44 PM)
 	 * @return java.lang.String[]
 	 */
-	public void retrieveExportData()
+	public void retrieveData()
 	{
+		String name = new String();
+		name += filePrefix;
+		name += FILENAME_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
+		name += fileExtension;
+		setExportFileName(name)	;
+		
 		long timer = System.currentTimeMillis();
 		if( getExportProperties().isShowColumnHeadings())
 		{
@@ -613,6 +605,5 @@ public class CSVBillingFormat extends ExportFormatBase
 		getExportProperties().setMaxTimestamp(newCal);
 		logEvent(" * Next TimePeriod: " + getExportProperties().getMinTimestamp().getTime() + " - " + getExportProperties().getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
 		logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);	
-		//writeToFile();
 	}
 }

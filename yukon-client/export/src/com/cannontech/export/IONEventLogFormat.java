@@ -6,10 +6,10 @@ public class IONEventLogFormat extends ExportFormatBase
 		
 	private final int VALID_PRIORITY = 51;
 	private final int VALID_POINTOFFSET = 2600;
-	private String fileName = "ioneventlog.csv";	//"c2000_control.csv";
 
-	public static final String LASTLOGID_FILENAME = "\\IONELID.DAT";	//ION Event Log ID (last read).dat
-	public static final String DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
+	private final String EXPORT_FILENAME= "ioneventlog.csv";	//"c2000_control.csv";
+	public final String LASTID_FILENAME = "\\IONELID.DAT";	//ION Event Log ID (last read).dat
+	
 	private long runTimeIntervalInMillis = 1800000;	//30mins
 
 	//VALID EFFECT HANDLES MUST BE MAPPED TOGETHER WITH INT AND STRING VALUES.
@@ -33,7 +33,7 @@ public class IONEventLogFormat extends ExportFormatBase
 		"Notify Status",
 		"Control Status",
 		"Notify Relay",
-		"Control Relay",
+		"Control Relay"
 	};
 	
 	//VALID CAUSE HANDLES MUST BE MAPPED TOGETHER WITH INT AND STRING VALUES.
@@ -80,25 +80,11 @@ public class IONEventLogFormat extends ExportFormatBase
 	{
 		super();
 		super.setRunTimeIntervalInMillis(runTimeIntervalInMillis);
+		super.setExportFileName(EXPORT_FILENAME);
+		super.setLastIDFileName(LASTID_FILENAME);
+		super.setIsAppend(true);
 	}
 
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#getFileName()
-	 */
-	public String getFileName()
-	{
-		return fileName;
-	}
-
-	/**
-	 * Set fileName to export format to.
-	 * @param fileName java.lang.String
-	 */
-	private void setFileName(String fileName)
-	{
-		this.fileName = fileName;
-	}
-	
 	/**
 	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
 	 */
@@ -116,13 +102,13 @@ public class IONEventLogFormat extends ExportFormatBase
 			{
 				if(keys[i].equalsIgnoreCase("DIR"))
 				{
-					setDirectory(values[i].toString());
-					java.io.File file = new java.io.File( getDirectory() );
+					setExportDirectory(values[i].toString());
+					java.io.File file = new java.io.File( getExportDirectory() );
 					file.mkdirs();
 				}
 				else if(keys[i].equalsIgnoreCase("FILE"))
 				{
-					setFileName(values[i].toString());
+					setExportFileName(values[i].toString());
 				}
 				else if(keys[i].equalsIgnoreCase("INT"))
 				{
@@ -131,13 +117,17 @@ public class IONEventLogFormat extends ExportFormatBase
 					long millisPerMinute  = 60L * 1000L;	//60 seconds * 1000 millis
 					setRunTimeIntervalInMillis( minuteInterval * millisPerMinute);
 				}
+				else if(keys[i].equalsIgnoreCase("APPEND"))
+				{
+					setIsAppend(Boolean.valueOf(values[i].trim()).booleanValue());
+				}
 			}
 		}
 		else
 		{
 			// MODIFY THE LOG EVENT HERE!!!
-			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ int=30", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> file=<exportFileName> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ file=export.csv int=30", com.cannontech.common.util.LogWriter.INFO);
 			logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
 		}
 		
@@ -148,22 +138,25 @@ public class IONEventLogFormat extends ExportFormatBase
 	 */
 	public String[][] buildKeysAndValues()
 	{
-		String[] keys = new String[4];
-		String[] values = new String[4];
+		String[] keys = new String[5];
+		String[] values = new String[5];
 		
 		int i = 0; 
 		keys[i] = "FORMAT";
 		values[i++] = String.valueOf(ExportFormatTypes.IONEVENTLOG_FORMAT);
 		
 		keys[i] = "DIR";
-		values[i++] = getDirectory();
+		values[i++] = getExportDirectory();
 
 		keys[i] = "FILE";
-		values[i++] = getFileName();
+		values[i++] = getExportFileName();
 		
 		long millisPerMinute = 60L * 1000L;	//60 seconds * 1000millis
 		keys[i] = "INT";
 		values[i++] = String.valueOf(getRunTimeIntervalInMillis()/millisPerMinute);
+		
+		keys[i] = "APPEND";
+		values[i++] = String.valueOf(isAppend());
 		
 		return new String[][]{keys, values};
 	}
@@ -171,24 +164,25 @@ public class IONEventLogFormat extends ExportFormatBase
 	/**
 	 * @see com.cannontech.export.ExportFormatBase#retrieveExportData()
 	 */
-	public void retrieveExportData()
+	public void retrieveData()
 	{
 		long timer = System.currentTimeMillis();
 	
-		StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME, DMG.METERNUMBER, DMG.BILLINGGROUP ");
-		sql.append(" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG ");
+		StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME, DDNP.SLAVEADDRESS, DMG.BILLINGGROUP ");
+		sql.append(" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICEDNP DDNP ");
 		sql.append(" WHERE P.POINTOFFSET = "+ VALID_POINTOFFSET);
 		sql.append(" AND SL.POINTID = P.POINTID ");
 		sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 		sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
-		sql.append(" AND LOGID > " + getLastEventLogID());
+		sql.append(" AND PAO.PAOBJECTID = DDNP.DEVICEID ");		
+		sql.append(" AND LOGID > " + getLastID());
 		sql.append(" ORDER BY LOGID");
 					
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
-		logEvent("ION Event Log for Max Log ID = " + getLastEventLogID(), com.cannontech.common.util.LogWriter.INFO);
+		logEvent("ION Event Log for Max Log ID = " + getLastID(), com.cannontech.common.util.LogWriter.INFO);
 		
 		try
 		{
@@ -211,7 +205,7 @@ public class IONEventLogFormat extends ExportFormatBase
 					String action = rset.getString(4);	
 					//Parse action here!
 					IONAction ionAction = getIONAction(action);
-					Integer record = ionAction.record;
+//					Integer record = ionAction.record;
 					String causeIon = ionAction.ion_cause_handle;
 					String effectIon = ionAction.ion_effect_handle;
 					
@@ -236,19 +230,21 @@ public class IONEventLogFormat extends ExportFormatBase
 						
 						String user = rset.getString(6);
 						String paoName = rset.getString(7);
-						String meterNum = rset.getString(8);
+//						String meterNum = rset.getString(8);
+						int slaveAdd = rset.getInt(8);
 						String billGroup = rset.getString(9);
-						String node = billGroup + "." + paoName + "_" + meterNum;
+//						String node = billGroup + "." + paoName + "_" + meterNum;
+						String node = billGroup + "." + paoName + "_" + String.valueOf(slaveAdd);
 						
 						com.cannontech.export.record.IONEventLogRecord ionRecord =
-							new com.cannontech.export.record.IONEventLogRecord(node, nLog, tsDate, priority, record, null, causeIon, causeValue, effectIon, effectValue);
+							new com.cannontech.export.record.IONEventLogRecord(node, nLog, tsDate, priority,new Integer(logid), null, causeIon, causeValue, effectIon, effectValue);
 	
-						getRecordVector().addElement(ionRecord.dataToString());
+						getRecordVector().addElement(ionRecord);
 					}
 				}
 				
 				if( lastLogID > 0)	//only write to file if we have actually collected new data.
-					writeLastLogIDToFile(lastLogID);
+					writeLastIDToFile(lastLogID);
 			}
 		}
 		catch( java.sql.SQLException e )
@@ -271,75 +267,6 @@ public class IONEventLogFormat extends ExportFormatBase
 		logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);
 	}
 
-	/**
-	 * Return the lastLogID used for generating the export format.
-	 * Reads the logId from LASTLOGID_FILENAME.
-	 * @return int
-	 */
-	private int getLastEventLogID()
-	{
-		int lastLogID = -1;
-		java.io.RandomAccessFile raFile = null;
-		java.io.File inFile = new java.io.File( DIRECTORY + LASTLOGID_FILENAME);	
-		try
-		{
-			// open file		
-			if( inFile.exists() )
-			{
-				raFile = new java.io.RandomAccessFile( inFile, "r" );
-
-				//Believe we should only have one line to read!		
-				String line = raFile.readLine();  // read a line in
-				lastLogID = Integer.valueOf(line).intValue();
-
-				// Close file
-				raFile.close();						
-			}
-		}
-		catch(java.io.IOException ex)
-		{
-			System.out.print("IOException in getLastEventLogID()");
-			ex.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				//Try to close the file, again.
-				if( inFile.exists() )
-					raFile.close();
-			}
-			catch( java.io.IOException ex )
-			{}		
-		}
-		return lastLogID;
-	}	
-	
-	/**
-	 * Write the greatest logid to file LASTLOGID_FILENAME
-	 * @param maxLogID
-	 */
-	private void writeLastLogIDToFile(int maxLogID)
-	{
-		try
-		{
-			java.io.File file = new java.io.File( DIRECTORY );
-			file.mkdirs();
-			
-			java.io.FileWriter writer = new java.io.FileWriter( file.getPath() + LASTLOGID_FILENAME);
-
-			// write the max log id recorded
-	 		writer.write( String.valueOf( maxLogID ) + "\r\n");
-	
-			writer.close();
-		}
-		catch ( java.io.IOException e )
-		{
-			System.out.print(" IOException in writeLastLogIDToFile()");
-			e.printStackTrace();
-		}
-	}	
-	
 	/**
 	 * Return true when desc parameters pass the validity checks.
 	 * @param desc innerclass.IONDescription
@@ -465,7 +392,7 @@ public class IONEventLogFormat extends ExportFormatBase
 				
 			if (value.length() > 0)
 			{
-				if( key.equalsIgnoreCase("rec"))
+				if( key.toLowerCase().startsWith("rec"))
 					ion_action.record = Integer.valueOf(value.trim());
 				else if( key.equalsIgnoreCase("c_h"))
 					ion_action.ion_cause_handle = getValidCauseHandle(Integer.valueOf(value.trim()).intValue());
@@ -508,5 +435,4 @@ public class IONEventLogFormat extends ExportFormatBase
 		}
 		return String.valueOf(causeHandle);	//default value back...I guess.
 	}
-	
 }

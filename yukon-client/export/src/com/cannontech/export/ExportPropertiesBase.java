@@ -20,9 +20,7 @@ public class ExportPropertiesBase
 
 	private Character delimiter = new Character('|');
 	private boolean showColumnHeadings = false;
-	private String filePrefix = "OfferBill";
-	private String fileExtension = ".csv";
-	private String energyFileName = "C:/yukon/client/config/EnergyNumbers.txt";
+	private String energyFileName = "c:/yukon/client/config/EnergyNumbers.txt";
 		
 	//DBPURGE PROPERTIES
 	int daysToRetain = 90;
@@ -71,18 +69,7 @@ public class ExportPropertiesBase
 	{
 		if (daysToRetain < 0)
 		{		
-			try
-			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				daysToRetain = (new Integer(bundle.getString("dbpurge_days_to_retain"))).intValue();
-				com.cannontech.clientutils.CTILogger.info("  (config.prop)  Days To Retain in database = " + daysToRetain);
-			}
-			catch( Exception e)
-			{
-				daysToRetain = 90;
-				com.cannontech.clientutils.CTILogger.error("  Days to retain was NOT found, DEFAULTED TO " + daysToRetain);
-				com.cannontech.clientutils.CTILogger.info("  Add 'dbpurge_days_to_retain' to config.properties.");
-			}
+			daysToRetain = 90;
 		}
 		return daysToRetain;
 	}
@@ -103,24 +90,6 @@ public class ExportPropertiesBase
 	public String getEnergyFileName()
 	{
 		return energyFileName;
-	}
-
-	/**
-	 * Returns the fileExtension.
-	 * @return String
-	 */
-	public String getFileExtension()
-	{
-		return fileExtension;
-	}
-
-	/**
-	 * Returns the filePrefix.
-	 * @return String
-	 */
-	public String getFilePrefix()
-	{
-		return filePrefix;
 	}
 
 	/**
@@ -197,18 +166,7 @@ public class ExportPropertiesBase
 			}
 			else
 			{
-				try
-				{
-					java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-					runTimeHour = new Integer(bundle.getString("dbpurge_runtime_hour"));
-					com.cannontech.clientutils.CTILogger.info("  (config.prop)  Hour of Day (0-23) to run is " + runTimeHour.intValue());
-				}
-				catch( Exception e)
-				{
-					runTimeHour = new Integer(1);
-					com.cannontech.clientutils.CTILogger.error("  Hour of Day (0-23) was NOT found, DEFAULTED TO " + runTimeHour.intValue());
-					com.cannontech.clientutils.CTILogger.info("  Add 'dbpurge_runtime_hour' to config.properties.");
-				}
+				runTimeHour = new Integer(1);
 			}
 		}
 		return runTimeHour;		
@@ -248,24 +206,6 @@ public class ExportPropertiesBase
 	public void setEnergyFileName(String energyFileName)
 	{
 		this.energyFileName = energyFileName;
-	}
-
-	/**
-	 * Sets the fileExtension.
-	 * @param fileExtension The fileExtension to set
-	 */
-	public void setFileExtension(String fileExtension)
-	{
-		this.fileExtension = fileExtension;
-	}
-
-	/**
-	 * Sets the filePrefix.
-	 * @param filePrefix The filePrefix to set
-	 */
-	public void setFilePrefix(String filePrefix)
-	{
-		this.filePrefix = filePrefix;
 	}
 
 	/**

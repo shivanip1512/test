@@ -24,22 +24,8 @@ public class DBPurgeFormat extends ExportFormatBase
 	public DBPurgeFormat()
 	{
 		super();
-	
 	}
 	
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#getFileName()
-	 */
-	public String getFileName()
-	{
-		String name = new String();
-		name += filePrefix;
-		name += FILENAME_FORMAT.format(getMaxDateToPurge().getTime());
-		name += fileExtension;
-	
-		return name;
-	}
-
 	/**
 	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
 	 */
@@ -58,12 +44,11 @@ public class DBPurgeFormat extends ExportFormatBase
 				if( keys[i].equalsIgnoreCase("DAYS"))
 				{
 					getExportProperties().setDaysToRetain( Integer.parseInt(values[i]) );
-					setMaxDateToPurge();
 				}				
 				else if(keys[i].equalsIgnoreCase("DIR"))
 				{
-					setDirectory(values[i].toString());
-					java.io.File file = new java.io.File( getDirectory() );
+					setExportDirectory(values[i].toString());
+					java.io.File file = new java.io.File( getExportDirectory() );
 					file.mkdirs();
 				}
 				else if( keys[i].equalsIgnoreCase("HOUR"))
@@ -79,8 +64,8 @@ public class DBPurgeFormat extends ExportFormatBase
 		else
 		{
 			// MODIFY THE LOG EVENT HERE!!!
-			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ int=30", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> hour=<runTimeHour(0-23)> purge=<boolean>", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Ex.	  format=1 dir=c:/yukon/client/export/ hour=1 purge=false", com.cannontech.common.util.LogWriter.INFO);
 			logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
 		}
 		
@@ -99,7 +84,7 @@ public class DBPurgeFormat extends ExportFormatBase
 		values[i++] = String.valueOf(ExportFormatTypes.DBPURGE_FORMAT);
 		
 		keys[i] = "DIR";
-		values[i++] = getDirectory();
+		values[i++] = getExportDirectory();
 		
 		keys[i] = "DAYS";
 		values[i++] = String.valueOf(getExportProperties().getDaysToRetain());
@@ -121,7 +106,7 @@ public class DBPurgeFormat extends ExportFormatBase
 	private java.util.GregorianCalendar getMaxDateToPurge() 
 	{
 		if( maxDateToPurge == null)
-			setMaxDateToPurge();
+			retrieveMaxDateToPurge();
 		return maxDateToPurge;
 	}
 	
@@ -177,8 +162,16 @@ public class DBPurgeFormat extends ExportFormatBase
 	/**
 	 * @see com.cannontech.export.ExportFormatBase#retrieveExportData()
 	 */
-	public void retrieveExportData()
+	public void retrieveData()
 	{
+		retrieveMaxDateToPurge();
+
+		String name = new String();
+		name += filePrefix;
+		name += FILENAME_FORMAT.format(getMaxDateToPurge().getTime());
+		name += fileExtension;
+		setExportFileName(name);
+
 		long timer = System.currentTimeMillis();	
 	
 		String sqlString =	"SELECT LOGID, SL.POINTID, DATETIME, TYPE, PRIORITY, ACTION, DESCRIPTION, P.POINTNAME, P.POINTTYPE "+
@@ -257,8 +250,7 @@ public class DBPurgeFormat extends ExportFormatBase
 				}
 				dbPurgeRec.setLogText(templogtext);
 					
-				String dataString = dbPurgeRec.dataToString();
-				getRecordVector().add(dataString);
+				getRecordVector().add(dbPurgeRec);
 			}
 	
 			if(getExportProperties().isPurgeData())
@@ -290,7 +282,7 @@ public class DBPurgeFormat extends ExportFormatBase
 	/**
 	 * Set MaxDateToPurge subtracting daysToRetain from today's dae.
 	 */
-	private void setMaxDateToPurge()
+	private void retrieveMaxDateToPurge()
 	{
 		int DAY = 86400;
 		int MILLI_CONVERT = 1000;

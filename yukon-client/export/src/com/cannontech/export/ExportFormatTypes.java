@@ -7,13 +7,17 @@ public class ExportFormatTypes
 	public static final int CSVBILLING_FORMAT = 0;
 	public static final int DBPURGE_FORMAT = 1;
 	public static final int IONEVENTLOG_FORMAT = 2;
+	public static final int LMCTRLHIST_EXPORT_FORMAT = 3;
+	public static final int LMCTRLHIST_IMPORT_FORMAT = 4;
 
 	//String values of valid formatIDs.  Also used for service install names.
 	public static String [] formatTypeNames = 
 	{
 		"CSVBilling",
 		"DBPurge",
-		"IONEventLog"
+		"IONEventLog",
+		"LMCtrlHistExport",
+		"LMCtrlHistImport"
 	};
 
 	//Configuration file for valid formatIDs
@@ -21,7 +25,10 @@ public class ExportFormatTypes
 	{
 		"csvwrapper.conf",
 		"dbwrapper.conf",
-		"ionwrapper.conf"
+		"ionwrapper.conf",
+		"lmchewrapper.conf",
+		"lmchiwrapper.conf"
+		
 	};
 
 	//Dat files for format property values.  Key=Value dat file format.
@@ -29,7 +36,9 @@ public class ExportFormatTypes
 	{
 		"\\csvprop.dat",
 		"\\dbprop.dat",
-		"\\ionprop.dat"
+		"\\ionprop.dat",
+		"\\lmcheprop.dat",
+		"\\lmchiprop.dat"
 	};
 
 	/**
