@@ -256,6 +256,46 @@ LONG CtiLMProgramDirectGear::getMethodOptionMax() const
     return _methodoptionmax;
 }
 
+/*----------------------------------------------------------------------------
+  getRampInInterval
+
+  Returns the ramp in interval of the gear
+----------------------------------------------------------------------------*/
+LONG CtiLMProgramDirectGear::getRampInInterval() const
+{
+    return _rampininterval;
+}
+
+/*----------------------------------------------------------------------------
+  getRampInPercent
+
+  Returns the ramp in percent of the gear
+----------------------------------------------------------------------------*/
+LONG CtiLMProgramDirectGear::getRampInPercent() const
+{
+    return _rampinpercent;
+}
+
+/*----------------------------------------------------------------------------
+  getRampOutInterval
+
+  Returns the ramp out interval of the gear
+----------------------------------------------------------------------------*/
+LONG CtiLMProgramDirectGear::getRampOutInterval() const
+{
+    return _rampoutinterval;
+}
+
+/*----------------------------------------------------------------------------
+  getRampOutPercent
+
+  Returns the ramp out percent of the gear
+----------------------------------------------------------------------------*/
+LONG CtiLMProgramDirectGear::getRampOutPercent() const
+{
+    return _rampoutpercent;
+}
+
 /*---------------------------------------------------------------------------
     setPAOId
     
@@ -483,6 +523,49 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setMethodOptionMax(LONG opmax)
     return *this;
 }
 
+/*----------------------------------------------------------------------------
+  setRampInInterval
+
+  Sets the ramp in interval of the gear
+----------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setRampInInterval(LONG interval)
+{
+    _rampininterval = interval;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setRampInPercent
+
+  Sets the ramp in percent of the gear
+----------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setRampInPercent(LONG percent)
+{
+    _rampinpercent = percent;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setRampOutInterval
+
+  Sets the ramp out interval of the gear
+----------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setRampOutInterval(LONG interval)
+{
+    _rampoutinterval = interval;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setRampOutPercent
+
+  Sets the ramp out percent of the gear
+----------------------------------------------------------------------------*/
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setRampOutPercent(LONG percent)
+{
+    _rampoutpercent = percent;
+    return *this;
+}
 
 /*-------------------------------------------------------------------------
     restoreGuts
@@ -513,7 +596,11 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
           >> _percentreduction
           >> _groupselectionmethod
           >> _methodoptiontype
-          >> _methodoptionmax;
+          >> _methodoptionmax
+	  >> _rampininterval
+	  >> _rampinpercent
+	  >> _rampoutinterval
+	  >> _rampoutpercent;
 }
 
 /*---------------------------------------------------------------------------
@@ -545,7 +632,12 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
           << _percentreduction
           << _groupselectionmethod
           << _methodoptiontype
-          << _methodoptionmax;
+          << _methodoptionmax
+	  << _rampininterval
+	  << _rampinpercent
+	  << _rampoutinterval
+	  << _rampoutpercent;
+   
 
     return;
 }
@@ -577,6 +669,10 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::operator=(const CtiLMProgramDire
         _groupselectionmethod = right._groupselectionmethod;
         _methodoptiontype = right._methodoptiontype;
         _methodoptionmax = right._methodoptionmax;
+	_rampininterval = right._rampininterval;
+	_rampinpercent = right._rampinpercent;
+	_rampoutinterval = right._rampoutinterval;
+	_rampoutpercent = right._rampoutpercent;
     }
 
     return *this;
@@ -637,6 +733,10 @@ void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
     rdr["groupselectionmethod"] >> _groupselectionmethod;
     rdr["methodoptiontype"] >> _methodoptiontype;
     rdr["methodoptionmax"] >> _methodoptionmax;
+    rdr["rampininterval"] >> _rampininterval;
+    rdr["rampinpercent"] >> _rampinpercent;
+    rdr["rampoutinterval"] >> _rampoutinterval;
+    rdr["rampoutpercent"] >>_rampoutpercent;
 }
 
 // Static Members
@@ -655,6 +755,7 @@ const RWCString CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 const RWCString CtiLMProgramDirectGear::RestoreStopType = "Restore";
 const RWCString CtiLMProgramDirectGear::TimeInStopType = "TimeIn";
 const RWCString CtiLMProgramDirectGear::StopCycleStopType = "StopCycle";
+const RWCString CtiLMProgramDirectGear::RampOutStopType = "RampOut";
 
 //Possible gear change condition types
 const RWCString CtiLMProgramDirectGear::NoneChangeCondition = "None";

@@ -53,6 +53,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const RWDBDateTime& getDirectStartTime() const;
     const RWDBDateTime& getDirectStopTime() const;
     const RWDBDateTime& getNotifyTime() const;
+    const RWDBDateTime& getStartedRampingOutTime() const;
+    
+    bool getIsRampingIn() const;
+    bool getIsRampingOut() const;
+    
     RWOrdered& getLMProgramDirectGears();
     RWOrdered& getLMProgramDirectGroups();
     set<int>&  getNotificationGroupIDs();
@@ -68,11 +73,16 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setDirectStartTime(const RWDBDateTime& start);
     CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
     CtiLMProgramDirect& setNotifyTime(const RWDBDateTime& notify);
+    CtiLMProgramDirect& setStartedRampingOutTime(const RWDBDateTime& started);
     
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
+    //Old school
     CtiLMGroupBase* findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
+    //new school, only master cycle for now
+    CtiLMGroupBase* findNextGroupToTake();
+    
     //void restoreDirectSpecificDatabaseEntries(RWDBReader& rdr);
     BOOL maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
     BOOL hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
@@ -84,6 +94,13 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     LONG calculateGroupControlTimeLeft(CtiLMGroupBase* currentLMGroup, LONG estimatedControlTimeInSeconds) const;
     BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupBase* currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
+    bool refreshRampOutProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+
+    bool updateGroupsRampingOut(ULONG secondsFrom1901);
+    
+/*    LONG countNumGroupsRampedIn() const;
+      BOOL isGroupRampedIn(CtiLMGroupBase* group) const;*/
+    
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiDispatchMsg);
     
     virtual CtiLMProgramBase* replicate() const;
@@ -94,7 +111,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
-
+    
     ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
     
     //Members inherited from RWCollectable
@@ -112,6 +129,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
 private: 
 
+    
     LONG _notifyoffset;
 
     string _message_subject;
@@ -124,6 +142,7 @@ private:
     RWDBDateTime _directstarttime;
     RWDBDateTime _directstoptime;
     RWDBDateTime _notifytime;
+    RWDBDateTime _startedrampingout;
 
     //When the dynamic data was last saved
     RWDBDateTime  _dynamictimestamp;
@@ -135,7 +154,20 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
+    
+/*
+    void SetGroupRampInFlags(BOOL flag);
+    void SetGroupRampOutFlags(BOOL flag);
+    void ResetGroupInternalState();
+*/
+//    void TakeGroupsEvery(int num_groups, long interval);
+/*    void setIsRampingIn(bool in);
+      void setIsRampingOut(bool out);*/
+    
+    void ResetGroups();
+    void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
+    double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
+    
     void restore(RWDBReader& rdr);
 };
 #endif

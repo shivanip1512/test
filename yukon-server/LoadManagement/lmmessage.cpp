@@ -13,6 +13,7 @@
 
 #include "lmmessage.h"
 #include "lmid.h"
+#include "rwutil.h"
 
 #include <rw/collstr.h>
 #include <time.h>
@@ -427,7 +428,10 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
     CtiLMMessage::restoreGuts(strm);
     RWOrdered* rw_ordered;
 
+    strm >> _paoid;
     strm >> rw_ordered;
+    strm >> _best_fit_action;
+    
     for(int i = 0; i < rw_ordered->entries(); i++)
     {
 	_constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
@@ -450,8 +454,9 @@ void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
     {
 	rw_ordered->insert(new RWCollectableString(iter->data()));
     }
-
+    strm << _paoid;
     strm << rw_ordered;
+    strm << _best_fit_action;
     return;
 }
 
@@ -469,6 +474,27 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::operator=(const CtiLMMan
 }
 
 /*----------------------------------------------------------------------------
+  getPAOId
+
+  Returns the program id
+----------------------------------------------------------------------------*/
+LONG CtiLMManualControlResponse::getPAOId() const
+{
+    return _paoid;
+}
+
+/*----------------------------------------------------------------------------
+  getBestFitAction
+
+  Returns a string describing the best fit action the server had to take,
+  might be empty
+----------------------------------------------------------------------------*/
+const string& CtiLMManualControlResponse::getBestFitAction() const
+{
+    return _best_fit_action;
+}
+
+/*----------------------------------------------------------------------------
   getConstraintViolations
 
   Returns the contraint violations
@@ -476,6 +502,26 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::operator=(const CtiLMMan
 const vector<string>& CtiLMManualControlResponse::getConstraintViolations() const
 {
     return _constraintViolations;
+}
+
+/*----------------------------------------------------------------------------
+  setPAOId
+
+  Sets the program id
+----------------------------------------------------------------------------*/  
+CtiLMManualControlResponse& CtiLMManualControlResponse::setPAOId(LONG paoid)
+{
+    _paoid = paoid;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setBestFitAction
+----------------------------------------------------------------------------*/
+CtiLMManualControlResponse& CtiLMManualControlResponse::setBestFitAction(const string& best_fit_action)
+{
+    _best_fit_action = best_fit_action;
+    return *this;
 }
 
 /*----------------------------------------------------------------------------

@@ -55,7 +55,6 @@ CtiLMGroupSADigital::~CtiLMGroupSADigital()
 CtiRequestMsg* CtiLMGroupSADigital::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control sadigital shed ");
-    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -101,7 +100,6 @@ CtiRequestMsg* CtiLMGroupSADigital::createTrueCycleRequestMsg(LONG percent, LONG
 CtiRequestMsg* CtiLMGroupSADigital::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control sadigital shed ");
-    controlString += buildShedString(shedTime);
     
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -120,7 +118,6 @@ CtiRequestMsg* CtiLMGroupSADigital::createRotationRequestMsg(LONG sendRate, LONG
 CtiRequestMsg* CtiLMGroupSADigital::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control sadigital shed ");
-    controlString += buildShedString(offTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

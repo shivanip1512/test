@@ -1072,8 +1072,8 @@ void CtiLMManualControlRequestExecutor::Execute()
     }
     }
 
-    //move the disabled checks into general constraint checking
-    if( controlArea->getDisableFlag() )
+    //move the disabled checks into general constraint checking, manual requests should be affected by ablement
+/*    if( controlArea->getDisableFlag() )
     {
 	if( _request != NULL)
 	{
@@ -1095,7 +1095,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 	    CtiLoadManager::getInstance()->sendMessageToClients(resp);
 	    return;
 	}
-    }
+	}*/
 
     
     RWDBDateTime startTime;
@@ -1105,7 +1105,6 @@ void CtiLMManualControlRequestExecutor::Execute()
     CtiLMConstraintChecker checker;
     vector<string> result_vec;
     bool passed_check = false;
-
     
     switch ( _controlMsg->getCommand() )
     {
@@ -1151,6 +1150,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     {
 	CtiServerResponseMsg* resp = new CtiServerResponseMsg();
 	CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
+	lmResp->setPAOId(_controlMsg->getPAOId());
 	lmResp->setConstraintViolations(result_vec);
 	resp->setPayload(lmResp);
 	resp->setID(_request->getID());

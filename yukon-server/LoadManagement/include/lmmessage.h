@@ -166,9 +166,14 @@ public:
     CtiLMManualControlResponse(const CtiLMManualControlResponse& resp);
     virtual ~CtiLMManualControlResponse() { };
 
+    LONG getPAOId() const;
     const vector< string >& getConstraintViolations() const;
+    const string& getBestFitAction() const;
+
+    CtiLMManualControlResponse& setPAOId(LONG pao_id);
     CtiLMManualControlResponse& setConstraintViolations(const vector< string >& constraintViolations);
-    
+    CtiLMManualControlResponse& setBestFitAction(const string& best_fit_action);
+
     virtual CtiMessage* replicateMessage() const;
     
     void restoreGuts(RWvistream&);
@@ -176,7 +181,9 @@ public:
 
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
+    LONG _paoid;
     vector< string > _constraintViolations;
+    string _best_fit_action;
 };
 
 class CtiLMEnergyExchangeControlMsg : public CtiLMMessage

@@ -22,17 +22,22 @@
 #include "resolvers.h"
 #include "numstr.h"
 
+#define GROUP_RAMPING_IN 0x00000001
+#define GROUP_RAMPING_OUT 0x00000002
+
 extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase::CtiLMGroupBase()
+CtiLMGroupBase::CtiLMGroupBase() : _next_control_time(1990,1,1,0,0,0,0)
 {
+    resetInternalState();
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
 {
+    resetInternalState();
     restore(rdr);
 }
 
@@ -265,6 +270,36 @@ const RWDBDateTime& CtiLMGroupBase::getControlCompleteTime() const
     return _controlcompletetime;
 }
 
+/*----------------------------------------------------------------------------
+  getNextControlTime
+
+  Returns the time this group will be controlled next
+----------------------------------------------------------------------------*/
+const RWDBDateTime& CtiLMGroupBase::getNextControlTime() const
+{
+    return _next_control_time;
+}
+
+/*----------------------------------------------------------------------------
+  getIsRampingIn
+
+  Returns whether or not the group is currently ramping in
+----------------------------------------------------------------------------*/
+bool CtiLMGroupBase::getIsRampingIn() const
+{
+    return _internalState & GROUP_RAMPING_IN;
+}
+
+/*----------------------------------------------------------------------------
+  getIsRampinOut
+
+  Returns whether or not he group is currently ramping out
+----------------------------------------------------------------------------*/
+bool CtiLMGroupBase::getIsRampingOut() const
+{
+    return _internalState & GROUP_RAMPING_OUT;
+}
+
 /*---------------------------------------------------------------------------
     getHoursDailyPointId
 
@@ -493,7 +528,6 @@ CtiLMGroupBase& CtiLMGroupBase::setControlInhibit(BOOL control)
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setGroupControlState(LONG controlstate)
 {
-
     _groupcontrolstate = controlstate;
     return *this;
 }
@@ -577,6 +611,18 @@ CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const RWDBDateTime& start)
 CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const RWDBDateTime& complete)
 {
     _controlcompletetime = complete;
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
+    setNextControlTime
+
+    Sets the time when the current group will be controlled next
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const RWDBDateTime& controltime)
+{
+    _next_control_time = controltime;
     return *this;
 }
 
@@ -731,38 +777,40 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(RWCString settings, LONG
 --------------------------------------------------------------------------*/
 void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
 {
-
-
-
     RWCollectable::restoreGuts( istrm );
 
     RWTime tempTime1;
     RWTime tempTime2;
     RWTime tempTime3;
+    RWTime tempTime4;
+    
     istrm >> _paoid
-    >> _paocategory
-    >> _paoclass
-    >> _paoname
-    >> _paotype
-    >> _paodescription
-    >> _disableflag
-    >> _grouporder
-    >> _kwcapacity
-    >> _childorder
-    >> _alarminhibit
-    >> _controlinhibit
-    >> _groupcontrolstate
-    >> _currenthoursdaily
-    >> _currenthoursmonthly
-    >> _currenthoursseasonal
-    >> _currenthoursannually
-    >> tempTime1
-    >> tempTime2
-    >> tempTime3;
+	  >> _paocategory
+	  >> _paoclass
+	  >> _paoname
+	  >> _paotype
+	  >> _paodescription
+	  >> _disableflag
+	  >> _grouporder
+	  >> _kwcapacity
+	  >> _childorder
+	  >> _alarminhibit
+	  >> _controlinhibit
+	  >> _groupcontrolstate
+	  >> _currenthoursdaily
+	  >> _currenthoursmonthly
+	  >> _currenthoursseasonal
+	  >> _currenthoursannually
+	  >> tempTime1
+	  >> tempTime2
+	  >> tempTime3
+	  >> tempTime4
+	  >> _internalState;
 
     _lastcontrolsent = RWDBDateTime(tempTime1);
     _controlstarttime = RWDBDateTime(tempTime2);
     _controlcompletetime = RWDBDateTime(tempTime3);
+    _next_control_time = RWDBDateTime(tempTime4);
 }
 
 /*---------------------------------------------------------------------------
@@ -772,31 +820,30 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
 {
-
-
-
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-    << _paocategory
-    << _paoclass
-    << _paoname
-    << _paotype
-    << _paodescription
-    << _disableflag
-    << _grouporder
-    << _kwcapacity
-    << _childorder
-    << _alarminhibit
-    << _controlinhibit
-    << _groupcontrolstate
-    << _currenthoursdaily
-    << _currenthoursmonthly
-    << _currenthoursseasonal
-    << _currenthoursannually
-    << _lastcontrolsent.rwtime()
-    << _controlstarttime.rwtime()
-    << _controlcompletetime.rwtime();
+	  << _paocategory
+	  << _paoclass
+	  << _paoname
+	  << _paotype
+	  << _paodescription
+	  << _disableflag
+	  << _grouporder
+	  << _kwcapacity
+	  << _childorder
+	  << _alarminhibit
+	  << _controlinhibit
+	  << _groupcontrolstate
+	  << _currenthoursdaily
+	  << _currenthoursmonthly
+	  << _currenthoursseasonal
+	  << _currenthoursannually
+	  << _lastcontrolsent.rwtime()
+	  << _controlstarttime.rwtime()
+	  << _controlcompletetime.rwtime()
+	  << _next_control_time.rwtime()
+	  << _internalState;
 
     return;
 }
@@ -806,8 +853,6 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
 {
-
-
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -830,6 +875,7 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _lastcontrolsent = right._lastcontrolsent;
         _controlstarttime = right._controlstarttime;
         _controlcompletetime = right._controlcompletetime;
+	_next_control_time = right._next_control_time;
         _hoursdailypointid = right._hoursdailypointid;
         _hoursmonthlypointid = right._hoursmonthlypointid;
         _hoursseasonalpointid = right._hoursseasonalpointid;
@@ -837,6 +883,7 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _lmprogramid = right._lmprogramid;
         _controlstatuspointid = right._controlstatuspointid;
         _lastcontrolstring = right._lastcontrolstring;
+	_internalState = right._internalState;
     }
 
     return *this;
@@ -977,7 +1024,9 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         rdr["timestamp"] >> dynamicTimeStamp;
         rdr["controlstarttime"] >> _controlstarttime;
         rdr["controlcompletetime"] >> _controlcompletetime;
-
+        rdr["nextcontroltime"] >> _next_control_time;
+	rdr["internalstate"] >> _internalState;
+	
         _insertDynamicDataFlag = FALSE;
     }
     else
@@ -990,7 +1039,9 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setLastControlSent(RWDBDateTime(1990,1,1,0,0,0,0));
         setControlStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
         setControlCompleteTime(RWDBDateTime(1990,1,1,0,0,0,0));
-
+        setNextControlTime(RWDBDateTime(1990,1,1,0,0,0,0));
+	_internalState = 0;
+	
         _insertDynamicDataFlag = TRUE;
     }
 
@@ -1090,7 +1141,10 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                         << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
                         << dynamicLMGroupTable["timestamp"].assign( currentDateTime )
                         << dynamicLMGroupTable["controlstarttime"].assign( getControlStartTime() )
-                        << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() );
+                        << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() )
+			<< dynamicLMGroupTable["nextcontroltime"].assign( getNextControlTime() )
+			<< dynamicLMGroupTable["internalstate"].assign( _internalState );
+		
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId()&&
                               dynamicLMGroupTable["lmprogramid"]==getLMProgramId());
@@ -1113,16 +1167,18 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 RWDBInserter inserter = dynamicLMGroupTable.inserter();
 
                 inserter << getPAOId()
-                << getGroupControlState()
-                << getCurrentHoursDaily()
-                << getCurrentHoursMonthly()
-                << getCurrentHoursSeasonal()
-                << getCurrentHoursAnnually()
-                << getLastControlSent()
-                << currentDateTime
-                << getLMProgramId()
-                << getControlStartTime()
-                << getControlCompleteTime();
+			 << getGroupControlState()
+			 << getCurrentHoursDaily()
+			 << getCurrentHoursMonthly()
+			 << getCurrentHoursSeasonal()
+			 << getCurrentHoursAnnually()
+			 << getLastControlSent()
+			 << currentDateTime
+			 << getLMProgramId()
+			 << getControlStartTime()
+			 << getControlCompleteTime()
+			 << getNextControlTime()
+			 << _internalState;
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -1141,6 +1197,37 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
             dout << RWTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
+}
+
+/*----------------------------------------------------------------------------
+  resetInternalState
+----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::resetInternalState()
+{
+    _internalState = 0x00000000;
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setIsRampingIn
+----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setIsRampingIn(bool in)
+{
+    _internalState = (in ?
+		      _internalState | GROUP_RAMPING_IN :
+		      _internalState & ~GROUP_RAMPING_IN);
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
+  setIsRampingOut
+----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
+{
+    _internalState = (out ?
+		      _internalState | GROUP_RAMPING_OUT :
+		      _internalState & ~GROUP_RAMPING_OUT);
+    return *this;
 }
 
 // Static Members

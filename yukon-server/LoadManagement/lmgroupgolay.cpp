@@ -55,7 +55,6 @@ CtiLMGroupGolay::~CtiLMGroupGolay()
 CtiRequestMsg* CtiLMGroupGolay::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control golay shed ");
-    controlString += buildShedString(shedTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -101,7 +100,6 @@ CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG per
 CtiRequestMsg* CtiLMGroupGolay::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
     RWCString controlString = RWCString("control golay shed ");
-    controlString += buildShedString(shedTime);
     
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -120,7 +118,6 @@ CtiRequestMsg* CtiLMGroupGolay::createRotationRequestMsg(LONG sendRate, LONG she
 CtiRequestMsg* CtiLMGroupGolay::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
     RWCString controlString = RWCString("control golay shed ");
-    controlString += buildShedString(offTime);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

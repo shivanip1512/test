@@ -73,7 +73,7 @@ public:
     const RWDBDateTime& getLastControlSent() const;
     BOOL getManualControlReceivedFlag() const;
     RWOrdered& getLMProgramControlWindows();
-
+    
     CtiLMProgramBase& setPAOId(LONG id);
     CtiLMProgramBase& setPAOCategory(const RWCString& category);
     CtiLMProgramBase& setPAOClass(const RWCString& pclass);

@@ -441,7 +441,7 @@ void CtiLoadManager::controlLoop()
 }
 
 /*---------------------------------------------------------------------------
-    getDispatchConnection
+    Getdispatchconnection
 
     Returns a connection to Dispatch, initializes if isn't created yet.
 ---------------------------------------------------------------------------*/

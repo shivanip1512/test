@@ -54,6 +54,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     const RWCString& getGroupSelectionMethod() const;
     const RWCString& getMethodOptionType() const;
     LONG getMethodOptionMax() const;
+    LONG getRampInInterval() const;
+    LONG getRampInPercent() const;
+    LONG getRampOutInterval() const;
+    LONG getRampOutPercent() const;
 
     CtiLMProgramDirectGear& setPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const RWCString& name);
@@ -73,6 +77,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     CtiLMProgramDirectGear& setGroupSelectionMethod(const RWCString& group);
     CtiLMProgramDirectGear& setMethodOptionType(const RWCString& optype);
     CtiLMProgramDirectGear& setMethodOptionMax(LONG opmax);
+    CtiLMProgramDirectGear& setRampInInterval(LONG ininterval);
+    CtiLMProgramDirectGear& setRampInPercent(LONG inpercent);
+    CtiLMProgramDirectGear& setRampOutInterval(LONG outinterval);
+    CtiLMProgramDirectGear& setRampOutPercent(LONG outpercent);
 
     CtiLMProgramDirectGear* replicate() const;
 
@@ -101,7 +109,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString RestoreStopType;
     static const RWCString TimeInStopType;
     static const RWCString StopCycleStopType;
-
+    static const RWCString RampOutStopType;
+    
     //Possible gear change condition types
     static const RWCString NoneChangeCondition;
     static const RWCString DurationChangeCondition;
@@ -141,6 +150,10 @@ private:
     RWCString _groupselectionmethod;
     RWCString _methodoptiontype;
     LONG _methodoptionmax;
+    LONG _rampininterval;
+    LONG _rampinpercent;
+    LONG _rampoutinterval;
+    LONG _rampoutpercent;
 };
 #endif
 

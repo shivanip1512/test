@@ -367,6 +367,8 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMGroupTable["lmprogramid"]
                                  << dynamicLMGroupTable["controlstarttime"]
                                  << dynamicLMGroupTable["controlcompletetime"]
+				 << dynamicLMGroupTable["nextcontroltime"]
+				 << dynamicLMGroupTable["internalstate"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -623,6 +625,7 @@ void CtiLMControlAreaStore::reset()
 			         << dynamicLMProgramDirectTable["timestamp"]
     			         << dynamicLMProgramDirectTable["dailyops"]
 				 << dynamicLMProgramDirectTable["notifytime"]
+				 << dynamicLMProgramDirectTable["startedrampingout"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -722,6 +725,10 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramDirectGearTable["groupselectionmethod"]
                                  << lmProgramDirectGearTable["methodoptiontype"]
                                  << lmProgramDirectGearTable["methodoptionmax"]
+				 << lmProgramDirectGearTable["rampininterval"]
+				 << lmProgramDirectGearTable["rampinpercent"]
+				 << lmProgramDirectGearTable["rampoutinterval"]
+				 << lmProgramDirectGearTable["rampoutpercent"]
                                  << lmThermoStatGearTable["settings"]
                                  << lmThermoStatGearTable["minvalue"]
                                  << lmThermoStatGearTable["maxvalue"]

@@ -24,7 +24,7 @@
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
-                
+
 class CtiLMGroupBase : public RWCollectable
 {
 
@@ -56,6 +56,11 @@ public:
     const RWDBDateTime& getLastControlSent() const;
     const RWDBDateTime& getControlStartTime() const;
     const RWDBDateTime& getControlCompleteTime() const;
+    const RWDBDateTime& getNextControlTime() const; //FIXME
+
+    bool getIsRampingIn() const;
+    bool getIsRampingOut() const;
+    
     LONG getHoursDailyPointId() const;
     LONG getHoursMonthlyPointId() const;
     LONG getHoursSeasonalPointId() const;
@@ -84,6 +89,12 @@ public:
     CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
     CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
     CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
+    CtiLMGroupBase& setNextControlTime(const RWDBDateTime& controltime);
+    
+    CtiLMGroupBase& setIsRampingIn(bool in);
+    CtiLMGroupBase& setIsRampingOut(bool out);
+    CtiLMGroupBase& resetInternalState();
+    
     CtiLMGroupBase& setHoursDailyPointId(LONG dailyid);
     CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
     CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
@@ -152,6 +163,7 @@ private:
     LONG _childorder;
     BOOL _alarminhibit;
     BOOL _controlinhibit;
+    
     LONG _groupcontrolstate;
     LONG _currenthoursdaily;
     LONG _currenthoursmonthly;
@@ -160,6 +172,10 @@ private:
     RWDBDateTime _lastcontrolsent;
     RWDBDateTime _controlstarttime;
     RWDBDateTime _controlcompletetime;
+//FIXME    
+    RWDBDateTime _next_control_time;
+    unsigned  _internalState;
+
     LONG _hoursdailypointid;
     LONG _hoursmonthlypointid;
     LONG _hoursseasonalpointid;
