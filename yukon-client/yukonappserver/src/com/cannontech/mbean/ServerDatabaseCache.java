@@ -1420,14 +1420,15 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleNotificationGroupChange( dbType, id );
 	}
-	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
-	{
-		retLBase = handleContactNotificationChange( dbType, id );
-	}
+//	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
+//	{
+//		retLBase = handleContactNotificationChange( dbType, id );
+//	}
 	else if( database == DBChangeMsg.CHANGE_CONTACT_DB )
 	{
-		//clear out the CICustomers as they may have changed
+		//clear out the CICustomers & NotificationGroups as they may have changed
 		allCICustomers = null;
+		allNotificationGroups = null;
 
 		retLBase = handleCustomerContactChange( dbType, id );		
 	}
