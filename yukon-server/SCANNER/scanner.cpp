@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2003/05/15 22:36:12 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2003/05/23 22:15:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,6 +177,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Define for the porter interface */
     IM_EX_CTIBASE extern USHORT   PrintLogEvent;
     RWTPtrSlist< OUTMESS >         outList;         // Nice little collection of OUTMESS's
+
 
     int Op, k;
 
@@ -552,7 +553,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                         dout << RWTime() << " Looking at " << pBase->getName() << endl;
                     }
 
-                    if(pBase->isSingle())
+                    if(pBase->isSingle() && !pBase->isInhibited())
                     {
                         DeviceRecord = (CtiDeviceSingle*)pBase;
 
@@ -984,10 +985,12 @@ VOID ScannerCleanUp ()
     ScannerQuit = TRUE;
 
     ScannerDeviceManager.DeleteList();
+    PortPipeCleanup(0);
+
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+    Sleep(2000);
     VanGoghConnection.ShutdownConnection();
 
-    PortPipeCleanup(0);
 
     dout << RWTime() << " Scanner terminated!" << endl;
 
@@ -1197,6 +1200,7 @@ void LoadScannableDevices(void *ptr)
 
 
     InitScannerGlobals();      // Go fetch from the environmant
+    ResetBreakAlloc();          // Make certain the debug library does not break us.
 
     RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());
 
@@ -1411,7 +1415,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                           CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)device;
                                           DeviceRecord->applySignaledRateChange(open,duration);
                                           DeviceRecord->validateScanTimes(true);
-                                          DeviceRecord->checkSignaledAlternateRateForExpiration();
+                                          // 052203 CGP // DeviceRecord->checkSignaledAlternateRateForExpiration();
                                           SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
                                       }
                                       else
