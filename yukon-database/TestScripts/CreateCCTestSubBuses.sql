@@ -1,4 +1,4 @@
-alter session set NLS_DATE_FORMAT='MM/DD/YYYY HH24:MI:SS';
+/*alter session set NLS_DATE_FORMAT='MM/DD/YYYY HH24:MI:SS';*/
 
 /******************* Insert TDC Cap Control View ***************************/
 insert into display values(-2, 'All Areas', 'Cap Control Client', 'Cap Control', 'com.cannontech.cbc.gui.StrategyReceiver');
