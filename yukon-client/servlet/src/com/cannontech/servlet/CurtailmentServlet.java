@@ -64,15 +64,15 @@ private boolean doAck(String username, int customerID, int curtailEventID, java.
 
  	if( conn != null )
  	{
-	 	System.out.println("name: " + msg.getNameOfAckPerson() );
-	 	System.out.println("ref id: " + msg.getCurtailReferenceID() );
-	 	System.out.println("ip addy: " + msg.getIpAddressOfAckUser() );
-	 	System.out.println("dev id: " + msg.getYukonID() );
-	 	System.out.println("username: " + msg.getUserName() );
-	 	System.out.println("notes: " + msg.getUserName() );
+ 		CTILogger.debug("Sending ack");
+		CTILogger.debug("name: " + msg.getNameOfAckPerson() );
+		CTILogger.debug("ref id: " + msg.getCurtailReferenceID() );
+		CTILogger.debug("ip addy: " + msg.getIpAddressOfAckUser() );
+		CTILogger.debug("dev id: " + msg.getYukonID() );
+		CTILogger.debug("username: " + msg.getUserName() );
+		CTILogger.debug("notes: " + msg.getUserName() );
 	 	
  		conn.write(msg);
- 		CTILogger.info("Ack sent, username: " + username + " curtailid: " + curtailEventID + " ip: " + clientInfo);
  		return true;
  	}
  	else
