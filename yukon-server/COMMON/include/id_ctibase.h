@@ -4,8 +4,8 @@
 #define PROJECT   "CTI Common DLL "
 
 #define MAJORREVISION   2
-#define MINORREVISION   16
-#define BUILDNUMBER     8
+#define MINORREVISION   17
+#define BUILDNUMBER     1
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,

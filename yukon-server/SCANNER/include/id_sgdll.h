@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/id_sgdll.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/04/16 17:50:08 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/04/23 15:50:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
 #define PROJECT   "CTI Scanner DLL"
 
 #define MAJORREVISION   2
-#define MINORREVISION   16
-#define BUILDNUMBER     4
+#define MINORREVISION   17
+#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
