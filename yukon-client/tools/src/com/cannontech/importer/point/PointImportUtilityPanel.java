@@ -46,7 +46,25 @@ public void analogImportJButton_ActionPerformed(java.awt.event.ActionEvent actio
 	String fileName = getAnalogJTextField().getText();
 	analogSuccess = com.cannontech.importer.point.PointImportUtility.processAnalogPoints(fileName);
 	if(analogSuccess)
+	{
+		javax.swing.JOptionPane.showMessageDialog(
+						this.getJFrame1(), 
+						"Analog point file was processed and inserted successfully. \n" +
+						"All analog points were added to the database" , "Import Successful",
+						javax.swing.JOptionPane.INFORMATION_MESSAGE );
 		System.exit(0);
+	}
+	else
+	{
+		javax.swing.JOptionPane.showMessageDialog(
+					this.getJFrame1(), 
+					"Analog point import could not be completed successfully. \n" 
+					+ "Please verify that you are not trying to import duplicates." , "Import FAILED",
+					javax.swing.JOptionPane.WARNING_MESSAGE );
+			
+			
+	}
+		
 	return;
 }
 /**
@@ -463,7 +481,22 @@ public void statusImportJButton_ActionPerformed(java.awt.event.ActionEvent actio
 	String fileName = getStatusJTextField().getText();
 	statusSuccess = com.cannontech.importer.point.PointImportUtility.processStatusPoints(fileName);
 	if(statusSuccess)
+	{
+	javax.swing.JOptionPane.showMessageDialog(
+					this.getJFrame1(), 
+					" Status point file was processed and inserted successfully. \n" +
+					"All status points were added to the database" , "Import Successful",
+					javax.swing.JOptionPane.INFORMATION_MESSAGE );
 		System.exit(0);
+	}
+	else
+	{
+		javax.swing.JOptionPane.showMessageDialog(
+					this.getJFrame1(), 
+					" Status point import could not be completed successfully. \n" 
+					+ "Please verify that you are not trying to import duplicates." , "Import FAILED",
+					javax.swing.JOptionPane.WARNING_MESSAGE );
+	}
 	return;
 }
 /**

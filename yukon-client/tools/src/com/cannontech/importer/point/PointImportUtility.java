@@ -65,7 +65,7 @@ public class PointImportUtility
 			 * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,NonUpdate,
 			 * RateOfChange,LimitSet1,LimitSet2,HighReasonablility,LowReasonability
 			 */
-			Integer pointID = new Integer(Point.getNextPointID());
+			Integer pointID = new Integer(Point.getNextPointID() + addCount);
 			
 			String pointName = tokenizer.nextElement().toString();
 			if(emptyField(pointName))
@@ -137,7 +137,7 @@ public class PointImportUtility
 				comparer = "kW";
 			}
 
-			comparer.toUpperCase();
+			comparer = comparer.toUpperCase();
 			if( comparer.compareTo( "KW" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 0 ) );
 			else if( comparer.compareTo( "KWH" ) == 0 )
@@ -303,7 +303,7 @@ public class PointImportUtility
 				}
 				myDuration = new Integer(tokenHolder);
 
-				if(myHighLimit.intValue() == 0 && myLowLimit.intValue() == 0)
+				if(myHighLimit.intValue() != 0 && myLowLimit.intValue() != 0)
 				{
 					++limitCount;
 					myPointLimit = new com.cannontech.database.db.point.PointLimit();
@@ -338,9 +338,9 @@ public class PointImportUtility
 			tokenCounter++;
 			if(emptyField(tokenHolder2))
 			{
-				tokenHolder2 = "0";
+				tokenHolder2 = "0 seconds";
 			}
-			analogPoint.getPoint().setArchiveInterval( new Integer( Integer.parseInt(tokenHolder2)) );
+			analogPoint.getPoint().setArchiveInterval( getArchiveIntervalSeconds(tokenHolder2) );
 			
 			//alarm categories
 			//grab all the alarm chars
@@ -363,19 +363,18 @@ public class PointImportUtility
 					tokenCounter++;
 					if(emptyField(alarmCategory))
 					{
-						alarmCategory = "none";
+						alarmCategory = "(none)";
 					}
-					else {
-					
+										
 					for( int j = 0; j < liteAlarms.size(); j++ )
 					{
-						if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName() == alarmCategory)
+						if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
 						{
 							alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
 							break;
 						}
 					}
-					}
+					
 					//get the char value to put into the alarm state string for the database
 					char generate = (char)alarmCategoryID;
 					alarmStates += generate;
@@ -392,8 +391,8 @@ public class PointImportUtility
 			
 			
 			multi.getDBPersistentVector().add( analogPoint );
-		
 			++addCount;
+			System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
 			}
 		}
 		boolean success = writeToSQLDatabase(multi);
@@ -401,23 +400,11 @@ public class PointImportUtility
 		if( success )
 		{
 			
-			javax.swing.JOptionPane.showMessageDialog(
-				PointImportWarningBox.getWarningFrame(), 
-				"Analog point file was processed and inserted successfully. \n" +
-				+ addCount + " analog points were added to the database" , "Import Successful",
-				javax.swing.JOptionPane.INFORMATION_MESSAGE );
-			
 			CTILogger.info(" analog point file was processed and inserted successfully");
 			
 			CTILogger.info(" " + addCount + " analog points were added to the database");
 		}
 		else
-		javax.swing.JOptionPane.showMessageDialog(
-			PointImportWarningBox.getWarningFrame(), 
-			"Analog point import could not be completed successfully. \n" 
-			+ "Please verify that you are not trying to import duplicates." , "Import FAILED",
-			javax.swing.JOptionPane.WARNING_MESSAGE );
-			
 			CTILogger.info(" analog points could NOT be added to the database");
 		
 	
@@ -460,7 +447,7 @@ public class PointImportUtility
 
 			com.cannontech.database.data.point.StatusPoint statusPoint = new com.cannontech.database.data.point.StatusPoint();
 			
-			Integer pointID = new Integer(Point.getNextPointID());
+			Integer pointID = new Integer(Point.getNextPointID() + addCount);
 				
 			String pointName = tokenizer.nextElement().toString();
 			if(emptyField(pointName))
@@ -590,7 +577,10 @@ public class PointImportUtility
 					
 					alarmCategory = tokenizer.nextElement().toString();
 					tokenCounter++;
-					
+					if(emptyField(alarmCategory))
+					{
+						alarmCategory = "(none)";
+					}
 					for( int j = 0; j < liteAlarms.size(); j++ )
 					{
 						alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
@@ -619,6 +609,7 @@ public class PointImportUtility
 			multi.getDBPersistentVector().add( statusPoint );
 		
 			++addCount;
+			System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
 
 			}
 		}
@@ -628,23 +619,11 @@ public class PointImportUtility
 		if( success )
 		{
 			
-			javax.swing.JOptionPane.showMessageDialog(
-				PointImportWarningBox.getWarningFrame(), 
-				" Status point file was processed and inserted successfully. \n" +
-				+ addCount + " status points were added to the database" , "Import Successful",
-				javax.swing.JOptionPane.INFORMATION_MESSAGE );
-			
 			CTILogger.info(" Status point file was processed and inserted successfully");
 			
 			CTILogger.info(" " + addCount + " Status points were added to the database");
 		}
 		else
-		javax.swing.JOptionPane.showMessageDialog(
-			PointImportWarningBox.getWarningFrame(), 
-			" Status point import could not be completed successfully. \n" 
-			+ "Please verify that you are not trying to import duplicates." , "Import FAILED",
-			javax.swing.JOptionPane.WARNING_MESSAGE );
-			
 			CTILogger.info(" Status points could NOT be added to the database");
 		
 		return success;
@@ -760,8 +739,8 @@ public class PointImportUtility
 		try 
 		{		
 			stmt = conn.createStatement();
-			rset = stmt.executeQuery( "SELECT StateGroupID FROM StateGroup where Name = '" + sgName +"'");	
-			
+			rset = stmt.executeQuery( "SELECT STATEGROUPID FROM STATEGROUP WHERE NAME = '" + sgName + "'");	
+				
 			//get the first returned result
 			rset.next();
 			return new Integer( rset.getInt(1) );
@@ -908,6 +887,50 @@ public class PointImportUtility
 		PointImportWarningBox.getWarningFrame(), 
 			"You are missing a required field on line number " + lineNumber + "\n The missing field is " + statusFields[fieldNumber]    ,"Item Not Found",
 			javax.swing.JOptionPane.WARNING_MESSAGE );
+	}
+	
+	public final static Integer getArchiveIntervalSeconds(String selectedString) 
+	{
+		Integer retVal = null;
+		int multiplier = 1;
+
+		if( selectedString == null)
+		{
+			retVal = new Integer(0);  //we have no idea, just use zero
+		}
+		else if( selectedString.toLowerCase().indexOf("second") != -1 || selectedString.toLowerCase().indexOf("sec") != -1 )
+		{
+			multiplier = 1;
+		}
+		else if( selectedString.toLowerCase().indexOf("minute") != -1 || selectedString.toLowerCase().indexOf("min") != -1 )
+		{
+			multiplier = 60;
+		}
+		else if( selectedString.toLowerCase().indexOf("hour") != -1 || selectedString.toLowerCase().indexOf("hrs") != -1 )
+		{
+			multiplier = 3600;
+		}
+		else if( selectedString.toLowerCase().indexOf("day") != -1 || selectedString.toLowerCase().indexOf("days") != -1 )
+		{
+			multiplier = 86400;
+		}
+		else
+			multiplier = 0;  //we have no idea, just use zero
+		
+		try
+		{
+			int loc = selectedString.toLowerCase().indexOf(" ");
+			retVal = new Integer( 
+				multiplier * Integer.parseInt(
+							  selectedString.toLowerCase().substring( 0, loc ) ));
+		}
+		catch( Exception e )
+		{
+			CTILogger.error( "Unable to parse archive interval string into seconds, using ZERO", e );
+			retVal = new Integer(0);
+		}
+
+		return retVal;
 	}
 	
 }
