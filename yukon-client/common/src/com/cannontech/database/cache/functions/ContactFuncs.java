@@ -246,8 +246,7 @@ public final class ContactFuncs
             LiteContactNotification ltCntNotif = 
                     (LiteContactNotification)contact.getLiteContactNotifications().get(j);
                 
-            if( !ltCntNotif.isDisabled() &&
-                 YukonListEntryFuncs.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
+            if( YukonListEntryFuncs.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
             {
                 phoneList.add( ltCntNotif );
             }
