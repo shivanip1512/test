@@ -14,6 +14,7 @@ import com.cannontech.stars.web.servlet.SOAPClient;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsGetCustomerAccountResponse;
@@ -75,8 +76,14 @@ public class GetCustAccountAction implements ActionBase {
             }
             
         	int energyCompanyID = user.getEnergyCompanyID();
+        	if (user.getAttribute( ServletUtils.ATT_CONTEXT_SWITCHED ) != null) {
+        		StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings)
+        				user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
+        		energyCompanyID = settings.getEnergyCompanyID();
+        	}
+        	
         	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
-
+        	
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;
             
