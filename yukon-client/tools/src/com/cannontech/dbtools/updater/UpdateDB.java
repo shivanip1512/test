@@ -71,7 +71,7 @@ public class UpdateDB
 	 */
 	public static boolean starsExists()
 	{
-		return VersionTools.tableExists("CustomerResidence");
+		return VersionTools.tableExists("CustomerAccount");
 	}
 
 	public static boolean isValidString( String str_ )
