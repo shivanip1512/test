@@ -232,8 +232,7 @@ function enableDates(value)
       <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-          <td height="19" bgcolor="888888" class="tableHeader">Single Substation 
-            Bus View for the area: </td>
+          <td height="19" bgcolor="888888" class="tableHeader">&nbsp;</td>
           <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
         </tr>
         <tr>
@@ -354,7 +353,7 @@ function enableDates(value)
 		  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 			<tr> 
 			  <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-			  <td height="19" bgcolor="888888" class="tableHeader">Object Selection</td>
+			  <td height="19" bgcolor="888888" class="tableHeader">Filter</td>
 			  <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
 			</tr>
 			<tr>
