@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/06/03 23:09:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/07/27 16:56:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,25 @@
 CtiProtocolBase *CtiDeviceLMI::getProtocol() const
 {
     return (CtiProtocolBase *)&_lmi;
+}
+
+
+int CtiDeviceLMI::decode(CtiXfer &xfer, int status)
+{
+    int retval = CtiDeviceSingle::decode(xfer, status);
+
+    if( _lmi.isTransactionComplete() )
+    {
+        getExclusion().setEvaluateNextAt(_lmi.getTransmittingUntil());
+    }
+
+    return retval;
+}
+
+
+void CtiDeviceLMI::getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue)
+{
+    _lmi.getVerificationWorkObjects(work_queue);
 }
 
 
@@ -98,10 +117,20 @@ INT CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             break;
         }
 
+        case GetValueRequest:
+        {
+            if( parse.isKeyValid("codes") )
+            {
+                _lmi.setCommand(CtiProtocolLMI::Command_ReadEchoedCodes);
+                found = true;
+            }
+
+            break;
+        }
+
         case ControlRequest:
         case PutConfigRequest:
         case GetStatusRequest:
-        case GetValueRequest:
         case PutValueRequest:
         case PutStatusRequest:
         default:
@@ -357,7 +386,7 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CtiDeviceLMI::hasQueuedWork() const
 {
-    return _lmi.hasCodes();
+    return _lmi.hasCodes(); //|| _retrievalScheduled;
 }
 
 
@@ -368,9 +397,14 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
     //  make sure we don't requeue our "go" OM
     if( getExclusion().hasExclusions() && OutMessage->Sequence != CtiProtocolLMI::QueuedWorkToken && OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC )
     {
-        _lmi.queueCode(atoi(OutMessage->Buffer.SASt._codeSimple));
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << OutMessage->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-        delete OutMessage;
+        _lmi.queueCode(OutMessage);
+
         OutMessage = 0;
 
         retval = QUEUED_TO_DEVICE;
@@ -388,18 +422,27 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 
     if( _lmi.hasCodes() && RWTime::now() > _lmi.getTransmittingUntil() )
     {
-        if( !OutMessage )
+        //  can we do anything in the time we're given?
+        if( _lmi.canTransmit(getExclusion().getExecutionGrantExpires().seconds()) )
         {
-            OutMessage = new CtiOutMessage();
+            if( !OutMessage )
+            {
+                OutMessage = new CtiOutMessage();
+            }
+
+            OutMessage->DeviceID = getID();
+            OutMessage->Sequence = CtiProtocolLMI::QueuedWorkToken;
+
+            OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
+
+            retval = true;
         }
-
-        OutMessage->DeviceID = getID();
-        OutMessage->Sequence = CtiProtocolLMI::QueuedWorkToken;
-
-        OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
-
-        retval = true;
+        else
+        {
+            getExclusion().setEvaluateNextAt(_lmi.getTransmittingUntil());
+        }
     }
+    //else if( _lmi
     else
     {
         if( OutMessage )
@@ -435,4 +478,6 @@ LONG CtiDeviceLMI::deviceMaxCommunicationTime() const
 
     return maxtime;
 }
+
+
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/02 20:56:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/07/27 16:56:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,18 +28,23 @@ private:
 
     CtiTableDeviceAddress _address;
 
-    CtiProtocolLMI _lmi;
     typedef CtiDeviceRemote Inherited;
 
 protected:
 
+    CtiProtocolLMI _lmi;
+    CtiProtocolBase *getProtocol() const;
+
 public:
 
-    CtiProtocolBase* getProtocol() const;
+    bool hasProtocol() const    {  return true;  };
 
     void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
 
     void DecodeDatabaseReader(RWDBReader &rdr);
+
+    int decode(CtiXfer &xfer, int status);
+    void getVerificationWorkObjects(queue< CtiVerificationBase * > &work_queue);
 
     INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
