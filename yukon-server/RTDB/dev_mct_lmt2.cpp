@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/18 21:32:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/11/05 19:37:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,17 +43,19 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, USHORT &function, USHORT 
 {
    bool found = false;
 
+   #if 0
    if(_commandStore.empty())  // Must initialize!
    {
       CtiDeviceMCT_LMT2::initCommandStore();
    }
+   #endif
 
    CTICMDSET::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
    if( itr != _commandStore.end() )    // It's prego!
    {
       CtiDLCCommandStore &cs = *itr;
-      function = cs._funcLen.first;           // Copy over the found funcLen pair!
+      function = cs._funcLen.first;          // Copy over the found funcLen pair!
       length = cs._funcLen.second;           // Copy over the found funcLen pair!
       io = cs._io;
       found = true;
