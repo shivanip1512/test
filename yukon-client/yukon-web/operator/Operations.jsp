@@ -133,7 +133,7 @@
           <td width="110" >&nbsp;</td>
           <td width="110" >&nbsp;</td>
           <td>&nbsp;</td>
-          8 </tr>
+          </tr>
         <tr> 
           <form method="post" action="LoadControl/oper_direct.jsp">
             <td width="110" class = "Main"> 
