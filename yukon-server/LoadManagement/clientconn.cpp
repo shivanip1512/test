@@ -28,7 +28,7 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - New Client Connection." << endl;
+        dout << RWTime() << " - New Client Connection, from " << ((RWSocketPortal*)_portal)->socket().getsockname() << endl;
     }
 
     try
@@ -46,9 +46,16 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 
         send_thr.start();
         recv_thr.start();
-    } catch (RWxmsg& msg)
+    }
+    catch(RWxmsg& msg)
     {
         _valid = FALSE;
+    }
+    catch(...)
+    {
+        _valid = FALSE;
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
 
