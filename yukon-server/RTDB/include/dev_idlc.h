@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/11 21:53:14 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/01/13 18:23:36 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -189,6 +189,19 @@ private:
             break;
          }
       }
+
+      if(getAddress() > 0)
+      {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << RWTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << ". DLC ID: " << getAddress() << endl;
+      }
+      else
+      {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << RWTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << endl;
+      }
+
+
 
       return _trxInfo;
    }
