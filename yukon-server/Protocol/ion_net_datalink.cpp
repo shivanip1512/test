@@ -186,7 +186,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 
         case InputSendAck:
         {
-            generateAck(&_outFrame, &_inFrame);
+            generateOutputAck(&_outFrame, &_inFrame);
 
             xfer.setOutBuffer((unsigned char *)&_outFrame);
             xfer.setOutCount(EmptyPacketLength + UncountedHeaderBytes);
@@ -201,7 +201,7 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 
         case InputSendNack:
         {
-            generateNack(&_outFrame, &_inFrame);
+            generateOutputNack(&_outFrame, &_inFrame);
 
             xfer.setOutBuffer((unsigned char *)&_outFrame);
             xfer.setOutCount(EmptyPacketLength + UncountedHeaderBytes);
@@ -216,10 +216,10 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 
         case Output:
         {
-            generateOutputFrame(&_outFrame);
+            generateOutputData(&_outFrame);
 
             xfer.setOutBuffer((unsigned char *)&_outFrame);
-            xfer.setOutCount(_outFrame.header.len + UncountedHeaderBytes);
+            xfer.setOutCount(_outFrame.header.len + UncountedHeaderBytes + OutputPadding);
             xfer.setCRCFlag(0);
 
             xfer.setInBuffer((unsigned char *)&_inBuffer);
@@ -276,23 +276,25 @@ int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 }
 
 
-void CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
+void CtiIONDatalinkLayer::generateOutputData( ion_output_frame *out_frame )
 {
     int payloadLen;
 
-    frame->header.reserved     = 0;
-    frame->header.cntlreserved = 0;
-    frame->header.srcreserved  = 0;
-    frame->header.tranreserved = 0;
+    //  ACH:  maybe make an "init output frame" that does all the common parts?
+    //out_frame->padding             = 0;
+    out_frame->header.reserved     = 0;
+    out_frame->header.cntlreserved = 0;
+    out_frame->header.srcreserved  = 0;
+    out_frame->header.tranreserved = 0;
 
-    frame->header.sync = 0x14;
-    frame->header.fmt  = 0xAC;
+    out_frame->header.sync = 0x14;
+    out_frame->header.fmt  = 0xAC;
 
-    frame->header.srcid = _src;
-    frame->header.dstid = _dst;
+    out_frame->header.srcid = _src;
+    out_frame->header.dstid = _dst;
 
-    frame->header.cntldirection = 0;
-    frame->header.cntlframetype = DataAcknakEnbl;
+    out_frame->header.cntldirection = 0;
+    out_frame->header.cntlframetype = DataAcknakEnbl;
 
     payloadLen = _dataLength - _dataSent;
 
@@ -315,21 +317,21 @@ void CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
         //  then subtract 1 to make it zero-based
         _currentOutputFrame--;
 
-        frame->header.tranfirstframe = 1;
+        out_frame->header.tranfirstframe = 1;
     }
     else
     {
-        frame->header.tranfirstframe = 0;
+        out_frame->header.tranfirstframe = 0;
     }
 
-    frame->header.trancounter = _currentOutputFrame;
+    out_frame->header.trancounter = _currentOutputFrame;
 
     //  copy the struct over into the char buffer
-    memcpy(frame->data, _data + _dataSent, payloadLen );
+    memcpy(out_frame->data, _data + _dataSent, payloadLen );
 
-    frame->header.len = EmptyPacketLength + payloadLen;
+    out_frame->header.len = EmptyPacketLength + payloadLen;
 
-    setCRC(frame);
+    setCRC(out_frame);
 
     _bytesInLastFrame = payloadLen;
 
@@ -338,8 +340,9 @@ void CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
 }
 
 
-void CtiIONDatalinkLayer::generateAck( ion_frame *out_frame, const ion_frame *in_frame )
+void CtiIONDatalinkLayer::generateOutputAck( ion_output_frame *out_frame, const ion_input_frame *in_frame )
 {
+    //out_frame->padding             = 0;
     out_frame->header.reserved     = 0;
     out_frame->header.cntlreserved = 0;
     out_frame->header.srcreserved  = 0;
@@ -363,10 +366,9 @@ void CtiIONDatalinkLayer::generateAck( ion_frame *out_frame, const ion_frame *in
 }
 
 
-void CtiIONDatalinkLayer::generateNack( ion_frame *out_frame, const ion_frame *in_frame )
+void CtiIONDatalinkLayer::generateOutputNack( ion_output_frame *out_frame, const ion_input_frame *in_frame )
 {
-    int retVal = 0;
-
+    //out_frame->padding             = 0;
     out_frame->header.reserved     = 0;
     out_frame->header.cntlreserved = 0;
     out_frame->header.srcreserved  = 0;
@@ -393,8 +395,6 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
     int offset;
-
-    ion_frame *saveFrame;
 
     if( status != NORMAL )
     {
@@ -659,38 +659,38 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
 
 
 
-void CtiIONDatalinkLayer::setCRC( ion_frame *frame )
+void CtiIONDatalinkLayer::setCRC( ion_output_frame *out_frame )
 {
     unsigned int frameCRC;
     int dataLen;
 
-    dataLen  = frame->header.len - EmptyPacketLength;
+    dataLen  = out_frame->header.len - EmptyPacketLength;
 
-    frameCRC = crc16( frame->data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
+    frameCRC = crc16( out_frame->data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
-    frame->data[dataLen]   =  frameCRC & 0x00FF;        //  the bytes right after the data ends
-    frame->data[dataLen+1] = (frameCRC & 0xFF00) >> 8;  //
+    out_frame->data[dataLen]   =  frameCRC & 0x00FF;        //  the bytes right after the data ends
+    out_frame->data[dataLen+1] = (frameCRC & 0xFF00) >> 8;  //
 }
 
 
-bool CtiIONDatalinkLayer::crcIsValid( ion_frame *frame )
+bool CtiIONDatalinkLayer::crcIsValid( const ion_input_frame *in_frame )
 {
     unsigned int frameCRC, computedCRC;
     int dataLen;
 
-    dataLen = frame->header.len - EmptyPacketLength;  //  len = data length + 7
+    dataLen = in_frame->header.len - EmptyPacketLength;  //  len = data length + 7
 
 
-    frameCRC  = frame->data[dataLen];         //  the bytes right after the data ends
-    frameCRC += frame->data[dataLen+1] << 8;  //
+    frameCRC  = in_frame->data[dataLen];         //  the bytes right after the data ends
+    frameCRC += in_frame->data[dataLen+1] << 8;  //
 
-    computedCRC = crc16( frame->data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
+    computedCRC = crc16( in_frame->data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
     return frameCRC == computedCRC;
 }
 
 
-unsigned int CtiIONDatalinkLayer::crc16( unsigned char *data, int length )
+unsigned int CtiIONDatalinkLayer::crc16( const unsigned char *data, int length )
 {
     //  CRC-16 computation
     //    from http://www.programmingparadise.com/vs/?crc/crcfast.c.html

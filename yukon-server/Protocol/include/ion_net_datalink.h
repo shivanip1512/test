@@ -33,30 +33,43 @@ private:
 
     //  frame definitions
 
-    struct ion_frame
+    struct ion_frame_header
     {
-        struct ion_frame_header
-        {
-            unsigned char sync;
-            unsigned char fmt;
+        unsigned char sync;
+        unsigned char fmt;
 
-            unsigned char cntlreserved  : 5;
-            unsigned char cntlframetype : 2;
-            unsigned char cntldirection : 1;
+        unsigned char cntlreserved  : 5;
+        unsigned char cntlframetype : 2;
+        unsigned char cntldirection : 1;
 
-            unsigned char len;
+        unsigned char len;
 
-            unsigned short srcid        : 15;
-            unsigned short srcreserved  : 1;
+        unsigned short srcid        : 15;
+        unsigned short srcreserved  : 1;
 
-            unsigned short dstid;
+        unsigned short dstid;
 
-            unsigned char trancounter    : 6;
-            unsigned char tranfirstframe : 1;
-            unsigned char tranreserved   : 1;
+        unsigned char trancounter    : 6;
+        unsigned char tranfirstframe : 1;
+        unsigned char tranreserved   : 1;
 
-            unsigned char reserved;
-        } header;
+        unsigned char reserved;
+    };
+
+    struct ion_input_frame
+    {
+        ion_frame_header header;
+
+        unsigned char data[240];  //  238 + 2 byte CRC
+    };
+
+    //  necessary because of the padding bytes
+    struct ion_output_frame
+    {
+        //unsigned short padding;
+
+        ion_frame_header header;
+
         unsigned char data[240];  //  238 + 2 byte CRC
     };
 
@@ -67,7 +80,8 @@ private:
         MinimumPacketSize    =  12,
         PrePayloadCRCOffset  =   8,
         EmptyPacketLength    =   7,
-        UncountedHeaderBytes =   5
+        UncountedHeaderBytes =   5,
+        OutputPadding        =   0  //  2
     };
 
     enum FrameType
@@ -78,27 +92,26 @@ private:
         AcknakACK = 3        //  11b
     };
 
-    void initFrameReserved( ion_frame *frame );
+    void generateOutputData( ion_output_frame *targetFrame );
+    void generateOutputAck ( ion_output_frame *out_frame, const ion_input_frame *in_frame );
+    void generateOutputNack( ion_output_frame *out_frame, const ion_input_frame *in_frame );
 
-    void initInputFrame( unsigned char *rawFrame, int rawFrameLength );
-    void generateOutputFrame( ion_frame *targetFrame );
-    void generateAck( ion_frame *out_frame, const ion_frame *in_frame );
-    void generateNack( ion_frame *out_frame, const ion_frame *in_frame );
+    bool crcIsValid( const ion_input_frame *frame );
+    void setCRC( ion_output_frame *frame );
 
-    bool crcIsValid( ion_frame *frame );
-    void setCRC( ion_frame *frame );
-
-    unsigned int crc16( unsigned char *data, int length );
+    unsigned int crc16( const unsigned char *data, int length );
 
     void freeMemory( void );
 
     int _currentInputFrame, _currentOutputFrame;
     int _src, _dst;
 
-    ion_frame _outFrame, _inFrame;
+    ion_input_frame  _inFrame;
+    ion_output_frame _outFrame;
+
     unsigned char _inBuffer[250];
 
-    vector< ion_frame > _inputFrameVector;
+    vector< ion_input_frame > _inputFrameVector;
 
     unsigned char  *_data;
     int             _dataLength, _dataSent;
