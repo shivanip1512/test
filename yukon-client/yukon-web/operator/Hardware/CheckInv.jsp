@@ -9,9 +9,6 @@
 <%
 	LiteStarsEnergyCompany ec = com.cannontech.stars.web.servlet.SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) session.getAttribute(InventoryManager.LM_HARDWARE_TO_CHECK);
-	
-	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-	if (referer == null) referer = "";
 /*	
 	String action = request.getParameter("action");
 	if (action != null && action.equalsIgnoreCase("CheckInventory")) {
@@ -83,7 +80,7 @@
               <% String header = "CHECK INVENTORY"; %>
 			  <%@ include file="include/SearchBar.jsp" %>
               <form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
-			    <input type="hidden" name="action" value="SelectInventory">
+			    <input type="hidden" name="action" value="ConfirmCheck">
 <%
 	if (liteHw == null) {
 %>
@@ -95,7 +92,7 @@
                       <input type="submit" name="NewHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="Submit" value="No" onclick="location.href='<%= referer %>'">
+                      <input type="button" name="No" value="No" onclick="history.back()">
                     </td>
                   </tr>
                 </table>
@@ -111,7 +108,7 @@
                       <input type="submit" name="SelectHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="Submit" value="No" onclick="location.href='<%= referer %>'">
+                      <input type="button" name="No" value="No" onclick="history.back()">
                     </td>
                   </tr>
                 </table>
@@ -144,7 +141,7 @@
                       <input type="submit" name="MoveHardware" value="Yes">
                     </td>
                     <td width="100"> 
-                      <input type="button" name="Submit" value="No" onclick="location.href='<%= referer %>'">
+                      <input type="button" name="No" value="No" onclick="history.back()">
                     </td>
                   </tr>
                 </table>
@@ -157,7 +154,7 @@
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
-                      <input type="button" name="Submit" value="OK" onclick="location.href='<%= referer %>'">
+                      <input type="button" name="OK" value="OK" onclick="history.back()">
                     </td>
                   </tr>
                 </table>

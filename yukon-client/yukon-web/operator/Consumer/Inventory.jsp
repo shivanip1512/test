@@ -1,44 +1,26 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	if (inventories.getStarsLMHardwareCount() == 0) {
-		response.sendRedirect("CreateHardware.jsp"); return;
-	}
-	
-	String invNoStr = request.getParameter("InvNo");
-	int invNo = 0;
-	if (invNoStr != null)
-		try {
-			invNo = Integer.parseInt(invNoStr);
-		}
-		catch (NumberFormatException e) {}
-	if (invNo < 0 || invNo >= inventories.getStarsLMHardwareCount())
-		invNo = 0;
-
+	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
-	ArrayList appList = new ArrayList();
+	
+	boolean hwChanged = request.getParameter("Changed") != null;
+	StarsLMHardware newHw = hardware;
+	if (hwChanged)
+		newHw = (StarsLMHardware) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
+	else
+		session.setAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP, hardware);
+	
+	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
+	
 	StarsServiceCompany company = null;
-	
-	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-		StarsAppliance app = appliances.getStarsAppliance(i);
-		if (app.getInventoryID() == hardware.getInventoryID())
-			appList.add(app);
-	}
-	
-	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
-	appList.toArray( starsApps );
-	
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany comp = companies.getStarsServiceCompany(i);
-		if (comp.getCompanyID() == hardware.getInstallationCompany().getEntryID()) {
+		if (comp.getCompanyID() == newHw.getInstallationCompany().getEntryID()) {
 			company = comp;
 			break;
 		}
 	}
-	
-	String hwGroupName = "Switch";
-	if (hardware.getStarsThermostatSettings() != null)
-		hwGroupName = "Thermostat";
 %>
 
 <html>
@@ -49,21 +31,11 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-function deleteHardware() {
-	var form = document.invForm;
-<%
-	if (starsApps.length > 0) {
-%>
-	if (!confirm('To delete the hardware, all programs related with it will be invalidated, do you want to proceed?')) return;
-<%
-	}
-	else {
-%>
-	if (!confirm('Are you sure you would like to delete this hardware?')) return;
-<%
-	}
-%>
-	form.elements('action').value = "DeleteLMHardware";
+function deleteHardware(form) {
+	if (!confirm('Deleting the hardware will also disable all the programs associated with it. Are you sure you want to continue?'))
+		return;
+	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
+	form.elements["action"].value = "DeleteLMHardware";
 	form.submit();
 }
 
@@ -72,7 +44,16 @@ function validate(form) {
 		alert("Serial # cannot be empty");
 		return false;
 	}
+<% if (!invCheckEarly) { %>
+	if (form.DeviceType.value != <%= hardware.getLMDeviceType().getEntryID() %> ||
+		form.SerialNo.value != "<%= hardware.getManufactureSerialNumber() %>")
+		form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
+<% } %>
 	return true;
+}
+
+function changeSerialNo(form) {
+	form.attributes["action"].value = "SerialNumber.jsp";
 }
 </script>
 </head>
@@ -125,12 +106,13 @@ function validate(form) {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "HARDWARE"; %><%@ include file="include/InfoSearchBar.jsp" %>
+              <% String header = "HARDWARE - INFORMATION"; %><%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="UpdateLMHardware">
-                <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
+                <input type="hidden" name="OrigInvID" value="<%= hardware.getInventoryID() %>">
+                <input type="hidden" name="InvID" value="<%= newHw.getInventoryID() %>">
 				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
 				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -140,14 +122,44 @@ function validate(form) {
                       <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
+							<% if (invCheckEarly) { %>
+                            <input type="hidden" name="DeviceType" value="<%= newHw.getLMDeviceType().getEntryID() %>">
+							<input type="hidden" name="SerialNo" value="<%= newHw.getManufactureSerialNumber() %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                              <tr> 
+                                <td width="100" class="TableCell" align="right">Type: 
+                                </td>
+                                <td width="120" class="MainText"><%= newHw.getLMDeviceType().getContent() %></td>
+                                <td width="80" rowspan="2"> 
+                                  <input type="submit" name="Change" value="Change" onClick="changeSerialNo(this.form)">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell" align="right">Serial 
+                                  #: </td>
+                                <td width="120" class="MainText"><%= newHw.getManufactureSerialNumber() %></td>
+                              </tr>
+                            </table>
+							<% } %>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+							<% if (!invCheckEarly) { %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" size="24" maxlength="30" value="<%= hardware.getLMDeviceType().getContent() %>">
-                                  <input type="hidden" name="DeviceType" value="<%= hardware.getLMDeviceType().getEntryID() %>">
+                                  <select name="DeviceType">
+                                    <%
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == newHw.getLMDeviceType().getEntryID())? "selected" : "";
+%>
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                    <%
+	}
+%>
+                                  </select>
                                 </td>
                               </tr>
                               <tr> 
@@ -155,23 +167,24 @@ function validate(form) {
                                   <div align="right">Serial #: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= newHw.getManufactureSerialNumber() %>">
                                 </td>
                               </tr>
+                            <% } %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= hardware.getDeviceLabel() %>">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= newHw.getDeviceLabel() %>">
                                 </td>
                               </tr>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Alt Tracking #: </div>
                                 </td>
-                                <td width="200"> 
-                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= hardware.getAltTrackingNumber() %>">
+                                <td width="200">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= newHw.getAltTrackingNumber() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -179,7 +192,7 @@ function validate(form) {
                                   <div align="right">Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getReceiveDate(), datePart) %>">
+                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(newHw.getReceiveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -187,7 +200,7 @@ function validate(form) {
                                   <div align="right">Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getRemoveDate(), datePart) %>">
+                                  <input type="text" name="RemoveDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(newHw.getRemoveDate(), datePart) %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -195,8 +208,18 @@ function validate(form) {
                                   <div align="right">Voltage: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" maxlength="30" size="24" value="<%= hardware.getVoltage().getContent() %>">
-                                  <input type="hidden" name="Voltage" value="<%= hardware.getVoltage().getEntryID() %>">
+                                  <select name="Voltage">
+                                    <%
+	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
+	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == newHw.getVoltage().getEntryID())? "selected" : "";
+%>
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                    <%
+	}
+%>
+                                  </select>
                                 </td>
                               </tr>
                               <tr> 
@@ -204,7 +227,7 @@ function validate(form) {
                                   <div align="right">Status: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= hardware.getDeviceStatus().getContent() %>">
+                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= newHw.getDeviceStatus().getContent() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -212,22 +235,13 @@ function validate(form) {
                                   <div align="right">Notes: </div>
                                 </td>
                                 <td width="200"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= newHw.getNotes() %></textarea>
                                 </td>
                               </tr>
-                              <!--
-                            <tr>
-                              <td width="100" class="TableCell">&nbsp;</td>
-                              <td width="200">
-                                <input type="button" name="Submit5" value="Config">
-                              </td>
-                            </tr>
--->
                             </table>
                           </td>
                       </tr>
                     </table>
-                    
                   </td>
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
                     <div align="center"> 
@@ -241,7 +255,7 @@ function validate(form) {
                                     <div align="right">Date Installed: </div>
                                   </td>
                                   <td width="200"> 
-                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(hardware.getInstallDate(), datePart) %>">
+                                    <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= ServletUtils.formatDate(newHw.getInstallDate(), datePart) %>">
                                   </td>
                                 </tr>
                                 <tr> 
@@ -267,7 +281,7 @@ function validate(form) {
                                     <div align="right">Notes: </div>
                                   </td>
                                   <td width="200"> 
-                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= hardware.getInstallationNotes() %></textarea>
+                                    <textarea name="InstallNotes" rows="3 wrap="soft" cols="28" class = "TableCell"><%= newHw.getInstallationNotes() %></textarea>
                                   </td>
                                 </tr>
                               </table>
@@ -300,18 +314,18 @@ function validate(form) {
               </table>
             <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
               <tr> 
-                  <td width="42%"> 
-                    <div align="right"> 
-                      <input type="submit" name="Submit2" value="Submit">
-                    </div>
+                  <td width="42%" align="right"> 
+                    <input type="submit" name="Submit" value="Submit">
                   </td>
-                  <td width="15%" align = "center"> 
-                    <input type="reset" name="Cancel2" value="Cancel">
+                  <td width="15%" align="center"> 
+                  <% if (hwChanged) { %>
+                    <input type="button" name="Cancel" value="Cancel" onclick="location.href = 'Inventory.jsp?InvNo=<%= invNo %>'">
+                  <% } else { %>
+                    <input type="reset" name="Cancel" value="Cancel">
+                  <% } %>
                   </td>
-                  <td width="43%"> 
-                    <div align="left">
-                      <input type="button" name="Submit" value="Delete" onclick="deleteHardware()">
-                    </div>
+                  <td width="43%" align="left"> 
+                    <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
                   </td>
               </tr>
             </table>
@@ -345,7 +359,7 @@ function validate(form) {
                   <tr> 
                     <td> 
                       <div align="right"> 
-                        <input type="button" name="More2" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNoStr %>'">
+                        <input type="button" name="More2" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNo %>'">
                       </div>
                     </td>
                   </tr>

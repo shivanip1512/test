@@ -1,16 +1,28 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+	String referer = request.getHeader("referer");
+	int deviceType = 0;
 	String serialNumber = "";
+	
 	if (request.getParameter("Change") != null) {
+		// Came from CreateHardware.jsp or Inventory.jsp
 		StarsLMHardware hardware = (StarsLMHardware) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
-		if (hardware != null) serialNumber = hardware.getManufactureSerialNumber();
+		if (hardware != null) {
+			deviceType = hardware.getLMDeviceType().getEntryID();
+			serialNumber = hardware.getManufactureSerialNumber();
+		}
 	}
-	else
+	else {
+		// Came from the nav link, next page is CreateHardware.jsp
 		session.removeAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
+		referer = request.getContextPath() + "/operator/Consumer/CreateHardware.jsp";
+	}
 	
 	boolean inWizard = (request.getParameter("Wizard") != null);
+	boolean createHardware = referer.indexOf("CreateHardware.jsp") >= 0;
+	if (!createHardware && referer.indexOf("Changed=true") < 0)
+		referer += "&Changed=true";
 %>
 <html>
 <head>
@@ -78,20 +90,20 @@ function selectInventory(form) {
           <td  valign="top" width="101">
 <%	if (inWizard) out.print("&nbsp;");
 	else { %>
-		    <% String pageName = "SerialNumber.jsp"; %>
+		    <% String pageName = referer.substring(referer.lastIndexOf('/') + 1); %>
 			<%@ include file="include/Nav.jsp" %>
 <%	} %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
-              <% String header = "CREATE NEW HARDWARE"; %>
+              <% String header = (createHardware)? "CREATE NEW HARDWARE" : "HARDWARE - INFORMATION"; %>
               <%@ include file="include/InfoSearchBar.jsp" %>
 			  
               <p>&nbsp;</p>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="CheckInventory">
-				<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/CreateHardware.jsp<% if (inWizard) out.print("?Wizard=true"); %>">
+				<input type="hidden" name="REDIRECT" value="<%= referer %><% if (inWizard) out.print("?Wizard=true"); %>">
                 <table width="480" border="0" cellspacing="0" cellpadding="3" class="MainText">
                   <tr>
                     <td width="322">Please select from the inventory:</td>
@@ -100,8 +112,39 @@ function selectInventory(form) {
                     </td>
                   </tr>
                   <tr>
-                    <td width="322">Or enter the serial #: 
-                      <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialNumber %>">
+                    <td width="322">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td width="15%" class="MainText">Or enter</td>
+                          <td width="85%"> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" class="MainText">
+                              <tr>
+                                <td align="right" width="30%">Device type: </td>
+                                <td width="70%"> 
+                                  <select name="DeviceType">
+                                    <%
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
+		String selected = (entry.getEntryID() == deviceType)? "selected" : "";
+%>
+                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                    <%
+	}
+%>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align="right" width="30%">Serial #: </td>
+                                <td width="70%"> 
+                                  <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= serialNumber %>">
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                     <td width="146"> 
                       <input type="submit" name="CheckInv" value="Check Inventory">
@@ -109,18 +152,9 @@ function selectInventory(form) {
                   </tr>
                 </table>
               </form>
-              <p>&nbsp;</p>
-              <form name="form2" method="post" action="CreateHardware.jsp<% if (inWizard) out.print("?Wizard=true"); %>">
-                <table width="480" border="0" cellspacing="0" cellpadding="3">
-                  <tr> 
-                    <td width="322" class="MainText">Skip inventory checking. 
-                      Add hardware directly (Not Recommended):</td>
-                    <td width="146" class="MainText"> 
-                      <input type="submit" name="Skip" value="Skip">
-                    </td>
-                  </tr>
-                </table>
-              </form>
+			  <% if (!createHardware) { %>
+                <input type="button" name="Cancel" value="Cancel" onclick="history.back()">
+			  <% } %>
               <p>&nbsp;</p>
               <p>&nbsp;</p>
             </div>

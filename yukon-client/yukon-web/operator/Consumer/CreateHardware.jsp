@@ -1,19 +1,15 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	boolean snEditable = false;
-	if (request.getParameter("Skip") != null) {
-		snEditable = true;
+	boolean invCheckEarly = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING_TIME).equalsIgnoreCase(InventoryManager.INVENTORY_CHECKING_TIME_EARLY);
+	if (invCheckEarly)
 		session.removeAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
-	}
 	
 	StarsLMHardware hardware = (StarsLMHardware) session.getAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP);
 	if (hardware == null)
 		hardware = (StarsLMHardware) StarsFactory.newStarsLMHw(StarsLMHardware.class);
 	
-	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-	boolean inWizard = (request.getParameter("Wizard") != null);
+	boolean inWizard = request.getParameter("Wizard") != null;
 %>
 <html>
 <head>
@@ -33,11 +29,14 @@ function validate(form) {
 		alert("Serial # cannot be empty");
 		return false;
 	}
+<% if (!invCheckEarly) { %>
+	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/InventoryManager";
+<% } %>
 	return true;
 }
 
 function changeSerialNo(form) {
-	form.attributes["action"].value = "<%= referer %>";
+	form.attributes["action"].value = "SerialNumber.jsp";
 }
 </script>
 </head>
@@ -86,7 +85,7 @@ function changeSerialNo(form) {
 <%	if (inWizard) out.print("&nbsp;");
 	else{
 %>
-		    <% String pageName = "SerialNumber.jsp"; %>
+		    <% String pageName = "CreateHardware.jsp"; %>
 			<%@ include file="include/Nav.jsp" %>
 <%	} %>
 		  </td>
@@ -100,7 +99,6 @@ function changeSerialNo(form) {
               <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="CreateLMHardware">
 				<input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
-				<input type="hidden" name="SerialNo" value="<%= hardware.getManufactureSerialNumber() %>">
 				<% if (inWizard) { %><input type="hidden" name="Wizard" value="true"><% } %>
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                   <tr> 
@@ -109,24 +107,27 @@ function changeSerialNo(form) {
                         <tr> 
                           <td valign="top"><span class="SubtitleHeader">DEVICE</span> 
                             <hr>
+                            <% if (invCheckEarly) { %>
+							<input type="hidden" name="DeviceType" value="<%= hardware.getLMDeviceType().getEntryID() %>">
+							<input type="hidden" name="SerialNo" value="<%= hardware.getManufactureSerialNumber() %>">
                             <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-<%	if (!snEditable) { %>
                               <tr> 
-                                <td width="100" class="TableCell"> 
-                                  <div align="right">Serial #: </div>
+                                <td width="100" class="TableCell" align="right">Type: 
                                 </td>
-                                <td width="200"> 
-                                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                    <tr> 
-                                      <td width="50%" class="MainText"><%= hardware.getManufactureSerialNumber() %></td>
-                                      <td width="50%"> 
-                                        <input type="submit" name="Change" value="Change" onclick="changeSerialNo(this.form)">
-                                      </td>
-                                    </tr>
-                                  </table>
+                                <td width="120" class="MainText"><%= hardware.getLMDeviceType().getContent() %></td>
+                                <td width="80" rowspan="2">
+                                  <input type="submit" name="Change" value="Change" onclick="changeSerialNo(this.form)">
                                 </td>
                               </tr>
-<%	} %>
+                              <tr> 
+                                <td width="100" class="TableCell" align="right">Serial 
+                                  #: </td>
+                                <td width="120" class="MainText"><%= hardware.getManufactureSerialNumber() %></td>
+                              </tr>
+                            </table>
+                            <% } %>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                            <% if (!invCheckEarly) { %> 
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Type: </div>
@@ -146,7 +147,6 @@ function changeSerialNo(form) {
                                   </select>
                                 </td>
                               </tr>
-<%	if (snEditable) { %>
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Serial #: </div>
@@ -155,7 +155,7 @@ function changeSerialNo(form) {
                                   <input type="text" name="SerialNo" maxlength="30" size="24" value="<%= hardware.getManufactureSerialNumber() %>">
                                 </td>
                               </tr>
-<%	} %>
+                            <% } %> 
                               <tr> 
                                 <td width="100" class="TableCell"> 
                                   <div align="right">Label: </div>
@@ -356,9 +356,9 @@ function changeSerialNo(form) {
                   </td>
                   <td> 
 <% if (!inWizard) { %>
-                    <input type="button" name="Cancel" value="Cancel" onClick="location.href='<%= referer %>'">
+                    <input type="reset" name="Cancel" value="Cancel">
 <% } else { %>
-                    <input type="button" name="Cancel" value="Cancel" onclick="location.href='../Operations.jsp'">
+                    <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
 <% } %>
                   </td>
                 </tr>
