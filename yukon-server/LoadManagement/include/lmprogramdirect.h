@@ -149,8 +149,9 @@ private:
     
     set<int> _notificationgroupids;
 
-    //don't stream
+    //don't stream/don't save
     BOOL _insertDynamicDataFlag;
+    bool _announced_constraint_violation; // used for timed schedules so we don't spam the logs with constraint violations
     
     void ResetGroups();
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);

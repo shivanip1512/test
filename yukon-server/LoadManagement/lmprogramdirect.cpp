@@ -46,14 +46,16 @@ RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::CtiLMProgramDirect() :
     _notifytime(RWDBDateTime(1990,1,1,0,0,0,0)),
-    _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0))
+    _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0)),
+    _announced_constraint_violation(false)
 
 {
 }
 
 CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr) :
     _notifytime(RWDBDateTime(1990,1,1,0,0,0,0)),
-    _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0))
+    _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0)),
+        _announced_constraint_violation(false)
 {
     restore(rdr);
 }
@@ -4476,18 +4478,28 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 	    vector<string> cons_results;
 	    if(!con_checker.checkConstraints(*this, getCurrentGearObject()->getGearNumber(), startTime.seconds(), endTime.seconds(), cons_results))
 	    {
-		string text = " LMProgram: ";
-		text += getPAOName();
-		text += ", a timed program, was scheduled to start but did not due to constraint violations";
-		string additional = "";
-		for(vector<string>::iterator iter = cons_results.begin(); iter != cons_results.end(); iter++)
+		if(!_announced_constraint_violation)
 		{
-		    additional += *iter;
-		    additional += "\n";
+		    string text = " LMProgram: ";
+		    text += getPAOName();
+		    text += ", a timed program, was scheduled to start but did not due to constraint violations";
+		    string additional = "";
+		    for(vector<string>::iterator iter = cons_results.begin(); iter != cons_results.end(); iter++)
+		    {
+			additional += *iter;
+			additional += "\n";
+		    }
+		    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+		    signal->setSOE(2);
+		    multiDispatchMsg->insert(signal);
+
+		{
+		    CtiLockGuard<CtiLogger> dout_guard(dout);
+		    dout << RWTime() << " - " <<  text << endl << additional << endl;
 		}
-		CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
-		signal->setSOE(2);
-		multiDispatchMsg->insert(signal);
+		
+		    _announced_constraint_violation = true;
+		}
 		return FALSE;
 	    }
 	    else
@@ -4509,6 +4521,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 	    incrementDailyOps();
 	    setDirectStartTime(startTime);
 	    setDirectStopTime(endTime);
+	    _announced_constraint_violation = false;
 	    return TRUE;
 	    }
 	}
@@ -4829,7 +4842,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
 	_dailyops = right._dailyops;
 	_notifytime = right._notifytime;
 	_startedrampingout = right._startedrampingout;
-
+	_announced_constraint_violation = right._announced_constraint_violation;
 
          for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)
          {
