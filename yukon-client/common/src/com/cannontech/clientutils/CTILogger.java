@@ -144,23 +144,23 @@ public class CTILogger
 		for( int i = 0; i < ALL_NAMES.length; i++ )
 			if( logger_.getName().equalsIgnoreCase(ALL_NAMES[i][0].toString()) )
 			{
-//				level = RoleFuncs.getGlobalPropertyValue( 
-//						((Integer)ALL_NAMES[i][1]).intValue() );
+				level = RoleFuncs.getGlobalPropertyValue( 
+						((Integer)ALL_NAMES[i][1]).intValue() );
 
-				level = "ALL";
+//				level = "ALL";
 			}
 			
 		//just in case we can not find the name above
 		if( level == null )
 		{			
-//			LiteYukonRoleProperty p =
-//				AuthFuncs.getRoleProperty( LoggingRole.GENERAL_LEVEL );
+			LiteYukonRoleProperty p =
+				AuthFuncs.getRoleProperty( LoggingRole.GENERAL_LEVEL );
 
 
 			//extra special case since we may not be inited yet with out properties
-//			if( p != null )
-//				level = RoleFuncs.getGlobalPropertyValue( LoggingRole.GENERAL_LEVEL );
-//			else
+			if( p != null )
+				level = RoleFuncs.getGlobalPropertyValue( LoggingRole.GENERAL_LEVEL );
+			else
 				level = "ALL";
 		}				
 
@@ -180,12 +180,12 @@ public class CTILogger
 		setLogLevel( getLoggerLevel(log) );
 
 
-//		LiteYukonRoleProperty lToFile =
-//			AuthFuncs.getRoleProperty( LoggingRole.LOG_TO_FILE );
+		LiteYukonRoleProperty lToFile =
+			AuthFuncs.getRoleProperty( LoggingRole.LOG_TO_FILE );
 
 		String writeToFile = "false";
-//		if( lToFile != null )
-//			writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
+		if( lToFile != null )
+			writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
 
 
 		if( Boolean.valueOf(writeToFile).booleanValue() )
@@ -219,7 +219,7 @@ public class CTILogger
 			}
 			catch( Exception e )
 			{
-				LogManager.getLogger( STANDARD_LOGGER ).error( 
+				getStandardLog().error( 
 					"Unable to initialize RollingFileAppender", e );
 			}
 		}
@@ -235,6 +235,21 @@ public class CTILogger
 	public static Level getLogLevel()
 	{      
 		return getLogger().getLevel();
+	}
+
+	/**
+	 *  
+	 * Use this log directly if you are not sure that the DB cache has been
+	 * loaded. Logging database connectivity is an example of where this 
+	 * should be used.
+	 * 
+	 * The STANDARD_LOGGER will be inited correctly to what the properties are
+	 * set to once the roles & properties are loaded. This is occurs in the
+	 * updateLogSettings() method.
+	 */
+	public static Logger getStandardLog()
+	{      
+		return getLogger().getLogger( STANDARD_LOGGER );
 	}
 
 	public static void setLogLevel( String level )
