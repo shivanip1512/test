@@ -38,8 +38,13 @@ public class CollectableMappings
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramEnergyExchange(),
 		new com.cannontech.loadcontrol.data.DefColl_LMGroupEmetcon(),
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramControlWindow(),
-		new com.cannontech.loadcontrol.data.DefColl_LMGroupPoint()
+		new com.cannontech.loadcontrol.data.DefColl_LMGroupPoint(),
+      
+      new com.cannontech.loadcontrol.data.DefColl_LMGroupExpresscom(),
+      new com.cannontech.loadcontrol.data.DefColl_LMProgramThermostatGear()
 	};
+   
+
 /**
  * This method was created in VisualAge.
  * @return DefineCollectable[]
