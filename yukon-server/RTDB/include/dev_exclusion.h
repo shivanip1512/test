@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/20 22:42:30 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/03 16:32:04 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.6  2004/06/03 16:32:04  mfisher
+* added a fake typedef for smart pointers wrapped by #define VSLICK_TAG_WORKAROUND so Slick will treat Cti*SPtr as a true pointer
+*
 * Revision 1.5  2004/05/20 22:42:30  cplender
 * Various exclusion changes
 *
@@ -50,7 +53,11 @@ using boost::shared_ptr;
 
 class CtiDeviceExclusion;
 
+#if VSLICK_TAG_WORKAROUND
+typedef CtiDeviceExclusion * CtiExclusionSPtr;
+#else
 typedef shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
+#endif
 
 class IM_EX_DEVDB CtiDeviceExclusion
 {

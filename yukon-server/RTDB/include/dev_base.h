@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2004/05/19 14:48:53 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2004/06/03 16:32:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,13 @@ class CtiTransmitterInfo;
 class CtiProtocolBase;
 class CtiDeviceBase;
 
+#if VSLICK_TAG_WORKAROUND
+typedef CtiDeviceBase * CtiDeviceSPtr;
+#else
 typedef shared_ptr< CtiDeviceBase > CtiDeviceSPtr;
+#endif
+
+
 
 /*
  *  This is a class used as a base for all others.... currently he branches

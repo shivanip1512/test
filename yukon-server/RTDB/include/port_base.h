@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/06/02 20:54:06 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/06/03 16:32:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,13 @@ using namespace std;
   #include "tbl_port_statistics.h"
 #endif
 
+#if VSLICK_TAG_WORKAROUND
+typedef CtiPort * CtiPortSPtr;
+#else
 typedef shared_ptr< CtiPort > CtiPortSPtr;
+#endif
+
+
 typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);
 typedef CTI_PORTTHREAD_FUNC_PTR (*CTI_PORTTHREAD_FUNC_FACTORY_PTR)(int);
 class CtiTraceMsg;
