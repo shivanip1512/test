@@ -7,12 +7,12 @@
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
-	int deviceID = starsMCT.getDeviceID();
+  int invNo = Integer.parseInt(request.getParameter("InvNo"));
+  StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
+  int deviceID = starsMCT.getDeviceID();
 
-	//get the liteYukonPao using the deviceID
-	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+  //get the liteYukonPao using the deviceID
+  LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
 %>
 
 <jsp:useBean id="ycBean" class="com.cannontech.yc.gui.YC" scope="session">
@@ -24,8 +24,7 @@
 <% if( request.getParameter("execute") != null){%>
 	<jsp:setProperty name="ycBean" property="*"/>
 	<jsp:forward page="&lt%= request.getContextPath() %&gt/servlet/CommanderServlet?InvNo=<%=invNo%>"/>
-	<%System.out.println(" HERE" );
-	 return;
+	<%return;
 	}%>
 
 <%
@@ -105,7 +104,7 @@ function disableButton(x)
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "CommandMeter.jsp?InvNo=" + deviceID;%>
+            <% String pageName = "CommandMeter.jsp?InvNo=" + invNo;%>
             <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
@@ -130,9 +129,9 @@ function disableButton(x)
                     <td width="70%" class="TableCell"><%=PAOGroups.getPAOTypeString(liteYukonPao.getType())%></td>
                   </tr>
 
-<!--                  <%@ include file="include/Command.jsp"%>-->
- 			  <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet?InvNo=<%=invNo%>">
+ 			  <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
    			    <input type="hidden" name="deviceID" value="<%=deviceID%>">
+   			    <input type="hidden" name="waitTime" value="3000">
 
 				<input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
@@ -161,7 +160,7 @@ function disableButton(x)
                   <td class="SubtitleHeader" colspan="2" valign="top">&nbsp;</td>
                 </tr>
               </form>
- 			  <form name="textForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet?InvNo=<%=invNo%>">
+ 			  <form name="textForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
 				<input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
 				<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvNo=<%= invNo %>">
                 <tr> 

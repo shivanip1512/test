@@ -192,8 +192,7 @@ function Today() {
                 <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;User 
-                  Control</td>
+                <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;User Control</td>
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
@@ -211,9 +210,9 @@ function Today() {
     <td> 
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
         <tr> 
-          <td width="150" bgcolor="#000000" height="1"></td>
+          <td width="101" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
-          <td width="609" bgcolor="#000000" height="1"></td>
+          <td width="657" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
@@ -224,178 +223,159 @@ function Today() {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="600" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <p><br>
-                <span class="TitleHeader">AUTO CONTROL</span><br>
-                <span class="MainText">Please select one of the following Trigger Sets:</span></p>
-              <table width="300" border="0" cellpadding="1">
-                <tr> 
-                  <form method="post" action="user_lm_control.jsp">
-                    <td> 
-                      <div align="center"> 
-                        <input type="submit" name="" value="Trigger Set 1">
-                      </div>
-                    </td>
-                  </form>
-                  <form method="post" action="user_lm_control2.jsp">
-                    <td> 
-                      <div align="center"> 
-                        <input type="submit" name="Control Area 2"" value="Trigger Set 2">
-                      </div>
-                    </td>
-                  </form>
-                </tr>
-              </table>
-              <p><span class="TableCell">Trigger Set 1 - Currently not controlling<br>
-                Your Last Control:<br>
-                07/10/02 12:50 - 07/10/02 16:50</span><br>
-                <br>
-              </p>
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
+            <p><br>
+              <span class="TitleHeader">AUTO CONTROL</span><br>
+              <span class="MainText">Please select one of the following Trigger Sets:</span></p>
+            <table width="300" border="0" cellpadding="1">
+              <tr> 
+                <form method="post" action="user_lm_control.jsp">
                   <td> 
-                    <table width="600" border="2" cellspacing="0" cellpadding="5" bgcolor="#FFFFFF">
-                      <tr> 
-                        <td> 
-                          <table width="600" border="0" cellspacing="0" cellpadding="5">
-                            <tr> 
-                              <td width="300" valign="top"> 
-                                <div class="TableCell"> 
-                                  <div align="center">Select or enter a new Current 
-                                    Load below:</div>
-                                </div>
-                                <form name="form1" method="post" action="">
-                                  <table width="299" border="0" cellspacing="1" cellpadding="5" class="TableCell" align="center">
-                                    <tr> 
-                                      <td background="../../Images/Parts/MeterBG.jpg" height="269"> 
-                                        <table width="150" border="0" cellspacing="0" height="117" align="center">
-                                          <tr> 
-                                            <td valign="top" height="65"> 
-                                              <table width="82%" border="0" height="45">
-                                                <tr> 
-                                                  <td>
-                                                    <table width="20" border="0" cellspacing="0">
-                                                      <tr> 
-                                                        <td><img src="../../Images/Parts/UpArrow.gif" width="19" height="17" onclick="incLoad()"></td>
-                                                      </tr>
-                                                      <tr> 
-                                                        <td><img src="../../Images/Parts/DownArrow.gif" width="19" height="17" onclick="decLoad()"></td>
-                                                      </tr>
-                                                    </table>
-                                                  </td>
-                                                  <td> 
-                                                    <input type="text" name="loadKW" size="8" value="1000">
-                                                    <font face="Arial, Helvetica, sans-serif" size="1">kW</font></td>
-                                                </tr>
-                                              </table>
-                                            </td>
-                                          </tr>
-                                          <tr>&nbsp;<br>
-                                          </tr>
-                                          <tr> 
-                                            <td valign="bottom"> 
-                                              <table width="89%" cellspacing="0" cellpadding="0" border="2" bordercolor="#999999" bgcolor="#CCCCCC" height="56">
-                                                <tr> 
-                                                  <td valign = "top"> 
-                                                    <table width="100%"  bgcolor="#CCCCCC" bordercolor="#999999" height="61">
-                                                      <tr align = "center"> 
-                                                        <td width="33%"> 
-                                                          <input type="radio" name="radiobutton" value="on" >
-                                                        </td>
-                                                        <td width="33%"> 
-                                                          <input type="radio" name="radiobutton" value="off" checked>
-                                                        </td>
-                                                        <td width="33%"> 
-                                                          <input type="radio" name="radiobutton" value="today">
-                                                        </td>
-                                                      </tr>
-                                                      <tr class = "TableCell2" align = "center"> 
-                                                        <td width="31%" valign = "top">On</td>
-                                                        <td width="33%" valign = "top">Off</td>
-                                                        <td width="36%">Today 
-                                                          Only</td>
-                                                      </tr>
-                                                    </table>
-                                                  </td>
-                                                </tr>
-                                              </table>
-                                            </td>
-                                          </tr>
-                                        </table>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </form>
-                                <div align="center"><br>
-                                  <form name="form2" method="post" action="">
-                                    <input type="submit" name="Update" value="Update">
-                                  </form>
-                                </div>
-                              </td>
-                              <td width="280" valign="top"> 
-                                <div align="center"> 
-                                  <p class="TableCell"><b>Your Valid Auto Control 
-                                    Time Range:<br>
-                                    </b>Start Time: 12:00<br>
-                                    Stop Time: 17:00</p>
-                                  <div class="TableCell">Drag the Start and Stop 
-                                    sliders to set a <br>
-                                    new Valid Auto Control Time Range:</div>
-                                  <form name = "timeForm">
-                                    <table width="218" border="0" cellspacing="0" height="267">
+                    <div align="center"> 
+                      <input type="submit" name="" value="Trigger Set 1">
+                    </div>
+                  </td>
+                </form>
+                <form method="post" action="user_lm_control2.jsp">
+                  <td> 
+                    <div align="center"> 
+                      <input type="submit" name="Control Area 2"" value="Trigger Set 2">
+                    </div>
+                  </td>
+                </form>
+              </tr>
+            </table>
+            <p><span class="TableCell">Trigger Set 1 - Currently not controlling<br>
+              Your Last Control:<br>07/10/02 12:50 - 07/10/02 16:50</span><br>
+            <br>
+            </p>
+            <table width="600" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                <td> 
+                  <table width="600" border="2" cellspacing="0" cellpadding="5" bgcolor="#FFFFFF">
+                    <tr> 
+                      <td width="300" valign="top">
+                        <div class="TableCell" align="center">Select or enter a new Current Load below:</div>
+                        <form name="form1" method="post" action="">
+                        <table width="299" border="0" cellspacing="1" cellpadding="5" class="TableCell" align="center">
+                          <tr>
+                            <td background="../../Images/Parts/MeterBG.jpg" height="269">
+                              <table width="150" border="0" cellspacing="0" height="117" align="center">
+                                <tr>
+                                  <td valign="top" height="65">
+                                    <table width="82%" border="0" height="45">
+                                      <tr>
+                                        <td>
+                                          <table width="20" border="0" cellspacing="0">
+                                            <tr>
+                                              <td><img src="../../Images/Parts/UpArrow.gif" width="19" height="17" onclick="incLoad()"></td>
+                                            </tr>
+                                            <tr>
+                                              <td><img src="../../Images/Parts/DownArrow.gif" width="19" height="17" onclick="decLoad()"></td>
+                                            </tr>
+                                          </table>
+                                        </td>
+                                        <td>
+                                          <input type="text" name="loadKW" size="8" value="1000">
+                                          <font face="Arial, Helvetica, sans-serif" size="1">kW</font>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr>&nbsp;<br></tr>
+                                <tr> 
+                                  <td valign="bottom"> 
+                                    <table width="89%" cellspacing="0" cellpadding="0" border="2" bordercolor="#999999" bgcolor="#CCCCCC" height="56">
                                       <tr> 
-                                        <td background="../../Images/Parts/GraphBG.gif" height="281"> 
-                                          <table width="100%" border="0" height="223">
-                                            <tr> 
-                                              <td valign = "top"> 
-                                                <div align = "center"><font face="Arial, Helvetica, sans-serif" size="1">Start 
-                                                  <input id = "startTime1" type="text" name="textfield" size="5" value = "00:00" onchange="moveStartStopPtr('start')">
-                                                  </font></div>
+                                        <td valign = "top"> 
+                                          <table width="100%"  bgcolor="#CCCCCC" bordercolor="#999999" height="61">
+                                            <tr align = "center"> 
+                                              <td width="33%"> 
+                                                <input type="radio" name="radiobutton" value="on" >
+                                              </td>
+                                              <td width="33%"> 
+                                                <input type="radio" name="radiobutton" value="off" checked>
+                                              </td>
+                                              <td width="33%"> 
+                                                <input type="radio" name="radiobutton" value="today">
                                               </td>
                                             </tr>
-                                            <tr> 
-                                              <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../Images/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
-                                            </tr>
-                                            <tr> 
-                                              <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.timeForm.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../Images/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
-                                            </tr>
-                                            <tr> 
-                                              <td valign = "bottom"> 
-                                                <div align = "center"> <font face="Arial, Helvetica, sans-serif" size="1">Stop 
-                                                  </font> 
-                                                  <input id = "stopTime1" type="text" name="textfield" size="5" onchange = "moveStartStopPtr('stop');" value = "23:50">
-                                                </div>
-                                              </td>
+                                            <tr class = "TableCell2" align = "center"> 
+                                              <td width="31%" valign = "top">On</td>
+                                              <td width="33%" valign = "top">Off</td>
+                                              <td width="36%">Today Only</td>
                                             </tr>
                                           </table>
                                         </td>
                                       </tr>
                                     </table>
-                                  </form>
-                                </div>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-              <br>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        </form>
+                        <div align="center"><br>
+                        <form name="form2" method="post" action="">
+                          <input type="submit" name="Update" value="Update">
+                        </form>
+                        </div>
+                      </td>
+                      <td width="280" valign="top">
+                        <div align="center">
+                        <p class="TableCell"><b>Your Valid Auto Control Time Range:<br></b>Start Time: 12:00<br>Stop Time: 17:00</p>
+                        <div class="TableCell">Drag the Start and Stop sliders to set a <br>new Valid Auto Control Time Range:</div>
+                        <form name = "timeForm">
+                        <table width="218" border="0" cellspacing="0" height="267">
+                          <tr>
+                            <td background="../../Images/Parts/GraphBG.gif" height="281">
+                              <table width="100%" border="0" height="223">
+                                <tr>
+                                  <td valign = "top">
+                                    <div align = "center"><font face="Arial, Helvetica, sans-serif" size="1">Start</font>
+                                    <input id = "startTime1" type="text" name="textfield" size="5" value = "00:00" onchange="moveStartStopPtr('start')">
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height=70"><img name= "startPtr" onmousedown = "beginDrag(event,0,0,parseInt(document.timeForm.stopPtr.style.left),27,'showStartTime1()','horizontal','')" src="../../Images/Parts/SliderShortStart.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                </tr>
+                                <tr>
+                                  <td height="70" ><img name= "stopPtr" onmousedown = "beginDrag(event,0,0,170,parseInt(document.timeForm.startPtr.style.left),'showStopTime1()','horizontal','')" src="../../Images/Parts/SliderShortStop.gif" onload= "setPixTime()" style = "position:relative; top:0px; left:0px; cursor:pointer"></td>
+                                </tr>
+                                <tr>
+                                  <td valign = "bottom"> 
+                                    <div align = "center"> <font face="Arial, Helvetica, sans-serif" size="1">Stop</font> 
+                                    <input id = "stopTime1" type="text" name="textfield" size="5" onchange = "moveStartStopPtr('stop');" value = "23:50">
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        </form>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <br>
             </div>
             <p align="center"> 
-              <cfform name="Form1" action="submit.cfm"
-  method="Post">
-              </cfform>
+              <cfform name="Form1" action="submit.cfm" method="Post"></cfform>
             </p>
             <p align="center" class="TableCell">Current Programs<br>
-              Click on a Program Name to view the Program details. </p>
+              Click on a Program Name to view the Program details.</p>
             <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td> 
                   <div align="center"> 
                     <form name="form3" method="post" action="">
-                      <input type="submit" name="Enable All" value="Enable All">
+                    <input type="submit" name="Enable All" value="Enable All">
                     </form>
                   </div>
                 </td>
@@ -443,8 +423,7 @@ function Today() {
                 <td height="23" class="TableCell" width="58">50.0</td>
               </tr>
               <tr> 
-                <td height="23" class="TableCell" width="104">Irrigation Site 
-                  2</td>
+                <td height="23" class="TableCell" width="104">Irrigation Site 2</td>
                 <td height="23" class="TableCell" width="100"><font color="#0000FF">Stopped</font></td>
                 <td height="23" class="TableCell" width="95">&nbsp;</td>
                 <td height="23" class="TableCell" width="101">07/20/01 13:15</td>
