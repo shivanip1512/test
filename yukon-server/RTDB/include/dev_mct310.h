@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/10/27 22:04:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/02/11 05:04:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,12 @@
 
 class IM_EX_DEVDB CtiDeviceMCT310 : public CtiDeviceMCT
 {
+private:
+
+   static DLCCommandSet _commandStore;
+
+   RWTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
+
 protected:
 
     enum
@@ -40,6 +46,11 @@ protected:
         MCT3XX_FuncReadMReadLen  =    9,  //  Variable based on point count... Max of 9.
         MCT3XX_FuncReadFrozenPos = 0x91,  //  145
         MCT3XX_FuncReadFrozenLen =    9,  //  Variable based on point count... Max of 9.
+
+        MCT3XX_FuncReadMinMaxDemandPos = 0x93,
+        MCT3XX_FuncReadMinMaxDemandLen =   12,  //  Variable based on point count
+        MCT3XX_FuncReadFrozenDemandPos = 0x94,
+        MCT3XX_FuncReadFrozenDemandLen =   12,  //  Variable based on point count
 
         MCT3XX_PutMRead1Pos      = 0x20,
         MCT3XX_PutMRead2Pos      = 0x32,
@@ -71,7 +82,16 @@ protected:
         MCT3XX_OptionPos         = 0x02,
         MCT3XX_OptionLen         =    6,
         MCT3XX_GenStatPos        = 0x05,
-        MCT3XX_GenStatLen        =    9
+        MCT3XX_GenStatLen        =    9,
+
+        MCT3XX_MinMaxPeakConfigPos  = 0x03,
+
+        MCT3XX_FunctionPeakOff  = 0x59,
+        MCT3XX_FunctionPeakOn   = 0x5a,
+
+        MCT3XX_FreezeOne         = 0x51,
+        MCT3XX_FreezeTwo         = 0x52,
+        MCT3XX_FreezeLen         =    0
     };
 
     enum
@@ -88,12 +108,6 @@ protected:
         MCT3XX_UniqAddrPos             = 0x1A,
         MCT3XX_UniqAddrLen             =    6
     };
-
-private:
-
-   static DLCCommandSet _commandStore;
-
-   RWTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
 
 public:
 
@@ -117,12 +131,14 @@ public:
 
    INT decodeGetValueKWH         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetValueDemand      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodeGetValuePeak        ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetStatusDisconnect ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetStatusInternal   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetConfigModel      ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeGetConfigOptions    ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
    INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+   INT decodePutConfigPeakMode   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 
    void decodeAccumulators( ULONG *result, INT accum_cnt, BYTE *Data );
    void decodeStati( INT &stat, INT which, BYTE *Data );
