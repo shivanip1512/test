@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/09/06 01:00:24 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/09/12 02:43:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,12 +161,12 @@ CtiPortSPtr CtiPortPoolDialout::getAvailableChildPort(CtiDevice* Device)
                                 dout << RWTime() << " Child port " << curport->getName() << " is busy/idle/pending with paoId " << curport->getConnectedDevice() << endl;
                             }
                         }
-                        else if(curport->queueCount() > 0)
+                        else if(curport->queueCount() > 0 || curport->getConnectedDevice())
                         {
                             if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDAVAILABILITY)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Child port " << curport->getName() << " is busy with paoId " << curport->getConnectedDevice() << endl;
+                                dout << RWTime() << " Child port " << curport->getName() << " is busy with paoId/guid " << curport->getConnectedDevice() << " / " << curport->getPoolAssignedGUID() << endl;
                             }
                         }
                         else
