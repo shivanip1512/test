@@ -51,7 +51,6 @@ public class PoolManager
 
    static private Properties dbProps;
    static private PoolManager instance;
-   static private int clients;
 
    private Hashtable pools = new Hashtable();
 
@@ -356,7 +355,6 @@ public String[] getAllPoolsStrings()
 	  {
 		 instance = new PoolManager();
 	  }
-	  clients++;
 	  return instance;
    }
    
@@ -396,6 +394,7 @@ public String[] getAllPoolsStrings()
 	{
 		release();
 
+        pools.clear();
         dbProps = null;
 		dbProps = loadDBProperties();
    	  
@@ -405,11 +404,6 @@ public String[] getAllPoolsStrings()
 
    public synchronized void release()
    {
-	  // Wait until called by the last client
-	  if (--clients != 0)
-	  {
-		 return;
-	  }
    
 	  Enumeration allPools = pools.elements();
 	  while (allPools.hasMoreElements())

@@ -291,6 +291,18 @@ public class ConnectionPool
    
    public void release()
    {
+       int to = 0, interval = 20; //10 seconds
+       while( checkedOut > 0 && to < interval )
+       {
+           CTILogger.debug("..waiting for CheckedOut dbconnections to be freed (CheckedOut= " + checkedOut + ")" );
+           try { Thread.currentThread().sleep(500); to++; }
+           catch( InterruptedException ie ) {}           
+       }
+       
+       if( to == interval && checkedOut > 0 )
+           throw new IllegalStateException("DB connection pool timed-out during release() operation");
+
+       
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized (cache) {
 		synchronized (this) {

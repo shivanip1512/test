@@ -119,14 +119,18 @@ public class SetupServlet extends HttpServlet
 				//remove any cache elements we may have from the prvious DB
 				try
 				{
-					DefaultDatabaseCache.getInstance().releaseAllCache();
+                    //release the cache
+                    DefaultDatabaseCache.getInstance().releaseAllCache();
 
-					//restart tomcat servlets here maybe?
+                    //restart tomcat servlets here maybe?
 					//This seems to happen automatically by modifying the resource (db.properties)
 					String server = "http://localhost:8080/mgr/reload?path=/";
 				}
 				catch( Exception ex) {}
-			
+
+
+                //load all group properties
+                DefaultDatabaseCache.getInstance().getYukonGroupRolePropertyMap();                
 			}
 			
 		}
@@ -147,11 +151,11 @@ public class SetupServlet extends HttpServlet
 		catch( Throwable t ) {}
 
 
+
 		//only attempt the following changes if we have a valid DB connection
 		if( isValidDBConn )
 		{
-		
-			DBChangeMsg[] dbChangeMsgs = null;
+            DBChangeMsg[] dbChangeMsgs = null;
 			try
 			{
 				dbChangeMsgs = writeYukonProperties( req );
@@ -172,7 +176,7 @@ public class SetupServlet extends HttpServlet
 					Multi multi = new Multi();
 					for( int i = 0; i < dbChangeMsgs.length; i++ )
 					{
-						//handle the DBChangeMsg locally
+						//handle the DBChangeMsg locally (nulls out our roleproperties, forcing us to reload completely)
 						DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChangeMsgs[i]);
 								
 						multi.getVector().add( dbChangeMsgs[i] );
@@ -232,7 +236,8 @@ public class SetupServlet extends HttpServlet
 			}
 			
 		}
-		
+
+
 		//update any changed values in the DB
 		yukGrpPersist = 
 			(YukonGroup)Transaction.createTransaction(
