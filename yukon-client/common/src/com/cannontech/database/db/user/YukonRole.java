@@ -2,17 +2,29 @@ package com.cannontech.database.db.user;
 
 import java.sql.SQLException;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 /**
  * @author alauinger
  */
-public class YukonRole extends DBPersistent {
-	private static String tableName = "YukonRole";
+public class YukonRole extends DBPersistent 
+{
+	public static final String TABLE_NAME = "YukonRole";
+
+	public static final String[] SETTER_COLUMNS  = 
+	{ 
+		"RoleName", "Category", "RoleDescription" 
+	};
+
+	public static final String[] CONSTRAINT_COLUMNS  = { "RoleID" }; 
 	
 	private Integer roleID;
 	private String roleName;
 	private String category;
+	private String roleDescription = CtiUtilities.STRING_NONE;
+
+
 	
 	public YukonRole() {
 		initialize(null,null,null);
@@ -35,43 +47,51 @@ public class YukonRole extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getRoleID(), getRoleName(), getCategory() };
-		add(tableName, addValues);
+		Object[] addValues = 
+		{ 
+			getRoleID(), getRoleName(), 
+			getCategory(), getRoleDescription() 
+		};
+		add(TABLE_NAME, addValues);
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
-		delete(tableName, "RoleID", getRoleID());
+	public void delete() throws SQLException 
+	{
+		delete(TABLE_NAME, CONSTRAINT_COLUMNS[0], getRoleID());
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
-		String[] selectColumns = { "RoleName", "Category" };
-		String[] constraintColumns = { "RoleID"};
+	public void retrieve() throws SQLException 
+	{
 		Object[] constraintValues = { getRoleID() };
 		
-		Object[] results = retrieve(selectColumns, tableName, constraintColumns, constraintValues);
-		if(results.length == selectColumns.length) {
+		Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
+		if(results.length == SETTER_COLUMNS.length) 
+		{
 			setRoleName((String) results[0]);
 			setCategory((String) results[1]);
+			setRoleDescription((String) results[2]);
 		}
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
-		String[] setColumns = { "RoleName", "Category" };
-		Object[] setValues = { getRoleName(), getCategory() };
+	public void update() throws SQLException 
+	{
+		Object[] setValues = 
+		{ 
+			getRoleName(), getCategory(), getRoleDescription() 
+		};
 		
-		String[] constraintColumns = { "RoleID" };
 		Object[] constraintValues = { getRoleID() };
 		
-		update(tableName, setColumns, setValues, constraintColumns, constraintValues);
+		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 	}
 
 	/**
@@ -120,6 +140,22 @@ public class YukonRole extends DBPersistent {
 	 */
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	/**
+	 * Returns the roleDescription.
+	 * @return String
+	 */
+	public String getRoleDescription() {
+		return roleDescription;
+	}
+
+	/**
+	 * Sets the roleDescription.
+	 * @param roleDescription The roleDescription to set
+	 */
+	public void setRoleDescription(String roleDescription) {
+		this.roleDescription = roleDescription;
 	}
 
 }
