@@ -162,7 +162,10 @@ private void initialize()
 	getJSplitPaneInner().add( bottomComp, "bottom" );
 	add( getJSplitPaneInner(), "bottom" );	
 	
+	
+	//layout the child compoonents to their intended sizes
 	resetToPreferredSizes();
+	getJSplitPaneInner().resetToPreferredSizes();
 }
 
 /**
