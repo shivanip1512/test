@@ -63,12 +63,12 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="LoadImage.gif">&nbsp;</td>
-		  <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="102" height="102" background="images/LoadImage.gif">&nbsp;</td>
+		  <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="images/Header.gif">&nbsp;</td>
               </tr>
               <tr bgcolor="#666699"> 
                 <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
@@ -89,7 +89,7 @@
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -131,7 +131,7 @@
             
             
           </td>
-          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 			<table width="657" border="0" cellspacing="0" cellpadding="0">
 			  <tr> 
@@ -326,7 +326,7 @@
                       <tr valign="top"> 
                         <td width="130" class="TableCell">
                           <div name = "sub" align = "left" cursor:default;">
-	                       		<% if( capBankMdl.isRowAlarmed(i) ) { %> <img src="./images/AlarmFlag.gif" width="10"> <% } %>
+	                       		<% if( capBankMdl.isRowAlarmed(i) ) { %> <img src="images/AlarmFlag.gif" width="10"> <% } %>
                           		<%= capBankMdl.getValueAt(i, CapBankTableModel.CB_NAME_COLUMN) %>
                           </div>
                         </td>
@@ -353,7 +353,7 @@
 </table>
 
           </td>
-        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>
