@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:54:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/25 16:51:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -998,6 +998,8 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                                               InMessage->Return.Attempt,
                                               InMessage->Return.TrxID,
                                               InMessage->Return.UserID);
+    CtiPointDataMsg  *commFailed;
+    CtiPointBase     *commPoint;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1076,6 +1078,14 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
 
                 default:
                     break;
+            }
+
+            if( commPoint = getDevicePointOffsetTypeEqual(2000, StatusPointType) )
+            {
+                commFailed = new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType);
+
+                pPIL->PointData().insert(commFailed);
+                commFailed = NULL;
             }
         }
 
@@ -1472,8 +1482,34 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
 
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-            OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-            OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
+            if( getType() == TYPEMCT360 ||
+                getType() == TYPEMCT370 )
+            {
+                switch( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() )
+                {
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetAddr;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
+                        break;
+
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetAddr;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = 3;     //  MCT's LG command identifier
+                        OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        OutMessage->Buffer.BSt.Message[2] = 0x2B;  //  Demand Reset function code for the LG S4
+                        break;
+
+                    default:
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        break;
+                }
+            }
         }
     }
 
@@ -1528,6 +1564,14 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
     {
         function = CtiProtocolEmetcon::GetStatus_LoadProfile;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if(parse.getFlags() & CMD_FLAG_GS_IED)
+    {
+        if(parse.getFlags() & CMD_FLAG_GS_LINK)
+        {
+            function = CtiProtocolEmetcon::GetStatus_IEDLink;
+            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
     }
     else //  if(parse.getFlags() & CMD_FLAG_GS_EXTERNAL) - default command
     {
@@ -1892,79 +1936,23 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
              */
 
             if( classnum > 255 )
-                classnum = 72;
-
+                classnum = 0;
             if( classoffset > 65535 ) //  fix?
                 classoffset = 0;
 
-            if( classnum == 72 && classoffset == 0 )  //  do not allow 72 to have a 0 offset
-                classoffset = 2;
+            if( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() == CtiTableDeviceMCTIEDPort::AlphaPowerPlus )
+            {
+                if( classnum == 0 )
+                    classnum = 72;  //  default to class 72 for an Alpha
+
+                if( classnum == 72 && classoffset == 0 )  //  do not allow 72 to have a 0 offset
+                    classoffset = 2;
+            }
 
             OutMessage->Buffer.BSt.Message[0] = 0;  //  128 len in MCT
             OutMessage->Buffer.BSt.Message[1] = (classoffset >> 8) & 0xff;
             OutMessage->Buffer.BSt.Message[2] =  classoffset       & 0xff;
             OutMessage->Buffer.BSt.Message[3] = classnum;
-
-            //  should we notify user like the old code did?
-            /*
-            if (DataBuffer[3] == 11)
-            {
-                //  class 11 billing info
-                strcpy (ReturnMessage, MessageStrings[SET_CLASS_11_MESS]);
-            }
-            else if (DataBuffer[3] == 12)
-            {
-                //  class 12 billing info
-                strcpy (ReturnMessage, MessageStrings[SET_CLASS_12_MESS]);
-            }
-            else if (DataBuffer[3] == 72 && DataBuffer[2] == 2)
-            {
-                //  class Frozen Rules Class billing info
-                if (AddressLevel == LEAD_METER_LEVEL)
-                {
-                    strcpy (ReturnMessage, MessageStrings[SET_CLASS_72_PREVLM_MESS]);
-                }
-                else if (AddressLevel == LEAD_LOAD_LEVEL)
-                {
-                    strcpy (ReturnMessage, MessageStrings[SET_CLASS_72_PREVLL_MESS]);
-                }
-                else
-                {
-                    strcpy (ReturnMessage, MessageStrings[SET_CLASS_72_PREV_MESS]);
-                }
-            }
-            else if (DataBuffer[3] == 72 && DataBuffer[2] == 1)
-            {
-                //  class Current Rules Class billing info
-                if (AddressLevel == LEAD_METER_LEVEL)
-                {
-                    strcpy (ReturnMessage, MessageStrings[SET_CLASS_72_CURRLM_MESS]);
-                }
-                else if (AddressLevel == LEAD_LOAD_LEVEL)
-                {
-                    strcpy (ReturnMessage, MessageStrings[SET_CLASS_72_CURRLL_MESS]);
-                }
-                else
-                {
-                    strcpy (ReturnMessage, MessageStrings[SET_CLASS_72_CURR_MESS]);
-                }
-            }
-            else
-            {
-                //  some other class
-                strcpy (ReturnMessage, MessageStrings[SET_CLASS_ANY_MESS]);
-                sprintf (ReturnMessage + CLASS_MESS_OFFSET, "%2hd", DataBuffer[3]);
-                ReturnMessage[CLASS_MESS_OFFSET + 2] = ' '; //  get rid of null
-            }
-
-            if ((DataBuffer[1] || DataBuffer[2]) && DataBuffer[3] != 72)
-            {
-                //  we must add in the offset of non-zero
-                sprintf (ReturnMessage + OFFSET_MESS_OFFSET, "%3hd", (DataBuffer[1] << 8 | DataBuffer[2]));
-                ReturnMessage[OFFSET_MESS_OFFSET + 3] = ' '; //  get rid of null
-            }
-
-             */
         }
     }
     else if(parse.isKeyValid("interval"))
