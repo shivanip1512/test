@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/08/27 22:49:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/08/28 14:53:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -860,7 +860,7 @@ public:
       if(this != &aRef)
       {
          HeadFrame[0]      = aRef.HeadFrame[0];
-         HeadFrame[1]      = aRef.HeadFrame[2];
+         HeadFrame[1]      = aRef.HeadFrame[1];
          DeviceID          = aRef.DeviceID;
          TargetID          = aRef.TargetID;
          Sequence          = aRef.Sequence;
