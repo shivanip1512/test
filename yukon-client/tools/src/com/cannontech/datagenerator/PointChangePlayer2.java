@@ -25,17 +25,19 @@ import com.cannontech.util.ServletUtil;
  */
 public class PointChangePlayer2 {
 
-	private static final String USAGE = "Replays point history from a binary file written by com.cannontech.datagenerator.PointChangeRecorder.\nPointChangePlayer2 file";
+	private static final String USAGE = "Replays point history from a binary file written by com.cannontech.datagenerator.PointChangeRecorder.\nPointChangePlayer2 file [idoffset]";
 	
 	public static void main(String[] args) throws Exception {
 		if(args.length != 1) {
 			System.out.println(USAGE);
 			System.exit(-1);	
 		}
-		
-		PointData[] pData = loadChanges(args[0]);
-		CTILogger.info("Loaded " + pData.length + " point changes");
 
+		int idOffset = Integer.parseInt(args[1]);
+		PointData[] pData = loadChanges(args[0], idOffset);
+				
+		CTILogger.info("Loaded " + pData.length + " point changes");
+		
 		int cur = 0;
 		long base = calcBase(pData[0].getPointDataTimeStamp().getTime());
 		long today = ServletUtil.getToday().getTime();
@@ -44,12 +46,12 @@ public class PointChangePlayer2 {
 		//find our starting point
 		while( (pData[cur].getPointDataTimeStamp().getTime() - base) < (now - today)) cur++;
 		
-		while(true) {
+		while(true) {			
 			sleepUntil(today + (pData[cur].getPointDataTimeStamp().getTime() - base));
 			
 			int count = 0;			
 			now = System.currentTimeMillis();
-			while( (pData[cur].getPointDataTimeStamp().getTime() - base) < (now - today)) {
+			while( (pData[cur].getPointDataTimeStamp().getTime() - base) <= (now - today)) {
 				writeOut(pData[cur], now);
 				count++;
 				
@@ -67,16 +69,19 @@ public class PointChangePlayer2 {
 		PointData msg = new PointData();
 		msg.setId(pd.getId());
 		msg.setTime(new Date(ts));
+		msg.setTimeStamp(new Date(ts));
 		msg.setQuality(pd.getQuality());
 		msg.setValue(pd.getValue());
 		msg.setType(pd.getType());
-		
+		CTILogger.info("id: " + msg.getId() + " val: " + msg.getValue() + " timestamp: " + msg.getPointDataTimeStamp());
 		Util.getConnToDispatch().write(msg);
 	}
 	
 	private static void sleepUntil(long ts) {
 		try {
-			Thread.sleep( Math.max(ts - System.currentTimeMillis(), 0));
+			long sleepFor = Math.max(ts - System.currentTimeMillis(), 0);
+			CTILogger.info("Sleeping for " + sleepFor + " millis");
+			Thread.sleep(sleepFor);
 		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		}
@@ -89,15 +94,15 @@ public class PointChangePlayer2 {
 		return cal.getTimeInMillis();
 	}
 		
-	private static PointData[] loadChanges(String fileName) throws Exception {
+	private static PointData[] loadChanges(String fileName, int idOffset) throws Exception {
 		
 		ArrayList changeList = new ArrayList();
 		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
 		try {
 	
 		while(true) {				
-			int id = dis.readInt();
-			long ts = dis.readLong();
+			int id = dis.readInt() + idOffset;
+			int ts = (int) (dis.readLong() / 1000L);
 			int quality = dis.readInt();
 			double value = dis.readDouble();
 						
@@ -115,10 +120,10 @@ public class PointChangePlayer2 {
 			PointData pData = new PointData();
 			
 			pData.setId(id);
-			pData.setTime(new Date(ts));
+			pData.setTime(new Date((long)ts * 1000L));
 			pData.setQuality(quality);
 			pData.setValue(value);
-
+			
 			pData.setType(lp.getPointType());
 		
 			changeList.add(pData);
