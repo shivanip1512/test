@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/12/30 21:57:22 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/12/31 16:15:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ CtiTagManager::~CtiTagManager()
 
     if(tlg.isAcquired())
     {
-        for(itr = _map.begin(); itr != _map.end(); itr++)
+        for(itr = _dynamicTagMsgMap.begin(); itr != _dynamicTagMsgMap.end(); itr++)
         {
             TagMgrMap_t::value_type vt = *itr;
             CtiTagMsg *pTagMsg = vt.second;
@@ -86,8 +86,9 @@ CtiTagManager& CtiTagManager::operator=(const CtiTagManager& aRef)
     return *this;
 }
 
-CtiTagManager& CtiTagManager::processTagMsg(CtiTagMsg &tag)
+int CtiTagManager::processTagMsg(CtiTagMsg &tag)
 {
+    int resultAction = ActionNone;
     int instance = tag.getInstanceID();
 
     try
@@ -100,6 +101,14 @@ CtiTagManager& CtiTagManager::processTagMsg(CtiTagMsg &tag)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             tlg.tryAcquire(5000);
+        }
+
+        bool pre = isPointControlInhibited(tag.getPointID());
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " Pre is " << pre << endl;
         }
 
         setDirty(true);
@@ -133,6 +142,37 @@ CtiTagManager& CtiTagManager::processTagMsg(CtiTagMsg &tag)
             }
 
         }
+
+        bool post = isPointControlInhibited(tag.getPointID());
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " Post is " << post << endl;
+        }
+
+        if(pre != post)
+        {
+            if(pre == true)
+            {
+                // We were inhibited and now are not.
+                resultAction = ActionPointInhibitRemove;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            else
+            {
+                // We were not inhibited but now are.
+                resultAction = ActionPointControlInhibit;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
     }
     catch(...)
     {
@@ -142,7 +182,7 @@ CtiTagManager& CtiTagManager::processTagMsg(CtiTagMsg &tag)
         }
     }
 
-    return *this;
+    return resultAction;
 }
 
 CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
@@ -162,9 +202,9 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
     try
     {
         TagMgrMap_t::key_type key = instanceid;
-        TagMgrMap_t::const_iterator itr = _map.find( key );
+        TagMgrMap_t::const_iterator itr = _dynamicTagMsgMap.find( key );
 
-        if(itr != _map.end())
+        if(itr != _dynamicTagMsgMap.end())
         {
             TagMgrMap_t::value_type vt = *itr;
             CtiTagMsg *pOriginalTag = vt.second;
@@ -200,7 +240,7 @@ size_t CtiTagManager::entries() const
         tlg.tryAcquire(5000);
     }
 
-    return _map.size();
+    return _dynamicTagMsgMap.size();
 }
 
 bool CtiTagManager::empty() const
@@ -215,7 +255,7 @@ bool CtiTagManager::empty() const
         tlg.tryAcquire(5000);
     }
 
-    return _map.empty();
+    return _dynamicTagMsgMap.empty();
 }
 
 bool CtiTagManager::dirty() const
@@ -253,7 +293,8 @@ void CtiTagManager::run()
 {
     try
     {
-        int lc = loadDynamicTags();
+        int stc = loadStaticTags();
+        int dtc = loadDynamicTags();
 
         while( !isSet(SHUTDOWN) )
         {
@@ -307,7 +348,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
     bool failure = true;
 
     TagMgrMap_t::key_type key = pTag->getInstanceID();
-    pair< TagMgrMap_t::iterator, bool > ip = _map.insert( make_pair( key, pTag ) );
+    pair< TagMgrMap_t::iterator, bool > ip = _dynamicTagMsgMap.insert( make_pair( key, pTag ) );
 
     if(ip.second != true)
     {
@@ -318,7 +359,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
         }
 
         TagMgrMap_t::iterator itr = ip.first;
-        if(itr != _map.end())
+        if(itr != _dynamicTagMsgMap.end())
         {
             TagMgrMap_t::value_type vt = *itr;
             CtiTagMsg *pOriginalTag = vt.second;
@@ -364,9 +405,9 @@ bool CtiTagManager::updateInstance(int instance, CtiTagMsg &tag)
     bool failure = true;
 
     TagMgrMap_t::key_type key = instance;
-    TagMgrMap_t::const_iterator itr = _map.find( key );
+    TagMgrMap_t::const_iterator itr = _dynamicTagMsgMap.find( key );
 
-    if(itr != _map.end())
+    if(itr != _dynamicTagMsgMap.end())
     {
         queueTagLogEntry(tag);
         queueDynamicTagLogEntry(tag);
@@ -391,9 +432,9 @@ bool CtiTagManager::removeInstance(int instance, CtiTagMsg &tag)
     _dynamicLogRemovals.push_back( instance );     // Tag this for removal from the dynamic table!
 
     TagMgrMap_t::key_type key = instance;
-    TagMgrMap_t::const_iterator itr = _map.find( key );
+    TagMgrMap_t::const_iterator itr = _dynamicTagMsgMap.find( key );
 
-    if(itr != _map.end())
+    if(itr != _dynamicTagMsgMap.end())
     {
         TagMgrMap_t::value_type vt = *itr;
         CtiTagMsg *pTag = vt.second;
@@ -407,7 +448,7 @@ bool CtiTagManager::removeInstance(int instance, CtiTagMsg &tag)
         if(pTag) delete pTag;
     }
 
-    size_t numdun = _map.erase( key );
+    size_t numdun = _dynamicTagMsgMap.erase( key );
 
     if(numdun > 0)
     {
@@ -592,13 +633,13 @@ void CtiTagManager::processDynamicRemovals()
                 removeit = _dynamicLogRemovals.back();
                 _dynamicLogRemovals.pop_back();
 
-                #if 0
+#if 0
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Trying to remove " << removeit << endl;
                 }
-                #endif
+#endif
 
                 CtiTableDynamicTag removeTag;
 
@@ -627,7 +668,7 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
 
     try
     {
-        for(itr = _map.begin(); itr != _map.end(); itr++)
+        for(itr = _dynamicTagMsgMap.begin(); itr != _dynamicTagMsgMap.end(); itr++)
         {
             TagMgrMap_t::value_type vt = *itr;
             TagMgrMap_t::key_type   key = vt.first;
@@ -711,7 +752,52 @@ int CtiTagManager::loadDynamicTags()
     return loadcount;
 }
 
-bool CtiTagManager::allocateInstance(CtiTagMsg &pTag)
+int CtiTagManager::loadStaticTags()
+{
+    int loadcount = 0;
+
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        RWDBDatabase   db       = conn.database();
+        RWDBSelector   selector = conn.database().selector();
+        RWDBTable      keyTable;
+        RWDBReader     rdr;
+
+        CtiTableTag::getSQL( db, keyTable, selector );
+
+        rdr = selector.reader( conn );
+
+        if(rdr.status().errorCode() != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << selector.asString() << endl;
+        }
+
+        while( rdr() )
+        {
+            CtiTableTag staticTag;
+            staticTag.DecodeDatabaseReader(rdr);
+            loadcount++;
+
+            pair< TagTblMap_t::iterator, bool > ip = _staticTagTableMap.insert( make_pair(staticTag.getTagId(), staticTag) );
+
+            if(ip.second != true)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** CtiTableTag **** Insert collision. " << endl;
+                }
+            }
+        }
+    }
+
+    return loadcount;
+}
+
+bool CtiTagManager::verifyTagMsg(CtiTagMsg &pTag)
 {
     bool allocated = false;
 
@@ -721,7 +807,92 @@ bool CtiTagManager::allocateInstance(CtiTagMsg &pTag)
         pTag.setInstanceID(instance);
         allocated = true;
     }
+    else if(pTag.getAction() == CtiTagMsg::RemoveAction && pTag.getPointID() <= 0)
+    {
+        CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+        while(!tlg.isAcquired())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            tlg.tryAcquire(5000);
+        }
+
+        TagMgrMap_t::const_iterator itr = _dynamicTagMsgMap.find( pTag.getInstanceID() );
+
+        if(itr != _dynamicTagMsgMap.end())
+        {
+            TagMgrMap_t::value_type vt = *itr;
+            CtiTagMsg *pOriginalTag = vt.second;
+
+            if(pOriginalTag)
+            {
+                pTag.setPointID(pOriginalTag->getPointID());
+            }
+        }
+    }
 
     return allocated;
 }
 
+bool CtiTagManager::isPointControlInhibited(LONG pid)
+{
+    bool inhibit = false;
+
+    if(pid <= 0)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " Loser" << endl;
+        }
+    }
+
+    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+    while(!tlg.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** CtiTagManager isPointControlInhibited() attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        tlg.tryAcquire(5000);
+    }
+
+    if(tlg.isAcquired())
+    {
+        TagMgrMap_t::iterator itr;
+
+        for(itr = _dynamicTagMsgMap.begin(); itr != _dynamicTagMsgMap.end(); itr++)
+        {
+            TagMgrMap_t::value_type vt = *itr;
+            CtiTagMsg *pTagMsg = vt.second;
+
+            if(pTagMsg && pTagMsg->getPointID() == pid)
+            {
+                TagTblMap_t::const_iterator tagitr = _staticTagTableMap.find( pTagMsg->getTagID() );
+
+                if(tagitr != _staticTagTableMap.end())
+                {
+                    TagTblMap_t::value_type vt = *tagitr;
+                    CtiTableTag Tag = vt.second;
+
+                    if( Tag.getInhibit() )
+                    {
+                        // This tag causes inhibits to occur!
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " Point " << pid << " is control inhibited due to tag instance " << pTagMsg->getInstanceID() << endl;
+                        }
+
+                        inhibit = true;
+                        break;                  // The for loop!
+                    }
+                }
+            }
+        }
+    }
+
+    return inhibit;
+}

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/12/30 21:57:23 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/12/31 16:15:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,13 @@ class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread
 public:
 
     typedef map< int, CtiTagMsg* >    TagMgrMap_t;
+    typedef map< int, CtiTableTag >   TagTblMap_t;
+
+    enum {
+        ActionNone,
+        ActionPointControlInhibit,
+        ActionPointInhibitRemove
+    };
 
 protected:
 
@@ -49,7 +56,8 @@ protected:
     // This is a vector of the rows in the dynamic table which need to be Deleted.
     vector< int > _dynamicLogRemovals;
 
-    TagMgrMap_t _map;
+    TagTblMap_t _staticTagTableMap;
+    TagMgrMap_t _dynamicTagMsgMap;
     bool _dirty;
     mutable CtiMutex _mux;
 
@@ -82,12 +90,13 @@ public:
 
     CtiTagManager& operator=(const CtiTagManager& aRef);
 
-    CtiTagManager& processTagMsg(CtiTagMsg &tag);
+    int processTagMsg(CtiTagMsg &tag);
 
     CtiTagMsg* getTagMsg(long instanceid) const;
     CtiMultiMsg* getPointTags(long pointid) const;
 
-    bool allocateInstance(CtiTagMsg &pTag);
+    bool verifyTagMsg(CtiTagMsg &pTag);
+    int loadStaticTags();
     int loadDynamicTags();      // This method loads the dynamic tags and converts them to CtiTagMsg's for sending to clients.
     UINT writeDynamicTagsToDB();
 
@@ -96,6 +105,7 @@ public:
 
     bool dirty() const;
     void setDirty(bool set = true);
+    bool isPointControlInhibited(LONG pid);
 
 };
 #endif // #ifndef __TAGMANAGER_H__

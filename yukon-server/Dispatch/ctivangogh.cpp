@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2003/12/30 21:46:24 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2003/12/31 16:15:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2728,7 +2728,8 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
     case MSG_TAG:
         {
             // Allocate instance number to any non-allocated message!
-            _tagManager.allocateInstance(*((CtiTagMsg*)pMsg));
+            // Process instances for removal requests.
+            _tagManager.verifyTagMsg(*((CtiTagMsg*)pMsg));
 
             break;
         }
@@ -6604,7 +6605,73 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 {
     int status = NORMAL;
 
-    _tagManager.processTagMsg(tagMsg);
+    int resultAction = _tagManager.processTagMsg(tagMsg);
+
+
+    bool disable;
+    LONG id       = tagMsg.getPointID();
+    int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
+    int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
+
+    switch(resultAction)
+    {
+    case (CtiTagManager::ActionPointControlInhibit):
+        {
+            disable = true;
+            break;
+        }
+    case (CtiTagManager::ActionPointInhibitRemove):
+        {
+            disable = false;
+            break;
+        }
+    }
+
+    if(resultAction != CtiTagManager::ActionNone)
+    {
+        try
+        {
+            CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+
+            if(pMulti)
+            {
+                pMulti->setSource(DISPATCH_APPLICATION_NAME);
+                pMulti->setUser(tagMsg.getUser());
+
+                tagmask = TAG_DISABLE_CONTROL_BY_POINT;
+                setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
+
+                {
+                    bool devicedifferent;
+
+                    CtiPointBase *pPt = PointMgr.getEqual(id);
+                    ablementPoint(pPt, devicedifferent, setmask, tagmask, tagMsg.getUser(), *pMulti);
+
+                    if(devicedifferent)     // The device became interesting because of this change.
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                }
+
+                if(pMulti->getData().entries())
+                {
+                    MainQueue_.putQueue(pMulti);
+                    pMulti = 0;
+                }
+                else
+                {
+                    delete pMulti;
+                }
+            }
+        }
+        catch(const RWxmsg& x)
+        {
+            dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
+        }
+    }
 
     return status;
 }

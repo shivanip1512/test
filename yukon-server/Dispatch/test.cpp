@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/30 21:50:27 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/12/31 16:16:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,7 +298,7 @@ void tagExecute(int argc, char **argv)
         {
             pTag = CTIDBG_new CtiTagMsg;
 
-            pTag->setTagID(1);
+            pTag->setTagID(2);
             pTag->setPointID(1);
             pTag->setAction(CtiTagMsg::AddAction);
             pTag->setDescriptionStr(RWTime().asString() + " TEST");
