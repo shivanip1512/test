@@ -10,6 +10,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -83,14 +84,15 @@ public class DeleteLMHardwareAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        	
         	StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
         	
         	LiteLMHardwareBase liteHw = null;
         	ArrayList invIDs = liteAcctInfo.getInventories();
         	for (int i = 0; i < invIDs.size(); i++) {
         		if (((Integer) invIDs.get(i)).intValue() == delHw.getInventoryID()) {
-        			liteHw = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).deleteLMHardware( delHw.getInventoryID() );
-        			invIDs.remove(i);
+        			liteHw = energyCompany.deleteLMHardware( delHw.getInventoryID() );
         			break;
         		}
         	}
@@ -99,6 +101,11 @@ public class DeleteLMHardwareAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware information") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
+        	
+        	com.cannontech.database.data.stars.hardware.InventoryBase inv =
+        			new com.cannontech.database.data.stars.hardware.InventoryBase();
+        	inv.setInventoryID( new Integer(liteHw.getInventoryID()) );
+        	Transaction.createTransaction(Transaction.DELETE, inv).execute();
         	
         	ArrayList liteApps = liteAcctInfo.getAppliances();
         	for (int i = 0; i < liteApps.size(); i++) {
@@ -117,12 +124,16 @@ public class DeleteLMHardwareAction implements ActionBase {
         	
         	if (liteAcctInfo.getThermostatSettings() != null &&
         		liteAcctInfo.getThermostatSettings().getInventoryID() == liteHw.getInventoryID())
+        	{
+        		if (liteAcctInfo.getThermostatSettings().getDynamicData() != null) {
+        			ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+        			synchronized (accountList) {
+        				accountList.remove( liteAcctInfo );
+        			}
+        		}
         		liteAcctInfo.setThermostatSettings( null );
-        	
-        	com.cannontech.database.data.stars.hardware.InventoryBase inv =
-        			new com.cannontech.database.data.stars.hardware.InventoryBase();
-        	inv.setInventoryID( new Integer(liteHw.getInventoryID()) );
-        	Transaction.createTransaction(Transaction.DELETE, inv).execute();
+        	}
+        	invIDs.remove( inv.getInventoryBase().getInventoryID() );
         	
             StarsSuccess success = new StarsSuccess();
             success.setDescription("Hardware deleted successfully");

@@ -45,6 +45,7 @@ public class LMThermostatSeason extends DBPersistent {
 		
 		for (int i = 0; i < getLMThermostatSeasonEntries().size(); i++) {
 			LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) getLMThermostatSeasonEntries().get(i);
+			entry.setSeasonID( getLMThermostatSeason().getSeasonID() );
 			entry.add();
 		}
 	}

@@ -9,6 +9,8 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.db.stars.report.CallReportBase;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -44,18 +46,21 @@ public class CreateCallAction implements ActionBase {
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
 			StarsCreateCallReport createCall = new StarsCreateCallReport();
-			if (req.getParameter("CallNo") != null)
-				createCall.setCallNumber( req.getParameter("CallNo") );
 			createCall.setCallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("CallDate")) );
+			createCall.setTakenBy( req.getParameter("TakenBy") );
+			createCall.setDescription( req.getParameter("Description").replaceAll("\r\n", "<br>") );
+			
+			String callNo = req.getParameter("CallNo");
+			String enableCallNo = req.getParameter("EnableCallNo");
+			if (enableCallNo != null && Boolean.valueOf(enableCallNo).booleanValue())
+				callNo = "\"" + callNo + "\"";	// Add quotes to indicate that this is a user specified call #
+			createCall.setCallNumber( callNo );
 			
 			CallType callType = (CallType) StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
 						selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE, Integer.parseInt(req.getParameter("CallType"))),
 					CallType.class );
 			createCall.setCallType( callType );
-			
-			createCall.setTakenBy( req.getParameter("TakenBy") );
-			createCall.setDescription( req.getParameter("Description") );
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsCreateCallReport( createCall );
@@ -73,7 +78,7 @@ public class CreateCallAction implements ActionBase {
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
-	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+	public synchronized SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
         
         try {
@@ -92,19 +97,54 @@ public class CreateCallAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
+        	
+        	int energyCompanyID = user.getEnergyCompanyID();
+        	LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
             StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
-            if (createCall.getCallNumber() != null) {
-            	if (ServerUtils.callNumberExists( createCall.getCallNumber(), user.getEnergyCompanyID() )) {
+            
+        	String callNo = createCall.getCallNumber();
+        	if (callNo == null) {
+        		// Call # not provided, get the next one available
+        		callNo = energyCompany.getNextCallNumber();
+        		if (callNo == null) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Track number already exists, please choose a different one") );
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get a call tracking number") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
-            	}
-            }
-            else {
-            	String callNo = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getNextCallNumber();
-            	createCall.setCallNumber( callNo );
-            }
+        		}
+        	}
+        	
+        	if (callNo.charAt(0) == '"') {
+        		// User specified call # is contained by quotes
+        		callNo = callNo.substring( 1, callNo.length() - 1 );
+        		
+	        	if (callNo.trim().length() == 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot be empty") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
+	        	if (callNo.startsWith( ServerUtils.CTI_NUMBER )) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Tracking # cannot start with reserved string \"" + ServerUtils.CTI_NUMBER + "\"") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
+	        	if (CallReportBase.callNumberExists( callNo, energyCompany.getEnergyCompanyID() )) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Tracking # already exists, please enter a different one") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
+        	}
+        	else {
+    			callNo = ServerUtils.CTI_NUMBER + callNo;
+    			
+	        	if (CallReportBase.callNumberExists( callNo, energyCompany.getEnergyCompanyID() )) {
+	        		energyCompany.resetNextCallNumber();
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Tracking # already exists, please try again with the new tracking #") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
+        	}
+    		createCall.setCallNumber( callNo );
             
             com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();
             com.cannontech.database.db.stars.report.CallReportBase callReportDB = callReport.getCallReportBase();
@@ -117,6 +157,8 @@ public class CreateCallAction implements ActionBase {
             callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
             
             StarsCallReport call = (StarsCallReport) StarsFactory.newStarsCallReport( createCall, StarsCallReport.class );
+            if (call.getCallNumber().startsWith( ServerUtils.CTI_NUMBER ))
+            	call.setCallNumber( call.getCallNumber().substring(ServerUtils.CTI_NUMBER.length()) );
             call.setCallID( callReport.getCallReportBase().getCallID().intValue() );
             accountInfo.getCallReportHistory().add( 0, call );
             
@@ -148,24 +190,30 @@ public class CreateCallAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+            
+			// If we submitted the pre-assigned call #, we need to get a new one
+			String callNo = reqOper.getStarsCreateCallReport().getCallNumber();
+			boolean updateCallNo = (callNo != null && callNo.charAt(0) != '"');
+			
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
+				if (failure.getStatusCode() == StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD && updateCallNo)
+					user.removeAttribute( ServletUtils.ATT_CALL_TRACKING_NUMBER );
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
 			
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			if (accountInfo == null)
+				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+			
 			StarsCreateCallReportResponse resp = operation.getStarsCreateCallReportResponse();
-			StarsCallReport call = resp.getStarsCallReport();
+			accountInfo.getStarsCallReportHistory().addStarsCallReport( 0, resp.getStarsCallReport() );
+			if (updateCallNo) user.removeAttribute( ServletUtils.ATT_CALL_TRACKING_NUMBER );
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            if (accountInfo == null)
-            	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-			
-			// Call report history must already be retrieved before, e.g. when the account info is loaded
-			accountInfo.getStarsCallReportHistory().addStarsCallReport( 0, call );
             return 0;
         }
         catch (Exception e) {

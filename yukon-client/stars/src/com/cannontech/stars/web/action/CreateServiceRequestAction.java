@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -53,10 +54,15 @@ public class CreateServiceRequestAction implements ActionBase {
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
-			
-			if (req.getParameter("OrderNo") != null)
-				createOrder.setOrderNumber( req.getParameter("OrderNo") );
 			createOrder.setDateReported( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("DateReported")) );
+			createOrder.setOrderedBy( req.getParameter("OrderedBy") );
+			createOrder.setDescription( req.getParameter("Notes").replaceAll("\r\n", "<br>") );
+			
+			String orderNo = req.getParameter("OrderNo");
+			String enableOrderNo = req.getParameter("EnableOrderNo");
+			if (enableOrderNo != null && Boolean.valueOf(enableOrderNo).booleanValue())
+				orderNo = "\"" + orderNo + "\"";
+			createOrder.setOrderNumber( orderNo );
 			
 			ServiceType servType = (ServiceType) StarsFactory.newStarsCustListEntry(
 					ServletUtils.getStarsCustListEntryByID(
@@ -64,15 +70,10 @@ public class CreateServiceRequestAction implements ActionBase {
 					ServiceType.class );
 			createOrder.setServiceType( servType );
 			
-			ServiceCompany company = (ServiceCompany) StarsFactory.newStarsCustListEntry(
-					ServletUtils.getStarsCustListEntryByID(
-						selectionLists, com.cannontech.database.db.stars.report.ServiceCompany.LISTNAME_SERVICECOMPANY, Integer.parseInt(req.getParameter("ServiceCompany"))),
-					ServiceCompany.class );
+			ServiceCompany company = new ServiceCompany();
+			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
 			createOrder.setServiceCompany( company );
 			
-			createOrder.setOrderedBy( req.getParameter("OrderedBy") );
-			createOrder.setDescription( req.getParameter("Notes").replaceAll("\r\n", "<br>") );
-            
             CurrentState status = (CurrentState) StarsFactory.newStarsCustListEntry(
             		ServletUtils.getStarsCustListEntry(
             			selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_UNSCHEDULED),
@@ -114,22 +115,54 @@ public class CreateServiceRequestAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
+            
+            int energyCompanyID = user.getEnergyCompanyID();
+            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
         	
             StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
-            if (createOrder.getOrderNumber() != null) {
-            	if (ServerUtils.orderNumberExists( createOrder.getOrderNumber(), user.getEnergyCompanyID() )) {
+            
+            String orderNo = createOrder.getOrderNumber();
+            if (orderNo == null) {
+        		// Order # not provided, get the next one available
+            	orderNo = energyCompany.getNextOrderNumber();
+            	if (orderNo == null) {
 	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Track number already exists, please choose a different one") );
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get a order #") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+            	}
+            }
+            
+            if (orderNo.charAt(0) == '"') {
+        		// User specified order # is contained by quotes
+        		orderNo = orderNo.substring( 1, orderNo.length() - 1 );
+        		
+	        	if (orderNo.trim().length() == 0) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Order # cannot be empty") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
+	        	if (orderNo.startsWith( ServerUtils.CTI_NUMBER )) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Order # cannot start with reserved string \"" + ServerUtils.CTI_NUMBER + "\"") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
+            	if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() )) {
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Order # already exists, please enter a different one") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
             	}
             }
             else {
-            	String orderNo = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getNextOrderNumber();
-            	createOrder.setOrderNumber( orderNo );
+            	orderNo = ServerUtils.CTI_NUMBER + orderNo;
+    			
+	        	if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() )) {
+	        		energyCompany.resetNextOrderNumber();
+	            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Order # already exists, please try again with the new order #") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+	        	}
             }
-            
-            int energyCompanyID = user.getEnergyCompanyID();
-            LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+        	createOrder.setOrderNumber( orderNo );
             
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
@@ -175,22 +208,30 @@ public class CreateServiceRequestAction implements ActionBase {
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+            
+			// If we submitted the pre-assigned order #, we need to get a new one
+			String orderNo = reqOper.getStarsCreateServiceRequest().getOrderNumber();
+			boolean updateOrderNo = (orderNo != null && orderNo.charAt(0) != '"');
+            
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
+				if (failure.getStatusCode() == StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD && updateOrderNo)
+					user.removeAttribute( ServletUtils.ATT_ORDER_TRACKING_NUMBER );
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
 			
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			if (accountInfo == null)
 				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 				
-			// Serivce request history must already be retrieved before, e.g. when the account info is loaded
 			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
 			accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, resp.getStarsServiceRequest() );
-
+			if (updateOrderNo) user.removeAttribute( ServletUtils.ATT_ORDER_TRACKING_NUMBER );
+			
             return 0;
         }
         catch (Exception e) {

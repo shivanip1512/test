@@ -70,6 +70,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 		
 		Date now = new Date();
 		for (int i = 0; i < companies.length; i++) {
+			if (companies[i].getLiteID() == SOAPServer.DEFAULT_ENERGY_COMPANY_ID) continue;
 			OptOutEventQueue.OptOutEvent[] dueEvents = companies[i].getOptOutEventQueue().getDueEvents(TIME_LIMIT);
 			
 			for (int j = 0; j < dueEvents.length; j++) {
@@ -79,7 +80,9 @@ public class HourlyTimerTask extends StarsTimerTask {
 					cal.add( Calendar.DATE, dueEvents[j].getPeriod() );
 					if (cal.getTime().getTime() - now.getTime() < TIME_LIMIT) continue;
 				}
+				
 				LiteStarsCustAccountInformation liteAcctInfo = companies[i].getCustAccountInformation( dueEvents[j].getAccountID(), true );
+				if (liteAcctInfo == null) continue;
 				
 				try {
 					// Execute "opt out"/"reenable" command

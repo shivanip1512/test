@@ -211,7 +211,7 @@ public class ProgramSignUpAction implements ActionBase {
 		                		liteStarsProg.getProgramHistory().add( liteEvent );
 		                	}
 		                }
-		                liteStarsProg.setInService( true );
+		                liteStarsProg.updateProgramStatus();
 		                newProgList.add( liteStarsProg );
 		                
 		                if (liteApp.getInventoryID() == 0 && dftInvID != null)
@@ -234,7 +234,7 @@ public class ProgramSignUpAction implements ActionBase {
     				}
     				else if (liteApp.getLmProgramID() != program.getProgramID()) {
     					// Add "termination" event to the old program
-    					LiteStarsLMProgram liteStarsProg = ServerUtils.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+    					LiteStarsLMProgram liteStarsProg = liteAcctInfo.getLMProgram( liteApp.getLmProgramID() );
     					if (liteStarsProg != null)
     						ServerUtils.removeFutureActivationEvents( liteStarsProg.getProgramHistory(), energyCompany );
     					
@@ -266,7 +266,7 @@ public class ProgramSignUpAction implements ActionBase {
 		                		liteStarsProg.getProgramHistory().add( liteEvent );
 		                	}
 		                }
-		                liteStarsProg.setInService( true );
+		                liteStarsProg.updateProgramStatus();
 		                newProgList.add( liteStarsProg );
 		                
 		                if (liteApp.getInventoryID() == 0 && dftInvID != null)
@@ -289,7 +289,7 @@ public class ProgramSignUpAction implements ActionBase {
     				}
     				else {
     					// Just copy the program to the new program list of the account
-    					LiteStarsLMProgram liteStarsProg = ServerUtils.getLMProgram( liteAcctInfo, program.getProgramID() );
+    					LiteStarsLMProgram liteStarsProg = liteAcctInfo.getLMProgram( program.getProgramID() );
     					if (liteStarsProg != null)
     						newProgList.add( liteStarsProg );
     				}
@@ -324,7 +324,7 @@ public class ProgramSignUpAction implements ActionBase {
 	                		liteStarsProg.getProgramHistory().add( liteEvent );
 	                	}
 	                }
-	                liteStarsProg.setInService( true );
+	                liteStarsProg.updateProgramStatus();
 	                newProgList.add( liteStarsProg );
 	        		
 	        		com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
@@ -363,7 +363,7 @@ public class ProgramSignUpAction implements ActionBase {
     			
     			if (liteApp.getLmProgramID() != 0) {
 					// Add "termination" event to the old program
-					LiteStarsLMProgram liteStarsProg = ServerUtils.getLMProgram( liteAcctInfo, liteApp.getLmProgramID() );
+					LiteStarsLMProgram liteStarsProg = liteAcctInfo.getLMProgram( liteApp.getLmProgramID() );
 					if (liteStarsProg != null)
 						ServerUtils.removeFutureActivationEvents( liteStarsProg.getProgramHistory(), energyCompany );
 					

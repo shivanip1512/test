@@ -206,61 +206,37 @@ public class CustomerAccount extends DBPersistent {
         return null;
     }
 
-    public static CustomerAccount[] getAllCustomerAccounts(Integer customerID, java.sql.Connection conn) {
+    public static CustomerAccount getCustomerAccount(Integer accountID) {
         String sql = "SELECT AccountID, AccountSiteID, AccountNumber, CustomerID, BillingAddressID, AccountNotes, LoginID "
-        		   + "FROM " + TABLE_NAME + " WHERE CustomerID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList accountList = new java.util.ArrayList();
+        		   + "FROM " + TABLE_NAME + " WHERE AccountID = " + accountID;
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
-            }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, customerID.intValue() );
-                rset = pstmt.executeQuery();
+        	stmt.execute();
+        	
+        	if (stmt.getRowCount() > 0) {
+        		Object[] row = stmt.getRow(0);
+                CustomerAccount account = new CustomerAccount();
 
-                while (rset.next()) {
-                    CustomerAccount account = new CustomerAccount();
-
-                    account.setAccountID( new Integer(rset.getInt(1)) );
-                    account.setAccountSiteID( new Integer(rset.getInt(2)) );
-                    account.setAccountNumber( rset.getString(3) );
-                    account.setCustomerID( new Integer(rset.getInt(4)) );
-                    account.setBillingAddressID( new Integer(rset.getInt(5)) );
-                    account.setAccountNotes( rset.getString(6) );
-                    account.setLoginID( new Integer(rset.getInt(7)) );
-
-                    accountList.add( account );
-                }
+                account.setAccountID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                account.setAccountSiteID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                account.setAccountNumber( (String) row[2] );
+                account.setCustomerID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+                account.setBillingAddressID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+                account.setAccountNotes( (String) row[5] );
+                account.setLoginID( new Integer(((java.math.BigDecimal) row[6]).intValue()) );
+                
+                return account;
             }
         }
-        catch( java.sql.SQLException e )
+        catch( Exception e )
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
 
-        CustomerAccount[] accounts = new CustomerAccount[ accountList.size() ];
-        accountList.toArray( accounts );
-        return accounts;
+        return null;
     }
 
     public void delete() throws java.sql.SQLException {

@@ -344,23 +344,33 @@ public class ProgramOptOutAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	private String[] getOptOutCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, int offHours)
-	throws Exception {
-        // List of hardware IDs to be disabled
+	/**
+	 * Return the list of hardware IDs to be disabled
+	 */
+	private static ArrayList getHardwareIDs(LiteStarsCustAccountInformation liteAcctInfo) {
         ArrayList hwIDList = new ArrayList();
         for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
         	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
         	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
         		LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
         		if (appliance.getLmProgramID() == program.getLmProgram().getProgramID()) {
-        			Integer hardwareID = new Integer( appliance.getInventoryID() );
-        			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
+        			if (appliance.getInventoryID() > 0) {
+	        			Integer hardwareID = new Integer( appliance.getInventoryID() );
+	        			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
+        			}
         			break;
         		}
         	}
         }
-		
+        
+        return hwIDList;
+	}
+	
+	private static String[] getOptOutCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, int offHours)
+	throws Exception {
 		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
+		
+        ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
 		String[] commands = new String[ hwIDList.size() ];
 
         for (int i = 0; i < hwIDList.size(); i++) {
@@ -377,7 +387,7 @@ public class ProgramOptOutAction implements ActionBase {
         return commands;
 	}
 	
-	boolean repeatLast(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception {
+	private static boolean repeatLast(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception {
 		/* We will only resend the command if there is no opt out event in the event queue
 		 * (otherwise the command hasn't been sent out yet), and there is a reenable event
 		 * (the opt out event is still active)
@@ -397,6 +407,7 @@ public class ProgramOptOutAction implements ActionBase {
 	
 	private static StarsProgramOptOutResponse processOptOut(
 			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, StarsProgramOptOut optOut)
+			throws com.cannontech.database.TransactionException
 	{
 		TimeZone tz = TimeZone.getTimeZone( energyCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
 		StarsProgramOptOutResponse resp = new StarsProgramOptOutResponse();
@@ -426,28 +437,15 @@ public class ProgramOptOutAction implements ActionBase {
 			reenableDate = ServletUtil.getTomorrow(tz);
 		}
         
-        // List of hardware IDs to be disabled
-        ArrayList hwIDList = new ArrayList();
-        for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-        	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-        	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-        		LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-        		if (appliance.getLmProgramID() == program.getLmProgram().getProgramID()) {
-        			Integer hardwareID = new Integer( appliance.getInventoryID() );
-        			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
-        			break;
-        		}
-        	}
-        }
-
+        ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
         for (int i = 0; i < hwIDList.size(); i++) {
         	Integer invID = (Integer) hwIDList.get(i);
         	LiteLMHardwareBase liteHw = energyCompany.getLMHardware( invID.intValue(), true );
         
-    		ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );
-    		com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
-    		
     		// Add "Temp Opt Out" and "Future Activation" to hardware events
+    		ServerUtils.removeFutureActivationEvents( liteHw.getLmHardwareHistory(), energyCompany );
+			com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
+    		
     		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
     		com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
@@ -472,64 +470,16 @@ public class ProgramOptOutAction implements ActionBase {
     		event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
     		multiDB.getDBPersistentVector().addElement( event );
     		
-            // Add "Temp Opt Out" and "Future Activation" to program events
-    		for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-            	LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-                if (appliance.getInventoryID() != liteHw.getInventoryID()) continue;
-                
-	            if (appliance.getLmProgramID() == 0) continue;
-            	Integer programID = new Integer( appliance.getLmProgramID() );
-            	
-            	LiteStarsLMProgram liteProg = ServerUtils.getLMProgram( liteAcctInfo, programID.intValue() );
-            	if (liteProg != null)
-            		ServerUtils.removeFutureActivationEvents( liteProg.getProgramHistory(), energyCompany );
-	            
-	            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
-	            		new com.cannontech.database.data.stars.event.LMProgramEvent();
-	            com.cannontech.database.db.stars.event.LMProgramEvent eventDB1 = event1.getLMProgramEvent();
-	            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase1 = event1.getLMCustomerEventBase();
-	            
-	            eventDB1.setLMProgramID( programID );
-	            eventDB1.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
-	            eventBase1.setEventTypeID( progEventEntryID );
-	            eventBase1.setActionID( tempTermEntryID );
-	            eventBase1.setEventDateTime( optOutDate );
-	            
-	            event1.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-	            multiDB.getDBPersistentVector().addElement( event1 );
-	            
-	            event1 = new com.cannontech.database.data.stars.event.LMProgramEvent();
-	            eventDB1 = event1.getLMProgramEvent();
-	            eventBase1 = event1.getLMCustomerEventBase();
-	            
-	            eventDB1.setLMProgramID( programID );
-	            eventDB1.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
-	            eventBase1.setEventTypeID( progEventEntryID );
-	            eventBase1.setActionID( futureActEntryID );
-	            eventBase1.setEventDateTime( reenableDate );
-	            
-	            event1.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-	            multiDB.getDBPersistentVector().addElement( event1 );
-            }
+    		multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
+    				Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
     		
-    		try {
-	    		multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
-	    				Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
-    		}
-    		catch (com.cannontech.database.TransactionException e) {
-    			e.printStackTrace();
-    			continue;
-    		}
-			
 			// Update lite objects and create response
-			// The first two events are hardware events
-			int eventNo = 0;
-			for (eventNo = 0; eventNo < 2; eventNo++) {
-				event = (com.cannontech.database.data.stars.event.LMHardwareEvent) multiDB.getDBPersistentVector().get(eventNo);
+			for (int j = 0; j < multiDB.getDBPersistentVector().size(); j++) {
+				event = (com.cannontech.database.data.stars.event.LMHardwareEvent) multiDB.getDBPersistentVector().get(j);
 				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 				liteHw.getLmHardwareHistory().add( liteEvent );
-				liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL );
 			}
+			liteHw.updateDeviceStatus();
 			
 			StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 			hwHist.setInventoryID( liteHw.getInventoryID() );
@@ -540,32 +490,62 @@ public class ProgramOptOutAction implements ActionBase {
 				hwHist.addStarsLMHardwareEvent( starsEvent );
 			}
 			resp.addStarsLMHardwareHistory( hwHist );
+        }
+		
+		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+			Integer programID = new Integer(liteProg.getLmProgram().getProgramID());
 			
-			// The rest of the events are program events in pairs
-			for (; eventNo < multiDB.getDBPersistentVector().size(); eventNo += 2) {
-				com.cannontech.database.data.stars.event.LMProgramEvent event1 =
-						(com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(eventNo);
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event1 );
-				
-				LiteStarsLMProgram liteProg = ServerUtils.getLMProgram( liteAcctInfo, event1.getLMProgramEvent().getLMProgramID().intValue() );
-				if (liteProg != null) {
-					liteProg.getProgramHistory().add( liteEvent );
-					event1 = (com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(eventNo+1);
-					liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event1 );
-					liteProg.getProgramHistory().add( liteEvent );
-					liteProg.setInService( false );
-					
-					StarsLMProgramHistory progHist = new StarsLMProgramHistory();
-					progHist.setProgramID( liteProg.getLmProgram().getProgramID() );
-					for (int l = 0; l < liteProg.getProgramHistory().size(); l++) {
-						liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(l);
-						StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
-						StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
-						progHist.addStarsLMProgramEvent( starsEvent );
-					}
-					resp.addStarsLMProgramHistory( progHist );
-				}
+	        // Add "Temp Opt Out" and "Future Activation" to program events
+			com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
+            
+            com.cannontech.database.data.stars.event.LMProgramEvent event =
+            		new com.cannontech.database.data.stars.event.LMProgramEvent();
+            com.cannontech.database.db.stars.event.LMProgramEvent eventDB = event.getLMProgramEvent();
+            com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
+            
+            eventDB.setLMProgramID( programID );
+            eventDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
+            eventBase.setEventTypeID( progEventEntryID );
+            eventBase.setActionID( tempTermEntryID );
+            eventBase.setEventDateTime( optOutDate );
+            
+            event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+            multiDB.getDBPersistentVector().addElement( event );
+            
+            event = new com.cannontech.database.data.stars.event.LMProgramEvent();
+            eventDB = event.getLMProgramEvent();
+            eventBase = event.getLMCustomerEventBase();
+            
+            eventDB.setLMProgramID( programID );
+            eventDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
+            eventBase.setEventTypeID( progEventEntryID );
+            eventBase.setActionID( futureActEntryID );
+            eventBase.setEventDateTime( reenableDate );
+            
+            event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+            multiDB.getDBPersistentVector().addElement( event );
+            
+    		multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
+    				Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+			
+			// Update lite objects and create response
+			for (int j = 0; j < multiDB.getDBPersistentVector().size(); j++) {
+				event = (com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(j);
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
+				liteProg.getProgramHistory().add( liteEvent );
 			}
+			liteProg.updateProgramStatus();
+			
+			StarsLMProgramHistory progHist = new StarsLMProgramHistory();
+			progHist.setProgramID( liteProg.getLmProgram().getProgramID() );
+			for (int j = 0; j < liteProg.getProgramHistory().size(); j++) {
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(j);
+				StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
+				StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
+				progHist.addStarsLMProgramEvent( starsEvent );
+			}
+			resp.addStarsLMProgramHistory( progHist );
         }
         
         return resp;
@@ -574,8 +554,14 @@ public class ProgramOptOutAction implements ActionBase {
 	public static void updateCustAccountInfo(
 			LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, StarsProgramOptOut optOut)
 	{
-		StarsProgramOptOutResponse resp = processOptOut( liteAcctInfo, energyCompany, optOut );
-		if (resp == null) return;
+		StarsProgramOptOutResponse resp = null;
+		try {
+			resp = processOptOut( liteAcctInfo, energyCompany, optOut );
+		}
+		catch (com.cannontech.database.TransactionException e) {
+			e.printStackTrace();
+			return;
+		}
 		
 		StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
 				energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );

@@ -311,7 +311,7 @@ public class SOAPClient extends HttpServlet {
         else if (action.equalsIgnoreCase("GetNextCallNo")) {
         	clientAction = new GetNextCallNumberAction();
         	destURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp";
-        	errorURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp?getCallNo=failed";
+        	errorURL = req.getContextPath() + "/operator/Consumer/CreateCalls.jsp?GetCallNo=failed";
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	clientAction = new CreateCallAction();

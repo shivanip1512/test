@@ -236,7 +236,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 		liteHw.getLmHardwareHistory().add( liteEvent );
-		liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL );
+		liteHw.updateDeviceStatus();
 		
 		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
 		return starsHw;
@@ -274,7 +274,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		
 		LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 		liteHw.getLmHardwareHistory().add( liteEvent );
-		liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
+		liteHw.updateDeviceStatus();
 		
 		StarsLMHardware starsHw = StarsLiteFactory.createStarsLMHardware( liteHw, energyCompany.getLiteID() );
 		return starsHw;
@@ -323,7 +323,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			
 			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 			liteHw.getLmHardwareHistory().add( liteEvent );
-			liteHw.setDeviceStatus( YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL );
+			liteHw.updateDeviceStatus();
         }
         else {
         	// Only send a config command

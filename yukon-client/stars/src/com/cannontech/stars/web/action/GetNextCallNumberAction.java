@@ -61,6 +61,8 @@ public class GetNextCallNumberAction implements ActionBase {
             }
             
             String callNo = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getNextCallNumber();
+            if (callNo == null) throw new Exception();
+            
             StarsGetNextCallNumberResponse resp = new StarsGetNextCallNumberResponse();
             resp.setCallNumber( callNo );
             

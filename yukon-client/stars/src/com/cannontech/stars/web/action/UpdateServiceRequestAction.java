@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -44,6 +45,8 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateServiceRequestAction implements ActionBase {
+	
+	private static final String TO_BE_DELETED = "TO_BE_DELETED";
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -54,7 +57,8 @@ public class UpdateServiceRequestAction implements ActionBase {
 			if (user == null) return null;
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			String[] changed = req.getParameterValues( "changed" );
+			String[] changed = req.getParameterValues( "Changed" );
+			String[] deleted = req.getParameterValues( "Deleted" );
 			String[] orderIDs = req.getParameterValues( "OrderID" );
 			String[] orderNos = req.getParameterValues( "OrderNo" );
 			String[] servTypes = req.getParameterValues( "ServiceType" );
@@ -63,8 +67,14 @@ public class UpdateServiceRequestAction implements ActionBase {
 			String[] descriptions = req.getParameterValues( "Description" );
 			
 			StarsUpdateServiceRequest updateOrders = new StarsUpdateServiceRequest();
-			for (int i = 0; i < changed.length; i++) {
-				if (changed[i].equals("true")) {
+			for (int i = 0; i < orderIDs.length; i++) {
+				if (Boolean.valueOf( deleted[i] ).booleanValue()) {
+					StarsServiceRequest order = new StarsServiceRequest();
+					order.setOrderID( Integer.parseInt(orderIDs[i]) );
+					order.setOrderNumber( TO_BE_DELETED );
+					updateOrders.addStarsServiceRequest( order );
+				}
+				else if (Boolean.valueOf( changed[i] ).booleanValue()) {
 					StarsServiceRequest order = new StarsServiceRequest();
 					order.setOrderID( Integer.parseInt(orderIDs[i]) );
 					
@@ -142,8 +152,28 @@ public class UpdateServiceRequestAction implements ActionBase {
         		StarsServiceRequest newOrder = updateOrders.getStarsServiceRequest(i);
         		for (int j = 0; j < orderHist.size(); j++) {
         			int orderID = ((Integer) orderHist.get(j)).intValue();
-        			if (orderID == newOrder.getOrderID()) {
+        			if (orderID != newOrder.getOrderID()) continue;
+        			
+        			if (newOrder.getOrderNumber() != null && newOrder.getOrderNumber().equals( TO_BE_DELETED )) {
+        				com.cannontech.database.data.stars.report.WorkOrderBase order =
+        						new com.cannontech.database.data.stars.report.WorkOrderBase();
+        				order.setOrderID( new Integer(newOrder.getOrderID()) );
+        				Transaction.createTransaction( Transaction.DELETE, order ).execute();
+        				
+        				energyCompany.deleteWorkOrderBase( newOrder.getOrderID() );
+        			}
+        			else {
         				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( orderID );
+        				
+        				if (newOrder.getOrderNumber() != null) {
+        					if (!liteOrder.getOrderNumber().equals( newOrder.getOrderNumber() )
+        						&& WorkOrderBase.orderNumberExists( newOrder.getOrderNumber(), energyCompany.getEnergyCompanyID() )) {
+				            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
+				            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Order # already exists, please enter a different one") );
+				            	return SOAPUtil.buildSOAPMessage( respOper );
+        					}
+        					liteOrder.setOrderNumber( newOrder.getOrderNumber() );
+        				}
         				
         				if (newOrder.getServiceType() != null)
         					liteOrder.setWorkTypeID( newOrder.getServiceType().getEntryID() );
@@ -153,16 +183,6 @@ public class UpdateServiceRequestAction implements ActionBase {
         					liteOrder.setServiceCompanyID( newOrder.getServiceCompany().getEntryID() );
         				if (newOrder.getDescription() != null)
         					liteOrder.setDescription( newOrder.getDescription() );
-        				
-        				if (newOrder.getOrderNumber() != null) {
-        					if (!liteOrder.getOrderNumber().equals( newOrder.getOrderNumber() )
-        						&& ServerUtils.orderNumberExists( newOrder.getOrderNumber(), user.getEnergyCompanyID() )) {
-				            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-				            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Order number already exists, please choose a different one") );
-				            	return SOAPUtil.buildSOAPMessage( respOper );
-        					}
-        					liteOrder.setOrderNumber( newOrder.getOrderNumber() );
-        				}
         				
         				com.cannontech.database.db.stars.report.WorkOrderBase orderDB =
         						(com.cannontech.database.db.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
@@ -224,16 +244,18 @@ public class UpdateServiceRequestAction implements ActionBase {
 				StarsServiceRequest newOrder = updateOrders.getStarsServiceRequest(i);
 				for (int j = 0; j < orderHist.getStarsServiceRequestCount(); j++) {
 					StarsServiceRequest order = orderHist.getStarsServiceRequest(j);
-					if (order.getOrderID() == newOrder.getOrderID()) {
+					if (order.getOrderID() != newOrder.getOrderID()) continue;
+					
+					if (newOrder.getOrderNumber() != null && newOrder.getOrderNumber().equals( TO_BE_DELETED ))
+						orderHist.removeStarsServiceRequest( j );
+					else {
 						if (newOrder.getOrderNumber() != null) order.setOrderNumber( newOrder.getOrderNumber() );
 						if (newOrder.getServiceType() != null) order.setServiceType( newOrder.getServiceType() );
 						if (newOrder.getCurrentState() != null) order.setCurrentState( newOrder.getCurrentState() );
 						if (newOrder.getServiceCompany() != null) order.setServiceCompany( newOrder.getServiceCompany() );
 						if (newOrder.getDescription() != null) order.setDescription( newOrder.getDescription() );
-						System.out.println( "*** Description: " + newOrder.getDescription() );
-						System.out.println( "### Description: " + order.getDescription() );
-						break;
 					}
+					break;
 				}
 			}
 			

@@ -124,9 +124,14 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
     		}
     		
+    		boolean isTwoWay = ServerUtils.isTwoWayThermostat( liteHw, energyCompany );
 			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
 			
-			StringBuffer cmd = new StringBuffer("putconfig xcom setstate");
+			StringBuffer cmd = new StringBuffer();
+			if (isTwoWay)
+				cmd.append("putconfig epro setstate");
+			else
+				cmd.append("putconfig xcom setstate");
 			if (starsOption.getMode() != null)
 				cmd.append(" system ").append(starsOption.getMode().toString().toLowerCase());
 			if (starsOption.getTemperature() == -1) {
@@ -210,7 +215,11 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             accountInfo.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
             
-            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "The thermostat settings have been updated");
+            String confirmMsg = "Thermostat settings have been sent.";
+            if (accountInfo.getStarsThermostatSettings().getStarsThermostatDynamicData() != null)
+            	confirmMsg += " It may take a few minutes before the changes are reflected on the webpage.";
+            session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
+            
             return 0;
         }
         catch (Exception e) {

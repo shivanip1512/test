@@ -339,17 +339,24 @@ public class ServletUtils {
     }
     
     public static String[] getImageNames(String imageStr) {
-    	StringTokenizer st = new StringTokenizer(imageStr, IMAGE_NAME_SEPARATOR);
+    	StringTokenizer st = new StringTokenizer(imageStr, IMAGE_NAME_SEPARATOR, true);
     	ArrayList imgNameList = new ArrayList();
-    	while (st.hasMoreTokens())
-    		imgNameList.add( st.nextToken() );
+    	while (st.hasMoreTokens()) {
+    		String tk = st.nextToken();
+    		if (!tk.equals( IMAGE_NAME_SEPARATOR )) {
+    			imgNameList.add( tk );
+    			if (st.hasMoreTokens()) st.nextToken();
+    		}
+    		else
+	    		imgNameList.add( "" );
+    	}
     		
     	String[] imgNames = new String[ MAX_NUM_IMAGES ];
     	for (int i = 0; i < MAX_NUM_IMAGES; i++) {
     		if (i < imgNameList.size())
     			imgNames[i] = (String) imgNameList.get(i);
     		else
-    			imgNames[i] = null;
+    			imgNames[i] = "";
     	}
     	
     	return imgNames;
@@ -366,6 +373,29 @@ public class ServletUtils {
 	    	sBuf.append( starsAddr.getCity() ).append( ", " );
     	sBuf.append( starsAddr.getState() ).append( " " )
     		.append( starsAddr.getZip() );
+    	
+    	return sBuf.toString();
+    }
+    
+    public static String getOneLineAddress(StarsCustomerAddress starsAddr) {
+    	if (starsAddr == null) return "(none)";
+    	
+		StringBuffer sBuf = new StringBuffer();
+		if (starsAddr.getStreetAddr1().trim().length() > 0)
+			sBuf.append( starsAddr.getStreetAddr1() );
+		if (starsAddr.getStreetAddr2().trim().length() > 0) {
+			if (sBuf.length() > 0) sBuf.append( ", " );
+			sBuf.append( starsAddr.getStreetAddr2() );
+		}
+		if (starsAddr.getCity().trim().length() > 0) {
+			if (sBuf.length() > 0) sBuf.append( ", " );
+			sBuf.append( starsAddr.getCity() );
+		}
+		if (starsAddr.getState().trim().length() > 0) {
+			if (sBuf.length() > 0) sBuf.append( ", " );
+			sBuf.append( starsAddr.getState() ).append( " " ).append( starsAddr.getZip() );
+		}
+		if (sBuf.length() == 0) sBuf.append( "(none)" );
     	
     	return sBuf.toString();
     }

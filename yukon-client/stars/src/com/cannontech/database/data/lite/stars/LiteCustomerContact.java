@@ -48,6 +48,7 @@ public class LiteCustomerContact extends LiteBase {
 
 	private String lastName = null;
 	private String firstName = null;
+	private int addressID = com.cannontech.common.util.CtiUtilities.NONE_ID;
 	private String homePhone = null;
 	private String workPhone = null;
 	private ContactNotification email = null;
@@ -161,6 +162,22 @@ public class LiteCustomerContact extends LiteBase {
 	 */
 	public void setEmail(ContactNotification email) {
 		this.email = email;
+	}
+
+	/**
+	 * Returns the addressID.
+	 * @return int
+	 */
+	public int getAddressID() {
+		return addressID;
+	}
+
+	/**
+	 * Sets the addressID.
+	 * @param addressID The addressID to set
+	 */
+	public void setAddressID(int addressID) {
+		this.addressID = addressID;
 	}
 
 }

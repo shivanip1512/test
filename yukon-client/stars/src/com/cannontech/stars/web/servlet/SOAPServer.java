@@ -22,7 +22,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.task.HourlyTimerTask;
-import com.cannontech.stars.util.task.LMControlHistoryTimerTask;
+import com.cannontech.stars.util.task.RefreshTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -50,6 +50,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	public static final int YUK_LIST_ENTRY_ID_HOME_PHONE = 5;
 	public static final int YUK_LIST_ENTRY_ID_WORK_PHONE = 6;
 	
+	public static final int YUK_WEB_CONFIG_ID_COOL = -1;
+	public static final int YUK_WEB_CONFIG_ID_HEAT = -2;
+	
 	private static boolean clientLocal = true;
     
     // Instance of the SOAPServer object
@@ -60,7 +63,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     
     private StarsTimerTask[] timerTasks = {
     	new HourlyTimerTask(),
-    	new LMControlHistoryTimerTask()
+    	new RefreshTimerTask()
     };
 	
     private PILConnectionServlet connToPIL = null;
@@ -333,10 +336,32 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	
 	public static LiteWebConfiguration getWebConfiguration(int configID) {
 		ArrayList webConfigList = getAllWebConfigurations();
-		for (int i = 0; i < webConfigList.size(); i++) {
-			LiteWebConfiguration config = (LiteWebConfiguration) webConfigList.get(i);
-			if (config.getConfigID() == configID)
-				return config;
+		synchronized (webConfigList) {
+			for (int i = 0; i < webConfigList.size(); i++) {
+				LiteWebConfiguration config = (LiteWebConfiguration) webConfigList.get(i);
+				if (config.getConfigID() == configID)
+					return config;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static void addWebConfiguration(LiteWebConfiguration config) {
+		ArrayList webConfigList = getAllWebConfigurations();
+		synchronized (webConfigList) { webConfigList.add(config); }
+	}
+	
+	public static LiteWebConfiguration deleteWebConfiguration(int configID) {
+		ArrayList webConfigList = getAllWebConfigurations();
+		synchronized (webConfigList) {
+			for (int i = 0; i < webConfigList.size(); i++) {
+				LiteWebConfiguration config = (LiteWebConfiguration) webConfigList.get(i);
+				if (config.getConfigID() == configID) {
+					webConfigList.remove( i );
+					return config;
+				}
+			}
 		}
 		
 		return null;

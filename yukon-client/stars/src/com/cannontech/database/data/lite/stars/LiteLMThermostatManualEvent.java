@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteTypes;
 
 /**
@@ -12,11 +13,11 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMThermostatManualEvent extends LiteLMCustomerEvent {
 
-	private int inventoryID = com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT;
+	private int inventoryID = CtiUtilities.NONE_ID;
 	private int previousTemperature = 0;
 	private boolean holdTemperature = false;
-	private int operationStateID = com.cannontech.common.util.CtiUtilities.NONE_ID;
-	private int fanOperationID = com.cannontech.common.util.CtiUtilities.NONE_ID;
+	private int operationStateID = CtiUtilities.NONE_ID;
+	private int fanOperationID = CtiUtilities.NONE_ID;
 	
 	public LiteLMThermostatManualEvent() {
 		super();

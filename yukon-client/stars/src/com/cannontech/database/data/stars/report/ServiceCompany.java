@@ -18,7 +18,7 @@ public class ServiceCompany extends DBPersistent {
     private com.cannontech.database.db.customer.Address address = null;
     private com.cannontech.database.db.contact.Contact primaryContact = null;
     
-    private com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase = null;
+    private Integer energyCompanyID = null;
 
     public ServiceCompany() {
         super();
@@ -39,33 +39,42 @@ public class ServiceCompany extends DBPersistent {
     	// delete from mapping table
     	delete("ECToGenericMapping", "ItemID", getServiceCompany().getCompanyID());
     	
-    	getAddress().delete();
-    	getPrimaryContact().delete();
         getServiceCompany().delete();
+        
+        getAddress().setAddressID( getServiceCompany().getAddressID() );
+    	getAddress().delete();
+    	
+    	getPrimaryContact().setContactID( getServiceCompany().getPrimaryContactID() );
+    	getPrimaryContact().delete();
     }
 
     public void add() throws java.sql.SQLException {
-    	if (getEnergyCompanyBase() == null)
-    		throw new java.sql.SQLException("Add: setEnergyCompanyBase() must be called before this function");
+    	if (getEnergyCompanyID() == null)
+    		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
     		
-        getServiceCompany().add();
         getAddress().add();
         getPrimaryContact().add();
         
-        if (getEnergyCompanyBase().getEnergyCompany() != null) {
-        	// Add to mapping table
-        	Object[] addValues = {
-        		getEnergyCompanyBase().getEnergyCompany().getEnergyCompanyID(),
-        		getServiceCompany().getCompanyID(),
-        		getServiceCompany().TABLE_NAME
-        	};
-        	add("ECToGenericMapping", addValues);
-        }
+        getServiceCompany().setAddressID( getAddress().getAddressID() );
+        getServiceCompany().setPrimaryContactID( getPrimaryContact().getContactID() );
+        getServiceCompany().add();
+        
+    	// Add to mapping table
+    	Object[] addValues = {
+    		getEnergyCompanyID(),
+    		getServiceCompany().getCompanyID(),
+    		com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME
+    	};
+    	add("ECToGenericMapping", addValues);
     }
 
     public void update() throws java.sql.SQLException {
         getServiceCompany().update();
+        
+        getAddress().setAddressID( getServiceCompany().getAddressID() );
         getAddress().update();
+    	
+    	getPrimaryContact().setContactID( getServiceCompany().getPrimaryContactID() );
         getPrimaryContact().update();
     }
 
@@ -136,20 +145,19 @@ public class ServiceCompany extends DBPersistent {
 	}
 
 	/**
-	 * Returns the energyCompanyBase.
-	 * @return com.cannontech.database.data.company.EnergyCompanyBase
+	 * Returns the energyCompanyID.
+	 * @return Integer
 	 */
-	public com.cannontech.database.data.company.EnergyCompanyBase getEnergyCompanyBase() {
-		return energyCompanyBase;
+	public Integer getEnergyCompanyID() {
+		return energyCompanyID;
 	}
 
 	/**
-	 * Sets the energyCompanyBase.
-	 * @param energyCompanyBase The energyCompanyBase to set
+	 * Sets the energyCompanyID.
+	 * @param energyCompanyID The energyCompanyID to set
 	 */
-	public void setEnergyCompanyBase(
-		com.cannontech.database.data.company.EnergyCompanyBase energyCompanyBase) {
-		this.energyCompanyBase = energyCompanyBase;
+	public void setEnergyCompanyID(Integer energyCompanyID) {
+		this.energyCompanyID = energyCompanyID;
 	}
 
 }

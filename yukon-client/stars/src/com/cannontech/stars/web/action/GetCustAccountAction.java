@@ -100,6 +100,14 @@ public class GetCustAccountAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
+            liteAcctInfo.setLastLoginTime( System.currentTimeMillis() );	// Update the last login time
+            if (liteAcctInfo.getThermostatSettings() != null && liteAcctInfo.getThermostatSettings().getDynamicData() != null) {
+	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+	            synchronized (accountList) {
+	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
+	            }
+            }
+            
     		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
     		
     		StarsCustAccountInformation starsAcctInfo = null;

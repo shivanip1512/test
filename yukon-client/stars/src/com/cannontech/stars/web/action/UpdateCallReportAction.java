@@ -10,6 +10,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.db.stars.report.CallReportBase;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -34,6 +35,8 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateCallReportAction implements ActionBase {
+	
+	private static final String TO_BE_DELETED = "TO_BE_DELETED";
 
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
@@ -44,20 +47,27 @@ public class UpdateCallReportAction implements ActionBase {
 			if (user == null) return null;
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			String[] changed = req.getParameterValues( "changed" );
+			String[] changed = req.getParameterValues( "Changed" );
+			String[] deleted = req.getParameterValues( "Deleted" );
 			String[] callIDs = req.getParameterValues( "CallID" );
 			String[] callNos = req.getParameterValues( "CallNo" );
 			String[] callTypes = req.getParameterValues( "CallType" );
 			String[] descriptions = req.getParameterValues( "Description" );
 			
 			StarsUpdateCallReport updateCalls = new StarsUpdateCallReport();
-			for (int i = 0; i < changed.length; i++) {
-				if (changed[i].equals("true")) {
+			for (int i = 0; i < callIDs.length; i++) {
+				if (Boolean.valueOf(deleted[i]).booleanValue()) {
+					StarsCallReport call = new StarsCallReport();
+					call.setCallID( Integer.parseInt(callIDs[i]) );
+					call.setCallNumber( TO_BE_DELETED );	// Set the call # to this special string to indicate that it's going to be deleted
+					updateCalls.addStarsCallReport( call );
+				}
+				else if (Boolean.valueOf(changed[i]).booleanValue()) {
 					StarsCallReport call = new StarsCallReport();
 					call.setCallID( Integer.parseInt(callIDs[i]) );
 					
 					if (callNos != null) call.setCallNumber( callNos[i] );
-					if (descriptions != null) call.setDescription( descriptions[i] );
+					if (descriptions != null) call.setDescription( descriptions[i].replaceAll("\r\n", "<br>") );
 					
 					if (callTypes != null) {
 						CallType callType = (CallType) StarsFactory.newStarsCustListEntry(
@@ -116,26 +126,36 @@ public class UpdateCallReportAction implements ActionBase {
         	for (int i = 0; i < updateCalls.getStarsCallReportCount(); i++) {
         		StarsCallReport newCall = updateCalls.getStarsCallReport(i);
         		for (int j = 0; j < callHist.size(); j++) {
-        			StarsCallReport call = (StarsCallReport) callHist.get(j);
-        			if (call.getCallID() == newCall.getCallID()) {
-        				if (newCall.getCallType() != null) call.setCallType( newCall.getCallType() );
-        				if (newCall.getDescription() != null) call.setDescription( newCall.getDescription() );
-        				
+        			StarsCallReport starsCall = (StarsCallReport) callHist.get(j);
+        			if (starsCall.getCallID() != newCall.getCallID()) continue;
+        			
+    				if (newCall.getCallNumber() != null && newCall.getCallNumber().equals( TO_BE_DELETED )) {
+    					com.cannontech.database.data.stars.report.CallReportBase call =
+    							new com.cannontech.database.data.stars.report.CallReportBase();
+    					call.setCallID( new Integer(starsCall.getCallID()) );
+    					Transaction.createTransaction( Transaction.DELETE, call ).execute();
+    					
+    					callHist.remove( j );
+    				}
+    				else {
         				if (newCall.getCallNumber() != null) {
-        					if (!call.getCallNumber().equals( newCall.getCallNumber() )
-        						&& ServerUtils.callNumberExists( newCall.getCallNumber(), user.getEnergyCompanyID() )) {
+        					if (!starsCall.getCallNumber().equals( newCall.getCallNumber() )
+        						&& CallReportBase.callNumberExists( newCall.getCallNumber(), new Integer(user.getEnergyCompanyID()) )) {
 				            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-				            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Call number already exists, please choose a different one") );
+				            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Call # already exists, please enter a different one") );
 				            	return SOAPUtil.buildSOAPMessage( respOper );
         					}
-        					call.setCallNumber( newCall.getCallNumber() );
+        					starsCall.setCallNumber( newCall.getCallNumber() );
         				}
         				
-        				StarsFactory.setCallReportBase( callDB, call );
-        				callDB.setCallID( new Integer(call.getCallID()) );
+        				if (newCall.getCallType() != null) starsCall.setCallType( newCall.getCallType() );
+        				if (newCall.getDescription() != null) starsCall.setDescription( newCall.getDescription() );
+        				
+        				StarsFactory.setCallReportBase( callDB, starsCall );
+        				callDB.setCallID( new Integer(starsCall.getCallID()) );
 						Transaction.createTransaction(Transaction.UPDATE, callDB).execute();
-        				break;
         			}
+        			break;
         		}
         	}
             
@@ -186,12 +206,16 @@ public class UpdateCallReportAction implements ActionBase {
 				StarsCallReport newCall = updateCalls.getStarsCallReport(i);
 				for (int j = 0; j < callHist.getStarsCallReportCount(); j++) {
 					StarsCallReport call = callHist.getStarsCallReport(j);
-					if (call.getCallID() == newCall.getCallID()) {
+					if (call.getCallID() != newCall.getCallID()) continue;
+					
+					if (newCall.getCallNumber() != null && newCall.getCallNumber().equals( TO_BE_DELETED ))
+						callHist.removeStarsCallReport( j );
+					else {
 						if (newCall.getCallNumber() != null) call.setCallNumber( newCall.getCallNumber() );
 						if (newCall.getCallType() != null) call.setCallType( newCall.getCallType() );
 						if (newCall.getDescription() != null) call.setDescription( newCall.getDescription() );
-						break;
 					}
+					break;
 				}
 			}
 			

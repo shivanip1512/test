@@ -27,6 +27,8 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private LiteStarsThermostatSettings thermostatSettings = null;
 	
+	private long lastLoginTime = 0;
+	
 	public LiteStarsCustAccountInformation() {
 		super();
 		setLiteType( LiteTypes.STARS_CUST_ACCOUNT_INFO );
@@ -231,6 +233,31 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setCustomerResidence(LiteCustomerResidence customerResidence) {
 		this.customerResidence = customerResidence;
+	}
+	
+	public LiteStarsLMProgram getLMProgram(int programID) {
+		for (int i = 0; i < getLmPrograms().size(); i++) {
+			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) getLmPrograms().get(i);
+			if (liteProg.getLmProgram().getProgramID() == programID)
+				return liteProg;
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the lastLoginTime.
+	 * @return long
+	 */
+	public long getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+	/**
+	 * Sets the lastLoginTime.
+	 * @param lastLoginTime The lastLoginTime to set
+	 */
+	public void setLastLoginTime(long lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
 	}
 
 }

@@ -34,7 +34,7 @@ public class WorkOrderBase extends DBPersistent {
 
     public void delete() throws java.sql.SQLException {
         // delete from mapping table
-        delete( "ECToWorkOrderMapping", "OrderID", getWorkOrderBase().getOrderID() );
+        delete( "ECToWorkOrderMapping", "WorkOrderID", getWorkOrderBase().getOrderID() );
 
         getWorkOrderBase().delete();
     }

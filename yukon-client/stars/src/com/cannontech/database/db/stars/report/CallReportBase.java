@@ -116,7 +116,7 @@ public class CallReportBase extends DBPersistent {
 
     public static CallReportBase[] getAllAccountCallReports(Integer accountID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
-        		   + " ORDER BY DateTaken DESC";
+        		   + " ORDER BY CallID DESC";
         
         try {		   
 	        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -149,7 +149,7 @@ public class CallReportBase extends DBPersistent {
     public static CallReportBase[] getAllCustomerCallReports(Integer customerID, java.sql.Connection conn) {
         String sql = "SELECT * FROM " + TABLE_NAME + " call, " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " account "
         		   + "WHERE call.AccountID = account.AccountID AND account.CustomerID = " + customerID.toString()
-        		   + " ORDER BY DateTaken DESC";
+        		   + " ORDER BY CallID DESC";
 
         try {		   
 	        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement( sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -308,5 +308,18 @@ public class CallReportBase extends DBPersistent {
 	public void setTakenBy(String takenBy) {
 		this.takenBy = takenBy;
 	}
+	
+	public static boolean callNumberExists(String callNo, Integer energyCompanyID)
+			throws com.cannontech.common.util.CommandExecutionException
+	{
+		String sql = "SELECT CallID FROM " + TABLE_NAME + " call, ECToCallReportMapping map "
+				   + "WHERE CallNumber = '" + callNo + "' AND call.CallID = map.CallReportID AND map.EnergyCompanyID = " + energyCompanyID;
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		stmt.execute();
+		return (stmt.getRowCount() > 0);
+	}
+
 
 }

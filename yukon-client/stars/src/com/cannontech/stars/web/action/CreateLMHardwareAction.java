@@ -13,6 +13,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -154,7 +156,7 @@ public class CreateLMHardwareAction implements ActionBase {
             
             invDB.setAccountID( new Integer(liteAcctInfo.getCustomerAccount().getAccountID()) );
             invDB.setInstallationCompanyID( new Integer(createHw.getInstallationCompany().getEntryID()) );
-            invDB.setCategoryID( new Integer(getInventoryCategory(createHw.getLMDeviceType(), energyCompanyID).getEntryID()) );
+            invDB.setCategoryID( new Integer(getInventoryCategoryID(createHw.getLMDeviceType().getEntryID(), energyCompanyID)) );
             if (createHw.getReceiveDate() != null)
 	            invDB.setReceiveDate( createHw.getReceiveDate() );
 	        if (createHw.getInstallDate() != null)
@@ -230,10 +232,19 @@ public class CreateLMHardwareAction implements ActionBase {
             resp.setStarsLMHardware( starsHw );
             
             // If this is a thermostat, add lite object for thermostat settings
-			int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
-        	if (liteHw.getLmHardwareTypeID() == thermTypeID) {
-            	liteAcctInfo.setThermostatSettings( SOAPServer.getEnergyCompany( energyCompanyID ).getThermostatSettings(liteHw.getInventoryID()) );
-            	
+        	if (ServerUtils.isOneWayThermostat(liteHw, energyCompany)) {
+            	liteAcctInfo.setThermostatSettings( energyCompany.getThermostatSettings(liteHw.getInventoryID(), false) );
+        	}
+        	else if (ServerUtils.isTwoWayThermostat(liteHw, energyCompany)) {
+        		populateThermostatTables( liteHw.getInventoryID(), energyCompany );
+            	liteAcctInfo.setThermostatSettings( energyCompany.getThermostatSettings(liteHw.getInventoryID(), true) );
+	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
+	            synchronized (accountList) {
+	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
+	            }
+        	}
+            
+            if (liteAcctInfo.getThermostatSettings() != null) {
 				StarsThermostatSettings starsThermSettings = new StarsThermostatSettings();
 				StarsLiteFactory.setStarsThermostatSettings( starsThermSettings, liteAcctInfo.getThermostatSettings(), energyCompanyID );
             	resp.setStarsThermostatSettings( starsThermSettings );
@@ -326,14 +337,55 @@ public class CreateLMHardwareAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static YukonListEntry getInventoryCategory(StarsCustListEntry deviceType, int energyCompanyID) {
-		if (deviceType.getContent().startsWith("LCR")	// LCR-XXXX
-			|| deviceType.getContent().startsWith("Thermostat"))	// Thermostat
+	public static int getInventoryCategoryID(int deviceTypeID, int energyCompanyID) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
+		int lcrTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR ).getEntryID();
+		int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
+		int eproTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO ).getEntryID();
+		
+		if (deviceTypeID == lcrTypeID || deviceTypeID == thermTypeID)
 		{
-			return SOAPServer.getEnergyCompany(energyCompanyID).getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC);
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
+		}
+		else if (deviceTypeID == eproTypeID)
+		{
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC).getEntryID();
 		}
 		
-		return null;
+		return com.cannontech.common.util.CtiUtilities.NONE_ID;
+	}
+	
+	private void populateThermostatTables(int inventoryID, LiteStarsEnergyCompany energyCompany) {
+		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
+				new com.cannontech.database.data.multi.MultiDBPersistent();
+		
+		ArrayList liteSeasons = energyCompany.getDefaultThermostatSettings().getThermostatSeasons();
+		for (int i = 0; i < liteSeasons.size(); i++) {
+			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
+			com.cannontech.database.data.stars.hardware.LMThermostatSeason season =
+					new com.cannontech.database.data.stars.hardware.LMThermostatSeason();
+			StarsLiteFactory.setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
+			season.getLMThermostatSeason().setSeasonID( null );
+			season.getLMThermostatSeason().setInventoryID( new Integer(inventoryID) );
+			
+			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
+				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
+				com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
+						new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
+				StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
+				entry.setEntryID( null );
+				season.getLMThermostatSeasonEntries().add( entry );
+			}
+			
+			multiDB.getDBPersistentVector().add( season );
+		}
+		
+		try {
+			Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

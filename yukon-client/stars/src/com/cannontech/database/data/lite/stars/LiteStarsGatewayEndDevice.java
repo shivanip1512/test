@@ -1,0 +1,274 @@
+package com.cannontech.database.data.lite.stars;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteTypes;
+
+/**
+ * @author yao
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Window>Preferences>Java>Templates.
+ * To enable and disable the creation of type comments go to
+ * Window>Preferences>Java>Code Generation.
+ */
+public class LiteStarsGatewayEndDevice extends LiteBase {
+	
+	private long timestamp = 0;
+	private int displayedTemperature = 0;
+	private String displayedTempUnit = null;
+	private int coolSetpoint = 0;
+	private int heatSetpoint = 0;
+	private String setpointStatus = null;
+	private int fanSwitch = CtiUtilities.NONE_ID;
+	private int systemSwitch = CtiUtilities.NONE_ID;
+	private int lowerCoolSetpointLimit = 0;
+	private int upperHeatSetpointLimit = 0;
+	private int outdoorTemperature = 0;
+	
+	private ArrayList infoStrings = null;
+	private Hashtable extraInformation = null;
+	
+	public LiteStarsGatewayEndDevice() {
+		super();
+		setLiteType( LiteTypes.STARS_GATEWAY_END_DEVICE );
+	}
+	
+	public LiteStarsGatewayEndDevice(int inventoryID) {
+		super();
+		setInventoryID( inventoryID );
+		setLiteType( LiteTypes.STARS_GATEWAY_END_DEVICE );
+	}
+
+	/**
+	 * Returns the coolSetpoint.
+	 * @return int
+	 */
+	public int getCoolSetpoint() {
+		return coolSetpoint;
+	}
+
+	/**
+	 * Returns the displayedTemperature.
+	 * @return int
+	 */
+	public int getDisplayedTemperature() {
+		return displayedTemperature;
+	}
+
+	/**
+	 * Returns the displayedTempUnit.
+	 * @return String
+	 */
+	public String getDisplayedTempUnit() {
+		return displayedTempUnit;
+	}
+
+	/**
+	 * Returns the extraInformation.
+	 * @return Hashtable
+	 */
+	public Hashtable getExtraInformation() {
+		if (extraInformation == null)
+			extraInformation = new Hashtable();
+		return extraInformation;
+	}
+
+	/**
+	 * Returns the fanSwitch.
+	 * @return int
+	 */
+	public int getFanSwitch() {
+		return fanSwitch;
+	}
+
+	/**
+	 * Returns the heatSetpoint.
+	 * @return int
+	 */
+	public int getHeatSetpoint() {
+		return heatSetpoint;
+	}
+
+	/**
+	 * Returns the infoStrings.
+	 * @return ArrayList
+	 */
+	public ArrayList getInfoStrings() {
+		if (infoStrings == null)
+			infoStrings = new ArrayList();
+		return infoStrings;
+	}
+
+	/**
+	 * Returns the inventoryID.
+	 * @return int
+	 */
+	public int getInventoryID() {
+		return getLiteID();
+	}
+
+	/**
+	 * Returns the lowerCoolSetpointLimit.
+	 * @return int
+	 */
+	public int getLowerCoolSetpointLimit() {
+		return lowerCoolSetpointLimit;
+	}
+
+	/**
+	 * Returns the outdoorTemperature.
+	 * @return int
+	 */
+	public int getOutdoorTemperature() {
+		return outdoorTemperature;
+	}
+
+	/**
+	 * Returns the systemSwitch.
+	 * @return int
+	 */
+	public int getSystemSwitch() {
+		return systemSwitch;
+	}
+
+	/**
+	 * Returns the timestamp.
+	 * @return long
+	 */
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * Returns the upperHeatSetpointLimit.
+	 * @return int
+	 */
+	public int getUpperHeatSetpointLimit() {
+		return upperHeatSetpointLimit;
+	}
+
+	/**
+	 * Sets the coolSetpoint.
+	 * @param coolSetpoint The coolSetpoint to set
+	 */
+	public void setCoolSetpoint(int coolSetpoint) {
+		this.coolSetpoint = coolSetpoint;
+	}
+
+	/**
+	 * Sets the displayedTemperature.
+	 * @param displayedTemperature The displayedTemperature to set
+	 */
+	public void setDisplayedTemperature(int displayedTemperature) {
+		this.displayedTemperature = displayedTemperature;
+	}
+
+	/**
+	 * Sets the displayedTempUnit.
+	 * @param displayedTempUnit The displayedTempUnit to set
+	 */
+	public void setDisplayedTempUnit(String displayedTempUnit) {
+		this.displayedTempUnit = displayedTempUnit;
+	}
+
+	/**
+	 * Sets the extraInformation.
+	 * @param extraInformation The extraInformation to set
+	 */
+	public void setExtraInformation(Hashtable extraInformation) {
+		this.extraInformation = extraInformation;
+	}
+
+	/**
+	 * Sets the fanSwitch.
+	 * @param fanSwitch The fanSwitch to set
+	 */
+	public void setFanSwitch(int fanSwitch) {
+		this.fanSwitch = fanSwitch;
+	}
+
+	/**
+	 * Sets the heatSetpoint.
+	 * @param heatSetpoint The heatSetpoint to set
+	 */
+	public void setHeatSetpoint(int heatSetpoint) {
+		this.heatSetpoint = heatSetpoint;
+	}
+
+	/**
+	 * Sets the infoStrings.
+	 * @param infoStrings The infoStrings to set
+	 */
+	public void setInfoStrings(ArrayList infoStrings) {
+		this.infoStrings = infoStrings;
+	}
+
+	/**
+	 * Sets the inventoryID.
+	 * @param inventoryID The inventoryID to set
+	 */
+	public void setInventoryID(int inventoryID) {
+		setLiteID( inventoryID );
+	}
+
+	/**
+	 * Sets the lowerCoolSetpointLimit.
+	 * @param lowerCoolSetpointLimit The lowerCoolSetpointLimit to set
+	 */
+	public void setLowerCoolSetpointLimit(int lowerCoolSetpointLimit) {
+		this.lowerCoolSetpointLimit = lowerCoolSetpointLimit;
+	}
+
+	/**
+	 * Sets the outdoorTemperature.
+	 * @param outdoorTemperature The outdoorTemperature to set
+	 */
+	public void setOutdoorTemperature(int outdoorTemperature) {
+		this.outdoorTemperature = outdoorTemperature;
+	}
+
+	/**
+	 * Sets the systemSwitch.
+	 * @param systemSwitch The systemSwitch to set
+	 */
+	public void setSystemSwitch(int systemSwitch) {
+		this.systemSwitch = systemSwitch;
+	}
+
+	/**
+	 * Sets the timestamp.
+	 * @param timestamp The timestamp to set
+	 */
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/**
+	 * Sets the upperHeatSetpointLimit.
+	 * @param upperHeatSetpointLimit The upperHeatSetpointLimit to set
+	 */
+	public void setUpperHeatSetpointLimit(int upperHeatSetpointLimit) {
+		this.upperHeatSetpointLimit = upperHeatSetpointLimit;
+	}
+
+	/**
+	 * Returns the setpointStatus.
+	 * @return String
+	 */
+	public String getSetpointStatus() {
+		return setpointStatus;
+	}
+
+	/**
+	 * Sets the setpointStatus.
+	 * @param setpointStatus The setpointStatus to set
+	 */
+	public void setSetpointStatus(String setpointStatus) {
+		this.setpointStatus = setpointStatus;
+	}
+
+}

@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
-
+import java.util.ArrayList;
+import com.cannontech.common.constants.*;
 
 /**
  * @author yao
@@ -14,7 +15,7 @@ public class LiteStarsLMProgram {
 
 	private LiteLMProgram lmProgram = null;
 	private int groupID = 0;
-	private java.util.ArrayList programHistory = null;	// List of LiteLMCustomerEvent
+	private ArrayList programHistory = null;	// List of LiteLMCustomerEvent
 	private boolean inService = false;
 	
 	public LiteStarsLMProgram() {
@@ -49,9 +50,9 @@ public class LiteStarsLMProgram {
 	 * Returns the programHistory.
 	 * @return java.util.ArrayList
 	 */
-	public java.util.ArrayList getProgramHistory() {
+	public ArrayList getProgramHistory() {
 		if (programHistory == null)
-			programHistory = new java.util.ArrayList();
+			programHistory = new ArrayList();
 		return programHistory;
 	}
 
@@ -59,7 +60,7 @@ public class LiteStarsLMProgram {
 	 * Sets the programHistory.
 	 * @param programHistory The programHistory to set
 	 */
-	public void setProgramHistory(java.util.ArrayList programHistory) {
+	public void setProgramHistory(ArrayList programHistory) {
 		this.programHistory = programHistory;
 	}
 
@@ -86,13 +87,29 @@ public class LiteStarsLMProgram {
 	public boolean isInService() {
 		return inService;
 	}
-
-	/**
-	 * Sets the inService.
-	 * @param inService The inService to set
-	 */
-	public void setInService(boolean inService) {
-		this.inService = inService;
+	
+	public void updateProgramStatus() {
+		ArrayList progHist = getProgramHistory();
+		
+		for (int i = progHist.size() - 1; i >= 0 ; i--) {
+			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
+			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
+			
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
+				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
+			{
+				inService = true;
+				return;
+			}
+			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ||
+				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
+			{
+				inService = false;
+				return;
+			}
+		}
+		
+		inService = false;
 	}
 
 }

@@ -4,8 +4,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.Vector;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -18,22 +20,60 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiProperties;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
+import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
+import com.cannontech.database.db.stars.appliance.ApplianceGenerator;
+import com.cannontech.database.db.stars.appliance.ApplianceGrainDryer;
+import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
+import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
+import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
+import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.operator.OddsForControlRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
+import com.cannontech.stars.xml.serialize.StarsCallReport;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
+import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
+import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
+import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
+import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
+import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
+import com.cannontech.stars.xml.serialize.StarsServiceCompany;
+import com.cannontech.stars.xml.serialize.StarsWebConfig;
+import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
@@ -55,6 +95,10 @@ public class ServerUtils {
     
     // If date in database is earlier than this, than the date is actually empty
     private static long VERY_EARLY_TIME = 1000 * 3600 * 24;
+
+	public static final String CTI_NUMBER = "CTI#";
+	
+
     
 	
     public static void sendCommand(String command)
@@ -113,39 +157,6 @@ public class ServerUtils {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static int getDeviceStatus(ArrayList hwHist) {
-		for (int i = hwHist.size() - 1; i >= 0; i--) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) hwHist.get(i);
-			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
-			
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
-				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
-				return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION)
-				return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL;
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
-				return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
-		}
-		
-		return YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
-	}
-	
-	public static boolean isInService(ArrayList progHist) {
-		for (int i = progHist.size() - 1; i >= 0 ; i--) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) progHist.get(i);
-			YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
-			
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
-				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)
-				return true;
-			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ||
-				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION)
-				return false;
-		}
-		
-		return false;
 	}
 	
 	public static void sendEmailMsg(String from, String[] to, String[] cc, String subject, String text) throws Exception {
@@ -279,7 +290,10 @@ public class ServerUtils {
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
 		DBChangeMsg msg = null;
 		
-		if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
+		if (lite == null) {
+			msg = new DBChangeMsg( 0, Integer.MAX_VALUE, "", "", typeOfChange );
+		}
+		else if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
 			msg = new DBChangeMsg(
 				lite.getLiteID(),
 				DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
@@ -317,52 +331,38 @@ public class ServerUtils {
     	conn.write( msg );
 	}
 	
-	public static boolean callNumberExists(String callNo, int energyCompanyID) throws com.cannontech.common.util.CommandExecutionException {
-		String sql = "SELECT CallID FROM CallReportBase call, ECToCallReportMapping map "
-				   + "WHERE CallNumber = '" + callNo + "' AND call.CallID = map.CallReportID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-		
-		stmt.execute();
-		return (stmt.getRowCount() > 0);
-	}
-	
-	public static boolean orderNumberExists(String orderNo, int energyCompanyID) throws com.cannontech.common.util.CommandExecutionException {
-		String sql = "SELECT OrderID FROM WorkOrderBase o, ECToWorkOrderMapping map "
-				   + "WHERE OrderNumber = '" + orderNo + "' AND o.OrderID = map.WorkOrderID AND map.EnergyCompanyID = " + energyCompanyID;
-		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-		
-		stmt.execute();
-		return (stmt.getRowCount() > 0);
-	}
-	
 	public static Date translateDate(long time) {
 		if (time < VERY_EARLY_TIME) return null;
 		return new Date(time);
-	}
-	
-	public static LiteStarsLMProgram getLMProgram(LiteStarsCustAccountInformation liteAcctInfo, int programID) {
-		for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
-			if (liteProg.getLmProgram().getProgramID() == programID)
-				return liteProg;
-		}
-		return null;
 	}
 
 	public static String forceNotNull(String str) {
 		return (str == null) ? "" : str.trim();
 	}
-	
-
 
 	public static String forceNotNone(String str) {
 		String str1 = forceNotNull(str);
 		return (str1.equalsIgnoreCase("(none)")) ? "" : str1;
 	}
 	
+	public static boolean isOneWayThermostat(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
+		int oneWayRecID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ).getEntryID();
+		int thermTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_THERMOSTAT ).getEntryID();
+		
+		if (liteHw.getCategoryID() == oneWayRecID)
+			if (liteHw.getLmHardwareTypeID() == thermTypeID)
+				return true;
+		return false;
+	}
 	
-
+	public static boolean isTwoWayThermostat(LiteLMHardwareBase liteHw, LiteStarsEnergyCompany energyCompany) {
+		int gwyEndDevID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC ).getEntryID();
+		int eproTypeID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO ).getEntryID();
+		
+		if (liteHw.getCategoryID() == gwyEndDevID)
+			if (liteHw.getLmHardwareTypeID() == eproTypeID)
+				return true;
+		return false;
+	}
 
 }
