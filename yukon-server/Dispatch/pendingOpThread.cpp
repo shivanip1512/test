@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/11/08 14:40:37 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/11/09 06:12:51 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.3  2004/11/09 06:12:51  cplender
+* Working to calm dispatch down
+*
 * Revision 1.2  2004/11/08 14:40:37  cplender
 * 305 Protocol should send controls on RTCs now.
 *
@@ -32,7 +35,6 @@
 #include "mgr_ptclients.h"
 #include "msg_cmd.h"
 #include "pendingopthread.h"
-#include "pt_numeric.h"
 
 #ifndef PERF_TO_MS
     #define PERF_TO_MS(b,a,p) ((UINT)((b).QuadPart - (a).QuadPart) / ((UINT)(p).QuadPart / 1000L))
@@ -47,6 +49,7 @@ extern int CntlStopInterval;
 static LARGE_INTEGER perfFrequency;
 
 CtiPendingOpThread::CtiPendingOpThread() :
+_multi(0),
 _pMainQueue(0)
 {
     _dbThread  = rwMakeThreadFunction(*this, &CtiPendingOpThread::dbWriterThread);
@@ -66,6 +69,7 @@ CtiPendingOpThread::CtiPendingOpThread(const CtiPendingOpThread& aRef)
 CtiPendingOpThread::~CtiPendingOpThread()
 {
     _dbThread.join();
+    if(_multi) delete _multi;
 }
 
 void CtiPendingOpThread::setMainQueue(CtiConnection::InQ_t *pMQ)
@@ -81,23 +85,45 @@ void CtiPendingOpThread::run( void )
         dout << RWTime() << " PendingOperationThread TID: " << CurrentTID () << endl;
     }
 
-    set(RELOAD);
+    set(PROCESSQ);
 
     try
     {
+        _multi = new CtiMultiMsg;
+
         while( !isSet(SHUTDOWN) )
         {
-            if( isSet(RELOAD) )
+            if( isSet(PROCESSQ) )
             {
-                set(RELOAD, false);
+                set(PROCESSQ, false);
             }
 
-            processPendableQueue();
-            doPendingLimits(false);
-            doPendingPointData(false);
-            doPendingControls(false);
+            try
+            {
+                processPendableQueue();
+                doPendingLimits(false);
+                doPendingPointData(false);
+                doPendingControls(false);
 
-            sleep(1000);               // interrupt(XXX) can wake us.
+                sleep(1000);               // interrupt(XXX) can wake us.
+
+                if(_multi->getCount() > 0)
+                {
+                    if(_pMainQueue)
+                        _pMainQueue->putQueue( _multi );
+                    else
+                        delete _multi;
+
+                    _multi = new CtiMultiMsg;
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
 
         {
@@ -105,9 +131,20 @@ void CtiPendingOpThread::run( void )
             dout << RWTime() << " Verification thread received shutdown - writing all pending codes to DB" << endl;
         }
 
+        processPendableQueue();
         doPendingLimits(true);
         doPendingPointData(true);
         doPendingControls(true);
+
+        if(_multi->getCount() > 0)
+        {
+            if(_pMainQueue)
+                _pMainQueue->putQueue( _multi );
+            else
+                delete _multi;
+
+            _multi= 0;
+        }
     }
     catch( ... )
     {
@@ -145,17 +182,6 @@ void CtiPendingOpThread::processPendableQueue()
     CtiPendable   *pendable;
     CtiCounter    _actionCount;
 
-
-    #if 0
-    if(_input.size())
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  Input Queue Size " << _input.size() << endl;
-        }
-    }
-    #endif
-
     int action;
     QueryPerformanceCounter(&startTime);
     while( pendable = _input.getQueue(0) )
@@ -168,15 +194,6 @@ void CtiPendingOpThread::processPendableQueue()
         case CtiPendable::CtiPendableAction_Add:
             {
                 processPendableAdd(pendable);
-
-                break;
-            }
-        case CtiPendable::CtiPendableAction_Remove:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
                 break;
             }
         case CtiPendable::CtiPendableAction_RemoveLimit:
@@ -213,19 +230,17 @@ void CtiPendingOpThread::processPendableQueue()
         delete pendable;
     }
 
+    set(QPROCESSED);
     QueryPerformanceCounter(&completeTime);
 
     #if 0
-    // if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 50)
+    if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 10)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " processPendableQueue duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
-    }
 
-    for(action = 0; action <= CtiPendable::CtiPendableAction_ControlStatusChanged; action++)
-    {
+        for(action = 0; action <= CtiPendable::CtiPendableAction_ControlStatusChanged; action++)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Action " << action << " had " << _actionCount.get(action) << endl;
         }
     }
@@ -236,6 +251,16 @@ void CtiPendingOpThread::processPendableQueue()
 void CtiPendingOpThread::doPendingControls(bool bShutdown)
 {
     LARGE_INTEGER startTime, completeTime;
+    RWTime now;
+    static RWTime cHistTime; //(now.seconds() - (now.seconds() % CntlHistInterval) + CntlHistInterval);
+    static RWTime cStopTime; //(now.seconds() - (now.seconds() % CntlStopInterval) + CntlStopInterval);
+    static RWTime cPostTime; //(now.seconds() - (now.seconds() % CntlHistPointPostInterval) + CntlHistPointPostInterval);
+
+    int counter01 = 0;
+    int counter02 = 0;
+    int counter03 = 0;
+    int counter04 = 0;
+    int counter05 = 0;
 
     try
     {
@@ -252,16 +277,24 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
         {
             QueryPerformanceCounter(&startTime);
             int lpcnt = 0;
-            RWTime now;
 
-            bool postCtrlStop = (CntlHistPointPostInterval && !(now.seconds() % CntlHistPointPostInterval));
+            bool postCtrlHist = now > cHistTime;
+            bool postCtrlPost = now > cPostTime;
+            bool postCtrlStop = now > cStopTime;
 
-            #if 0
+            if(postCtrlHist)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " doPendingControls count = " << _pendingControls.size() << endl;
+                cHistTime = now.seconds() - (now.seconds() % CntlHistInterval) + CntlHistInterval;
             }
-            #endif
+            if(postCtrlPost)
+            {
+                cPostTime = now.seconds() - (now.seconds() % CntlHistPointPostInterval) + CntlHistPointPostInterval;
+            }
+            if(postCtrlStop)
+            {
+                cStopTime = now.seconds() - (now.seconds() % CntlStopInterval) + CntlStopInterval;
+            }
+
             // There are pending operations for points out there in the world!
             CtiPendingOpSet_t::iterator it = _pendingControls.begin();
 
@@ -295,8 +328,12 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << " Start + control duration are < now not gonna write any more..." << endl;
+                                    dout << " Control ID " << ppo.getControl().getPAOID() << endl;
                                 }
                             }
+
+                            it = _pendingControls.erase(it);
+                            continue;   // iterator has been repositioned!
                         }
                         else if(ppo.getControl().getControlDuration() < 0)
                         {
@@ -309,24 +346,29 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                     dout << "  Control Duration is less than zero" << endl;
                                 }
                             }
+
+                            it = _pendingControls.erase(it);
+                            continue;   // iterator has been repositioned!
                         }
                         else
                         {
-                            if(now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
+                            if(postCtrlHist)
                             {
                                 // We have accumulated enough time against this control to warrant a new log entry!
                                 updateControlHistory( ppo, CtiPendingPointOperations::intervalcrossing, now);
+                                counter01++;
                             }
-                            else if(postCtrlStop)
+                            else if(postCtrlPost)
                             {
                                 // This rate posts history points and stop point.
                                 updateControlHistory( ppo, CtiPendingPointOperations::intervalpointpostcrossing, now);
+                                counter02++;
                             }
-                            else if(ppo.getControl().getControlDuration() > 0 &&
-                                    now.seconds() >= ppo.getControl().getPreviousStopReportTime().seconds() - (ppo.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval)
+                            else if(postCtrlStop)
                             {
-                                // This rate posts stop point.
+                                // This rate posts stop point.  Does not affect ppo.
                                 updateControlHistory( ppo, CtiPendingPointOperations::stopintervalcrossing, now);
+                                counter03++;
                             }
                         }
                     }
@@ -365,13 +407,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                             it = _pendingControls.erase(it);
                             continue;   // iterator has been repositioned!
                         }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
                     }
                     else if( ppo.getControlState() == CtiPendingPointOperations::controlCompleteCommanded   ||
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteTimedIn     ||
@@ -406,13 +441,21 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
             }
             QueryPerformanceCounter(&completeTime);
 
-            #if 0
-            // if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 50)
+           #if 0
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 5)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " doPendingControlOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+                dout << RWTime() << " doPendingControls count         = " << _pendingControls.size() << endl;
+                dout << RWTime() << " doPendingControls duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+
+                dout << " Counter 01 " << counter01 << endl;
+                dout << " Counter 02 " << counter02 << endl;
+                dout << " Counter 03 " << counter03 << endl;
+                dout << " Counter 04 " << counter04 << endl;
+                dout << " Counter 05 " << counter05 << endl;
             }
             #endif
+
         }
     }
     catch(...)
@@ -495,8 +538,8 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
             }
             QueryPerformanceCounter(&completeTime);
 
-            #if 0
-            // if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 50)
+            #if 1
+            if(PERF_TO_MS(completeTime, startTime, perfFrequency) > 5)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " doPendingPointDataOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
@@ -593,8 +636,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
              *  newcontrol record should fully define a control in a way that dispatch can recover from a shutdown
              *  accross their occurrence.
              */
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
-               ppc.getControl().getControlDuration() != RESTORE_DURATION)
+            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress && ppc.getControl().getControlDuration() != RESTORE_DURATION)
             {
                 RWTime completiontime = ppc.getControl().getStopTime();
                 ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
@@ -603,7 +645,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 
                 ppc.getControl().setActiveRestore( LMAR_NEWCONTROL );                               // Record this as a start interval.
 
-                insertControlHistoryRow(ppc);                                                       // Drop the row in there!
+                insertControlHistoryRow(ppc, __LINE__);                                                       // Drop the row in there!
                 postControlStopPoint(ppc,now);                                                      // Let everyone know when control should end.
 
                 ppc.getControl().setStopTime( thetime );
@@ -624,13 +666,12 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 
                     // Create some lies
                     ppc.getControl().setActiveRestore( LMAR_LOGTIMER );             // Record this as a start or continue interval.
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
+                    insertControlHistoryRow(ppc, __LINE__);
+                    postControlHistoryPoints(ppc, __LINE__);
 
                     // OK, set them out for the next run ok. Undo the lies.
                     ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
 
-                    // insertAndPostControlHistoryPoints(ppc, now, false, false, true);    // Post the AI now that the lies are covered up..
                     postControlStopPoint(ppc,now);
                 }
                 else
@@ -652,7 +693,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                 {
                     CtiPendingPointOperations temporaryPPC(ppc);
                     temporaryPPC.getControl().incrementTimes( thetime, addnlseconds );
-                    postControlHistoryPoints(temporaryPPC);
+                    postControlHistoryPoints(temporaryPPC, __LINE__);
                     postControlStopPoint(temporaryPPC, now);
                 }
                 else
@@ -666,7 +707,6 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
         }
     case (CtiPendingPointOperations::stopintervalcrossing):
         {
-            // insertAndPostControlHistoryPoints(ppc, now, false, false, true);        // Post countdown AI
             postControlStopPoint(ppc,now);
             break;
         }
@@ -682,8 +722,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     ppc.getControl().setStopTime(thetime);
                     ppc.getControl().incrementTimes( thetime, addnlseconds );
 
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
+                    insertControlHistoryRow(ppc, __LINE__);
                 }
                 else
                 {
@@ -708,8 +747,8 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     ppc.getControl().incrementTimes( thetime, addnlseconds );
                     ppc.setControlState( CtiPendingPointOperations::controlCompleteCommanded );
 
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
+                    insertControlHistoryRow(ppc, __LINE__);
+                    postControlHistoryPoints(ppc, __LINE__);
                     postControlStopPoint(ppc,now);
                 }
                 else
@@ -732,8 +771,8 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     ppc.getControl().incrementTimes( thetime, addnlseconds );
                     ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
 
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
+                    insertControlHistoryRow(ppc, __LINE__);
+                    postControlHistoryPoints(ppc, __LINE__);
                     postControlStopPoint(ppc,now);
                 }
                 else
@@ -754,17 +793,17 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 
                 if(addnlseconds >= 0)
                 {
-                    {
+                    /*{
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint: MANUAL dataChange! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    }*/
 
                     ppc.getControl().incrementTimes( thetime, addnlseconds );
                     ppc.getControl().setActiveRestore( LMAR_MANUAL_RESTORE );
                     ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
 
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
+                    insertControlHistoryRow(ppc, __LINE__);
+                    postControlHistoryPoints(ppc, __LINE__);
                     postControlStopPoint(ppc,now);
                 }
                 else
@@ -793,8 +832,8 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 
                     // Create some lies
                     ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                         // Record this as a continuation.
-                    insertControlHistoryRow(ppc);
-                    postControlHistoryPoints(ppc);
+                    insertControlHistoryRow(ppc, __LINE__);
+                    postControlHistoryPoints(ppc, __LINE__);
 
                     // OK, set them out for the next run ok. Undo the lies.
                     ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
@@ -811,8 +850,8 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 
                 ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                       // Record this as a control adjustment.
 
-                insertControlHistoryRow(ppc);                                                  // Drop the row in there!
-                postControlHistoryPoints(ppc);
+                insertControlHistoryRow(ppc, __LINE__);                                                  // Drop the row in there!
+                postControlHistoryPoints(ppc, __LINE__);
                 postControlStopPoint(ppc,now);                                                      // Let everyone know when control should end.
 
                 ppc.getControl().setStopTime( thetime );
@@ -834,11 +873,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     ppc.getControl().setActiveRestore( LMAR_DISPATCH_SHUTDOWN );
                     ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
 
-                    // ppc.dump();
-
-                    insertControlHistoryRow(ppc);
-                    //postControlHistoryPoints(ppc);
-                    //postControlStopPoint(ppc,now);
+                    insertControlHistoryRow(ppc, __LINE__);
                 }
                 else
                 {
@@ -861,56 +896,40 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 }
 
 
-void CtiPendingOpThread::postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now)
+void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, const RWTime &now)
 {
     int poff;
 
-    CtiPointBase *pPt = PointMgr.getEqual(ppc.getPointID());
+    CtiPointNumeric *pPoint = 0;
 
-    if(pPt != 0)
     {
-        CtiPointNumeric *pPoint = 0;
-
+        if(ppc.getControl().getControlDuration() > 0)
         {
-            if(ppc.getControl().getControlDuration() > 0 &&
-               ((now.seconds() >= ppc.getControl().getPreviousStopReportTime().seconds() - (ppc.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval) ||
-                (now > ppc.getControl().getStartTime() + ppc.getControl().getControlDuration())) )
+            // We want to post to the analog which records seconds until control STOPS.
+            ULONG remainingseconds = 0;
+
+            if( ppc.getControl().getControlCompleteTime() > now )
             {
-                // We want to post to the analog which records seconds until control STOPS.
-                ULONG remainingseconds = 0;
+                remainingseconds = ppc.getControl().getControlCompleteTime().seconds() - now.seconds();
+            }
 
-                if( ppc.getControl().getControlCompleteTime() > now )
-                {
-                    remainingseconds = ppc.getControl().getControlCompleteTime().seconds() - now.seconds();
-                }
-
-#if 0
+            if((0 != (pPoint = getPointOffset(ppc, ppc.getControl().getPAOID(), CONTROLSTOPCOUNTDOWNOFFSET))))
+            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Control stops at " << stoptime << endl;
-                    dout << "  There are " << remainingseconds << " seconds = " << remainingseconds/60 << " minutes remaining" << endl;
                 }
-#endif
-
-                if((0 != (pPoint = (CtiPointNumeric *)PointMgr.getOffsetTypeEqual( pPt->getDeviceID(), CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType))))
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    double ai = pPoint->computeValueForUOM((double)remainingseconds);
-                    _pMainQueue->putQueue( CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ai, NormalQuality, pPoint->getType(), pPoint->getName() + " control remaining"));
-                }
-
-                ppc.getControl().setPreviousStopReportTime(now);
+                double ai = pPoint->computeValueForUOM((double)remainingseconds);
+                if(_multi) _multi->insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ai, NormalQuality, pPoint->getType(), pPoint->getName() + " control remaining"));
             }
+
+            ppc.getControl().setPreviousStopReportTime(now);
         }
     }
     return;
 }
 
-void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &ppc )
+void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &ppc, int line )
 {
     int poff;
 
@@ -920,7 +939,7 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
 
         for(poff = DAILYCONTROLHISTOFFSET; poff <= ANNUALCONTROLHISTOFFSET; poff++ )
         {
-            pPoint = (CtiPointNumeric *)PointMgr.getOffsetTypeEqual( ppc.getControl().getPAOID(), poff, AnalogPointType );
+            pPoint = getPointOffset(ppc, ppc.getControl().getPAOID(), poff);    //(CtiPointNumeric *)PointMgr.getOffsetTypeEqual( ppc.getControl().getPAOID(), poff, AnalogPointType );
 
             if(pPoint != 0)
             {
@@ -941,7 +960,13 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
                     ctltime = pPoint->computeValueForUOM((double)ppc.getControl().getCurrentAnnualTime());
                 }
 
-                _pMainQueue->putQueue( CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ctltime, NormalQuality, pPoint->getType(), pPoint->getName() + " control history"));
+                /*
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Called from line (" << line << ")  PID: " << pPoint->getPointID() << " " << pPoint->getName() << endl;
+                }
+                */
+                if(_multi) _multi->insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), ctltime, NormalQuality, pPoint->getType(), pPoint->getName() + " control history"));
             }
         }
     }
@@ -954,6 +979,11 @@ bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
 {
     bool stat = false;
 
+    UINT sleepcnt = 0;
+
+    set(QPROCESSED, false);
+    set(PROCESSQ);
+
     if(!_pendingControls.empty())
     {
         CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
@@ -963,32 +993,80 @@ bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
     return(stat);
 }
 
-void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc)
+void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc, int line)
 {
     createOrUpdateICControl(ppc.getControl().getPAOID(), ppc.getControl());     // This keeps it current in mem.
-    _dynLMControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
-    _lmControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
+
+    if(ppc.getControl().getStopTime() >= ppc.getControl().getStartTime())
+    {
+        _dynLMControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
+
+        if(ppc.getControl().getActiveRestore() != LMAR_LOGTIMER &&
+           ppc.getControl().getActiveRestore() != LMAR_DISPATCH_SHUTDOWN)
+            _lmControlHistoryQueue.putQueue(CTIDBG_new CtiTableLMControlHistory(ppc.getControl()) );
+
+        if(ppc.getControl().isNewControl())
+        {
+            ppc.getControl().setNotNewControl();
+            ppc.getControl().setPreviousLogTime( ppc.getControl().getStartTime() );
+        }
+        else if(ppc.getControl().getActiveRestore() != RWCString(LMAR_NEWCONTROL))
+        {
+            ppc.getControl().setPreviousLogTime( ppc.getControl().getStopTime() );
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " NEGATIVE called from line " << line << endl;
+        }
+        ppc.dump();
+    }
+
     return;
 }
 
+/*
+ *  This method keeps the "Initial Condition" map current.  This map is used if there is no control in flight and the
+ *  control time values need to be primed.  Otherwise, the control times come from the in flight pendable.
+ */
 bool CtiPendingOpThread::createOrUpdateICControl(long paoid, CtiTableLMControlHistory &lmch )
 {
+    bool bres = false;
     lmch.setDirty();        // Mark as dirty so we know who needs to be written out.
-    pair< CtiICLMControlHistMap_t::iterator, bool > resultpair = _initialConditionControlHistMap.insert( make_pair(paoid, lmch) );
+    CtiICLMControlHistMap_t::iterator fitr = _initialConditionControlHistMap.find( paoid );
 
-    if(resultpair.second == false)           // Insert was unsuccessful.
+    if(fitr != _initialConditionControlHistMap.end())
     {
-        CtiICLMControlHistMap_t::iterator itr = resultpair.first;
-        if(itr != _initialConditionControlHistMap.end())
-        {
-            CtiICLMControlHistMap_t::value_type vt = *itr;
-            CtiTableLMControlHistory &origLMCH = vt.second;
+        // It was found
+        CtiICLMControlHistMap_t::value_type vt = *fitr;
+        CtiTableLMControlHistory &origLMCH = vt.second;
 
-            origLMCH = lmch;
+        origLMCH = lmch;
+    }
+    else
+    {
+        // Try to put it in there!
+        pair< CtiICLMControlHistMap_t::iterator, bool > resultpair = _initialConditionControlHistMap.insert( make_pair(paoid, lmch) );
+
+        if(resultpair.second == false)           // Insert was unsuccessful.
+        {
+            CtiICLMControlHistMap_t::iterator itr = resultpair.first;
+            if(itr != _initialConditionControlHistMap.end())
+            {
+                CtiICLMControlHistMap_t::value_type vt = *itr;
+                CtiTableLMControlHistory &origLMCH = vt.second;
+
+                origLMCH = lmch;
+           }
         }
+
+        bres = resultpair.second;
     }
 
-    return resultpair.second;
+    return bres;
 }
 
 #define DUMP_RATE 60
@@ -1236,6 +1314,14 @@ bool CtiPendingOpThread::getICControlHistory( CtiTableLMControlHistory &lmch )
         }
     }
 
+    if(!found)
+    {
+        lmch.setCurrentDailyTime(0);
+        lmch.setCurrentMonthlyTime(0);
+        lmch.setCurrentSeasonalTime(0);
+        lmch.setCurrentAnnualTime(0);
+    }
+
     return found;
 }
 
@@ -1272,6 +1358,7 @@ void CtiPendingOpThread::checkForControlBegin( CtiPendable *&pendable )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << pendable->_value << " " << ppo.getControlCompleteValue() << endl;
             }
 
             // No longer in the controlcomplete state... because of a pointdata (Manual Change???)
@@ -1371,6 +1458,8 @@ void CtiPendingOpThread::removePointData(CtiPendable *&pendable)
 
 void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
 {
+    RWTime tempTime;
+
     if(pendable->_ppo)
     {
         switch(pendable->_ppo->getType())
@@ -1384,19 +1473,20 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
 
                 if(resultpair.second != true)
                 {
-
                     /*
                      *  We only need to "do something" if the earlier control had gone into the controlInProgress state.
                      *  Otherwise it is waiting or completed and left over.
                      */
                     if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
                     {
+                        tempTime = pendable->_time >= ppo.getControl().getPreviousLogTime() ? pendable->_time : ppo.getControl().getPreviousLogTime();
+
                         if( pendable->_ppo->getControlState() == CtiPendingPointOperations::controlSeasonalReset )
                         {
                             RWCString origType = ppo.getControl().getControlType();
                             ppo.getControl().setControlType(pendable->_ppo->getControl().getControlType());
                             ppo.getControl().setCurrentSeasonalTime(0);
-                            updateControlHistory( ppo, CtiPendingPointOperations::seasonReset, pendable->_time );
+                            updateControlHistory( ppo, CtiPendingPointOperations::seasonReset, tempTime );
 
                             ppo.getControl().setControlType(origType);
                         }
@@ -1404,7 +1494,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                         {
                             // The incoming control information is a RESTORE type operation.
                             ppo.getControl().setActiveRestore(LMAR_MANUAL_RESTORE);
-                            updateControlHistory( ppo, CtiPendingPointOperations::control, pendable->_time );
+                            updateControlHistory( ppo, CtiPendingPointOperations::control, tempTime );
                             ppo = *pendable->_ppo;    // Copy it to update the control state.
                         }
                         else if( pendable->_ppo->getControl().getControlType() == ppo.getControl().getControlType() )
@@ -1418,9 +1508,16 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                             ppo.getControl().setStopTime(logTime);
                             updateControlHistory( ppo, CtiPendingPointOperations::repeatcontrol, logTime );
 
+                            //pendable->_ppo->getControl().setNotNewControl();
                             pendable->_ppo->getControl().setStartTime(ppo.getControl().getStartTime());
-                            pendable->_ppo->getControl().setPreviousLogTime(ppo.getControl().getStopTime());
-                            pendable->_ppo->getControl().setNotNewControl();
+                            pendable->_ppo->getControl().setPreviousLogTime(ppo.getControl().getPreviousLogTime());
+                            pendable->_ppo->getControl().setControlCompleteTime(pendable->_ppo->getControl().getStopTime());
+
+                            pendable->_ppo->getControl().setCurrentDailyTime(ppo.getControl().getCurrentDailyTime());
+                            pendable->_ppo->getControl().setCurrentMonthlyTime(ppo.getControl().getCurrentMonthlyTime());
+                            pendable->_ppo->getControl().setCurrentSeasonalTime(ppo.getControl().getCurrentSeasonalTime());
+                            pendable->_ppo->getControl().setCurrentAnnualTime(ppo.getControl().getCurrentAnnualTime());
+
                             ppo = *pendable->_ppo;    // Copy it to update the control state.
                         }
                         else
@@ -1428,7 +1525,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                             // A new and different control command has arrived.  We need to record the old command as having
                             // been overridden.
                             ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);
-                            updateControlHistory( ppo, CtiPendingPointOperations::control, pendable->_time );
+                            updateControlHistory( ppo, CtiPendingPointOperations::control, tempTime );
 
                             ppo = *pendable->_ppo;    // Copy it to update the control state.
                         }
@@ -1441,7 +1538,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                 else
                 {
                     // It went in clean.
-                    // Make certain controls know about any predecessor controls.
+                    // Make certain new controls know about any predecessor controls' control times.
                     getICControlHistory( ppo.getControl() );
                 }
                 break;
@@ -1554,3 +1651,24 @@ void CtiPendingOpThread::dbWriterThread()
     return;
 }
 
+
+CtiPointNumeric* CtiPendingOpThread::getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff)
+{
+    CtiPointNumeric *pPoint = 0;
+
+    long fpid = ppc.getOffsetsPointID(poff);
+
+    if(fpid)
+    {
+        pPoint = (CtiPointNumeric *)PointMgr.getEqual(fpid);
+        if(pPoint->getPointOffset() != poff) pPoint = 0;
+    }
+
+    if(!pPoint)
+    {
+        pPoint = (CtiPointNumeric *)PointMgr.getOffsetTypeEqual(pao, poff, AnalogPointType );
+        if(pPoint) ppc.addOffset(poff, pPoint->getPointID());
+    }
+
+    return pPoint;
+}

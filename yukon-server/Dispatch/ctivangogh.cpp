@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2004/11/05 17:24:44 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2004/11/09 06:12:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,8 +106,8 @@ CtiVanGoghExecutorFactory  ExecFactory;
 
 static const RWTime MAXTime(YUKONEOT);
 int CntlHistInterval = 3600;
-int CntlHistPointPostInterval = 60;
-int CntlStopInterval = 60;
+int CntlHistPointPostInterval = 300;
+int CntlStopInterval = 300;
 
 static CtiCounter msgCounts;
 static CtiCounter msgPrioritys;
@@ -3137,8 +3137,9 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
             }
 
             // We need to make sure there is no pending pointdata on this pointid.
-            // Arrival of a pointdata message eliminates a pending data msg.
-            removePointDataFromPending(pData->getId());
+            // Arrival of a pointdata message eliminates a pending data msg.  If this is a delayed point, it will overwrite anyway!
+            if(!(pData->getTags() & TAG_POINT_DELAYED_UPDATE))
+                removePointDataFromPending(pData->getId());
 
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPoint->getDynamic();
@@ -5996,15 +5997,15 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
         }
         else
         {
-            if(exceeds != LIMIT_SETUP_ERROR)    // If no limit is setup this is the return!.
+            if( pointNumeric.getLowLimit(statelimit) != -DBL_MAX && pointNumeric.getHighLimit(statelimit) != DBL_MAX )    // No limits set, no limits can be exceeded!
             {
                 // Remove any possible pending limit violator.
                 CtiPendable *pPend = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_RemoveLimit);
                 pPend->_limit = CtiPendingPointOperations::pendingLimit + statelimit;
                 _pendingOpThread.push( pPend );
-            }
 
-            deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
+                deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
+            }
         }
 
         if(pSig)
@@ -6500,7 +6501,7 @@ int CtiVanGogh::loadPendingControls()
 
     CtiLockGuard<CtiMutex> pmguard(_server_mux);
 
-    // RWDBStatus upStat = CtiTableLMControlHistory::updateCompletedOutstandingControls();     // This cleans up any controls which "completed" while dispatch was not running.
+    RWDBStatus upStat = CtiTableLMControlHistory::updateCompletedOutstandingControls();     // This cleans up any controls which "completed" while dispatch was not running.
 
     // This block will clean up any non closed control blocks.
     {

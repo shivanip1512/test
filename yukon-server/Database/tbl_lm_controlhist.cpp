@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/11/05 17:24:44 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/11/09 06:12:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,6 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setStartTime( const RWTime& 
 {
     setDirty();
     _startDateTime = start;
-    //setPreviousLogTime(start);
     return *this;
 }
 
@@ -578,17 +577,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     {
         if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
         {
-            if(isNewControl())
-            {
-                setPreviousLogTime( getStartTime() );
-            }
-            else if(getActiveRestore() != RWCString(LMAR_NEWCONTROL))
-            {
-                setPreviousLogTime( getStopTime() );
-            }
-
             setDirty(false);
-            setNotNewControl();
         }
         else
         {

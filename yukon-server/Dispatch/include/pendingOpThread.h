@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/11/08 14:40:38 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/11/09 06:12:51 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.3  2004/11/09 06:12:51  cplender
+* Working to calm dispatch down
+*
 * Revision 1.2  2004/11/08 14:40:38  cplender
 * 305 Protocol should send controls on RTCs now.
 *
@@ -33,6 +36,7 @@ using namespace std;
 
 #include "connection.h"
 #include "pendable.h"
+#include "pt_numeric.h"
 #include "queue.h"
 #include "tbl_lm_controlhist.h"
 #include "thread.h"
@@ -46,6 +50,7 @@ public:
 
 private:
 
+    CtiMultiMsg *_multi;
     RWThreadFunction  _dbThread;
 
     CtiConnection::InQ_t *_pMainQueue;    // Main queue
@@ -77,7 +82,10 @@ public:
 
     enum
     {
-        RELOAD = CtiThread::LAST,
+        PROCESSQ = CtiThread::LAST,
+        QPROCESSED,
+        POSTHISTORY,
+        POSTSTOP,
         PRIMED                                      // set by self after initial data has been loaded.
 
     };
@@ -94,10 +102,10 @@ public:
     void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
     // void dumpPendingOps( bool force = false  );
     void postControlStopPoint( CtiPendingPointOperations &ppc, const RWTime &now);
-    void postControlHistoryPoints( CtiPendingPointOperations &ppc );
+    void postControlHistoryPoints( CtiPendingPointOperations &ppc, int line = 0 );
     bool isPointInPendingControl(LONG pointid);
 
-    void insertControlHistoryRow( CtiPendingPointOperations &ppc);
+    void insertControlHistoryRow( CtiPendingPointOperations &ppc, int line);
     void writeLMControlHistoryToDB(bool justdoit = false);
     void writeDynamicLMControlHistoryToDB(bool justdoit = false);
 
@@ -112,6 +120,8 @@ public:
     void removeLimit(CtiPendable *&pendable);
     void removePointData(CtiPendable *&pendable);
     void removeControl(CtiPendable *&pendable);
+
+    static CtiPointNumeric* getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
 
 };
 #endif // #ifndef __PENDINGOPTHREAD_H__

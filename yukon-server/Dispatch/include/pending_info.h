@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/11/05 17:24:44 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/11/09 06:12:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,8 @@
 class CtiPendingPointOperations
 {
 public:
+
+    typedef map< int, long > CtiOffsetPIDMap_t;
 
     typedef enum
     {
@@ -96,6 +98,9 @@ protected:
 
     CtiPointDataMsg *_pdata;          // PointData to send to the peoples.
 
+    CtiOffsetPIDMap_t _opidMap;     // Once found this is where we keep point offsets.
+
+
 private:
 
     public:
@@ -143,5 +148,7 @@ private:
     CtiTableLMControlHistory& getControl();
     CtiPendingPointOperations& setControl(const CtiTableLMControlHistory& ref);
 
+    LONG getOffsetsPointID(int offset);
+    void addOffset(int offset, long pid);
 };
 #endif // #ifndef __PENDING_INFO_H__

@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/11/05 17:22:48 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/11/09 06:12:51 $
 * HISTORY      :
 * $Log: pendable.h,v $
+* Revision 1.2  2004/11/09 06:12:51  cplender
+* Working to calm dispatch down
+*
 * Revision 1.1  2004/11/05 17:22:48  cplender
 * IR
 *
@@ -33,7 +36,6 @@ public:
     enum {
         CtiPendableAction_Unspecified = 0,
         CtiPendableAction_Add,                      // Requires CtiPendingPointOperations
-        CtiPendableAction_Remove,
         CtiPendableAction_RemoveLimit,              // Requires _pointId and _action.
         CtiPendableAction_RemovePointData,          // Requires _pointId and _action.
         CtiPendableAction_ControlStatusComplete,    // Requires _pointId, _action, _value, and _tags.
