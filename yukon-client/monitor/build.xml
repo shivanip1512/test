@@ -19,15 +19,14 @@
 
        <jar jarfile="${yukon.lib}/monitor.jar"
             basedir="build/" 
-            manifest="resource/manifest.mf" />       
+            manifest="resource/manifest.mf">
+            
+	 	    <fileset dir="resource/">
+	 		<include name="**/*.ico"/>
+		    </fileset>
+		</jar>
 
 	<copy todir="${yukon.lib}">
- 	    <fileset dir="resource">
-		<include name="**/*.gif"/>
- 		<include name="**/*.ico"/>
- 		<include name="**/*.dll"/>
-	    </fileset>
-
  	    <fileset dir="">
  		<include name="**/*.dll"/>
 	    </fileset>
@@ -40,11 +39,6 @@
    			manifest="resource/manifest.mf" />   			
    			
    		<copy todir="${yukon.client.bin}">
- 	    	<fileset dir="resource">
-				<include name="**/*.gif"/>
- 				<include name="**/*.ico"/>
-	    	</fileset>
-
 	 	    <fileset dir="">
 	 		<include name="**/*.dll"/>
 		    </fileset>

@@ -21,14 +21,17 @@ public class YukonSysTray implements SysTrayMenuListener
 	
 
 	private final SysTrayMenu yukonSysTray = 
-			new SysTrayMenu( ALL_ICONS[0], "Starting up Yukon monitor..." );
+			new SysTrayMenu( ALL_ICONS[0], "Starting Yukon Monitor..." );
 
 	// create icons
 	static final SysTrayMenuIcon[] ALL_ICONS = 
 	{
 		// the extension can be omitted
-		new SysTrayMenuIcon("d:/systray/systray4j/java/icons/duke"),
-		new SysTrayMenuIcon("d:/systray/systray4j/java/icons/duke_up")
+		new SysTrayMenuIcon( 
+			ClassLoader.getSystemResource("duke" + SysTrayMenuIcon.getExtension()) ),
+
+		new SysTrayMenuIcon(
+			ClassLoader.getSystemResource("duke_up" + SysTrayMenuIcon.getExtension()) ),
 	};
 
 
