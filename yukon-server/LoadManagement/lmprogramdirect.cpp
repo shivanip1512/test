@@ -2079,17 +2079,22 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     }
                 }
             }
-            else if( previousGearObject->getControlMethod() == CtiLMProgramDirectGear::SmartCycleMethod )
+            else if( previousGearObject->getControlMethod() == CtiLMProgramDirectGear::SmartCycleMethod ||
+                     previousGearObject->getControlMethod() == CtiLMProgramDirectGear::TrueCycleMethod )
             {
                 for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
                 {
                     CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
                     int priority = 11;
-                    RWCString controlString = "control cycle terminate";
+                    RWCString controlString = "control terminate";
+                    if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                    {
+                        controlString = "control xcom terminate";
+                    }
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Sending cycle terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                        dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
                     }
                     multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority));
                     currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
@@ -2581,7 +2586,11 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                              tempMethodStopType == "Time-In" )
                                     {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                                         int priority = 11;
-                                        RWCString controlString = "control cycle terminate";
+                                        RWCString controlString = "control terminate";
+                                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                                        {
+                                            controlString = "control xcom terminate";
+                                        }
                                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2985,7 +2994,11 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                              tempMethodStopType == "Time-In" )
                                     {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                                         int priority = 11;
-                                        RWCString controlString = "control cycle terminate";
+                                        RWCString controlString = "control terminate";
+                                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                                        {
+                                            controlString = "control xcom terminate";
+                                        }
                                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3112,6 +3125,10 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                         {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                             int priority = 11;
                             RWCString controlString = "control terminate";
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                            {
+                                controlString = "control xcom terminate";
+                            }
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3168,7 +3185,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             //CtiLockGuard<CtiLogger> logger_guard(dout);
                             //dout << RWTime() << " - Stopping control on LM Group: " << currentLMGroup->getPAOName() << " with Stop Type of (Time In) in: " << __FILE__ << " at:" << __LINE__ << endl;
                             //I don't know if I should do anything unique here yet?
-                            //multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control cycle terminate"));
+                            //multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control terminate"));
                             //setLastControlSent(RWDBDateTime());
                             //currentLMGroup->setLastControlSent(RWDBDateTime());
                             RWDBDateTime timeToTimeIn = RWDBDateTime(1990,1,1,0,0,0,0);//put in a bogus time stamp
