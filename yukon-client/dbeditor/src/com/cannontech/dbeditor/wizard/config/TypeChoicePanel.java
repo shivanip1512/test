@@ -102,7 +102,7 @@ private javax.swing.JRadioButton getJRadioButton400Series() {
 			ivjJRadioButton400Series.setName("JRadioButton400Series");
 			ivjJRadioButton400Series.setMnemonic('e');
 			ivjJRadioButton400Series.setText("400 Series MCT");
-			ivjJRadioButton400Series.setEnabled(false);
+			ivjJRadioButton400Series.setEnabled(true);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
