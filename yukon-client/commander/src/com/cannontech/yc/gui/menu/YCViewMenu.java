@@ -56,9 +56,6 @@ private void initialize() {
 	clearMenuItem.setFont(f);
 	clearMenuItem.setText("Clear Screen");
 	clearMenuItem.setMnemonic('c');
-	clearMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
-	                             java.awt.event.KeyEvent.VK_C,
-	                             java.awt.Event.CTRL_MASK));
 	
 	deleteSerialNumberMenuItem = new CommandableMenuItem();
 	deleteSerialNumberMenuItem.setFont(f);
@@ -107,11 +104,6 @@ private void initialize() {
 				else if( e.getKeyCode() == KeyEvent.VK_F5)
 				{
 					reloadMenuItem.doClick();
-					return true;
-				}
-				else if( e.getKeyCode() == KeyEvent.VK_C && e.isControlDown() )
-				{
-					clearMenuItem.doClick();
 					return true;
 				}
 				else if( e.getKeyCode() == KeyEvent.VK_DELETE)
