@@ -1927,13 +1927,19 @@ void CtiLMShutdownExecutor::Execute()
 {
     try
     {
-        /*if( _LM_DEBUG )
+        if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down client connection thread..." << endl;
-        }*/
-    
+            dout << RWTime() << " - Shutting down client listener thread..." << endl;
+        }
+
         CtiLMClientListener::getInstance()->stop();
+
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Client listener thread shutdown." << endl;
+        }
     }
     catch(...)
     {
@@ -1946,7 +1952,7 @@ void CtiLMShutdownExecutor::Execute()
         if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down the substation bus store..." << endl;
+            dout << RWTime() << " - Shutting down control area store..." << endl;
         }
     
         CtiLMControlAreaStore::deleteInstance();
@@ -1954,7 +1960,7 @@ void CtiLMShutdownExecutor::Execute()
         if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Done shutting down the substation bus store!!!" << endl;
+            dout << RWTime() << " - Control area store shutdown." << endl;
         }
     }
     catch(...)
@@ -1965,26 +1971,25 @@ void CtiLMShutdownExecutor::Execute()
     
     try
     {
-        /*if( _LM_DEBUG )
+        if( _LM_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Shutting down the controller thread..." << endl;
-        }*/
+            dout << RWTime() << " - Shutting down load manager thread..." << endl;
+        }
     
         CtiLoadManager::getInstance()->stop();
+
+        if( _LM_DEBUG )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Load manager thread shutdown." << endl;
+        }
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
-    /*if( _LM_DEBUG )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Done shutting down" << endl;
-        dout << RWTime() << " - done with shutdown executor" << endl;
-    }*/
 }
 
 /*===========================================================================
