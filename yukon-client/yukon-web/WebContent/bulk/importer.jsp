@@ -32,7 +32,7 @@ TH {
 }
 -->
 </STYLE>
-</head>
+<SCRIPT type="text/javascript"></SCRIPT></head>
 
 <body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -98,7 +98,7 @@ TH {
 													<TD width="231"><SPAN class="HeaderCellCrucial">&nbsp;Override
 													the import wait period: <FONT color="#000000"> </FONT></SPAN></TD>
 													<TD width="314"><INPUT type="button" name="Import"
-														value="Force Manual Import Event" disabled></TD>
+														value="Force Manual Import Event" onclick=<%webImp.forceImport();%>></TD>
 
 													<TD width="191">
 													<DIV align="right"><BR>
