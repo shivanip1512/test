@@ -201,7 +201,7 @@ public java.lang.String getCoopId()
 		}
 		catch( java.util.MissingResourceException mre)
 		{
-			System.out.println(" Missing 'coop_id' in config.properties.");
+			com.cannontech.clientutils.CTILogger.info(" Missing 'coop_id' in config.properties.");
 
 			String value = javax.swing.JOptionPane.showInputDialog(
 				null, "Please enter your 5 digit coop-Id now: ", 

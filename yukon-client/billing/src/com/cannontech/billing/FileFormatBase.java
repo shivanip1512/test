@@ -71,7 +71,7 @@ public FileFormatBase()
 // Override me if you want to manually close the DBConnection
 public void closeDBConnection() 
 {
-	System.out.println(this.getClass().getName() + ".closeDBConnection() must be overriden");
+	com.cannontech.clientutils.CTILogger.info(this.getClass().getName() + ".closeDBConnection() must be overriden");
 }
 public String endDateString()
 {
@@ -256,9 +256,9 @@ public java.util.Hashtable retrieveAccountNumbers(String dbAlias)
 	catch(java.io.FileNotFoundException fnfe)
 	{
 		//fnfe.printStackTrace();
-		System.out.println("***********************************************************************************************");
-		System.out.println("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
-		System.out.println("***********************************************************************************************");
+		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
+		com.cannontech.clientutils.CTILogger.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
+		com.cannontech.clientutils.CTILogger.info("***********************************************************************************************");
 		return null;	//with null return, meternumbers will be used in place of accountnumbers
 	}
 
@@ -303,7 +303,7 @@ public java.util.Hashtable retrievePointIDMultiplierHashTable()
 
 		if( conn == null )
 		{
-			System.out.println(":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
 			return null;
 		}
 		else

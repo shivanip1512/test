@@ -396,7 +396,7 @@ public void handleGroup( Integer [] deviceMeterGroupIds )
 	String command = getCommand();
 
 	//else if( DeviceTypesFuncs.isMCT( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((CarrierBase)val).getPAOType() ) ) )
-	//System.out.println(" TYPE = " + com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(type));
+	//com.cannontech.clientutils.CTILogger.info(" TYPE = " + com.cannontech.database.data.pao.PAOGroups.getDeviceTypeString(type));
 	//if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(type))
 	//**  SEND WITH QUEUE COMMANDS STRING ON ALL **
 	//**  FIX:  NEED TO CHECK IF PAOBJECT IS AN MCT OR NOT
@@ -747,17 +747,17 @@ public void writeNewRequestToPorter(com.cannontech.message.porter.message.Reques
 		if( getConnToPorter().isValid())
 		{
 			getConnToPorter().write( request );
-			System.out.println(" REQUEST = "+ request.toString());
+			com.cannontech.clientutils.CTILogger.info(" REQUEST = "+ request.toString());
 			currentUserMessageID++;
 		}
 		else
 		{
-			System.out.println("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
+			com.cannontech.clientutils.CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 		}
 	}
 	else
 	{
-		System.out.println("REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+		com.cannontech.clientutils.CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
 	}
 		
 }

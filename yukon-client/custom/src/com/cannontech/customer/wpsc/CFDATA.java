@@ -134,7 +134,7 @@ protected void handleFile(java.io.InputStream in)
 		java.io.BufferedReader rdr = new java.io.BufferedReader( new java.io.InputStreamReader(in) );
 
 		String str;
-		System.out.println("Begin Processing CFDATA file...");
+		com.cannontech.clientutils.CTILogger.info("Begin Processing CFDATA file...");
 		WPSCMain.logMessage("Begin Processing CFDATA Files", com.cannontech.common.util.LogWriter.INFO);
 		while( (str = rdr.readLine()) != null )
 		{ 
@@ -142,7 +142,7 @@ protected void handleFile(java.io.InputStream in)
 
 			if( decoded != null )
 			{
-				System.out.println("CFDATA: " + decoded);
+				com.cannontech.clientutils.CTILogger.info("CFDATA: " + decoded);
 				WPSCMain.logMessage(" ** CFDATA:  "+ decoded, com.cannontech.common.util.LogWriter.DEBUG);
 				com.cannontech.message.porter.message.Request req = new com.cannontech.message.porter.message.Request( 0L, decoded, 1L );
 				porterConn.write(req);
@@ -150,7 +150,7 @@ protected void handleFile(java.io.InputStream in)
 				Thread.sleep(500);
 			}
 		}
-		System.out.println("...Done processing CFDATA file");
+		com.cannontech.clientutils.CTILogger.info("...Done processing CFDATA file");
 		WPSCMain.logMessage("Done Processing CFDATA Files  *  "+ countSent + "  *  read and wrote to Porter", com.cannontech.common.util.LogWriter.INFO);
 	}
 	catch(java.io.IOException e )

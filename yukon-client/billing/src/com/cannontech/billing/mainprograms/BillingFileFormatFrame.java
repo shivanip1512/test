@@ -245,7 +245,7 @@ private javax.swing.JPanel getJFrameContentPane() {
 private void handleException(java.lang.Throwable exception)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	 exception.printStackTrace();
 }
 /**
@@ -261,7 +261,7 @@ private void initialize() {
 		//  This application stores it's own default text config file,
 		//	 defined in billingFileDefaults class.
 
-		System.out.println("Yukon Billing File Frame Version: "  + frameVersion);
+		com.cannontech.clientutils.CTILogger.info("Yukon Billing File Frame Version: "  + frameVersion);
 		// user code end
 		setName("BillingFileFormatFrame");
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

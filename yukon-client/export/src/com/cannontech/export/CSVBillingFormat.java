@@ -204,9 +204,9 @@ public void parseCommandLineArgs(String[] args)
 	}
 	else
 	{
-		System.out.println("Usage:  CSVBilling FILE=FileDirectory START=mmddyyyy STOP=mmddyyyy");
-		System.out.println("Ex.		CSVBilling FILE=c:/yukon/export/ START=02/28/2002 STOP=03/01/2002");
-		System.out.println("Parameters not specifed will be defaulted to c:/yukon/export and \"yesterday\" run date.");
+		com.cannontech.clientutils.CTILogger.info("Usage:  CSVBilling FILE=FileDirectory START=mmddyyyy STOP=mmddyyyy");
+		com.cannontech.clientutils.CTILogger.info("Ex.		CSVBilling FILE=c:/yukon/export/ START=02/28/2002 STOP=03/01/2002");
+		com.cannontech.clientutils.CTILogger.info("Parameters not specifed will be defaulted to c:/yukon/export and \"yesterday\" run date.");
 		computeDefaultQueryTimestamp();
 	}
 }
@@ -244,7 +244,7 @@ public void retrieveBaselineData(int baselinePointID)
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return;
 		}
 		else
@@ -332,7 +332,7 @@ public void retrieveBillingData(int keyId, com.cannontech.export.record.CSVBilli
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return;
 		}
 		else
@@ -459,7 +459,7 @@ public void retrieveCustomerData()
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return;
 		}
 		else
@@ -520,7 +520,7 @@ public void retrieveExportData()
 
 	logEvent("...Retrieving data for Date > " + getMinTimestamp().getTime() +
 		" AND <= " + getMaxTimestamp().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	System.out.println("...Retrieving data for Date > " + getMinTimestamp().getTime() +
+	com.cannontech.clientutils.CTILogger.info("...Retrieving data for Date > " + getMinTimestamp().getTime() +
 		" AND <= " + getMaxTimestamp().getTime());
 		
 	//Add a column headings record

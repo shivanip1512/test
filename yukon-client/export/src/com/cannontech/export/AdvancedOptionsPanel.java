@@ -579,7 +579,7 @@ public Object getValue(Object object) {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**
@@ -720,11 +720,11 @@ public void showAdvancedOptions(javax.swing.JFrame parent)
 		{
 			if( event.getSource() == getOkButton() )
 			{
-				System.out.println("OK button");
+				com.cannontech.clientutils.CTILogger.info("OK button");
 			}
 			else if( event.getSource() == getCancelButton() )
 			{
-				System.out.println("Cancel Button");
+				com.cannontech.clientutils.CTILogger.info("Cancel Button");
 			}
 
 			dialog.setVisible(false);

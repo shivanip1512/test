@@ -27,7 +27,7 @@ public ReportBase()
 // Override me if you want to manually close the DBConnection
 public void closeDBConnection() 
 {
-	System.out.println(this.getClass().getName() + ".closeDBConnection() must be overriden");
+	com.cannontech.clientutils.CTILogger.info(this.getClass().getName() + ".closeDBConnection() must be overriden");
 }
 /**
  * Retrieves values from the database and inserts them in a FileFormatBase object

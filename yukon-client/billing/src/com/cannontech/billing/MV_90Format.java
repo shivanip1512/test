@@ -30,7 +30,7 @@ public class MV_90Format extends FileFormatBase
 //	}
 
 /**
- * Default SEDC constructor
+ * Default MV_90 constructor
  */
 public MV_90Format() 
 {
@@ -54,8 +54,8 @@ private void removeDuplicateMeters()
 		{
 			if( getRecordVector().get(i).equals(getRecordVector().get(j)) )
 			{
-				if( ((com.cannontech.billing.record.SEDCRecord)getRecordVector().get(i)).getReadingKWH().doubleValue() >=
-					    ((com.cannontech.billing.record.SEDCRecord)getRecordVector().get(j)).getReadingKWH().doubleValue() )
+				if( ((com.cannontech.billing.record.MV_90Record)getRecordVector().get(i)).getReadingKWH().doubleValue() >=
+					    ((com.cannontech.billing.record.MV_90Record)getRecordVector().get(j)).getReadingKWH().doubleValue() )
 					 getRecordVector().remove(j);
 				else
 					getRecordVector().remove(i);
@@ -113,7 +113,7 @@ public boolean retrieveBillingData(String dbAlias)
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 		else
@@ -122,7 +122,7 @@ public boolean retrieveBillingData(String dbAlias)
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
 			rset = pstmt.executeQuery();
 
-			System.out.println(" * Start looping through return resultset");
+			com.cannontech.clientutils.CTILogger.info(" * Start looping through return resultset");
 			
 			int recCount = 0;
 					
@@ -215,7 +215,7 @@ public boolean retrieveBillingData(String dbAlias)
 			e2.printStackTrace();//sometin is up
 		}	
 	}
-	System.out.println(" @SEDC Data Collection : Took " + (System.currentTimeMillis() - timer));
+	com.cannontech.clientutils.CTILogger.info(" @MV_90 Data Collection : Took " + (System.currentTimeMillis() - timer));
 	return true;
 }
 }

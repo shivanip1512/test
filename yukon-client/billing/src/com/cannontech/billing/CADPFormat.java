@@ -103,7 +103,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info((getClass() + ":  Error getting database connection.");
 			return false;
 		}
 		else
@@ -126,7 +126,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 			int recCount = 0;
 
 			int rsetCount = 0;
-			System.out.println(" Start looping through return resultset");
+			com.cannontech.clientutils.CTILogger.info(" Start looping through return resultset");
 
 			int vectorRecordCount = 0;
 
@@ -287,7 +287,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				getRecordVector().addElement(cadpRec);
 			}
 			
-			System.out.println(" Records counted = " +recCount + " ||  ResultSet Size = " + rsetCount);
+			com.cannontech.clientutils.CTILogger.info(" Records counted = " +recCount + " ||  ResultSet Size = " + rsetCount);
 		}//end else
 	}//end try 
 	catch( java.sql.SQLException e )
@@ -307,7 +307,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 			e2.printStackTrace();//sometin is up
 		}	
 	}
-	System.out.println(" @CADP Data Collection : Took " + (System.currentTimeMillis() - timer));
+	com.cannontech.clientutils.CTILogger.info(" @CADP Data Collection : Took " + (System.currentTimeMillis() - timer));
 	
 	return true;
 }
@@ -399,7 +399,7 @@ public boolean retrieveBillingData(String dbAlias)
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 		else
@@ -422,7 +422,7 @@ public boolean retrieveBillingData(String dbAlias)
 			int recCount = 0;
 
 			int rsetCount = 0;
-			System.out.println(" Start looping through return resultset");
+			com.cannontech.clientutils.CTILogger.info(" Start looping through return resultset");
 
 			int vectorRecordCount = 0;
 
@@ -590,7 +590,7 @@ public boolean retrieveBillingData(String dbAlias)
 				getRecordVector().addElement(cadpRec);
 			}
 			
-			System.out.println(" Records counted = " +recCount + " ||  ResultSet Size = " + rsetCount);
+			com.cannontech.clientutils.CTILogger.info(" Records counted = " +recCount + " ||  ResultSet Size = " + rsetCount);
 		}//end else
 	}//end try 
 	catch( java.sql.SQLException e )
@@ -610,7 +610,7 @@ public boolean retrieveBillingData(String dbAlias)
 			e2.printStackTrace();//sometin is up
 		}	
 	}
-	System.out.println(" @CADP Data Collection : Took " + (System.currentTimeMillis() - timer));
+	com.cannontech.clientutils.CTILogger.info(" @CADP Data Collection : Took " + (System.currentTimeMillis() - timer));
 	
 	return true;
 }

@@ -141,7 +141,7 @@ public static void main(String[] args)
 			}
 			catch (InterruptedException ie)
 			{
-				System.out.println("Interrupted Exception!!!");
+				com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
 				return;
 			}
 			
@@ -196,9 +196,9 @@ public void parseCommandLineArgs(String[] args)
 	}
 	else
 	{
-		System.out.println("Usage:  format=<formatType> -dNumDaysToRetain -fFileDirectory -hrunTimeHour");
-		System.out.println("Ex.		format=dbpurge -d90 -fc:/yukon/dbpurge/ -h1 {optional: -NOPURGE}");
-		System.out.println("** All parameters will be defaulted to the above if not specified");
+		com.cannontech.clientutils.CTILogger.info("Usage:  format=<formatType> -dNumDaysToRetain -fFileDirectory -hrunTimeHour");
+		com.cannontech.clientutils.CTILogger.info("Ex.		format=dbpurge -d90 -fc:/yukon/dbpurge/ -h1 {optional: -NOPURGE}");
+		com.cannontech.clientutils.CTILogger.info("** All parameters will be defaulted to the above if not specified");
 	}
 
 }
@@ -213,7 +213,7 @@ public void purgeSystemLog()
 	String deleteString = "DELETE FROM SYSTEMLOG WHERE DATETIME < ?";
 
 	logEvent("...Purging database for Max Date = " + getMaxDateToPurge().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	System.out.println("...Purging database for Max Date = " + getMaxDateToPurge().getTime());
+	com.cannontech.clientutils.CTILogger.info("...Purging database for Max Date = " + getMaxDateToPurge().getTime());
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.Connection conn = null;
 
@@ -262,7 +262,7 @@ public void retrieveExportData()
 	java.sql.ResultSet rset = null;
 
 	logEvent("...Exporting to file for Max Date = " + getMaxDateToPurge().getTime(), com.cannontech.common.util.LogWriter.INFO);
-	System.out.println("...Exporting to file for Max Date = " + getMaxDateToPurge().getTime());
+	com.cannontech.clientutils.CTILogger.info("...Exporting to file for Max Date = " + getMaxDateToPurge().getTime());
 	
 	try
 	{

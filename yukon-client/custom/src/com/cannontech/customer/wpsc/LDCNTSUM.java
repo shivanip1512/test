@@ -167,7 +167,7 @@ private String decodeSignal(com.cannontech.message.dispatch.message.Signal signa
 	catch( Exception e )
 	{
 		WPSCMain.logMessage("decodeSignal() - encountered badly formed signal", com.cannontech.common.util.LogWriter.ERROR);
-		System.out.println("decodeSignal() - encountered badly formed signal");
+		com.cannontech.clientutils.CTILogger.info("decodeSignal() - encountered badly formed signal");
 	}	
 			
 	return retVal;
@@ -328,7 +328,7 @@ public void run()
 
 						if( WPSCMain.DEBUG )
 						{
-							System.out.println("\n[" + new java.util.Date() +"]   Signal received:\n" +sig);
+							com.cannontech.clientutils.CTILogger.info("\n[" + new java.util.Date() +"]   Signal received:\n" +sig);
 							//Because of the logger not understanding an end of line character,
 							//Each element is instead specified this way.  Hack..whatever...
 							WPSCMain.logMessage("   Signal received:" , com.cannontech.common.util.LogWriter.DEBUG);
@@ -345,13 +345,13 @@ public void run()
 						String toWrite = decodeSignal(sig);
 						if( toWrite != null )
 						{
-							System.out.println("LDCNTSUM:  " + toWrite );
+							com.cannontech.clientutils.CTILogger.info("LDCNTSUM:  " + toWrite );
 							WPSCMain.logMessage("LDCNTSUM: "+ toWrite , com.cannontech.common.util.LogWriter.DEBUG);
 							writer.write(toWrite + "\r\n");
 						}
 						else
 						{
-							System.out.println("Ignoring signal");
+							com.cannontech.clientutils.CTILogger.info("Ignoring signal");
 							WPSCMain.logMessage("Ignoring signal, decodeSignal(sig) returned null.: " , com.cannontech.common.util.LogWriter.DEBUG);
 						}
 					}
@@ -381,7 +381,7 @@ public void run()
 	}
 	catch( InterruptedException ie )
 	{
-		System.out.println( getClass() + " - interrupted");
+		com.cannontech.clientutils.CTILogger.info( getClass() + " - interrupted");
 		WPSCMain.logMessage("InterruptedException LDCNTSUM.run()."+ getClass() + " - interrupted." , com.cannontech.common.util.LogWriter.ERROR);
 	}
 }

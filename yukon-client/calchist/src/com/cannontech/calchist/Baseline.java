@@ -99,7 +99,7 @@ public void figureNextBaselineCalcTime()
 	nextBaselineCalcTime.setTime(new java.util.Date(tempUpdateTime));
 
 	CalcHistorical.logEvent("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime(), com.cannontech.common.util.LogWriter.INFO);	
-	System.out.println("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime());
+	com.cannontech.clientutils.CTILogger.info("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime());
 }
 /**
  * Insert the method's description here.
@@ -116,16 +116,16 @@ public java.lang.Integer getBaselineCalcTime()
 			baselineCalcTime = new Integer( bundle.getString("calc_historical_baseline_calctime") );
 			daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
 			CalcHistorical.logEvent(" (config.prop) Baseline calculation time = " + baselineCalcTime + ":00", com.cannontech.common.util.LogWriter.INFO);
-			System.out.println("[" + new java.util.Date() + "]  Baseline calculation time from config.properties is " + baselineCalcTime + ":00");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calculation time from config.properties is " + baselineCalcTime + ":00");
 		}
 		catch( Exception e)
 		{
 			e.printStackTrace();
 			baselineCalcTime = new Integer(14400);	//default to 4am.
 			CalcHistorical.logEvent("Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.", com.cannontech.common.util.LogWriter.INFO);
-			System.out.println("[" + new java.util.Date() + "]  Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.");
 			CalcHistorical.logEvent("Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))", com.cannontech.common.util.LogWriter.DEBUG);
-			System.out.println("[" + new java.util.Date() + "]  Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))");
 			baselineCalcTime = new Integer(4);	//default this bad boy to run at 4am
 			daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
 		}
@@ -427,7 +427,7 @@ public int retrieveDailyBaselineData(CalcComponent calcComponent, Vector validTi
 
 		if (conn == null)
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);			
 			return 0;
 		}
@@ -563,7 +563,7 @@ public void setCustomerBaselineAttributes(int ptID, String databaseAlias)
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
 			return;
 		}

@@ -137,7 +137,7 @@ public boolean retrieveBillingData(String dbAlias)
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 		else
@@ -146,7 +146,7 @@ public boolean retrieveBillingData(String dbAlias)
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
 			rset = pstmt.executeQuery();
 
-			System.out.println(" * Start looping through return resultset");
+			com.cannontech.clientutils.CTILogger.info(" * Start looping through return resultset");
 			
 			int recCount = 0;
 			
@@ -261,7 +261,7 @@ public boolean retrieveBillingData(String dbAlias)
 			e2.printStackTrace();//sometin is up
 		}	
 	}
-	System.out.println(" @SEDC Data Collection : Took " + (System.currentTimeMillis() - timer));
+	com.cannontech.clientutils.CTILogger.info(" @SEDC Data Collection : Took " + (System.currentTimeMillis() - timer));
 	return true;
 }
 }

@@ -55,7 +55,7 @@ public String dataToString()
 		if (!buffer.toString().substring(0,3).equalsIgnoreCase("FHD"))
 		{
 			// invalid data; no file header
-			System.out.println("MISSING MVRS FILE HEADER - PROCESS TERMINATED");
+			com.cannontech.clientutils.CTILogger.info("MISSING MVRS FILE HEADER - PROCESS TERMINATED");
 			return "";
 		}
 		writeToFile.append(processFileHeader());
@@ -259,7 +259,7 @@ public final void processMVRSField(String buffer, StringBuffer writeToFile) {
 	else if (buffer.regionMatches(true, 0, "RDG", 0, 3))
 		writeToFile.append(processReadingRecord(buffer));
 	// others not implemented, as in original C code
-	else System.out.println("MISSING/UNSUPPORTED MVRS RECORD INDICATOR, LINE " + Integer.toString(inputLine) + " - LINE IGNORED");
+	else com.cannontech.clientutils.CTILogger.info("MISSING/UNSUPPORTED MVRS RECORD INDICATOR, LINE " + Integer.toString(inputLine) + " - LINE IGNORED");
 }
 /**
  * Handles a reading record from the input file

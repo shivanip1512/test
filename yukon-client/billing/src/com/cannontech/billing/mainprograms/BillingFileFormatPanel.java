@@ -291,7 +291,7 @@ private void generateFile()
 		
 		enableTimer( true );
 		
-		System.out.println("Started " + 
+		com.cannontech.clientutils.CTILogger.info("Started " + 
 					FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
 					" format at: " + new java.util.Date());
 
@@ -304,7 +304,7 @@ private void generateFile()
 	else
 	{
 		javax.swing.JOptionPane.showMessageDialog(this.getParent().getComponent(0), getBillingDefaults().getFormatID() + " unrecognized file format id", "Yukon Billing File Generator", javax.swing.JOptionPane.ERROR_MESSAGE);
-		System.out.println(getBillingDefaults().getFormatID() + " unrecognized file format id");
+		com.cannontech.clientutils.CTILogger.info(getBillingDefaults().getFormatID() + " unrecognized file format id");
 	}
 }
 public BillingFileDefaults getBillingDefaults()
@@ -962,8 +962,8 @@ private String getInputFileText()
 		catch( Exception e)
 		{
 			inputFileText = "C:\\yukon\\client\\config\\input.txt";
-			System.out.println("[" + new java.util.Date() + "]  Billing File Input Path was NOT found in config.properties, defaulted to " + inputFileText);
-			System.out.println("[" + new java.util.Date() + "]  Add row named 'billing_input_file' to config.properties with the proper billing file location.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Billing File Input Path was NOT found in config.properties, defaulted to " + inputFileText);
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'billing_input_file' to config.properties with the proper billing file location.");
 		}
 	}
 	return inputFileText;
@@ -1194,7 +1194,7 @@ public java.lang.Thread getTimerThread()
 private void handleException(java.lang.Throwable exception)
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	 exception.printStackTrace();
 }
 /**
@@ -1213,7 +1213,7 @@ private void initialize() {
 		billingFile = new BillingFile();
 		billingFile.setAllBillGroupsVector(getBillingFile().retreiveAllBillGroupsVector());
 		billingFile.retreiveFileFormats();
-		System.out.println("Yukon Billing File Client Version: "  + BILLING_VERSION);
+		com.cannontech.clientutils.CTILogger.info("Yukon Billing File Client Version: "  + BILLING_VERSION);
 		// user code end
 		setName("BillingFile");
 		setLayout(new java.awt.GridBagLayout());
@@ -1385,7 +1385,7 @@ public synchronized void update(java.util.Observable obs, Object data)
 {
 	if( obs instanceof BillingFile )
 	{
-		System.out.println("...Ended format at: " + new java.util.Date() );
+		com.cannontech.clientutils.CTILogger.info("...Ended format at: " + new java.util.Date() );
 
 		//kill our timerThread
 		getTimerThread().interrupt();

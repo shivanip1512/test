@@ -48,7 +48,7 @@ private TrendSerie[] hitDatabase_LoadDuration()
 
 		if( conn == null )
 		{
-			System.out.println(":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
 			return null;
 		}
 		else
@@ -69,7 +69,7 @@ private TrendSerie[] hitDatabase_LoadDuration()
 			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
 			rset = pstmt.executeQuery();
 			
-			System.out.println("Executing:  " + sql.toString() );
+			com.cannontech.clientutils.CTILogger.info("Executing:  " + sql.toString() );
 				
 			// Fields used in sorting out just the LD readings we are looking for.	
 			double currentHour = 0; //The hour that we are currently looking for (0 - 23) 
@@ -241,7 +241,7 @@ private TrendSerie[] hitDatabase_LoadDuration()
 	}
 	
 //	valueFormat.setGroupingUsed(true);
-//	System.out.println(" @HIT DATABASE: Took " + (System.currentTimeMillis() - timer) + " millis to update DataViewModel.");
+//	com.cannontech.clientutils.CTILogger.info(" @HIT DATABASE: Took " + (System.currentTimeMillis() - timer) + " millis to update DataViewModel.");
 return trendSeries;
 }
 
@@ -261,7 +261,7 @@ private TrendSerie[] hitDatabase_OverlaidDays()
 
 		if( conn == null )
 		{
-			System.out.println(":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
 			return null;
 		}
 		else
@@ -271,7 +271,7 @@ private TrendSerie[] hitDatabase_OverlaidDays()
 			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
 			rset = pstmt.executeQuery();
 			
-			System.out.println("Executing:  " + sql.toString() );
+			com.cannontech.clientutils.CTILogger.info("Executing:  " + sql.toString() );
 
 			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
 
@@ -311,7 +311,7 @@ private TrendSerie[] hitDatabase_OverlaidDays()
 						
 					if( currentDayInYear == lastDayInYear)
 					{
-						System.out.println(" current = last");
+						com.cannontech.clientutils.CTILogger.info(" current = last");
 						//good 
 					}
 					else if( currentDayInYear == lastDayInYear + 1)
@@ -320,11 +320,11 @@ private TrendSerie[] hitDatabase_OverlaidDays()
 						if( mmss == 0)
 						{
 							//good
-							System.out.println(" current = last + 1 and mmss");
+							com.cannontech.clientutils.CTILogger.info(" current = last + 1 and mmss");
 						}
 						else
 						{
-							System.out.println(" DONE WITH TODAY ");
+							com.cannontech.clientutils.CTILogger.info(" DONE WITH TODAY ");
 							com.jrefinery.data.TimeSeriesDataPair[] dataPairArray =
 								new com.jrefinery.data.TimeSeriesDataPair[dataPairVector.size()];
 							dataPairVector.toArray(dataPairArray);
@@ -337,7 +337,7 @@ private TrendSerie[] hitDatabase_OverlaidDays()
 					}
 					else
 					{
-						System.out.println(" %%%%%%%ELSE%%%%%%%%%%%%");						
+						com.cannontech.clientutils.CTILogger.info(" %%%%%%%ELSE%%%%%%%%%%%%");						
 					}
 //					lastDayInYear = currentDayInYear;
 				}
@@ -428,7 +428,7 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 	}
 	else
 	{
-		System.out.println(" GraphDefinition contains NO graphDataSeries Items");
+		com.cannontech.clientutils.CTILogger.info(" GraphDefinition contains NO graphDataSeries Items");
 	}
 }
 
@@ -678,7 +678,7 @@ private TrendSerie[] hitDatabase_Basic()
 
 		if( conn == null )
 		{
-			System.out.println(":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(":  Error getting database connection.");
 			return null;
 		}
 		else
@@ -711,7 +711,7 @@ private TrendSerie[] hitDatabase_Basic()
 
 			rset = pstmt.executeQuery();
 			
-			System.out.println("Executing:  " + sql.toString() );
+			com.cannontech.clientutils.CTILogger.info("Executing:  " + sql.toString() );
 
 			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
 

@@ -415,7 +415,7 @@ public javax.swing.JTextField getRightMinTextField() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
 }
 /**
@@ -450,7 +450,7 @@ private void initialize() {
 	}
 	catch (Exception e)
 	{
-		System.out.println(" Error initializing Event listeners");
+		com.cannontech.clientutils.CTILogger.info(" Error initializing Event listeners");
 		e.printStackTrace();
 	}
 	// user code end

@@ -215,7 +215,7 @@ public boolean retrieveReportData(String dbAlias)
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 

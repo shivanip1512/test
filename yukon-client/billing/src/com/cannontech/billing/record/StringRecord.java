@@ -11,13 +11,13 @@ public class StringRecord implements BillingRecordBase
 {
 	private String data = null;
 /**
- * SEDCRecord constructor comment.
+ * StringRecord constructor comment.
  */
 protected StringRecord() {
 	super();
 }
 /**
- * SEDCRecord constructor comment.
+ * StringRecord constructor comment.
  */
 public StringRecord( String value ) 
 {
@@ -25,7 +25,7 @@ public StringRecord( String value )
 	setData( value );
 }
 /**
- * Converts data in a SEDCFormat to a formatted StringBuffer for stream use.
+ * Converts data in a StringFormat to a formatted StringBuffer for stream use.
  * Creation date: (5/24/00 10:58:48 AM)
  * @return java.lang.String
  */

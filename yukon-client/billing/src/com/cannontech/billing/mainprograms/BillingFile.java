@@ -138,7 +138,7 @@ public void retreiveFileFormats()
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info( getClass() + ":  Error getting database connection.");
 			return;
 		}
 		else
@@ -205,9 +205,9 @@ public void run()
 		//fileFormatBase.setIsAppending( getAppendCheckBox().isSelected() );
 		fileFormatBase.setBillingDefaults(getBillingDefaults());
 
-		System.out.println(" ** FYI ** Valid entries are for meters with: ");
-		System.out.println(" ** DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-		System.out.println(" ** ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+		com.cannontech.clientutils.CTILogger.info(" ** FYI ** Valid entries are for meters with: ");
+		com.cannontech.clientutils.CTILogger.info(" ** DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+		com.cannontech.clientutils.CTILogger.info(" ** ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
 
 		boolean success = false;
 		
@@ -231,7 +231,7 @@ public void run()
 
 			setChanged();
 			this.notifyObservers("Successfully created the file : " + fileFormatBase.getOutputFileName() );
-			System.out.println("notified observers!");
+			com.cannontech.clientutils.CTILogger.info("notified observers!");
 		}
 		catch(java.io.IOException ioe)
 		{

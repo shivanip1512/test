@@ -18,7 +18,7 @@ public StringBuffer getHtml(StringBuffer buf)
 {
 	if( model.getTrendSeries() == null)
 		return buf;
-//	System.out.println("Usage HTML getHtml()");
+//	com.cannontech.clientutils.CTILogger.info("Usage HTML getHtml()");
 //	long timer = System.currentTimeMillis();
 	/* The usage will be determined by taking the first available
 	   USAGE_SERIES value and subtracting it from the last.
@@ -225,13 +225,13 @@ public StringBuffer getHtml(StringBuffer buf)
 	catch( Exception e)
 	{
 		buf.append("<BR>No!! Usage points defined\r\n");
-		System.out.println(" Exception in UsageHtml.getHtml");
+		com.cannontech.clientutils.CTILogger.info(" Exception in UsageHtml.getHtml");
 		e.printStackTrace();
 		return buf;
 	}	
 //	finally
 //	{
-//		System.out.println(" @USAGE HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
+//		com.cannontech.clientutils.CTILogger.info(" @USAGE HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
 //	}
 }
 }

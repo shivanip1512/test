@@ -53,7 +53,7 @@ private class TrendDataAutoUpdater extends Thread
 				{
 					if( ignoreAutoUpdate )
 					{
-						System.out.println("** ignoreAutoUpdate **\n");
+						com.cannontech.clientutils.CTILogger.info("** ignoreAutoUpdate **\n");
 						ignoreAutoUpdate = false;
 						continue;
 					}
@@ -78,7 +78,7 @@ private class TrendDataAutoUpdater extends Thread
 								updateCurrentPane();
 								long timer = (System.currentTimeMillis());
 								frame.setTitle("Yukon Trending - ( Updated " + extendedDateTimeformat.format(new java.util.Date(timer)) + " )");
-								System.out.println("[" + extendedDateTimeformat.format(new java.util.Date(timer)) + "] - Yukon Trending - Auto Updating Point Data");
+								com.cannontech.clientutils.CTILogger.info("[" + extendedDateTimeformat.format(new java.util.Date(timer)) + "] - Yukon Trending - Auto Updating Point Data");
 								frame.setCursor(savedCursor);
 
 							}
@@ -197,7 +197,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	{
 		getGraph().setUpdateTrend(true);	
 		
-		System.out.println(" don't change model");
+		com.cannontech.clientutils.CTILogger.info(" don't change model");
 		actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);		
 	}
 	else if (event.getSource() == getStartDateComboBox())
@@ -205,7 +205,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		// Need to make sure the date has changed otherwise we are doing a billion updates on the one stateChange.
 		if( currentStartDate.compareTo((Object)ivjStartDateComboBox.getSelectedDate()) != 0 )
 		{
-			System.out.println("Changing Date!");
+			com.cannontech.clientutils.CTILogger.info("Changing Date!");
 			actionPerformed_GetRefreshButton(DONT_CHANGE_MODEL);
 			currentStartDate = ivjStartDateComboBox.getSelectedDate();
 		}
@@ -257,7 +257,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 
 	else if( event.getSource() == getOptionsMenu().getShowYesterdayMenuItem())
 	{
-		System.out.println("yesterday change");
+		com.cannontech.clientutils.CTILogger.info("yesterday change");
 		boolean isMasked = getOptionsMenu().getShowYesterdayMenuItem().isSelected();
 		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_YESTERDAY_MASK, isMasked);
 		getGraph().setOptionsMaskHolder(TrendModelType.SHOW_MULTIPLE_DAY_MASK, isMasked);
@@ -330,7 +330,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else
 	{
-		System.out.println(" other action");
+		com.cannontech.clientutils.CTILogger.info(" other action");
 	}
 }
 /**
@@ -532,7 +532,7 @@ public void actionPerformed_GetRefreshButton( int refreshModelType )
 	}
 	catch (Exception e)
 	{
-		System.out.println("-> Null pointer Exception - GraphClient.ActionPerformed on UpdateButton");
+		com.cannontech.clientutils.CTILogger.info("-> Null pointer Exception - GraphClient.ActionPerformed on UpdateButton");
 		e.printStackTrace();
 	}
 	finally
@@ -616,7 +616,7 @@ public void actionPerformed_GetToggleButton( )
 		if( histDate != null)
 			getStartDateComboBox().setSelectedDate(com.cannontech.util.ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
 		else
-			System.out.println(" %%% hist date null!!! ");
+			com.cannontech.clientutils.CTILogger.info(" %%% hist date null!!! ");
 	}
 
 	// -- Put the action listener back on the timePeriodComboBox	
@@ -1020,7 +1020,7 @@ private String getDirectory()
 		{
 			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
 			directory = bundle.getString("yc_common_commands_dir");	//using the YC one so not another one needs to exist.
-			//System.out.println("[" + new java.util.Date() + "]  Directory found in config.properties is " + directory);
+			//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Directory found in config.properties is " + directory);
 			int index = directory.lastIndexOf("/");
 			directory = directory.substring(0, index+1);
 			directory = directory + "export/";
@@ -1028,8 +1028,8 @@ private String getDirectory()
 		catch( Exception e)
 		{
 			directory= "C:/yukon/client/export/";
-			//System.out.println("[" + new java.util.Date() + "]  Directory was NOT found in config.properties, defaulted to " + directory);
-			System.out.println("[" + new java.util.Date() + "]  Add row named 'yc_common_commands_dir' to config.properties with the home directory.");
+			//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Directory was NOT found in config.properties, defaulted to " + directory);
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'yc_common_commands_dir' to config.properties with the home directory.");
 		}
 
 		java.io.File file = new java.io.File( directory );
@@ -1302,7 +1302,7 @@ public javax.swing.JMenuBar getMenuBar()
 		}
 		catch (java.lang.Throwable ivjExc) 
 		{
-			System.out.println(" Throwable Exception in getMenuBar()");
+			com.cannontech.clientutils.CTILogger.info(" Throwable Exception in getMenuBar()");
 			ivjExc.printStackTrace();
 		}
 	}
@@ -1374,7 +1374,7 @@ private com.cannontech.common.gui.util.DateComboBox getStartDateComboBox() {
 			ivjStartDateComboBox.setName("StartDateComboBox");
 			// user code begin {1}
 			currentStartDate = ivjStartDateComboBox.getSelectedDate();
-			System.out.println(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + currentStartDate);
+			com.cannontech.clientutils.CTILogger.info(" DAY -> "+ivjStartDateComboBox.getSelectedDate() + " and  " + currentStartDate);
 			ivjStartDateComboBox.addActionListener(this);
 			ivjStartDateComboBox.setEnabled(false);
 			// user code end
@@ -1677,7 +1677,7 @@ public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMs
 {
 	if (!((DBChangeMsg)msg).getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
 	{
-		System.out.println(" ## DBChangeMsg ##\n" + msg);
+		com.cannontech.clientutils.CTILogger.info(" ## DBChangeMsg ##\n" + msg);
 		/*
 		if( msg.getDatabase() == msg.CHANGE_POINT_DB )
 		{
@@ -1718,7 +1718,7 @@ public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMs
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	 exception.printStackTrace(System.out);
 }
 /**
@@ -1852,7 +1852,7 @@ private void initializeSwingComponents()
 		//styleSheet.addRule("TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: green; background-color: green; font-weight: normal}");
 		//styleSheet.loadRules(reader, new java.net.URL("file:d:/yukon/client/bin/CannonStyle.css"));
 	}
-	catch(java.io.IOException e){System.out.println(e);}
+	catch(java.io.IOException e){com.cannontech.clientutils.CTILogger.info(e);}
 
 	editorKit.setStyleSheet(styleSheet);
 	//tabularPanel.setEditorKit(editorKit);
@@ -2188,21 +2188,21 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 	{
 		if( getTrendingTabbedPane().getSelectedComponent() == getGraphTabPanel())
 		{
-			System.out.println("GRAPH TAB");
+			com.cannontech.clientutils.CTILogger.info("GRAPH TAB");
 			getGraph().setSeriesMask(GRAPH_MASK, true);
 			getGraph().setSeriesMask(PEAK_MASK, false);
 			getGraph().setSeriesMask(USAGE_MASK, false);
 		}
 		else if( getTrendingTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
 		{
-			System.out.println("TABULAR TAB");
+			com.cannontech.clientutils.CTILogger.info("TABULAR TAB");
 			getGraph().setSeriesMask(GRAPH_MASK, true);
 			getGraph().setSeriesMask(PEAK_MASK, false);
 			getGraph().setSeriesMask(USAGE_MASK, false);
 		}
 		else if( getTrendingTabbedPane().getSelectedComponent() == getSummaryTabEditorPane())
 		{
-			System.out.println("SUMMARY TAB");
+			com.cannontech.clientutils.CTILogger.info("SUMMARY TAB");
 			getGraph().setSeriesMask(GRAPH_MASK, true);
 			getGraph().setSeriesMask(PEAK_MASK, true);
 			getGraph().setSeriesMask(USAGE_MASK, true);

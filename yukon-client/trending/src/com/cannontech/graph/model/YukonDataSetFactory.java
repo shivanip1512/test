@@ -91,7 +91,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 							}
 							catch(com.jrefinery.data.SeriesException se)
 							{
-								System.out.println("Series Exception:  PERIOD = " + new java.util.Date(dp.getPeriod().getStart()));
+								com.cannontech.clientutils.CTILogger.info("Series Exception:  PERIOD = " + new java.util.Date(dp.getPeriod().getStart()));
 							}
 						}
 					}
@@ -215,7 +215,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 		for (int i = 0; i < keyArray.length; i++)
 		{
 			categoryList[i] = percentFormat.format((i/categoryCount));
-			System.out.println(" Category "  + i + " = " + categoryList[i]);
+			com.cannontech.clientutils.CTILogger.info(" Category "  + i + " = " + categoryList[i]);
 		}
 		
 		Double[][] datasetValues = new Double[validSeriesLength][];
@@ -326,7 +326,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDataFormat
 							}
 							catch(com.jrefinery.data.SeriesException se)
 							{
-								System.out.println(" PERIOD = " + new java.util.Date(dp.getPeriod().getStart()));
+								com.cannontech.clientutils.CTILogger.info(" PERIOD = " + new java.util.Date(dp.getPeriod().getStart()));
 							}
 							valArray[j] = dp.getValue();
 						}

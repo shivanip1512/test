@@ -21,13 +21,13 @@ public class WLT_40HeaderRecord0000 implements BillingRecordBase
 	private java.util.Vector endMeterReadingVector = null;
 	private java.util.Vector meterMultiplierVector = null;
 /**
- * SEDCRecord constructor comment.
+ * WLT_40HeaderRecord0000 constructor comment.
  */
 public WLT_40HeaderRecord0000() {
 	super();
 }
 /**
- * Converts data in a SEDCFormat to a formatted StringBuffer for stream use.
+ * Converts data in a WLT_40Format to a formatted StringBuffer for stream use.
  * Creation date: (5/24/00 10:58:48 AM)
  * @return java.lang.String
  */

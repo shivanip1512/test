@@ -108,12 +108,12 @@ public static void main(String[] args)
 	// Error messages for missing arguments
 	if( reportType == ReportTypes.INVALID )
 	{
-		System.out.println("ERROR: Missing File Format Type");
+		com.cannontech.clientutils.CTILogger.info("ERROR: Missing File Format Type");
 		validArguments = false;
 	}
 	if( outputFileName == null && !printFlag )
 	{
-		System.out.println("ERROR: Missing Output Filename or not to be printed");
+		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Output Filename or not to be printed");
 		validArguments = false;
 	}
 
@@ -168,11 +168,11 @@ public static void main(String[] args)
 								}
 								catch( InterruptedException ex )
 								{
-									System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+									com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 									ex.printStackTrace(System.out);	
 								}
 
-								System.out.println("	Waiting for printer");		
+								com.cannontech.clientutils.CTILogger.info("	Waiting for printer");		
 							}	
 
 							document.print( printer );
@@ -184,7 +184,7 @@ public static void main(String[] args)
 						}
 						catch( com.klg.jclass.page.awt.JCAWTPrinter.PrinterJobCancelledException e)
 						{
-							System.out.println("USER CANCELED PRINT JOB");
+							com.cannontech.clientutils.CTILogger.info("USER CANCELED PRINT JOB");
 						}
 					}
 					else
@@ -195,22 +195,22 @@ public static void main(String[] args)
 						outputFileWriter.close();
 					}
 
-					System.out.println("Report successfully created.");
+					com.cannontech.clientutils.CTILogger.info("Report successfully created.");
 				}
 				else
-					System.out.println("Unable to create report errors in retrieveReportData().");
+					com.cannontech.clientutils.CTILogger.info("Unable to create report errors in retrieveReportData().");
 				
 			}
 			catch(java.io.IOException ioe)
 			{
-				System.out.println("Report not created.");
+				com.cannontech.clientutils.CTILogger.info("Report not created.");
 				ioe.printStackTrace();
 			}
 			
 		}
 		else
 		{
-			System.out.println(reportString + " unrecognized report type");
+			com.cannontech.clientutils.CTILogger.info(reportString + " unrecognized report type");
 		}
 	}
 	else
@@ -221,14 +221,13 @@ public static void main(String[] args)
 			// do a little formatting for the screen
 			if( i > 0 && (i%5) == 0 )
 			{
-				System.out.println();
-				System.out.print("                    ");
+				com.cannontech.clientutils.CTILogger.info("                    ");
 			}
 			
-			System.out.print( ReportTypes.SUPPORTED_REPORTS[i] );
+			com.cannontech.clientutils.CTILogger.info( ReportTypes.SUPPORTED_REPORTS[i] );
 		}
 
-		System.out.println("*** Sample argument structure: type=loads_shed outputfile=loads_shed.out startdate=10/01/2001 stopdate=10/01/2001 ***");
+		com.cannontech.clientutils.CTILogger.info("*** Sample argument structure: type=loads_shed outputfile=loads_shed.out startdate=10/01/2001 stopdate=10/01/2001 ***");
 	}
 
 	System.exit(0);

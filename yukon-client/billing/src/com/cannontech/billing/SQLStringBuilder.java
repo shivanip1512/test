@@ -108,7 +108,7 @@ public class SQLStringBuilder
 		sqlBuffer.append( buildWhereClause( billingDefaults.getBillGroup(), billingDefaults.getBillGroupColumn(), analogOffsets, pulseAccOffsets, demandAccOffsets));
 	
 	
-		System.out.println(" SQL Statement: " + sqlBuffer.toString());
+		com.cannontech.clientutils.CTILogger.info(" SQL Statement: " + sqlBuffer.toString());
 		return sqlBuffer;
 	}
 

@@ -383,7 +383,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines, com.ca
 		}//end try
 		catch(Exception e)
 		{
-			System.out.println(" Exception caught in Graph.setExportArray()");
+			com.cannontech.clientutils.CTILogger.info(" Exception caught in Graph.setExportArray()");
 			e.printStackTrace();
 		}
 		valueFormat.setGroupingUsed(true);

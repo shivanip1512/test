@@ -50,7 +50,7 @@ public final static ExportFormatBase createFileFormat(String formatString)
 	}
 	else
 	{
-		System.out.println("No file format found - Unrecognized file format type");
+		com.cannontech.clientutils.CTILogger.info("No file format found - Unrecognized file format type");
 	}
 	return returnFormat;
 }
@@ -229,8 +229,8 @@ public static void main(String[] args)
 	}
 	if( formatType == null)
 	{
-		System.out.println("** Missing FORMAT=<format type> from commandline.");
-		System.out.println("** No File Format Specified, Exporting process will exit...");
+		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
+		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
 		System.exit(0);
 	}
 	else
@@ -272,14 +272,14 @@ public static void main(String[] args)
 			}
 			catch (InterruptedException ie)
 			{
-				System.out.println("Interrupted Exception!!!");
+				com.cannontech.clientutils.CTILogger.info("Interrupted Exception!!!");
 				return;
 			}
 			
 		}
 	}while (formatBase.isService());
 
-	System.out.println("..Finished " + formatBase.getClass().getName() + " File Export.");
+	com.cannontech.clientutils.CTILogger.info("..Finished " + formatBase.getClass().getName() + " File Export.");
 	formatBase.logEvent("..Finished " + formatBase.getClass().getName()+ " File Export.", com.cannontech.common.util.LogWriter.INFO);
 
 	logger.getPrintWriter().close();
@@ -297,8 +297,8 @@ public static  void runMainWithGui(ExportFormatBase formatBase)
 {
 	if( formatType == null)
 	{
-		System.out.println("** Missing FORMAT=<format type> from commandline.");
-		System.out.println("** No File Format Specified, Exporting process will exit...");
+		com.cannontech.clientutils.CTILogger.info("** Missing FORMAT=<format type> from commandline.");
+		com.cannontech.clientutils.CTILogger.info("** No File Format Specified, Exporting process will exit...");
 		System.exit(0);
 	}
 
@@ -319,7 +319,7 @@ public static  void runMainWithGui(ExportFormatBase formatBase)
 
 	logger.getPrintWriter().close();
 	logger = null;
-	System.out.println("..Finished " + formatBase.getClass().getName() + " File Export.");
+	com.cannontech.clientutils.CTILogger.info("..Finished " + formatBase.getClass().getName() + " File Export.");
 	formatBase.logEvent("..Finished " + formatBase.getClass().getName()+ " File Export.", com.cannontech.common.util.LogWriter.INFO);
 }
 public abstract void setAdvancedProperties(AdvancedOptionsPanel advOptsPanel);

@@ -107,7 +107,7 @@ public void actionPerformed(ActionEvent event)
 	else if (event.getSource() == getSerialRoutePanel().getRouteComboBox())
 	{
 		setRoute(getSerialRoutePanel().getRouteComboBox().getSelectedItem());
-		System.out.println(getRoute());
+		com.cannontech.clientutils.CTILogger.info(getRoute());
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -208,12 +208,12 @@ public void actionPerformed(ActionEvent event)
 		ycClass.setDirectSend( !ycClass.isDirectSend() );
 		if( ycClass.isDirectSend() )
 		{
-			System.out.println(" ** CGPMODE IS ON ** ");
+			com.cannontech.clientutils.CTILogger.info(" ** CGPMODE IS ON ** ");
 			getCGPMode().setText("CGPMODE ON:  Sending \'Execute Command\' string. (CTRL + F5)");
 		}
 		else
 		{
-			System.out.println(" ** CGPMODE IS OFF ** ");
+			com.cannontech.clientutils.CTILogger.info(" ** CGPMODE IS OFF ** ");
 			getCGPMode().setText("");
 		}
 	}
@@ -1061,7 +1061,7 @@ public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMs
 private static void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	exception.printStackTrace(System.out);
 }
 /**
@@ -1086,17 +1086,17 @@ private void initDispatchConnection()
 		host = "127.0.0.1";
 		port = 1510;
 
-		System.out.println("Missing dispatch_machine and/or dispatch_port from db.properties file");
-		System.out.println("Defaulted to host = " + host + ", port = " + port);
+		com.cannontech.clientutils.CTILogger.info("Missing dispatch_machine and/or dispatch_port from db.properties file");
+		com.cannontech.clientutils.CTILogger.info("Defaulted to host = " + host + ", port = " + port);
 	}
 	catch (NumberFormatException nfe)
 	{
 		port = 1510;
-		System.out.println("Number format exception on dispatch_port");
-		System.out.println("Defaulted to port = " + port);
+		com.cannontech.clientutils.CTILogger.info("Number format exception on dispatch_port");
+		com.cannontech.clientutils.CTILogger.info("Defaulted to port = " + port);
 	}
 	
-	System.out.println("Connecting to Dispatch:  " + host + " port:  " + port);
+	com.cannontech.clientutils.CTILogger.info("Connecting to Dispatch:  " + host + " port:  " + port);
 
 	connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 
@@ -1199,17 +1199,17 @@ private void initPorterConnection()
 	{
 		host = "127.0.0.1";
 		port = 1540;
-		System.out.println("Missing porter_machine and/or porter_port from db.properties file");
-		System.out.println("Defaulted to host = " + host + ", port = " + port);
+		com.cannontech.clientutils.CTILogger.info("Missing porter_machine and/or porter_port from db.properties file");
+		com.cannontech.clientutils.CTILogger.info("Defaulted to host = " + host + ", port = " + port);
 	}
 	catch (NumberFormatException nfe)
 	{
 		port = 1540;
-		System.out.println("Number format exception on dispatch_port");
-		System.out.println("Defaulted to port = " + port);
+		com.cannontech.clientutils.CTILogger.info("Number format exception on dispatch_port");
+		com.cannontech.clientutils.CTILogger.info("Defaulted to port = " + port);
 	}
 	
-	System.out.println("Connecting to Porter:  " + host + " port:  " + port);
+	com.cannontech.clientutils.CTILogger.info("Connecting to Porter:  " + host + " port:  " + port);
 
 	connToPorter = new com.cannontech.message.porter.ClientConnection();
 
@@ -1461,7 +1461,7 @@ private void restoreCurrentTree()
 	else
 	{
 		tvp.selectObject(null);
-		System.out.println("WARNING:  nothing reselected in the tree, dbChangeMessageListener is missing an instanceof");
+		com.cannontech.clientutils.CTILogger.info("WARNING:  nothing reselected in the tree, dbChangeMessageListener is missing an instanceof");
 	}
 	// ** Add else if... here to include other objects that may be in the treeViewPanel
 }
@@ -1565,7 +1565,7 @@ public void run()
 						}
 //						else
 //						{
-//							System.out.println("** From Porter: " + ret.getResultString() + "\n");
+//							com.cannontech.clientutils.CTILogger.info("** From Porter: " + ret.getResultString() + "\n");
 //						}
 					}
 //					else
@@ -1887,7 +1887,7 @@ public void valueChanged(TreeSelectionEvent event)
 		return;
 	}
 
-	System.out.println(" COMMAND FILE: " + cpf);
+	com.cannontech.clientutils.CTILogger.info(" COMMAND FILE: " + cpf);
 	
 	// Only update command boxes on a change in device type/ file name.
 	if( !cpf.toString().equalsIgnoreCase( ycClass.getCommandFile().toString() ) )

@@ -59,7 +59,7 @@ public DAFFRONRecord(String newMeterNumber, java.sql.Timestamp newTimestamp)
 	setTime(newTimestamp);
 }
 /**
- * Converts data in a SEDCFormat to a formatted StringBuffer for stream use.
+ * Converts data in a DaffronFormat to a formatted StringBuffer for stream use.
  * Creation date: (5/24/00 10:58:48 AM)
  *@return java.lang.String
 */
@@ -158,8 +158,8 @@ public String dataToString()
 public boolean equals(Object o) 
 {
 	return ( (o != null) &&
-			   (o instanceof SEDCRecord) &&
-			   ((SEDCRecord)o).getMeterNumber().equalsIgnoreCase(getMeterNumber()) );
+			   (o instanceof DAFFRONRecord) &&
+			   ((DAFFRONRecord)o).getMeterNumber().equalsIgnoreCase(getMeterNumber()) );
 }
 /**
  * Insert the method's description here.

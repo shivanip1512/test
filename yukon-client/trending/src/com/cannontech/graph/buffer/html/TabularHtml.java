@@ -23,7 +23,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	if( model.getTrendSeries() == null)
 		return buf;
 
-//	System.out.println("Tabular HTML getHtml()");
+//	com.cannontech.clientutils.CTILogger.info("Tabular HTML getHtml()");
 //	long timer = System.currentTimeMillis();
 
 	long tabStDt = model.getStartDate().getTime()/1000;
@@ -136,7 +136,7 @@ public StringBuffer getHtml(StringBuffer buf)
 		buf.append(timeFormat.format(new java.util.Date(ts1.longValue() *1000)));
 		buf.append("<BR>\n");
 	}
-//	System.out.println(" $$ Collecting timestamps; constructing html for timestamps $$" );
+//	com.cannontech.clientutils.CTILogger.info(" $$ Collecting timestamps; constructing html for timestamps $$" );
 	buf.append("</FONT></TD>\n");
 
 	//Go through all the points one by one and output their values as html
@@ -172,7 +172,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	
 	buf.append("</FONT></TD></TR></TABLE></CENTER></TD></TR></TABLE></CENTER>\n");
 
-//	System.out.println(" @TABULAR HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
+//	com.cannontech.clientutils.CTILogger.info(" @TABULAR HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
 	return buf;
 }
 /**

@@ -131,7 +131,7 @@ public void figureNextCalcTime()
 		this.nextCalcTime.setTime(new java.util.Date(tempSeconds));
 	}
 	logEvent("...Next Historical Calculation to occur at: " + nextCalcTime.getTime(),com.cannontech.common.util.LogWriter.INFO );
-	System.out.println("...Next Historical Calculation to occur at: " + nextCalcTime.getTime());
+	com.cannontech.clientutils.CTILogger.info("...Next Historical Calculation to occur at: " + nextCalcTime.getTime());
 }
 /**
  * Insert the method's description here.
@@ -174,14 +174,14 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 						else
 						{
 							logEvent("Can not divide by zero CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-							System.out.println("Can not divide by zero CalcHistorical::figurePointDataMsgValue()");
+							com.cannontech.clientutils.CTILogger.info("Can not divide by zero CalcHistorical::figurePointDataMsgValue()");
 							return null;
 						}
 					}
 					else
 					{
 						logEvent("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-						System.out.println("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()");
+						com.cannontech.clientutils.CTILogger.info("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()");
 						return null;
 					}
 				}
@@ -210,14 +210,14 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				else
 				{
 					logEvent("Can not divide by zero CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-					System.out.println("Can not divide by zero CalcHistorical::figurePointDataMsgValue()");
+					com.cannontech.clientutils.CTILogger.info("Can not divide by zero CalcHistorical::figurePointDataMsgValue()");
 					return null;
 				}
 			}
 			else
 			{
 				logEvent("Can not determine the Constant in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-				System.out.println("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()");
+				com.cannontech.clientutils.CTILogger.info("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()");
 				return null;
 			}
 		}
@@ -267,7 +267,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				
 				for(int j = 0; j < currentRawPointHistoryVector.size(); j++)
 				{
-					System.out.println(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
+					com.cannontech.clientutils.CTILogger.info(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
 					if( ltPU.getUomID() == KW_UNITMEASURE)
 						powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
 					else if( ltPU.getUomID() == KQ_UNITMEASURE)
@@ -288,7 +288,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				
 				for(int j = 0; j < currentRawPointHistoryVector.size(); j++)
 				{
-					System.out.println(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
+					com.cannontech.clientutils.CTILogger.info(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
 					if( ltPU.getUomID() == KW_UNITMEASURE)
 						powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
 					else if( ltPU.getUomID() == KVA_UNITMEASURE)
@@ -297,7 +297,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 			}
 			//For this to ever work the query in getCalcComponentPoints(...)
 			// must be changed at the spot of != 'Function'
-//			System.out.println("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
+//			com.cannontech.clientutils.CTILogger.info("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
 			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
 			{
 				//This is handled in main, not here!
@@ -306,13 +306,13 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 			else
 			{
 				logEvent("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
-				System.out.println("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()");
+				com.cannontech.clientutils.CTILogger.info("Can not determine the Function in CalcHistorical::figurePointDataMsgValue()");
 				return null;
 			}
 		}
 		else
 		{
-			System.out.println("Can not determine the ComponentType in CalcHistorical::figurePointDataMsgValue()");
+			com.cannontech.clientutils.CTILogger.info("Can not determine the ComponentType in CalcHistorical::figurePointDataMsgValue()");
 			return null;
 		}
 	}
@@ -336,16 +336,16 @@ public java.lang.Integer getAggregationInterval()
 			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
 			aggregationInterval = new Integer( bundle.getString("calc_historical_interval") );
 			logEvent(" (config.prop)Aggregation interval = " + aggregationInterval + " seconds.", com.cannontech.common.util.LogWriter.INFO);
-			System.out.println("[" + new java.util.Date() + "]  Aggregation interval was found in config.properties is " + aggregationInterval + " seconds.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Aggregation interval was found in config.properties is " + aggregationInterval + " seconds.");
 		}
 		catch( Exception e)
 		{
 			e.printStackTrace();
 			aggregationInterval = new Integer(900);
 			logEvent("Aggregation interval NOT found in config.properties, defaulted to " + aggregationInterval + " seconds.", com.cannontech.common.util.LogWriter.INFO);
-			System.out.println("[" + new java.util.Date() + "]  Aggregation interval was NOT found in config.properties, defaulted too " + aggregationInterval + " seconds.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Aggregation interval was NOT found in config.properties, defaulted too " + aggregationInterval + " seconds.");
 			logEvent("Add row named 'calc_historical_interval' to config.properties with the time between calculations in seconds", com.cannontech.common.util.LogWriter.DEBUG);
-			System.out.println("[" + new java.util.Date() + "]  Add row named 'calc_historical_interval' to config.properties with the time between calculations in seconds");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'calc_historical_interval' to config.properties with the time between calculations in seconds");
 		}
 	}
 	
@@ -378,8 +378,8 @@ public GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPointID, S
 			logEvent(" ####### UPDATE DYNAMICCALCHISTORICAL WITH POINTID = "+ String.valueOf(calcPointID), com.cannontech.common.util.LogWriter.INFO);
 			logEvent(" ####### USING LASTUPDATE = " + returnTimeStamp, com.cannontech.common.util.LogWriter.INFO);
 	
-			System.out.println(" ####### UPDATE DYNAMICCALCHISTORICAL WITH POINTID = "+ String.valueOf(calcPointID));
-			System.out.println(" ####### USING LASTUPDATE = " + returnTimeStamp);
+			com.cannontech.clientutils.CTILogger.info(" ####### UPDATE DYNAMICCALCHISTORICAL WITH POINTID = "+ String.valueOf(calcPointID));
+			com.cannontech.clientutils.CTILogger.info(" ####### USING LASTUPDATE = " + returnTimeStamp);
 		}
 		
 		java.sql.Timestamp tempTimestamp = null;
@@ -409,7 +409,7 @@ public GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPointID, S
 		}
 		catch( java.sql.SQLException e )
 		{
-			System.out.println(" *** NEW DYNAMIC TABLE may be missing:  DYNAMICCALCHISTORICAL");
+			com.cannontech.clientutils.CTILogger.info(" *** NEW DYNAMIC TABLE may be missing:  DYNAMICCALCHISTORICAL");
 			logEvent(" *** NEW DYNAMIC TABLE may be missing:  DYNAMICCALCHISTORICAL", com.cannontech.common.util.LogWriter.DEBUG);
 			e.printStackTrace();
 		}
@@ -425,7 +425,7 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 	GregorianCalendar lastCalcPointRawPointHistoryTimeStamp,
 	String databaseAlias)
 {
-	//System.out.println("[" + new java.util.Date() + "] ENTER getCalcHistoricalPointDataMsgVector");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER getCalcHistoricalPointDataMsgVector");
 	
 	Vector returnVector = null;
 
@@ -450,7 +450,7 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 				tempRawPointHistoryVector = new Vector();
 
 				int count = 0;
-				//System.out.println("[" + new java.util.Date() + "] ** RSET RETRIEVED * getCalcHistoricalPointDataMsgVector");
+				//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ** RSET RETRIEVED * getCalcHistoricalPointDataMsgVector");
 				while (rset.next())
 				{
 					Integer changeID = new Integer(rset.getInt(1));
@@ -466,7 +466,7 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 					tempRawPointHistoryVector.add(rph);
 					count++;
 				}
-				//System.out.println("[" + new java.util.Date() + "] ** RSET FINISHED *" + count + "* getCalcHistoricalPointDataMsgVector");
+				//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ** RSET FINISHED *" + count + "* getCalcHistoricalPointDataMsgVector");
 				if (tempRawPointHistoryVector != null && tempRawPointHistoryVector.size() > 0)
 				{
 					rawPointHistoryVectorOfVectors.add(tempRawPointHistoryVector);
@@ -506,7 +506,7 @@ public Vector getCalcHistoricalPointDataMsgVector(int ptID,
 	}
 
 	returnVector = parseAndCalculateRawPointHistories(rawPointHistoryVectorOfVectors);
-	//System.out.println("[" + new java.util.Date() + "'] EXIT getCalcHistoricalPointDataMsgVector");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "'] EXIT getCalcHistoricalPointDataMsgVector");
 	return returnVector;
 }
 /**
@@ -685,7 +685,7 @@ private double calculatePowerFactor(PF pFactor)
 	}
 	else
 	{
-		System.out.println(" ERROR IN CALCULATEPOWERFACTOR::Cannot devide by 0");
+		com.cannontech.clientutils.CTILogger.info(" ERROR IN CALCULATEPOWERFACTOR::Cannot devide by 0");
 	}
 	return pfValue;
 }
@@ -757,8 +757,8 @@ public static void main(java.lang.String[] args)
 	calcHistorical.figureNextCalcTime();
 	baseLine.figureNextBaselineCalcTime();
 	
-	System.out.println("[" + new java.util.Date() + "]  Calc Historical (Version: " + VERSION + ") Started.");
-	System.out.println(" DISCLAIMER:  Percent Window is not yet functional in determining the Baseline for a point.");
+	com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Calc Historical (Version: " + VERSION + ") Started.");
+	com.cannontech.clientutils.CTILogger.info(" DISCLAIMER:  Percent Window is not yet functional in determining the Baseline for a point.");
 
 	logEvent("Calc Historical (Version: " + VERSION + ") Started.", com.cannontech.common.util.LogWriter.INFO);
 	logEvent(" DISCLAIMER:  Percent Window is not yet functional in determining the Baseline for a point.", com.cannontech.common.util.LogWriter.INFO);
@@ -771,7 +771,7 @@ public static void main(java.lang.String[] args)
 		
 		if (calcHistorical.getNextCalcTime().getTime().compareTo(now) <= 0)
 		{
-			System.out.println("[" + new java.util.Date() + "]  Starting period calculating of historical points.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting period calculating of historical points.");
 			logEvent("Starting period calculating of historical points.", com.cannontech.common.util.LogWriter.INFO);
 			
 			// Get a list of all 'Historical' CalcPoints and their fields from Point table in database. 
@@ -807,7 +807,7 @@ public static void main(java.lang.String[] args)
 						calcHistorical.writeMultiMessage( tempPointDataMsgVector );
 					}
 					//else
-						//System.out.println("Skipping point "+ litePoint.getPointID());
+						//com.cannontech.clientutils.CTILogger.info("Skipping point "+ litePoint.getPointID());
 				}
 				else
 				{
@@ -817,7 +817,7 @@ public static void main(java.lang.String[] args)
 				}
 			}
 
-			System.out.println("[" + new java.util.Date() + "]  Done with period calculating of historical points.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with period calculating of historical points.");
 			logEvent("Done with period calculating of historical points.", com.cannontech.common.util.LogWriter.INFO);
 			calcHistorical.figureNextCalcTime();
 
@@ -829,14 +829,14 @@ public static void main(java.lang.String[] args)
 		// CALCULATE BASELINE TOTALS.
 		if (baseLine.getNextBaselineCalcTime().getTime().compareTo(now) <= 0)
 		{
-			System.out.println("[" + new java.util.Date() + "]  Starting baseline calculation of baseline calc points.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Starting baseline calculation of baseline calc points.");
 			logEvent("Starting baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
 
 			tempPointDataMsgVector = baseLine.main();
 			
 			calcHistorical.writeMultiMessage(tempPointDataMsgVector);
 
-			System.out.println("[" + new java.util.Date() + "]  Done with baseline calculation of baseline calc points.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Done with baseline calculation of baseline calc points.");
 			logEvent("Done with baseline calculation of baseline calc points.", com.cannontech.common.util.LogWriter.INFO);
 			baseLine.figureNextBaselineCalcTime();
 			
@@ -852,7 +852,7 @@ public static void main(java.lang.String[] args)
 		}
 		catch (InterruptedException ie)
 		{
-			System.out.println("Exiting Calc Historical");
+			com.cannontech.clientutils.CTILogger.info("Exiting Calc Historical");
 			logEvent("Exiting Calc Historical", com.cannontech.common.util.LogWriter.ERROR);
 			if (calcHistorical.getDispatchConnection().isValid())
 			{
@@ -881,7 +881,7 @@ public static void main(java.lang.String[] args)
 				{
 					if (((Command) msg).getOperation() == Command.ARE_YOU_THERE)
 					{
-						System.out.println("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
+						com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
 						logEvent("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
 						calcHistorical.getDispatchConnection().write(msg);
 					}
@@ -898,13 +898,13 @@ public static void main(java.lang.String[] args)
 	catch(java.io.IOException ioe)
 	{
 		logEvent("An exception occured disconnecting from load control", com.cannontech.common.util.LogWriter.ERROR);
-		System.out.println("An exception occured disconnecting from load control");
+		com.cannontech.clientutils.CTILogger.info("An exception occured disconnecting from load control");
 	}
 
 	logger.getPrintWriter().close();
 	logger = null;
 	
-	System.out.println("Exiting Calc Historical...at end");
+	com.cannontech.clientutils.CTILogger.info("Exiting Calc Historical...at end");
 	logEvent("Exiting Calc Historical...at end", com.cannontech.common.util.LogWriter.INFO);
 }
 /**
@@ -913,7 +913,7 @@ public static void main(java.lang.String[] args)
  */
 public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfVectors )
 {
-	//System.out.println("[" + new java.util.Date() + "] ENTER parseAndCalculateRawPointHistories");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER parseAndCalculateRawPointHistories");
 	if (rawPointHistoryVectorOfVectors.size() == 0)
 	{
 		return null;
@@ -1031,7 +1031,7 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 		tempRawPointHistoryVector = null;
 	}
 	//DONE HERE>>>>
-	//System.out.println("[" + new java.util.Date() + "] EXIT parseAndCalculateRawPointHistories");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] EXIT parseAndCalculateRawPointHistories");
 	return returnVector;
 }
 /**
@@ -1095,7 +1095,7 @@ public static void stopApplication()
  */
 public void updateDynamicCalcHistorical(java.util.Date lastUpdate)
 {
-	//System.out.println("[" + new java.util.Date() + "] ENTER updateDynamicCalcHistorica");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER updateDynamicCalcHistorica");
 	StringBuffer pSql = new StringBuffer("UPDATE DYNAMICCALCHISTORICAL SET LASTUPDATE =? WHERE POINTID = " + getPointID());
 	
 	java.sql.PreparedStatement pstmt = null;
@@ -1123,13 +1123,13 @@ public void updateDynamicCalcHistorical(java.util.Date lastUpdate)
 		}
 		catch( java.sql.SQLException e )
 		{
-			System.out.println(" *** NEW DYNAMIC TABLE may be missing:  DYNAMICCALCHISTORICAL");
+			com.cannontech.clientutils.CTILogger.info(" *** NEW DYNAMIC TABLE may be missing:  DYNAMICCALCHISTORICAL");
 			logEvent(" *** NEW DYNAMIC TABLE may be missing:  DYNAMICCALCHISTORICAL", com.cannontech.common.util.LogWriter.DEBUG);
 			e.printStackTrace();
 			
 		}
 	}
-	//System.out.println("[" + new java.util.Date() + "] EXIT updateDynamicCalcHistorica");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] EXIT updateDynamicCalcHistorica");
 }
 /**
  * Insert the method's description here.
@@ -1137,7 +1137,7 @@ public void updateDynamicCalcHistorical(java.util.Date lastUpdate)
  */
 public void writeMultiMessage(Vector pointDataMsgVector)
 {
-	//System.out.println("[" + new java.util.Date() + "] ENTER writeMultiMessage");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] ENTER writeMultiMessage");
 	if (pointDataMsgVector != null)
 	{
 		multiMsg = new com.cannontech.message.dispatch.message.Multi();
@@ -1149,19 +1149,19 @@ public void writeMultiMessage(Vector pointDataMsgVector)
 		{
 			if (multiMsg.getVector().size() > 0)
 			{
-				System.out.println("[" + new java.util.Date() + "]  Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + getPointID());
+				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + getPointID());
 				logEvent("Sending " + multiMsg.getVector().size() + " point changes to Dispatch for pointID: " + getPointID(), com.cannontech.common.util.LogWriter.INFO);
 				getDispatchConnection().write(multiMsg);
 			}
 			else
 			{
-				System.out.println( "[" + new java.util.Date() + "]  Dispatch connection valid, but no Point Changes to send at this time for pointID: " + getPointID() );
+				com.cannontech.clientutils.CTILogger.info( "[" + new java.util.Date() + "]  Dispatch connection valid, but no Point Changes to send at this time for pointID: " + getPointID() );
 				logEvent( "Dispatch connection valid, but no Point Changes to send at this time for pointID: " + getPointID(), com.cannontech.common.util.LogWriter.INFO);
 			}
 		}
 		else
 		{
-			System.out.println("[" + new java.util.Date() + "]  Dispatch connection is not valid couldn't send point changes.");
+			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Dispatch connection is not valid couldn't send point changes.");
 			logEvent("Dispatch connection is not valid couldn't send point changes.", com.cannontech.common.util.LogWriter.DEBUG);
 		}
 	}
@@ -1178,13 +1178,13 @@ public void writeMultiMessage(Vector pointDataMsgVector)
 			{
 				if (((Command) msg).getOperation() == Command.ARE_YOU_THERE)
 				{
-					System.out.println("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
+					com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
 					logEvent("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
 					getDispatchConnection().write(msg);
 				}
 			}
 		}
 	}
-	//System.out.println("[" + new java.util.Date() + "] EXIT writeMultiMsg");
+	//com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "] EXIT writeMultiMsg");
 }
 }

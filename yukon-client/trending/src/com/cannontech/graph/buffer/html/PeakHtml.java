@@ -29,7 +29,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	if( model.getTrendSeries() == null)
 		return buf;
 
-//	System.out.println("Usage HTML getHtml()");
+//	com.cannontech.clientutils.CTILogger.info("Usage HTML getHtml()");
 //	long timer = System.currentTimeMillis();
 	long peakPointIndex = -1;
 	// Find the peak point
@@ -199,7 +199,7 @@ public StringBuffer getHtml(StringBuffer buf)
 	}
 //	finally
 //	{
-//		System.out.println(" @PEAK HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
+//		com.cannontech.clientutils.CTILogger.info(" @PEAK HTML - Took " + (System.currentTimeMillis() - timer) +" millis to build html buffer.");
 //	}
 
 }

@@ -26,7 +26,7 @@ public void chartChanged(com.jrefinery.chart.event.ChartChangeEvent event)
 {
 	if( event.getSource() == freeChart)
 	{
-		System.out.println(" ***** CHART CHANGED EVENT ***** " + event.getType());
+		com.cannontech.clientutils.CTILogger.info(" ***** CHART CHANGED EVENT ***** " + event.getType());
 	}
 }
 	private java.lang.String DB_ALIAS = "yukon";
@@ -501,7 +501,7 @@ private int retrieveIntervalRate()
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return minIntervalRate;
 		}
 		else

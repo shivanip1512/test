@@ -89,7 +89,7 @@ public class WPSCMain implements Runnable
 								if (((com.cannontech.message.dispatch.message.Command) msg).getOperation() 
 									== com.cannontech.message.dispatch.message.Command.ARE_YOU_THERE)
 								{
-									System.out.println("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
+									com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
 									WPSCMain.logMessage("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
 									dispatchConn.write(msg);
 								}
@@ -233,10 +233,10 @@ public static void main(String[] args)
 	}
 	else
 	{
-		System.out.println("Usage:  WPSCMain DispatchHost DispatchPort PorterHost PorterPort");
-		System.out.println("         CFDATADir CFDATAFileExt CFDataCheckFreq LDCNTSUMOutputFile\n");
-		System.out.println("Ex.		WPSCMain 127.0.0.1 1510 127.0.0.1 1540 c:/cfdatadir");
-		System.out.println("         .snd 1000 ldcntsum.snd");
+		com.cannontech.clientutils.CTILogger.info("Usage:  WPSCMain DispatchHost DispatchPort PorterHost PorterPort");
+		com.cannontech.clientutils.CTILogger.info("         CFDATADir CFDATAFileExt CFDataCheckFreq LDCNTSUMOutputFile\n");
+		com.cannontech.clientutils.CTILogger.info("Ex.		WPSCMain 127.0.0.1 1510 127.0.0.1 1540 c:/cfdatadir");
+		com.cannontech.clientutils.CTILogger.info("         .snd 1000 ldcntsum.snd");
 		return;
 	}
 

@@ -69,7 +69,7 @@ public boolean retrieveBillingData(String dbAlias)
 					sql += ", " + validAccPtOffsets[i];
 				}
 				sql += ") )) ORDER BY PAO.PAONAME, PT.POINTID, RPH.TIMESTAMP DESC";
-	System.out.println(" Local SQL: " + sql);
+	com.cannontech.clientutils.CTILogger.info((" Local SQL: " + sql);
 */
 	SQLStringBuilder builder = new SQLStringBuilder();
 	String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), kwAnalogOffsets, validAccPtOffsets)).toString());
@@ -89,7 +89,7 @@ public boolean retrieveBillingData(String dbAlias)
 
 		if( conn == null )
 		{
-			System.out.println(getClass() + ":  Error getting database connection.");
+			com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
 			return false;
 		}
 		else
@@ -97,7 +97,7 @@ public boolean retrieveBillingData(String dbAlias)
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
 			rset = pstmt.executeQuery();
-			System.out.println(" *Start looping through return resultset");
+			com.cannontech.clientutils.CTILogger.info(" *Start looping through return resultset");
 
 			int currentPointID = 0;
 			int lastPointID = 0;
@@ -149,7 +149,7 @@ public boolean retrieveBillingData(String dbAlias)
 			e2.printStackTrace();//sometin is up
 		}	
 	}
-	System.out.println(" @CTI_CSV Data Collection : Took " + (System.currentTimeMillis() - timer));
+	com.cannontech.clientutils.CTILogger.info(" @OPU Data Collection : Took " + (System.currentTimeMillis() - timer));
 	return true;
 }
 }

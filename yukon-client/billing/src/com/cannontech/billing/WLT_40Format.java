@@ -13,7 +13,7 @@ public class WLT_40Format extends FileFormatBase
 	public static final String FILE_TERMINATION_RECORD =
 		"999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999";
 /**
- * Default SEDC constructor
+ * Default WLT_40 constructor
  */
 public WLT_40Format() 
 {
@@ -36,7 +36,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 		java.util.GregorianCalendar lastRPHTimestamp = null;
 		if( rawPointHistoryVector.size() > 0 )
 		{
-			System.out.println( "Number of Raw Point History entries " + Integer.toString(rawPointHistoryVector.size()) );
+			com.cannontech.clientutils.CTILogger.info( "Number of Raw Point History entries " + Integer.toString(rawPointHistoryVector.size()) );
 
 			expectedRPHTimestamp = new java.util.GregorianCalendar();
 			expectedRPHTimestamp.setTime(getBillingDefaults().getDemandStartDate());
@@ -48,12 +48,12 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 			if( i == 0 )
 			{
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
-				System.out.println("First raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+				com.cannontech.clientutils.CTILogger.info("First raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
 			}
 			else if( i == (rawPointHistoryVector.size()-1) )
 			{
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
-				System.out.println("Last raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+				com.cannontech.clientutils.CTILogger.info("Last raw point entry date: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
 			}
 
 			if( expectedRPHTimestamp.getTime().getTime() < currentRPH.getTimeStamp().getTime().getTime() )
@@ -66,15 +66,15 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
 				while( expectedRPHTimestamp.getTime().getTime() < currentRPH.getTimeStamp().getTime().getTime() )
 				{
-					System.out.println("Missing raw point entry for date: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
-					//System.out.println("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
-					//System.out.println("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
+					com.cannontech.clientutils.CTILogger.info("Missing raw point entry for date: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
+					//com.cannontech.clientutils.CTILogger.info("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+					//com.cannontech.clientutils.CTILogger.info("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 					expectedRPHTimestamp.add(java.util.GregorianCalendar.SECOND,demandInterval.intValue());
 					returnPulseVector.addElement( tempDataStatusZoneString );
 					missingIntervals++;
 				}
-				//System.out.println("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
-				//System.out.println("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
+				//com.cannontech.clientutils.CTILogger.info("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+				//com.cannontech.clientutils.CTILogger.info("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 			}
 
 			if( lastRPHTimestamp == null ||
@@ -148,7 +148,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 			else
 			{
 				java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
-				System.out.println( "Duplicate timestamp: " + timestampFormatter.format( currentRPH.getTimeStamp().getTime()) + ", using first entry throwing other entries with the same timestamp." );
+				com.cannontech.clientutils.CTILogger.info( "Duplicate timestamp: " + timestampFormatter.format( currentRPH.getTimeStamp().getTime()) + ", using first entry throwing other entries with the same timestamp." );
 			}
 		}
 		pulseTotalVector.addElement(new Integer(tempPulseTotal));
@@ -166,15 +166,15 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, j
 			java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm:ss:SSSS");
 			while( expectedRPHTimestamp.getTime().getTime() < stopRPHTimestamp.getTime().getTime() )
 			{
-				System.out.println("Missing raw point entry for date: " + timestampFormatter.format( expectedRPHTimestamp.getTime()) );
-				//System.out.println("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
-				//System.out.println("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
+				com.cannontech.clientutils.CTILogger.info("Missing raw point entry for date: " + timestampFormatter.format( expectedRPHTimestamp.getTime()) );
+				//com.cannontech.clientutils.CTILogger.info("Current Raw Point History Timestamp: " + timestampFormatter.format(currentRPH.getTimeStamp().getTime()) );
+				//com.cannontech.clientutils.CTILogger.info("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 				expectedRPHTimestamp.add(java.util.GregorianCalendar.SECOND,demandInterval.intValue());
 				returnPulseVector.addElement( tempDataStatusZoneString );
 				missingIntervals++;
 			}
-			//System.out.println("Stop Raw Point History Timestamp: " + timestampFormatter.format(stopRPHTimestamp.getTime()) );
-			//System.out.println("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
+			//com.cannontech.clientutils.CTILogger.info("Stop Raw Point History Timestamp: " + timestampFormatter.format(stopRPHTimestamp.getTime()) );
+			//com.cannontech.clientutils.CTILogger.info("Expected Raw Point History Timestamp: " + timestampFormatter.format(expectedRPHTimestamp.getTime()) );
 		}
 	}
 
@@ -281,7 +281,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 			while( stringTokenizer.hasMoreTokens() )
 			{
 				String tokenString = stringTokenizer.nextToken();
-				System.out.println(tokenString);
+				com.cannontech.clientutils.CTILogger.info(tokenString);
 				if( pass == 0 )
 				{
 					substationId = tokenString;
@@ -435,12 +435,12 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 
 							if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() != predictedIntervals )
 							{
-								System.out.println("Why isn't there the corrent number of pulses?");
-								System.out.println( "Expected number " + Integer.toString(predictedIntervals) );
-								System.out.println( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
+								com.cannontech.clientutils.CTILogger.info("Why isn't there the corrent number of pulses?");
+								com.cannontech.clientutils.CTILogger.info( "Expected number " + Integer.toString(predictedIntervals) );
+								com.cannontech.clientutils.CTILogger.info( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
 								if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
 								{
-									System.out.println("Not enough pulses!!");
+									com.cannontech.clientutils.CTILogger.info("Not enough pulses!!");
 									while( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
 									{
 										((java.util.Vector)pulseVectorOfVectors.get(j)).addElement("00002");
@@ -448,7 +448,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 								}
 								else //if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() > predictedIntervals )
 								{
-									System.out.println("Too many pulses!!");
+									com.cannontech.clientutils.CTILogger.info("Too many pulses!!");
 								}
 							}
 
@@ -564,7 +564,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 							header0001.setDstChange(new java.util.GregorianCalendar(tempGreg3.get(java.util.Calendar.YEAR), tempGreg3.get(java.util.Calendar.MONTH), tempGreg3.get(java.util.Calendar.DAY_OF_MONTH)-1, 3, 0));
 						}
 						java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm");
-						System.out.println("Day Light Savings Time Change at: " + timestampFormatter.format(header0001.getDstChange().getTime()) + " type: " + header0001.getDstType() );
+						com.cannontech.clientutils.CTILogger.info("Day Light Savings Time Change at: " + timestampFormatter.format(header0001.getDstChange().getTime()) + " type: " + header0001.getDstType() );
 						break;
 					}
 					else
@@ -646,7 +646,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 				{
 					//this is most likey caused by the rset already being closed,
 					// happens when there is zero rows returned
-					System.out.println(ex.getMessage());
+					com.cannontech.clientutils.CTILogger.info(ex.getMessage());
 					return true;
 				}
 			}
@@ -697,7 +697,7 @@ public void writeToFile() throws java.io.IOException
 			}
 			else
 			{
-				System.out.println("Output File Name == null!!!!!!!");
+				com.cannontech.clientutils.CTILogger.info("Output File Name == null!!!!!!!");
 			}
 
 			tempBuffer = null;
@@ -807,7 +807,7 @@ public boolean retrieveBillingData(String dbAlias)
 			while( stringTokenizer.hasMoreTokens() )
 			{
 				String tokenString = stringTokenizer.nextToken();
-				System.out.println(tokenString);
+				com.cannontech.clientutils.CTILogger.info(tokenString);
 				if( pass == 0 )
 				{
 					substationId = tokenString;
@@ -961,12 +961,12 @@ public boolean retrieveBillingData(String dbAlias)
 
 							if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() != predictedIntervals )
 							{
-								System.out.println("Why isn't there the corrent number of pulses?");
-								System.out.println( "Expected number " + Integer.toString(predictedIntervals) );
-								System.out.println( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
+								com.cannontech.clientutils.CTILogger.info("Why isn't there the corrent number of pulses?");
+								com.cannontech.clientutils.CTILogger.info( "Expected number " + Integer.toString(predictedIntervals) );
+								com.cannontech.clientutils.CTILogger.info( "Actual number " + Integer.toString(((java.util.Vector)pulseVectorOfVectors.get(j)).size()) );
 								if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
 								{
-									System.out.println("Not enough pulses!!");
+									com.cannontech.clientutils.CTILogger.info("Not enough pulses!!");
 									while( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() < predictedIntervals )
 									{
 										((java.util.Vector)pulseVectorOfVectors.get(j)).addElement("00002");
@@ -974,7 +974,7 @@ public boolean retrieveBillingData(String dbAlias)
 								}
 								else //if( ((java.util.Vector)pulseVectorOfVectors.get(j)).size() > predictedIntervals )
 								{
-									System.out.println("Too many pulses!!");
+									com.cannontech.clientutils.CTILogger.info("Too many pulses!!");
 								}
 							}
 
@@ -1090,7 +1090,7 @@ public boolean retrieveBillingData(String dbAlias)
 							header0001.setDstChange(new java.util.GregorianCalendar(tempGreg3.get(java.util.Calendar.YEAR), tempGreg3.get(java.util.Calendar.MONTH), tempGreg3.get(java.util.Calendar.DAY_OF_MONTH)-1, 3, 0));
 						}
 						java.text.SimpleDateFormat timestampFormatter = new java.text.SimpleDateFormat("MM/dd/yy/HH:mm");
-						System.out.println("Day Light Savings Time Change at: " + timestampFormatter.format(header0001.getDstChange().getTime()) + " type: " + header0001.getDstType() );
+						com.cannontech.clientutils.CTILogger.info("Day Light Savings Time Change at: " + timestampFormatter.format(header0001.getDstChange().getTime()) + " type: " + header0001.getDstType() );
 						break;
 					}
 					else
@@ -1172,7 +1172,7 @@ public boolean retrieveBillingData(String dbAlias)
 				{
 					//this is most likey caused by the rset already being closed,
 					// happens when there is zero rows returned
-					System.out.println(ex.getMessage());
+					com.cannontech.clientutils.CTILogger.info(ex.getMessage());
 					return true;
 				}
 			}

@@ -158,8 +158,8 @@ public java.util.Date getDemandStartDate()
 	cal.set(java.util.Calendar.MILLISECOND,0);
 
 	demandStartDate = cal.getTime();
-	//System.out.println(" DEMAND START DATE = " + demandStartDate);
-	//System.out.println(" $  AFTER END DATE = " + endDate);
+	//com.cannontech.clientutils.CTILogger.info(" DEMAND START DATE = " + demandStartDate);
+	//com.cannontech.clientutils.CTILogger.info(" $  AFTER END DATE = " + endDate);
 
 	return demandStartDate;
 }
@@ -208,8 +208,8 @@ public java.util.Date getEnergyStartDate()
 	cal.set(java.util.Calendar.SECOND,0);
 	cal.set(java.util.Calendar.MILLISECOND,0);
 	energyStartDate= cal.getTime();
-	//System.out.println(" ENERGY START DATE = " + energyStartDate);
-	//System.out.println(" END DATE = " + endDate);
+	//com.cannontech.clientutils.CTILogger.info(" ENERGY START DATE = " + energyStartDate);
+	//com.cannontech.clientutils.CTILogger.info(" END DATE = " + endDate);
 	
 	return energyStartDate;
 }
@@ -398,7 +398,7 @@ private void setDemandStartDate(java.util.Date newDemandStartDate)
 
 	newDemandStartDate = cal.getTime();
 
-	System.out.println(" end date = " + getDemandStartDate());
+	com.cannontech.clientutils.CTILogger.info(" end date = " + getDemandStartDate());
 	//getDemandStartDate();
 }
 public void setEndDate(java.util.Date newEndDate)

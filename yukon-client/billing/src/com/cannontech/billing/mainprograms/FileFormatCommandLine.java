@@ -116,23 +116,23 @@ public static void main(String[] args)
 	// Error messages for missing arguments
 	if( fileFormatType == FileFormatTypes.INVALID )
 	{
-		System.out.println("ERROR: Missing File Format Type");
+		com.cannontech.clientutils.CTILogger.info("ERROR: Missing File Format Type");
 		validArguments = false;
 	}
 	if( collectionGroupVector.size() == 0 )
 	{
-		System.out.println("ERROR: Missing Collection Group");
+		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Collection Group");
 		validArguments = false;
 	}
 	if( outputFileName == null )
 	{
-		System.out.println("ERROR: Missing Output Filename");
+		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Output Filename");
 		validArguments = false;
 	}
 	if( (inputFileName == null) &&
 		  (fileFormatType == FileFormatTypes.MVRS || fileFormatType == FileFormatTypes.WLT_40) )
 	{
-		System.out.println("ERROR: Missing Input Filename");
+		com.cannontech.clientutils.CTILogger.info("ERROR: Missing Input Filename");
 		validArguments = false;
 	}
 
@@ -165,22 +165,22 @@ public static void main(String[] args)
 					outputFileWriter.flush();
 					outputFileWriter.close();
 
-					System.out.println("Billing File successfully created.");
+					com.cannontech.clientutils.CTILogger.info("Billing File successfully created.");
 				}
 				else
-					System.out.println("Unable to create billing file not due to erros with the FileFormatter.");
+					com.cannontech.clientutils.CTILogger.info("Unable to create billing file not due to erros with the FileFormatter.");
 				
 			}
 			catch(java.io.IOException ioe)
 			{
-				System.out.println("Billing File not created.");
+				com.cannontech.clientutils.CTILogger.info("Billing File not created.");
 				ioe.printStackTrace();
 			}
 			
 		}
 		else
 		{
-			System.out.println(fileFormatString + " unrecognized file format type");
+			com.cannontech.clientutils.CTILogger.info(fileFormatString + " unrecognized file format type");
 		}
 	}
 	else
@@ -191,15 +191,14 @@ public static void main(String[] args)
 			// do a little formatting for the screen
 			if( i > 0 && (i%5) == 0 )
 			{
-				System.out.println();
-				System.out.print("                    ");
+				com.cannontech.clientutils.CTILogger.info("                    ");
 			}
 			
-			System.out.print( FileFormatTypes.getValidFormatTypes()[i] );
+			com.cannontech.clientutils.CTILogger.info(FileFormatTypes.getValidFormatTypes()[i] );
 		}
 
 			
-		System.out.println("*** Sample argument structure: type=mvrs outputfile=billing.out collectiongroup=north collectiongroup=south startdate=10/01/2001 stopdate=10/31/2001 newfile ***");
+		com.cannontech.clientutils.CTILogger.info("*** Sample argument structure: type=mvrs outputfile=billing.out collectiongroup=north collectiongroup=south startdate=10/01/2001 stopdate=10/31/2001 newfile ***");
 	}
 
 	return;
