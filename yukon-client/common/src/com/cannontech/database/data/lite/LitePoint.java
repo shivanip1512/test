@@ -1,6 +1,5 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
 
 /*
@@ -18,7 +17,7 @@ public class LitePoint extends LiteBase
 	//used to represent a NON filler location for lite points
 	public final static LitePoint NONE_LITE_PT = new LitePoint(
 			PointTypes.SYS_PID_SYSTEM, 
-			CtiUtilities.STRING_NONE,
+			"System Point",
 			PointTypes.INVALID_POINT,
 			0,0,0 );
 		
