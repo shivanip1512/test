@@ -1,5 +1,5 @@
 var currentMenu;
-var selectedItem;
+var selectedNavItem;
 var invNo;
 
 // Variables that must be initialized before calling functions below!
@@ -16,7 +16,7 @@ function initHardwareMenu(menu, num) {
 		if (pageLinks[invNo][i] == pageName) {
 			menuItems[i].style.display = "none";
 			menuItemsSelected[i].style.display = "";
-			selectedItem = menuItemsSelected[i];
+			selectedNavItem = menuItemsSelected[i];
 		}
 		else {
 			menuItems[i].style.display = "";
@@ -29,7 +29,7 @@ function initHardwareMenu(menu, num) {
 		document.getElementById("ScheduleMenuItem").className = "navmenu1";
 		document.getElementById("ScheduleMenuItemSelected").style.display = "";
 		document.getElementById("ScheduleMenuItemSelected").className = "navmenu2";
-		selectedItem = document.getElementById("ScheduleMenuItemSelected");
+		selectedNavItem = document.getElementById("ScheduleMenuItemSelected");
 	}
 	else {
 		document.getElementById("ScheduleMenuItem").style.display = "";
@@ -43,7 +43,7 @@ function initHardwareMenu(menu, num) {
 		document.getElementById("ManualMenuItem").className = "navmenu1";
 		document.getElementById("ManualMenuItemSelected").style.display = "";
 		document.getElementById("ManualMenuItemSelected").className = "navmenu2";
-		selectedItem = document.getElementById("ManualMenuItemSelected");
+		selectedNavItem = document.getElementById("ManualMenuItemSelected");
 	}
 	else {
 		document.getElementById("ManualMenuItem").style.display = "";
@@ -58,11 +58,11 @@ function changeNavStyle(t)
 {
 	t.className = "navmenu2";
 
-	if (selectedItem && t != selectedItem)
+	if (selectedNavItem && t != selectedNavItem)
 	{
-		selectedItem.className = "navmenu1";
+		selectedNavItem.className = "navmenu1";
 	}
-	selectedItem = t;
+	selectedNavItem = t;
 }
 	
 function trendMenuAppear(event, source, divId)
