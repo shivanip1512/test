@@ -53,7 +53,7 @@ public interface IPointOffsets
 								"Load profile kW demand","Load profile voltage"} ),
 
 		new PointOffset( PAOGroups.MCT370, PointTypes.STATUS_POINT, 
-					new int[]{5,6,10,11,12,20},
+					new int[]{5,6,10,11,12,2000},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT370, PointTypes.ANALOG_POINT,
@@ -79,7 +79,7 @@ public interface IPointOffsets
 					new String[] {"Control relays A/B"} ),
 
 		new PointOffset( PAOGroups.MCT360, PointTypes.STATUS_POINT, 
-					new int[]{5,6,10,11,12,20},
+					new int[]{5,6,10,11,12,2000},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT360, PointTypes.ANALOG_POINT,
@@ -90,7 +90,7 @@ public interface IPointOffsets
 						"Rate B KVAH","Rate C KVA","Rate C KVAH","Rate D KVA","Rate D KVAH","Last Interval KVA"} ),
 			
 		new PointOffset( PAOGroups.MCT318, PointTypes.STATUS_POINT, 
-					new int[]{5,6,10,11,12,20},
+					new int[]{5,6,10,11,12,2000},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT318, PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -124,7 +124,7 @@ public interface IPointOffsets
 					new String[] {"Disconnect status"} ),
 
 		new PointOffset( PAOGroups.MCT310, PointTypes.STATUS_POINT, 
-					new int[]{5,6,10,11,12,20},
+					new int[]{5,6,10,11,12,2000},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT310, PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -136,7 +136,7 @@ public interface IPointOffsets
 					new String[] {"PI #1-Demand","PI #2-Demand","PI #3-Demand"} ),
 
 		new PointOffset( PAOGroups.MCT250, PointTypes.STATUS_POINT, 
-					new int[]{1,2,3,4,9,10,11,12,13,14,20},
+					new int[]{1,2,3,4,9,10,11,12,13,14,2000},
 					new String[] {"Status input 1","Status input 2","Status input 3","Status input 4","Time Sync Flag","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Load Survey Active Flag","Tamper Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT250, PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -147,7 +147,7 @@ public interface IPointOffsets
 					new String[] {"PI #1-Demand"} ),
 
 		new PointOffset( PAOGroups.MCT248, PointTypes.STATUS_POINT, 
-					new int[]{1,9,10,11,12,13,14,20},
+					new int[]{1,9,10,11,12,13,14,2000},
 					new String[] {"Control Point","Time Sync Flag","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Load Survey Active Flag","Tamper Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT248, PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -161,7 +161,7 @@ public interface IPointOffsets
 					new String[] {"Control relays A/B"} ),
 
 		new PointOffset( PAOGroups.MCT240, PointTypes.STATUS_POINT, 
-					new int[]{9,10,11,12,13,14,20},
+					new int[]{9,10,11,12,13,14,2000},
 					new String[] {"Time Sync Flag","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Load Survey Active Flag","Tamper Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT240, PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -172,7 +172,7 @@ public interface IPointOffsets
 					new String[] {"PI #1-Demand"} ),
 
 		new PointOffset( PAOGroups.MCT213, PointTypes.STATUS_POINT, 
-					new int[]{1,10,12,14,20},
+					new int[]{1,10,12,14,2000},
 					new String[] {"Disconnect Status (3 State: Open, Close, Transition)","Power Fail Flag",
 						"Over Flow Flag","Tamper Flag","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.MCT213, PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -227,19 +227,19 @@ public interface IPointOffsets
 						"VHF Channel Bust","VHF Tx inhibit","Paging terminal interface full"} ),
 
 		new PointOffset( PAOGroups.CCU710A, PointTypes.STATUS_POINT, 
-					new int[]{20},
+					new int[]{2000},
 					new String[] {"Communication Status (CVD)"} ),
 
 		new PointOffset( PAOGroups.CCU711, PointTypes.STATUS_POINT, 
-					new int[]{20},
+					new int[]{2000},
 					new String[] {"Communication Status (CVD)"} ),
 
 		new PointOffset( PAOGroups.REPEATER, PointTypes.STATUS_POINT, 
-					new int[]{20},
+					new int[]{2000},
 					new String[] {"Communication Status (CVD)"} ),
 
 		new PointOffset( PAOGroups.DCT_501, PointTypes.STATUS_POINT, 
-					new int[]{1,2,9,10,11,12,13,14,16,20},
+					new int[]{1,2,9,10,11,12,13,14,16,2000},
 					new String[] {"Status Input 1","Status Input 2","Time Sync Flag","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow","Remote/Local Status","TOS - Status","TOS Mode","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.DCT_501, PointTypes.ANALOG_POINT,
@@ -250,7 +250,7 @@ public interface IPointOffsets
 					new String[] {"C-Relay/D-Relay"} ),
 
 		new PointOffset( PAOGroups.LMT_2, PointTypes.STATUS_POINT, 
-					new int[]{1,2,9,10,11,12,13,14,15,16,20},
+					new int[]{1,2,9,10,11,12,13,14,15,16,2000},
 					new String[] {"Status Point #1","Status Point #2","Time Sync Flag","Power Fail Flag",
 						"Short Power Fail Flag","Over Flow Flag","Load Survey Active Flag","Customer Over Ride Flag",
 						"Tou Active Flag","Tou Rate Status","Communication Status (CVD)"} ),
@@ -267,10 +267,10 @@ public interface IPointOffsets
 					new String[] {"C-Relay/D-Relay"} ),
 
 		new PointOffset( PAOGroups.LCU415, PointTypes.STATUS_POINT, 
-					new int[]{1,2,3,4,5,6,7,8,17,18,19,20,24,26,27},
+					new int[]{1,2,3,4,5,6,7,8,17,18,19,24,26,27,2000},
 					new String[] {"Status Input 1","Status Input 2","Status Input 3","Status Input 4","Status Input 5","Status Input 6",
-						"Status Input 7","Status Input 8","Local Operation","Injector Alarm","Busy Transmitting","Communication Status (CVD)",
-						"Power Fail","Output disabled","Injector staged"} ),
+						"Status Input 7","Status Input 8","Local Operation","Injector Alarm","Busy Transmitting",
+						"Power Fail","Output disabled","Injector staged","Communication Status (CVD)"} ),
 		new PointOffset( PAOGroups.LCU415, PointTypes.DEMAND_ACCUMULATOR_POINT,
 					new int[]{1},
 					new String[] {"PI #1"} ),
