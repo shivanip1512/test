@@ -117,11 +117,11 @@ public class ClientSession {
 		
 		boolean success = false;
 		if(dbProps != null && !dbProps.isEmpty()) {
-			CTILogger.getStandardLog().error("Attempting local load of database properties...");
+			CTILogger.getStandardLog().info("Attempting local load of database properties...");
 			localLogin = (success = doLocalLogin(parent, dbProps));
 		}
 		else {
-			CTILogger.getStandardLog().error("Attempting remote load of database properties...");
+			CTILogger.getStandardLog().info("Attempting remote load of database properties...");
 			localLogin = !(success = doRemoteLogin(parent));
 		}			
 		
