@@ -1,11 +1,16 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (7/16/2001 11:14:53 AM)
  * @author: 
  */
-public class RippleMessageShedPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
+public class RippleMessageShedPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener 
+{
+	public static final String CONT_LATCH = "Continuous Latch";
+	
 	private com.cannontech.common.gui.util.SingleLine25BitTogglePanel ivjControlBitToggle = null;
 	private com.cannontech.common.gui.util.SingleLine25BitTogglePanel ivjRestoreBitToggle = null;
 	private com.cannontech.common.gui.util.SingleLine25BitTogglePanel ivjControlBitToggle1 = null;
@@ -393,11 +398,11 @@ private javax.swing.JComboBox getShedTimeComboBox() {
 			ivjShedTimeComboBox.setMinimumSize(new java.awt.Dimension(61, 23));
 			// user code begin {1}
 
-			ivjShedTimeComboBox.addItem(new Double(7.5));
-			ivjShedTimeComboBox.addItem(new Double(15));
-			ivjShedTimeComboBox.addItem(new Double(30));
-			ivjShedTimeComboBox.addItem(new Double(60));
-			ivjShedTimeComboBox.addItem("Continuous Latch");
+			ivjShedTimeComboBox.addItem( "7.5 minute" );
+			ivjShedTimeComboBox.addItem( "15  minute" );
+			ivjShedTimeComboBox.addItem( "30  minute" );
+			ivjShedTimeComboBox.addItem( "60  minute" );
+			ivjShedTimeComboBox.addItem( CONT_LATCH );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -532,17 +537,14 @@ public Object getValue(Object o)
 
 	}
 
-	//shed time is 0(Infinite) if the selected shed is the a string	
-	Integer shedTime = null;
-	if (getShedTimeComboBox().getSelectedItem() instanceof String)
-	{
-		shedTime = new Integer(0);
-	}
-	else
-	{
-		shedTime = new Integer(new Double((((Double)getShedTimeComboBox().getSelectedItem()).doubleValue() * 60)).intValue());
-	}
-	
+	//shed time is 0(Infinite) if the selected shed is the a string
+	Integer shedTime = new Integer(0);
+	String val = getShedTimeComboBox().getSelectedItem().toString();
+		
+	if( !CONT_LATCH.equalsIgnoreCase(val) )
+		shedTime = CtiUtilities.getIntervalComboBoxSecondsValue( 
+							getShedTimeComboBox() );
+		
 	group.getLmGroupRipple().setControl(controlBuffer.toString());
 	group.getLmGroupRipple().setRestore(restoreBuffer.toString());
 	group.getLmGroupRipple().setShedTime(shedTime);
@@ -661,33 +663,10 @@ public void setValue(Object val)
 		String control = ((com.cannontech.database.data.device.lm.LMGroupRipple) val).getLmGroupRipple().getControl();
 		String restore = ((com.cannontech.database.data.device.lm.LMGroupRipple) val).getLmGroupRipple().getRestore();
 
-		//Set selected Item
-		switch (shedTimeSec.intValue())
-		{
 
-			case 450 :
-				getShedTimeComboBox().setSelectedIndex(0);
-				break;
+      CtiUtilities.setIntervalComboBoxSelectedItem(
+      		getShedTimeComboBox(), shedTimeSec.intValue() );
 
-			case 900 :
-				getShedTimeComboBox().setSelectedIndex(1);
-				break;
-
-			case 1800 :
-				getShedTimeComboBox().setSelectedIndex(2);
-				break;
-
-			case 3600 :
-				getShedTimeComboBox().setSelectedIndex(3);
-				break;
-
-			
-			case 0 :
-			default:
-				getShedTimeComboBox().setSelectedIndex(4);
-				break;
-
-		}
 
 		//set the Control Bits
 		javax.swing.JToggleButton controlToggleButtons[]= getControlBitToggle().getToggleButtons();
