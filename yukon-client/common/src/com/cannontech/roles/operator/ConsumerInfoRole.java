@@ -29,8 +29,11 @@ public interface ConsumerInfoRole {
 	
 	public static final int SUPER_OPERATOR = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 50;
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
+	public static final int IMPORT_CUSTOMER_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
+	public static final int INVENTORY_CHECKING_TIME = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
 	
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
+	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;
 	public static final int WEB_TEXT_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 10;
 	public static final int WEB_TEXT_OPT_OUT_NOUN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 13;
 	public static final int WEB_TEXT_OPT_OUT_VERB = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 14;
