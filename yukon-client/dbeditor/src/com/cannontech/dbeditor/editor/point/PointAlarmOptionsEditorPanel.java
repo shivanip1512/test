@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.point;
 
 import java.util.List;
 
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
@@ -20,21 +21,7 @@ public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util
 	private javax.swing.JPanel ivjConfigurationPanel = null;
 	private javax.swing.JScrollPane ivjJScrollPaneAlarmStates = null;
 	private javax.swing.JTable ivjJTableAlarmStates = null;
-	public static final String[] STATUS_ALARM_STATES =
-	{
-		"Non-updated",
-		"Abnormal",
-		"Uncommanded State Change",
-		"Command Failure"
-	};
-	public static final String[] OTHER_ALARM_STATES =
-	{
-		"Non-updated",
-		"Rate Of Change",
-		"Limit Set 1",
-		"Limit Set 2"
-	};
-	
+
 	public static final LiteContact NONE_LITE_CONTACT =
 			new LiteContact( CtiUtilities.NONE_ID, 
 					null, CtiUtilities.STRING_NONE ); 
@@ -960,7 +947,7 @@ public void setValue(Object val)
 		
 			// insert all the predefined states into the JTable
 			int i = 0;
-			for( i = 0; i < STATUS_ALARM_STATES.length; i++ )
+			for( i = 0; i < IAlarmDefs.STATUS_ALARM_STATES.length; i++ )
 			{
 				if( ((int)(alarmStates.charAt(i))-1) < allAlarmStates.size() )
 					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (int)(alarmStates.charAt(i))-1 )).getCategoryName();
@@ -969,7 +956,7 @@ public void setValue(Object val)
 						
 				boolean notify = ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'Y' ? true : false );
 				
-				getTableModel().addRowValue( STATUS_ALARM_STATES[i], generate, notify );
+				getTableModel().addRowValue( IAlarmDefs.STATUS_ALARM_STATES[i], generate, notify );
 			}
 			
 			for( int j = 0; j < stateNames.length; j++, i++ )
@@ -992,7 +979,7 @@ public void setValue(Object val)
 		{  
 			// All other point types are processed here
 			// insert all the predefined states into the JTable
-			for( int i = 0; i < OTHER_ALARM_STATES.length; i++ )
+			for( int i = 0; i < IAlarmDefs.OTHER_ALARM_STATES.length; i++ )
 			{
 				if( ((int)(alarmStates.charAt(i))-1) < allAlarmStates.size() )
 					generate = ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get( (int)(alarmStates.charAt(i))-1 )).getCategoryName();
@@ -1001,7 +988,7 @@ public void setValue(Object val)
 						
 				boolean notify = ( Character.toUpperCase(excludeNotifyStates.charAt(i)) == 'Y' ? true : false );
 				
-				getTableModel().addRowValue( OTHER_ALARM_STATES[i], generate, notify );
+				getTableModel().addRowValue( IAlarmDefs.OTHER_ALARM_STATES[i], generate, notify );
 			}		
 		}
 
