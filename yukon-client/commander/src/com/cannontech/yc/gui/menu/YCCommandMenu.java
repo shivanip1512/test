@@ -15,6 +15,7 @@ public class YCCommandMenu extends javax.swing.JMenu {
 	public JMenuItem stopMenuItem;
 	public JMenuItem executeMenuItem;
 	public JMenuItem locateRoute;
+	public JMenuItem installAddressing;
 	
 	public JMenuItem advancedOptionsMenuItem;	
 /**
@@ -48,6 +49,10 @@ private void initialize() {
 	locateRoute.setText("Locate Route");
 	locateRoute.setMnemonic('l');
 
+	installAddressing = new JMenuItem();
+	installAddressing.setFont(f);
+	installAddressing.setText("Install Addressing");
+	installAddressing.setMnemonic('i');
 	
 	//queueMCTCommandsMenuItem = new javax.swing.JCheckBoxMenuItem();
 	//queueMCTCommandsMenuItem.setFont( f );
@@ -74,6 +79,7 @@ private void initialize() {
 	add( executeMenuItem );
 	add( stopMenuItem );
 	add( locateRoute );
+	add( installAddressing );
 	add( separator1 );
 	add( advancedOptionsMenuItem );
 	//add( queueMCTCommandsMenuItem );
