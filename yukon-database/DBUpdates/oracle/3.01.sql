@@ -153,9 +153,9 @@ alter table LMProgramDirect add MessageFooter varchar2(160);
 update LMProgramDirect set MessageFooter = '(none)';
 alter table LMProgramDirect modify MessageFooter varchar2(160) not null;
 
-alter table LMProgramDirect add CancelMsg varchar2(80);
-update LMProgramDirect set CancelMsg = '(none)';
-alter table LMProgramDirect modify CancelMsg varchar2(80) not null;
+alter table LMProgramDirect add CanceledMsg varchar2(80);
+update LMProgramDirect set CanceledMsg = '(none)';
+alter table LMProgramDirect modify CanceledMsg varchar2(80) not null;
 
 alter table LMProgramDirect add StoppedEarlyMsg varchar2(80);
 update LMProgramDirect set StoppedEarlyMsg = '(none)';

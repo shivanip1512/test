@@ -187,11 +187,11 @@ update LMProgramDirect set MessageFooter = '(none)';
 go
 alter table LMProgramDirect alter column MessageFooter varchar(160) not null;
 go
-alter table LMProgramDirect add CancelMsg varchar(80);
+alter table LMProgramDirect add CanceledMsg varchar(80);
 go
-update LMProgramDirect set CancelMsg = '(none)';
+update LMProgramDirect set CanceledMsg = '(none)';
 go
-alter table LMProgramDirect alter column CancelMsg varchar(80) not null;
+alter table LMProgramDirect alter column CanceledMsg varchar(80) not null;
 go
 alter table LMProgramDirect add StoppedEarlyMsg varchar(80);
 go
