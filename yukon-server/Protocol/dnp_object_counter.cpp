@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/26 17:27:06 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/09/01 19:21:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,7 +151,7 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( const CtiDNPTimeCTO *cto )
     double val = 0;
     int quality;
 
-    switch(getVariation())
+/*    switch(getVariation())
     {
         case Binary32Bit:
         case Binary32BitNoFlag:
@@ -161,22 +161,14 @@ CtiPointDataMsg *CtiDNPCounter::getPoint( const CtiDNPTimeCTO *cto )
         case Delta32BitNoFlag:
         case Delta16Bit:
         case Delta16BitNoFlag:
-        {
-            val = _counter;
+        {*/
 
-            break;
-        }
 
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
-        }
-    }
+    //  this used to be chosen or excluded by the variation...  but every
+    //    variation returns the same data, so there's no need to differentiate...
+    //    at least not for counters
+    //  the child classes add to this, but the values concerned are still the same
+    val = _counter;
 
 /*    UnintializedQuality = 0,
     InitDefaultQuality,
@@ -222,10 +214,138 @@ CtiDNPCounterChange::CtiDNPCounterChange(int variation) : CtiDNPObject(Group, va
 
 }
 
-CtiDNPCounterFrozen::CtiDNPCounterFrozen(int variation) : CtiDNPObject(Group, variation)
+CtiDNPCounterFrozen::CtiDNPCounterFrozen(int variation) : CtiDNPCounter(Group, variation)
 {
 
 }
+
+int CtiDNPCounterFrozen::restore(unsigned char *buf, int len)
+{
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case Binary16Bit:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPCounter::Binary16Bit);
+            break;
+        }
+        case Binary16BitNoFlag:
+        {
+            pos += restoreVariation(buf + pos, len - pos, CtiDNPCounter::Binary16BitNoFlag);
+            break;
+        }
+    }
+
+        //  ACH:  check minimum length, like the others
+    return pos;
+}
+
+
+int CtiDNPCounterFrozen::serialize(unsigned char *buf)
+{
+    return 0;
+}
+
+
+int CtiDNPCounterFrozen::getSerializedLen(void)
+{
+    int retVal;
+
+    switch(getVariation())
+    {
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - in CtiDNPCounterFrozen::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0;
+
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
+CtiPointDataMsg *CtiDNPCounterFrozen::getPoint( const CtiDNPTimeCTO *cto )
+{
+    CtiPointDataMsg *tmpMsg;
+
+    double val = 0;
+    int quality;
+
+    //  inherited types just add on to the parent's values
+    tmpMsg = CtiDNPCounter::getPoint(cto);
+
+/*    switch(getVariation())
+    {
+        case Binary32Bit:
+        case Binary32BitNoFlag:
+        case Binary16Bit:
+        case Binary16BitNoFlag:
+        case Delta32Bit:
+        case Delta32BitNoFlag:
+        case Delta16Bit:
+        case Delta16BitNoFlag:
+        {
+            val = _counter;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
+    }
+*/
+
+/*    UnintializedQuality = 0,
+    InitDefaultQuality,
+    InitLastKnownQuality,
+    NonUpdatedQuality,
+    ManualQuality,
+    NormalQuality,
+    ExceedsLowQuality,
+    ExceedsHighQuality,
+    AbnormalQuality,
+    UnknownQuality,
+    InvalidQuality,
+    PartialIntervalQuality,
+    DeviceFillerQuality,
+    QuestionableQuality,
+    OverflowQuality,
+    PowerfailQuality,
+    UnreasonableQuality
+
+    if( _flags.aiflags.remoteforced )
+    {
+
+    }*/
+
+    if( gDNPVerbose )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Counter object, value " << val << endl;
+    }
+
+    //  the ID will be replaced by the offset by the object block, which will then be used by the
+    //    device to figure out the true ID
+    //tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, PulseAccumulatorPointType);
+
+    return tmpMsg;
+}
+
 
 CtiDNPCounterFrozenEvent::CtiDNPCounterFrozenEvent(int variation) : CtiDNPObject(Group, variation)
 {
