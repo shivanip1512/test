@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2003/03/14 00:52:01 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2003/04/23 19:39:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -819,7 +819,21 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             }
 
             tempOutList.clearAndDestroy();              // Just make sure!
-            status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
+
+            try
+            {
+                status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
+            }
+            catch(...)
+            {
+                {
+                    RWTime NowTime;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << NowTime << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
+                    dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
+                }
+            }
 
             for(int j = tempOutList.entries(); j > 0; j--)
             {
