@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2003/10/28 16:10:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2003/12/26 17:24:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -265,15 +265,17 @@ bool CtiDNPApplication::hasInboundPoints( void )
 
 void CtiDNPApplication::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
 {
-    //CtiDNPTimeCTO *cto;
+    const CtiDNPTimeCTO *cto;
 
     for( int i = 0; i < _inObjectBlocks.size(); i++ )
     {
-        //if( _inObjectBlocks[i]->
-
-        if( _inObjectBlocks[i]->hasPoints() )
+        if( _inObjectBlocks[i]->isCTO() )
         {
-            _inObjectBlocks[i]->getPoints(pointList);
+            cto = _inObjectBlocks[i]->getCTO();
+        }
+        else if( _inObjectBlocks[i]->hasPoints() )
+        {
+            _inObjectBlocks[i]->getPoints(pointList, cto);
         }
     }
 }
