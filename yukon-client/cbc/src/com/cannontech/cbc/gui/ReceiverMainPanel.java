@@ -20,6 +20,7 @@ import com.cannontech.cbc.popupmenu.CapBankDevicePopUp;
 import com.cannontech.cbc.popupmenu.FeederPopUp;
 import com.cannontech.cbc.popupmenu.SubBusPopUp;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.common.gui.panel.*;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 
@@ -578,7 +579,8 @@ private javax.swing.JScrollPane getCapBankTableScrollPane()
 		capBankScrollPane.setBackground(java.awt.Color.white);
 		capBankScrollPane.setForeground(java.awt.Color.lightGray);
 		capBankScrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
-		capBankScrollPane.setPreferredSize(new java.awt.Dimension(0, 0));
+
+		capBankScrollPane.setPreferredSize(new java.awt.Dimension(30, 30));
 		
 		getCapBankTableScrollPane().setViewportView(getCapBankTable());
 	}
@@ -821,7 +823,8 @@ private javax.swing.JScrollPane getFeederTableScrollPane()
 		feederScrollPane.setBackground(java.awt.Color.white);
 		feederScrollPane.setForeground(java.awt.Color.lightGray);
 		feederScrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
-		feederScrollPane.setPreferredSize(new java.awt.Dimension(0, 0));
+		
+		feederScrollPane.setPreferredSize(new java.awt.Dimension(30, 30));
 		
 		getFeederTableScrollPane().setViewportView( getFeederTable() );
 	}
@@ -885,6 +888,8 @@ private javax.swing.JScrollPane getSubBusScrollPane()
 		subBusScrollPane.setBackground(java.awt.Color.white);
 		subBusScrollPane.setForeground(java.awt.Color.lightGray);
 		subBusScrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
+
+		subBusScrollPane.setPreferredSize(new java.awt.Dimension(200, 200));
 
 		getSubBusScrollPane().setViewportView( getSubBusTable() );
 	}
@@ -1166,8 +1171,8 @@ private void initConnections()
  */
 public void initDividerPosition() 
 {
-	if( getViewMode() == VIEW_SPLIT_PANE )
-		getCompSplitPane().initDividerPosition();
+	//if( getViewMode() == VIEW_SPLIT_PANE )
+		//getCompSplitPane().initDividerPosition();
 }
 /**
  * This method was created in VisualAge.
