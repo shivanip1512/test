@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2003/03/12 16:41:03 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2003/03/26 20:32:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,6 +264,8 @@ void CtiVanGogh::VGMainThread()
                         {
                             if(ConnThread_.getCompletionState() != RW_THR_PENDING)
                             {
+                                CtiLockGuard<CtiMutex> pmguard(server_mux, 10000);
+
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Restarting ConnThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -4246,7 +4248,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                         }
                         // Recipients have changed
             CtiContactNotificationSet_t::iterator cnit;
-            
+
             for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
               {
                 CtiTableContactNotification &CNotif = *cnit;
@@ -4538,7 +4540,7 @@ CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
       pCNotif->Restore();
     }
     }
-    
+
   return pCNotif;
 }
 /*
@@ -4643,7 +4645,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
         {
         CtiTableContactNotification *pCNotif;
         int cnotifid = *r_iter;
-    
+
         {
           CtiLockGuard<CtiMutex> guard(server_mux);
           if( (pCNotif = getContactNotification(cnotifid)) != NULL)
@@ -4882,7 +4884,7 @@ int CtiVanGogh::mail(const CtiEmailMsg &aMail)
                         for(it = recip.begin(); it != recip.end(); ++it)
                         {
                             vector<int>::reference cnotifid = *it;
-            
+
                 if( (pCNotif = getContactNotification(cnotifid)) != NULL)
                   {
                 // Now we have it ALL!!!! send the email
