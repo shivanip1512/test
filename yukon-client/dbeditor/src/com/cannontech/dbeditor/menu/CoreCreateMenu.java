@@ -14,6 +14,7 @@ public class CoreCreateMenu extends javax.swing.JMenu {
 	public CommandableMenuItem pointMenuItem;	
 	public CommandableMenuItem stateGroupMenuItem;
 	public CommandableMenuItem billingGroupMenuItem;
+	public CommandableMenuItem config2WayMenuItem;
 /**
  * CreateMenu constructor comment.
  */
@@ -51,6 +52,10 @@ private void initialize() {
 	billingGroupMenuItem = new CommandableMenuItem("Billing File...");
 	billingGroupMenuItem.setFont( font );
 	billingGroupMenuItem.setMnemonic('b');
+	
+	config2WayMenuItem = new CommandableMenuItem("Two-way Config...");
+	config2WayMenuItem.setFont( font );
+	config2WayMenuItem.setMnemonic('m');
 
 	setText("Create");
 	setFont( font );
@@ -62,5 +67,6 @@ private void initialize() {
 	add( pointMenuItem );
 	add( stateGroupMenuItem );
 	add( billingGroupMenuItem );
+	add( config2WayMenuItem );
 }
 }

@@ -40,6 +40,8 @@ public interface DatabaseCache
    public java.util.List getAllHolidaySchedules(  ) throws java.rmi.RemoteException;
    
    public java.util.List getAllBaselines(  ) throws java.rmi.RemoteException;
+   
+   public java.util.List getAllConfigs(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllLMPrograms(  ) throws java.rmi.RemoteException;
 
@@ -116,6 +118,8 @@ public interface DatabaseCache
    public void releaseAllHolidaySchedules(  ) throws java.rmi.RemoteException;
    
    public void releaseAllBaselines(  ) throws java.rmi.RemoteException;
+   
+   public void releaseAllConfigs(  ) throws java.rmi.RemoteException;
 
    public void releaseAllNotificationGroups(  ) throws java.rmi.RemoteException;
 

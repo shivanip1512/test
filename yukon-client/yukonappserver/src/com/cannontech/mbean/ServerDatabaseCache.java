@@ -57,6 +57,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allMCTs = null;
 	private ArrayList allHolidaySchedules = null;
 	private ArrayList allBaselines = null;
+	private ArrayList allConfigs = null;
 	private ArrayList allDeviceMeterGroups = null;
 	private ArrayList allPointsUnits = null;
 	private ArrayList allPointLimits = null;
@@ -467,6 +468,20 @@ public synchronized java.util.List getAllBaselines()
 		BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
 		baselineLoader.run();
 		return allBaselines;
+	}
+}
+
+public synchronized java.util.List getAllConfigs()
+{
+
+	if (allConfigs != null)
+		return allConfigs;
+	else
+	{
+		allConfigs = new java.util.ArrayList();
+		ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
+		configLoader.run();
+		return allConfigs;
 	}
 }
 /**
@@ -1458,6 +1473,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleBaselineChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
+	{
+		retLBase = handleConfigChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
 				|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
@@ -1734,6 +1753,64 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 				break;
 		default:
 				releaseAllBaselines();
+				break;
+	}
+
+	return lBase;
+}
+
+private synchronized LiteBase handleConfigChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allConfigs == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allConfigs.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).getConfigID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allConfigs.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteConfig lh = new com.cannontech.database.data.lite.LiteConfig(id);
+					lh.retrieve(databaseAlias);
+					allConfigs.add(lh);
+					lBase = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allConfigs.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).getConfigID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allConfigs.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allConfigs.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteConfig)allConfigs.get(i)).getConfigID() == id )
+					{
+						lBase = (LiteBase)allConfigs.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllConfigs();
 				break;
 	}
 
@@ -2258,6 +2335,7 @@ public synchronized void releaseAllCache()
 	allGraphDefinitions = null;
 	allHolidaySchedules = null;
 	allBaselines = null;
+	allConfigs = null;
 	allDeviceMeterGroups = null;
 	allPointsUnits = null;
 	allPointLimits = null;
@@ -2338,6 +2416,11 @@ public synchronized void releaseAllHolidaySchedules()
 public synchronized void releaseAllBaselines()
 {
 	allBaselines = null;
+}
+
+public synchronized void releaseAllConfigs()
+{
+	allConfigs = null;
 }
 /**
  * Insert the method's description here.

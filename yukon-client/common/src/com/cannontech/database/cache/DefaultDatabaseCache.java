@@ -123,6 +123,14 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllBaselines();
 	}
 
+	/**
+	  * @ejb:interface-method
+	  * tview-type="remote" 
+	 **/
+	 public synchronized java.util.List getAllConfigs()
+	 {
+		  return getDBCache().getAllConfigs();
+	 }
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -412,6 +420,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
    public synchronized void releaseAllBaselines()
    {
 	  getDBCache().releaseAllBaselines();
+   }
+   
+   public synchronized void releaseAllConfigs()
+   {
+	  getDBCache().releaseAllConfigs();
    }
    /**
     * @ejb:interface-method

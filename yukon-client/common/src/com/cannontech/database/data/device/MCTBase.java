@@ -2,6 +2,7 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.db.config.MCTConfigMapping;
 /**
  * This type was created in VisualAge.
  */
@@ -9,6 +10,8 @@ public class MCTBase extends CarrierBase implements IDeviceMeterGroup
 {
 	private DeviceMeterGroup deviceMeterGroup = null;
 	private DeviceLoadProfile deviceLoadProfile = null;
+	private boolean hasConfig = false;
+	private MCTConfigMapping configMapping = null;
 /**
  * MCT constructor comment.
  */
@@ -22,6 +25,10 @@ public void add() throws java.sql.SQLException {
 	super.add();
 	getDeviceMeterGroup().add();
 	getDeviceLoadProfile().add();
+	if(hasConfig)
+		getConfigMapping().add();
+	
+	
 }
 /**
  * Insert the method's description here.
@@ -35,6 +42,8 @@ public void addPartial() throws java.sql.SQLException
 	//getDeviceMeterGroupDefaults().add();
 	getDeviceMeterGroup().add();
 	getDeviceLoadProfile().add();
+	if(hasConfig)
+		getConfigMapping().add();
 	
 }
 /**
@@ -44,6 +53,8 @@ public void delete() throws java.sql.SQLException
 {
 	getDeviceMeterGroup().delete();
 	getDeviceLoadProfile().delete();
+	if(hasConfig)
+		getConfigMapping().delete();
 	super.delete();
 }
 /**
@@ -76,6 +87,21 @@ public DeviceMeterGroup getDeviceMeterGroup() {
 	return deviceMeterGroup;
 }
 
+public MCTConfigMapping getConfigMapping() {
+	if( configMapping == null )
+		configMapping = new MCTConfigMapping();
+	return configMapping;
+}
+
+public void setConfigMapping( MCTConfigMapping newConfig) {
+	configMapping = newConfig;
+}
+
+public void setConfigMapping( Integer conID, Integer mctID) {
+	getConfigMapping().setconfigID(conID);
+	getConfigMapping().setmctID(mctID);
+}
+
 public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
 {
 	deviceMeterGroup = dvMtrGrp_;
@@ -88,6 +114,8 @@ public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
 	getDeviceMeterGroup().retrieve();
 	getDeviceLoadProfile().retrieve();
+	if(hasConfig)
+		getConfigMapping().retrieve();
 }
 /**
  * Insert the method's description here.
@@ -99,6 +127,8 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 	getDeviceLoadProfile().setDbConnection(conn);
 	getDeviceMeterGroup().setDbConnection(conn);
+	if(hasConfig)
+		getConfigMapping().setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -108,7 +138,14 @@ public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 	getDeviceMeterGroup().setDeviceID(deviceID);
 	getDeviceLoadProfile().setDeviceID(deviceID);
+
 }
+
+public void setHasConfig(boolean yesno)
+{
+	hasConfig = yesno;
+}
+
 /**
  * This method was created in VisualAge.
  */
@@ -116,5 +153,52 @@ public void update() throws java.sql.SQLException {
 	super.update();
 	getDeviceMeterGroup().update();
 	getDeviceLoadProfile().update();
+	if(hasConfig)
+		getConfigMapping().add(); 
+}
+
+public boolean hasMappedConfig()
+{
+	hasConfig = false;
+	
+	try
+	{
+		hasConfig = MCTConfigMapping.hasConfig(getDevice().getDeviceID());
+	}
+	catch( java.sql.SQLException e2 )
+	{
+		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+	}	
+	
+	return hasConfig;
+}
+
+public Integer getConfigID()
+{
+	Integer id = new Integer(-1);
+	
+	if(hasConfig)
+	{
+		try
+		{
+			java.sql.Connection conn = null;
+	
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+	
+			id = MCTConfigMapping.getTheConfigID(getDevice().getDeviceID(), conn);
+			
+			conn.close();
+		}
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+		}	
+	}
+	else
+		id = configMapping.getConfigID();
+	
+	return id;
+		
+		
 }
 }

@@ -206,6 +206,10 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 	  return getCache().getAllBaselines();
    }
 
+   public synchronized java.util.List getAllConfigs()
+   {
+	  return getCache().getAllConfigs();
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -533,6 +537,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllBaselines()
    {
 	  getCache().releaseAllBaselines();
+   }
+   
+   public synchronized void releaseAllConfigs()
+   {
+	  getCache().releaseAllConfigs();
    }
    /**
     * @ejb:interface-method

@@ -107,7 +107,12 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				returnObject = new com.cannontech.database.data.baseline.Baseline();
 				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineID(new Integer(((LiteBaseline)liteObject).getBaselineID()) );
 				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineName( ((LiteBaseline)liteObject).getBaselineName() );
-				break;					
+				break;
+			case LiteTypes.CONFIG:
+				returnObject = new com.cannontech.database.data.config.ConfigTwoWay();
+				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigID(new Integer(((LiteConfig)liteObject).getConfigID()) );
+				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigName( ((LiteConfig)liteObject).getConfigName() );
+				break;						
          case LiteTypes.STATE_IMAGE:
             returnObject = new com.cannontech.database.db.state.YukonImage();
             ((com.cannontech.database.db.state.YukonImage)returnObject).setImageID(new Integer(((LiteYukonImage)liteObject).getImageID()) );
@@ -200,6 +205,13 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteBaseline(
 			((com.cannontech.database.data.baseline.Baseline)val).getBaselineID().intValue(),
 			((com.cannontech.database.data.baseline.Baseline)val).getBaselineName() );
+			
+	}
+	else if( val instanceof com.cannontech.database.data.config.ConfigTwoWay )
+	{
+		returnLite = new LiteConfig(
+			((com.cannontech.database.data.config.ConfigTwoWay)val).getConfigID().intValue(),
+			((com.cannontech.database.data.config.ConfigTwoWay)val).getConfigName() );
 			
 	}
 	else if( val instanceof com.cannontech.database.data.graph.GraphDefinition )

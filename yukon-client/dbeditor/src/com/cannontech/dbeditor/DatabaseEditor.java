@@ -97,13 +97,14 @@ public class DatabaseEditor
 			new Integer(ModelFactory.DEVICE),
 			new Integer(ModelFactory.IED),
 			new Integer(ModelFactory.MCT),
-         new Integer(ModelFactory.MCTBROADCAST),         
+         	new Integer(ModelFactory.MCTBROADCAST),         
 			new Integer(ModelFactory.METER),
 			new Integer(ModelFactory.DEVICE_METERNUMBER),
 			new Integer(ModelFactory.ROUTE),
 			new Integer(ModelFactory.RTU),
 			new Integer(ModelFactory.STATEGROUP),
-			new Integer(ModelFactory.TRANSMITTER)			
+			new Integer(ModelFactory.TRANSMITTER),
+			new Integer(ModelFactory.TWOWAYCONFIG)			
 		};
 	private static final Integer[] LM_MODELS =
 		{
@@ -138,7 +139,6 @@ public class DatabaseEditor
 	//During an item state change we need to remember previous selection
 	//in order query the user whether we should save or not
 	private Object lastSelection = null;
-	
 	
 	private static int decimalPlaces;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
@@ -510,6 +510,11 @@ private void displayAWizardPanel(JMenuItem item)
 	else if (item == coreCreateMenu.billingGroupMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.billing.BillingFileWizardPanel());
+	}
+	
+	else if (item == coreCreateMenu.config2WayMenuItem)
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.config.ConfigWizardPanel());
 	}
 	
 	else if (item == lmCreateMenu.lmGroupMenuItem)
