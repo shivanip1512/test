@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/20 22:42:30 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/07/08 23:15:37 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.6  2004/07/08 23:15:37  cplender
+* Added get/setMinTimeInSec()
+*
 * Revision 1.5  2004/05/20 22:42:30  cplender
 * Various exclusion changes
 *
@@ -41,7 +44,8 @@
 
 
 CtiDeviceExclusion::CtiDeviceExclusion(LONG id) :
-_deviceId(id)
+_deviceId(id),
+_minTimeInSec(0)
 {
 }
 
@@ -471,7 +475,7 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
             RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
 
             RWTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();               // Back up one position.
-            RWTime close = open + _cycleTimeExclusion.getTransmitTime();
+            RWTime close = open + _cycleTimeExclusion.getTransmitTime() - getMinTimeInSec();
 
             bstatus = (open <= now && now < close);
         }
@@ -557,6 +561,17 @@ bool CtiDeviceExclusion::proximityExcludes(LONG id) const
 CtiTablePaoExclusion CtiDeviceExclusion::getCycleTimeExclusion() const
 {
     return _cycleTimeExclusion;
+}
+
+unsigned int CtiDeviceExclusion::getMinTimeInSec() const
+{
+    return _minTimeInSec;
+}
+
+void CtiDeviceExclusion::setMinTimeInSec(unsigned int sec)
+{
+    _minTimeInSec = sec;
+    return;
 }
 
 

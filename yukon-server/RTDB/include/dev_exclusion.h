@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/06/03 16:32:04 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/07/08 23:15:37 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.7  2004/07/08 23:15:37  cplender
+* Added get/setMinTimeInSec()
+*
 * Revision 1.6  2004/06/03 16:32:04  mfisher
 * added a fake typedef for smart pointers wrapped by #define VSLICK_TAG_WORKAROUND so Slick will treat Cti*SPtr as a true pointer
 *
@@ -81,6 +84,8 @@ protected:
     RWTime              _executeGrantExpires;     // Device is may execute until...
     RWTime              _executionGrant;      // This is the last time this device was granted execution priviledges.
 
+    unsigned int        _minTimeInSec;            // This is the minimum time to allow in isTimeSlotOpen;
+
 private:
 
 public:
@@ -131,6 +136,9 @@ public:
     RWTime getNextTimeSlotOpen() const;
     RWTime getTimeSlotClose() const;
     CtiTablePaoExclusion getCycleTimeExclusion() const;
+
+    unsigned int getMinTimeInSec() const;
+    void setMinTimeInSec(unsigned int sec);
 
 };
 #endif // #ifndef __DEV_EXCLUSION_H__
