@@ -74,7 +74,7 @@ public class MV_90Record implements BillingRecordBase
 	
 		if( getNewMeterNumber())
 		{
-			writeToFile.append( getMeterNumber() + "\r\n" );
+			writeToFile.append( "ID " +getMeterNumber() + "\r\n" );
 		}
 	
 		writeToFile.append(getDateKW() + ',');
