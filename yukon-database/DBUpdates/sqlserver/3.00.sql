@@ -816,7 +816,7 @@ go
 
 
 update YukonUser set username = 'admin', password = 'admin' where userid = -1;
-insert into YukonUser values(-2,'yukon','yukon',0,'01-JAN-00','Enabled');
+update YukonUser set username = 'yukon', password = 'yukon' where userid = -2;
 go
 
 insert into YukonGroup values(-2,'System Administrator Grp','A set of roles that allow administrative access to the system.');
@@ -1026,6 +1026,7 @@ go
 alter table PAOExclusion alter column FuncParams varchar(200) not null;
 go
 
+delete from fdrinterfaceoption where interfaceid = 14;
 delete from fdrinterface where InterfaceId = 14;
 insert into fdrinterface values (16,'LODESTAR_STD','Receive','f');
 insert into fdrinterface values (17,'LODESTAR_ENH','Receive','f');
