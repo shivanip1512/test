@@ -36,6 +36,9 @@ public class DeviceAddressRange
 
    private static final RangeBase RANGE_RTC = 
 		 new RangeBase( 0, 15, "Valid range for " + DeviceTypes.STRING_RTC[0] + " addresses is 0 to 15" );
+   
+   private static final RangeBase RANGE_RTM = 
+		 new RangeBase( 0, 15, "Valid range for " + DeviceTypes.STRING_RTM[0] + " addresses is 0 to 15" );
 
    //build any extra params into the RangeBase appropriate intsances
    static
@@ -44,8 +47,6 @@ public class DeviceAddressRange
       //long[] excludedValues = { 1398101 }; 
       //RANGE_MCT.setExcludedValues( excludedValues );            
    }
-
-
 
 	/**
 	 * Constructor for DeviceAddressRange.
@@ -84,6 +85,10 @@ public class DeviceAddressRange
 	  else if( DeviceTypes.RTC == deviceType_ )
 	  {
 	     return RANGE_RTC;
+	  }
+	  else if( DeviceTypes.RTM == deviceType_ )
+	  {
+	  	 return RANGE_RTM;
 	  }
       else if( DeviceTypes.CAPBANKCONTROLLER == deviceType_
                || DeviceTypes.CBC_FP_2800 == deviceType_

@@ -8,11 +8,13 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.MCT_Broadcast;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.RTCBase;
+import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.data.device.Ion7700;
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * This type was created in VisualAge.
@@ -473,6 +475,11 @@ public Object getValue(Object val)
    else if( val instanceof RTCBase )
    {
    		((RTCBase)val).getDeviceRTC().setRTCAddress( address );
+   }
+   else if( val instanceof RTM )
+   {
+   		((RTM)val).getDeviceIED().setSlaveAddress(address.toString());
+   		((RTM)val).getDeviceIED().setPassword(CtiUtilities.STRING_NONE);
    }
    else if( val instanceof Series5Base )
    {

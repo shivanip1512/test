@@ -12,6 +12,7 @@ import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 
+
 public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private int deviceType = -1;
 	private int paoID = -1;
@@ -1630,11 +1631,14 @@ public Object getValue(Object val)
 			rtc.getDeviceRTC().setDisableVerifies("N");
 			
       }
-      
-      
-		else if( val instanceof IEDBase )
-		{
-			String password = getPasswordTextField().getText();
+      else if( val instanceof RTM )
+      {
+			RTM rtm = (RTM)val;
+			rtm.getDeviceIED().setSlaveAddress( getPhysicalAddressTextField().getText() );
+      }
+      else if( val instanceof IEDBase )
+      {
+      		String password = getPasswordTextField().getText();
 			if( password.length() > 0 )
 				((IEDBase)val).getDeviceIED().setPassword(password);
 			else
@@ -1649,12 +1653,11 @@ public Object getValue(Object val)
 					slaveAddress = getSlaveAddressComboBox().getEditor().getItem().toString();
 				else /**** END SUPER HACK ****/
 					slaveAddress = new String( getSlaveAddressComboBox().getSelectedItem() != null ?
-							  getSlaveAddressComboBox().getSelectedItem().toString() : "" );
+						  		getSlaveAddressComboBox().getSelectedItem().toString() : "" );
 
-	
 				((IEDBase)val).getDeviceIED().setSlaveAddress(slaveAddress);
 			}
-		}
+	  	}
 
 	}
 	else
@@ -2131,6 +2134,21 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 
 			String slaveAddress = ((IEDBase)rBase).getDeviceIED().getSlaveAddress();
 			getSlaveAddressComboBox().setSelectedItem(slaveAddress);
+		}
+		if( rBase instanceof RTM )
+		{
+			getPhysicalAddressLabel().setVisible(true);
+			getPhysicalAddressLabel().setText("RTM Address:");
+			getPhysicalAddressTextField().setVisible(true);
+			ivjPhysicalAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 15) );
+			getPhysicalAddressTextField().setText( ((IEDBase)rBase).getDeviceIED().getSlaveAddress() );
+			
+			getSlaveAddressLabel().setVisible(false);
+			getSlaveAddressComboBox().setVisible(false);
+			
+			getPasswordLabel().setVisible(false);
+			getPasswordTextField().setVisible(false);
+
 		}
 		else if( rBase instanceof Sixnet )
 		{

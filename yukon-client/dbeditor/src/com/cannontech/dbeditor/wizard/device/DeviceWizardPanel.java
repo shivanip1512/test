@@ -226,18 +226,18 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		int devType = getDeviceTypePanel().getDeviceType();
 		
-		if( devType == com.cannontech.database.data.pao.PAOGroups.TAPTERMINAL
-			 || devType == com.cannontech.database.data.pao.PAOGroups.WCTP_TERMINAL )
+		if( devType == PAOGroups.TAPTERMINAL
+			 || devType == PAOGroups.WCTP_TERMINAL )
 		{
 			return getDeviceTapTerminalPanel();
 		}
 		else if( (DeviceTypesFuncs.isMeter(devType)
 					  && !DeviceTypesFuncs.isIon(devType))
-				    || devType == com.cannontech.database.data.pao.PAOGroups.DAVISWEATHER)
+				    || devType == PAOGroups.DAVISWEATHER)
 		{
 			return getDeviceIEDNamePanel();
 		}
-		else if( devType == com.cannontech.database.data.pao.PAOGroups.VIRTUAL_SYSTEM )
+		else if( devType == PAOGroups.VIRTUAL_SYSTEM )
 		{
 			return getDeviceVirtualNamePanel();
 		}
@@ -262,7 +262,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			
 			return getDeviceMeterNumberPanel();
 		}
-		else if( devType == com.cannontech.database.data.pao.PAOGroups.DAVISWEATHER )
+		else if( devType == PAOGroups.DAVISWEATHER )
 		{
 			getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
 			return getDeviceScanRatePanel();			
@@ -295,7 +295,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			getDeviceRoutePanel().setValue(null);
 			return getDeviceRoutePanel();
 		}
-		else if( devType == com.cannontech.database.data.pao.PAOGroups.SIXNET)
+		else if( devType == PAOGroups.SIXNET)
 		{
 			return getDeviceSixnetWizardPanel();
 		}

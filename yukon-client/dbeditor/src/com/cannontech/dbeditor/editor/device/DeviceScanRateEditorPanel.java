@@ -24,6 +24,8 @@ import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
+import com.cannontech.database.data.device.RTM;
+import com.cannontech.database.data.device.RTCBase;
 
 /**
  * This type was created in VisualAge.
@@ -1538,7 +1540,8 @@ public Object getValue(Object device)
 
 	if( (val instanceof CCUBase) || (val instanceof TCUBase) 
 			  || (val instanceof RepeaterBase) ||
-			 (val instanceof PagingTapTerminal) )
+			 (val instanceof PagingTapTerminal) ||
+			 (val instanceof RTCBase))
 	{
 		if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
@@ -1552,7 +1555,7 @@ public Object getValue(Object device)
 			newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_STATUS, generalRate, generalGroup, altRate));
 		}
 	}
-	else if ( val instanceof IEDMeter )
+	else if ( val instanceof IEDMeter || val instanceof RTM )
 	{
 		if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible())
 		{
@@ -2050,7 +2053,9 @@ public void setValue(Object val)
 		|| (val instanceof TCUBase)
 		|| (val instanceof RepeaterBase)
 		|| (val instanceof PagingTapTerminal)
-		|| (val instanceof IEDMeter))
+		|| (val instanceof IEDMeter)
+		|| (val instanceof RTCBase)
+		|| (val instanceof RTM))
 	{
 		if (dScanRate.length > 0)
 		{
