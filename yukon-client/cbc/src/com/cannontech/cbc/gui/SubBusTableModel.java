@@ -85,9 +85,17 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		{
 			try
 			{
-				String thisVal = ((SubBus)o1).getCcArea();
-				String anotherVal = ((SubBus)o2).getCcArea();
-				return( thisVal.compareToIgnoreCase(anotherVal) );
+				String thisArea = ((SubBus)o1).getCcArea();
+				String anotherArea = ((SubBus)o2).getCcArea();
+				
+				if( !thisArea.equalsIgnoreCase(anotherArea) )
+					return( thisArea.compareToIgnoreCase(anotherArea) );
+				
+				//if the Area Names	are equal, we need to sort by SubName
+				String thisName = ((SubBus)o1).getCcName();
+				String anotherName = ((SubBus)o2).getCcName();
+				
+				return( thisName.compareToIgnoreCase(anotherName) );				
 			}
 			catch( Exception e )
 			{
