@@ -9,12 +9,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.yukon.IConnectionBase;
+import com.cannontech.yukon.IServerConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
 import com.roguewave.vsj.PortableOutputStream;
 
-public class ClientConnection extends java.util.Observable implements Runnable, IConnectionBase 
+public class ClientConnection extends java.util.Observable implements Runnable, IServerConnection 
 {
 	private InputStream inStrm = null;
 	private OutputStream outStrm = null;
@@ -115,13 +115,23 @@ private void cleanUp()
  */
 public void connect() throws java.io.IOException 
 {
+	//wait a long time to timeout
+	//for the freaks out there: 106,751,991,167 days (292,471,208 years)
+	connect( Long.MAX_VALUE );
+}
+
+/**
+ * This method was created in VisualAge.
+ */
+public void connect( long millis ) throws java.io.IOException 
+{
 	connectWithoutWait();
 
-	
- 	try
+	int sleep = 100, cnt = 0;
+	try
 	{
-		while( !isValid() )
-			Thread.sleep( 100 );
+		while( !isValid() && ((cnt++)*sleep) <= millis )
+			Thread.sleep( sleep );
 	}
 	catch( InterruptedException e )
 	{
@@ -129,6 +139,7 @@ public void connect() throws java.io.IOException
 		CTILogger.info("InterruptedException in " + this.getClass().getName() + ".connect() : " + e.getMessage());
 	}
 }
+
 /**
  * This method was created in VisualAge.
  */
