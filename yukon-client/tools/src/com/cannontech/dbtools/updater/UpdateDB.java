@@ -6,6 +6,8 @@ package com.cannontech.dbtools.updater;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
@@ -26,6 +28,24 @@ public class UpdateDB
 {
 	private static double dbVersion = 0.0;
 	private IMessageFrame output = null;
+
+
+	//A comparator to compare the DBupdate file versions 
+	public static final Comparator COMP_FILE_VERS = new Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			double aVal = getFileVersion( (File)o1 );
+			double bVal = getFileVersion( (File)o2 );
+
+			return (aVal < bVal ? -1 : (aVal == bVal ? 0 : 1) );
+		}
+			
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
 
 	/**
 	 * 
@@ -60,7 +80,7 @@ public class UpdateDB
 		ArrayList versions = new ArrayList(32);
 
 		//previously generated list of valid commands
-		File genDIR = new File( CtiUtilities.getLogDirPath() );
+		final File genDIR = new File( CtiUtilities.getLogDirPath() );
 		for( int i = 0; i < genDIR.listFiles().length; i++ )
 		{
 			File sqlFile = genDIR.listFiles()[i];
@@ -85,7 +105,7 @@ public class UpdateDB
 		
 
 		//dir to look in for new updates
-		File userDIR = new File( rootDIR );
+		final File userDIR = new File( rootDIR );
 		for( int i = 0; i < userDIR.listFiles().length; i++ )
 		{
 			File sqlFile = userDIR.listFiles()[i];
@@ -111,6 +131,8 @@ public class UpdateDB
 		dbUpdateFiles = new File[ files.size() ];
 		dbUpdateFiles = (File[])files.toArray( dbUpdateFiles );			
 		
+		//be sure the returned list is in order by version number
+		Arrays.sort( dbUpdateFiles, COMP_FILE_VERS );		 
 		return dbUpdateFiles;
 	}
 

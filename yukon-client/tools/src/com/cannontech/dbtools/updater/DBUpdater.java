@@ -26,16 +26,44 @@ For 2.40 Yukon client updates,
 the following minimum versions of software are needed:
  JRE 1.4.0
  Oracle 9.2
- SQLServer 2000 (8.0)
- 
- 
- * Suggested DBUpdate Process Steps
- * 1) Install any new JRE (optional)
- * 2) Update DBMS version (example: oracle 8 to oracle 9) (optional)
- * 3) Install new Yukon software (clients, server, etc)
- * 4) Execute DBUpdate application (DBToolsFrame.bat file in \yukon\client\bin\ )
- * 5)
- *
+ SQLServer 7 (prefer 2000)
+
+Here is what the DBUpdater tool does:
+1) Searches the directory that you specify for all valid .sql files (ex: 2.41.sql | 2.40-2.1.2003.sql)
+2) Reads in all the lines of the files found
+    - only reads the .sql files that have a version number greater than the database version
+3) Attempts to write the lines out to an intermediate file in the \Yukon\Client\Log\ directory 
+    called X.XXvalids.sql where X.XX is the version (ex: 2.41valids.sql). If an intermediate
+    file already exists, not file is written.
+4) Commands in the intermediate files are then executed, commiting each successful command.
+    - If all the commands in an entire file are executed successfully, 
+    the file is written with embedded descriptive tags and renamed by adding the following text
+    to the extension _MM-dd-yyyy_HH-mm-ss (ex: 2.40valids.sql_06-24-2003_10-40-08 )
+    - If a command fails, the file is written with embedded descriptive tags and the
+    name of the file is left unchanged.
+
+Embedded descriptive tags:
+All tags apply to the line below the tag.
+@error [ignore | autofix | verbose] - what action to take in case of an error 
+@success [true | false]  - did the line commit successfully to the DB
+  
+NOTES: 
+-Try to fix any unexpected errors on your own or find someone else who
+ can fix it. Do NOT ignore errors.
+-Any changes made to fix script errors should be made in the generated
+ intermediate file. 
+-During an error, the application can be rerun and and it will pick up
+ command execution on the last command that did not execute successfully (only commands that 
+ do not have a @success true tag will run).  
+-Output can be logged to a file by changing :
+ client_log_file=false to true in config.properties.
+
+Suggested DBUpdate Process Steps
+1) Install any new JRE (optional)
+2) Update DBMS version (example: oracle 8 to oracle 9) (optional)
+3) Install new Yukon software (clients, server, etc)
+4) Execute DBUpdate application (DBToolsFrame.bat file in \yukon\client\bin\ )
+
  *
  * Allows the user to update and change the DB. Here is a quick summary of what
  * format the files read should be in:
