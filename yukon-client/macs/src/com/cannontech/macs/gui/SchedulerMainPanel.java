@@ -210,7 +210,8 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
  */
 private void executeEditButton_ActionPerformed( ActionEvent event )
 {
-   if( !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_PENDING) )
+   if( !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_PENDING) &&
+    	!getSelectedSchedule().getCurrentState().equals(Schedule.STATE_RUNNING) )
 		showEditorPanel( getSelectedSchedule() );
 }
 /**
@@ -1048,19 +1049,20 @@ protected void synchTableAndButtons(Schedule selected)
 {
    if (startStopButton == null || editButton == null || enableDisableButton == null)
 	  return;
-
-	getEditViewButton().setEnabled(true);
+	
 	getDeleteScheduleButton().setEnabled(true);
 	getEnableDisableButton().setEnabled(true);
 
    if (selected.getCurrentState().equals(Schedule.STATE_WAITING))
    {
+   	  getEditViewButton().setEnabled(true);
 	  getStartStopButton().setText("Start");
 	  getStartStopButton().setEnabled(true);
 	  getEnableDisableButton().setText("Disable");
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_RUNNING))
    {
+   	  getEditViewButton().setEnabled(false);
 	  getStartStopButton().setText("Stop");
 	  getStartStopButton().setEnabled(true);
 	  getDeleteScheduleButton().setEnabled(false);
@@ -1068,12 +1070,14 @@ protected void synchTableAndButtons(Schedule selected)
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_DISABLED))
    {
+   	  getEditViewButton().setEnabled(true);
 	  getStartStopButton().setText("Start");
 	  getStartStopButton().setEnabled(false);
 	  getEnableDisableButton().setText("Enable");
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_PENDING))
    {
+   	 
 	   //disable all buttons!!
 	  getStartStopButton().setText("Stop");
 	  getEnableDisableButton().setEnabled(false);
