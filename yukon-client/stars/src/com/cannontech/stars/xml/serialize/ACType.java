@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class Type extends StarsCustListEntry 
+public class ACType extends StarsCustListEntry 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public Type() {
+    public ACType() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.Type()
+    } //-- com.cannontech.stars.xml.serialize.ACType()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.Type unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.ACType unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.Type) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.Type.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.Type unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.ACType) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ACType.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.ACType unmarshal(java.io.Reader) 
 
     /**
     **/

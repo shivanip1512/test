@@ -34,7 +34,7 @@ public class AirConditioner implements java.io.Serializable {
 
     private Tonnage _tonnage;
 
-    private Type _type;
+    private ACType _ACType;
 
 
       //----------------/
@@ -51,6 +51,16 @@ public class AirConditioner implements java.io.Serializable {
     //-----------/
 
     /**
+     * Returns the value of field 'ACType'.
+     * 
+     * @return the value of field 'ACType'.
+    **/
+    public ACType getACType()
+    {
+        return this._ACType;
+    } //-- ACType getACType() 
+
+    /**
      * Returns the value of field 'tonnage'.
      * 
      * @return the value of field 'tonnage'.
@@ -59,16 +69,6 @@ public class AirConditioner implements java.io.Serializable {
     {
         return this._tonnage;
     } //-- Tonnage getTonnage() 
-
-    /**
-     * Returns the value of field 'type'.
-     * 
-     * @return the value of field 'type'.
-    **/
-    public Type getType()
-    {
-        return this._type;
-    } //-- Type getType() 
 
     /**
     **/
@@ -108,6 +108,16 @@ public class AirConditioner implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'ACType'.
+     * 
+     * @param ACType the value of field 'ACType'.
+    **/
+    public void setACType(ACType ACType)
+    {
+        this._ACType = ACType;
+    } //-- void setACType(ACType) 
+
+    /**
      * Sets the value of field 'tonnage'.
      * 
      * @param tonnage the value of field 'tonnage'.
@@ -116,16 +126,6 @@ public class AirConditioner implements java.io.Serializable {
     {
         this._tonnage = tonnage;
     } //-- void setTonnage(Tonnage) 
-
-    /**
-     * Sets the value of field 'type'.
-     * 
-     * @param type the value of field 'type'.
-    **/
-    public void setType(Type type)
-    {
-        this._type = type;
-    } //-- void setType(Type) 
 
     /**
      * 

@@ -12,8 +12,9 @@ package com.cannontech.stars.xml.util;
 public class StarsConstants {
 	
 	public static final int FAILURE_CODE_RUNTIME_ERROR = 1;
-	public static final int FAILURE_CODE_RESPONSE_NULL = 2;
-	public static final int FAILURE_CODE_NODE_NOT_FOUND = 3;
+	public static final int FAILURE_CODE_REQUEST_NULL = 2;
+	public static final int FAILURE_CODE_RESPONSE_NULL = 3;
+	public static final int FAILURE_CODE_NODE_NOT_FOUND = 4;
 	public static final int FAILURE_CODE_SESSION_INVALID = 101;
 	public static final int FAILURE_CODE_OPERATION_FAILED = 102;
 

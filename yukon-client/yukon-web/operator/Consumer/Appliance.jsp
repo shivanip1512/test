@@ -256,7 +256,7 @@ function deleteAppliance(form) {
 		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
 		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
-			String selectedStr = (appliance.getAirConditioner().getType().getEntryID() == entry.getEntryID()) ? "selected" : "";
+			String selectedStr = (appliance.getAirConditioner().getACType().getEntryID() == entry.getEntryID()) ? "selected" : "";
 %>
                               <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%

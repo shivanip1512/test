@@ -1047,47 +1047,63 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 LiteApplianceCategory liteAppCat = getApplianceCategory( appliance.getApplianceBase().getApplianceCategoryID().intValue() );
                 if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
                 	ApplianceAirConditioner app = ApplianceAirConditioner.getApplianceAirConditioner( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppAirConditioner();
-                	StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppAirConditioner();
+	                	StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
                 	ApplianceWaterHeater app = ApplianceWaterHeater.getApplianceWaterHeater( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppWaterHeater();
-                	StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppWaterHeater();
+	                	StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
                 	ApplianceDualFuel app = ApplianceDualFuel.getApplianceDualFuel( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppDualFuel();
-                	StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppDualFuel();
+	                	StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
                 	ApplianceGenerator app = ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppGenerator();
-                	StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppGenerator();
+	                	StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
                 	ApplianceGrainDryer app = ApplianceGrainDryer.getApplianceGrainDryer( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppGrainDryer();
-                	StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppGrainDryer();
+	                	StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
                 	ApplianceStorageHeat app = ApplianceStorageHeat.getApplianceStorageHeat( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppStorageHeat();
-                	StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppStorageHeat();
+	                	StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
                 	ApplianceHeatPump app = ApplianceHeatPump.getApplianceHeatPump( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppHeatPump();
-                	StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppHeatPump();
+	                	StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, app );
+                	}
                 }
                 else if (liteAppCat.getCategoryID() == getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
                 	ApplianceIrrigation app = ApplianceIrrigation.getApplianceIrrigation( appliance.getApplianceBase().getApplianceID() );
-                	liteApp = new LiteStarsAppIrrigation();
-                	StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, app );
+                	if (app != null) {
+	                	liteApp = new LiteStarsAppIrrigation();
+	                	StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, app );
+                	}
                 }
-                else {
+                
+                if (liteApp == null)
                 	liteApp = new LiteStarsAppliance();
-                }
                 StarsLiteFactory.setLiteApplianceBase( liteApp, appliance );
                 
                 accountInfo.getAppliances().add( liteApp );

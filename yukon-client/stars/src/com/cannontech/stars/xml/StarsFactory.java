@@ -93,6 +93,18 @@ public class StarsFactory {
 			starsApp.setLocation( app.getLocation() );
 			starsApp.setServiceCompany( app.getServiceCompany() );
 			starsApp.setNotes( app.getNotes() );
+			starsApp.setModelNumber( app.getModelNumber() );
+			starsApp.setKWCapacity( app.getKWCapacity() );
+			starsApp.setEfficiencyRating( app.getEfficiencyRating() );
+			
+			starsApp.setAirConditioner( app.getAirConditioner() );
+			starsApp.setWaterHeater( app.getWaterHeater() );
+			starsApp.setDualFuel( app.getDualFuel() );
+			starsApp.setGenerator( app.getGenerator() );
+			starsApp.setGrainDryer( app.getGrainDryer() );
+			starsApp.setStorageHeat( app.getStorageHeat() );
+			starsApp.setHeatPump( app.getHeatPump() );
+			starsApp.setIrrigation( app.getIrrigation() );
 			
 			return starsApp;
 		}
@@ -101,12 +113,6 @@ public class StarsFactory {
 		}
 		
 		return null;
-	}
-	
-	public static void setApplianceBase(ApplianceBase appDB, StarsApp app) {
-		appDB.setApplianceID( new Integer(app.getApplianceID()) );
-		appDB.setApplianceCategoryID( new Integer(app.getApplianceCategoryID()) );
-		appDB.setNotes( app.getNotes() );
 	}
 	
 	

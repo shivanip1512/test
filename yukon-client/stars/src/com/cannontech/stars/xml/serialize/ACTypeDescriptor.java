@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class TypeDescriptor extends StarsCustListEntryDescriptor {
+public class ACTypeDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -47,10 +47,10 @@ public class TypeDescriptor extends StarsCustListEntryDescriptor {
      //- Constructors -/
     //----------------/
 
-    public TypeDescriptor() {
+    public ACTypeDescriptor() {
         super();
         setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
-        xmlName = "Type";
+        xmlName = "ACType";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,7 +58,7 @@ public class TypeDescriptor extends StarsCustListEntryDescriptor {
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.TypeDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.ACTypeDescriptor()
 
 
       //-----------/
@@ -92,7 +92,7 @@ public class TypeDescriptor extends StarsCustListEntryDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.Type.class;
+        return com.cannontech.stars.xml.serialize.ACType.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

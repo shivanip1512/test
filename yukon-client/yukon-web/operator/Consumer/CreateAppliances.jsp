@@ -24,8 +24,8 @@ function showAdditionalAppInfo(index)
 	if (newCatDiv != prevCatDiv) {
 		document.MForm.CatID.value = categoryIDs[index];
 		if (prevCatDiv != null)
-			prevCatDiv.style.visibility = 'hidden';
-		newCatDiv.style.visibility = 'visible';
+			prevCatDiv.style.display = 'none';
+		newCatDiv.style.display = '';
 		prevCatDiv = newCatDiv;
 	}
 }
@@ -87,12 +87,11 @@ function showAdditionalAppInfo(index)
 				<input type="hidden" name="AppNo" value="<%= appliances.getStarsApplianceCount() %>">
 				<input type="hidden" name="CatID" value="0">
                 <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                  <tr>
+                  <tr> 
                     <td colspan = "2"  class="TableCell"> <span class="MainHeader"><b>APPLIANCE 
                       INFORMATION</b></span> 
                       <hr>
-                      </td>
-                    
+                    </td>
                   </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -100,12 +99,38 @@ function showAdditionalAppInfo(index)
                     </td>
                     <td width="200"> 
                       <select name="AppCatID" onchange="showAdditionalAppInfo(this.selectedIndex)">
-<%
+                        <%
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 %>
-						<option value="<%= category.getApplianceCategoryID() %>"><%= category.getDescription() %></option>
-<%
+                        <option value="<%= category.getApplianceCategoryID() %>"><%= category.getDescription() %></option>
+                        <%
+	}
+%>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="100" class="TableCell"> 
+                      <div align="right">Model #:</div>
+                    </td>
+                    <td width="200"> 
+                      <input type="text" name="ModelNo" maxlength="40" size="24" value="">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="100" class="TableCell"> 
+                      <div align="right">Location:</div>
+                    </td>
+                    <td width="200"> 
+                      <select name="Location">
+                        <%
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION );
+	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
+%>
+                        <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                        <%
 	}
 %>
                       </select>
@@ -117,23 +142,17 @@ function showAdditionalAppInfo(index)
                     </td>
                     <td width="200"> 
                       <select name="Manufacturer">
-<%
+                        <%
 	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER );
 	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
 %>
-						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                        <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                        <%
 	}
 %>
                       </select>
                     </td>
-                  </tr>
-				   <tr> 
-                    <td width="100" class="TableCell"> 
-                      <div align="right">Model #:</div>
-                    </td>
-                    <td width="200"><input type="text" name="ModelNo" maxlength="40" size="30" value=""></td>
                   </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -145,23 +164,20 @@ function showAdditionalAppInfo(index)
                   </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 
-                      <div align="right">Location:</div>
+                      <div align="right">KW Capacity:</div>
                     </td>
                     <td width="200"> 
-                      <select name="Location">
-<%
-	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION );
-	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
-%>
-						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
-	}
-%>
-                      </select>
+                      <input type="text" name="KWCapacity" maxlength="14" size="14">
                     </td>
                   </tr>
-                 
+                  <tr> 
+                    <td width="100" class="TableCell"> 
+                      <div align="right">Efficiency Rating:</div>
+                    </td>
+                    <td width="200"> 
+                      <input type="text" name="EffRating" maxlength="14" size="14">
+                    </td>
+                  </tr>
                   <tr> 
                     <td width="100" class="TableCell"> 
                       <div align="right">Notes:</div>
@@ -186,7 +202,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryACUsed) {
 %>
-				<div id="Category<%= categoryID_AC %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_AC %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -243,7 +259,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryWHUsed) {
 %>
-				<div id="Category<%= categoryID_WH %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_WH %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -308,7 +324,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryDFUsed) {
 %>
-				<div id="Category<%= categoryID_DF %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_DF %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -373,7 +389,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryGENUsed) {
 %>
-				<div id="Category<%= categoryID_GEN %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_GEN %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -454,7 +470,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryGDUsed) {
 %>
-                <div id="Category<%= categoryID_GD %>" style="visibility:hidden">
+                <div id="Category<%= categoryID_GD %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell" height="17"> 
@@ -565,7 +581,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategorySHUsed) {
 %>
-				<div id="Category<%= categoryID_SH %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_SH %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -620,7 +636,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryHPUsed) {
 %>
-				<div id="Category<%= categoryID_HP %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_HP %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell"> 
@@ -685,7 +701,7 @@ function showAdditionalAppInfo(index)
 		}
 	if (isCategoryIRRUsed) {
 %>
-				<div id="Category<%= categoryID_IRR %>" style="visibility:hidden">
+				<div id="Category<%= categoryID_IRR %>" style="display:none">
                 <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                   <tr> 
                     <td width="100" class="TableCell" height="17"> 
@@ -766,7 +782,7 @@ function showAdditionalAppInfo(index)
                     <td width="200" height="2"> 
                       <select name="IRR_MeterLoc">
 <%
-		StarsCustSelectionList locationList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION );
+		StarsCustSelectionList locationList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION );
 		for (int i = 0; i < locationList1.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = locationList1.getStarsSelectionListEntry(i);
 %>

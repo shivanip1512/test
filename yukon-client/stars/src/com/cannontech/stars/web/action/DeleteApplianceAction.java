@@ -9,10 +9,12 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.db.stars.appliance.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -127,6 +129,47 @@ public class DeleteApplianceAction implements ActionBase {
 	        			break;
 	        		}
 	        	}
+        	}
+        	
+        	if (liteApp instanceof LiteStarsAppAirConditioner) {
+        		ApplianceAirConditioner app = new ApplianceAirConditioner();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppWaterHeater) {
+        		ApplianceWaterHeater app = new ApplianceWaterHeater();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppDualFuel) {
+        		ApplianceDualFuel app = new ApplianceDualFuel();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppGenerator) {
+        		ApplianceGenerator app = new ApplianceGenerator();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppGrainDryer) {
+        		ApplianceGrainDryer app = new ApplianceGrainDryer();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppStorageHeat) {
+        		ApplianceStorageHeat app = new ApplianceStorageHeat();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppHeatPump) {
+        		ApplianceHeatPump app = new ApplianceHeatPump();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
+        	}
+        	else if (liteApp instanceof LiteStarsAppIrrigation) {
+        		ApplianceIrrigation app = new ApplianceIrrigation();
+        		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+        		Transaction.createTransaction(Transaction.DELETE, app).execute();
         	}
         	
         	com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();

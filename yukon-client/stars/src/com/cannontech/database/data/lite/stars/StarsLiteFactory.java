@@ -654,12 +654,76 @@ public class StarsLiteFactory {
 		app.getApplianceBase().setLocationID( new Integer(liteApp.getLocationID()) );
 		app.getApplianceBase().setNotes( liteApp.getNotes() );
 		app.getApplianceBase().setModelNumber( liteApp.getModelNumber() );
+		app.getApplianceBase().setKWCapacity( new Integer(liteApp.getKWCapacity()) );
+		app.getApplianceBase().setEfficiencyRating( new Integer(liteApp.getEfficiencyRating()) );
 		
 		if (liteApp.getInventoryID() != com.cannontech.database.db.stars.hardware.InventoryBase.NONE_INT) {
 			app.getLMHardwareConfig().setApplianceID( app.getApplianceBase().getApplianceID() );
 			app.getLMHardwareConfig().setInventoryID( new Integer(liteApp.getInventoryID()) );
 			app.getLMHardwareConfig().setAddressingGroupID( new Integer(liteApp.getAddressingGroupID()) );
 		}
+	}
+	
+	public static void setApplianceAirConditioner(com.cannontech.database.db.stars.appliance.ApplianceAirConditioner app, LiteStarsAppAirConditioner liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setTonnageID( new Integer(liteApp.getTonnageID()) );
+		app.setTypeID( new Integer(liteApp.getTypeID()) );
+	}
+	
+	public static void setApplianceWaterHeater(com.cannontech.database.db.stars.appliance.ApplianceWaterHeater app, LiteStarsAppWaterHeater liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setNumberOfGallonsID( new Integer(liteApp.getNumberOfGallonsID()) );
+		app.setEnergySourceID( new Integer(liteApp.getNumberOfGallonsID()) );
+		app.setNumberOfElements( new Integer(liteApp.getNumberOfElements()) );
+	}
+	
+	public static void setApplianceDualFuel(com.cannontech.database.db.stars.appliance.ApplianceDualFuel app, LiteStarsAppDualFuel liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setSwitchOverTypeID( new Integer(liteApp.getSwitchOverTypeID()) );
+		app.setSecondaryEnergySourceID( new Integer(liteApp.getSecondaryEnergySourceID()) );
+		app.setSecondaryKWCapacity( new Integer(liteApp.getSecondaryKWCapacity()) );
+	}
+	
+	public static void setApplianceGenerator(com.cannontech.database.db.stars.appliance.ApplianceGenerator app, LiteStarsAppGenerator liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setTransferSwitchTypeID( new Integer(liteApp.getTransferSwitchTypeID()) );
+		app.setTransferSwitchMfgID( new Integer(liteApp.getTransferSwitchMfgID()) );
+		app.setPeakKWCapacity( new Integer(liteApp.getPeakKWCapacity()) );
+		app.setFuelCapGallons( new Integer(liteApp.getFuelCapGallons()) );
+		app.setStartDelaySeconds( new Integer(liteApp.getStartDelaySeconds()) );
+	}
+	
+	public static void setApplianceGrainDryer(com.cannontech.database.db.stars.appliance.ApplianceGrainDryer app, LiteStarsAppGrainDryer liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setDryerTypeID( new Integer(liteApp.getDryerTypeID()) );
+		app.setBinSizeID( new Integer(liteApp.getBinSizeID()) );
+		app.setBlowerEnergySourceID( new Integer(liteApp.getBlowerEnergySourceID()) );
+		app.setBlowerHorsePowerID( new Integer(liteApp.getBlowerHorsePowerID()) );
+		app.setBlowerHeatSourceID( new Integer(liteApp.getBlowerHeatSourceID()) );
+	}
+	
+	public static void setApplianceStorageHeat(com.cannontech.database.db.stars.appliance.ApplianceStorageHeat app, LiteStarsAppStorageHeat liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setStorageTypeID( new Integer(liteApp.getStorageTypeID()) );
+		app.setPeakKWCapacity( new Integer(liteApp.getPeakKWCapacity()) );
+		app.setHoursToRecharge( new Integer(liteApp.getHoursToRecharge()) );
+	}
+	
+	public static void setApplianceHeatPump(com.cannontech.database.db.stars.appliance.ApplianceHeatPump app, LiteStarsAppHeatPump liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setPumpTypeID( new Integer(liteApp.getPumpTypeID()) );
+		app.setStandbySourceID( new Integer(liteApp.getStandbySourceID()) );
+		app.setSecondsDelayToRestart( new Integer(liteApp.getSecondsDelayToRestart()) );
+	}
+	
+	public static void setApplianceIrrigation(com.cannontech.database.db.stars.appliance.ApplianceIrrigation app, LiteStarsAppIrrigation liteApp) {
+		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
+		app.setIrrigationTypeID( new Integer(liteApp.getIrrigationTypeID()) );
+		app.setHorsePowerID( new Integer(liteApp.getHorsePowerID()) );
+		app.setEnergySourceID( new Integer(liteApp.getEnergySourceID()) );
+		app.setSoilTypeID( new Integer(liteApp.getSoilTypeID()) );
+		app.setMeterLocationID( new Integer(liteApp.getMeterLocationID()) );
+		app.setMeterVoltageID( new Integer(liteApp.getMeterVoltageID()) );
 	}
 	
 	public static void setWorkOrderBase(com.cannontech.database.db.stars.report.WorkOrderBase order, LiteWorkOrderBase liteOrder) {
@@ -1447,10 +1511,10 @@ public class StarsLiteFactory {
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppAirConditioner) liteApp).getTonnageID() ),
 	    			Tonnage.class)
 	    	);
-	    	ac.setType(
-	    		(Type) StarsFactory.newStarsCustListEntry(
+	    	ac.setACType(
+	    		(ACType) StarsFactory.newStarsCustListEntry(
 	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppAirConditioner) liteApp).getTypeID() ),
-	    			Type.class)
+	    			ACType.class)
 	    	);
 	    	starsApp.setAirConditioner( ac );
 	    }

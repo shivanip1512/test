@@ -94,28 +94,28 @@ public class AirConditionerDescriptor extends org.exolab.castor.xml.util.XMLClas
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _type
-        desc = new XMLFieldDescriptorImpl(Type.class, "_type", "Type", NodeType.Element);
+        //-- _ACType
+        desc = new XMLFieldDescriptorImpl(ACType.class, "_ACType", "ACType", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 AirConditioner target = (AirConditioner) object;
-                return target.getType();
+                return target.getACType();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     AirConditioner target = (AirConditioner) object;
-                    target.setType( (Type) value);
+                    target.setACType( (ACType) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new Type();
+                return new ACType();
             }
         } );
         desc.setHandler(handler);
@@ -123,7 +123,7 @@ public class AirConditionerDescriptor extends org.exolab.castor.xml.util.XMLClas
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _type
+        //-- validation code for: _ACType
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);

@@ -165,9 +165,9 @@ public class SOAPClient extends HttpServlet {
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
 
-        String nextURL = homeURL;       // The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
+        String nextURL = loginURL;		// The next URL we're going to, operation succeed -> destURL, operation failed -> errorURL
         String destURL = null;			// URL we should go to if action succeed
-        String errorURL = homeURL;		// URL we should go to if action failed
+        String errorURL = null;		// URL we should go to if action failed
         ActionBase clientAction = null;
 		
         if (action.equalsIgnoreCase("OperatorLogin")) {
@@ -177,7 +177,7 @@ public class SOAPClient extends HttpServlet {
 
         	clientAction = (ActionBase) actions;
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
         }
         else if (action.equalsIgnoreCase("UserLogin")) {
             MultiAction actions = new MultiAction();
@@ -187,12 +187,12 @@ public class SOAPClient extends HttpServlet {
         	
         	clientAction = (ActionBase) actions;
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
         }
 		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
 			destURL = "/operator/Consumer/Update.jsp";
-			nextURL = errorURL = "/operator/Consumer/New.jsp";
+			errorURL = "/operator/Consumer/New.jsp";
 		}
 		else if (action.equalsIgnoreCase("ProgramSignUp")) {
             MultiAction actions = new MultiAction();
@@ -203,32 +203,32 @@ public class SOAPClient extends HttpServlet {
 	            
 			clientAction = (ActionBase) actions;
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
 		}
         else if (action.equalsIgnoreCase("SearchCustAccount")) {
             clientAction = new SearchCustAccountAction();
             destURL = "/operator/Consumer/Update.jsp";
-            nextURL = errorURL = "/operator/Consumer/SearchResults.jsp";
+            errorURL = "/operator/Consumer/SearchResults.jsp";
         }
         else if (action.equalsIgnoreCase("GetCustAccount")) {
         	clientAction = new GetCustAccountAction();
         	destURL = req.getParameter( ServletUtils.ATT_REDIRECT );
-        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+        	errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
         }
         else if (action.equalsIgnoreCase("UpdateCustAccount")) {
             clientAction = new UpdateCustAccountAction();
             destURL = "/operator/Consumer/Update.jsp";
-            nextURL = errorURL = "/operator/Consumer/Update.jsp";
+            errorURL = "/operator/Consumer/Update.jsp";
         }
         else if (action.equalsIgnoreCase("ReloadCustAccount")) {
         	clientAction = new ReloadCustAccountAction();
             destURL = referer;
-            nextURL = errorURL = referer;
+            errorURL = referer;
         }
         else if (action.equalsIgnoreCase("DeleteCustAccount")) {
         	clientAction = new DeleteCustAccountAction();
         	destURL = "/operator/Operations.jsp";
-            nextURL = errorURL = "/operator/Consumer/Update.jsp";
+            errorURL = "/operator/Consumer/Update.jsp";
         }
         else if (action.equalsIgnoreCase("OptOutProgram")) {
         	MultiAction actions = new MultiAction();
@@ -237,7 +237,7 @@ public class SOAPClient extends HttpServlet {
         	
         	//clientAction = new ProgramOptOutAction();
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-            nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+            errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         	
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             StarsGetExitInterviewQuestionsResponse questions = null;
@@ -268,17 +268,17 @@ public class SOAPClient extends HttpServlet {
         	clientAction = actions;
         	
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-            nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+            errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("GetExitQuestions")) {
         	clientAction = new GetInterviewQuestionsAction();
         	destURL = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-            nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+            errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("ReenableProgram")) {
         	clientAction = new ProgramReenableAction();
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-            nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+            errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService") || action.equalsIgnoreCase("Config")) {
             clientAction = new YukonSwitchCommandAction();
@@ -289,80 +289,72 @@ public class SOAPClient extends HttpServlet {
             clientAction = new GetLMCtrlHistAction();
             session.setAttribute( ServletUtils.ATT_REFERRER, referer );
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-            nextURL = errorURL = referer;
+            errorURL = referer;
         }
         else if (action.equalsIgnoreCase("GetNextCallNo")) {
         	clientAction = new GetNextCallNumberAction();
         	destURL = "/operator/Consumer/CreateCalls.jsp";
-        	nextURL = errorURL = "/operator/Consumer/CreateCalls.jsp?getCallNo=failed";
+        	errorURL = "/operator/Consumer/CreateCalls.jsp?getCallNo=failed";
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
         	clientAction = new CreateCallAction();
         	destURL = "/operator/Consumer/Calls.jsp";
-        	nextURL = errorURL = "/operator/Consumer/CreateCalls.jsp";
+        	errorURL = "/operator/Consumer/CreateCalls.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateCalls")) {
         	clientAction = new UpdateCallReportAction();
         	destURL = "/operator/Consumer/Calls.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Calls.jsp";
-        }
-        else if (action.equalsIgnoreCase("CallTracking")) {
-        	clientAction = new CallTrackingAction();
-        	destURL = "/operator/Consumer/Calls.jsp";
+        	errorURL = "/operator/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("GetNextOrderNo")) {
         	clientAction = new GetNextOrderNumberAction();
         	destURL = "/operator/Consumer/Service.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Service.jsp?getOrderNo=failed";
+        	errorURL = "/operator/Consumer/Service.jsp?getOrderNo=failed";
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
         	clientAction = new CreateServiceRequestAction();
         	destURL = "/operator/Consumer/ServiceSummary.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Service.jsp";
+        	errorURL = "/operator/Consumer/Service.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateOrders")) {
         	clientAction = new UpdateServiceRequestAction();
         	destURL = "/operator/Consumer/ServiceSummary.jsp";
-        	nextURL = errorURL = "/operator/Consumer/ServiceSummary.jsp";
-        }
-        else if (action.equalsIgnoreCase("GetServiceHistory")) {
-        	clientAction = new GetServiceHistoryAction();
-        	destURL = "/operator/Consumer/ServiceSummary.jsp";
+        	errorURL = "/operator/Consumer/ServiceSummary.jsp";
         }
         else if (action.equalsIgnoreCase("CreateAppliance")) {
         	clientAction = new CreateApplianceAction();
         	destURL = "/operator/Consumer/Appliance.jsp";
-        	nextURL = errorURL = "/operator/Consumer/CreateAppliances.jsp";
+        	errorURL = "/operator/Consumer/CreateAppliances.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateAppliance")) {
         	clientAction = new UpdateApplianceAction();
         	destURL = referer;
-        	nextURL = errorURL = referer;
+        	errorURL = referer;
         }
         else if (action.equalsIgnoreCase("DeleteAppliance")) {
         	clientAction = new DeleteApplianceAction();
         	destURL = "/operator/Consumer/Update.jsp";
-        	nextURL = errorURL = req.getHeader( "referer" );
+        	errorURL = req.getHeader( "referer" );
         }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
         	destURL = "/operator/Consumer/Inventory.jsp";
-        	nextURL = errorURL = "/operator/Consumer/CreateHardware.jsp";
+        	errorURL = "/operator/Consumer/CreateHardware.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
         	clientAction = new UpdateLMHardwareAction();
         	destURL = "/operator/Consumer/Inventory.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Inventory.jsp";
+        	errorURL = "/operator/Consumer/Inventory.jsp";
         }
         else if (action.equalsIgnoreCase("DeleteLMHardware")) {
         	clientAction = new DeleteLMHardwareAction();
         	destURL = "/operator/Consumer/Update.jsp";
-        	nextURL = errorURL = req.getHeader( "referer" );
+        	errorURL = req.getHeader( "referer" );
         }
         else if (action.equalsIgnoreCase("UpdateLogin")) {
         	clientAction = new UpdateLoginAction();
         	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+        	errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
         	clientAction = new UpdateThermostatScheduleAction();
@@ -371,22 +363,22 @@ public class SOAPClient extends HttpServlet {
         	if (referer == null)	// Request is redirected from servlet UpdateThermostat
         		referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER );
         	destURL = referer;
-        	nextURL = errorURL = referer;
+        	errorURL = referer;
         }
         else if (action.equalsIgnoreCase("UpdateThermostatOption")) {
         	clientAction = new UpdateThermostatManualOptionAction();
         	destURL = "/user/ConsumerStat/stat/Thermostat.jsp";
-        	nextURL = errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
+        	errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         }
         else if (action.equalsIgnoreCase("SendControlOdds")) {
         	clientAction = new SendOddsForControlAction();
         	destURL = "/operator/Consumer/Odds.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Odds.jsp";
+        	errorURL = "/operator/Consumer/Odds.jsp";
         }
         else if (action.equalsIgnoreCase("UpdateResidenceInfo")) {
         	clientAction = new UpdateResidenceInfoAction();
         	destURL = "/operator/Consumer/Residence.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Residence.jsp";
+        	errorURL = "/operator/Consumer/Residence.jsp";
         }
         else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");
@@ -395,6 +387,7 @@ public class SOAPClient extends HttpServlet {
         }
 
         if (clientAction != null) {
+        	nextURL = errorURL;
             reqMsg = clientAction.build(req, session);
 
             if (reqMsg != null) {
@@ -414,13 +407,30 @@ public class SOAPClient extends HttpServlet {
                         nextURL = destURL;
                     else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID)
                     	nextURL = loginURL;
-                    else
+                    else {
+                    	setErrorMsg( session, status );
                     	nextURL = errorURL;
+                    }
                 }
+                else
+                	setErrorMsg( session, StarsConstants.FAILURE_CODE_RESPONSE_NULL );
             }
+            else
+            	setErrorMsg( session, StarsConstants.FAILURE_CODE_REQUEST_NULL );
         }
 
         resp.sendRedirect( nextURL );
+    }
+    
+    private void setErrorMsg(HttpSession session, int status) {
+    	if (status == StarsConstants.FAILURE_CODE_RUNTIME_ERROR)
+    		session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to process response message" );
+    	else if (status == StarsConstants.FAILURE_CODE_REQUEST_NULL)
+        	session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to build request message" );
+    	else if (status == StarsConstants.FAILURE_CODE_RESPONSE_NULL)
+        	session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to receive response message" );
+    	else if (status == StarsConstants.FAILURE_CODE_NODE_NOT_FOUND)
+    		session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation failed: invalid response message" );
     }
 
 }
