@@ -27,7 +27,7 @@ import com.loox.jloox.LxLine;
 /**
  * @author alauinger
   */
-public class CCOneLineGenerator
+class CCOneLineGenerator
 {
     private static String DEF_CAPCONTROL_HOME = "../subs.jsp";
     private static String DEF_FEEDERS_HOME = "../feeders.jsp";
