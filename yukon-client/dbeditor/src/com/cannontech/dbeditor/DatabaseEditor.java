@@ -130,12 +130,27 @@ public class DatabaseEditor
 			new Integer(ModelFactory.LMGROUPS),
 			new Integer(ModelFactory.LMPROGRAM),
 			new Integer(ModelFactory.LMGROUPMACRO),
-			new Integer(ModelFactory.LMGROUPSA305),
-			new Integer(ModelFactory.LMGROUPSA205),
-			new Integer(ModelFactory.LMGROUPSADIGITAL),
 			new Integer(ModelFactory.LMSCENARIO),
 			new Integer(ModelFactory.LMGROUPVERSACOM)
-		};
+		};	
+		
+	private static final Integer[] LM_MODELS_WITH_SA =
+	{
+		new Integer(ModelFactory.LMCONSTRAINT),
+		new Integer(ModelFactory.LMCONTROLAREA),
+		new Integer(ModelFactory.LMGROUPEMETCON),
+		new Integer(ModelFactory.LMGROUPEXPRESSCOM),
+		new Integer(ModelFactory.GOLAY),
+		new Integer(ModelFactory.LMGROUPS),
+		new Integer(ModelFactory.LMPROGRAM),
+		new Integer(ModelFactory.LMGROUPMACRO),
+		new Integer(ModelFactory.LMGROUPSA305),
+		new Integer(ModelFactory.LMGROUPSA205),
+		new Integer(ModelFactory.LMGROUPSADIGITAL),
+		new Integer(ModelFactory.LMSCENARIO),
+		new Integer(ModelFactory.LMGROUPVERSACOM)
+	};
+	
 	private static final Integer[] CAP_CONTROL_MODELS =
 		{
 			new Integer(ModelFactory.CAPBANK),
@@ -2738,7 +2753,12 @@ public void setDatabase(int whichDatabase)
 		case DatabaseTypes.LM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.lmRadioButtonMenuItem.setSelected(true);
-				models = LM_MODELS;
+				boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
+					DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
+				if(allowSA)
+					models = LM_MODELS_WITH_SA;
+				else
+					models = LM_MODELS;
 				break;		
 		case DatabaseTypes.CAP_CONTROL_DB:
 				this.menuBar = getMenuBar(whichDatabase);

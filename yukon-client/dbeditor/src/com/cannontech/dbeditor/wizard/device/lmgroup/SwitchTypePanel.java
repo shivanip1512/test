@@ -3,7 +3,8 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-
+import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.device.lm.LMFactory;
 
 public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPanel 
@@ -23,6 +24,24 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"LCR 2000       (VERSACOM)",
 			"LCR 1000       (Ripple)",
 			"LMT 100 Series (EMETCON)",
+			"DCU-S1180      (Golay)",	
+			"Point Group",
+			"MCT Group"
+	};
+	
+	//normally we cannot show SA protocol groups, since legal permission
+	//has only been granted for a few specific companies
+	private static final String[] SWITCH_LIST_SA = 
+	{
+			"LCR 5000       (EXPRESSCOM)",
+			"T-STAT         (EXPRESSCOM)",
+			"LCR 5000       (VERSACOM)",
+			"LCR 4000       (VERSACOM)",
+			"LCR 3000       (VERSACOM)",
+			"LCR 3000       (EMETCON)",
+			"LCR 2000       (VERSACOM)",
+			"LCR 1000       (Ripple)",
+			"LMT 100 Series (EMETCON)",
 			"DCU-S3000      (SA-305)",
 			"DCU-S2000      (SA-205)",
 			"DCU-S1170      (SA Digital)",
@@ -30,11 +49,28 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"Point Group",
 			"MCT Group"
 	};
-
-
+	
 	// These are the values that correspond to each selection
 	// switchList
 	private static final int[] VALUE_LIST = 
+	{
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,			
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_GOLAY,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
+	};	
+	
+	//normally we cannot show SA protocol groups, since legal permission
+	//has only been granted for a few specific companies
+	private static final int[] VALUE_LIST_SA = 
 	{
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
@@ -52,7 +88,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
 	};
-
+	
 /**
  * Constructor
  */
@@ -87,8 +123,13 @@ private void connEtoM1() {
  */
 public Object[] connEtoM1_ListData() {
 	
+	//normally we cannot show SA protocol groups, this checks the 
+	//specific property.
+	boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
+		DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
+	if(allowSA)
+		return SwitchTypePanel.SWITCH_LIST_SA;
 	return SwitchTypePanel.SWITCH_LIST;
-		
 		
 }
 
@@ -234,6 +275,13 @@ private javax.swing.JScrollPane getSwitchListScrollPane() {
  * @return int
  */
 public int getTypeOfSwitchSelected() {
+	
+	//normally we cannot show SA protocol groups, this checks the 
+	//specific property.
+	boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
+		DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
+	if(allowSA)
+		return SwitchTypePanel.VALUE_LIST_SA[getSwitchList().getSelectedIndex()];
 	return SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()];
 }
 
@@ -243,7 +291,15 @@ public int getTypeOfSwitchSelected() {
  * @return int
  */
 public String getTypeOfSwitchSelectedString() 
-{
+{	
+	//normally we cannot show SA protocol groups, this checks the 
+	//specific property.
+	boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
+		DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
+	if(allowSA)
+		return com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(
+			SwitchTypePanel.VALUE_LIST_SA[getSwitchList().getSelectedIndex()]);
+		
 	return com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(
 		SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()]);
 }

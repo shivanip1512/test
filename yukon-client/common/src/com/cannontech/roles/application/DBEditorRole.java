@@ -20,4 +20,5 @@ public interface DBEditorRole {
 	public static final int PERMIT_LOGIN_EDIT = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 8;
 	public static final int ALLOW_USER_ROLES = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 9;
 	public static final int ACTIVATE_ALTERNATE_RIPPLE = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 10;
+	public static final int FUTURE_PROTOCOL_DEV = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 11;
 }
