@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/11/12 19:56:29 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/12/26 17:25:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ int CtiDNPObject::getVariation(void)
 }
 
 
-CtiPointDataMsg *CtiDNPObject::getPoint( void )
+CtiPointDataMsg *CtiDNPObject::getPoint( const CtiDNPTimeCTO *cto )
 {
     return NULL;
 }
@@ -701,9 +701,16 @@ bool CtiDNPObjectBlock::isCTO( void ) const
 }
 
 
-unsigned long CtiDNPObjectBlock::getCTOSeconds( void ) const
+const CtiDNPTimeCTO *CtiDNPObjectBlock::getCTO( void ) const
 {
-    return 0;
+    const CtiDNPTimeCTO *retVal = 0;
+
+    if( isCTO() )
+    {
+        retVal = (const CtiDNPTimeCTO *)_objectList[0];
+    }
+
+    return retVal;
 }
 
 
@@ -764,7 +771,7 @@ bool CtiDNPObjectBlock::hasPoints( void )
 }
 
 
-void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
+void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList, const CtiDNPTimeCTO *cto )
 {
     CtiDNPObject *tmpObj;
     CtiPointDataMsg *pMsg;
@@ -788,8 +795,8 @@ void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
             {
                 tmpObj = _objectList[i];
 
-                //  pass in the CTO object here, or a NULL otherwise;  the points can do with it as they please
-                pMsg = tmpObj->getPoint();
+                //  we're passing in the CTO object here;  the points can do with it as they please
+                pMsg = tmpObj->getPoint(cto);
 
                 if( pMsg != NULL )
                 {

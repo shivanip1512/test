@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/10/22 22:18:15 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/12/26 17:25:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@
 #include "pointtypes.h"
 
 using namespace std;
+
+class CtiDNPTimeCTO;  //  forward declaration
 
 class CtiDNPObject
 {
@@ -52,7 +54,7 @@ public:
     virtual int serialize( unsigned char *buf );
     virtual int getSerializedLen( void );
 
-    virtual CtiPointDataMsg *getPoint( void );
+    virtual CtiPointDataMsg *getPoint( const CtiDNPTimeCTO *cto );
 };
 
 
@@ -114,14 +116,14 @@ public:
 
     int  restore( unsigned char *buf, int len );
     bool hasPoints( void );
-    void getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+    void getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList, const CtiDNPTimeCTO *cto );
 
     bool isBinaryOutputControl( void )        const;
     int  getBinaryOutputControlStatus( void ) const;
     long getBinaryOutputControlOffset( void ) const;
 
-    bool          isCTO( void )         const;
-    unsigned long getCTOSeconds( void ) const;
+    bool                 isCTO( void )  const;
+    const CtiDNPTimeCTO *getCTO( void ) const;
 
     bool          isTime( void )         const;
     unsigned long getTimeSeconds( void ) const;
