@@ -17,6 +17,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -385,7 +386,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				optOutEventQueue = OptOutEventQueue.getInstance();
 			}
 			catch (IOException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -402,7 +403,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				switchCommandQueue = SwitchCommandQueue.getInstance();
 			}
 			catch (IOException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -928,7 +929,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return cList;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -964,20 +965,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		// Search the default energy company if list entry is not found here
 		if (!ECUtils.isDefaultEnergyCompany( this ))
 			return SOAPServer.getDefaultEnergyCompany().getYukonListEntry( yukonDefID );
-		
-		return null;
-	}
-	
-	public YukonListEntry getYukonListEntry(String listName, int entryID) {
-		YukonSelectionList list = getYukonSelectionList( listName );
-		if (list != null) {
-			ArrayList entries = list.getYukonListEntries();
-			for (int i = 0; i < entries.size(); i++) {
-				YukonListEntry entry = (YukonListEntry) entries.get(i);
-				if (entry.getEntryID() == entryID)
-					return entry;
-			}
-		}
 		
 		return null;
 	}
@@ -1128,7 +1115,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 						customerFAQs.add( liteFAQ );
 					}
 					catch (Exception e) {
-						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+						CTILogger.error( e.getMessage(), e );
 					}
 				}
 			}
@@ -1184,7 +1171,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				nextCallNo = maxCallNo + 1;
 			}
 			catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 				return null;
 			}
 		}
@@ -1223,7 +1210,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				nextOrderNo = maxOrderNo + 1;
 			}
 			catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -1429,7 +1416,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return liteAddr;
 			}
 			catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -1564,7 +1551,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -1617,7 +1604,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	private LiteStarsLMHardware searchForLMHardware(int devTypeDefID, String serialNo, LiteStarsEnergyCompany referer)
+	/**
+	 * @return Pair(LiteStarsLMHardware, LiteStarsEnergyCompany)
+	 */
+	private Pair searchForLMHardware(int devTypeDefID, String serialNo, LiteStarsEnergyCompany referer)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
@@ -1632,7 +1622,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				if (YukonListFuncs.getYukonListEntry( liteHw.getLmHardwareTypeID() ).getYukonDefID() == devTypeDefID &&
 					liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
 				{
-					return liteHw;
+					return new Pair(liteHw, this);
 				}
 			}
 		}
@@ -1655,12 +1645,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 						StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
 						addInventory( liteHw );
 						
-						return liteHw;
+						return new Pair(liteHw, this);
 					}
 				}
 			}
 			catch (TransactionException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 				return null;
 			}
 		}
@@ -1671,17 +1661,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < children.size(); i++) {
 				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
 				if (!liteCompany.equals( referer )) {
-					LiteStarsLMHardware liteHw = liteCompany.searchForLMHardware( devTypeDefID, serialNo, this );
-					if (liteHw != null) return liteHw;
+					Pair p = liteCompany.searchForLMHardware( devTypeDefID, serialNo, this );
+					if (p != null)
+						throw new ObjectInOtherEnergyCompanyException( (LiteStarsLMHardware)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 				}
 			}
 		}
 		
 		// Search the LM hardware in the parent energy company
 		if (getParent() != null && !getParent().equals( referer )) {
-			LiteStarsLMHardware liteHw = getParent().searchForLMHardware( devTypeDefID, serialNo, this );
-			if (liteHw != null)
-				throw new ObjectInOtherEnergyCompanyException();
+			Pair p = getParent().searchForLMHardware( devTypeDefID, serialNo, this );
+			if (p != null)
+				throw new ObjectInOtherEnergyCompanyException( (LiteStarsLMHardware)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 		}
 		
 		return null;
@@ -1689,18 +1680,23 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	/**
 	 * Search for LM hardware with specified device type and serial #.
-	 * If this energy company is a member of a higher level energy company,
-	 * and the hardware belongs to another member of that energy company,
+	 * If this energy company is a part of an energy company hierarchy,
+	 * and the hardware belongs to another company in the hierarchy,
 	 * the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteStarsLMHardware searchForLMHardware(int deviceType, String serialNo)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		int devTypeDefID = YukonListFuncs.getYukonListEntry( deviceType ).getYukonDefID();
-		return searchForLMHardware( devTypeDefID, serialNo, this );
+		Pair p = searchForLMHardware( devTypeDefID, serialNo, this );
+		if (p != null) return (LiteStarsLMHardware)p.getFirst();
+		return null;
 	}
 	
-	private LiteInventoryBase searchForDeviceInInventory(int categoryID, String deviceName, LiteStarsEnergyCompany referer)
+	/**
+	 * @return Pair(LiteInventoryBase, LiteStarsEnergyCompany)
+	 */
+	private Pair searchForDevice(int categoryID, String deviceName, LiteStarsEnergyCompany referer)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
@@ -1713,7 +1709,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				
 				if (liteInv.getCategoryID() == categoryID &&
 					PAOFuncs.getYukonPAOName( liteInv.getDeviceID() ).equalsIgnoreCase( deviceName ))
-					return liteInv;
+					return new Pair(liteInv, this);
 			}
 		}
 		
@@ -1734,11 +1730,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
 					addInventory( liteInv );
 					
-					return liteInv;
+					return new Pair(liteInv, this);
 				}
 			}
 			catch (TransactionException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 				return null;
 			}
 		}
@@ -1748,16 +1744,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < children.size(); i++) {
 				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
 				if (!liteCompany.equals( referer )) {
-					LiteInventoryBase liteInv = liteCompany.searchForDeviceInInventory( categoryID, deviceName, this );
-					if (liteInv != null) return liteInv;
+					Pair p = liteCompany.searchForDevice( categoryID, deviceName, this );
+					if (p != null)
+						throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 				}
 			}
 		}
 		
 		if (getParent() != null && !getParent().equals( referer )) {
-			LiteInventoryBase liteInv = getParent().searchForDeviceInInventory( categoryID, deviceName, this );
-			if (liteInv != null)
-				throw new ObjectInOtherEnergyCompanyException();
+			Pair p = getParent().searchForDevice( categoryID, deviceName, this );
+			if (p != null)
+				throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 		}
 		
 		return null;
@@ -1765,15 +1762,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	/**
 	 * Search for device with the specified category and device name.
-	 * If this energy company is a member of a higher level energy company,
-	 * and the device belongs to another member of that energy company,
+	 * If this energy company is a part of an energy company hierarchy,
+	 * and the device belongs to another company in the hierarchy,
 	 * the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteInventoryBase searchForDevice(int categoryID, String deviceName)
 		throws ObjectInOtherEnergyCompanyException
 	{
-		LiteInventoryBase liteInv = searchForDeviceInInventory( categoryID, deviceName, this );
-		if (liteInv != null) return liteInv;
+		Pair p = searchForDevice( categoryID, deviceName, this );
+		if (p != null) return (LiteInventoryBase)p.getFirst();
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
@@ -1786,7 +1783,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					
 					if (PAOFuncs.getYukonPAOName( litePao.getYukonID() ).equalsIgnoreCase( deviceName )) {
 						// Create a temporary LiteInventoryBase object
-						liteInv = new LiteInventoryBase();
+						LiteInventoryBase liteInv = new LiteInventoryBase();
 						liteInv.setInventoryID( -1 );
 						liteInv.setDeviceID( litePao.getYukonID() );
 						liteInv.setCategoryID( categoryID );
@@ -1799,7 +1796,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	private LiteInventoryBase getDevice(int deviceID, LiteStarsEnergyCompany referer)
+	/**
+	 * @return Pair(LiteInventoryBase, LiteStarsEnergyCompany)
+	 */
+	private Pair getDevice(int deviceID, LiteStarsEnergyCompany referer)
 		throws ObjectInOtherEnergyCompanyException
 	{
 		ArrayList inventory = getAllInventory();
@@ -1808,7 +1808,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < inventory.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
 				if (liteInv.getDeviceID() == deviceID)
-					return liteInv;
+					return new Pair(liteInv, this);
 			}
 		}
 		
@@ -1819,7 +1819,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			if (inv != null) {
 				LiteInventoryBase liteInv = new LiteInventoryBase();
 				StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
-				return liteInv;
+				return new Pair(liteInv, this);
 			}
 		}
 		
@@ -1828,16 +1828,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < children.size(); i++) {
 				LiteStarsEnergyCompany liteCompany = (LiteStarsEnergyCompany) children.get(i);
 				if (!liteCompany.equals( referer )) {
-					LiteInventoryBase liteInv = liteCompany.getDevice( deviceID, this );
-					if (liteInv != null) return liteInv;
+					Pair p = liteCompany.getDevice( deviceID, this );
+					if (p != null)
+						throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 				}
 			}
 		}
 		
 		if (getParent() != null && !getParent().equals( referer )) {
-			LiteInventoryBase liteInv = getParent().getDevice( deviceID, this );
-			if (liteInv != null)
-				throw new ObjectInOtherEnergyCompanyException();
+			Pair p = getParent().getDevice( deviceID, this );
+			if (p != null)
+				throw new ObjectInOtherEnergyCompanyException( (LiteInventoryBase)p.getFirst(), (LiteStarsEnergyCompany)p.getSecond() );
 		}
 		
 		return null;
@@ -1845,20 +1846,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	/**
 	 * Search the inventory for device with the specified device ID.
-	 * If this energy company is a member of a higher level energy company,
-	 * and the device belongs to another member of that energy company,
+	 * If this energy company is a part of an energy company hierarchy,
+	 * and the device belongs to another company in the hierarchy,
 	 * the ObjectInOtherEnergyCompanyException is thrown. 
 	 */
 	public LiteInventoryBase getDevice(int deviceID) throws ObjectInOtherEnergyCompanyException {
-		return getDevice( deviceID, this );
+		Pair p = getDevice( deviceID, this );
+		if (p != null) return (LiteInventoryBase)p.getFirst();
+		return null;
 	}
 	
 	/**
-	 * Search the inventory by serial number. The returned LiteInventoryBase
-	 * objects may be "unextended".
-	 * @param searchMembers Controls whether to search through member energy companies
+	 * Search the inventory by serial number. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
 	 */
-	public LiteInventoryBase[] searchInventoryBySerialNo(String serialNo, boolean searchMembers) {
+	public ArrayList searchInventoryBySerialNo(String serialNo, boolean searchMembers) {
 		ArrayList hwList = new ArrayList();
 		ArrayList inventory = loadAllInventory();
 		
@@ -1866,8 +1869,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			for (int i = 0; i < inventory.size(); i++) {
 				if (inventory.get(i) instanceof LiteStarsLMHardware) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
-					if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo ))
-					hwList.add( liteHw );
+					if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo )) {
+						if (searchMembers)
+							hwList.add( new Pair(liteHw, this) );
+						else
+							hwList.add( liteHw );
+					}
 				}
 			}
 		}
@@ -1877,22 +1884,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteInventoryBase[] hardwares = company.searchInventoryBySerialNo( serialNo, searchMembers );
-					for (int j = 0; j < hardwares.length; j++)
-						hwList.add( hardwares[j] );
+					ArrayList memberList = company.searchInventoryBySerialNo( serialNo, searchMembers );
+					hwList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteInventoryBase[] hardwares = new LiteInventoryBase[ hwList.size() ];
-		hwList.toArray( hardwares );
-		return hardwares;
+		return hwList;
 	}
 	
 	/**
-	 * Search the inventory by account # the hardware belongs to
+	 * Search the inventory by account #. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
 	 */
-	public LiteInventoryBase[] searchInventoryByAccountNo(String accountNo, boolean searchMembers) {
+	public ArrayList searchInventoryByAccountNo(String accountNo, boolean searchMembers) {
 		ArrayList invList = new ArrayList();
 		ArrayList inventory = loadAllInventory();
 		
@@ -1901,8 +1907,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (inventory) {
 				for (int i = 0; i < inventory.size(); i++) {
 					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-					if (liteInv.getAccountID() == liteAcctInfo.getAccountID())
-						invList.add( liteInv );
+					if (liteInv.getAccountID() == liteAcctInfo.getAccountID()) {
+						if (searchMembers)
+							invList.add( new Pair(liteInv, this) );
+						else
+							invList.add( liteInv );
+					}
 				}
 			}
 		}
@@ -1912,29 +1922,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteInventoryBase[] hardwares = company.searchInventoryByAccountNo( accountNo, searchMembers );
-					for (int j = 0; j < hardwares.length; j++)
-						invList.add( hardwares[j] );
+					ArrayList memberList = company.searchInventoryByAccountNo( accountNo, searchMembers );
+					invList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteInventoryBase[] hardwares = new LiteInventoryBase[ invList.size() ];
-		invList.toArray( hardwares );
-		return hardwares;
+		return invList;
 	}
 	
-	private LiteInventoryBase[] searchInventoryByContactIDs(int[] contactIDs, boolean searchMembers) {
+	private ArrayList searchInventoryByContactIDs(int[] contactIDs, boolean searchMembers) {
 		ArrayList invList = new ArrayList();
 		ArrayList inventory = loadAllInventory();
-		LiteStarsCustAccountInformation[] accounts = searchAccountByContactIDs( contactIDs, false );
+		ArrayList acctList = searchAccountByContactIDs( contactIDs, false );
 		
 		synchronized (inventory) {
 			for (int i = 0; i < inventory.size(); i++) {
 				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-				for (int j = 0; j < accounts.length; j++) {
-					if (liteInv.getAccountID() == accounts[j].getAccountID()) {
-						invList.add( liteInv );
+				for (int j = 0; j < acctList.size(); j++) {
+					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctList.get(j);
+					if (liteInv.getAccountID() == liteAcctInfo.getAccountID()) {
+						if (searchMembers)
+							invList.add( new Pair(liteInv, this) );
+						else
+							invList.add( liteInv );
 						break;
 					}
 				}
@@ -1946,22 +1957,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteInventoryBase[] hardwares = company.searchInventoryByContactIDs( contactIDs, searchMembers );
-					for (int j = 0; j < hardwares.length; j++)
-						invList.add( hardwares[j] );
+					ArrayList memberList = company.searchInventoryByContactIDs( contactIDs, searchMembers );
+					invList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteInventoryBase[] hardwares = new LiteInventoryBase[ invList.size() ];
-		invList.toArray( hardwares );
-		return hardwares;
+		return invList;
 	}
 	
 	/**
-	 * Search the inventory by phone # of the account the hardware belongs to
+	 * Search the inventory by phone #. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
 	 */
-	public LiteInventoryBase[] searchInventoryByPhoneNo(String phoneNo, boolean searchMembers) {
+	public ArrayList searchInventoryByPhoneNo(String phoneNo, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
 				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE} );
 		
@@ -1973,9 +1983,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search the inventory by last name of the account the hardware belongs to
+	 * Search the inventory by last name. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
 	 */
-	public LiteInventoryBase[] searchInventoryByLastName(String lastName, boolean searchMembers) {
+	public ArrayList searchInventoryByLastName(String lastName, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByLName( lastName );
 		
 		int[] contactIDs = new int[ contacts.length ];
@@ -1985,7 +1997,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return searchInventoryByContactIDs( contactIDs, searchMembers );
 	}
 	
-	public LiteInventoryBase[] searchInventoryByOrderNo(String orderNo, boolean searchMembers) {
+	/**
+	 * Search the inventory by order #. If searchMembers is true,
+	 * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteInventoryBase.
+	 */
+	public ArrayList searchInventoryByOrderNo(String orderNo, boolean searchMembers) {
 		ArrayList invList = new ArrayList();
 		ArrayList inventory = loadAllInventory();
 		ArrayList workOrders = loadWorkOrders();
@@ -2005,8 +2022,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (inventory) {
 				for (int i = 0; i < inventory.size(); i++) {
 					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-					if (liteInv.getAccountID() == liteOrder.getAccountID())
-						invList.add( liteInv );
+					if (liteInv.getAccountID() == liteOrder.getAccountID()) {
+						if (searchMembers)
+							invList.add( new Pair(liteInv, this) );
+						else
+							invList.add( liteInv );
+					}
 				}
 			}
 		}
@@ -2016,16 +2037,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteInventoryBase[] hardwares = company.searchInventoryByOrderNo( orderNo, searchMembers );
-					for (int j = 0; j < hardwares.length; j++)
-						invList.add( hardwares[j] );
+					ArrayList memberList = company.searchInventoryByOrderNo( orderNo, searchMembers );
+					invList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteInventoryBase[] hardwares = new LiteInventoryBase[ invList.size() ];
-		invList.toArray( hardwares );
-		return hardwares;
+		return invList;
 	}
 	
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID) {
@@ -2089,7 +2107,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return workOrders;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -2119,7 +2137,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return workOrder;
 			}
 			catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
         
@@ -2300,7 +2318,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			liteAcctInfo.setExtended( true );
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -2327,7 +2345,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				return addBriefCustAccountInfo( account );
 			}
 			catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
 		
@@ -2414,7 +2432,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			return addBriefCustAccountInfo( account );
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		
 		return null;
@@ -2433,22 +2451,32 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	/**
 	 * Search customer accounts by account #. Wildcard character "*" is allowed.
-	 * The returned LiteStarsCustAccountInformation objects may be "unextended".
-	 * @param searchMembers Controls whether to search through member energy companies.
+	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
-	public LiteStarsCustAccountInformation[] searchAccountByAccountNo(String accountNo, boolean searchMembers) {
+	public ArrayList searchAccountByAccountNo(String accountNo, boolean searchMembers) {
 		ArrayList accountList = new ArrayList();
 		
 		if (accountNo.indexOf('*') == -1) {
 			LiteStarsCustAccountInformation liteAcctInfo = searchByAccountNo( accountNo );
-			if (liteAcctInfo != null) accountList.add( liteAcctInfo );
+			if (liteAcctInfo != null)  {
+				if (searchMembers)
+					accountList.add( new Pair(liteAcctInfo, this) );
+				else
+					accountList.add( liteAcctInfo );
+			} 
 		}
 		else {
 			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber(
 					getEnergyCompanyID(), accountNo.replace('*','%') );
 			if (accountIDs != null) {
-				for (int i = 0; i < accountIDs.length; i++)
-					accountList.add( getBriefCustAccountInfo(accountIDs[i], true) );
+				for (int i = 0; i < accountIDs.length; i++) {
+					LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+					if (searchMembers)
+						accountList.add( new Pair(liteAcctInfo, this) );
+					else
+						accountList.add( liteAcctInfo );
+				}
 			}
 		}
 		
@@ -2457,29 +2485,34 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteStarsCustAccountInformation[] accounts = company.searchAccountByAccountNo( accountNo, searchMembers );
-					for (int j = 0; j < accounts.length; j++)
-						accountList.add( accounts[j] );
+					ArrayList memberList = company.searchAccountByAccountNo( accountNo, searchMembers );
+					accountList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
-		accountList.toArray( accounts );
-		return accounts;
+		return accountList;
 	}
 	
 	/**
-	 * Search customer accounts by hardware serial # assigned to the account.
+	 * Search customer accounts by hardware serial #.
+	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
-	public LiteStarsCustAccountInformation[] searchAccountBySerialNo(String serialNo, boolean searchMembers) {
-		LiteInventoryBase[] hardwares = searchInventoryBySerialNo( serialNo, false );
+	public ArrayList searchAccountBySerialNo(String serialNo, boolean searchMembers) {
+		ArrayList invList = searchInventoryBySerialNo( serialNo, false );
 		ArrayList accountList = new ArrayList();
 		
-		for (int i = 0; i < hardwares.length; i++) {
-			if (hardwares[i].getAccountID() > 0) {
-				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( hardwares[i].getAccountID(), true );
-				if (liteAcctInfo != null) accountList.add( liteAcctInfo );
+		for (int i = 0; i < invList.size(); i++) {
+			LiteInventoryBase inv = (LiteInventoryBase) invList.get(i);
+			if (inv.getAccountID() > 0) {
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( inv.getAccountID(), true );
+				if (liteAcctInfo != null) {
+					if (searchMembers)
+						accountList.add( new Pair(liteAcctInfo, this) );
+					else
+						accountList.add( liteAcctInfo );
+				} 
 			}
 		}
 		
@@ -2488,25 +2521,31 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteStarsCustAccountInformation[] accounts = company.searchAccountBySerialNo( serialNo, searchMembers );
-					for (int j = 0; j < accounts.length; j++)
-						accountList.add( accounts[j] );
+					ArrayList memberList = company.searchAccountBySerialNo( serialNo, searchMembers );
+					accountList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
-		accountList.toArray( accounts );
-		return accounts;
+		return accountList;
 	}
 	
-	public LiteStarsCustAccountInformation searchAccountByMapNo(String mapNo, boolean searchMembers) {
+	/**
+	 * Search customer account by residence map #.
+	 * If searchMembers is true, the return type is Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise the return type is LiteStarsCustAccountInformation.
+	 */
+	public Object searchAccountByMapNo(String mapNo, boolean searchMembers) {
 		ArrayList acctInfoList = getAllCustAccountInformation();
 		synchronized (acctInfoList) {
 			for (int i = 0; i < acctInfoList.size(); i++) {
 				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) acctInfoList.get(i);
-				if (liteAcctInfo.getAccountSite().getSiteNumber().equalsIgnoreCase( mapNo ))
-					return liteAcctInfo;
+				if (liteAcctInfo.getAccountSite().getSiteNumber().equalsIgnoreCase( mapNo )) {
+					if (searchMembers)
+						return new Pair(liteAcctInfo, this);
+					else
+						return liteAcctInfo;
+				}
 			}
 		}
 		
@@ -2519,11 +2558,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				account = (com.cannontech.database.data.stars.customer.CustomerAccount)
 						Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
 				
-				return addBriefCustAccountInfo( account );
+				LiteStarsCustAccountInformation liteAcctInfo = addBriefCustAccountInfo( account );
+				if (searchMembers)
+					return new Pair(liteAcctInfo, this);
+				else
+					return liteAcctInfo;
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			return null;
 		}
 		
@@ -2532,8 +2575,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteStarsCustAccountInformation liteAcctInfo = company.searchAccountByMapNo( mapNo, searchMembers );
-					if (liteAcctInfo != null) return liteAcctInfo;
+					Object obj = company.searchAccountByMapNo( mapNo, searchMembers );
+					if (obj != null) return obj;
 				}
 			}
 		}
@@ -2541,14 +2584,19 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	private LiteStarsCustAccountInformation[] searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
+	private ArrayList searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
 		ArrayList accountList = new ArrayList();
 		
 		int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByPrimaryContactIDs(
 				contactIDs, getLiteID() );
 		if (accountIDs != null) {
-			for (int i = 0; i < accountIDs.length; i++)
-				accountList.add( getBriefCustAccountInfo(accountIDs[i], true) );
+			for (int i = 0; i < accountIDs.length; i++) {
+				LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+				if (searchMembers)
+					accountList.add( new Pair(liteAcctInfo, this) );
+				else
+					accountList.add( liteAcctInfo );
+			}
 		}
 		
 		if (searchMembers) {
@@ -2556,22 +2604,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			synchronized (children) {
 				for (int i = 0; i < children.size(); i++) {
 					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
-					LiteStarsCustAccountInformation[] accounts = company.searchAccountByContactIDs( contactIDs, searchMembers );
-					for (int j = 0; j < accounts.length; j++)
-						accountList.add( accounts[j] );
+					ArrayList memberList = company.searchAccountByContactIDs( contactIDs, searchMembers );
+					accountList.addAll( memberList );
 				}
 			}
 		}
 		
-		LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ accountList.size() ];
-		accountList.toArray( accounts );
-		return accounts;
+		return accountList;
 	}
 	
 	/**
 	 * Search customer accounts by phone number.
+	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
-	public LiteStarsCustAccountInformation[] searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
+	public ArrayList searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
 		LiteContact[] contacts = ContactFuncs.getContactsByPhoneNo(
 				phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE} );
 		
@@ -2583,11 +2630,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	/**
-	 * Search customer accounts by last name. The search is based on partial match,
-	 * in which all the accounts with last names started with the search string are
-	 * returned. It is also case-insensitive.
+	 * Search customer accounts by last name. The search is based on partial match, and is case-insensitive.
+	 * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	 * otherwise it returns a list of LiteStarsCustAccountInformation.
 	 */
-	public LiteStarsCustAccountInformation[] searchAccountByLastName(String lastName, boolean searchMembers) {
+	public ArrayList searchAccountByLastName(String lastName, boolean searchMembers) {
 		ArrayList contactList = new ArrayList();
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();

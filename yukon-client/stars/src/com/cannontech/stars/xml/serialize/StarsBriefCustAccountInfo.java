@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplyThermostatSchedule.java,v 1.2 2004/06/02 16:30:18 zyao Exp $
+ * $Id: StarsBriefCustAccountInfo.java,v 1.1 2004/06/02 16:30:15 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,37 +23,37 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.2 $ $Date: 2004/06/02 16:30:18 $
+ * @version $Revision: 1.1 $ $Date: 2004/06/02 16:30:15 $
 **/
-public class StarsApplyThermostatSchedule implements java.io.Serializable {
+public class StarsBriefCustAccountInfo implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _inventoryID;
+    private int _accountID;
 
     /**
-     * keeps track of state for field: _inventoryID
+     * keeps track of state for field: _accountID
     **/
-    private boolean _has_inventoryID;
+    private boolean _has_accountID;
 
-    private int _scheduleID;
+    private int _energyCompanyID;
 
     /**
-     * keeps track of state for field: _scheduleID
+     * keeps track of state for field: _energyCompanyID
     **/
-    private boolean _has_scheduleID;
+    private boolean _has_energyCompanyID;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsApplyThermostatSchedule() {
+    public StarsBriefCustAccountInfo() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsApplyThermostatSchedule()
+    } //-- com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo()
 
 
       //-----------/
@@ -62,51 +62,44 @@ public class StarsApplyThermostatSchedule implements java.io.Serializable {
 
     /**
     **/
-    public void deleteInventoryID()
+    public void deleteEnergyCompanyID()
     {
-        this._has_inventoryID= false;
-    } //-- void deleteInventoryID() 
+        this._has_energyCompanyID= false;
+    } //-- void deleteEnergyCompanyID() 
 
     /**
-    **/
-    public void deleteScheduleID()
-    {
-        this._has_scheduleID= false;
-    } //-- void deleteScheduleID() 
-
-    /**
-     * Returns the value of field 'inventoryID'.
+     * Returns the value of field 'accountID'.
      * 
-     * @return the value of field 'inventoryID'.
+     * @return the value of field 'accountID'.
     **/
-    public int getInventoryID()
+    public int getAccountID()
     {
-        return this._inventoryID;
-    } //-- int getInventoryID() 
+        return this._accountID;
+    } //-- int getAccountID() 
 
     /**
-     * Returns the value of field 'scheduleID'.
+     * Returns the value of field 'energyCompanyID'.
      * 
-     * @return the value of field 'scheduleID'.
+     * @return the value of field 'energyCompanyID'.
     **/
-    public int getScheduleID()
+    public int getEnergyCompanyID()
     {
-        return this._scheduleID;
-    } //-- int getScheduleID() 
+        return this._energyCompanyID;
+    } //-- int getEnergyCompanyID() 
 
     /**
     **/
-    public boolean hasInventoryID()
+    public boolean hasAccountID()
     {
-        return this._has_inventoryID;
-    } //-- boolean hasInventoryID() 
+        return this._has_accountID;
+    } //-- boolean hasAccountID() 
 
     /**
     **/
-    public boolean hasScheduleID()
+    public boolean hasEnergyCompanyID()
     {
-        return this._has_scheduleID;
-    } //-- boolean hasScheduleID() 
+        return this._has_energyCompanyID;
+    } //-- boolean hasEnergyCompanyID() 
 
     /**
     **/
@@ -146,37 +139,37 @@ public class StarsApplyThermostatSchedule implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'inventoryID'.
+     * Sets the value of field 'accountID'.
      * 
-     * @param inventoryID the value of field 'inventoryID'.
+     * @param accountID the value of field 'accountID'.
     **/
-    public void setInventoryID(int inventoryID)
+    public void setAccountID(int accountID)
     {
-        this._inventoryID = inventoryID;
-        this._has_inventoryID = true;
-    } //-- void setInventoryID(int) 
+        this._accountID = accountID;
+        this._has_accountID = true;
+    } //-- void setAccountID(int) 
 
     /**
-     * Sets the value of field 'scheduleID'.
+     * Sets the value of field 'energyCompanyID'.
      * 
-     * @param scheduleID the value of field 'scheduleID'.
+     * @param energyCompanyID the value of field 'energyCompanyID'.
     **/
-    public void setScheduleID(int scheduleID)
+    public void setEnergyCompanyID(int energyCompanyID)
     {
-        this._scheduleID = scheduleID;
-        this._has_scheduleID = true;
-    } //-- void setScheduleID(int) 
+        this._energyCompanyID = energyCompanyID;
+        this._has_energyCompanyID = true;
+    } //-- void setEnergyCompanyID(int) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsApplyThermostatSchedule unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsApplyThermostatSchedule) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsApplyThermostatSchedule.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsApplyThermostatSchedule unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo unmarshal(java.io.Reader) 
 
     /**
     **/

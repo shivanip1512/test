@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -225,7 +226,8 @@ public class InventoryManager extends HttpServlet {
 			liteInv = energyCompany.getDevice( deviceID );
 		}
 		catch (ObjectInOtherEnergyCompanyException e) {
-			redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp?InOther=true";
+			session.setAttribute( INVENTORY_TO_CHECK, e );
+			redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 			return;
 		}
 		
@@ -329,8 +331,10 @@ public class InventoryManager extends HttpServlet {
 						"The hardware is found in another energy company. Please contact " + energyCompany.getParent().getName() + " for more information." );
 				redirect = referer;
 			}
-			else
-				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp?InOther=true";
+			else {
+				session.setAttribute( INVENTORY_TO_CHECK, e );
+				redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
+			}
 			
 			return;
 		}
@@ -878,18 +882,18 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		boolean searchMembers = energyCompany.getChildren().size() > 0;
-		LiteInventoryBase[] hardwares = null; 
+		ArrayList invList = null; 
 		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
-			hardwares = energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
+			invList = energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			hardwares = energyCompany.searchInventoryByAccountNo( searchValue, searchMembers );
+			invList = energyCompany.searchInventoryByAccountNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
 			try {
 				String phoneNo = ServletUtils.formatPhoneNumber( searchValue );
-				hardwares = energyCompany.searchInventoryByPhoneNo( phoneNo, searchMembers );
+				invList = energyCompany.searchInventoryByPhoneNo( phoneNo, searchMembers );
 			}
 			catch (WebClientException e) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
@@ -897,31 +901,33 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-			hardwares = energyCompany.searchInventoryByLastName( searchValue, searchMembers );
+			invList = energyCompany.searchInventoryByLastName( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
 			if (AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN ))
 				searchValue = ServerUtils.AUTO_GEN_NUM_PREC + searchValue;
-			hardwares = energyCompany.searchInventoryByOrderNo( searchValue, searchMembers );
+			invList = energyCompany.searchInventoryByOrderNo( searchValue, searchMembers );
 		}
 		
-		if (hardwares == null || hardwares.length == 0) {
+		if (invList == null || invList.size() == 0) {
 			session.setAttribute(INVENTORY_SET_DESC, "<div class='ErrorMsg' align='center'>No hardware found matching the search criteria.</div>");
 		}
 		else {
 			LiteInventoryBase liteInv = null;
-			if (hardwares.length == 1)
-				liteInv = energyCompany.getInventoryBrief( hardwares[0].getInventoryID(), false );
+			if (invList.size() == 1) {
+				if (searchMembers) {
+					if (((Pair)invList.get(0)).getSecond() == energyCompany)
+						liteInv = (LiteInventoryBase) ((Pair)invList.get(0)).getFirst();
+				}
+				else
+					liteInv = (LiteInventoryBase) invList.get(0);
+			}
 			
 			if (liteInv != null) {
 				redirect = req.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";
 			}
 			else {
-				ArrayList invList = new ArrayList();
-				for (int i = 0; i < hardwares.length; i++)
-					invList.add( hardwares[i] );
-				
 				session.setAttribute(INVENTORY_SET, invList);
 				session.setAttribute(INVENTORY_SET_DESC, "Click on a serial # (device name) to view the hardware details, or click on an account # (if available) to view the account information.");
 				session.setAttribute(ServletUtils.ATT_REFERRER, referer);

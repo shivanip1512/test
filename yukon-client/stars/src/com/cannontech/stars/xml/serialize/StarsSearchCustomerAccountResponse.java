@@ -36,7 +36,7 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
 
     private StarsCustAccountInformation _starsCustAccountInformation;
 
-    private java.util.Vector _accountIDList;
+    private java.util.Vector _starsBriefCustAccountInfoList;
 
     private StarsFailure _starsFailure;
 
@@ -47,7 +47,7 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
 
     public StarsSearchCustomerAccountResponse() {
         super();
-        _accountIDList = new Vector();
+        _starsBriefCustAccountInfoList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsSearchCustomerAccountResponse()
 
 
@@ -58,67 +58,67 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
     /**
      * 
      * 
-     * @param vAccountID
+     * @param vStarsBriefCustAccountInfo
     **/
-    public void addAccountID(int vAccountID)
+    public void addStarsBriefCustAccountInfo(StarsBriefCustAccountInfo vStarsBriefCustAccountInfo)
         throws java.lang.IndexOutOfBoundsException
     {
-        _accountIDList.addElement(new Integer(vAccountID));
-    } //-- void addAccountID(int) 
+        _starsBriefCustAccountInfoList.addElement(vStarsBriefCustAccountInfo);
+    } //-- void addStarsBriefCustAccountInfo(StarsBriefCustAccountInfo) 
 
     /**
      * 
      * 
      * @param index
-     * @param vAccountID
+     * @param vStarsBriefCustAccountInfo
     **/
-    public void addAccountID(int index, int vAccountID)
+    public void addStarsBriefCustAccountInfo(int index, StarsBriefCustAccountInfo vStarsBriefCustAccountInfo)
         throws java.lang.IndexOutOfBoundsException
     {
-        _accountIDList.insertElementAt(new Integer(vAccountID), index);
-    } //-- void addAccountID(int, int) 
+        _starsBriefCustAccountInfoList.insertElementAt(vStarsBriefCustAccountInfo, index);
+    } //-- void addStarsBriefCustAccountInfo(int, StarsBriefCustAccountInfo) 
 
     /**
     **/
-    public java.util.Enumeration enumerateAccountID()
+    public java.util.Enumeration enumerateStarsBriefCustAccountInfo()
     {
-        return _accountIDList.elements();
-    } //-- java.util.Enumeration enumerateAccountID() 
+        return _starsBriefCustAccountInfoList.elements();
+    } //-- java.util.Enumeration enumerateStarsBriefCustAccountInfo() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public int getAccountID(int index)
+    public StarsBriefCustAccountInfo getStarsBriefCustAccountInfo(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _accountIDList.size())) {
+        if ((index < 0) || (index > _starsBriefCustAccountInfoList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return ((Integer)_accountIDList.elementAt(index)).intValue();
-    } //-- int getAccountID(int) 
+        return (StarsBriefCustAccountInfo) _starsBriefCustAccountInfoList.elementAt(index);
+    } //-- StarsBriefCustAccountInfo getStarsBriefCustAccountInfo(int) 
 
     /**
     **/
-    public int[] getAccountID()
+    public StarsBriefCustAccountInfo[] getStarsBriefCustAccountInfo()
     {
-        int size = _accountIDList.size();
-        int[] mArray = new int[size];
+        int size = _starsBriefCustAccountInfoList.size();
+        StarsBriefCustAccountInfo[] mArray = new StarsBriefCustAccountInfo[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = ((Integer)_accountIDList.elementAt(index)).intValue();
+            mArray[index] = (StarsBriefCustAccountInfo) _starsBriefCustAccountInfoList.elementAt(index);
         }
         return mArray;
-    } //-- int[] getAccountID() 
+    } //-- StarsBriefCustAccountInfo[] getStarsBriefCustAccountInfo() 
 
     /**
     **/
-    public int getAccountIDCount()
+    public int getStarsBriefCustAccountInfoCount()
     {
-        return _accountIDList.size();
-    } //-- int getAccountIDCount() 
+        return _starsBriefCustAccountInfoList.size();
+    } //-- int getStarsBriefCustAccountInfoCount() 
 
     /**
      * Returns the value of field 'starsCustAccountInformation'.
@@ -178,53 +178,53 @@ public class StarsSearchCustomerAccountResponse implements java.io.Serializable 
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * 
-     * 
-     * @param index
     **/
-    public int removeAccountID(int index)
+    public void removeAllStarsBriefCustAccountInfo()
     {
-        java.lang.Object obj = _accountIDList.elementAt(index);
-        _accountIDList.removeElementAt(index);
-        return ((Integer)obj).intValue();
-    } //-- int removeAccountID(int) 
-
-    /**
-    **/
-    public void removeAllAccountID()
-    {
-        _accountIDList.removeAllElements();
-    } //-- void removeAllAccountID() 
+        _starsBriefCustAccountInfoList.removeAllElements();
+    } //-- void removeAllStarsBriefCustAccountInfo() 
 
     /**
      * 
      * 
      * @param index
-     * @param vAccountID
     **/
-    public void setAccountID(int index, int vAccountID)
+    public StarsBriefCustAccountInfo removeStarsBriefCustAccountInfo(int index)
+    {
+        java.lang.Object obj = _starsBriefCustAccountInfoList.elementAt(index);
+        _starsBriefCustAccountInfoList.removeElementAt(index);
+        return (StarsBriefCustAccountInfo) obj;
+    } //-- StarsBriefCustAccountInfo removeStarsBriefCustAccountInfo(int) 
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vStarsBriefCustAccountInfo
+    **/
+    public void setStarsBriefCustAccountInfo(int index, StarsBriefCustAccountInfo vStarsBriefCustAccountInfo)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _accountIDList.size())) {
+        if ((index < 0) || (index > _starsBriefCustAccountInfoList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _accountIDList.setElementAt(new Integer(vAccountID), index);
-    } //-- void setAccountID(int, int) 
+        _starsBriefCustAccountInfoList.setElementAt(vStarsBriefCustAccountInfo, index);
+    } //-- void setStarsBriefCustAccountInfo(int, StarsBriefCustAccountInfo) 
 
     /**
      * 
      * 
-     * @param accountIDArray
+     * @param starsBriefCustAccountInfoArray
     **/
-    public void setAccountID(int[] accountIDArray)
+    public void setStarsBriefCustAccountInfo(StarsBriefCustAccountInfo[] starsBriefCustAccountInfoArray)
     {
         //-- copy array
-        _accountIDList.removeAllElements();
-        for (int i = 0; i < accountIDArray.length; i++) {
-            _accountIDList.addElement(new Integer(accountIDArray[i]));
+        _starsBriefCustAccountInfoList.removeAllElements();
+        for (int i = 0; i < starsBriefCustAccountInfoArray.length; i++) {
+            _starsBriefCustAccountInfoList.addElement(starsBriefCustAccountInfoArray[i]);
         }
-    } //-- void setAccountID(int) 
+    } //-- void setStarsBriefCustAccountInfo(StarsBriefCustAccountInfo) 
 
     /**
      * Sets the value of field 'starsCustAccountInformation'.

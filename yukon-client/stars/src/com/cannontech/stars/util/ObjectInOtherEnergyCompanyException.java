@@ -6,6 +6,9 @@
  */
 package com.cannontech.stars.util;
 
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+
 /**
  * @author yao
  *
@@ -14,12 +17,31 @@ package com.cannontech.stars.util;
  */
 public class ObjectInOtherEnergyCompanyException extends Exception {
 	
+	private LiteBase object = null;
+	private LiteStarsEnergyCompany energyCompany = null;
+	
 	public ObjectInOtherEnergyCompanyException() {
 		super();
 	}
 	
-	public ObjectInOtherEnergyCompanyException(String s) {
-		super(s);
+	public ObjectInOtherEnergyCompanyException(LiteBase obj, LiteStarsEnergyCompany company) {
+		super();
+		object = obj;
+		energyCompany = company;
+	}
+
+	/**
+	 * @return
+	 */
+	public LiteStarsEnergyCompany getEnergyCompany() {
+		return energyCompany;
+	}
+
+	/**
+	 * @return
+	 */
+	public LiteBase getObject() {
+		return object;
 	}
 
 }

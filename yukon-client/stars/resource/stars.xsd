@@ -518,7 +518,12 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:element ref="stars-CustAccountInformation"/>
-				<xs:element name="AccountID" type="xs:int" maxOccurs="unbounded"/>
+				<xs:element name="stars-BriefCustAccountInfo" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="accountID" type="xs:int" use="required"/>
+						<xs:attribute name="energyCompanyID" type="xs:int"/>
+					</xs:complexType>
+				</xs:element>
 				<xs:element ref="stars-Failure"/>
 			</xs:choice>
 		</xs:complexType>

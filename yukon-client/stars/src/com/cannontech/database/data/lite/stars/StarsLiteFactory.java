@@ -1686,14 +1686,19 @@ public class StarsLiteFactory {
 		starsSite.setPole( ServerUtils.forceNotNull(liteSite.getPole()) );
 		starsSite.setTransformerSize( ServerUtils.forceNotNull(liteSite.getTransformerSize()) );
 		starsSite.setServiceVoltage( ServerUtils.forceNotNull(liteSite.getServiceVoltage()) );
-		starsSite.setSubstation(
-			(Substation) StarsFactory.newStarsCustListEntry(
-				energyCompany.getYukonListEntry(
-					com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION,
-					liteSite.getSubstationID()
-				),
-				Substation.class)
-		);
+		
+		YukonListEntry subEntry = null;
+		YukonSelectionList subList = energyCompany.getYukonSelectionList( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+		if (subList != null) {
+			for (int i = 0; i < subList.getYukonListEntries().size(); i++) {
+				YukonListEntry entry = (YukonListEntry) subList.getYukonListEntries().get(i);
+				if (entry.getEntryID() == liteSite.getSubstationID()) {
+					subEntry = entry;
+					break;
+				}
+			}
+		}
+		starsSite.setSubstation( (Substation)StarsFactory.newStarsCustListEntry(subEntry, Substation.class) );
 		
 		return starsSite;
 	}

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
@@ -54,8 +55,10 @@ public class InventoryBean {
 	
 	private static final Comparator INV_ID_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
-			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
-			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			LiteInventoryBase inv1 = (LiteInventoryBase)
+					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
+			LiteInventoryBase inv2 = (LiteInventoryBase)
+					((o2 instanceof Pair)? ((Pair)o2).getFirst() :  o2);
 			return inv1.getInventoryID() - inv2.getInventoryID();
 		}
 	};
@@ -67,8 +70,10 @@ public class InventoryBean {
 	 */
 	private static final Comparator SERIAL_NO_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
-			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
-			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			LiteInventoryBase inv1 = (LiteInventoryBase)
+					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
+			LiteInventoryBase inv2 = (LiteInventoryBase)
+					((o2 instanceof Pair)? ((Pair)o2).getFirst() :  o2);
 			int result = 0;
 			
 			if ((inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware)) {
@@ -132,8 +137,10 @@ public class InventoryBean {
 	
 	private static final Comparator INST_DATE_CMPTOR = new Comparator() {
 		public int compare(Object o1, Object o2) {
-			LiteInventoryBase inv1 = (LiteInventoryBase) o1;
-			LiteInventoryBase inv2 = (LiteInventoryBase) o2;
+			LiteInventoryBase inv1 = (LiteInventoryBase)
+					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
+			LiteInventoryBase inv2 = (LiteInventoryBase)
+					((o2 instanceof Pair)? ((Pair)o2).getFirst() :  o2);
 			
 			int result = new java.util.Date(inv1.getInstallDate()).compareTo( new java.util.Date(inv2.getInstallDate()) );
 			if (result == 0)
@@ -171,30 +178,43 @@ public class InventoryBean {
 		return energyCompany;
 	}
 	
-	private ArrayList getHardwareList() {
+	private ArrayList getHardwareList(boolean showEnergyCompany) {
 		if (inventoryList != null) return inventoryList;
 		
 		ArrayList hardwares = null;
 		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
 			hardwares = inventorySet;
 		}
+		else if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY) {
+			hardwares = getEnergyCompany().loadAllInventory();
+		}
 		else {
-			ArrayList companies = ECUtils.getAllDescendants( getEnergyCompany() );
-			
 			if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_ENERGY_COMPANY) {
-				for (int i = 0; i < companies.size(); i++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-					if (company.getLiteID() == getMember()) {
-						hardwares = company.loadAllInventory();
-						break;
-					}
+				LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( getMember() );
+				ArrayList inventory = member.loadAllInventory();
+				
+				if (showEnergyCompany) {
+					hardwares = new ArrayList();
+					for (int i = 0; i < inventory.size(); i++)
+						hardwares.add( new Pair(inventory.get(i), member) );
 				}
+				else
+					hardwares = inventory;
 			}
 			else {
 				hardwares = new ArrayList();
-				for (int i = 0; i < companies.size(); i++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
-					hardwares.addAll( company.loadAllInventory() );
+				
+				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
+				for (int i = 0; i < members.size(); i++) {
+					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
+					ArrayList inventory = member.loadAllInventory();
+					
+					if (showEnergyCompany) {
+						for (int j = 0; j < inventory.size(); j++)
+							hardwares.add( new Pair(inventory.get(j), member) );
+					}
+					else
+						hardwares.addAll( inventory );
 				}
 			}
 		}
@@ -211,45 +231,42 @@ public class InventoryBean {
 			int devTypeMCT = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT ).getEntryID();
 			
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				LiteInventoryBase liteInv = (LiteInventoryBase)
+						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
 				
 				if (liteInv instanceof LiteStarsLMHardware &&
-					((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() == getDeviceType()
+					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), getDeviceType() )
 					|| getDeviceType() == devTypeMCT && ECUtils.isMCT(liteInv.getCategoryID()))
 				{
-					sortedInvs.add( liteInv );
+					sortedInvs.add( hardwares.get(i) );
 				}
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY) {
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				LiteInventoryBase liteInv = (LiteInventoryBase)
+						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
 				
 				if (liteInv.getInstallationCompanyID() == getServiceCompany())
-					sortedInvs.add( liteInv );
+					sortedInvs.add( hardwares.get(i) );
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION) {
-			if (getLocation() == INV_LOCATION_WAREHOUSE) {
-				for (int i = 0; i < hardwares.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
-					
-					if (liteInv.getAccountID() == CtiUtilities.NONE_ID)
-						sortedInvs.add( liteInv );
-				}
-			}
-			else {	// getLocation() == INV_LOCATION_RESIDENCE
-				for (int i = 0; i < hardwares.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
-					
-					if (liteInv.getAccountID() != CtiUtilities.NONE_ID)
-						sortedInvs.add( liteInv );
+			for (int i = 0; i < hardwares.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase)
+						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
+				
+				if (getLocation() == INV_LOCATION_WAREHOUSE && liteInv.getAccountID() == CtiUtilities.NONE_ID
+					|| getLocation() == INV_LOCATION_RESIDENCE && liteInv.getAccountID() != CtiUtilities.NONE_ID)
+				{
+					sortedInvs.add( hardwares.get(i) );
 				}
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				LiteInventoryBase liteInv = (LiteInventoryBase)
+						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
 				
 				int groupID = CtiUtilities.NONE_ID;
 				if (liteInv instanceof LiteStarsLMHardware) {
@@ -280,15 +297,16 @@ public class InventoryBean {
 				}
 				
 				if (groupID == getAddressingGroup())
-					sortedInvs.add( liteInv );
+					sortedInvs.add( hardwares.get(i) );
 			}
 		}
 		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
 			for (int i = 0; i < hardwares.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				LiteInventoryBase liteInv = (LiteInventoryBase)
+						(showEnergyCompany? ((Pair)hardwares.get(i)).getFirst() : hardwares.get(i));
 				
 				if (liteInv.getDeviceStatus() == getDeviceStatus())
-					sortedInvs.add( liteInv );
+					sortedInvs.add( hardwares.get(i) );
 			}
 		}
 		else {
@@ -296,7 +314,6 @@ public class InventoryBean {
 		}
 		
 		inventoryList = new ArrayList();
-		
 		java.util.Iterator it = sortedInvs.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
@@ -315,7 +332,9 @@ public class InventoryBean {
 	public String getHTML(HttpServletRequest req) {
 		StringBuffer htmlBuf = new StringBuffer();
 		
-		ArrayList hwList = getHardwareList();
+		boolean showEnergyCompany = (getHtmlStyle() == HTML_STYLE_LIST_INVENTORY) && getEnergyCompany().getChildren().size() > 0;
+		ArrayList hwList = getHardwareList( showEnergyCompany );
+		
 		if (hwList == null || hwList.size() == 0) {
 			htmlBuf.append("<p class='ErrorMsg'>No hardware found.</p>").append(LINE_SEPARATOR);
 			if (getHtmlStyle() != HTML_STYLE_LIST_INVENTORY) {
@@ -335,10 +354,6 @@ public class InventoryBean {
 		
 		String uri = req.getRequestURI();
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
-		
-		boolean showEnergyCompany = getEnergyCompany().getChildren().size() > 0;
-		ArrayList descendants = null;
-		if (showEnergyCompany) descendants = ECUtils.getAllDescendants( getEnergyCompany() );
 		
 		String srcStr = "";
 		if (getHtmlStyle() == HTML_STYLE_SELECT_INVENTORY)
@@ -406,7 +421,17 @@ public class InventoryBean {
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
 		for (int i = minInvNo; i <= maxInvNo; i++) {
-			LiteInventoryBase liteInv = (LiteInventoryBase) hwList.get(i-1);
+			LiteInventoryBase liteInv = null;
+			LiteStarsEnergyCompany member = null;
+			
+			if (showEnergyCompany) {
+				liteInv = (LiteInventoryBase) ((Pair)hwList.get(i-1)).getFirst();
+				member = (LiteStarsEnergyCompany) ((Pair)hwList.get(i-1)).getSecond();
+			}
+			else {
+				liteInv = (LiteInventoryBase) hwList.get(i-1);
+				member = getEnergyCompany();
+			}
         	
 			String deviceType = "(none)";
 			String deviceName = "(none)";
@@ -428,17 +453,6 @@ public class InventoryBean {
 			java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
 			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
 			String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
-        	
-			LiteStarsEnergyCompany member = getEnergyCompany();
-			if (showEnergyCompany) {
-				for (int j = 0; j < descendants.size(); j++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
-					if (company.getInventoryBrief(liteInv.getInventoryID(), false) != null) {
-						member = company;
-						break;
-					}
-				}
-			}
 			
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             

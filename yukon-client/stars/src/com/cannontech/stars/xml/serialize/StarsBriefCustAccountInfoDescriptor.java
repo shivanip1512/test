@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlHistoryDescriptor.java,v 1.77 2004/06/02 16:30:16 zyao Exp $
+ * $Id: StarsBriefCustAccountInfoDescriptor.java,v 1.1 2004/06/02 16:30:21 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.77 $ $Date: 2004/06/02 16:30:16 $
+ * @version $Revision: 1.1 $ $Date: 2004/06/02 16:30:21 $
 **/
-public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsBriefCustAccountInfoDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,74 +47,34 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
      //- Constructors -/
     //----------------/
 
-    public ControlHistoryDescriptor() {
+    public StarsBriefCustAccountInfoDescriptor() {
         super();
-        xmlName = "ControlHistory";
+        xmlName = "stars-BriefCustAccountInfo";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _startDateTime
-        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_startDateTime", "StartDateTime", NodeType.Element);
+        //-- _accountID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_accountID", "accountID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlHistory target = (ControlHistory) object;
-                return target.getStartDateTime();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    ControlHistory target = (ControlHistory) object;
-                    target.setStartDateTime( (java.util.Date) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new java.util.Date();
-            }
-        } );
-        desc.setHandler( new DateFieldHandler(handler));
-        desc.setImmutable(true);
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _startDateTime
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        desc.setValidator(fieldValidator);
-        
-        //-- _controlDuration
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_controlDuration", "ControlDuration", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                ControlHistory target = (ControlHistory) object;
-                if(!target.hasControlDuration())
+                StarsBriefCustAccountInfo target = (StarsBriefCustAccountInfo) object;
+                if(!target.hasAccountID())
                     return null;
-                return new Integer(target.getControlDuration());
+                return new Integer(target.getAccountID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlHistory target = (ControlHistory) object;
+                    StarsBriefCustAccountInfo target = (StarsBriefCustAccountInfo) object;
                     // ignore null values for non optional primitives
                     if (value == null) return;
                     
-                    target.setControlDuration( ((Integer)value).intValue());
+                    target.setAccountID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -126,10 +86,9 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         } );
         desc.setHandler(handler);
         desc.setRequired(true);
-        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _controlDuration
+        //-- validation code for: _accountID
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
@@ -138,7 +97,51 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
         }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.ControlHistoryDescriptor()
+        //-- _energyCompanyID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_energyCompanyID", "energyCompanyID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsBriefCustAccountInfo target = (StarsBriefCustAccountInfo) object;
+                if(!target.hasEnergyCompanyID())
+                    return null;
+                return new Integer(target.getEnergyCompanyID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsBriefCustAccountInfo target = (StarsBriefCustAccountInfo) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteEnergyCompanyID();
+                        return;
+                    }
+                    target.setEnergyCompanyID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _energyCompanyID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfoDescriptor()
 
 
       //-----------/
@@ -170,7 +173,7 @@ public class ControlHistoryDescriptor extends org.exolab.castor.xml.util.XMLClas
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.ControlHistory.class;
+        return com.cannontech.stars.xml.serialize.StarsBriefCustAccountInfo.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
