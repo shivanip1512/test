@@ -156,7 +156,6 @@ public class SOAPClient extends HttpServlet {
 		HttpSession session = req.getSession(false);
         
 		if (action.equalsIgnoreCase("RefreshCache")) {
-			ServletUtils.clear();
 			if (isServerLocal()) SOAPServer.refreshCache();
 			if (session != null) session.invalidate();
 			resp.sendRedirect( req.getContextPath() + LOGIN_URL ); return;
