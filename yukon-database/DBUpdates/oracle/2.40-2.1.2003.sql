@@ -120,12 +120,14 @@ update CICustomerBase SET CompanyName='(none)';
 
 alter TABLE CICustomerBase MODIFY CompanyName NOT NULL;
 
+update CICustomerBase set CompanyName =
+(select PAOName
+from YukonPAObject
+where CustomerID = PAObjectID)
+where CustomerID in
+(select PAObjectID from YukonPAObject
+where CustomerID = PAObjectID);
 
-update CICustomerBase
-set CompanyName =
-(select y.PAOName
-from CICustomerBase c, YukonPAObject y
-where c.CustomerID = y.PAObjectID);
 
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)

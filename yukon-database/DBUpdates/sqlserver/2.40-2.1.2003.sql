@@ -112,10 +112,15 @@ alter table CICustomerBase drop column CustTimeZone
 go
 alter table CICustomerBase add CompanyName Varchar(80) not null DEFAULT '(none)'
 go
-update CICustomerBase
-set CompanyName = y.PAOName
-from CICustomerBase c, YukonPAObject y
-where c.CustomerID = y.PAObjectID
+
+update CICustomerBase set CompanyName =
+(select PAOName
+from YukonPAObject
+where CustomerID = PAObjectID)
+where CustomerID in
+(select PAObjectID from YukonPAObject
+where CustomerID = PAObjectID)
+
 go
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
