@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/10 13:15:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,6 +108,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     OutMessage->DeviceID       = Device->getID();
     OutMessage->Port           = Device->getPortID();
     OutMessage->Remote         = Device->getAddress();
+    if(!OutMessage->Retry)     OutMessage->Retry = 2;
 
     /*
      * From this point on the OutMessage will be an EMETCON type.

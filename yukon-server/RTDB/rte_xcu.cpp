@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/10 13:15:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,6 +161,8 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
     OutMessage->Remote   = Device->getAddress();
     OutMessage->TimeOut  = 2;
     OutMessage->InLength = -1;
+
+    if(!OutMessage->Retry)  OutMessage->Retry = 2;
 
     CtiProtocolVersacom  Versacom(Device->getType());
     Versacom.parseRequest(parse, OutMessage->Buffer.VSt);                       // Pick out the CommandType and parameters
