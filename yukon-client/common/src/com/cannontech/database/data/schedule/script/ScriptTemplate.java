@@ -355,7 +355,7 @@ public class ScriptTemplate implements ScriptParameters
 				    //Sorry folks...we're removing all quotes...what are you using them in tcl strings for anyway?
 				    value = value.replaceAll("\"", "");
 					getParamToValueMap().put(tokenStr, value);
-					CTILogger.info(tokenStr + ", " + value);
+					CTILogger.debug(tokenStr + ", " + value);
 				}
 			}
 	    }
