@@ -13,7 +13,7 @@ public class CustomerContact extends com.cannontech.database.db.DBPersistent imp
 	private String contLastName = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String contPhone1 = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String contPhone2 = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private Integer locationID = new Integer(com.cannontech.database.db.notification.NotificationGroup.NONE_NOTIFICATIONGROUP_ID);
+	private Integer locationID = new Integer(com.cannontech.database.db.notification.NotificationRecipient.NONE_RECIPIENT_ID);
 	private Integer logInID = new Integer(UserUtils.USER_YUKON_ID);
 
 	
