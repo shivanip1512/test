@@ -23,8 +23,7 @@ public DeviceMeterGroupLoader(java.util.ArrayList deviceList, String alias) {
 public void run()
 {
 	long timer = System.currentTimeMillis();
-
-	String sqlString = "SELECT DEVICEID, METERNUMBER FROM DEVICEMETERGROUP ORDER BY METERNUMBER";
+	String sqlString = "SELECT DEVICEID, METERNUMBER, COLLECTIONGROUP FROM DEVICEMETERGROUP ORDER BY METERNUMBER";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -40,10 +39,11 @@ public void run()
 		{
 			int deviceID = rset.getInt(1);
 			String meterNumber = rset.getString(2).trim();
+			String collGrp = rset.getString(3).trim();
 
 			if(meterNumber.compareToIgnoreCase("default") != 0)
 			{
-				com.cannontech.database.data.lite.LiteDeviceMeterNumber liteDevMetNum = new com.cannontech.database.data.lite.LiteDeviceMeterNumber(deviceID, meterNumber);
+				com.cannontech.database.data.lite.LiteDeviceMeterNumber liteDevMetNum = new com.cannontech.database.data.lite.LiteDeviceMeterNumber(deviceID, meterNumber, collGrp);
 				devMetNumList.add(liteDevMetNum);
 			}
 		}
