@@ -4178,6 +4178,20 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 		
 		setTitleFromDisplay();				
 		refreshTDCClient();
+		
+		
+		//we may need to update the filter we have selected
+		if( source.getCurrentDisplay().getDisplayData() != null )
+		{
+			//we only need one filterID
+			getAlarmToolBar().setSelectedFilter(
+					source.getCurrentDisplay().getDisplayData().getFilterID() );
+		}
+		else
+			getAlarmToolBar().setSelectedFilter( CtiUtilities.NONE_ID );
+
+		TDCMainFrame.messageLog.addMessage( 
+				"Current Filter is " + source.getCurrentDisplay().getTdcFilter(), MessageBoxFrame.INFORMATION_MSG );		
 	}
 
 
@@ -4195,20 +4209,6 @@ public void mainPanel_JComboCurrentDisplayAction_actionPerformed(java.util.Event
 	getJMenuItemRemoveDisplays().setEnabled(
 			Display.isUserDefinedType(source.getCurrentDisplay().getType())  );
 
-
-
-	//we may need to update the filter we have selected
-	if( source.getCurrentDisplay().getDisplayData() != null )
-	{
-		//we only need one filterID
-		getAlarmToolBar().setSelectedFilter(
-				source.getCurrentDisplay().getDisplayData().getFilterID() );
-	}
-	else
-		getAlarmToolBar().setSelectedFilter( CtiUtilities.NONE_ID );
-
-	TDCMainFrame.messageLog.addMessage( 
-			"Current Filter is " + source.getCurrentDisplay().getTdcFilter(), MessageBoxFrame.INFORMATION_MSG );
 
 	return;
 }
