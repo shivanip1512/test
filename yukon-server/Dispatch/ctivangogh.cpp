@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2003/08/19 14:03:38 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2003/08/19 19:34:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -657,12 +657,13 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
                             pDyn->getDispatch().setTags( amask );   // Mark it if there are other alarms on the point.
 
+                            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                                 dout << " Signal has tags: " << pSigNew->getTags() << " " << explainTags(pSigNew->getTags())  << endl;
-                                dout << " Mgr    has tags: " << amask << " " << explainTags(amask) << endl;
+                                dout << " SigMgr has tags: " << amask << " " << explainTags(amask) << endl;
                                 dout << " Point  has tags: " << pDyn->getDispatch().getTags()  << " " << explainTags(pDyn->getDispatch().getTags()) << endl;
                             }
                         }
@@ -2141,8 +2142,8 @@ INT CtiVanGogh::loadPendingSignals()
             sig.setId( dynAlarm.getPointID() );
             sig.setMessageTime( dynAlarm.getAlarmTime() );
             sig.setSignalCategory( dynAlarm.getCategoryID() );
-            sig.setText( dynAlarm.getDescription() );
-            sig.setAdditionalInfo( dynAlarm.getAction() );
+            sig.setText( dynAlarm.getAction() );
+            sig.setAdditionalInfo( dynAlarm.getDescription() );
             sig.setTags( dynAlarm.getTags() & MASK_ANY_ALARM );     // We only care about the alarm masks!
             sig.setCondition( dynAlarm.getAlarmCondition() );
             sig.setLogID(dynAlarm.getLogID());
@@ -2871,8 +2872,6 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap)
         // Make sure we use the correct enumeration based upon point type.
         INT alarm = (point.isStatus() ? CtiTablePointAlarming::nonUpdatedStatus : CtiTablePointAlarming::nonUpdatedNumeric);
 
-        bool nonUpdated = _signalManager.isAlarmed(point.getID(), alarm);
-
         if( pDyn != NULL )
         {
             UINT quality = pDyn->getDispatch().getQuality();
@@ -2881,18 +2880,26 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointBase &point, CtiMultiWrapper &aWrap)
             {
                 pDyn->getDispatch().setQuality(NonUpdatedQuality);
 
-                if(!nonUpdated)
+                if(!_signalManager.isAlarmed(point.getID(), alarm))
                 {
                     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(point.getID(), 0, "Non Updated", getAlarmStateName( point.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point.getAlarming().getAlarmCategory(alarm));
 
                     tagSignalAsAlarm(point, pSig, alarm);
                     aWrap.getMulti()->insert( pSig );
                 }
+                else if(!_signalManager.isAlarmActive(point.getID(), alarm))
+                {
+                    reactivatePointAlarm(alarm, aWrap, point, pDyn);
+                }
 
                 CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point.getID(), pDyn->getValue(), pDyn->getQuality(), point.getType(), "Non Updated", pDyn->getDispatch().getTags());
                 pDat->setTime(pDyn->getTimeStamp());
 
                 aWrap.getMulti()->insert( pDat );
+            }
+            else
+            {
+                deactivatePointAlarm(alarm,aWrap,point,pDyn);
             }
         }
 
@@ -3174,16 +3181,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                 }
                 else
                 {
-                    pSig = _signalManager.setAlarmActive( point.getID(), alarm, false );
-                    if(pSig != NULL)
-                    {
-                        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                        pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
-
-                        pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-                        aWrap.getMulti()->insert( pSig );
-                        pSig = 0;
-                    }
+                    deactivatePointAlarm(alarm,aWrap,point,pDyn);
                 }
             }
 
@@ -3289,11 +3287,13 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     }
                 }
 
-
                 if(pSig)
                 {
-                    tagSignalAsAlarm(point, pSig, alarm, pData);
-                    aWrap.getMulti()->insert( pSig );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    delete pSig;
                     pSig = 0;
                 }
             }
@@ -5757,11 +5757,11 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
             // Evaluate High Limit
             if(pointNumeric.getPointUnits().getHighReasonabilityLimit() < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
             {
+                alarm = CtiTablePointAlarming::highReasonability;
                 double val = pData->getValue();
 
                 if(val > pointNumeric.getPointUnits().getHighReasonabilityLimit())
                 {
-                    alarm = CtiTablePointAlarming::highReasonability;
                     pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
                     pData->setQuality( UnreasonableQuality );
 
@@ -5781,37 +5781,32 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 
                         pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmCategory(CtiTablePointAlarming::highReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmCategory(CtiTablePointAlarming::highReasonability), pData->getUser());
                     }
+                    else if(!_signalManager.isAlarmActive(pointNumeric.getID(), alarm))
+                    {
+                        reactivatePointAlarm(alarm, aWrap, pointNumeric, pDyn);
+                    }
 
                     // This is an alarm if the alarm state indicates anything other than SignalEvent.
                     if(pSig)
                     {
-                        tagSignalAsAlarm(pointNumeric, pSig, CtiTablePointAlarming::highReasonability, pData);
+                        tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
                         aWrap.getMulti()->insert( pSig );
                         pSig = NULL;
                     }
                 }
                 else
                 {
-                    pSig = _signalManager.setAlarmActive(pointNumeric.getID(), CtiTablePointAlarming::highReasonability, false);
-                    if(pSig != NULL)
-                    {
-                        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                        pDyn->getDispatch().setTags( _signalManager.getAlarmMask(pointNumeric.getID()) );
-
-                        pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-                        aWrap.getMulti()->insert( pSig );
-                        pSig = 0;
-                    }
+                    deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
                 }
             }
 
             if(pointNumeric.getPointUnits().getLowReasonabilityLimit() > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
             {
+                alarm = CtiTablePointAlarming::lowReasonability;
                 double val = pData->getValue();
 
                 if(val < pointNumeric.getPointUnits().getLowReasonabilityLimit())
                 {
-                    alarm = CtiTablePointAlarming::lowReasonability;
                     pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
                     pData->setQuality( UnreasonableQuality );
 
@@ -5831,6 +5826,10 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 
                         pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmCategory(CtiTablePointAlarming::lowReasonability) ), GeneralLogType, pointNumeric.getAlarming().getAlarmCategory(CtiTablePointAlarming::lowReasonability), pData->getUser());
                     }
+                    else if(!_signalManager.isAlarmActive(pointNumeric.getID(), alarm))
+                    {
+                        reactivatePointAlarm(alarm, aWrap, pointNumeric, pDyn);
+                    }
 
                     // This is an alarm if the alarm state indicates anything other than SignalEvent.
                     if(pSig)
@@ -5842,16 +5841,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                 }
                 else
                 {
-                    pSig = _signalManager.setAlarmActive(pointNumeric.getID(), CtiTablePointAlarming::lowReasonability, false);
-                    if(pSig != NULL)
-                    {
-                        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                        pDyn->getDispatch().setTags( _signalManager.getAlarmMask(pointNumeric.getID()) );
-
-                        pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-                        aWrap.getMulti()->insert( pSig );
-                        pSig = 0;
-                    }
+                    deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
                 }
             }
         }
@@ -5902,20 +5892,22 @@ void CtiVanGogh::checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, Cti
 
                 // OK, we have an actual alarm condition to gripe about!
                 pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), tstr, getAlarmStateName( pointNumeric.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmCategory(alarm), pData->getUser());
+
+                if(pSig)
+                {
+                    tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
+                    aWrap.getMulti()->insert( pSig );
+                    pSig = 0;
+                }
+            }
+            else if(!_signalManager.isAlarmActive(pointNumeric.getID(), alarm))
+            {
+                reactivatePointAlarm(alarm, aWrap, pointNumeric, pDyn);
             }
         }
         else
         {
-            pSig = _signalManager.setAlarmActive( pointNumeric.getID(), alarm, false );
-            if(pSig != NULL)
-            {
-                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                pDyn->getDispatch().setTags( _signalManager.getAlarmMask(pointNumeric.getID()) );
-
-                pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-                aWrap.getMulti()->insert( pSig );
-                pSig = 0;
-            }
+            deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
         }
     }
 
@@ -6058,20 +6050,23 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     }
                 }
             }
+            else if(!_signalManager.isAlarmActive(pointNumeric.getID(), alarm))
+            {
+                reactivatePointAlarm(alarm, aWrap, pointNumeric, pDyn);
+            }
         }
         else
         {
-            pSig = _signalManager.setAlarmActive( pointNumeric.getID(), alarm, false );
-            if(pSig != NULL)
-            {
-                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                pDyn->getDispatch().setTags( _signalManager.getAlarmMask(pointNumeric.getID()) );
-
-                pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-                aWrap.getMulti()->insert( pSig );
-                pSig = 0;
-            }
+            deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
         }
+
+        if(pSig)
+        {
+            tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
+            aWrap.getMulti()->insert( pSig );
+            pSig = 0;
+        }
+
     }
     catch(...)
     {
@@ -6093,39 +6088,22 @@ void CtiVanGogh::checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrap
             // Well, we were NOT expecting a change, so make sure the values match
             if(pDyn->getDispatch().getValue() != pData->getValue())
             {
-                if(!_signalManager.isAlarmed(point.getID(), alarm))
+                // Values don't match and we weren't expecting a change!
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
                 {
-                    // Values don't match and we weren't expecting a change!
-                    if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** UNCOMMANDEDSTATECHANGE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    // OK, we have an actual alarm condition to gripe about!
-                    pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), ResolveStateName(point.getStateGroupID(), (int)pData->getValue()), getAlarmStateName( point.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point.getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
-
-                    pSig->setAdditionalInfo("UCOS");
-                    // This is an alarm if the alarm state indicates anything other than SignalEvent.
-                    tagSignalAsAlarm(point, pSig, alarm, pData);
-
-                    // UCOS is special in that it is never really active.  It is instantly self inactive.
-                    pDyn->getDispatch().resetTags(TAG_ACTIVE_ALARM);
-                    pSig->resetTags(TAG_ACTIVE_ALARM);
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** UNCOMMANDEDSTATECHANGE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-            }
-            else
-            {
-                pSig = _signalManager.setAlarmActive( point.getID(), alarm, false);
-                if(pSig != NULL)
-                {
-                    pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                    pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
 
-                    pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-                    aWrap.getMulti()->insert( pSig );
-                    pSig = 0;
-                }
+                // OK, we have an actual alarm condition to gripe about!
+                pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), RWCString( "UCOS: " + ResolveStateName(point.getStateGroupID(), (int)pData->getValue())), getAlarmStateName( point.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point.getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+
+                // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                tagSignalAsAlarm(point, pSig, alarm, pData);
+
+                pSig->resetTags( TAG_ACTIVE_ALARM );
+                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+                pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
             }
         }
     }
@@ -6188,6 +6166,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
     double val = pData->getValue();
     INT statelimit = (alarm - CtiTablePointAlarming::state0);
 
+    // Value or quality must have been changed to look at this stuff again!
     if( (pDyn->getValue() != pData->getValue() || pDyn->getQuality() != pData->getQuality()))
     {
         INT exceeds = LIMIT_IN_RANGE;
@@ -6211,27 +6190,14 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
                 tagSignalAsAlarm(point, pSig, alarm, pData);
             }
+            else if(!_signalManager.isAlarmActive(point.getID(), alarm))
+            {
+                reactivatePointAlarm(alarm,aWrap,point,pDyn);
+            }
         }
         else
         {
-            pSig = _signalManager.setAlarmActive(point.getID(), alarm, false);
-            if(pSig != NULL)
-            {
-                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
-
-                pSig->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
-
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    pSig->dump();
-                }
-
-                aWrap.getMulti()->insert( pSig );
-                pSig = 0;
-            }
+            deactivatePointAlarm(alarm,aWrap,point,pDyn);
         }
     }
 }
@@ -6417,3 +6383,36 @@ void CtiVanGogh::postControlStopPoint( CtiPendingPointOperations &ppc, const RWT
     }
     return;
 }
+
+void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn )
+{
+    CtiSignalMsg *pSigActive = _signalManager.setAlarmActive(point.getID(), alarm, false);
+
+    if(pSigActive != NULL)
+    {
+        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+        pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
+
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
+
+        aWrap.getMulti()->insert( pSigActive );
+        pSigActive = 0;
+    }
+}
+
+void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn )
+{
+    CtiSignalMsg *pSigActive = _signalManager.setAlarmActive(point.getID(), alarm, true);
+
+    if(pSigActive != NULL)
+    {
+        pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+        pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
+
+        pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) );
+
+        aWrap.getMulti()->insert( pSigActive );
+        pSigActive = 0;
+    }
+}
+

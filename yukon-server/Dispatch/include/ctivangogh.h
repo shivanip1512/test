@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/08/19 14:03:38 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/08/19 19:34:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -265,6 +265,9 @@ public:
     void adjustDeviceDisableTags(LONG id = 0);
     void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
+    void deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
+    void reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
+
 };
 
 #endif // #ifndef __VANGOGH_H__

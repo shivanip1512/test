@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/19 13:47:05 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/19 19:34:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@ using namespace std;
 #include "dlldefs.h"
 #include "msg_signal.h"
 #include "msg_multi.h"
+#include "mutex.h"
 
 class IM_EX_CTIVANGOGH CtiSignalManager
 {
@@ -37,6 +38,7 @@ protected:
 
     SigMgrMap_t _map;
     bool _dirty;
+    mutable CtiMutex _mux;
 
 private:
 

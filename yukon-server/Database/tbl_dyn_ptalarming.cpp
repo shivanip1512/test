@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/19 13:47:06 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/19 19:34:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "tbl_dyn_ptalarming.h"
 
 CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming() :
+_tags(0),
 _user("(none)"),
 _action("(none)"),
 _description("(none)")
@@ -30,6 +31,7 @@ _description("(none)")
 }
 
 CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming(const CtiTableDynamicPointAlarming& aRef) :
+_tags(0),
 _user("(none)"),
 _action("(none)"),
 _description("(none)")
@@ -112,10 +114,11 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
     getLogType() <<
     getUser();
 
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
+        dout << endl << RWTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl << endl;
     }
 
     inserter.execute( conn );
@@ -174,17 +177,19 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
     RWDBTable myTable = myResult.table();
     long rowsAffected = myResult.rowCount();
 
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << updater.asString() << endl << endl;
+    }
+
     if( ec == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << updater.asString() << endl;
-        }
         stat = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
@@ -241,6 +246,13 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete()
 
     deleter.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
 
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << deleter.asString() << endl << endl;
+    }
+
     return deleter.execute( conn ).status();
 }
 
@@ -254,10 +266,11 @@ RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_conditio
 
     deleter.where( table["pointid"] == pointid && table["alarmcondition"] == alarm_condition );
 
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << deleter.asString() << endl;
+        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << deleter.asString() << endl << endl;
     }
 
     return deleter.execute( conn ).status();
