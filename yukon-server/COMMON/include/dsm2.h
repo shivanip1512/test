@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/05/15 22:32:36 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/07/21 21:52:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -926,6 +926,7 @@ typedef struct _INMESS
    UINT        MilliTime;
 
    UINT        EventCode;
+   UINT        MessageFlags;
    UINT        Priority;
    ULONG       InLength;
 
