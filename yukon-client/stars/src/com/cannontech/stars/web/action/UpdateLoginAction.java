@@ -47,26 +47,26 @@ public class UpdateLoginAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
-        try {
-            StarsUpdateLogin updateLogin = new StarsUpdateLogin();
-            updateLogin.setUsername( req.getParameter("Username") );
-            updateLogin.setPassword( req.getParameter("Password") );
+		try {
+			StarsUpdateLogin updateLogin = new StarsUpdateLogin();
+			updateLogin.setUsername( req.getParameter("Username") );
+			updateLogin.setPassword( req.getParameter("Password") );
 			if (req.getParameter("Status") != null)
 				updateLogin.setStatus( StarsLoginStatus.valueOf(req.getParameter("Status")) );
 			else
 				updateLogin.setStatus( StarsLoginStatus.DISABLED );
-            if (req.getParameter("CustomerGroup") != null && req.getParameter("CustomerGroup").length() > 0)
-            	updateLogin.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
+			if (req.getParameter("CustomerGroup") != null && req.getParameter("CustomerGroup").length() > 0)
+				updateLogin.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
             
-            StarsOperation operation = new StarsOperation();
-            operation.setStarsUpdateLogin( updateLogin );
+			StarsOperation operation = new StarsOperation();
+			operation.setStarsUpdateLogin( updateLogin );
             
-            return SOAPUtil.buildSOAPMessage( operation );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
-        }
+			return SOAPUtil.buildSOAPMessage( operation );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Invalid request parameters" );
+		}
 
 		return null;
 	}
@@ -75,50 +75,50 @@ public class UpdateLoginAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
-        StarsOperation respOper = new StarsOperation();
+		StarsOperation respOper = new StarsOperation();
         
-        try {
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
+		try {
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user == null) {
-                respOper.setStarsFailure( StarsFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			if (user == null) {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
             
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-            		user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
+					user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
-            try {
-            	updateLogin( updateLogin, liteAcctInfo, energyCompany );
-            }
-            catch (WebClientException e) {
+			try {
+				updateLogin( updateLogin, liteAcctInfo, energyCompany );
+			}
+			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_OPERATION_FAILED, e.getMessage()) );
 				return SOAPUtil.buildSOAPMessage( respOper );
-            }
+			}
             
-            StarsSuccess success = new StarsSuccess();
-            success.setDescription( "User login updated successfully" );
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription( "User login updated successfully" );
             
-            respOper.setStarsSuccess( success );
-            return SOAPUtil.buildSOAPMessage( respOper );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+			respOper.setStarsSuccess( success );
+			return SOAPUtil.buildSOAPMessage( respOper );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
             
-            try {
-            	respOper.setStarsFailure( StarsFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create/update login for the customer") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
-            }
-            catch (Exception e2) {
-            	e2.printStackTrace();
-            }
-        }
+			try {
+				respOper.setStarsFailure( StarsFactory.newStarsFailure(
+						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot create/update login for the customer") );
+				return SOAPUtil.buildSOAPMessage( respOper );
+			}
+			catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
 
 		return null;
 	}
@@ -127,8 +127,8 @@ public class UpdateLoginAction implements ActionBase {
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+		try {
+			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
@@ -162,79 +162,79 @@ public class UpdateLoginAction implements ActionBase {
 			if (reqOper.getStarsNewCustomerAccount() == null)	// If not from the new customer account page
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, success.getDescription() );
 			
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+			return 0;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
 	/**
 	 * Check to see if the username already exists
 	 */
 	public static boolean checkLogin(StarsUpdateLogin login) {
-        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized (cache) {
-        	Iterator it = cache.getAllYukonUsers().iterator();
-        	while (it.hasNext()) {
-        		LiteYukonUser lUser = (LiteYukonUser) it.next();
-        		if (lUser.getUsername().equalsIgnoreCase( login.getUsername() ))
-        			return false;
-        	}
-        }
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized (cache) {
+			Iterator it = cache.getAllYukonUsers().iterator();
+			while (it.hasNext()) {
+				LiteYukonUser lUser = (LiteYukonUser) it.next();
+				if (lUser.getUsername().equalsIgnoreCase( login.getUsername() ))
+					return false;
+			}
+		}
         
-        return true;
+		return true;
 	}
 	
 	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany)
 	throws CommandExecutionException {
-        com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
-        com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
+		com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
+		com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
         
-        if (login.hasGroupID()) {
+		if (login.hasGroupID()) {
 			com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
 			dbGroup.setGroupID( new Integer(login.getGroupID()) );
 			dataUser.getYukonGroups().addElement( dbGroup );
-        }
-        
-    	dbUser.setUsername( login.getUsername() );
-    	dbUser.setPassword( login.getPassword() );
-    	if (login.getStatus() != null)
-    		dbUser.setStatus( ECUtils.getUserStatus(login.getStatus()) );
-    	else
-    		dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
-        
-    	dataUser = (com.cannontech.database.data.user.YukonUser)
-        		Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
-        LiteYukonUser liteUser = new LiteYukonUser(
-        		dbUser.getUserID().intValue(),
-        		dbUser.getUsername(),
-        		dbUser.getPassword(),
-        		dbUser.getStatus()
-        		);
-        ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
-        
-		if (liteContact != null) {
-	        liteContact.setLoginID( liteUser.getUserID() );
-	        com.cannontech.database.data.customer.Contact contact =
-	        		(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-	        Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
-	        ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
         
-        return liteUser;
+		dbUser.setUsername( login.getUsername() );
+		dbUser.setPassword( login.getPassword() );
+		if (login.getStatus() != null)
+			dbUser.setStatus( ECUtils.getUserStatus(login.getStatus()) );
+		else
+			dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
+        
+		dataUser = (com.cannontech.database.data.user.YukonUser)
+				Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
+		LiteYukonUser liteUser = new LiteYukonUser(
+				dbUser.getUserID().intValue(),
+				dbUser.getUsername(),
+				dbUser.getPassword(),
+				dbUser.getStatus()
+				);
+		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
+        
+		if (liteContact != null) {
+			liteContact.setLoginID( liteUser.getUserID() );
+			com.cannontech.database.data.customer.Contact contact =
+					(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+			Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
+			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+		}
+        
+		return liteUser;
 	}
 	
 	public static void deleteLogin(int userID, LiteContact liteContact)
 	throws CommandExecutionException {
 		if (liteContact != null) {
-	        liteContact.setLoginID( com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID );
-	        com.cannontech.database.data.customer.Contact contact =
-	        		(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
-	        Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
-	        ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			liteContact.setLoginID( com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID );
+			com.cannontech.database.data.customer.Contact contact =
+					(com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
+			Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
+			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
         
 		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
@@ -281,14 +281,20 @@ public class UpdateLoginAction implements ActionBase {
 			if (!liteUser.getUsername().equalsIgnoreCase(username) && !checkLogin(updateLogin) )
 				throw new WebClientException( "Username '" + username + "' already exists" );
 			
+			String status = (updateLogin.getStatus() != null)? ECUtils.getUserStatus(updateLogin.getStatus()) : liteUser.getStatus();
+			
+			if (password.trim().length() == 0) {
+				if (status.equalsIgnoreCase( liteUser.getStatus() ))
+					throw new WebClientException( "Password cannot be empty" );
+				// Only the login status is to be changed, ignore the password
+				password = liteUser.getPassword();
+			}
+			
 			com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
 					StarsLiteFactory.createDBPersistent( liteUser );
 			dbUser.setUsername( username );
 			dbUser.setPassword( password );
-			if (updateLogin.getStatus() != null)
-				dbUser.setStatus( ECUtils.getUserStatus(updateLogin.getStatus()) );
-			else
-				dbUser.setStatus( liteUser.getStatus() );
+			dbUser.setStatus( status );
 			
 			dbUser = (com.cannontech.database.db.user.YukonUser)
 					Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
