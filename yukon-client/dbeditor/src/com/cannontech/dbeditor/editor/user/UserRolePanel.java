@@ -3,15 +3,24 @@ package com.cannontech.dbeditor.editor.user;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
+import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.user.UserUtils;
 
@@ -326,11 +335,10 @@ private javax.swing.JTree getJTreeRoles() {
 			// user code begin {1}
 			
 			
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode("Roles");
-			ivjJTreeRoles = new javax.swing.JTree( root );
-			ivjJTreeRoles.setName("JTreeRoles");
-			ivjJTreeRoles.setBounds(8, 13, 165, 243);
-			
+			DefaultMutableTreeNode root = 
+				new DefaultMutableTreeNode("Role Categories");
+
+			ivjJTreeRoles.setModel( new CTITreeModel(root) );			
 			ivjJTreeRoles.setCellRenderer( new CheckRenderer() );
 			//ivjJTreeRoles.setRootVisible( false );
 
@@ -339,13 +347,32 @@ private javax.swing.JTree getJTreeRoles() {
 			synchronized( cache )
 			{
 				List roles = cache.getAllYukonRoles();
+				Collections.sort( roles, LiteComparators.liteRoleCategoryComparator );
+				String tmpCat = null;
+				CheckNode currParent = null;
 				
 				for( int i = 0; i < roles.size(); i++ )
-					root.add( new CheckNode(roles.get(i)) );
+				{
+					LiteYukonRole role = (LiteYukonRole)roles.get(i);
+
+					if( !role.getCategory().equalsIgnoreCase(tmpCat) )
+					{
+						tmpCat = role.getCategory();
+						currParent = new CheckNode(tmpCat);
+						root.add( currParent );
+					}
+						
+					currParent.add( new CheckNode(role) );
+				}
+				
 			}
 			
 			//expand the root
 			ivjJTreeRoles.expandPath( new TreePath(root.getPath()) );
+
+			ivjJTreeRoles.addMouseListener(
+				new CheckNodeSelectionListener(ivjJTreeRoles) );
+			
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -427,6 +454,14 @@ public boolean isInputValid()
 	return true;
 }
 
+/**
+ * This method was created in VisualAge.
+ * @return CTITreeMode
+ */
+private CTITreeModel getJTreeModel() 
+{
+	return (CTITreeModel)getJTreeRoles().getModel();
+}
 
 /**
  * main entrypoint - starts the part when it is run as an application
@@ -454,15 +489,64 @@ public static void main(java.lang.String[] args) {
 	}
 }
 
+	
+	/**
+	 * setValue method comment.
+	 */
+	public void setValue(Object o) 
+	{
+		if( o == null )
+			return;
+	
+		YukonUser login = (YukonUser)o;
+	
+		DefaultMutableTreeNode
+			root = (DefaultMutableTreeNode)getJTreeRoles().getModel().getRoot();
 
-/**
- * setValue method comment.
- */
-public void setValue(Object o) 
-{
-	if( o == null )
-		return;
+		List allRoles = getJTreeModel().getAllLeafNodes( new TreePath(root) );
+					
+			
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized( cache )
+		{
+			List roles = (List)cache.getAllYukonUserRoleMap().get( 
+									LiteFactory.createLite(login) );
+			
+			for( int i = 0; roles != null && i < roles.size(); i++ )
+			{
+				Pair rolePair = (Pair)roles.get(i);
+				
+				for( int j = 0; j < allRoles.size(); j++  )
+				{
+					CheckNode roleNode = 
+							(CheckNode)allRoles.get(j);
 
-	YukonUser login = (YukonUser)o;
-}
+					LiteYukonRole role = (LiteYukonRole)roleNode.getUserObject();
+
+					if( rolePair.getFirst().equals(role) )
+					{
+						roleNode.setUserObject( rolePair.getFirst() );
+						roleNode.setSelected( true );
+						
+						//direct lookup here
+						((CheckNode)getJTreeModel().findNode(
+								new TreePath(roleNode),
+								roleNode)).setSelected( true );
+								
+						getJTreeModel().reload();
+						
+						break;
+						
+					}
+		
+				}			
+								
+			}
+			
+		}
+			
+			
+	}
+	
 }

@@ -900,39 +900,42 @@ public synchronized java.util.List getAllYukonPAObjects()
 	}
 	
 	
-	private void loadRoleLookupMaps() {
+	private void loadRoleLookupMaps() 
+	{
 		allYukonUserLookupRoles = new HashMap();
 		allYukonUserLookupRoleIDs = new HashMap();
 		
 		Iterator iter = getAllYukonUsers().iterator();			
-			Map userRoles = getAllYukonUserRoleMap();
-			Map userGroups =  getAllYukonUserGroupMap();
-			Map groupRoles = getAllYukonGroupRoleMap();
+		Map userRoles = getAllYukonUserRoleMap();
+		Map userGroups =  getAllYukonUserGroupMap();
+		Map groupRoles = getAllYukonGroupRoleMap();
 			
-			while(iter.hasNext()) {
-				LiteYukonUser user = (LiteYukonUser) iter.next();
-				HashMap roleMap = new HashMap();
-				HashMap roleIDMap = new HashMap();
-				
-				// first groups roles then user roles
-				// to maintain correct precedence
-				List groups = (List) userGroups.get(user);
-				if(groups != null) {
-					Iterator groupIter = groups.iterator();
-					while(groupIter.hasNext()) {
-						LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
-						List roles = (List) groupRoles.get(group);
-						addRolesToMap(roles, roleMap, roleIDMap);
-					}				
-				}
-				
-				List roles = (List) userRoles.get(user);
-				addRolesToMap(roles, roleMap, roleIDMap);
-				
-				allYukonUserLookupRoles.put(user, roleMap);		
-				allYukonUserLookupRoleIDs.put(user, roleIDMap);				
-			}	
+		while(iter.hasNext()) {
+			LiteYukonUser user = (LiteYukonUser) iter.next();
+			HashMap roleMap = new HashMap();
+			HashMap roleIDMap = new HashMap();
+			
+			// first groups roles then user roles
+			// to maintain correct precedence
+			List groups = (List) userGroups.get(user);
+			if(groups != null) {
+				Iterator groupIter = groups.iterator();
+				while(groupIter.hasNext()) {
+					LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
+					List roles = (List) groupRoles.get(group);
+					addRolesToMap(roles, roleMap, roleIDMap);
+				}				
+			}
+			
+			List roles = (List) userRoles.get(user);
+			addRolesToMap(roles, roleMap, roleIDMap);
+			
+			allYukonUserLookupRoles.put(user, roleMap);		
+			allYukonUserLookupRoleIDs.put(user, roleIDMap);				
+		}
+	
 	}
+	
 	/**
 	 * Convenience method for loadRoleLookupMaps
 	 * @param roles
@@ -1963,10 +1966,7 @@ public synchronized void loadAllCache()
 	allStateGroups = new java.util.ArrayList();
 	allUnitMeasures = new java.util.ArrayList();
 	allNotificationGroups = new java.util.ArrayList();
-	
-	//allUsedContactNotifications = new java.util.ArrayList();
-	allContactNotifications = new java.util.ArrayList();
-	
+	allContactNotifications = new java.util.ArrayList();	
 	allAlarmCategories = new java.util.ArrayList();
 	allContacts = new java.util.ArrayList();
 	allGraphDefinitions = new java.util.ArrayList();
@@ -1976,6 +1976,13 @@ public synchronized void loadAllCache()
    allYukonImages = new java.util.ArrayList();
 	allCICustomers = new java.util.ArrayList();
 	
+	allYukonUsers = new java.util.ArrayList();
+	allYukonRoles = new java.util.ArrayList();
+
+	
+	//prime the maps
+	allYukonUserRoles = new java.util.HashMap();
+
 	
    //be sure all of our derived storage is cleard
 	allGraphTaggedPoints = null;
@@ -1997,18 +2004,16 @@ public synchronized void loadAllCache()
 		new UnitMeasureLoader(allUnitMeasures, databaseAlias),
 		new GraphDefinitionLoader(allGraphDefinitions, databaseAlias),		
 		new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias),
-
-
-// 	MAY NEED TO CHANGE HACK/CRACK		
-//		new NotificationRecipientLoader(allNotificationRecipients, databaseAlias),
-
-
 		new AlarmCategoryLoader(allAlarmCategories, databaseAlias),
 		new ContactLoader(allContacts, databaseAlias),
 		new HolidayScheduleLoader(allHolidaySchedules, databaseAlias),
 		new DeviceMeterGroupLoader(allDeviceMeterGroups, databaseAlias),
       new YukonImageLoader(allYukonImages, databaseAlias),
-      new CICustomerLoader(allCICustomers, databaseAlias)
+      new CICustomerLoader(allCICustomers, databaseAlias),
+      
+		new YukonUserLoader(allYukonUsers, databaseAlias),
+      new YukonRoleLoader(allYukonRoles, databaseAlias),
+      new YukonUserRoleLoader(allYukonUserRoles, getAllYukonUsers(), getAllYukonRoles(), databaseAlias)
 	};
 
 

@@ -105,6 +105,20 @@ public final class LiteComparators
 		}
 	};
 	
+	public static java.util.Comparator liteRoleCategoryComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			String thisVal = ((LiteYukonRole)o1).getCategory();
+			String anotherVal = ((LiteYukonRole)o2).getCategory();
+         return ( thisVal.compareToIgnoreCase(anotherVal) );
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};	
+	
 	// this method is used to compare Strings found in ANY lite class
 	//   ADD ALL LIGHT CLASSES YOU WANT TO COMPARE BELOW!!!!!!!!!!!!!
 	public static java.util.Comparator liteStringComparator = new java.util.Comparator()

@@ -13,10 +13,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class CheckNode extends DefaultMutableTreeNode 
 {
-
-  public final static int SINGLE_SELECTION = 0;
-  public final static int DIG_IN_SELECTION = 4;
-  protected int selectionMode;
+//  public final static int SINGLE_SELECTION = 0;
+//  public final static int DIG_IN_SELECTION = 4;
+//  protected int selectionMode;
+  
   protected boolean isSelected;
 
   public CheckNode() {
@@ -31,10 +31,10 @@ public class CheckNode extends DefaultMutableTreeNode
                                     , boolean isSelected) {
     super(userObject, allowsChildren);
     this.isSelected = isSelected;
-    setSelectionMode(DIG_IN_SELECTION);
+//    setSelectionMode(DIG_IN_SELECTION);
   }
 
-
+/*
   public void setSelectionMode(int mode) {
     selectionMode = mode;
   }
@@ -42,13 +42,15 @@ public class CheckNode extends DefaultMutableTreeNode
   public int getSelectionMode() {
     return selectionMode;
   }
+*/
 
   public void setSelected(boolean isSelected) 
   {
     this.isSelected = isSelected;
     
-    if ((selectionMode == DIG_IN_SELECTION)
-        && (children != null)) 
+//    if( (selectionMode == DIG_IN_SELECTION)
+//         && (children != null)) 
+    if( children != null ) 
 	 {
       Enumeration enum = children.elements();      
       while (enum.hasMoreElements()) 

@@ -9,6 +9,8 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
+	public static final int PANEL_COUNT = 1;
+
 
 	public LoginEditorPanel() {
 		super();
@@ -25,7 +27,7 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 	 */
 	public Object[] createNewPanel(int panelIndex)
 	{
-		Object[] objs = new Object[2];
+		Object[] objs = new Object[PANEL_COUNT];
 		
 		switch( panelIndex )
 		{
@@ -33,14 +35,12 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 				objs[0] = new UserLoginBasePanel();
 				objs[1] = "General";
 				break;
-
 /*
 			case 1: 
 				objs[0] = new UserRolePanel();
 				objs[1] = "Roles";
 				break;
 */
-
 		}
 			
 		return objs;
@@ -116,7 +116,6 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		java.util.Vector tabs = new java.util.Vector();
 		
 		DataInputPanel tempPanel;	
-		final int PANEL_COUNT = 1;
 
 	 	for( int i = 0; i < PANEL_COUNT; i++ )
 	 	{
