@@ -6,7 +6,6 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -22,6 +21,7 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
+import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
@@ -485,6 +485,7 @@ public class StarsFactory {
 			
 			starsInv.setInventoryID( -1 );
 			starsInv.setDeviceID( CtiUtilities.NONE_ID );
+			starsInv.setDeviceType( (DeviceType) newEmptyStarsCustListEntry(DeviceType.class) );
 			starsInv.setDeviceLabel( "" );
 			starsInv.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );
 			starsInv.setInstallDate( new java.util.Date() );
@@ -509,6 +510,7 @@ public class StarsFactory {
 			
 			starsInv.setInventoryID( inv.getInventoryID() );
 			starsInv.setDeviceID( inv.getDeviceID() );
+			starsInv.setDeviceType( inv.getDeviceType() );
 			starsInv.setCategory( inv.getCategory() );
 			starsInv.setDeviceLabel( inv.getDeviceLabel() );
 			starsInv.setInstallationCompany( inv.getInstallationCompany() );
@@ -548,13 +550,7 @@ public class StarsFactory {
 			invDB.setVoltageID( new Integer(starsInv.getVoltage().getEntryID()) );
 		invDB.setNotes( starsInv.getNotes() );
 		invDB.setDeviceID( new Integer(starsInv.getDeviceID()) );
-		
-		if (starsInv.getDeviceLabel().length() > 0)
-			invDB.setDeviceLabel( starsInv.getDeviceLabel() );
-		else if (starsInv.getDeviceID() > 0)
-			invDB.setDeviceLabel( PAOFuncs.getYukonPAOName(starsInv.getDeviceID()) );
-		else if (starsInv.getLMHardware() != null)
-			invDB.setDeviceLabel( starsInv.getLMHardware().getManufacturerSerialNumber() );
+		invDB.setDeviceLabel( starsInv.getDeviceLabel() );
 	}
 	
 	

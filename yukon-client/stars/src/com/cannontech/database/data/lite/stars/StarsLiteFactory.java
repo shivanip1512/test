@@ -1547,11 +1547,11 @@ public class StarsLiteFactory {
 		
 		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()),
+					DeviceType.class) );
 			
 			LMHardware hw = new LMHardware();
-			hw.setLMHardwareType( (LMHardwareType)StarsFactory.newStarsCustListEntry(
-					YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()),
-					LMHardwareType.class) );
 			hw.setManufacturerSerialNumber( ServerUtils.forceNotNull(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber()) );
 			
 			if (liteHw.getThermostatSettings() != null) {
@@ -1563,10 +1563,22 @@ public class StarsLiteFactory {
 			starsInv.setLMHardware( hw );
 		}
 		else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT),
+					DeviceType.class) );
+			
 			MCT mct = new MCT();
-			mct.setDeviceName( PAOFuncs.getYukonPAOName(liteInv.getDeviceID()) );
+			if (liteInv.getDeviceID() > 0)
+				mct.setDeviceName( PAOFuncs.getYukonPAOName(liteInv.getDeviceID()) );
+			else if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
+				mct.setDeviceName( liteInv.getDeviceLabel() );
+			else
+				mct.setDeviceName( "(none)" );
 			
 			starsInv.setMCT( mct );
+		}
+		else {
+			starsInv.setDeviceType( (DeviceType)StarsFactory.newEmptyStarsCustListEntry( DeviceType.class ));
 		}
 	}
 	
