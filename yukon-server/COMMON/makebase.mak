@@ -54,7 +54,7 @@ master.obj \
 mutex.obj \
 numstr.obj \
 observe.obj \
-pending_gwresult.obj \
+pending_stat_operation.obj \
 pexec.obj \
 psup.obj \
 queue.obj \
