@@ -5,11 +5,13 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (3/4/2002 8:36:18 AM)
  * @author: 
  */ 
-import java.util.Date;
+import javax.swing.JOptionPane;
 
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.application.BillingRole;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
 {
@@ -1166,6 +1168,20 @@ private void initialize() {
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());	
 		final javax.swing.JFrame frame = new javax.swing.JFrame();
 		
+		ClientSession session = ClientSession.getInstance(); 
+		if(!session.establishSession(frame)){
+			System.exit(-1);			
+		}
+	  	
+		if(session == null) 		
+			System.exit(-1);
+				
+		if(!session.checkRole(BillingRole.ROLEID)) 
+		{
+		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+		  System.exit(-1);				
+		}
+				
 		//Create a menuBar for running standalone.
 		javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
 		javax.swing.JMenu fileMenu = new javax.swing.JMenu("File");
