@@ -13,7 +13,7 @@ public class Clock implements Runnable
 ;
 	
 /**
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx
+ * Another w00t constructor comment.
  */
 public Clock( TDCMainPanel origin ) {
 	super();
