@@ -8,11 +8,10 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
- * @author: 
+ * @author: alauinger
  */
 public class StaticImageEditorPanel extends DataInputPanel {
 	private javax.swing.JLabel ivjImageLabel = null;

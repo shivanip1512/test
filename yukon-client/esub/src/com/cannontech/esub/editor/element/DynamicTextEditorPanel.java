@@ -9,7 +9,6 @@ import javax.swing.JDialog;
 import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (12/18/2001 2:05:01 PM)

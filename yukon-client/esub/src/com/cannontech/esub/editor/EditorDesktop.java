@@ -4,7 +4,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 
 import com.cannontech.graph.GraphClient;
-import com.cannontech.graph.GraphColors;
 
 /**
  * @author alauinger

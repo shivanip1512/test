@@ -6,11 +6,10 @@ import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
- * @author: 
+ * @author: alauinger
  */
 public class StaticTextEditorPanel extends DataInputPanel {
 	private StaticText staticText;

@@ -1,9 +1,6 @@
 package com.cannontech.esub.util;
 
 import java.awt.Color;
-
-import com.loox.jloox.LxStyle;
-
 /**
  * @author alauinger
  */

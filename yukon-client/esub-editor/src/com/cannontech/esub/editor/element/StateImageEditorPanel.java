@@ -5,11 +5,10 @@ import javax.swing.event.TreeSelectionListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)
- * @author: 
+ * @author: alauinger
  */
 public class StateImageEditorPanel extends DataInputPanel implements TreeSelectionListener {
 	private javax.swing.JPanel ivjJPanel1 = null;
