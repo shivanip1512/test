@@ -137,9 +137,13 @@ public class SQLStringBuilder
 		{
 			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
 		}
-		if( yukonPAObjectTable_from && deviceCarrierSettings_from)
+		if( point_from && deviceCarrierSettings_from)
 		{
 			whereClauses.add(new String(" POINT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
+		}
+		if( yukonPAObjectTable_from && deviceCarrierSettings_from)
+		{
+			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
 		}
 //		if ( yukonPAObjectTable_from && deviceScanRate_from)
 //		{
