@@ -110,6 +110,10 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		},
 		{	//12 - DeviceVerificationAssignmentPanel
 			PAOGroups.RTM
+		},
+		{
+			//13 - DeviceMCT400SeriesOptionPanel
+			PAOGroups.MCT410IL
 		}
 
 };
@@ -222,6 +226,11 @@ public Object[] createNewPanel(int panelIndex)
 		case 12:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceVerificationAssignmentPanel();
 			objs[1] = "Verification";
+			break;
+			
+		case 13:
+			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceMCT400SeriesOptionsPanel();
+			objs[1] = "MCT Settings";
 			break;
 	}
 		

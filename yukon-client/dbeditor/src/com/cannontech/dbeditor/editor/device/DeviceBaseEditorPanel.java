@@ -1457,6 +1457,7 @@ private javax.swing.JComboBox getTOUComboBox() {
 			ivjTOUComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTOUComboBox.setMinimumSize(new java.awt.Dimension(120, 25));
 			// user code begin {1}
+			ivjTOUComboBox.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1480,6 +1481,7 @@ private javax.swing.JLabel getTOULabel() {
 			ivjTOULabel.setText("TOU Schedule: ");
 			ivjTOULabel.setVisible(false);
 			// user code begin {1}
+			ivjTOULabel.setEnabled(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1769,7 +1771,7 @@ public Object getValue(Object val)
 			((MCTBase)val).setHasConfig(true);
 		}
 		 
-		if(getTOUComboBox().getSelectedItem().equals(CtiUtilities.STRING_NONE))
+		/*if(getTOUComboBox().getSelectedItem().equals(CtiUtilities.STRING_NONE))
 		{
 		   ((MCTBase)val).getTOUDeviceMapping().deleteAMapping((((MCTBase)val).getDevice().getDeviceID()));
 		   ((MCTBase)val).setHasTOUSchedule(false);
@@ -1778,7 +1780,7 @@ public Object getValue(Object val)
 		{
 		   ((MCTBase)val).setTOUDeviceMapping(new Integer(((com.cannontech.database.data.lite.LiteTOUSchedule)getTOUComboBox().getSelectedItem()).getScheduleID()),(((MCTBase)val).getDevice().getDeviceID()));
 		   ((MCTBase)val).setHasTOUSchedule(true);
-		}
+		}*/
 	}
 
 	return val;
@@ -2080,7 +2082,7 @@ private void setNonRemBaseValue( Object base )
 			
 			if(base instanceof MCT410IL)
 			{
-				for(int x = 0; x < tous.size(); x++)
+				/*for(int x = 0; x < tous.size(); x++)
 				{
 					getTOUComboBox().addItem( tous.get(x) );
 					if(((MCTBase) base).hasTOUSchedule())
@@ -2088,7 +2090,7 @@ private void setNonRemBaseValue( Object base )
 						if(((MCTBase) base).getTOUScheduleID().intValue() == ((com.cannontech.database.data.lite.LiteTOUSchedule)tous.get(x)).getLiteID())
 							getTOUComboBox().setSelectedItem(tous.get(x));
 					}
-				}
+				}*/
 			}
 		}
 		if( base instanceof CarrierBase )
