@@ -7,15 +7,15 @@ package com.cannontech.esub.editor;
 
 import java.util.HashMap;
 
-import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 
 import com.cannontech.esub.util.Util;
-import com.loox.jloox.Lx;
 import com.loox.jloox.LxAbstractAction;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
@@ -81,15 +81,29 @@ class EditorActions {
 
 				JFileChooser fileChooser = com.cannontech.esub.util.Util.getDrawingJFileChooser();
 				fileChooser.setApproveButtonText("Open");
+				
+				String currentDir = 
+					EditorPrefs.getPreferences().getWorkingDir();
+							
+				fileChooser.setCurrentDirectory(new File(currentDir));
 				int returnVal = fileChooser.showOpenDialog(null);
 
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
 
 					// Remove old components.
 					String newDrawing = fileChooser.getSelectedFile().getPath();										
-					editor.loadDrawing(newDrawing);					
+					editor.loadDrawing(newDrawing);	
+					
+					try {
+					EditorPrefs.getPreferences().setWorkingDir(
+						fileChooser.getSelectedFile().getParentFile().getCanonicalPath());				
+					}
+					catch(IOException ioe) {
+						ioe.printStackTrace();
+					}			
+
+				}	
 				}
-			}
 	    }
 	};
 

@@ -4,14 +4,17 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.JScrollPane;
 
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.*;
 
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 /**
  * Creation date: (1/11/2002 11:43:34 AM)
  * @author: 
  */
-public class PointSelectionPanel extends JPanel {
+public class PointSelectionPanel extends JPanel implements TreeWillExpandListener {
 	private JTree ivjDevicePointTree = null;
 	private JScrollPane ivjJScrollPane1 = null;
 	private com.cannontech.database.model.DeviceTreeModel ivjDeviceTreeModel = null;
@@ -47,6 +50,7 @@ private void connPtoP1SetTarget() {
 	/* Set the target from the source */
 	try {
 		getDevicePointTree().setModel(getDeviceTreeModel());
+		getDevicePointTree().addTreeWillExpandListener(this);
 		// user code begin {1}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -230,8 +234,15 @@ private void initialize() {
  * @param point com.cannontech.database.data.lite.LitePoint
  */
 public boolean selectPoint(LitePoint point) {
-	TreePath rootPath = new TreePath( getDevicePointTree().getModel().getRoot() );
-	return selectPoint(rootPath, point);			
+	TreePath rootPath = new TreePath( getDeviceTreeModel().getRoot() );
+	TreePath paoPath = findPAO(rootPath, point.getPaobjectID());
+	
+	if( paoPath != null ) {
+		getDevicePointTree().expandPath(paoPath);
+		return selectPoint(paoPath, point);
+	}
+
+	return false;
 }
 /**
  * Creation date: (12/18/2001 4:36:53 PM)
@@ -244,6 +255,7 @@ private boolean selectPoint(TreePath path, LitePoint point) {
 	Object o = node.getUserObject();
 	if( o instanceof LitePoint && ((LitePoint) o).getPointID() == point.getPointID()) {
 		getDevicePointTree().getSelectionModel().setSelectionPath( path );
+		getDevicePointTree().scrollPathToVisible(path);
 		return true;
  	}
 	else 
@@ -269,4 +281,51 @@ private boolean selectPoint(TreePath path, LitePoint point) {
 	}
 			
 }
+
+private TreePath findPAO(TreePath path, int paoID) {
+	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+
+	Object o = node.getUserObject();
+	if( o instanceof LiteYukonPAObject && ((LiteYukonPAObject) o).getYukonID() == paoID) {
+		getDevicePointTree().getSelectionModel().setSelectionPath( path );
+		return path;
+ 	}
+	else 
+	if( node.isLeaf() ) {
+		return null;
+	}
+	else {
+		for( int i = 0; i < node.getChildCount(); i++ )
+		{
+			Object nextPathObjs[] = new Object[path.getPath().length +1];
+
+			System.arraycopy( path.getPath(), 0, nextPathObjs, 0, path.getPath().length );
+
+			nextPathObjs[path.getPath().length] = node.getChildAt(i);
+			
+			TreePath nextPath = new TreePath(nextPathObjs);
+			
+			if( (nextPath = findPAO(nextPath, paoID)) != null)
+				return nextPath;
+		}
+
+		return null;
+	}			
+}
+
+	/**
+	 * @see javax.swing.event.TreeWillExpandListener#treeWillCollapse(TreeExpansionEvent)
+	 */
+	public void treeWillCollapse(TreeExpansionEvent event)
+		throws ExpandVetoException {			
+	}
+
+	/**
+	 * @see javax.swing.event.TreeWillExpandListener#treeWillExpand(TreeExpansionEvent)
+	 */
+	public void treeWillExpand(TreeExpansionEvent event)
+		throws ExpandVetoException {
+			getDeviceTreeModel().treePathWillExpand(event.getPath());
+	}
+
 }

@@ -10,7 +10,7 @@ import java.net.URL;
  * @author: 
  */
 public class Util {
-	 public final static String jpeg = "jpeg";
+    public final static String jpeg = "jpeg";
     public final static String jpg = "jpg";
     public final static String gif = "gif";
     public final static String tiff = "tiff";
@@ -18,6 +18,7 @@ public class Util {
 
     private static javax.swing.JColorChooser colorChooser = null;
     private static javax.swing.JFileChooser drawingFileChooser = null;
+    
 /**
  * Util constructor comment.
  */

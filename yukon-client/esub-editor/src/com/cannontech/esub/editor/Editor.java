@@ -11,6 +11,7 @@ import java.awt.Cursor;
 
 import javax.swing.*;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -326,6 +327,9 @@ void saveFile(){
 
 	JFileChooser fileChooser = com.cannontech.esub.util.Util.getDrawingJFileChooser();
 	fileChooser.setApproveButtonText("Save");
+	String currentDir = EditorPrefs.getPreferences().getWorkingDir();
+	fileChooser.setCurrentDirectory(new File(currentDir));
+	
 	int returnVal = fileChooser.showSaveDialog(null);
 
 	if(returnVal == JFileChooser.APPROVE_OPTION){
@@ -357,6 +361,13 @@ void saveFile(){
 			e.printStackTrace();
 		}
 		
+		try {
+			EditorPrefs.getPreferences().setWorkingDir(
+				fileChooser.getSelectedFile().getParentFile().getCanonicalPath());				
+			}
+			catch(IOException ioe) {
+				ioe.printStackTrace();
+			}			
        }
 
 	// Just saved so graph is not modified.

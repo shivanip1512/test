@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Color;
 
 /**
+ * DynamicText is a text element that is bound to a point attribute.
  * Creation date: (12/17/2001 1:44:37 PM)
  * @author: 
  */
@@ -105,13 +106,13 @@ private void initialize() {
  * @param version java.lang.String
  */
 public void readFromJLX(InputStream in, String version) throws IOException
-{  System.out.println("DynamicText::readFromJLX");
+{  
 	super.readFromJLX(in, version);
 
 	setPointID(LxSaveUtils.readInt(in));
 
 	// read in font
-	String fontName = LxSaveUtils.readString(in);
+/*	String fontName = LxSaveUtils.readString(in);
 	int fontSize = LxSaveUtils.readInt(in);
 	
 	Font f = new Font(fontName, Font.PLAIN, fontSize );
@@ -123,7 +124,7 @@ public void readFromJLX(InputStream in, String version) throws IOException
 	int b = LxSaveUtils.readInt(in);
 
 	Color c = new Color(r, g, b);
-	setPaint(c);
+	setPaint(c);*/
 	
 	//read link
 	setLinkTo( LxSaveUtils.readString(in));
@@ -141,7 +142,7 @@ public void saveAsJLX(OutputStream out) throws IOException
 	LxSaveUtils.writeInt(out, getPointID());
 
 	//write out font into
-	LxSaveUtils.writeString(out, getFont().getName());
+/*	LxSaveUtils.writeString(out, getFont().getName());
 	LxSaveUtils.writeInt(out, getFont().getSize());
 	
 	//save color
@@ -149,7 +150,7 @@ public void saveAsJLX(OutputStream out) throws IOException
 	LxSaveUtils.writeInt(out, textColor.getRed());
 	LxSaveUtils.writeInt(out, textColor.getGreen());
 	LxSaveUtils.writeInt(out, textColor.getBlue());
-	
+*/	
 	//save link
 	LxSaveUtils.writeString(out, getLinkTo() );
 	
