@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/03/13 19:35:52 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/10/12 01:08:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
         controlout.dout.queue      = false;
         controlout.dout.clear      = false;
 
-        _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut, &controlout, 1);
+        _dnp.setCommand(CtiProtocolDNP::DNP_SetDigitalOut_Direct, &controlout, 1);
 
         OutMessage->Port = getPortID();
         OutMessage->DeviceID = getID();
