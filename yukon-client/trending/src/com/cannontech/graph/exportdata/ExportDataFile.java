@@ -209,8 +209,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		try
 		{
 			JFreeChart fChart = (JFreeChart)exportObject;			
-			ChartUtilities cu = new ChartUtilities();
-			cu.saveChartAsJPEG(file,fChart, 700, 500 );
+			ChartUtilities.saveChartAsJPEG(file,fChart, 700, 500 );
 		}
 		catch (java.io.IOException ioe)
 		{
@@ -263,8 +262,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		try
 		{
 			JFreeChart fChart = (JFreeChart)exportObject;
-			ChartUtilities cu = new ChartUtilities();
-			cu.saveChartAsPNG(file,fChart, 700, 500 );
+			ChartUtilities.saveChartAsPNG(file,fChart, 700, 500 );
 		}
 		catch (java.io.IOException ioe)
 		{

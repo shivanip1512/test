@@ -1358,7 +1358,7 @@ public com.cannontech.database.data.graph.GraphDefinition showCreateGraphPanelDi
 	getOkButton().removeActionListener(listener);
 	getCancelButton().removeActionListener(listener);
 		
-	if( getButtonPushed() == this.OK )
+	if( getButtonPushed() == CreateGraphPanel.OK )
 		return (com.cannontech.database.data.graph.GraphDefinition) getValue(null);
 	else
 		return null;
