@@ -54,19 +54,12 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 	public static final int DEFAULT_DISABLEDCOLOR = Colors.GRAY_ID;  // gray as of 8-31-2000
 	public static final int DEFAULT_ALARMCOLOR = Colors.RED_ID;  // red as of 1-12-2001
 	
-	public static final PointValues DUMMY_POINT_VALUES =
+	private static final PointValues DUMMY_POINT_VALUES =
 						new PointValues(
 								TDCDefines.ROW_BREAK_ID,
 								PointTypes.INVALID_POINT,
 								"", "", "" );	
 
-	public static final PointValues PSUEDO_POINT_VALUES =
-						new PointValues(
-								TDCDefines.ROW_BREAK_ID,
-								PointTypes.INVALID_POINT,
-								"", "", "" );	
-
-	
 	private Vector columnNames = null;	
 	private Vector columnTypeName = null;
 
@@ -196,7 +189,8 @@ private int addColumnDefinedRow( Signal signal )
 			createRowForEventViewer( signal );
 
 			// put a psuedo value in row location 0
-			createPsuedoPointValue( 0 );
+			createPsuedoPointValue( 0, signal );
+			
 			rowsAdded++;
 				
 			if( addBlankRowIfNeeded() )
@@ -392,15 +386,33 @@ protected void createDummyPointValue( int location )
  * Version: <version>
  * @param id long
  */
-protected void createPsuedoPointValue( int location ) 
+private void createPsuedoPointValue( int location, Signal signal ) 
 {
 	if( location >= getRowCount() )
 		return;  // cant add it off the chart
 
+	PointValues psuedoValue =
+		new PointValues(
+			(signal == null ? TDCDefines.ROW_BREAK_ID : signal.getPointID()),
+			PointTypes.INVALID_POINT,
+			"", "", "" );	
+
 	if( location >= getRowCount() ) //Add the new value
-		pointValues.addElement( PSUEDO_POINT_VALUES );
+		pointValues.addElement( psuedoValue );
 	else
-		pointValues.insertElementAt( PSUEDO_POINT_VALUES, location );
+		pointValues.insertElementAt( psuedoValue, location );
+}
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/12/00 2:23:47 PM)
+ * Version: <version>
+ * @param id long
+ */
+protected void createPsuedoPointValue( int location ) 
+{
+	createPsuedoPointValue( location, null );
 }
 
 
@@ -428,20 +440,6 @@ protected void createDummyPointValue( long id, long timeStamp, String deviceName
 }
 */
 
-/**
- * Insert the method's description here.
- * Creation date: (4/12/00 2:23:47 PM)
- * Version: <version>
- * @param signal Signal
- */
-/*
-private void createPsuedoPointValue( Signal signal )
-{
-	pointValues.insertElementAt(
-		new PointValues( signal, PointTypes.INVALID_POINT ),
-		0 );
-}
-*/
 /**
  * Insert the method's description here.
  * Creation date: (4/13/00 5:04:56 PM)
