@@ -195,7 +195,7 @@ void CtiCCClientListener::_listen()
                     _connections.insert(conn);
                 }
 
-                LONG secondsFrom1901 = RWDBDateTime().seconds();
+                ULONG secondsFrom1901 = RWDBDateTime().seconds();
                 CtiCCExecutorFactory f;
                 CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
                 {

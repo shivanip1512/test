@@ -33,9 +33,9 @@ class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock >
 {
 public:   
 
-    RWOrdered* getCCSubstationBuses(LONG secondsFrom1901);
-    RWOrdered* getCCCapBankStates(LONG secondsFrom1901);
-    RWOrdered* getCCGeoAreas(LONG secondsFrom1901);
+    RWOrdered* getCCSubstationBuses(ULONG secondsFrom1901);
+    RWOrdered* getCCCapBankStates(ULONG secondsFrom1901);
+    RWOrdered* getCCGeoAreas(ULONG secondsFrom1901);
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();

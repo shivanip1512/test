@@ -79,7 +79,7 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 
     Returns a RWOrdered of CtiCCSubstationBuses
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses(LONG secondsFrom1901)
+RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -100,7 +100,7 @@ RWOrdered* CtiCCSubstationBusStore::getCCSubstationBuses(LONG secondsFrom1901)
 
     Returns a RWOrdered of CtiCCGeoAreas
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas(LONG secondsFrom1901)
+RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -117,7 +117,7 @@ RWOrdered* CtiCCSubstationBusStore::getCCGeoAreas(LONG secondsFrom1901)
 
     Returns a RWOrdered of CtiCCStates
 ---------------------------------------------------------------------------*/
-RWOrdered* CtiCCSubstationBusStore::getCCCapBankStates(LONG secondsFrom1901)
+RWOrdered* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
@@ -1380,7 +1380,7 @@ void CtiCCSubstationBusStore::doResetThr()
     time_t start = time(NULL);
 
     RWDBDateTime currenttime = RWDBDateTime();
-    LONG tempsum = currenttime.seconds()+refreshrate;
+    ULONG tempsum = currenttime.seconds()+refreshrate;
     RWDBDateTime nextDatabaseRefresh = RWDBDateTime(RWTime(tempsum));
 
     while(TRUE)
@@ -1537,7 +1537,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
             time_t start = time(NULL);
 
             RWDBDateTime currenttime = RWDBDateTime();
-            LONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);
+            ULONG tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);
             RWDBDateTime nextAMFMRefresh = RWDBDateTime(RWTime(tempsum));
 
             while(TRUE)

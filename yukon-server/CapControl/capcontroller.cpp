@@ -167,7 +167,7 @@ void CtiCapController::controlLoop()
 
                 currentDateTime.now();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-                LONG secondsFrom1901 = currentDateTime.seconds();
+                ULONG secondsFrom1901 = currentDateTime.seconds();
     
                 if(_CC_DEBUG)
                 {
@@ -516,7 +516,7 @@ CtiConnection* CtiCapController::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkDispatch(LONG secondsFrom1901)
+void CtiCapController::checkDispatch(ULONG secondsFrom1901)
 {
     BOOL done = FALSE;
     do
@@ -539,7 +539,7 @@ void CtiCapController::checkDispatch(LONG secondsFrom1901)
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::checkPIL(LONG secondsFrom1901)
+void CtiCapController::checkPIL(ULONG secondsFrom1901)
 {
     BOOL done = FALSE;
     do
@@ -632,7 +632,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::parseMessage(RWCollectable *message, LONG secondsFrom1901)
+void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 {
     try
     {
@@ -743,7 +743,7 @@ void CtiCapController::parseMessage(RWCollectable *message, LONG secondsFrom1901
 
     Handles point data messages and updates substation bus point values.
 ---------------------------------------------------------------------------*/
-void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, LONG secondsFrom1901 )
+void CtiCapController::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _CC_DEBUG )
     {
@@ -984,7 +984,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
     Handles porter return messages and updates the status of substation bus
     cap bank controls.
 ---------------------------------------------------------------------------*/
-void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, LONG secondsFrom1901 )
+void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
     /*if( _CC_DEBUG )
     {
@@ -1067,7 +1067,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 
     Handles signal messages and updates substation bus tags.
 ---------------------------------------------------------------------------*/
-void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, LONG secondsFrom1901 )
+void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
 {
     if( _CC_DEBUG )
     {
