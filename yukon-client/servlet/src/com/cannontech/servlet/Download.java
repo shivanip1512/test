@@ -6,6 +6,7 @@ package com.cannontech.servlet;
  */
 import javax.servlet.http.HttpServlet;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.graph.exportdata.ExportDataFile;
 
 public class Download extends HttpServlet
 {	
@@ -34,169 +35,78 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
 
-		int width = 556;
-		int height = 433;
-		//Grab the parameters
-		if( req.getParameter("width") != null)
-			width = Integer.parseInt( req.getParameter("width") );
-		if( req.getParameter("height") != null)
-			height = Integer.parseInt( req.getParameter("height") );
-		
-		String extension = req.getParameter("ext");
-		int gDefId = Integer.parseInt(req.getParameter("gdefid"));
-		java.util.Date start = dateFormat.parse(req.getParameter("start"));
-		java.util.Date end = start; //just as an init!
-		String dbAlias = req.getParameter("db").toString();
-		int selectedPane = com.cannontech.graph.GraphDefines.GRAPH_PANE;
-		int modelType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
-		String period = req.getParameter("period");
-		System.out.println("PERIOD ====== " + period);
-		String modelTypeStr = req.getParameter("model");
-		if (modelTypeStr != null)
-			modelType = Integer.parseInt(modelTypeStr);
 
-		// page indicates the page requested which happens to be
-		// the day between the start and end, starting with 1		
-		//String pageStr = (String) req.getParameter("page");
-
-		// Create the graph def with the given id and retrieve it from the db	
-		com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-		gDef.getGraphDefinition().setGraphDefinitionID(new Integer(gDefId));
-
-		if (gDef != null)
+		com.cannontech.graph.GraphBean localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
+		if(localBean == null)
 		{
-			java.sql.Connection conn = null;
-			try
-			{
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-				gDef.setDbConnection(conn);
-				gDef.retrieve();
-
-				// Lose the reference to the connection
-				gDef.setDbConnection(null);
-			}
-			catch (java.sql.SQLException e)
-			{
-				e.printStackTrace();
-			}
-			finally
-			{ //make sure to close the connection
-				try
-				{
-					if (conn != null)
-						conn.close();
-				}
-				catch (java.sql.SQLException e2)
-				{
-					e2.printStackTrace();
-				};
-			}
-
-			// If a page is indicated, just do that day....
-			//if (pageStr != null)
-			{
-				end = com.cannontech.util.ServletUtil.getEndingDateOfInterval( start, period );
-				start = com.cannontech.util.ServletUtil.getStartingDateOfInterval( start, period );
-
-				gDef.getGraphDefinition().setStartDate(start);
-				System.out.println("START ====== " + start);				
-				gDef.getGraphDefinition().setStopDate(end);
-				System.out.println("STOP ====== " + end);
-
+			System.out.println("!!! BEAN IS NULL !!! ");
+			session.setAttribute("graphBean", new com.cannontech.graph.GraphBean());
+		}
 			
-				//java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				//cal.setTime(start);
+		localBean.updateCurrentPane();
 
-				//int startDay = cal.get(java.util.Calendar.DAY_OF_YEAR);
-				////+ Integer.parseInt(pageStr) - 1;
+		String extension = req.getParameter("ext");
+		javax.servlet.ServletOutputStream out = null;
 
-				//cal.set(java.util.Calendar.DAY_OF_YEAR, startDay);
-				//start = cal.getTime();
-
-				//cal.setTime(end);
-				//cal.set(java.util.Calendar.DAY_OF_YEAR, startDay + period);
-				//end = cal.getTime();
-			}
-
-			//gDef.getGraphDefinition().setStartDate(start);
-			//gDef.getGraphDefinition().setStopDate(end);
-
-			com.cannontech.graph.Graph graph = new com.cannontech.graph.Graph();
-			graph.setDatabaseAlias(dbAlias);
-			graph.setCurrentGraphDefinition(gDef);
-		
-			graph.setViewType(modelType);
-			if( width > 0 && height > 0)
-				graph.setSize(width, height);
-
-			// Define the peak series....
-			for (int i = 0; i < gDef.getGraphDataSeries().size(); i++)
-			{
-				com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) gDef.getGraphDataSeries().get(i);
-
-				
-			}
-
-			System.out.println(" *** SERVLET, RIGHT BEFORE THE GRAPH.UPDATE()!!!");
-			graph.update();
-			System.out.println(" *** SERVLET, RIGHT AFTER THE GRAPH.UPDATE()!!!");
-			javax.servlet.ServletOutputStream out = null;
-
-			try
-			{
-				System.out.println(" *** SERVLET, RESP.GETOUTPUTSTREAM!!!");
-				out = resp.getOutputStream();
-
-				if (extension.equalsIgnoreCase("csv"))
-				{
-					resp.setContentType("text/comma-separated-values");
-
-					com.cannontech.graph.model.TrendModel tModel = graph.getTrendModel();
-
-					com.cannontech.graph.exportdata.ExportDataFile eDataFile = new com.cannontech.graph.exportdata.ExportDataFile
-					(selectedPane, graph.getFreeChart(), graph.getTrendModel().getChartName(), graph.getTrendModel());
-
-					eDataFile.setExtension(extension);
-					String[] data = eDataFile.createCSVFormat();
-					if( data != null)
-						for (int i = 0; i < data.length; i++)
-							out.write(data[i].getBytes());
-				}
-				else if (extension.equalsIgnoreCase("pdf"))
-				{
-					resp.setContentType("application/pdf");
-					graph.encodePDF(out);
-				}
-				else if (extension.equalsIgnoreCase("jpeg"))
-				{
-					resp.setContentType("image/jpeg");
-					graph.encodeJpeg(out);
-				}
-				else if (extension.equalsIgnoreCase("png"))
-				{
-					resp.setContentType("image/x-png");
-					graph.encodePng(out);
-				}
-				else if (extension.equalsIgnoreCase(""))
-				{
-					resp.setContentType("image/x-png");
-					graph.encodePng(out);
-				}
-
-
-				out.flush();
-				System.out.println("*** Just tried to flush the out!");
-			}
-			catch (java.io.IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-		}
-		else
+		try
 		{
-			CTILogger.debug("Null graphdefinition!");
-		}
+			out = resp.getOutputStream();
+			com.cannontech.graph.Graph graph = localBean.getGraph();
+			
+			
+			//Extra code that needs to be done somewhere else.  Done here for craps sake now...
+			int tab = 0;
+			if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.GRAPH_PANE_STRING))
+				tab = com.cannontech.graph.GraphDefines.GRAPH_PANE;
+			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.TABULAR_PANE_STRING))
+				tab = com.cannontech.graph.GraphDefines.TABULAR_PANE;
+			else if( localBean.getTab().equalsIgnoreCase(com.cannontech.graph.GraphDefines.SUMMARY_PANE_STRING))
+				tab = com.cannontech.graph.GraphDefines.SUMMARY_PANE;
+			
+			if (extension.equalsIgnoreCase("csv"))
+			{
+				resp.setContentType("text/comma-separated-values");
+				ExportDataFile eDataFile = new ExportDataFile(
+				tab,
+				graph.getFreeChart(), 
+				graph.getTrendModel().getChartName(), 
+				graph.getTrendModel());
 
+				eDataFile.setExtension(extension);
+				String[] data = eDataFile.createCSVFormat();
+				if( data != null)
+					for (int i = 0; i < data.length; i++)
+						out.write(data[i].getBytes());
+			}
+			else if (extension.equalsIgnoreCase("pdf"))
+			{
+				resp.setContentType("application/pdf");
+				graph.encodePDF(out);
+			}
+			else if (extension.equalsIgnoreCase("jpeg"))
+			{
+				resp.setContentType("image/jpeg");
+				graph.encodeJpeg(out);
+			}
+			else if (extension.equalsIgnoreCase("png"))
+			{
+				resp.setContentType("image/x-png");
+				graph.encodePng(out);
+			}
+			else if (extension.equalsIgnoreCase(""))
+			{
+				resp.setContentType("image/x-png");
+				graph.encodePng(out);
+			}
+
+
+			out.flush();
+			System.out.println("*** Just tried to flush the out!");
+		}
+		catch (java.io.IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
 	}
 	catch (Throwable t)
 	{
