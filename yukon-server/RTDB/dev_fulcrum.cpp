@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2002/04/15 15:19:34 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2002/04/15 22:15:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1929,8 +1929,10 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
                     // only build one of these if the point was found and configured correctly
                     if (getMeterDataFromScanStruct (i, PValue, peakTime, Fsd))
                     {
+                        PValue = pNumericPoint->computeValueForUOM(PValue);
+
                         verifyAndAddPointToReturnMsg (pNumericPoint->getPointID(),
-                                                      PValue * pNumericPoint->getMultiplier(),
+                                                      PValue,
                                                       NormalQuality,
                                                       peakTime,
                                                       pPIL);
@@ -2092,7 +2094,8 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (INMESS *InMessage,
                     pulseCount = (INT)nibblesAndBits(pulseTemp, numActiveChannels, programNumber, i);
                     intervalTime = RWTime(currentIntervalTime + rwEpoch);
 
-                    pValue = ((60.0 / (DOUBLE)intervalLength) * (DOUBLE)pulseWeight * (DOUBLE)pulseCount * pNumericPoint->getMultiplier()) / 1000.0;
+                    pValue = ((60.0 / (DOUBLE)intervalLength) * (DOUBLE)pulseWeight * (DOUBLE)pulseCount) / 1000.0;
+                    pValue = pNumericPoint->computeValueForUOM(pValue);
 
                     if (verifyAndAddPointToReturnMsg (pNumericPoint->getPointID(),
                                                       pValue,
