@@ -14,21 +14,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/01/07 16:45:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include "xfer.h"
-
+/*
 //change these into a enum.....        
 #define HEADER_WIDTH    3
 #define IDD_WIDTH       3
 #define DATA_WIDTH      6
 #define SIGN_WIDTH      1
 #define FORMAT_WIDTH    2
-
+*/
 class IM_EX_PROT CtiTransdataData
 {
 
@@ -56,6 +56,15 @@ public:
 
 private:
 
+   enum
+   {
+      Sign_width     = 1,
+      Format_width,
+      Idd_width,
+      Header_width   = 3,
+      Data_width     = 6
+   };
+   
    unsigned       _year;
    unsigned       _month;
    unsigned       _day;

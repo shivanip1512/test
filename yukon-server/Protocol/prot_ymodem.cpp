@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/12/29 21:00:40 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/01/07 16:45:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -83,14 +83,14 @@ bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
    
    if( _start )
    {
-      setXfer( xfer, Crcnak, _bytesExpected, false, 5 );
+      setXfer( xfer, Crcnak, _bytesExpected, false, 2 );
       setAcks( reqAcks );     //when we start the protocol, set how many times we think we'll need to ack
       _acks = 0;
       _start = false;
    }
    else
    {
-      setXfer( xfer, Ack, _bytesExpected, false, 5 );
+      setXfer( xfer, Ack, _bytesExpected, false, 2 );
       _acks++; 
    }
    

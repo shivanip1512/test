@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/12/31 21:04:04 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/01/07 16:45:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,25 +68,25 @@ void CtiTransdataData::fillData( BYTE *data )
 
    isTime = false;
 
-   _dataID = stringToInt( data, IDD_WIDTH );
-   data += IDD_WIDTH;
+   _dataID = stringToInt( data, Idd_width );
+   data += Idd_width;
 
    isTime = dataIsTime( _dataID );
 
    if( isTime )
    {
-      temp = stringToInt( data, DATA_WIDTH );
+      temp = stringToInt( data, Data_width );
    }
    else
    {
-      _reading = stringToInt( data, DATA_WIDTH );
+      _reading = stringToInt( data, Data_width );
    }
-   data += DATA_WIDTH;
+   data += Data_width;
 
-   _isNegative = isDataNegative( data, SIGN_WIDTH );
-   data += SIGN_WIDTH;
+   _isNegative = isDataNegative( data, Sign_width );
+   data += Sign_width;
 
-   _formatCode = stringToInt( data, FORMAT_WIDTH );
+   _formatCode = stringToInt( data, Format_width );
 
    if( isTime )
    {
