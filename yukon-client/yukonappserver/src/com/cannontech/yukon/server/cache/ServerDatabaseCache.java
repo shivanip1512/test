@@ -32,7 +32,8 @@ public class ServerDatabaseCache implements com.cannontech.yukon.IDatabaseCache
 	private java.util.ArrayList allHolidaySchedules = null;
 	private java.util.ArrayList allDeviceMeterGroups = null;
 	private java.util.ArrayList allPointsUnits = null;
-        private java.util.ArrayList allYukonImages = null;
+	private java.util.ArrayList allPointLimits = null;
+    private java.util.ArrayList allYukonImages = null;
 
 	//lists that are created by the joining/parsing of existing lists
 	private java.util.ArrayList allGraphTaggedPoints = null;
@@ -484,6 +485,17 @@ public synchronized java.util.List getAllPointsUnits(){
 	}
 }
 
+public synchronized java.util.List getAllPointLimits() {
+	if( allPointLimits != null ) 
+		return allPointLimits;
+	else
+	{
+		allPointLimits = new java.util.ArrayList();
+		PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
+		pointLimitLoader.run();
+		return allPointLimits;
+	}
+}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)

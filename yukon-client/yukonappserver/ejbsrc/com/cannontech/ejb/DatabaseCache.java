@@ -61,6 +61,8 @@ public interface DatabaseCache
    public java.util.List getAllPoints(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllPointsUnits(  ) throws java.rmi.RemoteException;
+   
+   public java.util.List getAllPointLimits(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllPorts(  ) throws java.rmi.RemoteException;
 

@@ -19,5 +19,6 @@ public final class LiteTypes
 	public final static int DEVICE_METERNUMBER = 15;
 	public final static int YUKON_PAOBJECT= 16;
 	public final static int POINT_UNIT = 17;
-        public final static int STATE_IMAGE = 18;
+	public final static int POINT_LIMIT = 18;
+    public final static int STATE_IMAGE = 19;
 }

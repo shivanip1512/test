@@ -2,6 +2,7 @@ package com.cannontech.ejb;
 
 import com.cannontech.database.TransactionException;
 
+import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.EJBException;
 import javax.ejb.SessionContext;
@@ -228,7 +229,16 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       return getCache().getAllPointsUnits();
    }
    
-
+	
+   /**
+	* @ejb:interface-method
+	* tview-type="remote"
+   **/
+	public List getAllPointLimits() 
+	{
+		return getCache().getAllPointLimits();
+	}	
+	
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -238,7 +248,6 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
       return getCache().getAllPointidMultiplierHashMap();
    }
    
-
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -456,7 +465,5 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public void setDatabaseAlias(String newAlias)
    {
       getCache().setDatabaseAlias( newAlias );
-   }
-
-
+   }	
 }

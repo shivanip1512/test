@@ -34,6 +34,7 @@ public interface IDatabaseCache {
    public java.util.List getAllNotificationRecipients();
    public java.util.List getAllPoints();
    public java.util.List getAllPointsUnits();
+   public java.util.List getAllPointLimits();
    public java.util.HashMap getAllPointidMultiplierHashMap();
    public java.util.List getAllPorts();
    public java.util.List getAllRoutes();

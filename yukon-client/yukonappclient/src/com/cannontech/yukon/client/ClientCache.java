@@ -24,7 +24,7 @@ public class ClientCache implements IDatabaseCache
 	 */
 	public ClientCache()
 	{
-		super();
+		super(); 
       initialize();
 	}
 
@@ -388,7 +388,22 @@ public class ClientCache implements IDatabaseCache
       }
    }
    
-
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	**/
+	public List getAllPointLimits() {
+		try 
+		{
+			return getCache().getAllPointLimits();
+		}
+		catch(java.rmi.RemoteException e)
+		{
+			com.cannontech.clientutils.CTILogger.info(e);
+			return new java.util.ArrayList();
+		}
+	}
+	
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -793,5 +808,4 @@ public class ClientCache implements IDatabaseCache
          com.cannontech.clientutils.CTILogger.info( e );
       }
    }
-
 }

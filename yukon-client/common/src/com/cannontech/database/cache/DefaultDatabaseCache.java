@@ -1,10 +1,8 @@
 package com.cannontech.database.cache;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -216,7 +214,14 @@ public class DefaultDatabaseCache implements IDatabaseCache
       return getDBCache().getAllPointsUnits();
    }
    
-
+    /**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 **/
+	public List getAllPointLimits() {
+		return getDBCache().getAllPointLimits();
+    }
+    
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -445,5 +450,4 @@ public class DefaultDatabaseCache implements IDatabaseCache
    {
       getDBCache().setDatabaseAlias( newAlias );
    }
-
 }

@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteBase;
 //  Imports for IDBPersistent implementation
 // ---------------------------------------------------------------------------------   
 import java.sql.SQLException;
+import java.util.List;
 
 
 /**
@@ -205,6 +206,10 @@ public class YukonServerResource implements com.cannontech.yukon.IYukon
    {
       return getDBCache().getAllPointsUnits();
    }
+   
+   public List getAllPointLimits() {
+	  return getDBCache().getAllPointLimits();
+   }
 
    public java.util.HashMap getAllPointidMultiplierHashMap()
    {
@@ -340,5 +345,5 @@ public class YukonServerResource implements com.cannontech.yukon.IYukon
        getDBCache().setDatabaseAlias( newAlias );
    }
 
-   
+
 }
