@@ -77,6 +77,10 @@ public class CtiProperties extends java.util.Properties implements ClientRights
    public static final String KEY_LOGIN_PAGE_HELP_EMAIL = "login_page_help_email";
    public static final String KEY_PFACTOR_FORMAT = "pfactor_decimal_places";   
    
+    public static String KEY_SMTP_HOST = "mail.smtp.host";
+    public static String KEY_ADMIN_EMAIL_ADDRESS = "admin_email_address";
+    public static String KEY_BATCH_COMMAND_FOLDER = "batch_command_folder";
+    
    
 	public static final String[] ALL_CONFIG_KEYS =
 	{
@@ -118,7 +122,11 @@ public class CtiProperties extends java.util.Properties implements ClientRights
       
       KEY_LOGIN_PAGE_LOGO,
       KEY_LOGIN_PAGE_HELP_EMAIL,
-   	KEY_PFACTOR_FORMAT   
+   	KEY_PFACTOR_FORMAT,
+      
+      KEY_SMTP_HOST,
+      KEY_ADMIN_EMAIL_ADDRESS,
+      KEY_BATCH_COMMAND_FOLDER
       
 	};
 
