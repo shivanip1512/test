@@ -12,6 +12,9 @@ package com.cannontech.graph;
  * Creation date: (12/15/99 10:13:31 AM)
  * @author:  Aaron Lauinger 
  */
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
@@ -158,22 +161,9 @@ public void encodePng(java.io.OutputStream out) throws java.io.IOException
 public void encodeSVG(java.io.OutputStream out) throws java.io.IOException
 {
 	synchronized(Graph.class)
-	{
-		//	update();
-		javax.swing.JFrame encFrame = new javax.swing.JFrame();
-		com.jrefinery.chart.ChartPanel cp = new com.jrefinery.chart.ChartPanel(getFreeChart());	
-		
-		encFrame.setSize(getWidth(), getHeight());
-		cp.setSize(getWidth(), getHeight());
-		encFrame.getContentPane().add( cp, "Center");
-			  
-		//make sure to create its peer
-		encFrame.addNotify();
-		
-		// FIXFIX these probably can be resused
-		// Get a DOMImplementation
+	{		
 		org.w3c.dom.DOMImplementation domImpl =
-		org.apache.batik.dom.GenericDOMImplementation.getDOMImplementation();
+			org.apache.batik.dom.GenericDOMImplementation.getDOMImplementation();
 		
 		// Create an instance of org.w3c.dom.Document
 		org.w3c.dom.Document document = domImpl.createDocument(null, "svg", null);
@@ -181,17 +171,13 @@ public void encodeSVG(java.io.OutputStream out) throws java.io.IOException
 		//Create an instance of the SVG Generator
 		org.apache.batik.svggen.SVGGraphics2D svgGenerator = 
 		new org.apache.batik.svggen.SVGGraphics2D(document);
-			
-		// Ask the test to render into the SVG Graphics2D implementation       
-		cp.paint(svgGenerator);
-			
+		
+		getFreeChart().draw(svgGenerator, new Rectangle(getWidth(),getHeight()));
+		
 		// Finally, stream out SVG to the standard output 
 		// is this a good encoding to use?
 		java.io.Writer writer = new java.io.OutputStreamWriter(out,"ISO-8859-1");
-		svgGenerator.stream(writer, true);
-			        
-		encFrame.getContentPane().removeAll();
-		encFrame.dispose();  
+		svgGenerator.stream(writer, true);		
 	}
 }
 
