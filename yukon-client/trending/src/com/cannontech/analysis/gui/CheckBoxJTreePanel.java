@@ -4,11 +4,9 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package com.cannontech.report;
+package com.cannontech.analysis.gui;
 
 import javax.swing.JTree;
-
-
 
 import com.cannontech.common.gui.tree.CheckRenderer;
 import com.cannontech.common.gui.util.TreeViewPanel;

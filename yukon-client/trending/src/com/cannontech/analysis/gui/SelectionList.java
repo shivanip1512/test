@@ -1,4 +1,4 @@
-package com.cannontech.report;
+package com.cannontech.analysis.gui;
 
 /**
  * Insert the type's description here.
@@ -137,7 +137,7 @@ private javax.swing.JPanel getJPanel1() {
 private StartEndPanel getStartEndPanel() {
 	if (ivjStartEndPanel == null) {
 		try {
-			ivjStartEndPanel = new com.cannontech.report.StartEndPanel();
+			ivjStartEndPanel = new StartEndPanel();
 			ivjStartEndPanel.setName("StartEndPanel");
 			// user code begin {1}
 			// user code end
