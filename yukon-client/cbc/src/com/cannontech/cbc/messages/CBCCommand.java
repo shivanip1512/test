@@ -8,8 +8,6 @@ package com.cannontech.cbc.messages;
 
 public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage 
 {
-	//server does not use this one
-	public static final int CMD_INVALID = -1;
 
 
 	//The following are the different commands that
@@ -45,7 +43,12 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 		"RETURN BANK TO FEEDER"
 	};
 	
-		
+
+	//server does not use these commands
+	public static final int CMD_INVALID			= -1;
+	public static final int CMD_MANUAL_ENTRY	= -2;
+
+
 	private int command;
 	private int deviceID;
 /**
