@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/03/13 19:35:59 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/06/27 21:06:27 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,29 +60,29 @@ bool CtiDeviceRepeater900::initCommandStore()
 
     cs._cmd = CtiProtocolEmetcon::Scan_General;
     cs._io = IO_READ;
-    cs._funcLen = make_pair((int)Rpt_ModelAddr, 1);
+    cs._funcLen = make_pair((int)Rpt_ModelPos, 1);
     _commandStore.insert( cs );
 
     cs._cmd = CtiProtocolEmetcon::Command_Loop;
     cs._io = IO_READ;
-    cs._funcLen = make_pair((int)Rpt_ModelAddr, 1);
+    cs._funcLen = make_pair((int)Rpt_ModelPos, 1);
     _commandStore.insert( cs );
 
     cs._cmd = CtiProtocolEmetcon::PutConfig_Role;
     cs._io = IO_WRITE;
-    cs._funcLen = make_pair((int)Rpt_RoleBaseAddr,
+    cs._funcLen = make_pair((int)Rpt_RoleBasePos,
                             (int)Rpt_RoleLen);
     _commandStore.insert( cs );
 
     cs._cmd = CtiProtocolEmetcon::GetConfig_Role;
     cs._io = IO_READ;
-    cs._funcLen = make_pair((int)Rpt_RoleBaseAddr,
+    cs._funcLen = make_pair((int)Rpt_RoleBasePos,
                             (int)Rpt_RoleLen);
     _commandStore.insert( cs );
 
     cs._cmd = CtiProtocolEmetcon::GetConfig_Model;
     cs._io = IO_READ;
-    cs._funcLen = make_pair((int)Rpt_ModelAddr,
+    cs._funcLen = make_pair((int)Rpt_ModelPos,
                             (int)Rpt_ModelLen);
     _commandStore.insert( cs );
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:14 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/06/27 21:06:28 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,12 +29,12 @@ protected:
 
    enum
    {
-       Rpt_StatusAddr   = 0x00,
-       Rpt_StatusLen    =    3,
-       Rpt_RoleBaseAddr = 0x00,
-       Rpt_RoleLen      =    2,
-       Rpt_ModelAddr    = 0x7f,
-       Rpt_ModelLen     =    3
+       Rpt_StatusPos   = 0x00,
+       Rpt_StatusLen   =    3,
+       Rpt_RoleBasePos = 0x00,
+       Rpt_RoleLen     =    2,
+       Rpt_ModelPos    = 0x7f,
+       Rpt_ModelLen    =    3
    };
 
 private:

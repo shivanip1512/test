@@ -30,8 +30,8 @@ protected:
 
     enum
     {
-        Rpt800_PFCountAddr = 0x36,
-        Rpt800_PFCountLen  =    3
+        Rpt800_PFCountPos = 0x36,
+        Rpt800_PFCountLen =    3
     };
 
 private:

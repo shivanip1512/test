@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/03/13 19:35:58 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/06/27 21:06:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -358,14 +358,14 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                 switch( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() )
                 {
                     case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetAddr;
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetPos;
                         OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
                         OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
                         break;
 
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetAddr;
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetPos;
                         OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
                         OutMessage->Buffer.BSt.Message[0] = 3;     //  MCT's LG command identifier
                         OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)

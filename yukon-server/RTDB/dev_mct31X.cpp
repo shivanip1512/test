@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/06/12 18:23:03 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2003/06/27 21:09:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,19 +63,19 @@ bool CtiDeviceMCT31X::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::Scan_General;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandAddr,
+    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadStatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandAddr,
+    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadDemandLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandAddr,
+    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadDemandLen );
     _commandStore.insert( cs );
 
@@ -87,43 +87,43 @@ bool CtiDeviceMCT31X::initCommandStore( )
     //  add the 2 other channels for 318s
     cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ2;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_PutMRead2Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_PutMRead2Pos,
                              (int)MCT3XX_PutMReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_KYZ3;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_PutMRead3Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_PutMRead3Pos,
                              (int)MCT3XX_PutMReadLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_External;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandAddr,
+    cs._funcLen = make_pair( (int)MCT31X_FuncReadDemandPos,
                              (int)MCT31X_FuncReadStatusLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier2;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult2Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_Mult2Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier3;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult3Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_Mult3Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier2;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult2Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_Mult2Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier3;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT3XX_Mult3Addr,
+    cs._funcLen = make_pair( (int)MCT3XX_Mult3Pos,
                              (int)MCT3XX_MultLen );
     _commandStore.insert( cs );
 
@@ -132,48 +132,48 @@ bool CtiDeviceMCT31X::initCommandStore( )
     //  scan address and length are identical for the p+ and s4
     cs._cmd     = CtiProtocolEmetcon::GetConfig_IEDScan;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDScanAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDScanPos,
                              (int)MCT360_IEDScanLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_IEDScan;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT360_IEDScanAddr, 2 );  //  just 2 bytes - seconds and delay
+    cs._funcLen = make_pair( (int)MCT360_IEDScanPos, 2 );  //  just 2 bytes - seconds and delay
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_IEDClass;
     cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT360_IEDClassAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDClassPos,
                              (int)MCT360_IEDClassLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_IEDTime;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDTimeAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDTimePos,
                              (int)MCT360_IEDTimeLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_IEDDemand;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDDemandAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDDemandPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_IEDKwh;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDKwhAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDKwhPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_IEDKvarh;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDKvarhAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDKvarhPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_IEDKvah;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDKvahAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDKvahPos,
                              (int)MCT360_IEDReqLen );
     _commandStore.insert( cs );
 
@@ -184,7 +184,7 @@ bool CtiDeviceMCT31X::initCommandStore( )
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_IEDLink;
     cs._io      = IO_FCT_READ;
-    cs._funcLen = make_pair( (int)MCT360_IEDLinkAddr,
+    cs._funcLen = make_pair( (int)MCT360_IEDLinkPos,
                              (int)MCT360_IEDLinkLen );
     _commandStore.insert( cs );
 

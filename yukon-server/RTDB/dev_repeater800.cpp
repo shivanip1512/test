@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:59 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/06/27 21:06:27 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ bool CtiDeviceRepeater800::initCommandStore()
 
    cs._cmd = CtiProtocolEmetcon::GetValue_PFCount;
    cs._io = IO_READ;
-   cs._funcLen = make_pair((int)Rpt800_PFCountAddr,
+   cs._funcLen = make_pair((int)Rpt800_PFCountPos,
                            (int)Rpt800_PFCountLen);
    _commandStore.insert( cs );
 

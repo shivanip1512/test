@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/06/27 21:09:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,36 +37,36 @@ public:
 
     enum
     {
-        MCT31X_FuncReadDemandAddr = 0x92,
-        MCT31X_FuncReadDemandLen  =    7,
-        MCT31X_FuncReadStatusLen  =    1,
+        MCT31X_FuncReadDemandPos = 0x92,
+        MCT31X_FuncReadDemandLen =    7,
+        MCT31X_FuncReadStatusLen =    1,
 
         //  get status and 3 accumulators
-        MCT31X_FuncReadAccumAddr  = 0x95,
-        MCT31X_FuncReadAccumLen   =   10,
+        MCT31X_FuncReadAccumPos  = 0x95,
+        MCT31X_FuncReadAccumLen  =   10,
 
         //  these addresses are only valid for the 360 and 370
-        MCT360_IEDKwhAddr         = 0xa2,
-        MCT360_IEDKvahAddr        = 0xa7,
-        MCT360_IEDKvarhAddr       = 0xa7,
-        MCT360_IEDDemandAddr      = 0xa1,
-        MCT360_IEDReqLen          =   13,
-        MCT360_IEDLinkAddr        = 0xa0,
-        MCT360_IEDLinkLen         =    5,
+        MCT360_IEDKwhPos         = 0xa2,
+        MCT360_IEDKvahPos        = 0xa7,
+        MCT360_IEDKvarhPos       = 0xa7,
+        MCT360_IEDDemandPos      = 0xa1,
+        MCT360_IEDReqLen         =   13,
+        MCT360_IEDLinkPos        = 0xa0,
+        MCT360_IEDLinkLen        =    5,
 
-        MCT360_IEDTimeAddr        = 0xaa,
-        MCT360_IEDTimeLen         =    9,
+        MCT360_IEDTimePos        = 0xaa,
+        MCT360_IEDTimeLen        =    9,
 
-        MCT360_IEDScanAddr        = 0x74,
-        MCT360_IEDScanLen         =    6,
+        MCT360_IEDScanPos        = 0x74,
+        MCT360_IEDScanLen        =    6,
 
-        MCT360_IEDClassAddr       = 0x76,
-        MCT360_IEDClassLen        =    4,
+        MCT360_IEDClassPos       = 0x76,
+        MCT360_IEDClassLen       =    4,
 
-        MCT360_AlphaResetAddr     = 0xb0,
-        MCT360_AlphaResetLen      =    2,
-        MCT360_LGS4ResetAddr      = 0xc0,
-        MCT360_LGS4ResetLen       =    3
+        MCT360_AlphaResetPos     = 0xb0,
+        MCT360_AlphaResetLen     =    2,
+        MCT360_LGS4ResetPos      = 0xc0,
+        MCT360_LGS4ResetLen      =    3
     };
 
     typedef CtiDeviceMCT310 Inherited;
