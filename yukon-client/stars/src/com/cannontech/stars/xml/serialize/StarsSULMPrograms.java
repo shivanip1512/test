@@ -27,24 +27,24 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsLMProgramSignUps implements java.io.Serializable {
+public class StarsSULMPrograms implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _LMProgramList;
+    private java.util.Vector _SULMProgramList;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsLMProgramSignUps() {
+    public StarsSULMPrograms() {
         super();
-        _LMProgramList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMProgramSignUps()
+        _SULMProgramList = new Vector();
+    } //-- com.cannontech.stars.xml.serialize.StarsSULMPrograms()
 
 
       //-----------/
@@ -54,67 +54,67 @@ public class StarsLMProgramSignUps implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vLMProgram
+     * @param vSULMProgram
     **/
-    public void addLMProgram(LMProgram vLMProgram)
+    public void addSULMProgram(SULMProgram vSULMProgram)
         throws java.lang.IndexOutOfBoundsException
     {
-        _LMProgramList.addElement(vLMProgram);
-    } //-- void addLMProgram(LMProgram) 
+        _SULMProgramList.addElement(vSULMProgram);
+    } //-- void addSULMProgram(SULMProgram) 
 
     /**
      * 
      * 
      * @param index
-     * @param vLMProgram
+     * @param vSULMProgram
     **/
-    public void addLMProgram(int index, LMProgram vLMProgram)
+    public void addSULMProgram(int index, SULMProgram vSULMProgram)
         throws java.lang.IndexOutOfBoundsException
     {
-        _LMProgramList.insertElementAt(vLMProgram, index);
-    } //-- void addLMProgram(int, LMProgram) 
+        _SULMProgramList.insertElementAt(vSULMProgram, index);
+    } //-- void addSULMProgram(int, SULMProgram) 
 
     /**
     **/
-    public java.util.Enumeration enumerateLMProgram()
+    public java.util.Enumeration enumerateSULMProgram()
     {
-        return _LMProgramList.elements();
-    } //-- java.util.Enumeration enumerateLMProgram() 
+        return _SULMProgramList.elements();
+    } //-- java.util.Enumeration enumerateSULMProgram() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public LMProgram getLMProgram(int index)
+    public SULMProgram getSULMProgram(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _LMProgramList.size())) {
+        if ((index < 0) || (index > _SULMProgramList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (LMProgram) _LMProgramList.elementAt(index);
-    } //-- LMProgram getLMProgram(int) 
+        return (SULMProgram) _SULMProgramList.elementAt(index);
+    } //-- SULMProgram getSULMProgram(int) 
 
     /**
     **/
-    public LMProgram[] getLMProgram()
+    public SULMProgram[] getSULMProgram()
     {
-        int size = _LMProgramList.size();
-        LMProgram[] mArray = new LMProgram[size];
+        int size = _SULMProgramList.size();
+        SULMProgram[] mArray = new SULMProgram[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (LMProgram) _LMProgramList.elementAt(index);
+            mArray[index] = (SULMProgram) _SULMProgramList.elementAt(index);
         }
         return mArray;
-    } //-- LMProgram[] getLMProgram() 
+    } //-- SULMProgram[] getSULMProgram() 
 
     /**
     **/
-    public int getLMProgramCount()
+    public int getSULMProgramCount()
     {
-        return _LMProgramList.size();
-    } //-- int getLMProgramCount() 
+        return _SULMProgramList.size();
+    } //-- int getSULMProgramCount() 
 
     /**
     **/
@@ -155,63 +155,63 @@ public class StarsLMProgramSignUps implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllLMProgram()
+    public void removeAllSULMProgram()
     {
-        _LMProgramList.removeAllElements();
-    } //-- void removeAllLMProgram() 
+        _SULMProgramList.removeAllElements();
+    } //-- void removeAllSULMProgram() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public LMProgram removeLMProgram(int index)
+    public SULMProgram removeSULMProgram(int index)
     {
-        java.lang.Object obj = _LMProgramList.elementAt(index);
-        _LMProgramList.removeElementAt(index);
-        return (LMProgram) obj;
-    } //-- LMProgram removeLMProgram(int) 
+        java.lang.Object obj = _SULMProgramList.elementAt(index);
+        _SULMProgramList.removeElementAt(index);
+        return (SULMProgram) obj;
+    } //-- SULMProgram removeSULMProgram(int) 
 
     /**
      * 
      * 
      * @param index
-     * @param vLMProgram
+     * @param vSULMProgram
     **/
-    public void setLMProgram(int index, LMProgram vLMProgram)
+    public void setSULMProgram(int index, SULMProgram vSULMProgram)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _LMProgramList.size())) {
+        if ((index < 0) || (index > _SULMProgramList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _LMProgramList.setElementAt(vLMProgram, index);
-    } //-- void setLMProgram(int, LMProgram) 
+        _SULMProgramList.setElementAt(vSULMProgram, index);
+    } //-- void setSULMProgram(int, SULMProgram) 
 
     /**
      * 
      * 
-     * @param LMProgramArray
+     * @param SULMProgramArray
     **/
-    public void setLMProgram(LMProgram[] LMProgramArray)
+    public void setSULMProgram(SULMProgram[] SULMProgramArray)
     {
         //-- copy array
-        _LMProgramList.removeAllElements();
-        for (int i = 0; i < LMProgramArray.length; i++) {
-            _LMProgramList.addElement(LMProgramArray[i]);
+        _SULMProgramList.removeAllElements();
+        for (int i = 0; i < SULMProgramArray.length; i++) {
+            _SULMProgramList.addElement(SULMProgramArray[i]);
         }
-    } //-- void setLMProgram(LMProgram) 
+    } //-- void setSULMProgram(SULMProgram) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsLMProgramSignUps unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsSULMPrograms unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsLMProgramSignUps) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMProgramSignUps.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMProgramSignUps unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsSULMPrograms) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsSULMPrograms.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsSULMPrograms unmarshal(java.io.Reader) 
 
     /**
     **/

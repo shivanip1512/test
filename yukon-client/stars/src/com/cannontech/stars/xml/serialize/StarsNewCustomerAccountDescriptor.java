@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsNewCustomerAccountDescriptor.java,v 1.9 2002/09/25 15:09:11 zyao Exp $
+ * $Id: StarsNewCustomerAccountDescriptor.java,v 1.10 2002/09/26 22:26:29 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.9 $ $Date: 2002/09/25 15:09:11 $
+ * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:29 $
 **/
 public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -91,35 +91,35 @@ public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.uti
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _starsLMProgramSignUps
-        desc = new XMLFieldDescriptorImpl(StarsLMProgramSignUps.class, "_starsLMProgramSignUps", "stars-LMProgramSignUps", NodeType.Element);
+        //-- _starsSULMPrograms
+        desc = new XMLFieldDescriptorImpl(StarsSULMPrograms.class, "_starsSULMPrograms", "stars-SULMPrograms", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                return target.getStarsLMProgramSignUps();
+                return target.getStarsSULMPrograms();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                    target.setStarsLMProgramSignUps( (StarsLMProgramSignUps) value);
+                    target.setStarsSULMPrograms( (StarsSULMPrograms) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMProgramSignUps();
+                return new StarsSULMPrograms();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsLMProgramSignUps
+        //-- validation code for: _starsSULMPrograms
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsLMProgramSignUpsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class SULMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,53 +47,101 @@ public class StarsLMProgramSignUpsDescriptor extends org.exolab.castor.xml.util.
      //- Constructors -/
     //----------------/
 
-    public StarsLMProgramSignUpsDescriptor() {
+    public SULMProgramDescriptor() {
         super();
-        xmlName = "stars-LMProgramSignUps";
+        xmlName = "SULMProgram";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _LMProgramList
-        desc = new XMLFieldDescriptorImpl(LMProgram.class, "_LMProgramList", "LMProgram", NodeType.Element);
+        //-- _programID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_programID", "programID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsLMProgramSignUps target = (StarsLMProgramSignUps) object;
-                return target.getLMProgram();
+                SULMProgram target = (SULMProgram) object;
+                if(!target.hasProgramID())
+                    return null;
+                return new Integer(target.getProgramID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsLMProgramSignUps target = (StarsLMProgramSignUps) object;
-                    target.addLMProgram( (LMProgram) value);
+                    SULMProgram target = (SULMProgram) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteProgramID();
+                        return;
+                    }
+                    target.setProgramID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new LMProgram();
+                return null;
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _LMProgramList
+        //-- validation code for: _programID
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsLMProgramSignUpsDescriptor()
+        //-- _applianceCategoryID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_applianceCategoryID", "applianceCategoryID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                SULMProgram target = (SULMProgram) object;
+                if(!target.hasApplianceCategoryID())
+                    return null;
+                return new Integer(target.getApplianceCategoryID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    SULMProgram target = (SULMProgram) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteApplianceCategoryID();
+                        return;
+                    }
+                    target.setApplianceCategoryID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _applianceCategoryID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
+        
+    } //-- com.cannontech.stars.xml.serialize.SULMProgramDescriptor()
 
 
       //-----------/
@@ -125,7 +173,7 @@ public class StarsLMProgramSignUpsDescriptor extends org.exolab.castor.xml.util.
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsLMProgramSignUps.class;
+        return com.cannontech.stars.xml.serialize.SULMProgram.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

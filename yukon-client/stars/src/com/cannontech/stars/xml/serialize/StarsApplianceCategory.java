@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategory.java,v 1.9 2002/09/25 15:09:14 zyao Exp $
+ * $Id: StarsApplianceCategory.java,v 1.10 2002/09/26 22:26:32 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.9 $ $Date: 2002/09/25 15:09:14 $
+ * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:32 $
 **/
 public class StarsApplianceCategory implements java.io.Serializable {
 
@@ -45,7 +45,7 @@ public class StarsApplianceCategory implements java.io.Serializable {
 
     private StarsWebConfig _starsWebConfig;
 
-    private java.util.Vector _starsEnrollmentLMProgramList;
+    private java.util.Vector _starsEnrLMProgramList;
 
 
       //----------------/
@@ -54,7 +54,7 @@ public class StarsApplianceCategory implements java.io.Serializable {
 
     public StarsApplianceCategory() {
         super();
-        _starsEnrollmentLMProgramList = new Vector();
+        _starsEnrLMProgramList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsApplianceCategory()
 
 
@@ -65,25 +65,25 @@ public class StarsApplianceCategory implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vStarsEnrollmentLMProgram
+     * @param vStarsEnrLMProgram
     **/
-    public void addStarsEnrollmentLMProgram(StarsEnrollmentLMProgram vStarsEnrollmentLMProgram)
+    public void addStarsEnrLMProgram(StarsEnrLMProgram vStarsEnrLMProgram)
         throws java.lang.IndexOutOfBoundsException
     {
-        _starsEnrollmentLMProgramList.addElement(vStarsEnrollmentLMProgram);
-    } //-- void addStarsEnrollmentLMProgram(StarsEnrollmentLMProgram) 
+        _starsEnrLMProgramList.addElement(vStarsEnrLMProgram);
+    } //-- void addStarsEnrLMProgram(StarsEnrLMProgram) 
 
     /**
      * 
      * 
      * @param index
-     * @param vStarsEnrollmentLMProgram
+     * @param vStarsEnrLMProgram
     **/
-    public void addStarsEnrollmentLMProgram(int index, StarsEnrollmentLMProgram vStarsEnrollmentLMProgram)
+    public void addStarsEnrLMProgram(int index, StarsEnrLMProgram vStarsEnrLMProgram)
         throws java.lang.IndexOutOfBoundsException
     {
-        _starsEnrollmentLMProgramList.insertElementAt(vStarsEnrollmentLMProgram, index);
-    } //-- void addStarsEnrollmentLMProgram(int, StarsEnrollmentLMProgram) 
+        _starsEnrLMProgramList.insertElementAt(vStarsEnrLMProgram, index);
+    } //-- void addStarsEnrLMProgram(int, StarsEnrLMProgram) 
 
     /**
     **/
@@ -94,10 +94,10 @@ public class StarsApplianceCategory implements java.io.Serializable {
 
     /**
     **/
-    public java.util.Enumeration enumerateStarsEnrollmentLMProgram()
+    public java.util.Enumeration enumerateStarsEnrLMProgram()
     {
-        return _starsEnrollmentLMProgramList.elements();
-    } //-- java.util.Enumeration enumerateStarsEnrollmentLMProgram() 
+        return _starsEnrLMProgramList.elements();
+    } //-- java.util.Enumeration enumerateStarsEnrLMProgram() 
 
     /**
      * Returns the value of field 'applianceCategoryID'.
@@ -124,35 +124,35 @@ public class StarsApplianceCategory implements java.io.Serializable {
      * 
      * @param index
     **/
-    public StarsEnrollmentLMProgram getStarsEnrollmentLMProgram(int index)
+    public StarsEnrLMProgram getStarsEnrLMProgram(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsEnrollmentLMProgramList.size())) {
+        if ((index < 0) || (index > _starsEnrLMProgramList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsEnrollmentLMProgram) _starsEnrollmentLMProgramList.elementAt(index);
-    } //-- StarsEnrollmentLMProgram getStarsEnrollmentLMProgram(int) 
+        return (StarsEnrLMProgram) _starsEnrLMProgramList.elementAt(index);
+    } //-- StarsEnrLMProgram getStarsEnrLMProgram(int) 
 
     /**
     **/
-    public StarsEnrollmentLMProgram[] getStarsEnrollmentLMProgram()
+    public StarsEnrLMProgram[] getStarsEnrLMProgram()
     {
-        int size = _starsEnrollmentLMProgramList.size();
-        StarsEnrollmentLMProgram[] mArray = new StarsEnrollmentLMProgram[size];
+        int size = _starsEnrLMProgramList.size();
+        StarsEnrLMProgram[] mArray = new StarsEnrLMProgram[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsEnrollmentLMProgram) _starsEnrollmentLMProgramList.elementAt(index);
+            mArray[index] = (StarsEnrLMProgram) _starsEnrLMProgramList.elementAt(index);
         }
         return mArray;
-    } //-- StarsEnrollmentLMProgram[] getStarsEnrollmentLMProgram() 
+    } //-- StarsEnrLMProgram[] getStarsEnrLMProgram() 
 
     /**
     **/
-    public int getStarsEnrollmentLMProgramCount()
+    public int getStarsEnrLMProgramCount()
     {
-        return _starsEnrollmentLMProgramList.size();
-    } //-- int getStarsEnrollmentLMProgramCount() 
+        return _starsEnrLMProgramList.size();
+    } //-- int getStarsEnrLMProgramCount() 
 
     /**
      * Returns the value of field 'starsWebConfig'.
@@ -210,22 +210,22 @@ public class StarsApplianceCategory implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllStarsEnrollmentLMProgram()
+    public void removeAllStarsEnrLMProgram()
     {
-        _starsEnrollmentLMProgramList.removeAllElements();
-    } //-- void removeAllStarsEnrollmentLMProgram() 
+        _starsEnrLMProgramList.removeAllElements();
+    } //-- void removeAllStarsEnrLMProgram() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsEnrollmentLMProgram removeStarsEnrollmentLMProgram(int index)
+    public StarsEnrLMProgram removeStarsEnrLMProgram(int index)
     {
-        java.lang.Object obj = _starsEnrollmentLMProgramList.elementAt(index);
-        _starsEnrollmentLMProgramList.removeElementAt(index);
-        return (StarsEnrollmentLMProgram) obj;
-    } //-- StarsEnrollmentLMProgram removeStarsEnrollmentLMProgram(int) 
+        java.lang.Object obj = _starsEnrLMProgramList.elementAt(index);
+        _starsEnrLMProgramList.removeElementAt(index);
+        return (StarsEnrLMProgram) obj;
+    } //-- StarsEnrLMProgram removeStarsEnrLMProgram(int) 
 
     /**
      * Sets the value of field 'applianceCategoryID'.
@@ -253,31 +253,31 @@ public class StarsApplianceCategory implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @param vStarsEnrollmentLMProgram
+     * @param vStarsEnrLMProgram
     **/
-    public void setStarsEnrollmentLMProgram(int index, StarsEnrollmentLMProgram vStarsEnrollmentLMProgram)
+    public void setStarsEnrLMProgram(int index, StarsEnrLMProgram vStarsEnrLMProgram)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsEnrollmentLMProgramList.size())) {
+        if ((index < 0) || (index > _starsEnrLMProgramList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _starsEnrollmentLMProgramList.setElementAt(vStarsEnrollmentLMProgram, index);
-    } //-- void setStarsEnrollmentLMProgram(int, StarsEnrollmentLMProgram) 
+        _starsEnrLMProgramList.setElementAt(vStarsEnrLMProgram, index);
+    } //-- void setStarsEnrLMProgram(int, StarsEnrLMProgram) 
 
     /**
      * 
      * 
-     * @param starsEnrollmentLMProgramArray
+     * @param starsEnrLMProgramArray
     **/
-    public void setStarsEnrollmentLMProgram(StarsEnrollmentLMProgram[] starsEnrollmentLMProgramArray)
+    public void setStarsEnrLMProgram(StarsEnrLMProgram[] starsEnrLMProgramArray)
     {
         //-- copy array
-        _starsEnrollmentLMProgramList.removeAllElements();
-        for (int i = 0; i < starsEnrollmentLMProgramArray.length; i++) {
-            _starsEnrollmentLMProgramList.addElement(starsEnrollmentLMProgramArray[i]);
+        _starsEnrLMProgramList.removeAllElements();
+        for (int i = 0; i < starsEnrLMProgramArray.length; i++) {
+            _starsEnrLMProgramList.addElement(starsEnrLMProgramArray[i]);
         }
-    } //-- void setStarsEnrollmentLMProgram(StarsEnrollmentLMProgram) 
+    } //-- void setStarsEnrLMProgram(StarsEnrLMProgram) 
 
     /**
      * Sets the value of field 'starsWebConfig'.

@@ -25,26 +25,9 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class LMProgram implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _programID;
-
-    /**
-     * keeps track of state for field: _programID
-    **/
-    private boolean _has_programID;
-
-    private int _applianceCategoryID;
-
-    /**
-     * keeps track of state for field: _applianceCategoryID
-    **/
-    private boolean _has_applianceCategoryID;
+public class LMProgram extends StarsCustListEntry 
+implements java.io.Serializable
+{
 
 
       //----------------/
@@ -59,54 +42,6 @@ public class LMProgram implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-    **/
-    public void deleteApplianceCategoryID()
-    {
-        this._has_applianceCategoryID= false;
-    } //-- void deleteApplianceCategoryID() 
-
-    /**
-    **/
-    public void deleteProgramID()
-    {
-        this._has_programID= false;
-    } //-- void deleteProgramID() 
-
-    /**
-     * Returns the value of field 'applianceCategoryID'.
-     * 
-     * @return the value of field 'applianceCategoryID'.
-    **/
-    public int getApplianceCategoryID()
-    {
-        return this._applianceCategoryID;
-    } //-- int getApplianceCategoryID() 
-
-    /**
-     * Returns the value of field 'programID'.
-     * 
-     * @return the value of field 'programID'.
-    **/
-    public int getProgramID()
-    {
-        return this._programID;
-    } //-- int getProgramID() 
-
-    /**
-    **/
-    public boolean hasApplianceCategoryID()
-    {
-        return this._has_applianceCategoryID;
-    } //-- boolean hasApplianceCategoryID() 
-
-    /**
-    **/
-    public boolean hasProgramID()
-    {
-        return this._has_programID;
-    } //-- boolean hasProgramID() 
 
     /**
     **/
@@ -144,29 +79,6 @@ public class LMProgram implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'applianceCategoryID'.
-     * 
-     * @param applianceCategoryID the value of field
-     * 'applianceCategoryID'.
-    **/
-    public void setApplianceCategoryID(int applianceCategoryID)
-    {
-        this._applianceCategoryID = applianceCategoryID;
-        this._has_applianceCategoryID = true;
-    } //-- void setApplianceCategoryID(int) 
-
-    /**
-     * Sets the value of field 'programID'.
-     * 
-     * @param programID the value of field 'programID'.
-    **/
-    public void setProgramID(int programID)
-    {
-        this._programID = programID;
-        this._has_programID = true;
-    } //-- void setProgramID(int) 
 
     /**
      * 

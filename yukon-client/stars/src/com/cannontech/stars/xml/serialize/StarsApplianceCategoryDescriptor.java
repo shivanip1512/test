@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategoryDescriptor.java,v 1.9 2002/09/25 15:09:10 zyao Exp $
+ * $Id: StarsApplianceCategoryDescriptor.java,v 1.10 2002/09/26 22:26:27 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.9 $ $Date: 2002/09/25 15:09:10 $
+ * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:27 $
 **/
 public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -174,35 +174,35 @@ public class StarsApplianceCategoryDescriptor extends org.exolab.castor.xml.util
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsEnrollmentLMProgramList
-        desc = new XMLFieldDescriptorImpl(StarsEnrollmentLMProgram.class, "_starsEnrollmentLMProgramList", "stars-EnrollmentLMProgram", NodeType.Element);
+        //-- _starsEnrLMProgramList
+        desc = new XMLFieldDescriptorImpl(StarsEnrLMProgram.class, "_starsEnrLMProgramList", "stars-EnrLMProgram", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsApplianceCategory target = (StarsApplianceCategory) object;
-                return target.getStarsEnrollmentLMProgram();
+                return target.getStarsEnrLMProgram();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsApplianceCategory target = (StarsApplianceCategory) object;
-                    target.addStarsEnrollmentLMProgram( (StarsEnrollmentLMProgram) value);
+                    target.addStarsEnrLMProgram( (StarsEnrLMProgram) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsEnrollmentLMProgram();
+                return new StarsEnrLMProgram();
             }
         } );
         desc.setHandler(handler);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsEnrollmentLMProgramList
+        //-- validation code for: _starsEnrLMProgramList
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSuccessDescriptor.java,v 1.10 2002/09/26 22:26:34 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:34 $
+ * @version $Revision$ $Date$
 **/
-public class StarsSuccessDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsSULMProgramsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,54 +47,53 @@ public class StarsSuccessDescriptor extends org.exolab.castor.xml.util.XMLClassD
      //- Constructors -/
     //----------------/
 
-    public StarsSuccessDescriptor() {
+    public StarsSULMProgramsDescriptor() {
         super();
-        xmlName = "stars-Success";
+        xmlName = "stars-SULMPrograms";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _description
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "description", NodeType.Attribute);
-        desc.setImmutable(true);
+        //-- initialize element descriptors
+        
+        //-- _SULMProgramList
+        desc = new XMLFieldDescriptorImpl(SULMProgram.class, "_SULMProgramList", "SULMProgram", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsSuccess target = (StarsSuccess) object;
-                return target.getDescription();
+                StarsSULMPrograms target = (StarsSULMPrograms) object;
+                return target.getSULMProgram();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsSuccess target = (StarsSuccess) object;
-                    target.setDescription( (java.lang.String) value);
+                    StarsSULMPrograms target = (StarsSULMPrograms) object;
+                    target.addSULMProgram( (SULMProgram) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new SULMProgram();
             }
         } );
         desc.setHandler(handler);
+        desc.setMultivalued(true);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _description
+        //-- validation code for: _SULMProgramList
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
+        fieldValidator.setMinOccurs(0);
         desc.setValidator(fieldValidator);
         
-        //-- initialize element descriptors
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsSuccessDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsSULMProgramsDescriptor()
 
 
       //-----------/
@@ -126,7 +125,7 @@ public class StarsSuccessDescriptor extends org.exolab.castor.xml.util.XMLClassD
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsSuccess.class;
+        return com.cannontech.stars.xml.serialize.StarsSULMPrograms.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -166,7 +166,10 @@ public class YukonSwitchCommandAction implements ActionBase {
             	}
             }
             
-            operator.removeAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+            if (operator != null)
+	            operator.removeAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	        else
+	        	user.removeAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
 			
             return 0;
         }
@@ -278,10 +281,16 @@ public class YukonSwitchCommandAction implements ActionBase {
 	                	com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
 	                			
 	                	if (hwDB.getManufacturerSerialNumber().equalsIgnoreCase( service.getSerialNumber(i) )) {
+	                		// Check to see if the LM hardware is already out of service, if it is, then skip the table updates
+	                		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
+	                				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( hwDB.getInventoryID() );
+	                		if (!isInService(events)) break;
+	                		
 	                		cmdHwVct.addElement( hw );
 	                		com.cannontech.database.data.multi.MultiDBPersistent multiDB =
 	                				new com.cannontech.database.data.multi.MultiDBPersistent();
 	                				
+	                		// Insert "Temp Opt Out" and "Future Activation" events in the LMHardwareEvent table
 	                		com.cannontech.database.data.stars.event.LMHardwareEvent event =
 	                				new com.cannontech.database.data.stars.event.LMHardwareEvent();
 	                		com.cannontech.database.db.stars.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
@@ -317,7 +326,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 				                	com.cannontech.database.data.device.lm.LMProgramBase program = app.getLMProgram();
 						            if (program.getPAObjectID().intValue() == 0) continue;
 						            cmdProgVct.addElement( program );
-						                
+						            
+						            // Insert "Temp Opt Out" and "Future Activation" events in the LMProgramEvent table
 						            com.cannontech.database.data.stars.event.LMProgramEvent event1 =
 						            		new com.cannontech.database.data.stars.event.LMProgramEvent();
 						            com.cannontech.database.db.stars.event.LMProgramEvent eventDB1 = event1.getLMProgramEvent();
@@ -369,14 +379,21 @@ public class YukonSwitchCommandAction implements ActionBase {
 	                	com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hw.getLMHardwareBase();
 	                			
 	                	if (hwDB.getManufacturerSerialNumber().equalsIgnoreCase( service.getSerialNumber(i) )) {
+	                		// Check to see if the LM hardware is still in service, if it is, then skip the table updates
+	                		com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
+	                				com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( hwDB.getInventoryID() );
+	                		if (isInService(events)) break;
+	                		
 	                		cmdHwVct.addElement( hw );
 	                		
 	                		// Determine to update the last entry, or insert a new entry into the database
-	                		com.cannontech.database.data.stars.event.LMHardwareEvent lastHwEvent =
-		                			com.cannontech.database.data.stars.event.LMHardwareEvent.getLastLMHardwareEvent( hwDB.getInventoryID() );
 	                		boolean update = false;
-		                	if (lastHwEvent != null && lastHwEvent.getEventType().getEntryID().intValue() == futureActEntryID.intValue())
-		                		update = true;
+	                		com.cannontech.database.data.stars.event.LMHardwareEvent lastHwEvent = null;
+	                		if (events != null && events.length > 0) {
+	                			lastHwEvent = events[events.length - 1];
+			                	if (lastHwEvent.getAction().getEntryID().intValue() == futureActEntryID.intValue())
+			                		update = true;
+	                		}
 		                		
 	                		if (update) {
 	                			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastHwEvent.getLMCustomerEventBase();
@@ -468,7 +485,7 @@ public class YukonSwitchCommandAction implements ActionBase {
         return null;
     }
 
-    private void sendCommand(String command, ClientConnection conn)
+    void sendCommand(String command, ClientConnection conn)
     {
         com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
             new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
@@ -476,5 +493,17 @@ public class YukonSwitchCommandAction implements ActionBase {
         conn.write(req);
 
         logger.info( "YukonSwitchCommandAction: Sent command to PIL: " + command );
+    }
+    
+    boolean isInService(com.cannontech.database.data.stars.event.LMHardwareEvent[] events) {
+    	if (events == null) return false;
+    	
+    	for (int i = events.length - 1; i >= 0; i--) {
+    		if (events[i].getAction().getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED ))
+    			return true;
+    		else if (events[i].getAction().getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION ))
+    			return false;
+    	}
+    	return false;
     }
 }

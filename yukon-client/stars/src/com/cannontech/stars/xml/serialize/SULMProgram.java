@@ -25,30 +25,35 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsGetEnrollmentPrograms implements java.io.Serializable {
+public class SULMProgram implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _energyCompanyID;
+    private int _programID;
 
     /**
-     * keeps track of state for field: _energyCompanyID
+     * keeps track of state for field: _programID
     **/
-    private boolean _has_energyCompanyID;
+    private boolean _has_programID;
 
-    private java.lang.String _category;
+    private int _applianceCategoryID;
+
+    /**
+     * keeps track of state for field: _applianceCategoryID
+    **/
+    private boolean _has_applianceCategoryID;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsGetEnrollmentPrograms() {
+    public SULMProgram() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms()
+    } //-- com.cannontech.stars.xml.serialize.SULMProgram()
 
 
       //-----------/
@@ -57,37 +62,51 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
 
     /**
     **/
-    public void deleteEnergyCompanyID()
+    public void deleteApplianceCategoryID()
     {
-        this._has_energyCompanyID= false;
-    } //-- void deleteEnergyCompanyID() 
+        this._has_applianceCategoryID= false;
+    } //-- void deleteApplianceCategoryID() 
 
     /**
-     * Returns the value of field 'category'.
+    **/
+    public void deleteProgramID()
+    {
+        this._has_programID= false;
+    } //-- void deleteProgramID() 
+
+    /**
+     * Returns the value of field 'applianceCategoryID'.
      * 
-     * @return the value of field 'category'.
+     * @return the value of field 'applianceCategoryID'.
     **/
-    public java.lang.String getCategory()
+    public int getApplianceCategoryID()
     {
-        return this._category;
-    } //-- java.lang.String getCategory() 
+        return this._applianceCategoryID;
+    } //-- int getApplianceCategoryID() 
 
     /**
-     * Returns the value of field 'energyCompanyID'.
+     * Returns the value of field 'programID'.
      * 
-     * @return the value of field 'energyCompanyID'.
+     * @return the value of field 'programID'.
     **/
-    public int getEnergyCompanyID()
+    public int getProgramID()
     {
-        return this._energyCompanyID;
-    } //-- int getEnergyCompanyID() 
+        return this._programID;
+    } //-- int getProgramID() 
 
     /**
     **/
-    public boolean hasEnergyCompanyID()
+    public boolean hasApplianceCategoryID()
     {
-        return this._has_energyCompanyID;
-    } //-- boolean hasEnergyCompanyID() 
+        return this._has_applianceCategoryID;
+    } //-- boolean hasApplianceCategoryID() 
+
+    /**
+    **/
+    public boolean hasProgramID()
+    {
+        return this._has_programID;
+    } //-- boolean hasProgramID() 
 
     /**
     **/
@@ -127,36 +146,38 @@ public class StarsGetEnrollmentPrograms implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'category'.
+     * Sets the value of field 'applianceCategoryID'.
      * 
-     * @param category the value of field 'category'.
+     * @param applianceCategoryID the value of field
+     * 'applianceCategoryID'.
     **/
-    public void setCategory(java.lang.String category)
+    public void setApplianceCategoryID(int applianceCategoryID)
     {
-        this._category = category;
-    } //-- void setCategory(java.lang.String) 
+        this._applianceCategoryID = applianceCategoryID;
+        this._has_applianceCategoryID = true;
+    } //-- void setApplianceCategoryID(int) 
 
     /**
-     * Sets the value of field 'energyCompanyID'.
+     * Sets the value of field 'programID'.
      * 
-     * @param energyCompanyID the value of field 'energyCompanyID'.
+     * @param programID the value of field 'programID'.
     **/
-    public void setEnergyCompanyID(int energyCompanyID)
+    public void setProgramID(int programID)
     {
-        this._energyCompanyID = energyCompanyID;
-        this._has_energyCompanyID = true;
-    } //-- void setEnergyCompanyID(int) 
+        this._programID = programID;
+        this._has_programID = true;
+    } //-- void setProgramID(int) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.SULMProgram unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.SULMProgram) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.SULMProgram.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.SULMProgram unmarshal(java.io.Reader) 
 
     /**
     **/

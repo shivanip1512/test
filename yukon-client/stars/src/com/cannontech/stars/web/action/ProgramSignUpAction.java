@@ -32,17 +32,17 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			String[] catIDs = req.getParameterValues( "CatID" );
 			String[] progIDs = req.getParameterValues( "ProgID" );
-			StarsLMProgramSignUps programs = new StarsLMProgramSignUps();
+			StarsSULMPrograms programs = new StarsSULMPrograms();
 			if (progIDs != null)
 				for (int i = 0; i < progIDs.length; i++) {
 					if (progIDs[i].length() == 0) continue;
 					
-					LMProgram program = new LMProgram();
+					SULMProgram program = new SULMProgram();
 					program.setProgramID( Integer.parseInt(progIDs[i]) );
 					program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
-					programs.addLMProgram( program );
+					programs.addSULMProgram( program );
 				}
-			progSignUp.setStarsLMProgramSignUps( programs );
+			progSignUp.setStarsSULMPrograms( programs );
 			
 			StarsLogin login = new StarsLogin();
 			login.setUsername( req.getParameter("UserName") );
@@ -94,8 +94,8 @@ public class ProgramSignUpAction implements ActionBase {
 		            com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber(
         	    		new Integer(energyCompanyID), progSignUp.getAccountNumber() );
         	    		
-            StarsLMProgramSignUps programs = progSignUp.getStarsLMProgramSignUps();
-            if (programs.getLMProgramCount() > 0) {
+            StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
+            if (programs.getSULMProgramCount() > 0) {
 	        	com.cannontech.database.data.multi.MultiDBPersistent multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
 	        	
 	        	// Get the primary IDs for table insert
@@ -152,8 +152,8 @@ public class ProgramSignUpAction implements ActionBase {
 	            
 	            java.util.Date now = new java.util.Date();
 	        	
-	        	for (int i = 0; i < programs.getLMProgramCount(); i++) {
-	        		LMProgram program = programs.getLMProgram(i);
+	        	for (int i = 0; i < programs.getSULMProgramCount(); i++) {
+	        		SULMProgram program = programs.getSULMProgram(i);
 	        		
 	        		com.cannontech.database.db.stars.appliance.ApplianceBase appDB = new com.cannontech.database.db.stars.appliance.ApplianceBase();
 	        		appDB.setApplianceID( new Integer(nextAppID++) );

@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsEnrLMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
      //- Constructors -/
     //----------------/
 
-    public StarsEnrollmentLMProgramDescriptor() {
+    public StarsEnrLMProgramDescriptor() {
         super();
-        xmlName = "stars-EnrollmentLMProgram";
+        xmlName = "stars-EnrLMProgram";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -64,7 +64,7 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsEnrollmentLMProgram target = (StarsEnrollmentLMProgram) object;
+                StarsEnrLMProgram target = (StarsEnrLMProgram) object;
                 if(!target.hasProgramID())
                     return null;
                 return new Integer(target.getProgramID());
@@ -73,7 +73,7 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsEnrollmentLMProgram target = (StarsEnrollmentLMProgram) object;
+                    StarsEnrLMProgram target = (StarsEnrLMProgram) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
                         target.deleteProgramID();
@@ -109,14 +109,14 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsEnrollmentLMProgram target = (StarsEnrollmentLMProgram) object;
+                StarsEnrLMProgram target = (StarsEnrLMProgram) object;
                 return target.getProgramName();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsEnrollmentLMProgram target = (StarsEnrollmentLMProgram) object;
+                    StarsEnrLMProgram target = (StarsEnrLMProgram) object;
                     target.setProgramName( (java.lang.String) value);
                 }
                 catch (Exception ex) {
@@ -148,14 +148,14 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsEnrollmentLMProgram target = (StarsEnrollmentLMProgram) object;
+                StarsEnrLMProgram target = (StarsEnrLMProgram) object;
                 return target.getStarsWebConfig();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsEnrollmentLMProgram target = (StarsEnrollmentLMProgram) object;
+                    StarsEnrLMProgram target = (StarsEnrLMProgram) object;
                     target.setStarsWebConfig( (StarsWebConfig) value);
                 }
                 catch (Exception ex) {
@@ -174,7 +174,7 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsEnrollmentLMProgramDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsEnrLMProgramDescriptor()
 
 
       //-----------/
@@ -206,7 +206,7 @@ public class StarsEnrollmentLMProgramDescriptor extends org.exolab.castor.xml.ut
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsEnrollmentLMProgram.class;
+        return com.cannontech.stars.xml.serialize.StarsEnrLMProgram.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -12,10 +12,10 @@ import com.cannontech.stars.xml.serialize.*;
  */
 public class StarsGetEnrollmentProgramsResponseFactory {
 
-	public static StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse(Integer energyCompanyID) {
+	public static StarsGetEnrollmentProgramsResponse getStarsGetEnrollmentProgramsResponse(Integer energyCompanyID, String category) {
 		try {
             StarsGetEnrollmentProgramsResponse response = new StarsGetEnrollmentProgramsResponse();
-            Integer[] progIDs = getAllEnrLMProgramIDs( energyCompanyID );
+            Integer[] progIDs = getAllEnrLMProgramIDs( energyCompanyID, category );
             
             for (int i = 0; i < progIDs.length; i++) {
             	com.cannontech.database.data.stars.LMProgramWebPublishing webPub =
@@ -40,12 +40,12 @@ public class StarsGetEnrollmentProgramsResponseFactory {
 	            			StarsWebConfigFactory.newStarsWebConfig(webPub.getApplianceCategory().getWebConfiguration()) );
             	}
             	
-            	StarsEnrollmentLMProgram program = new StarsEnrollmentLMProgram();
+            	StarsEnrLMProgram program = new StarsEnrLMProgram();
             	program.setProgramID( webPub.getLMProgram().getPAObjectID().intValue() );
             	program.setProgramName( webPub.getLMProgram().getPAOName() );
             	program.setStarsWebConfig(
             			StarsWebConfigFactory.newStarsWebConfig(webPub.getWebConfiguration()) );
-            	appCategory.addStarsEnrollmentLMProgram( program );
+            	appCategory.addStarsEnrLMProgram( program );
             }
             
             return response;
@@ -57,9 +57,12 @@ public class StarsGetEnrollmentProgramsResponseFactory {
 		return null;
 	}
 	
-	private static Integer[] getAllEnrLMProgramIDs(Integer energyCompanyID) {
-		String sql = "SELECT ItemID FROM ECToGenericMapping WHERE "
-				   + "EnergyCompanyID = ? AND MappingCategory = 'LMPrograms'";
+	private static Integer[] getAllEnrLMProgramIDs(Integer energyCompanyID, String category) {
+		StringBuffer sql = new StringBuffer("SELECT DISTINCT ItemID FROM ECToGenericMapping WHERE "
+							+ "EnergyCompanyID = ? AND MappingCategory LIKE 'LMPrograms");
+		if (category != null && category.length() > 0)
+			sql.append("-").append(category);
+		sql.append("%'");
 				   
         java.sql.Connection conn = null;
         java.sql.PreparedStatement pstmt = null;
@@ -71,7 +74,7 @@ public class StarsGetEnrollmentProgramsResponseFactory {
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
             
-            pstmt = conn.prepareStatement( sql );
+            pstmt = conn.prepareStatement( sql.toString() );
             pstmt.setInt( 1, energyCompanyID.intValue() );
             rset = pstmt.executeQuery();
             

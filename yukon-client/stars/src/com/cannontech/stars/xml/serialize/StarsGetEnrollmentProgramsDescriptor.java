@@ -103,6 +103,44 @@ public class StarsGetEnrollmentProgramsDescriptor extends org.exolab.castor.xml.
         }
         desc.setValidator(fieldValidator);
         
+        //-- _category
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_category", "Category", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsGetEnrollmentPrograms target = (StarsGetEnrollmentPrograms) object;
+                return target.getCategory();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsGetEnrollmentPrograms target = (StarsGetEnrollmentPrograms) object;
+                    target.setCategory( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _category
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsGetEnrollmentProgramsDescriptor()
 
 

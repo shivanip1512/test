@@ -10,7 +10,7 @@ import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.xml.StarsWebConfigFactory;
 import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
-import com.cannontech.stars.xml.serialize.StarsEnrollmentLMProgram;
+import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsGetEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsGetEnrollmentProgramsResponse;
@@ -44,6 +44,7 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 				catch (NumberFormatException e) {}
 			if (energyCompanyID > 0)
 				getEnrProgs.setEnergyCompanyID( energyCompanyID );
+			getEnrProgs.setCategory( req.getParameter("Category") );
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsGetEnrollmentPrograms( getEnrProgs );
@@ -82,7 +83,8 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             }
             	
             StarsGetEnrollmentProgramsResponse response =
-            		StarsGetEnrollmentProgramsResponseFactory.getStarsGetEnrollmentProgramsResponse( new Integer(energyCompanyID) );
+            		StarsGetEnrollmentProgramsResponseFactory.getStarsGetEnrollmentProgramsResponse(
+            			new Integer(energyCompanyID), getEnrProgs.getCategory() );
             
             respOper.setStarsGetEnrollmentProgramsResponse( response );
             return SOAPUtil.buildSOAPMessage( respOper );

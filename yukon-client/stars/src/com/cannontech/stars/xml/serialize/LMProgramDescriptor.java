@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class LMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class LMProgramDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -49,95 +49,12 @@ public class LMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
 
     public LMProgramDescriptor() {
         super();
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
         xmlName = "LMProgram";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
         //-- initialize attribute descriptors
-        
-        //-- _programID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_programID", "programID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                LMProgram target = (LMProgram) object;
-                if(!target.hasProgramID())
-                    return null;
-                return new Integer(target.getProgramID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    LMProgram target = (LMProgram) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteProgramID();
-                        return;
-                    }
-                    target.setProgramID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _programID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
-        
-        //-- _applianceCategoryID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_applianceCategoryID", "applianceCategoryID", NodeType.Attribute);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                LMProgram target = (LMProgram) object;
-                if(!target.hasApplianceCategoryID())
-                    return null;
-                return new Integer(target.getApplianceCategoryID());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    LMProgram target = (LMProgram) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteApplianceCategoryID();
-                        return;
-                    }
-                    target.setApplianceCategoryID( ((Integer)value).intValue());
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _applianceCategoryID
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
-            fieldValidator.setValidator(iv);
-        }
-        desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
         
@@ -159,13 +76,15 @@ public class LMProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

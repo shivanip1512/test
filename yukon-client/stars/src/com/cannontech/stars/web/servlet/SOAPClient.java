@@ -109,8 +109,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("DisableService") || action.equalsIgnoreCase("EnableService")) {
             clientAction = new YukonSwitchCommandAction();
-            destURL = "/OperatorDemos/Consumer/Programs.jsp";
-            nextURL = errorURL = "/OperatorDemos/Consumer/OptOut.jsp";
+            destURL = req.getParameter("REDIRECT");
+            nextURL = errorURL = req.getParameter("REFERRER");
 
             PILConnectionServlet connContainer = (PILConnectionServlet)
                     getServletContext().getAttribute(PILConnectionServlet.SERVLET_CONTEXT_ID);
@@ -138,7 +138,7 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new GetServiceHistoryAction();
         	destURL = "/OperatorDemos/Consumer/ServiceSummary.jsp";
         }
-        else if (action.equalsIgnoreCase("GetEnrollmentPrograms")) {
+        else if (action.equalsIgnoreCase("GetEnrPrograms")) {
         	clientAction = new GetEnrollmentProgramsAction();
         	destURL = req.getParameter("REDIRECT");
         	nextURL = errorURL = req.getParameter("REFERRER");
@@ -150,7 +150,7 @@ public class SOAPClient extends HttpServlet {
         	MultiAction actions = new MultiAction();
         	actions.getActionVector().addElement( new LoginAction() );
         	actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
-        	
+
         	clientAction = (ActionBase) actions;
         	destURL = req.getParameter("REDIRECT");
         	nextURL = errorURL = loginURL;
