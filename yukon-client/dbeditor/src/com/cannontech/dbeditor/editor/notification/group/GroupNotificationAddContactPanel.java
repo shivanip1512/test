@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.editor.notification.group;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.CustomerContactFuncs;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
@@ -315,27 +315,27 @@ public void setValue(Object val)
 	synchronized(cache)
 	{
 		//locations
-		java.util.List cntNotifs = CustomerContactFuncs.getAllContactNotifications();
+		java.util.List cntctNotifs = ContactFuncs.getAllContactNotifications();
 
 		for(int i = 0; i < destinationVector.size(); i++)
 		{
-			for( int j = 0; j < cntNotifs.size(); j++ )
+			for( int j = 0; j < cntctNotifs.size(); j++ )
 			{
-				if( ((LiteContactNotification)cntNotifs.get(j)).getContactNotifID() ==
+				if( ((LiteContactNotification)cntctNotifs.get(j)).getContactNotifID() ==
 					((NotificationDestination)destinationVector.elementAt(i)).getRecipientID().intValue() )
 				{
-					assignedLocations.addElement( cntNotifs.get(j) );
+					assignedLocations.addElement( cntctNotifs.get(j) );
 					break;
 				}
 			}
 		}
 			
 		boolean alreadyAssigned = false;
-		for(int i = 0; i < cntNotifs.size(); i++)
+		for(int i = 0; i < cntctNotifs.size(); i++)
 		{
 			alreadyAssigned = false;
 			LiteContactNotification possibleNotif = 
-					(LiteContactNotification)cntNotifs.get(i);
+					(LiteContactNotification)cntctNotifs.get(i);
 
 			if( possibleNotif.getContactNotifID() == CtiUtilities.NONE_ID )
 				continue;
@@ -349,9 +349,9 @@ public void setValue(Object val)
 				}
 			}
 			
-			if( !alreadyAssigned && !availableLocations.contains(cntNotifs.get(i)) )				
+			if( !alreadyAssigned && !availableLocations.contains(cntctNotifs.get(i)) )				
 			{
-				availableLocations.addElement( cntNotifs.get(i) );
+				availableLocations.addElement( cntctNotifs.get(i) );
 			}
 			
 		}

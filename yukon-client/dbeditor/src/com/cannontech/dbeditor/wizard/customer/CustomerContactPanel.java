@@ -2,13 +2,10 @@ package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
 import java.util.List;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.CustomerContactFuncs;
-import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.data.customer.Contact;
+import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteContact;
 
@@ -558,9 +555,7 @@ public void setValue(Object o)
 
 	for( int i = 0; i < customer.getCustomerContactIDs().length; i++ )
 	{
-		LiteContact liteContact = 
-				CustomerContactFuncs.getCustomerContact(
-							customer.getCustomerContactIDs()[i] );
+		LiteContact liteContact = ContactFuncs.getContact( customer.getCustomerContactIDs()[i] );
 		
 		getJTableModel().addRow( liteContact );
 	}

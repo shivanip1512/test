@@ -3,16 +3,12 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
-import java.awt.Toolkit;
 import java.util.List;
-
-import javax.swing.ImageIcon;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;

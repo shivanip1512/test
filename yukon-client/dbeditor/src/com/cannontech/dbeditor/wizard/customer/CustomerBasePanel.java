@@ -2,22 +2,16 @@ package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
 import java.util.List;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.customer.Customer;
-import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
