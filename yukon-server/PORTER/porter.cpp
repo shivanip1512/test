@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2004/10/12 20:17:02 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2004/10/19 20:28:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -522,6 +522,7 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
 
         ptPort->applyPortQueue(&qa, applyPortQueueOutMessageReport);
 
+        #if 0
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -560,7 +561,7 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
                     dout << metric_names[pos] << "           OM Count " << setw(5) << qa.metrics[pos] << endl;
             }
         }
-
+        #endif
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -575,8 +576,6 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
                 dout << endl;
             }
         }
-
-        DeviceManager.apply(applyDeviceQueueReport,(void*)ptPort->getPortID());
     }
 }
 
@@ -2064,7 +2063,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
     int twnetyfourcnt = 0;
 
-    if(lRequest > 1000000 && (nSize == 24 || nSize == 52 || nSize == 1316 || nSize == 68) )
+    if(lRequest > 1000000 )
     {
         if( (nSize == 24) )
         {
@@ -2093,19 +2092,27 @@ static int MyAllocHook(int nAllocType, void *pvData,
         {
             twnetyfourcnt++;
         }
-        if((nSize == 1316) )
+        else if((nSize == 1316) )
         {
             twnetyfourcnt++;
         }
-        if( (nSize == 68) )
+        else if( (nSize == 68) )
         {
             twnetyfourcnt++;
         }
-        if( (nSize == 63) )
+        else if( (nSize == 63) )
         {
             twnetyfourcnt++;
         }
-        if( (nSize == 164) )
+        else if( (nSize == 416) )
+        {
+            twnetyfourcnt++;
+        }
+        else if( (nSize == 40) )
+        {
+            twnetyfourcnt++;
+        }
+        else if( (nSize == 164) )  // RWDBDatabase::RWDBDatabase() constructor.
         {
             twnetyfourcnt++;
         }
