@@ -409,12 +409,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public synchronized void init() {
 		// Load the inventory when energy company is initiated
-		if (!inventoryLoaded && !ECUtils.isDefaultEnergyCompany( this )) {
-			if (!inventoryLoaded && loadInvTask == null) {
-				loadInvTask = new LoadInventoryTask( this );
-				new Thread( loadInvTask ).start();
-				CTILogger.info( "*** Start loading all inventory ***" );
-			}
+		if (!inventoryLoaded && loadInvTask == null && !ECUtils.isDefaultEnergyCompany( this )) {
+			loadInvTask = new LoadInventoryTask( this );
+			new Thread( loadInvTask ).start();
+			CTILogger.info( "*** Start loading all inventory ***" );
 		}
 	}
 	
@@ -1585,38 +1583,36 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return null;
 	}
 	
-	public void setInventoryLoaded(boolean inventoryLoaded) {
-		this.inventoryLoaded = inventoryLoaded;
-	}
-	
-	public synchronized ArrayList loadAllInventory() {
-		if (inventoryLoaded) return getAllInventory();
-		
-		try {
-			if (loadInvTask == null) {
-				loadInvTask = new LoadInventoryTask( this );
-				new Thread( loadInvTask ).start();
-			}
+	public ArrayList loadAllInventory() {
+		synchronized (LoadInventoryTask.class) {
+			if (inventoryLoaded) return getAllInventory();
 			
-			while (true) {
-				if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED) {
-					loadInvTask = null;
-					inventoryLoaded = true;
-					return getAllInventory();
-				}
-				else if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR) {
-					loadInvTask = null;
-					throw new Exception( loadInvTask.getErrorMsg() );
+			try {
+				if (loadInvTask == null) {
+					loadInvTask = new LoadInventoryTask( this );
+					new Thread( loadInvTask ).start();
 				}
 				
-				try {
-					Thread.sleep( 1000 );
+				while (true) {
+					if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED) {
+						loadInvTask = null;
+						inventoryLoaded = true;
+						return getAllInventory();
+					}
+					else if (loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR) {
+						loadInvTask = null;
+						throw new Exception( loadInvTask.getErrorMsg() );
+					}
+					
+					try {
+						Thread.sleep( 500 );
+					}
+					catch (InterruptedException e) {}
 				}
-				catch (InterruptedException e) {}
 			}
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
+			catch (Exception e) {
+				CTILogger.error( e.getMessage(), e );
+			}
 		}
 		
 		return null;
