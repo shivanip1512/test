@@ -58,10 +58,11 @@ static RWTValSlistDictionary< USHORT, ERRSTRUCT > CtiErrors;
 
 ERRSTRUCT CTIErrors[] = {
     { NORMAL,               NORMAL_TXT,                NORMAL_TYPE                ," N/A"}, // 0
-    { BADBCH,               BADBCH_TXT,                ERRTYPEPROTOCOL                 ," N/A"},
-    { NODWORD,              NODWORD_TXT,               ERRTYPEPROTOCOL                 ," N/A"},
-    { BADTYPE,              BADTYPE_TXT,               ERRTYPEPROTOCOL                 ," N/A"},
-    { DLENGTH,              DLENGTH_TXT,               ERRTYPEPROTOCOL                 ," N/A"},
+    { NOTNORMAL,            NOTNORMAL_TXT,             NOTNORMAL_TYPE             ," N/A"}, // 1
+    { BADBCH,               BADBCH_TXT,                ERRTYPEPROTOCOL            ," N/A"}, // 100 now...
+    { NODWORD,              NODWORD_TXT,               ERRTYPEPROTOCOL            ," N/A"},
+    { BADTYPE,              BADTYPE_TXT,               ERRTYPEPROTOCOL            ," N/A"},
+    { DLENGTH,              DLENGTH_TXT,               ERRTYPEPROTOCOL            ," N/A"},
     { BADLOAD,              BADLOAD_TXT,               BADLOAD_TYPE               ," N/A"},//  5
     { BADTIME,              BADTIME_TXT,               BADTIME_TYPE               ," N/A"},
     { BADLEVEL,             BADLEVEL_TXT,              BADLEVEL_TYPE              ," N/A"},
