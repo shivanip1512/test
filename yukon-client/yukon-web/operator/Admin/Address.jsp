@@ -86,7 +86,7 @@
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
 					  <input type="hidden" name="action" value="UpdateAddress">
 					  <input type="hidden" name="REFERER" value="<%= referer %>">
-					  <input type="hidden" name="REDIRECT" value="/operator/Consumer/<%= referer %>">
+					  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Admin/<%= referer %>">
 					  <input type="hidden" name="AddressID" value="<%= address.getAddressID() %>">
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Street 
