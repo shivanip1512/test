@@ -53,7 +53,9 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "Main" align="center"><% String header = "CREATE NEW APPLIANCE"; %><%@ include file="InfoSearchBar.jsp" %><br>
            
-              <form name = "MForm">
+              <form name="MForm" method="post" action="/servlet/SOAPClient">
+			    <input type="hidden" name="action" value="CreateAppliance">
+				<input type="hidden" name="AppNo" value="<%= appliances.getStarsApplianceCount() %>">
                 <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                   <tr>
                     <td colspan = "2"  class="TableCell"> <span class="MainHeader"><b>APPLIANCE 
@@ -68,8 +70,16 @@
                     </td>
                     <td width="200"> 
                       <select name="Category">
-                        <option>Air Conditioner</option>
-                        <option>Water Heater</option>
+<%
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
+	for (int i = 0; i < appCatList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = appCatList.getStarsSelectionListEntry(i);
+%>
+						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                       </select>
                     </td>
                   </tr>
@@ -78,7 +88,7 @@
                       <div align="right">Manufacturer:</div>
                     </td>
                     <td width="200"> 
-                      <select name="select3">
+                      <select name="Manufacturer">
                         <option>Century</option>
                       </select>
                     </td>
@@ -88,7 +98,7 @@
                       <div align="right">Year Manufactured:</div>
                     </td>
                     <td width="200"> 
-                      <input type="text" name="textfield243" maxlength="14" size="14">
+                      <input type="text" name="ManuYear" maxlength="14" size="14">
                     </td>
                   </tr>
                   <tr> 
@@ -96,7 +106,7 @@
                       <div align="right">Location:</div>
                     </td>
                     <td width="200"> 
-                      <select name="select4">
+                      <select name="Location">
                         <option>Basement</option>
                       </select>
                     </td>
@@ -105,8 +115,18 @@
                     <td width="100" class="TableCell"> 
                       <div align="right">Service Company:</div>
                     </td>
-                    <td width="200"> 
-                      <input type="text" name="textfield532" maxlength="40" size="30">
+                    <td width="200">
+					  <select name="Company">
+<%
+	StarsCustSelectionList companyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+	for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
+%>
+						<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
+					  </select>
                     </td>
                   </tr>
                   <tr> 
@@ -114,7 +134,7 @@
                       <div align="right">Notes:</div>
                     </td>
                     <td width="200"> 
-                      <textarea name="notes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                      <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
                     </td>
                   </tr>
                 </table>
@@ -125,7 +145,7 @@
                     <input type="submit" name="Submit" value="Save">
                   </td>
                   <td> 
-                    <input type="button" name="Submit2" value="Cancel">
+                    <input type="reset" name="Cancel" value="Cancel">
                   </td>
                 </tr>
               </table><br>

@@ -94,7 +94,6 @@ function getCurrentDateFormatted() {
               
               <form name = "MForm" method="POST" action="/servlet/SOAPClient">
 			    <input type="hidden" name="action" value="CreateCall">
-				<input type="hidden" name="CallNumber" value="<%= callNumber %>">
                 <span class="MainHeader"><b>&nbsp;</b></span> 
                 <table width="34%" border="0" height="179" cellspacing = "0">
                   <tr>
@@ -117,9 +116,7 @@ function getCurrentDateFormatted() {
                         <tr> 
                           <td width = "50%" align = "right">Tracking #:</td>
                           <td width="50%"> 
-                            <select>
-                              <option>4268723</option>
-                            </select>
+                            <input type="text" name="CallNumber" size="10" value="<%= callNumber %>">
                           </td>
                         </tr>
 						<tr> 

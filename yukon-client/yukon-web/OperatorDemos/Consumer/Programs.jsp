@@ -219,8 +219,7 @@ function changeProgram(radioBtn, index) {
 		}
 %>
                 <tr>
-                  <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 350)"> 
-                    <br>
+                    <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
                     <span class = "TableCell">Click 
                     Above</span></td>
                   <td width="132" align = "center"> 

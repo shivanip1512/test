@@ -1,6 +1,6 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute("$$SERVICE_HISTORY");
+	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY");
 	if (getServHistResp == null) {
 		response.sendRedirect("/servlet/SOAPClient?action=GetServiceHistory"); return;
 	}
@@ -70,7 +70,7 @@
               history.</span>
               </div>
               
-            <table width="615" border="1" cellspacing="0" cellpadding="3" align="center" height="229">
+            <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
               <tr> 
                 <td width="53" class="HeaderCell">Order # </td>
                 <td width="65" class="HeaderCell">Date/Time</td>
@@ -88,8 +88,8 @@
                 <td width="53" class="TableCell"><a href="SOHistory.jsp" class="Link1"><%= servHist.getOrderNumber() %></a></td>
                 <td width="65" class="TableCell"><% if (servHist.getDateReported() != null) out.print( histDateFormat.format(servHist.getDateReported()) ); %></td>
                 <td width="49" class="TableCell"><%= servHist.getServiceType().getContent() %></td>
-                <td width="52" class="TableCell"><%= servHist.getCurrentState() %></td>
-                <td width="42" class="TableCell">&nbsp;</td>
+                <td width="52" class="TableCell"><%= servHist.getCurrentState().getContent() %></td>
+                <td width="42" class="TableCell"><%= servHist.getOrderedBy() %></td>
 				<td width="74" class="TableCell"><%= servHist.getServiceCompany().getContent() %></td>
 				<td width="222"> 
 				  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"><%= servHist.getDescription() %></textarea>

@@ -1,34 +1,36 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
+	if (inventories.getStarsLMHardwareCount() == 0) {
+		response.sendRedirect("CreateHardware.jsp"); return;
+	}
+	
 	String invNoStr = request.getParameter("InvNo");
-	int invNo = -1;
+	int invNo = 0;
 	if (invNoStr != null)
 		try {
 			invNo = Integer.parseInt(invNoStr);
 		}
 		catch (NumberFormatException e) {}
+	if (invNo < 0 || invNo >= inventories.getStarsLMHardwareCount())
+		invNo = 0;
 
-	StarsLMHardware hardware = null;
+	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
 	ArrayList appList = new ArrayList();
 	String hwStatus = "Unavailable";
 	
-	if (invNo >= 0) {
-		hardware = inventories.getStarsLMHardware(invNo);
-		
-		for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-			StarsAppliance app = appliances.getStarsAppliance(i);
-			if (app.getInventoryID() == hardware.getInventoryID())
-				appList.add(app);
-		}
-	
-		StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
-		if (hwHist != null && hwHist.getLMHardwareEventCount() > 0) {
-			LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
-			if (event.getEventAction().equals("Activation Completed"))
-				hwStatus = "Available";
-			else if (event.getEventAction().equals("Temporary Termination"))
-				hwStatus = "Temporary Unavail";
-		}
+	for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
+		StarsAppliance app = appliances.getStarsAppliance(i);
+		if (app.getInventoryID() == hardware.getInventoryID())
+			appList.add(app);
+	}
+
+	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
+	if (hwHist != null && hwHist.getLMHardwareEventCount() > 0) {
+		LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
+		if (event.getEventAction().equals("Activation Completed"))
+			hwStatus = "Available";
+		else if (event.getEventAction().equals("Temporary Termination"))
+			hwStatus = "Temporary Unavail";
 	}
 	
 	StarsAppliance[] starsApps = new StarsAppliance[ appList.size() ];
@@ -85,7 +87,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "Inventory.jsp?InvNo=" + invNoStr; %>
+            <% String pageName = "Inventory.jsp?InvNo=" + invNo; %>
             <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

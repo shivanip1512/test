@@ -67,70 +67,78 @@
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td valign="top" bgcolor="#FFFFFF"> 
-                        <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
-                          <tr> 
-                            <td width="100" class="TableCell"> 
-                              <div align="right">Service Order #:</div>
-                            </td>
-                            <td width="210"> 
-                              <input type="text" name="OrderNumber" maxlength="2" size="14" value="<%= orderNumber %>">
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="100" class="TableCell"> 
-                              <div align="right">Date Reported:</div>
-                            </td>
-                            <td width="210"> 
-                              <input type="text" name="DateAssigned" maxlength="2" size="14" value="<%= dateFormat.format(Calendar.getInstance().getTime()) %>">
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="100" class="TableCell"> 
-                              <div align="right">Service Type:</div>
-                            </td>
-                            <td width="210"> 
-                              <select name="ServiceType">
-<%
+                        
+                      <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Service Order #:</div>
+                          </td>
+                          <td width="210"> 
+                            <input type="text" name="OrderNumber" size="14" value="<%= orderNumber %>">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Date Reported:</div>
+                          </td>
+                          <td width="210"> 
+                            <input type="text" name="DateAssigned" size="14" value="<%= dateFormat.format(Calendar.getInstance().getTime()) %>">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Service Type:</div>
+                          </td>
+                          <td width="210"> 
+                            <select name="ServiceType">
+                              <%
 	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
 	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
 %>
-                                <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
 	}
 %>
-                              </select>
-                            </td>
-                          </tr>
-						  <tr> 
-                            <td width="100" class="TableCell"> 
-                              
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
                             <div align="right">Assign to:</div>
-                            </td>
-                            <td width="210"> 
-                              <select name="ServiceCompany">
-<%
+                          </td>
+                          <td width="210"> 
+                            <select name="ServiceCompany">
+                              <%
 	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
 	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
 %>
-                                <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                              <%
 	}
 %>
-                              </select>
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="100" class="TableCell"> 
-                              <div align="right">Notes: </div>
-                            </td>
-                            <td width="210"> 
-                              <textarea name="Notes" rows="3" wrap="soft" cols="25" class = "TableCell"></textarea>
-                            </td>
-                          </tr>
-                        </table>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Ordered By:</div>
+                          </td>
+                          <td width="210">
+                            <input type="text" name="OrderedBy" size="14">
+                          </td>
+                        </tr>
+                        <tr> 
+                          <td width="100" class="TableCell"> 
+                            <div align="right">Notes: </div>
+                          </td>
+                          <td width="210"> 
+                            <textarea name="Notes" rows="3" wrap="soft" cols="25" class = "TableCell"></textarea>
+                          </td>
+                        </tr>
+                      </table>
                       <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                         <tr> 
                           <td width="169"> 

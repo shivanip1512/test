@@ -1,43 +1,45 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
+	if (appliances.getStarsApplianceCount() == 0) {
+		response.sendRedirect("CreateAppliances.jsp"); return;
+	}
+	
 	String appNoStr = request.getParameter("AppNo");
-	int appNo = -1;
+	int appNo = 0;
 	if (appNoStr != null)
 		try {
 			appNo = Integer.parseInt(appNoStr);
 		}
 		catch (NumberFormatException e) {}
+	if (appNo < 0 || appNo >= appliances.getStarsApplianceCount())
+		appNo = 0;
 		
-	StarsAppliance appliance = null;
+	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
 	StarsLMHardware hardware = null;
 	StarsLMProgram program = null;
 	StarsApplianceCategory category = null;
 	
-	if (appNo >= 0) {
-		appliance = appliances.getStarsAppliance(appNo);
-		
-		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-			StarsLMHardware hw = inventories.getStarsLMHardware(i);
-			if (hw.getInventoryID() == appliance.getInventoryID()) {
-				hardware = hw;
-				break;
-			}
+	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+		StarsLMHardware hw = inventories.getStarsLMHardware(i);
+		if (hw.getInventoryID() == appliance.getInventoryID()) {
+			hardware = hw;
+			break;
 		}
+	}
+
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram starsProg = programs.getStarsLMProgram(i);
+		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+			program = starsProg;
+			break;
+		}
+	}
 	
-		for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-			StarsLMProgram starsProg = programs.getStarsLMProgram(i);
-			if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-				program = starsProg;
-				break;
-			}
-		}
-		
-		for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
-			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(i);
-			if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
-				category = appCat;
-				break;
-			}
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory appCat = categories.getStarsApplianceCategory(i);
+		if (appCat.getApplianceCategoryID() == appliance.getApplianceCategoryID()) {
+			category = appCat;
+			break;
 		}
 	}
 %>
@@ -92,7 +94,7 @@
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "Appliance.jsp?AppNo=" + appNoStr; %>
+            <% String pageName = "Appliance.jsp?AppNo=" + appNo; %>
             <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
@@ -108,7 +110,7 @@
                             <div align="right">Description: </div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="textfield5322" maxlength="40" size="30" value="<%= appliance.getCategoryDescription() %>">
+                            <input type="text" name="Category" maxlength="40" size="30" value="<%= appliance.getCategoryName() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -116,7 +118,7 @@
                             <div align="right">Manufacturer:</div>
                           </td>
                           <td width="200"> 
-                            <select name="select3">
+                            <select name="Manufacturer">
                               <option>Century</option>
                             </select>
                           </td>
@@ -126,7 +128,7 @@
                             <div align="right">Year Manufactured:</div>
                           </td>
                           <td width="200"> 
-                            <input type="text" name="textfield243" maxlength="14" size="14">
+                            <input type="text" name="ManuYear" maxlength="14" size="14">
                           </td>
                         </tr>
                         <tr> 
@@ -134,7 +136,7 @@
                             <div align="right">Location:</div>
                           </td>
                           <td width="200"> 
-                            <select name="select4">
+                            <select name="Location">
                               <option>Basement</option>
                             </select>
                           </td>
@@ -144,7 +146,7 @@
                             <div align="right">Service Company:</div>
                           </td>
                           <td width="200">
-                            <input type="text" name="textfield532" maxlength="40" size="30">
+                            <input type="text" name="Company" maxlength="40" size="30">
                           </td>
                         </tr>
                         <tr> 
@@ -221,7 +223,7 @@
 	}
 	else {
 %>
-					<p align="center">There is no program for this appliance</p>
+					<p align="center">There is no program for this appliance.</p>
 <%
 	}
 %>

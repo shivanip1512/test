@@ -32,8 +32,8 @@
     for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
         StarsAppliance app = appliances.getStarsAppliance(i);
 		
-		String linkText = app.getCategoryDescription();
-		if (linkText == null) linkText = "Appliance";
+		String linkText = app.getCategoryName();
+		if (linkText == null || linkText.length() == 0) linkText = "Appliance";
 			
 		if (pageName.equalsIgnoreCase("Appliance.jsp?AppNo=" + i))
 			appLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";

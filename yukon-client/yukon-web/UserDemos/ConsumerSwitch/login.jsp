@@ -108,7 +108,7 @@
 <%
 	String formMethod = null;
 	String formAction = null;
-	if (session.getAttribute("ENROLLMENT_PROGRAMS") != null) {
+	if (session.getAttribute("ENROLLMENT_PROGRAMS_SWITCH") != null) {
 		formMethod = "get";
 		formAction = "ProgramsNew.jsp";
 	}
@@ -119,7 +119,7 @@
 %>
 					  <form method="<%= formMethod %>" action="<%= formAction %>">
 <%
-	if (session.getAttribute("ENROLLMENT_PROGRAMS") == null) {
+	if (session.getAttribute("ENROLLMENT_PROGRAMS_SWITCH") == null) {
 %>
 					    <input type="hidden" name="action" value="GetEnrPrograms">
 						<input type="hidden" name="CompanyID" value="1">
