@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/10/22 22:19:10 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/10/24 17:27:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,9 +371,6 @@ void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
     _retryState = _ioState;
 
     _comm_errors = 0;
-
-    //  wipe out the state of the underlying layer - its data has just changed
-    _transport.initForOutput((unsigned char *)&_appReq, getLengthReq(), _dstAddr, _srcAddr);
 }
 
 
@@ -443,6 +440,13 @@ int CtiDNPApplication::generate( CtiXfer &xfer )
             case Input:
             {
                 _transport.initForInput((unsigned char *)&_appRsp);
+
+                break;
+            }
+
+            case Output:
+            {
+                _transport.initForOutput((unsigned char *)&_appReq, _appReqBytesUsed + ReqHeaderSize, _dstAddr, _srcAddr);
 
                 break;
             }
