@@ -1600,7 +1600,7 @@ public void setValue(Object val)
 			getChannel2CheckBox().setEnabled(false);
 			getChannel3CheckBox().setEnabled(false);
 			
-			getJLabelVoltDmdRate().setText("Channel 4: ");
+			getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
 			getJComboBoxlVoltRate().removeAllItems();
 			getJComboBoxlVoltRate().addItem("5 minute");
 			getJComboBoxlVoltRate().addItem("15 minute");
