@@ -92,18 +92,13 @@ public class SVGGenerator {
 	
 	private void generateLine(Writer writer, LxLine line) throws IOException {
 		Color c = line.getStyle().getLineColor();
-		Point2D[] p = line.getPathPoints();
 		Shape[] s = line.getShape();
-
+		float opacity = line.getStyle().getTransparency();
 		
 		String pathStr = getPathString(s, line.getCenterX(), line.getCenterY());
-		/*int mx = (int) p[0].getX();
-		int my = (int) p[0].getY();
-		int x = (int) p[1].getX();
-		int y = (int) p[1].getY();
-		*/
+
 		float width = line.getStyle().getLineThickness();
-		writer.write("<path id=\"" + line.getName() + "\" style=\"fill:none;stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width + ";\" d=\"" + pathStr + "\" />\n");
+		writer.write("<path id=\"" + line.getName() + "\" style=\"fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width + ";\" d=\"" + pathStr + "\" />\n");
 	}
 	
 	private void generateRect(Writer writer, LxRectangle rect) throws IOException {
@@ -157,7 +152,9 @@ public class SVGGenerator {
 			fontWeightStr = "bold";
 		}
 		
-		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");	
+		float opacity = text.getStyle().getTransparency();
+		
+		writer.write("<text id=\"" + text.getName() + "\" style=\"fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";\" transform=\"translate(" + x + "," + y + ")\" >" + text.getText() + "</text>\n");	
 	}
 	
 	private String getPathString(Shape[] s, double cx, double cy) {
