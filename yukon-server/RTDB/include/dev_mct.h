@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/08/11 20:12:37 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/10/21 16:30:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,9 @@
 
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
 {
-public:
+private:
+
+    static CTICMDSET _commandStore;
 
 protected:
 
@@ -67,9 +69,10 @@ protected:
         MCT_MaxPulseCount         = 10000000
     };
 
-private:
-
-    static CTICMDSET _commandStore;
+    enum
+    {
+        MCT_PointOffset_Status_Powerfail = 10
+    };
 
 public:
 
