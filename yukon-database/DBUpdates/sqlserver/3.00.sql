@@ -995,6 +995,13 @@ insert into YukonGroupRole values (-1356,-2,-201,-20856,'(none)');
 insert into YukonGroupRole values (-1370,-2,-201,-20870,'(none)');
 /* END the Admin role Group */
 
+alter table PAOExclusion add FuncParams varchar(200);
+go
+update PAOExclusion set FuncParams = '(none)';
+go
+alter table PAOExclusion alter column FuncParams varchar(200) not null;
+go
+
 
 INSERT into point  values (-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 
