@@ -139,13 +139,13 @@ public class CreateApplianceAction implements ActionBase {
             	}
             }
             
-            app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction( Transaction.INSERT, app ).execute();
+            app = (com.cannontech.database.data.stars.appliance.ApplianceBase) Transaction.createTransaction(Transaction.INSERT, app).execute();
             
-            StarsAppliance starsApp = StarsLiteFactory.createStarsAppliance( app, energyCompanyID );
-            accountInfo.getAppliances().add( starsApp );
+            LiteStarsAppliance liteApp = (LiteStarsAppliance) StarsLiteFactory.createLite(app);
+            accountInfo.getAppliances().add( liteApp );
             
             StarsCreateApplianceResponse resp = new StarsCreateApplianceResponse();
-            resp.setStarsAppliance( starsApp );
+            resp.setStarsAppliance( StarsLiteFactory.createStarsAppliance(liteApp, energyCompanyID) );
             respOper.setStarsCreateApplianceResponse( resp );
 
             SOAPMessage respMsg = SOAPUtil.buildSOAPMessage( respOper );

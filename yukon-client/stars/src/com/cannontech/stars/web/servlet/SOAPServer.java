@@ -456,18 +456,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return company.getCustomerContact( contactID );
 	}
 	
-	public static void addCustomerContact(int energyCompanyID, LiteCustomerContact liteContact) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company != null)
-			company.addCustomerContact( liteContact );
-	}
-	
-	public static void deleteCustomerContact(int energyCompanyID, LiteCustomerContact liteContact) {
-		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
-		if (company != null)
-			company.deleteCustomerContact( liteContact );
-	}
-	
 	public static LiteCustomerAddress getCustomerAddress(int energyCompanyID, int addressID) {
 		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
 		if (company == null) return null;

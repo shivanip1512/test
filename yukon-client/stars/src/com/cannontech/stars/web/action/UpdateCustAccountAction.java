@@ -98,7 +98,7 @@ public class UpdateCustAccountAction implements ActionBase {
             primContact.setWorkPhone( ServletUtils.formatPhoneNumber(req.getParameter("WorkPhone")) );
             account.setPrimaryContact( primContact );
             
-            account.setTimeZone( ServletUtils.getTimeZoneStr(TimeZone.getDefault()) );
+            account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );
 
             StarsUpdateCustomerAccount updateAccount = (StarsUpdateCustomerAccount)
                     StarsCustAccountFactory.newStarsCustAccount(account, StarsUpdateCustomerAccount.class );
@@ -155,7 +155,7 @@ public class UpdateCustAccountAction implements ActionBase {
             	StarsLiteFactory.setLiteCustomerAddress( liteBillAddr, billAddr );
             }
             
-            if (!StarsLiteFactory.isIdentical( liteAccount, updateAccount )) {
+            if (!StarsLiteFactory.isIdenticalCustomerAccount( liteAccount, updateAccount )) {
             	com.cannontech.database.db.stars.customer.CustomerAccount account =
             			(com.cannontech.database.db.stars.customer.CustomerAccount) StarsLiteFactory.createDBPersistent( liteAccount );
 /*            	account = (com.cannontech.database.db.stars.customer.CustomerAccount)
@@ -205,7 +205,7 @@ public class UpdateCustAccountAction implements ActionBase {
 		        		contactList.remove(j);
 		        		liteContact = SOAPServer.getCustomerContact( energyCompanyID, contactID.intValue() );
 		        		
-		        		if (!StarsLiteFactory.isIdentical(liteContact, starsContact)) {
+		        		if (!StarsLiteFactory.isIdenticalCustomerContact(liteContact, starsContact)) {
 			        		// Update the customer contact
 			        		com.cannontech.database.db.customer.CustomerContact contact =
 			        				(com.cannontech.database.db.customer.CustomerContact) StarsLiteFactory.createDBPersistent( liteContact );
@@ -236,7 +236,7 @@ public class UpdateCustAccountAction implements ActionBase {
 		            contact = contactWrapper.getCustomerContact();
 		            
 		            liteContact = (LiteCustomerContact) StarsLiteFactory.createLite( contact );
-		            SOAPServer.addCustomerContact( energyCompanyID, liteContact );
+		            SOAPServer.getAllCustomerContacts( energyCompanyID ).add( liteContact );
             	}
             	
             	newContactList.add( new Integer(liteContact.getContactID()) );
@@ -253,31 +253,34 @@ public class UpdateCustAccountAction implements ActionBase {
 	            		Transaction.createTransaction( Transaction.DELETE, contactWrapper ).execute();
 	            contact = contactWrapper.getCustomerContact();
             	
-            	SOAPServer.deleteCustomerContact( energyCompanyID, liteContact );
+            	SOAPServer.getAllCustomerContacts( energyCompanyID ).remove( liteContact );
             }
             
             liteCustomer.setAdditionalContacts( newContactList );
             
             Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
-            LiteCustomerSelectionList custTypeList = (LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
-            
-            int custTypeID = 0;
-            if (updateAccount.getIsCommercial())
-            	custTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
-            			custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM).getEntryID();
-            else
-            	custTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
-            			custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES).getEntryID();
-            			
-            if (liteCustomer.getCustomerTypeID() != custTypeID) {
+	        LiteCustomerSelectionList custTypeList = (LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CUSTOMERTYPE );
+	        
+	        int custTypeID = 0;
+	        if (updateAccount.getIsCommercial())
+	        	custTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
+	        			custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_COMM).getEntryID();
+	        else
+	        	custTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
+	        			custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES).getEntryID();
+	        
+            if (!StarsLiteFactory.isIdenticalCustomerBase(liteCustomer, updateAccount, custTypeID)) {
 /*	           customer = (com.cannontech.database.db.stars.customer.CustomerBase)
 	            		Transaction.createTransaction( Transaction.RETRIEVE, customer ).execute();*/
 	            
 	            customer.setCustomerTypeID( new Integer(custTypeID) );
+	            if (updateAccount.getTimeZone() != null)
+	            	liteCustomer.setTimeZone( updateAccount.getTimeZone() );
 	            customer = (com.cannontech.database.db.stars.customer.CustomerBase)
 	            		Transaction.createTransaction( Transaction.UPDATE, customer ).execute();
 	            
 	            liteCustomer.setCustomerTypeID( customer.getCustomerTypeID().intValue() );
+	            liteCustomer.setTimeZone( customer.getTimeZone() );
             }
             
             /* Update account site */
@@ -296,7 +299,7 @@ public class UpdateCustAccountAction implements ActionBase {
             	StarsLiteFactory.setLiteCustomerAddress( liteStAddr, stAddr );
             }
             
-            if (!StarsLiteFactory.isIdentical( liteAcctSite, updateAccount )) {
+            if (!StarsLiteFactory.isIdenticalAccountSite( liteAcctSite, updateAccount )) {
             	com.cannontech.database.db.stars.customer.AccountSite acctSite =
             			(com.cannontech.database.db.stars.customer.AccountSite) StarsLiteFactory.createDBPersistent( liteAcctSite );
 /*            	acctSite = (com.cannontech.database.db.stars.customer.AccountSite)
@@ -313,7 +316,7 @@ public class UpdateCustAccountAction implements ActionBase {
             LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
             StarsSiteInformation starsSiteInfo = updateAccount.getStarsSiteInformation();
             
-            if (!StarsLiteFactory.isIdentical(liteSiteInfo, starsSiteInfo)) {
+            if (!StarsLiteFactory.isIdenticalSiteInformation(liteSiteInfo, starsSiteInfo)) {
             	com.cannontech.database.db.stars.customer.SiteInformation siteInfo =
             			(com.cannontech.database.db.stars.customer.SiteInformation) StarsLiteFactory.createDBPersistent( liteSiteInfo );
 /*            	siteInfo = (com.cannontech.database.db.stars.customer.SiteInformation)

@@ -15,7 +15,7 @@ public class LiteStarsCustAccountInformation {
 	private LiteAccountSite accountSite = null;
 	private LiteSiteInformation siteInformation = null;
 	private java.util.ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
-	private java.util.ArrayList appliances = null;	// List of StarsAppliance
+	private java.util.ArrayList appliances = null;	// List of LiteStarsAppliance
 	private java.util.ArrayList inventories = null;	// List of IDs of LiteLMHardware
 	private java.util.ArrayList serviceCompanies = null;	// List of IDs of LiteServiceCompany
 	private java.util.ArrayList callReportHistory = null;	// List of StarsCallReport

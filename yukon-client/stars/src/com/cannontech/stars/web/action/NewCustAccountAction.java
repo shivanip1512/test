@@ -15,21 +15,7 @@ import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.serialize.AdditionalContact;
-import com.cannontech.stars.xml.serialize.BillingAddress;
-import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse;
-import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSiteInformation;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
-import com.cannontech.stars.xml.serialize.StarsLogin;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -58,7 +44,7 @@ public class NewCustAccountAction implements ActionBase {
             account.setAccountNotes( req.getParameter("AcctNotes") );
             account.setPropertyNumber( req.getParameter("PropNo") );
             account.setPropertyNotes( req.getParameter("PropNotes") );
-            account.setTimeZone( ServletUtils.getTimeZoneStr(TimeZone.getDefault()) );
+            account.setTimeZone( ServletUtils.getTimeZoneStr(Calendar.getInstance().getTimeZone()) );
 
             StreetAddress propAddr = new StreetAddress();
             propAddr.setStreetAddr1( req.getParameter("SAddr1") );
@@ -110,17 +96,7 @@ public class NewCustAccountAction implements ActionBase {
 	        }
 
 			newAccount.setStarsCustomerAccount( account );
-/*			
-			newAccount.setStarsLMProgramSignUps( new StarsLMProgramSignUps() );
-			
-	        String userName = req.getParameter("UserName");
-	        if (userName != null && userName.length() > 0) {
-		        StarsLogin login = new StarsLogin();
-		        login.setUsername( req.getParameter("UserName") );
-		        login.setPassword( req.getParameter("Password") );
-				newAccount.setStarsLogin( login );
-	        }
-*/
+
             StarsOperation operation = new StarsOperation();
             operation.setStarsNewCustomerAccount( newAccount );
 
@@ -187,7 +163,10 @@ public class NewCustAccountAction implements ActionBase {
         				custTypeList, com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_CUSTTYPE_RES ).getEntryID();
             customerDB.setCustomerTypeID( new Integer(custTypeID) );
             
-            customerDB.setTimeZone( "(none)" );	// How to set the proper time zone???
+            if (starsAccount.getTimeZone() != null)
+            	customerDB.setTimeZone( starsAccount.getTimeZone() );
+            else
+            	customerDB.setTimeZone( "(none)" );		// Should use the default setting of the energy company
             customerDB.setPaoID( new Integer(0) );
             /*- End create Customer -*/
             
@@ -216,39 +195,23 @@ public class NewCustAccountAction implements ActionBase {
             acctSiteDB.setSiteNumber( starsAccount.getPropertyNumber() );
             acctSiteDB.setPropertyNotes( starsAccount.getPropertyNotes() );
             /*- End create AccountSite -*/
-/*            
-            com.cannontech.database.db.customer.CustomerLogin login = account.getCustomerLogin();
-            StarsLogin starsLogin = newAccount.getStarsLogin();
-            if (starsLogin != null) {
-	            login.setUserName( starsLogin.getUsername() );
-	            login.setUserPassword( starsLogin.getPassword() );
-	            login.setLoginType( "STARS" );		// Add "STARS" type to CustomerLogin db class later
-            }
-            else {
-            	login.setUserName( starsAccount.getAccountNumber() );
-            	login.setUserPassword( "" );
-	            login.setLoginType( "STARS" );
-            }
-*/            
+
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
             accountDB.setAccountNotes( starsAccount.getAccountNotes() );
             account.setCustomerBase( customer );
             account.setEnergyCompanyID( new Integer(energyCompanyID) );
-            //account.setCustomerLogin( login );
             /* End create CustomerAccount */
             
             account = (com.cannontech.database.data.stars.customer.CustomerAccount)
             		Transaction.createTransaction( Transaction.INSERT, account ).execute();
             
 			LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.addCustAccountInformation( energyCompanyID, account );
-            
             user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 
-            StarsNewCustomerAccountResponse resp = new StarsNewCustomerAccountResponse();
-            resp.setStarsCustAccountInformation( starsAcctInfo );
-            
-            respOper.setStarsNewCustomerAccountResponse( resp );
+			StarsSuccess success = new StarsSuccess();
+			success.setDescription( "Customer account created successfully" );
+			respOper.setStarsSuccess( success );
+			
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -272,19 +235,31 @@ public class NewCustAccountAction implements ActionBase {
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+            StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-			StarsFailure failure = operation.getStarsFailure();
+			StarsFailure failure = respOper.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
 			
-			StarsNewCustomerAccountResponse resp = operation.getStarsNewCustomerAccountResponse();
-			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			StarsSuccess success = respOper.getStarsSuccess();
+			if (success == null)
+				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+				
+			StarsCustAccountInformation accountInfo = new StarsCustAccountInformation();
+			accountInfo.setStarsCustomerAccount( reqOper.getStarsNewCustomerAccount().getStarsCustomerAccount() );
+			
+			accountInfo.setStarsLMPrograms( new StarsLMPrograms() );
+			accountInfo.setStarsAppliances( new StarsAppliances() );
+			accountInfo.setStarsInventories( new StarsInventories() );
+			accountInfo.setStarsServiceCompanies( new StarsServiceCompanies() );
+			accountInfo.setStarsCallReportHistory( new StarsCallReportHistory() );
+			accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation() );
+			user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
 			
             return 0;
         }

@@ -28,18 +28,25 @@ public class LMHardwareBase extends InventoryBase {
         getLMHardwareBase().setDbConnection(conn);
         getLMHardwareType().setDbConnection(conn);
     }
-
-    public void delete() throws java.sql.SQLException {
+    
+    /**
+     * This method is to be called from com.cannontech.database.data.stars.hardware.InventoryBase.delete()
+     */
+    public void deleteLMHardwareBase() throws java.sql.SQLException {
         // delete from LMHardwareEvent
-        com.cannontech.database.db.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
-            getLMHardwareBase().getInventoryID(), getDbConnection() );
+        com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
+            getInventoryBase().getInventoryID(), getDbConnection() );
 
         // delete from LMHardwareConfiguration
         com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration(
-            getLMHardwareBase().getInventoryID(), getDbConnection() );
+            getInventoryBase().getInventoryID(), getDbConnection() );
 
         getLMHardwareBase().delete();
-        super.delete();
+    }
+
+    public void delete() throws java.sql.SQLException {
+    	deleteLMHardwareBase();
+        super.deleteInventoryBase();
     }
 
     public void add() throws java.sql.SQLException {

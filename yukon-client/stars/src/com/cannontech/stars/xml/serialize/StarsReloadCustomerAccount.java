@@ -25,23 +25,27 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsNewCustomerAccountResponse implements java.io.Serializable {
+public class StarsReloadCustomerAccount implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsCustAccountInformation _starsCustAccountInformation;
+    /**
+     * internal content storage
+    **/
+    private java.lang.String _content = "";
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsNewCustomerAccountResponse() {
+    public StarsReloadCustomerAccount() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse()
+        setContent("");
+    } //-- com.cannontech.stars.xml.serialize.StarsReloadCustomerAccount()
 
 
       //-----------/
@@ -49,14 +53,15 @@ public class StarsNewCustomerAccountResponse implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'starsCustAccountInformation'.
+     * Returns the value of field 'content'. The field 'content'
+     * has the following description: internal content storage
      * 
-     * @return the value of field 'starsCustAccountInformation'.
+     * @return the value of field 'content'.
     **/
-    public StarsCustAccountInformation getStarsCustAccountInformation()
+    public java.lang.String getContent()
     {
-        return this._starsCustAccountInformation;
-    } //-- StarsCustAccountInformation getStarsCustAccountInformation() 
+        return this._content;
+    } //-- java.lang.String getContent() 
 
     /**
     **/
@@ -96,26 +101,26 @@ public class StarsNewCustomerAccountResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'starsCustAccountInformation'.
+     * Sets the value of field 'content'. The field 'content' has
+     * the following description: internal content storage
      * 
-     * @param starsCustAccountInformation the value of field
-     * 'starsCustAccountInformation'.
+     * @param content the value of field 'content'.
     **/
-    public void setStarsCustAccountInformation(StarsCustAccountInformation starsCustAccountInformation)
+    public void setContent(java.lang.String content)
     {
-        this._starsCustAccountInformation = starsCustAccountInformation;
-    } //-- void setStarsCustAccountInformation(StarsCustAccountInformation) 
+        this._content = content;
+    } //-- void setContent(java.lang.String) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsReloadCustomerAccount unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsNewCustomerAccountResponse unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsReloadCustomerAccount) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsReloadCustomerAccount.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsReloadCustomerAccount unmarshal(java.io.Reader) 
 
     /**
     **/

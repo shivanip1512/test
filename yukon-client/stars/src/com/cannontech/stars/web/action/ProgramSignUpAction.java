@@ -174,7 +174,7 @@ public class ProgramSignUpAction implements ActionBase {
 		            app = (com.cannontech.database.data.stars.appliance.ApplianceBase) multiDB.getDBPersistentVector().get(0);
 		            event = (com.cannontech.database.data.stars.event.LMProgramEvent) multiDB.getDBPersistentVector().get(1);
 		            
-		            liteAcctInfo.getAppliances().add( StarsLiteFactory.createStarsAppliance(app, energyCompanyID) );
+		            liteAcctInfo.getAppliances().add( StarsLiteFactory.createLite(app) );
 		            
 		            LiteStarsLMProgram liteProg = new LiteStarsLMProgram();
 		            liteProg.setProgramID( app.getLMProgram().getPAObjectID().intValue() );

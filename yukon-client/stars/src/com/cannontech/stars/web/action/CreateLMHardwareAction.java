@@ -326,7 +326,9 @@ public class CreateLMHardwareAction implements ActionBase {
 		LiteCustomerSelectionList invCatList = (LiteCustomerSelectionList)
 				selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_INVENTORYCATEGORY );
 				
-		if (deviceType.getContent().startsWith("LCR")) {	// LCR-XXXX
+		if (deviceType.getContent().startsWith("LCR")	// LCR-XXXX
+			|| deviceType.getContent().startsWith("Thermostat"))	// Thermostat
+		{
 			for (int i = 0; i < invCatList.getListEntries().length; i++) {
 				StarsSelectionListEntry entry = invCatList.getListEntries()[i];
 				if (entry.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_INVCAT_ONEWAYREC ))

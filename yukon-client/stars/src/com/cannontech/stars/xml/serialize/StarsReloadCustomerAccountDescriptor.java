@@ -2,10 +2,10 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCtrlHistPeriodDescriptor.java,v 1.20 2003/01/28 18:11:13 zyao Exp $
+ * $Id$
  */
 
-package com.cannontech.stars.xml.serialize.types;
+package com.cannontech.stars.xml.serialize;
 
   //---------------------------------/
  //- Imported classes and packages -/
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2003/01/28 18:11:13 $
+ * @version $Revision$ $Date$
 **/
-public class StarsCtrlHistPeriodDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsReloadCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,17 +47,54 @@ public class StarsCtrlHistPeriodDescriptor extends org.exolab.castor.xml.util.XM
      //- Constructors -/
     //----------------/
 
-    public StarsCtrlHistPeriodDescriptor() {
+    public StarsReloadCustomerAccountDescriptor() {
         super();
-        xmlName = "stars-CtrlHistPeriod";
+        xmlName = "stars-ReloadCustomerAccount";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        //-- _content
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_content", "PCDATA", NodeType.Text);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsReloadCustomerAccount target = (StarsReloadCustomerAccount) object;
+                return target.getContent();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsReloadCustomerAccount target = (StarsReloadCustomerAccount) object;
+                    target.setContent( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _content
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriodDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsReloadCustomerAccountDescriptor()
 
 
       //-----------/
@@ -89,7 +126,7 @@ public class StarsCtrlHistPeriodDescriptor extends org.exolab.castor.xml.util.XM
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.class;
+        return com.cannontech.stars.xml.serialize.StarsReloadCustomerAccount.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

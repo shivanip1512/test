@@ -49,12 +49,7 @@ public class SearchCustAccountAction implements ActionBase {
             if (user == null) return null;
             
             // Remove the "transient"(account-related) attributes
-            Enumeration enum = user.getAttributeNames();
-            while (enum.hasMoreElements()) {
-            	String attName = (String) enum.nextElement();
-            	if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
-        			user.removeAttribute(attName);
-            }
+            ServletUtils.removeTransientAttributes( user );
 
             StarsSearchCustomerAccount searchAccount = new StarsSearchCustomerAccount();
             SearchBy searchBy = new SearchBy();

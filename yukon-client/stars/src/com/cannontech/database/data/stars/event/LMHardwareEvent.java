@@ -52,6 +52,23 @@ public class LMHardwareEvent extends LMCustomerEventBase {
         getLMHardwareEvent().retrieve();
     }
     
+    public static void deleteAllLMHardwareEvents(Integer invID, java.sql.Connection conn) {
+    	try {
+    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID, conn );
+    		com.cannontech.database.db.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents( invID, conn );
+    		
+    		LMCustomerEventBase event = new LMCustomerEventBase();
+    		for (int i = 0; i < eventIDs.length; i++) {
+    			event.setEventID( eventIDs[i] );
+    			event.setDbConnection( conn );
+    			event.delete();
+    		}
+    	}
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
     public static LMHardwareEvent[] getAllLMHardwareEvents(Integer invID) {
     	java.sql.Connection conn = null;
 
@@ -60,15 +77,14 @@ public class LMHardwareEvent extends LMCustomerEventBase {
                         com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             if (conn == null) return null;
             
-	        com.cannontech.database.db.stars.event.LMHardwareEvent[] eventDBs =
-	        		com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEvents( invID, conn );
+	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMHardwareEvent.getAllLMHardwareEventIDs( invID, conn );
 	        com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
-	        		new com.cannontech.database.data.stars.event.LMHardwareEvent[ eventDBs.length ];
+	        		new com.cannontech.database.data.stars.event.LMHardwareEvent[ eventIDs.length ];
 	        
 	        for (int i = 0; i < events.length; i++) {
 	        	events[i] = new com.cannontech.database.data.stars.event.LMHardwareEvent();
 	        	events[i].setDbConnection(conn);
-	        	events[i].setEventID( eventDBs[i].getEventID() );
+	        	events[i].setEventID( eventIDs[i] );
 	        	events[i].retrieve();
 	        }
 	        

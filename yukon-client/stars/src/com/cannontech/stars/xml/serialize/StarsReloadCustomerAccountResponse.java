@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardware.java,v 1.20 2003/01/28 18:11:10 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,25 +23,40 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2003/01/28 18:11:10 $
+ * @version $Revision$ $Date$
 **/
-public class StarsLMHardware extends StarsLMHw 
-implements java.io.Serializable
-{
+public class StarsReloadCustomerAccountResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsCustAccountInformation _starsCustAccountInformation;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsLMHardware() {
+    public StarsReloadCustomerAccountResponse() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware()
+    } //-- com.cannontech.stars.xml.serialize.StarsReloadCustomerAccountResponse()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsCustAccountInformation'.
+     * 
+     * @return the value of field 'starsCustAccountInformation'.
+    **/
+    public StarsCustAccountInformation getStarsCustAccountInformation()
+    {
+        return this._starsCustAccountInformation;
+    } //-- StarsCustAccountInformation getStarsCustAccountInformation() 
 
     /**
     **/
@@ -81,15 +96,26 @@ implements java.io.Serializable
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsCustAccountInformation'.
+     * 
+     * @param starsCustAccountInformation the value of field
+     * 'starsCustAccountInformation'.
+    **/
+    public void setStarsCustAccountInformation(StarsCustAccountInformation starsCustAccountInformation)
+    {
+        this._starsCustAccountInformation = starsCustAccountInformation;
+    } //-- void setStarsCustAccountInformation(StarsCustAccountInformation) 
+
+    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsReloadCustomerAccountResponse unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsLMHardware) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMHardware.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsReloadCustomerAccountResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsReloadCustomerAccountResponse.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsReloadCustomerAccountResponse unmarshal(java.io.Reader) 
 
     /**
     **/

@@ -38,48 +38,41 @@ public class CustomerAccount extends DBPersistent {
 
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-
         getCustomerAccount().setDbConnection(conn);
         getAccountSite().setDbConnection(conn);
         getBillingAddress().setDbConnection(conn);
-
-        if (getCustomerBase() != null)
-            getCustomerBase().setDbConnection(conn);
+        if (getCustomerBase() != null) getCustomerBase().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
-        getAccountSite().delete();
-        getBillingAddress().delete();
-        
-    	getCustomerBase().delete();
-    	//getCustomerLogin().delete();
-
-        com.cannontech.database.db.stars.hardware.InventoryBase[] hws = com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
-            getCustomerAccount().getAccountID(), getDbConnection() );
+        // delete from the mapping table
+        delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
+    	
+/*		com.cannontech.database.db.stars.hardware.InventoryBase[] hws = com.cannontech.database.db.stars.hardware.InventoryBase.getAllInventories(
+            getCustomerAccount().getAccountID(), getDbConnection() );*/
         com.cannontech.database.data.stars.hardware.InventoryBase hw = new com.cannontech.database.data.stars.hardware.InventoryBase();
-        for (int i = 0; i < hws.length; i++) {
-            hw.setInventoryBase( hws[i] );
+        for (int i = 0; i < getInventoryVector().size(); i++) {
+            hw.setInventoryBase( (com.cannontech.database.db.stars.hardware.InventoryBase) getInventoryVector().get(i) );
             hw.setDbConnection( getDbConnection() );
             hw.delete();
         }
 
-        com.cannontech.database.db.stars.appliance.ApplianceBase[] loads =
-        		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );
-        com.cannontech.database.data.stars.appliance.ApplianceBase load =
-        		new com.cannontech.database.data.stars.appliance.ApplianceBase();
-        for (int i = 0; i < loads.length; i++) {
-            load.setApplianceBase( loads[i] );
-            load.setDbConnection( getDbConnection() );
-            load.delete();
+/*		com.cannontech.database.db.stars.appliance.ApplianceBase[] apps =
+        		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );*/
+        for (int i = 0; i < getApplianceVector().size(); i++) {
+			com.cannontech.database.data.stars.appliance.ApplianceBase app =
+        		(com.cannontech.database.data.stars.appliance.ApplianceBase) getApplianceVector().get(i);
+            app.setDbConnection( getDbConnection() );
+            app.delete();
         }
 
-        com.cannontech.database.db.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+        com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
             getCustomerAccount().getAccountID(), getDbConnection() );
-
-        // delete from the mapping table
-        delete( "ECToAccountMapping", "AccountID", getCustomerAccount().getAccountID() );
-
+        
         getCustomerAccount().delete();
+        getAccountSite().delete();
+        getBillingAddress().delete();
+        if (getCustomerBase() != null) getCustomerBase().delete();
 
         setDbConnection(null);
     }
@@ -154,8 +147,11 @@ public class CustomerAccount extends DBPersistent {
             com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
                         new com.cannontech.database.data.stars.appliance.ApplianceBase();
             appliance.setApplianceBase( appliances[i] );
-            appliance.setDbConnection( getDbConnection() );
-            appliance.retrieve();
+            /* To reduce database hit, ApplianceBase(data).retrieve() is duplicated here */
+            appliance.setLMHardwareConfig( com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getLMHardwareConfiguration(
+            		appliances[i].getApplianceID(), getDbConnection()) );
+            //appliance.setDbConnection( getDbConnection() );
+            //appliance.retrieve();
             getApplianceVector().addElement( appliance );
         }
 

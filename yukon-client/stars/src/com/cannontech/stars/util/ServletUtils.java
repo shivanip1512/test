@@ -1,6 +1,7 @@
 package com.cannontech.stars.util;
 
 import java.util.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.*;
 
 /**
@@ -54,9 +55,11 @@ public class ServletUtils {
 	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
 	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
 	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
-	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
+	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
+	
+	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
 	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
@@ -268,5 +271,14 @@ public class ServletUtils {
     		return "EST";
     	else
     		return null;
+    }
+    
+    public static void removeTransientAttributes(StarsYukonUser user) {
+        Enumeration enum = user.getAttributeNames();
+        while (enum.hasMoreElements()) {
+        	String attName = (String) enum.nextElement();
+        	if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
+    			user.removeAttribute(attName);
+        }
     }
 }

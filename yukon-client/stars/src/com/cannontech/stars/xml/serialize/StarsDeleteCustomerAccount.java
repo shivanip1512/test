@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardware.java,v 1.20 2003/01/28 18:11:10 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,25 +23,45 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.20 $ $Date: 2003/01/28 18:11:10 $
+ * @version $Revision$ $Date$
 **/
-public class StarsLMHardware extends StarsLMHw 
-implements java.io.Serializable
-{
+public class StarsDeleteCustomerAccount implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    /**
+     * internal content storage
+    **/
+    private java.lang.String _content = "";
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsLMHardware() {
+    public StarsDeleteCustomerAccount() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware()
+        setContent("");
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'content'. The field 'content'
+     * has the following description: internal content storage
+     * 
+     * @return the value of field 'content'.
+    **/
+    public java.lang.String getContent()
+    {
+        return this._content;
+    } //-- java.lang.String getContent() 
 
     /**
     **/
@@ -81,15 +101,26 @@ implements java.io.Serializable
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'content'. The field 'content' has
+     * the following description: internal content storage
+     * 
+     * @param content the value of field 'content'.
+    **/
+    public void setContent(java.lang.String content)
+    {
+        this._content = content;
+    } //-- void setContent(java.lang.String) 
+
+    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsLMHardware) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMHardware.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount unmarshal(java.io.Reader) 
 
     /**
     **/

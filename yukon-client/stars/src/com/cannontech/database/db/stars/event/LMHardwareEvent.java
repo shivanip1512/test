@@ -64,8 +64,8 @@ public class LMHardwareEvent extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public static LMHardwareEvent[] getAllLMHardwareEvents(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ? ORDER BY EventID";
+    public static Integer[] getAllLMHardwareEventIDs(Integer inventoryID, java.sql.Connection conn) {
+        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE InventoryID = ? ORDER BY EventID";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -83,14 +83,8 @@ public class LMHardwareEvent extends DBPersistent {
                 pstmt.setInt( 1, inventoryID.intValue() );
                 rset = pstmt.executeQuery();
 
-                while (rset.next()) {
-                    LMHardwareEvent event = new LMHardwareEvent();
-
-                    event.setEventID( new Integer(rset.getInt("EventID")) );
-                    event.setInventoryID( new Integer(rset.getInt("InventoryID")) );
-
-                    eventList.add(event);
-                }
+                while (rset.next())
+                    eventList.add( new Integer(rset.getInt("EventID")) );
             }
         }
         catch( java.sql.SQLException e )
@@ -110,9 +104,9 @@ public class LMHardwareEvent extends DBPersistent {
             }
         }
 
-        LMHardwareEvent[] events = new LMHardwareEvent[ eventList.size() ];
-        eventList.toArray( events );
-        return events;
+        Integer[] eventIDs = new Integer[ eventList.size() ];
+        eventList.toArray( eventIDs );
+        return eventIDs;
     }
 
     public static void deleteAllLMHardwareEvents(Integer inventoryID, java.sql.Connection conn) {

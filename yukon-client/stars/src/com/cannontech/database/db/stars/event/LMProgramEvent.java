@@ -68,8 +68,8 @@ public class LMProgramEvent extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = ? ORDER BY EventID";
+    public static Integer[] getAllLMProgramEventIDs(Integer accountID, java.sql.Connection conn) {
+        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE AccountID = ? ORDER BY EventID";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -87,15 +87,8 @@ public class LMProgramEvent extends DBPersistent {
                 pstmt.setInt( 1, accountID.intValue() );
                 rset = pstmt.executeQuery();
 
-                while (rset.next()) {
-                    LMProgramEvent event = new LMProgramEvent();
-
-                    event.setEventID( new Integer(rset.getInt("EventID")) );
-                    event.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    event.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
-
-                    eventList.add(event);
-                }
+                while (rset.next())
+                    eventList.add( new Integer(rset.getInt("EventID")) );
             }
         }
         catch( java.sql.SQLException e )
@@ -115,13 +108,13 @@ public class LMProgramEvent extends DBPersistent {
             }
         }
 
-        LMProgramEvent[] events = new LMProgramEvent[ eventList.size() ];
-        eventList.toArray( events );
-        return events;
+        Integer[] eventIDs = new Integer[ eventList.size() ];
+        eventList.toArray( eventIDs );
+        return eventIDs;
     }
     
-    public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
+    public static Integer[] getAllLMProgramEventIDs(Integer accountID, Integer programID) {
+        String sql = "SELECT EventID FROM " + TABLE_NAME + " WHERE AccountID = " + accountID.toString()
         		   + " AND LMProgramID = " + programID.toString() + " ORDER BY EventID";
 
         com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
@@ -130,18 +123,11 @@ public class LMProgramEvent extends DBPersistent {
         try
         {
         	stmt.execute();
-        	LMProgramEvent[] events = new LMProgramEvent[ stmt.getRowCount() ];
-
-            for (int i = 0; i < events.length; i++) {
-            	Object[] row = stmt.getRow(i);
-                events[i] = new LMProgramEvent();
-
-                events[i].setEventID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-                events[i].setAccountID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-                events[i].setLMProgramID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-            }
+        	Integer[] eventIDs = new Integer[ stmt.getRowCount() ];
+            for (int i = 0; i < eventIDs.length; i++)
+            	eventIDs[i] = new Integer( ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue() );
             
-            return events;
+            return eventIDs;
         }
         catch( Exception e )
         {

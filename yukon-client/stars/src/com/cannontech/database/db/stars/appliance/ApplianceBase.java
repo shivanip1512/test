@@ -219,14 +219,6 @@ public class ApplianceBase extends DBPersistent {
 	}
 
 	/**
-	 * Returns the lmProgramID.
-	 * @return Integer
-	 */
-	public Integer getLmProgramID() {
-		return lmProgramID;
-	}
-
-	/**
 	 * Returns the locationID.
 	 * @return Integer
 	 */
@@ -256,14 +248,6 @@ public class ApplianceBase extends DBPersistent {
 	 */
 	public void setKWCapacity(Integer kwCapacity) {
 		this.kwCapacity = kwCapacity;
-	}
-
-	/**
-	 * Sets the lmProgramID.
-	 * @param lmProgramID The lmProgramID to set
-	 */
-	public void setLmProgramID(Integer lmProgramID) {
-		this.lmProgramID = lmProgramID;
 	}
 
 	/**

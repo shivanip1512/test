@@ -43,17 +43,8 @@ public class CustomerBase extends DBPersistent {
     }
 
     public void delete() throws java.sql.SQLException {
+        getCustomerBase().delete();
         getPrimaryContact().delete();
-
-        // delete from CustomerAccount
-        com.cannontech.database.db.stars.customer.CustomerAccount[] accounts =
-            com.cannontech.database.db.stars.customer.CustomerAccount.getAllCustomerAccounts( getCustomerBase().getCustomerID(), getDbConnection() );
-        com.cannontech.database.data.stars.customer.CustomerAccount account = new com.cannontech.database.data.stars.customer.CustomerAccount();
-        for (int i = 0; i < accounts.length; i++) {
-            account.setCustomerAccount( accounts[i] );
-            account.setDbConnection( getDbConnection() );
-            account.delete();
-        }
 
         /* Delete from CustomerAdditionalContact
          * After merging, can be replaced with:
@@ -70,8 +61,6 @@ public class CustomerBase extends DBPersistent {
             contact.setDbConnection( getDbConnection() );
             contact.delete();
         }
-
-        getCustomerBase().delete();
     }
 
     public void add() throws java.sql.SQLException {

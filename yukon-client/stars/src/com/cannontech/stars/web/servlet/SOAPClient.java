@@ -148,6 +148,16 @@ public class SOAPClient extends HttpServlet {
             destURL = "/operator/Consumer/Update.jsp";
             nextURL = errorURL = "/operator/Consumer/Update.jsp";
         }
+        else if (action.equalsIgnoreCase("ReloadCustAccount")) {
+        	clientAction = new ReloadCustAccountAction();
+            destURL = "/operator/Consumer/Update.jsp";
+            nextURL = errorURL = "/operator/Consumer/Update.jsp";
+        }
+        else if (action.equalsIgnoreCase("DeleteCustAccount")) {
+        	clientAction = new DeleteCustAccountAction();
+        	destURL = "/operator/Operations.jsp";
+            nextURL = errorURL = "/operator/Consumer/Update.jsp";
+        }
         else if (action.equalsIgnoreCase("OptOutProgram")) {
         	MultiAction actions = new MultiAction();
         	actions.addAction( new ProgramOptOutAction(), req, session );
@@ -277,7 +287,7 @@ public class SOAPClient extends HttpServlet {
         	nextURL = errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         }
         else {
-            CTILogger.debug( "SOAPClient: Invalid action type: " + action );
+            CTILogger.info( "SOAPClient: Invalid action type: " + action );
         }
 
         if (clientAction != null) {

@@ -37,12 +37,23 @@ public class InventoryBase extends DBPersistent {
         getCategory().setDbConnection(conn);
         getVoltage().setDbConnection(conn);
     }
+    
+    /**
+     * This method is to be called from the delete() method of all subclasses of InventoryBase (e.g. com.cannontech.database.data.stars.hardware.LMHardwareBase)
+     */
+    public void deleteInventoryBase() throws java.sql.SQLException {
+        delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
+        getInventoryBase().delete();
+    }
 
     public void delete() throws java.sql.SQLException {
-        // delete from the mapping table
-        delete( "ECToInventoryMapping", "InventoryID", getInventoryBase().getInventoryID() );
-
-        getInventoryBase().delete();
+    	// Call customized delete method from all subclasses of InventoryBase, now there is only LMHardwareBase
+    	LMHardwareBase hw = new LMHardwareBase();
+    	hw.setInventoryID( getInventoryBase().getInventoryID() );
+    	hw.setDbConnection( getDbConnection() );
+    	hw.deleteLMHardwareBase();
+    	
+    	deleteInventoryBase();
     }
 
     public void add() throws java.sql.SQLException {

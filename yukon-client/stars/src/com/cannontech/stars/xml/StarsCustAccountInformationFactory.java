@@ -17,6 +17,7 @@ import com.cannontech.database.db.stars.*;
  * Window>Preferences>Java>Code Generation.
  */
 public class StarsCustAccountInformationFactory {
+	
 /*
  * Commented out since cache is used now
  * 

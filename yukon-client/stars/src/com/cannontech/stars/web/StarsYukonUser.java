@@ -65,6 +65,35 @@ public class StarsYukonUser {
 	private void init() {
 		if (ServerUtils.isOperator(this)) {
 			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(yukonUser).getLiteID();
+			
+			String sql1 = "SELECT CallNumber FROM CallReportBase WHERE CallID = "
+						+ "(SELECT MAX(CallReportID) FROM ECToCallReportMapping WHERE EnergyCompanyID = ?)";
+			String sql2 = "SELECT OrderNumber FROM WorkOrderBase WHERE OrderID = "
+						+ "(SELECT MAX(WorkOrderID) FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?)";
+						
+			com.cannontech.database.SqlStatement stmt1 = new com.cannontech.database.SqlStatement(
+					sql1, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			com.cannontech.database.SqlStatement stmt2 = new com.cannontech.database.SqlStatement(
+					sql2, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+					
+			try {
+				stmt1.execute();
+				if (stmt1.getRowCount() > 0) {
+					String callNoStr = (String) stmt1.getRow(0)[0];
+					int callNo = Integer.parseInt( callNoStr );
+					setAttribute( "NEXT_CALL_NUMBER", new Integer(++callNo) );
+				}
+				
+				stmt2.execute();
+				if (stmt2.getRowCount() > 0) {
+					String orderNoStr = (String) stmt2.getRow(0)[0];
+					int orderNo = Integer.parseInt( orderNoStr );
+					setAttribute( "NEXT_ORDER_NUMBER", new Integer(++orderNo) );
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		else if (ServerUtils.isCICustomer(this)) {
 			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(yukonUser).getLiteID();

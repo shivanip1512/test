@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.19 2003/01/15 20:12:57 zyao Exp $
+ * $Id: StarsOperation.java,v 1.20 2003/01/28 18:11:07 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.19 $ $Date: 2003/01/15 20:12:57 $
+ * @version $Revision: 1.20 $ $Date: 2003/01/28 18:11:07 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -33,8 +33,6 @@ public class StarsOperation implements java.io.Serializable {
     //--------------------------/
 
     private StarsLogin _starsLogin;
-
-    private StarsLoginResponse _starsLoginResponse;
 
     private StarsLogoff _starsLogoff;
 
@@ -47,8 +45,6 @@ public class StarsOperation implements java.io.Serializable {
     **/
     private StarsNewCustomerAccount _starsNewCustomerAccount;
 
-    private StarsNewCustomerAccountResponse _starsNewCustomerAccountResponse;
-
     private StarsProgramSignUp _starsProgramSignUp;
 
     private StarsSearchCustomerAccount _starsSearchCustomerAccount;
@@ -58,6 +54,12 @@ public class StarsOperation implements java.io.Serializable {
     private StarsGetCustomerAccount _starsGetCustomerAccount;
 
     private StarsGetCustomerAccountResponse _starsGetCustomerAccountResponse;
+
+    private StarsReloadCustomerAccount _starsReloadCustomerAccount;
+
+    private StarsReloadCustomerAccountResponse _starsReloadCustomerAccountResponse;
+
+    private StarsDeleteCustomerAccount _starsDeleteCustomerAccount;
 
     /**
      * Update a customer account
@@ -253,6 +255,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsDefaultThermostatSettings;
     } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
+
+    /**
+     * Returns the value of field 'starsDeleteCustomerAccount'.
+     * 
+     * @return the value of field 'starsDeleteCustomerAccount'.
+    **/
+    public StarsDeleteCustomerAccount getStarsDeleteCustomerAccount()
+    {
+        return this._starsDeleteCustomerAccount;
+    } //-- StarsDeleteCustomerAccount getStarsDeleteCustomerAccount() 
 
     /**
      * Returns the value of field 'starsFailure'.
@@ -453,16 +465,6 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsLogin getStarsLogin() 
 
     /**
-     * Returns the value of field 'starsLoginResponse'.
-     * 
-     * @return the value of field 'starsLoginResponse'.
-    **/
-    public StarsLoginResponse getStarsLoginResponse()
-    {
-        return this._starsLoginResponse;
-    } //-- StarsLoginResponse getStarsLoginResponse() 
-
-    /**
      * Returns the value of field 'starsLogoff'.
      * 
      * @return the value of field 'starsLogoff'.
@@ -483,17 +485,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsNewCustomerAccount;
     } //-- StarsNewCustomerAccount getStarsNewCustomerAccount() 
-
-    /**
-     * Returns the value of field
-     * 'starsNewCustomerAccountResponse'.
-     * 
-     * @return the value of field 'starsNewCustomerAccountResponse'.
-    **/
-    public StarsNewCustomerAccountResponse getStarsNewCustomerAccountResponse()
-    {
-        return this._starsNewCustomerAccountResponse;
-    } //-- StarsNewCustomerAccountResponse getStarsNewCustomerAccountResponse() 
 
     /**
      * Returns the value of field 'starsProgramOptOut'.
@@ -544,6 +535,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsProgramSignUp;
     } //-- StarsProgramSignUp getStarsProgramSignUp() 
+
+    /**
+     * Returns the value of field 'starsReloadCustomerAccount'.
+     * 
+     * @return the value of field 'starsReloadCustomerAccount'.
+    **/
+    public StarsReloadCustomerAccount getStarsReloadCustomerAccount()
+    {
+        return this._starsReloadCustomerAccount;
+    } //-- StarsReloadCustomerAccount getStarsReloadCustomerAccount() 
+
+    /**
+     * Returns the value of field
+     * 'starsReloadCustomerAccountResponse'.
+     * 
+     * @return the value of field
+     * 'starsReloadCustomerAccountResponse'.
+    **/
+    public StarsReloadCustomerAccountResponse getStarsReloadCustomerAccountResponse()
+    {
+        return this._starsReloadCustomerAccountResponse;
+    } //-- StarsReloadCustomerAccountResponse getStarsReloadCustomerAccountResponse() 
 
     /**
      * Returns the value of field 'starsSearchCustomerAccount'.
@@ -851,6 +864,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
 
     /**
+     * Sets the value of field 'starsDeleteCustomerAccount'.
+     * 
+     * @param starsDeleteCustomerAccount the value of field
+     * 'starsDeleteCustomerAccount'.
+    **/
+    public void setStarsDeleteCustomerAccount(StarsDeleteCustomerAccount starsDeleteCustomerAccount)
+    {
+        this._starsDeleteCustomerAccount = starsDeleteCustomerAccount;
+    } //-- void setStarsDeleteCustomerAccount(StarsDeleteCustomerAccount) 
+
+    /**
      * Sets the value of field 'starsFailure'.
      * 
      * @param starsFailure the value of field 'starsFailure'.
@@ -1054,17 +1078,6 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsLogin(StarsLogin) 
 
     /**
-     * Sets the value of field 'starsLoginResponse'.
-     * 
-     * @param starsLoginResponse the value of field
-     * 'starsLoginResponse'.
-    **/
-    public void setStarsLoginResponse(StarsLoginResponse starsLoginResponse)
-    {
-        this._starsLoginResponse = starsLoginResponse;
-    } //-- void setStarsLoginResponse(StarsLoginResponse) 
-
-    /**
      * Sets the value of field 'starsLogoff'.
      * 
      * @param starsLogoff the value of field 'starsLogoff'.
@@ -1086,17 +1099,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsNewCustomerAccount = starsNewCustomerAccount;
     } //-- void setStarsNewCustomerAccount(StarsNewCustomerAccount) 
-
-    /**
-     * Sets the value of field 'starsNewCustomerAccountResponse'.
-     * 
-     * @param starsNewCustomerAccountResponse the value of field
-     * 'starsNewCustomerAccountResponse'.
-    **/
-    public void setStarsNewCustomerAccountResponse(StarsNewCustomerAccountResponse starsNewCustomerAccountResponse)
-    {
-        this._starsNewCustomerAccountResponse = starsNewCustomerAccountResponse;
-    } //-- void setStarsNewCustomerAccountResponse(StarsNewCustomerAccountResponse) 
 
     /**
      * Sets the value of field 'starsProgramOptOut'.
@@ -1152,6 +1154,29 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsProgramSignUp = starsProgramSignUp;
     } //-- void setStarsProgramSignUp(StarsProgramSignUp) 
+
+    /**
+     * Sets the value of field 'starsReloadCustomerAccount'.
+     * 
+     * @param starsReloadCustomerAccount the value of field
+     * 'starsReloadCustomerAccount'.
+    **/
+    public void setStarsReloadCustomerAccount(StarsReloadCustomerAccount starsReloadCustomerAccount)
+    {
+        this._starsReloadCustomerAccount = starsReloadCustomerAccount;
+    } //-- void setStarsReloadCustomerAccount(StarsReloadCustomerAccount) 
+
+    /**
+     * Sets the value of field
+     * 'starsReloadCustomerAccountResponse'.
+     * 
+     * @param starsReloadCustomerAccountResponse the value of field
+     * 'starsReloadCustomerAccountResponse'.
+    **/
+    public void setStarsReloadCustomerAccountResponse(StarsReloadCustomerAccountResponse starsReloadCustomerAccountResponse)
+    {
+        this._starsReloadCustomerAccountResponse = starsReloadCustomerAccountResponse;
+    } //-- void setStarsReloadCustomerAccountResponse(StarsReloadCustomerAccountResponse) 
 
     /**
      * Sets the value of field 'starsSearchCustomerAccount'.

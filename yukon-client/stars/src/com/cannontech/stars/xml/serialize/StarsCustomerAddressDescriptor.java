@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAddressDescriptor.java,v 1.19 2003/01/15 20:12:54 zyao Exp $
+ * $Id: StarsCustomerAddressDescriptor.java,v 1.20 2003/01/28 18:11:03 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.19 $ $Date: 2003/01/15 20:12:54 $
+ * @version $Revision: 1.20 $ $Date: 2003/01/28 18:11:03 $
 **/
 public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -257,7 +257,6 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
-            sv.setLength(2);
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
@@ -299,7 +298,6 @@ public class StarsCustomerAddressDescriptor extends org.exolab.castor.xml.util.X
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
-            sv.setPattern("[0-9]{5}(-[0-9]{4})?");
             fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
