@@ -859,6 +859,9 @@ insert into YukonGroupRole values(-70,-1,-5,-1400,'(none)');
 insert into YukonGroupRole values(-71,-1,-5,-1401,'(none)');
 insert into YukonGroupRole values(-72,-1,-5,-1402,'(none)');
 
+insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring all the batched switch commands');
+insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring all the scheduled opt out events');
+
 
 
 
