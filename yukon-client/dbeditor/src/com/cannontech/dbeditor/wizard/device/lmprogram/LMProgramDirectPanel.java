@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+
+
+
 /**
  * This type was created in VisualAge.
  */
@@ -117,6 +120,7 @@ private DirectModifyGearPanel getDirectModifyGearPanel() {
 			handleException(ivjExc);
 		}
 	}
+	
 	return ivjDirectModifyGearPanel;
 }
 
@@ -265,8 +269,13 @@ public Object getValue(Object o)
 {
 	//this stores any changes that are made to the current Gear
 	if( getJComboBoxGear().getSelectedItem() != null )
-		getDirectModifyGearPanel().getValue( getJComboBoxGear().getSelectedItem() );
-
+	{
+		int index = getJComboBoxGear().getSelectedIndex();
+		getJComboBoxGear().insertItemAt(getDirectModifyGearPanel().getValue( getJComboBoxGear().getSelectedItem() ), index);
+		getJComboBoxGear().removeItemAt(index+1);
+	}
+		 
+		
 	LMProgramDirect program = (LMProgramDirect)o;
 
 	program.getLmProgramDirectGearVector().removeAllElements();
@@ -390,7 +399,9 @@ public void inputUpdate(com.cannontech.common.gui.util.DataInputPanelEvent event
 		 && !getDirectModifyGearPanel().getGearType().equalsIgnoreCase(
 			 ((LMProgramDirectGear)getJComboBoxGear().getSelectedItem()).getControlMethod()) )
 	{
-		getDirectModifyGearPanel().getValue( getJComboBoxGear().getSelectedItem() );
+		int index = getJComboBoxGear().getSelectedIndex();
+		getJComboBoxGear().insertItemAt(getDirectModifyGearPanel().getValue( getJComboBoxGear().getSelectedItem() ), index);
+		getJComboBoxGear().removeItemAt(index+1);
 	}
 
 	fireInputUpdate();
