@@ -14,7 +14,7 @@ import com.cannontech.database.data.pao.DeviceClasses;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Series5Base extends IDLCBase {
+public class Series5Base extends RemoteBase {
 	/**
 	 * SmartTransmitted constructor comment.
 	 */
