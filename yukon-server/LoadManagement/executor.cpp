@@ -528,13 +528,13 @@ void CtiLMManualControlMsgExecutor::ScheduledStart()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual direct control scheduled start received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 dout << RWTime() << " - start time: " << _controlMsg->getStartTime().asString() << endl;
                                 dout << RWTime() << " - stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                _ultoa(_controlMsg->getStartGear(),tempchar,10);
+                                _ltoa(_controlMsg->getStartGear(),tempchar,10);
                                 dout << RWTime() << " - start gear: " << tempchar << endl;
-                                _ultoa(_controlMsg->getStartPriority(),tempchar,10);
+                                _ltoa(_controlMsg->getStartPriority(),tempchar,10);
                                 dout << RWTime() << " - start priority: " << tempchar << endl;
                                 dout << RWTime() << " - additional info: " << _controlMsg->getAdditionalInfo() << endl;
                             }*/
@@ -575,7 +575,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStart()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual curtail scheduled start received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 dout << RWTime() << " - action time: " << RWDBDateTime().asString() << endl;
                                 dout << RWTime() << " - notify time: " << _controlMsg->getNotifyTime().asString() << endl;
@@ -654,13 +654,13 @@ void CtiLMManualControlMsgExecutor::ScheduledStop()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual direct control scheduled stop received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 dout << RWTime() << " - start time: " << _controlMsg->getStartTime().asString() << endl;
                                 dout << RWTime() << " - stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                //_ultoa(_controlMsg->getStartGear(),tempchar,10);
+                                //_ltoa(_controlMsg->getStartGear(),tempchar,10);
                                 //dout << RWTime() << " - start gear: " << tempchar << endl;
-                                //_ultoa(_controlMsg->getStartPriority(),tempchar,10);
+                                //_ltoa(_controlMsg->getStartPriority(),tempchar,10);
                                 //dout << RWTime() << " - start priority: " << tempchar << endl;
                                 dout << RWTime() << " - additional info: " << _controlMsg->getAdditionalInfo() << endl;
                             }*/
@@ -694,7 +694,7 @@ void CtiLMManualControlMsgExecutor::ScheduledStop()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual curtail scheduled stop received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 //dout << RWTime() << " - action time: " << RWDBDateTime().asString() << endl;
                                 //dout << RWTime() << " - notify time: " << _controlMsg->getNotifyTime().asString() << endl;
@@ -772,13 +772,13 @@ void CtiLMManualControlMsgExecutor::StartNow()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual direct control start now received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 dout << RWTime() << " - start time: " << _controlMsg->getStartTime().asString() << endl;
                                 dout << RWTime() << " - stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                _ultoa(_controlMsg->getStartGear(),tempchar,10);
+                                _ltoa(_controlMsg->getStartGear(),tempchar,10);
                                 dout << RWTime() << " - start gear: " << tempchar << endl;
-                                _ultoa(_controlMsg->getStartPriority(),tempchar,10);
+                                _ltoa(_controlMsg->getStartPriority(),tempchar,10);
                                 dout << RWTime() << " - start priority: " << tempchar << endl;
                                 dout << RWTime() << " - additional info: " << _controlMsg->getAdditionalInfo() << endl;
                             }*/
@@ -817,7 +817,7 @@ void CtiLMManualControlMsgExecutor::StartNow()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual curtail start now received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 dout << RWTime() << " - action time: " << RWDBDateTime().asString() << endl;
                                 dout << RWTime() << " - notify time: " << _controlMsg->getNotifyTime().asString() << endl;
@@ -896,13 +896,13 @@ void CtiLMManualControlMsgExecutor::StopNow()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual direct control stop now received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 dout << RWTime() << " - start time: " << _controlMsg->getStartTime().asString() << endl;
                                 dout << RWTime() << " - stop time: " << _controlMsg->getStopTime().asString() << endl;
-                                //_ultoa(_controlMsg->getStartGear(),tempchar,10);
+                                //_ltoa(_controlMsg->getStartGear(),tempchar,10);
                                 //dout << RWTime() << " - start gear: " << tempchar << endl;
-                                //_ultoa(_controlMsg->getStartPriority(),tempchar,10);
+                                //_ltoa(_controlMsg->getStartPriority(),tempchar,10);
                                 //dout << RWTime() << " - start priority: " << tempchar << endl;
                                 dout << RWTime() << " - additional info: " << _controlMsg->getAdditionalInfo() << endl;
                             }*/
@@ -935,7 +935,7 @@ void CtiLMManualControlMsgExecutor::StopNow()
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 char tempchar[64];
                                 dout << RWTime() << " - Manual curtail stop now received." << endl;
-                                _ultoa(_controlMsg->getPAOId(),tempchar,10);
+                                _ltoa(_controlMsg->getPAOId(),tempchar,10);
                                 dout << RWTime() << " - pao id: " << tempchar << endl;
                                 //dout << RWTime() << " - action time: " << RWDBDateTime().asString() << endl;
                                 //dout << RWTime() << " - notify time: " << _controlMsg->getNotifyTime().asString() << endl;
@@ -1032,7 +1032,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
         dout << RWTime() << " - NEW energy exchange offer received." << endl;
-        _ultoa(_energyExchangeMsg->getPAOId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
         dout << RWTime() << " - pao id: " << tempchar << endl;
         dout << RWTime() << " - offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
         dout << RWTime() << " - notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
@@ -1136,9 +1136,9 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
         dout << RWTime() << " - Energy exchange offer UPDATE received." << endl;
-        _ultoa(_energyExchangeMsg->getPAOId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
         dout << RWTime() << " - pao id: " << tempchar << endl;
-        _ultoa(_energyExchangeMsg->getOfferId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
         dout << RWTime() << " - offer id: " << tempchar << endl;
         dout << RWTime() << " - offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
         dout << RWTime() << " - notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
@@ -1252,9 +1252,9 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
         dout << RWTime() << " - Energy exchange offer REVISION received." << endl;
-        _ultoa(_energyExchangeMsg->getPAOId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
         dout << RWTime() << " - pao id: " << tempchar << endl;
-        _ultoa(_energyExchangeMsg->getOfferId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
         dout << RWTime() << " - offer id: " << tempchar << endl;
         dout << RWTime() << " - offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
         dout << RWTime() << " - notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
@@ -1379,9 +1379,9 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
         dout << RWTime() << " - Energy exchange offer CLOSE received." << endl;
-        _ultoa(_energyExchangeMsg->getPAOId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
         dout << RWTime() << " - pao id: " << tempchar << endl;
-        _ultoa(_energyExchangeMsg->getOfferId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
         dout << RWTime() << " - offer id: " << tempchar << endl;
         dout << RWTime() << " - offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
         dout << RWTime() << " - notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
@@ -1482,9 +1482,9 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         char tempchar[64];
         dout << RWTime() << " - Energy exchange offer CANCEL received." << endl;
-        _ultoa(_energyExchangeMsg->getPAOId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
         dout << RWTime() << " - pao id: " << tempchar << endl;
-        _ultoa(_energyExchangeMsg->getOfferId(),tempchar,10);
+        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
         dout << RWTime() << " - offer id: " << tempchar << endl;
         dout << RWTime() << " - offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
         dout << RWTime() << " - notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
@@ -1605,10 +1605,10 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
         dout << RWTime() << " - Curtail acknowledge received." << endl;
 
         char tempchar[64];
-        _ultoa(_curtailAckMsg->getPAOId(),tempchar,10);
+        _ltoa(_curtailAckMsg->getPAOId(),tempchar,10);
         RWCString outString = tempchar;
         dout << RWTime() << " - pao id: " << outString.data() << endl;
-        _ultoa(_curtailAckMsg->getCurtailReferenceId(),tempchar,10);
+        _ltoa(_curtailAckMsg->getCurtailReferenceId(),tempchar,10);
         outString = tempchar;
         dout << RWTime() << " - curtail reference id: " << outString.data() << endl;
         dout << RWTime() << " - acknowledge status: " << _curtailAckMsg->getAcknowledgeStatus() << endl;
@@ -1647,7 +1647,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
                             {
                                 CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailmentCustomers[k];
 
-                                if( (curtailmentCustomerID == currentLMCurtailCustomer->getPAOId()) &&
+                                if( (curtailmentCustomerID == currentLMCurtailCustomer->getCustomerId()) &&
                                     (curtailReferenceID == currentLMCurtailCustomer->getCurtailReferenceId()) )
                                 {
                                     currentLMCurtailCustomer->setAcknowledgeStatus(_curtailAckMsg->getAcknowledgeStatus());
@@ -1707,13 +1707,13 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
         dout << RWTime() << " - Energy exchange accept received." << endl;
 
         char tempchar[64];
-        _ultoa(_energyExchangeAcceptMsg->getPAOId(),tempchar,10);
+        _ltoa(_energyExchangeAcceptMsg->getPAOId(),tempchar,10);
         RWCString outString = tempchar;
         dout << RWTime() << " - pao id: " << outString.data() << endl;
-        _ultoa(_energyExchangeAcceptMsg->getOfferId(),tempchar,10);
+        _ltoa(_energyExchangeAcceptMsg->getOfferId(),tempchar,10);
         outString = tempchar;
         dout << RWTime() << " - offer id: " << outString.data() << endl;
-        _ultoa(_energyExchangeAcceptMsg->getRevisionNumber(),tempchar,10);
+        _ltoa(_energyExchangeAcceptMsg->getRevisionNumber(),tempchar,10);
         outString = tempchar;
         dout << RWTime() << " - revision number: " << outString.data() << endl;
         dout << RWTime() << " - accept status: " << _energyExchangeAcceptMsg->getAcceptStatus() << endl;
@@ -1753,7 +1753,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                             {
                                 CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[k];
 
-                                if( customerID == currentLMEnergyExchangeCustomer->getPAOId() )
+                                if( customerID == currentLMEnergyExchangeCustomer->getCustomerId() )
                                 {
                                     RWOrdered& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
                                     for(long l=lmEnergyExchangeCustomerReplies.entries()-1;l>=0;l--)
