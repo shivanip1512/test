@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/10/12 20:18:20 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/10/19 20:27:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -756,14 +756,20 @@ VOID PerfUpdateThread (PVOID Arg)
             dout << RWTime() << " PerfUpdateThread: TID " << CurrentTID() << " recieved shutdown request." << endl;
         }
 
-        statisticsRecord();
 
-        #if 0
+#if 0
+        statisticsRecord();
+#else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
         {
             CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
             gDeviceStatMap.clear();
         }
-        #endif
+
+#endif
     }
     catch(...)
     {
