@@ -2178,7 +2178,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
             if(!(strnum = token.match("(y|n) *(y|n) *(y|n)")).isNull())
             {
-                for(i = 0, mask = 0x20 ; i < strnum.length(); i++)
+                for(i = 0, mask = 0x80 ; i < strnum.length(); i++)
                 {
                     if(strnum[(size_t)i] == 'y')
                     {
@@ -2187,7 +2187,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                     if(strnum[(size_t)i] != ' ')
                     {
-                        mask <<= 1;
+                        mask >>= 1;
                     }
                 }
             }
