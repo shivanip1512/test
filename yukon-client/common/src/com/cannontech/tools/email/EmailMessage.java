@@ -435,7 +435,7 @@ public class EmailMessage
 	
 	public void addTo_Array(String[] emailAddress)
 	{
-		String oldTo = (getTo() == null ? "" : getTo());
+		String oldTo = (to == null ? "" : to);
 
 		if( emailAddress != null && emailAddress.length > 0)
 		{
