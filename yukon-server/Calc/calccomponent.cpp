@@ -547,6 +547,14 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         retVal = atan(componentPointValue);
     }
     //added 3/4/03 JW
+    //added 7/31/03 JW
+    else if( !functionName.compareTo("X^Y",RWCString::ignoreCase) )
+    {
+        DOUBLE y = _parent->pop();
+        DOUBLE x = _parent->pop();
+        retVal = pow(x,y);
+    }
+    //added 7/31/03 JW
 
     if( _isnan(retVal) )
     {
