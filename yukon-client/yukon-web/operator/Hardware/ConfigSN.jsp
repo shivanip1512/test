@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
+<%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
 <%
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	boolean useHardwareAddressing = Boolean.valueOf(trackHwAddr).booleanValue();
