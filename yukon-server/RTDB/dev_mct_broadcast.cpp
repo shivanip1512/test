@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/06/27 21:06:56 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/11 20:12:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -330,13 +330,63 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
     bool found = false;
 
 
-    if(parse.getFlags() & CMD_FLAG_PV_IED)     // This parse has the token IED in it!
+    if(parse.getFlags() & CMD_FLAG_PV_IED)     //  This parse has the token "IED" in it!
     {
         //  currently only know how to reset IEDs
         if(parse.getFlags() & CMD_FLAG_PV_RESET)
         {
+            int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
+
             function = CtiProtocolEmetcon::PutValue_IEDReset;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            if( getType() == TYPEMCT360 || getType() == TYPEMCT370 )
+            {
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                switch( iedtype )
+                {
+                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
+                    {
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetPos;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
+                    {
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetPos;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = CtiDeviceMCT31X::MCT360_LGS4ResetID;
+                        OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        OutMessage->Buffer.BSt.Message[2] = 0x2B;  //  Demand Reset function code for the LG S4
+                        break;
+                    }
+
+                    case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
+                    {
+                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_GEKVResetPos;
+                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_GEKVResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = CtiDeviceMCT31X::MCT360_GEKVResetID;
+                        OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                        OutMessage->Buffer.BSt.Message[2] = 0x00;  //  sequence, standard proc, and uppoer bits of proc are 0
+                        OutMessage->Buffer.BSt.Message[3] = 0x09;  //  procedure 9
+                        OutMessage->Buffer.BSt.Message[4] = 0x01;  //  parameter length 1
+                        OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
+                        break;
+                    }
+
+                    default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        break;
+                    }
+                }
+            }
 
             if(found)
             {
@@ -346,39 +396,11 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                 OutMessage->Port      = getPortID();
                 OutMessage->Remote    = getAddress();
                 OutMessage->TimeOut   = 2;
-                OutMessage->Sequence  = function;         // Helps us figure it out later!
+                OutMessage->Sequence  = function;         //  Helps us figure it out later
                 OutMessage->Retry     = 2;
 
                 OutMessage->Request.RouteID   = getRouteID();
                 strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-            }
-
-            if( getType() == TYPEMCT360 || getType() == TYPEMCT370 )
-            {
-                switch( ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType() )
-                {
-                    case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetPos;
-                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
-                        OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                        OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
-                        break;
-
-                    case CtiTableDeviceMCTIEDPort::LandisGyrS4:
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetPos;
-                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
-                        OutMessage->Buffer.BSt.Message[0] = 3;     //  MCT's LG command identifier
-                        OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                        OutMessage->Buffer.BSt.Message[2] = 0x2B;  //  Demand Reset function code for the LG S4
-                        break;
-
-                    default:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        break;
-                }
             }
         }
     }
