@@ -1141,15 +1141,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 		// TODO Is removing the messageListener enough?
 		System.out.println("***** Value UNBound " + arg0.getValue().toString() + "*****");
 		getConnToPorter().removeMessageListener(this);
-		try
-		{
-			getConnToPorter().disconnect();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	/**
