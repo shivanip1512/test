@@ -1371,11 +1371,25 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
     {
         stopTime = _controlMsg->getStopTime();
     }
-    lmProgramDirect->setManualControlReceivedFlag(FALSE);
-    lmProgramDirect->setDirectStopTime(stopTime);
 
-    lmProgramDirect->setManualControlReceivedFlag(TRUE);
-    controlArea->setUpdatedFlag(TRUE);
+    // Check the stop time to see if it is before the start time
+    if(stopTime.seconds() < lmProgramDirect->getDirectStartTime().seconds())
+    {
+        lmProgramDirect->setManualControlReceivedFlag(FALSE);
+        lmProgramDirect->setDirectStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        lmProgramDirect->setDirectStopTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        lmProgramDirect->setNotifyTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        lmProgramDirect->setProgramState(CtiLMProgramBase::InactiveState);
+        controlArea->setUpdatedFlag(TRUE);
+    }
+    else
+    {
+        lmProgramDirect->setManualControlReceivedFlag(FALSE);
+        lmProgramDirect->setDirectStopTime(stopTime);
+
+        lmProgramDirect->setManualControlReceivedFlag(TRUE);
+        controlArea->setUpdatedFlag(TRUE);
+    }
 }
 
 void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea)
