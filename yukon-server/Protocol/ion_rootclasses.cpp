@@ -155,19 +155,35 @@ unsigned int CtiIONValue::getSerializedHeaderLength( void ) const
     unsigned long tmpLength;
     unsigned int  tmpHeaderLength;
 
-    tmpLength = getSerializedValueLength( );
+    switch( getType() )
+    {
+        case IONProgram:
+        case IONBoolean:
+        {
+            tmpHeaderLength = 1;
 
-    if( tmpLength <= 12 )
-    {
-        tmpHeaderLength = 1;
-    }
-    else if( tmpLength <= 255 )
-    {
-        tmpHeaderLength = 2;
-    }
-    else
-    {
-        tmpHeaderLength = 5;
+            break;
+        }
+
+        default:
+        {
+            tmpLength = getSerializedValueLength( );
+
+            if( tmpLength <= 12 )
+            {
+                tmpHeaderLength = 1;
+            }
+            else if( tmpLength <= 255 )
+            {
+                tmpHeaderLength = 2;
+            }
+            else
+            {
+                tmpHeaderLength = 5;
+            }
+
+            break;
+        }
     }
 
     return tmpHeaderLength;
@@ -224,8 +240,6 @@ unsigned char *CtiIONValue::putClassSize( unsigned char key, unsigned char *buf 
         {
             *buf++ = key;
         }
-
-
     }
 
     return buf;
