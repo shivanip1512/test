@@ -683,7 +683,7 @@ public Object getValue(Object o)
 	customer.getCiCustomerBase().setCustTimeZone("*BAD*");
 	customer.getCiCustomerBase().setPrimeContactID(new Integer(0));
 	//END HACKS FOR NOW!!!!!!!!!!!!!!!!!
-
+/*FIXFIX
 	//WebSettingsDefaults, only used if we do not have a CustomerWebSettings row yet!
 	if( customer.getCustomerWebSettings().getLogo() == null )
 		customer.getCustomerWebSettings().setLogo( com.cannontech.common.util.CtiUtilities.STRING_NONE );
@@ -696,7 +696,7 @@ public Object getValue(Object o)
 		customer.getCustomerWebSettings().setHomeURL("/default");
 	else
 		customer.getCustomerWebSettings().setHomeURL(home);
-
+*/
 	//set the EnergyCompany only if one is selected
 	if( !(getJComboBoxEnergyCompany().getSelectedItem() instanceof String) )
 		customer.setEnergyCompany( 
@@ -913,11 +913,11 @@ public void setValue(Object o)
 
 	getJTextFieldCurtailAmount().setText( customer.getCiCustomerBase().getCurtailAmount().toString() );
 
-
+/*FIXFIX
 	String home = customer.getCustomerWebSettings().getHomeURL();
 	if( home != null )
 		getJTextFieldWebHome().setText(home);
-
+*/
 
 	if( customer.getEnergyCompany() != null )
 		getJComboBoxEnergyCompany().setSelectedItem( customer.getEnergyCompany() );

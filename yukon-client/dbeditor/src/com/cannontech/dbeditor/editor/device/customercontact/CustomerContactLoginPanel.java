@@ -6,7 +6,9 @@ package com.cannontech.dbeditor.editor.device.customercontact;
 import java.awt.Dimension;
 
 import com.cannontech.database.data.customer.CustomerContact;
+/*FIXFIX
 import com.cannontech.database.db.customer.CustomerLogin;
+*/
 
 public class CustomerContactLoginPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelNormalPassword = null;
@@ -418,10 +420,10 @@ private javax.swing.JComboBox getJComboBoxCurtailmentRights() {
 			ivjJComboBoxCurtailmentRights.setName("JComboBoxCurtailmentRights");
 			ivjJComboBoxCurtailmentRights.setEnabled(false);
 			// user code begin {1}
-
+/*FIXFIX
 			ivjJComboBoxCurtailmentRights.addItem( CustomerLogin.RIGHTS_ALL_CONTROL );
 			ivjJComboBoxCurtailmentRights.addItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-			
+*/			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -443,10 +445,10 @@ private javax.swing.JComboBox getJComboBoxEnergyExchangeRights() {
 			ivjJComboBoxEnergyExchangeRights.setName("JComboBoxEnergyExchangeRights");
 			ivjJComboBoxEnergyExchangeRights.setEnabled(false);
 			// user code begin {1}
-
+/*FIXFIX
 			ivjJComboBoxEnergyExchangeRights.addItem( CustomerLogin.RIGHTS_ALL_CONTROL );
 			ivjJComboBoxEnergyExchangeRights.addItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-
+*/
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -468,10 +470,10 @@ private javax.swing.JComboBox getJComboBoxLoadControlRights() {
 			ivjJComboBoxLoadControlRights.setName("JComboBoxLoadControlRights");
 			ivjJComboBoxLoadControlRights.setEnabled(false);
 			// user code begin {1}
-			
+	/*FIXFIX		
 			ivjJComboBoxLoadControlRights.addItem( CustomerLogin.RIGHTS_ALL_CONTROL );
 			ivjJComboBoxLoadControlRights.addItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-			
+	*/		
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -494,9 +496,10 @@ private javax.swing.JComboBox getJComboBoxReadmeterRights() {
 			ivjJComboBoxReadmeterRights.setEnabled(false);
 			// user code begin {1}
 
-			ivjJComboBoxReadmeterRights.addItem( CustomerLogin.RIGHTS_ALL_CONTROL );
+/*FIXFIX  
+ 		ivjJComboBoxReadmeterRights.addItem( CustomerLogin.RIGHTS_ALL_CONTROL );
 			ivjJComboBoxReadmeterRights.addItem( CustomerLogin.RIGHTS_VIEW_ONLY );
-
+*/
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -826,7 +829,7 @@ private javax.swing.JTextField getJTextFieldUserID() {
 private String getLoginTypeString()
 {
 	StringBuffer retValue = new StringBuffer("");
-	
+/*FIXFIX	
 	//check for the curtailment login
 	if( getJCheckBoxCurtailment().isSelected() )
 	{
@@ -873,7 +876,7 @@ private String getLoginTypeString()
 			retValue.append( CustomerLogin.ENERGYEXCHANGE );
 	}
 	
-		
+	*/	
 	if( retValue.length() <= 0 )
 		return "(none)";
 	else	
@@ -891,6 +894,7 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object o) 
 {
+	/*FIXFIX
 	CustomerLogin login = ((CustomerContact)o).getCustomerLogin();
 
 	if( getJCheckBoxEnableLogin().isSelected() )
@@ -926,7 +930,8 @@ public Object getValue(Object o)
 		}
 	}
 	
-	return o;
+	return o;*/
+	return null;
 }
 /**
  * Called whenever the part throws an exception.
@@ -1145,6 +1150,7 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) 
 {
+	/*FIXFIX
 	if( o == null )
 		return;
 
@@ -1212,7 +1218,7 @@ public void setValue(Object o)
 	
 		//getJComboBoxLoginType().setSelectedItem( login.getLoginType() );
 	}
-	
+	*/
 }
 /**
  * 
