@@ -44,7 +44,7 @@ public class LiteYukonUser extends LiteBase {
 	{
 		
 		String sql = 
-			"SELECT Username,Password FROM " + YukonUser.TABLE_NAME + " " +
+			"SELECT Username,Password,Status FROM " + YukonUser.TABLE_NAME + " " +
 			"WHERE UserID = " + getUserID();
    		
 		Connection conn = null;
@@ -64,6 +64,7 @@ public class LiteYukonUser extends LiteBase {
 			{
       		setUsername( rset.getString(1).trim() );
       		setPassword( rset.getString(2).trim() );
+      		setStatus( rset.getString(3) );
          }
          
 		}
