@@ -78,8 +78,6 @@ private:
     ULONG _hour;
     DOUBLE _price;
     DOUBLE _amountrequested;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
 

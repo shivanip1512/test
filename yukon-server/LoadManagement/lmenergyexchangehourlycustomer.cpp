@@ -56,7 +56,7 @@ CtiLMEnergyExchangeHourlyCustomer::~CtiLMEnergyExchangeHourlyCustomer()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeHourlyCustomer::getCustomerId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _customerid;
 }
 
@@ -67,7 +67,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getCustomerId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeHourlyCustomer::getOfferId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _offerid;
 }
 
@@ -79,7 +79,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getOfferId() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeHourlyCustomer::getRevisionNumber() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _revisionnumber;
 }
 
@@ -90,7 +90,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getRevisionNumber() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeHourlyCustomer::getHour() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _hour;
 }
 
@@ -101,7 +101,7 @@ ULONG CtiLMEnergyExchangeHourlyCustomer::getHour() const
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMEnergyExchangeHourlyCustomer::getAmountCommitted() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _amountcommitted;
 }
 
@@ -112,7 +112,7 @@ DOUBLE CtiLMEnergyExchangeHourlyCustomer::getAmountCommitted() const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setCustomerId(ULONG custid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _customerid = custid;
     //do not notify observers of this !
     return *this;
@@ -125,7 +125,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setCustome
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setOfferId(ULONG offid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _offerid = offid;
     return *this;
 }
@@ -137,7 +137,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setOfferId
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setRevisionNumber(ULONG revnumber)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _revisionnumber = revnumber;
     return *this;
 }
@@ -149,7 +149,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setRevisio
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setHour(ULONG hour)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _hour = hour;
     return *this;
 }
@@ -161,7 +161,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setHour(UL
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setAmountCommitted(DOUBLE committed)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _amountcommitted = committed;
     return *this;
 }
@@ -175,7 +175,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setAmountC
 void CtiLMEnergyExchangeHourlyCustomer::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -194,7 +194,7 @@ void CtiLMEnergyExchangeHourlyCustomer::restoreGuts(RWvistream& istrm)
 void CtiLMEnergyExchangeHourlyCustomer::saveGuts(RWvostream& ostrm ) const
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::saveGuts( ostrm );
 
@@ -220,7 +220,7 @@ CtiLMEnergyExchangeHourlyCustomer* CtiLMEnergyExchangeHourlyCustomer::replicate(
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::operator=(const CtiLMEnergyExchangeHourlyCustomer& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -239,7 +239,7 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::operator=(
 ---------------------------------------------------------------------------*/
 int CtiLMEnergyExchangeHourlyCustomer::operator==(const CtiLMEnergyExchangeHourlyCustomer& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return( (getCustomerId() == right.getCustomerId()) &&
             (getOfferId() == right.getOfferId()) &&
             (getRevisionNumber() == right.getRevisionNumber()) );
@@ -250,7 +250,7 @@ int CtiLMEnergyExchangeHourlyCustomer::operator==(const CtiLMEnergyExchangeHourl
 ---------------------------------------------------------------------------*/
 int CtiLMEnergyExchangeHourlyCustomer::operator!=(const CtiLMEnergyExchangeHourlyCustomer& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return !(operator==(right));
 }
 
@@ -261,7 +261,7 @@ int CtiLMEnergyExchangeHourlyCustomer::operator!=(const CtiLMEnergyExchangeHourl
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     rdr["customerid"] >> _customerid;
     rdr["offerid"] >> _offerid;
@@ -277,7 +277,7 @@ void CtiLMEnergyExchangeHourlyCustomer::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -324,7 +324,7 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTable()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();

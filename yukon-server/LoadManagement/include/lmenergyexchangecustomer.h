@@ -89,8 +89,6 @@ private:
     RWCString _custtimezone;
 
     RWOrdered _lmenergyexchangecustomerreplies;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
 

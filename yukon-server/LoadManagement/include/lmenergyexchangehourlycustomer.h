@@ -76,8 +76,6 @@ private:
     ULONG _revisionnumber;
     ULONG _hour;
     DOUBLE _amountcommitted;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 #endif
 

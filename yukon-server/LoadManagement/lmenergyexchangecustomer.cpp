@@ -48,7 +48,7 @@ CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(const CtiLMEnergyExchan
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer::~CtiLMEnergyExchangeCustomer()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     _lmenergyexchangecustomerreplies.clearAndDestroy();
 }
 
@@ -59,7 +59,7 @@ CtiLMEnergyExchangeCustomer::~CtiLMEnergyExchangeCustomer()
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeCustomer::getPAOId() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoid;
 }
 
@@ -70,7 +70,7 @@ ULONG CtiLMEnergyExchangeCustomer::getPAOId() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMEnergyExchangeCustomer::getPAOCategory() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paocategory;
 }
 
@@ -81,7 +81,7 @@ const RWCString& CtiLMEnergyExchangeCustomer::getPAOCategory() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMEnergyExchangeCustomer::getPAOClass() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoclass;
 }
 
@@ -92,7 +92,7 @@ const RWCString& CtiLMEnergyExchangeCustomer::getPAOClass() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMEnergyExchangeCustomer::getPAOName() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paoname;
 }
 
@@ -103,7 +103,7 @@ const RWCString& CtiLMEnergyExchangeCustomer::getPAOName() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeCustomer::getPAOType() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paotype;
 }
 
@@ -114,7 +114,7 @@ ULONG CtiLMEnergyExchangeCustomer::getPAOType() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMEnergyExchangeCustomer::getPAODescription() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _paodescription;
 }
 
@@ -125,7 +125,7 @@ const RWCString& CtiLMEnergyExchangeCustomer::getPAODescription() const
 ---------------------------------------------------------------------------*/
 BOOL CtiLMEnergyExchangeCustomer::getDisableFlag() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _disableflag;
 }
 
@@ -136,7 +136,7 @@ BOOL CtiLMEnergyExchangeCustomer::getDisableFlag() const
 ---------------------------------------------------------------------------*/
 ULONG CtiLMEnergyExchangeCustomer::getCustomerOrder() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _customerorder;
 }
 
@@ -147,7 +147,7 @@ ULONG CtiLMEnergyExchangeCustomer::getCustomerOrder() const
 ---------------------------------------------------------------------------*/
 const RWCString& CtiLMEnergyExchangeCustomer::getCustTimeZone() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _custtimezone;
 }
 
@@ -158,7 +158,7 @@ const RWCString& CtiLMEnergyExchangeCustomer::getCustTimeZone() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMEnergyExchangeCustomer::getLMEnergyExchangeCustomerReplies()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+
     return _lmenergyexchangecustomerreplies;
 }
 
@@ -169,7 +169,7 @@ RWOrdered& CtiLMEnergyExchangeCustomer::getLMEnergyExchangeCustomerReplies()
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOId(ULONG id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoid = id;
     //do not notify observers of this!
     return *this;
@@ -182,7 +182,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOId(ULONG id)
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOCategory(const RWCString& category)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paocategory = category;
     return *this;
 }
@@ -194,7 +194,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOCategory(const R
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOClass(const RWCString& pclass)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoclass = pclass;
     return *this;
 }
@@ -206,7 +206,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOClass(const RWCS
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOName(const RWCString& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paoname = name;
     return *this;
 }
@@ -218,7 +218,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOName(const RWCSt
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOType(ULONG type)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paotype = type;
     return *this;
 }
@@ -230,7 +230,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAOType(ULONG type)
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAODescription(const RWCString& description)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _paodescription = description;
     return *this;
 }
@@ -242,7 +242,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setPAODescription(cons
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setDisableFlag(BOOL disable)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _disableflag = disable;
     return *this;
 }
@@ -254,7 +254,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setDisableFlag(BOOL di
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setCustomerOrder(ULONG order)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _customerorder = order;
     return *this;
 }
@@ -266,7 +266,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setCustomerOrder(ULONG
 ---------------------------------------------------------------------------*/    
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::setCustTimeZone(const RWCString& timezone)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     _custtimezone = timezone;
     return *this;
 }
@@ -308,7 +308,7 @@ BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(ULONG offerid) const
 void CtiLMEnergyExchangeCustomer::restoreGuts(RWvistream& istrm)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCollectable::restoreGuts( istrm );
 
@@ -333,7 +333,7 @@ void CtiLMEnergyExchangeCustomer::restoreGuts(RWvistream& istrm)
 void CtiLMEnergyExchangeCustomer::saveGuts(RWvostream& ostrm ) const  
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
         
     RWCollectable::saveGuts( ostrm );
 
@@ -366,7 +366,7 @@ CtiLMEnergyExchangeCustomer* CtiLMEnergyExchangeCustomer::replicate() const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLMEnergyExchangeCustomer& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     if( this != &right )
     {
@@ -395,7 +395,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLME
 ---------------------------------------------------------------------------*/
 int CtiLMEnergyExchangeCustomer::operator==(const CtiLMEnergyExchangeCustomer& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return ( (getPAOId() == right.getPAOId()) && (getCustomerOrder() == right.getCustomerOrder()) );
 }
 
@@ -404,7 +404,7 @@ int CtiLMEnergyExchangeCustomer::operator==(const CtiLMEnergyExchangeCustomer& r
 ---------------------------------------------------------------------------*/
 int CtiLMEnergyExchangeCustomer::operator!=(const CtiLMEnergyExchangeCustomer& right) const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
     return !(operator==(right));
 }
 
@@ -415,7 +415,7 @@ int CtiLMEnergyExchangeCustomer::operator!=(const CtiLMEnergyExchangeCustomer& r
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomer::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+
 
     RWCString tempBoolString;
     RWCString tempTypeString;
