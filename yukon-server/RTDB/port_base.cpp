@@ -390,8 +390,6 @@ void CtiPort::DecodeDialableDatabaseReader(RWDBReader &rdr)
 
 void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    LockGuard gd(monitor());
-
     _tblPAO.DecodeDatabaseReader(rdr);
     _tblPortBase.DecodeDatabaseReader(rdr);
 
@@ -441,8 +439,6 @@ void CtiPort::haltLog()
 INT CtiPort::outInMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT   status = NORMAL;
-
-    LockGuard gd(monitor());
 
     Xfer.setInCountActual((ULONG)0L);    // Make sure that any error on the outMess does not affect a state machine!
 
