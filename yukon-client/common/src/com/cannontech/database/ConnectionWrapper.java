@@ -18,7 +18,7 @@ class ConnectionWrapper implements java.sql.Connection
    private boolean isClosed = false;
 
 	/* Blank interface to supply upperwards compatibility to */
-	/*  the ConnectionWrapper class  */
+	/* Uncomment for jkd 1.3, comment out for 1.4 */
    //private interface Savepoint
    //{}
    public ConnectionWrapper(Connection realConn, ConnectionPool pool)
