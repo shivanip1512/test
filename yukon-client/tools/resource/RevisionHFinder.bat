@@ -13,6 +13,6 @@ echo:
 echo Ex1:  RevisionHFinder.bat logfile=C:/yukon/server/log/macs01.log reportfile=c:/yukon/server/export/revHdata.txt
 echo		- parses log file for "Revision H" return messages, writes results to reportfile
 echo Ex2:  RevisionHFinder.bat coll="Cycle 1" retry=2 reportfile=C:/yukon/server/export/revHData.txt
-echo		- sends "getvalue model" command for all meters in Cycle 1, write results to reportfile
+echo		- sends "getconfig model" command for all meters in Cycle 1, write results to reportfile
 echo:
 :done
