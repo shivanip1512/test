@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     7/16/2003 1:51:35 PM                         */
+/* Created on:     7/22/2003 4:53:48 PM                         */
 /*==============================================================*/
 
 
@@ -2787,7 +2787,9 @@ insert into FDRInterfaceOption values(11, 'Point', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(11, 'Group', 2, 'Query', 'select GroupName from FDRTelegyrGroup' );
 insert into FDRInterfaceOption values(12,'Point ID',1,'Text','(none)');
 insert into FDRInterfaceOption values(13,'Point ID',1,'Text','(none)');
-insert into FDRInterfaceOption values(14, 'Point', 1, 'Text', '(none)' );
+insert into fdrinterfaceoption values(14,'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values(14,'Channel',2,'Text','(none)');
+
 
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)

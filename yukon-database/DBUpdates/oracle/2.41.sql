@@ -205,7 +205,8 @@ insert into fdrinterface values (13,'TEXTEXPORT','Send','f');
 insert into FDRInterface values (14, 'LODESTAR', 'Receive', 'f' );
 insert into fdrinterfaceoption values (12,'Point ID',1,'Text','(none)');
 insert into fdrinterfaceoption values (13,'Point ID',1,'Text','(none)');
-insert into FDRInterfaceOption values(14, 'Point', 1, 'Text', '(none)' );
+insert into fdrinterfaceoption values(14,'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values(14,'Channel',2,'Text','(none)');
 
 insert into billingfileformats values( 12, 'SEDC 5.4');
 
