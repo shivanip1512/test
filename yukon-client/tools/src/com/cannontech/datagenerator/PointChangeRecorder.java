@@ -7,32 +7,45 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 
 /**
- * Saves a days worth of point changes by looking at the rawpointhistory table
+ * Saves an interval of days worth of point changes by looking at the rawpointhistory table
  * @author alauinger
  */
 public class PointChangeRecorder {
-
-	public static void main(String[] args) {		
+	static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+	
+	public static void main(String[] args) throws Exception {		
 		
-		if( args.length != 2 ) {
-			System.out.println("Example usage:\ncom.cannontech.datagenerator.PointChangeRecorder output.dat 9/15/2002");			
+		if( args.length < 2 ) {
+			System.out.println("Example usage:\ncom.cannontech.datagenerator.PointChangeRecorder output.dat 9/15/2002 [9/20/2002]");			
 			System.exit(-1);
 		}
 		
 		String outputFile = args[0];
-		Date startDate = new Date(args[1]);
+		Date startDate = dateFormat.parse(args[1]);
+		Date endDate;
+		if(args.length >= 3) {
+			endDate = dateFormat.parse(args[2]);
+		}
+		else {
+			endDate = new Date(startDate.getTime() + 86400L*1000L);
+		}
+System.out.println(startDate);
+System.out.println(endDate);
 		Timestamp start = new Timestamp(startDate.getTime());
-		Timestamp end = new Timestamp(startDate.getTime() + (86400L * 1000L) );
+		Timestamp end = new Timestamp(endDate.getTime());
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
+		
+		int count = 0;
 		
 		try {
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
@@ -48,6 +61,7 @@ public class PointChangeRecorder {
 				das.writeLong( rset.getTimestamp(2).getTime() );
 				das.writeInt( rset.getInt(3));
 				das.writeDouble( rset.getDouble(4));
+				count++;
 			}	
 			
 			das.flush();
@@ -60,6 +74,8 @@ public class PointChangeRecorder {
 			pstmt.close();
 			conn.close();
 			}catch(Exception e2) {}				
-		}		
+		}	
+		
+		System.out.println("Wrote: " + count);	
 	}
 }
