@@ -1,14 +1,12 @@
 package com.cannontech.esub.editor;
 
 import java.awt.Dimension;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.DrawingMetaElement;
-import com.cannontech.esub.util.DrawingGenerator;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
 import com.loox.jloox.LxComponent;
@@ -41,14 +39,6 @@ public class Drawing implements Serializable {
 	public synchronized void load(String file) {
 		clear();
 		
-try {
-DrawingGenerator gen = new DrawingGenerator();
-FileInputStream in = new FileInputStream(file);
-//FileReader rdr = new FileReader(file);
-gen.generate(in,this);		
-} catch(Exception e) {
-	e.printStackTrace();
-}
 		// the saved drawing willhave its own meta element, remove the default
 	//	getLxGraph().remove(getMetaElement());
 		

@@ -6,172 +6,127 @@ var timer;
 var parentWin;
 var svgElement;
 var svgDoc;
+var dataRequest;
 
 function updateGraphChange(evt) {
-	
-	svgElement = evt.getTarget();
-	svgDoc = svgElement.getOwnerDocument();
-	parentWin = window.parent;
-	if (evt) {
-	w = parentWin.open("../js/GraphSettings.jsp", "GraphSettings", "width=300,height=375");
-	window.setTimeout("chckSubmit()", 3000);
-	}
+    svgElement = findParentGraph(evt.getTarget());
+    svgDoc = svgElement.getOwnerDocument();
+    parentWin = window.parent;
+    
+    var view = svgElement.getAttribute('view');
+    var period = svgElement.getAttribute('period');
+    var start = svgElement.getAttribute('start'); 
+    var url = 	"../jsp/GraphSettings.jsp" +
+    		  	"?view=" + view +
+    		  	"&period=" + period +
+    		  	"&start=" + start;
+    		  	
+    if (evt) {
+        w = parentWin.open(url, "GraphSettings", "width=400,height=250,resizable=yes");
+        window.setTimeout("chckSubmit()", 250);
+    }
 
-}
+} //end updateGraphChange
 
 function chckSubmit() {
+    if (w.closed) { 
+        if(parentWin.dataRequest != null) {	
+                               
+	        var data = parentWin.dataRequest.split(":");
 
- if (w.closed) {
-	
-	//put code to update the graph
-	var data = parentWin.document.getElementById('dataRequest').value;
-	data = data.split(":");
-	if (data[2] == "true") {
-	var view = data[0];
-	var period = data[1];
-	var url = '/servlet/GraphGenerator?';
-	updateGraph(svgElement, url, view, period);
-	
-	}
-	
-
-
-}
-else 
-	window.setTimeout("chckSubmit()", 3000);
-
-}
-
-
-
-
-function updateGraph(node, url, v, p) {
-
-	
-			url = url + "gdefid=" + node.getAttribute('gdefid') +
-		      "&model=" + v +
-		      "&period=" + p +
-			  "&width=" + node.getAttribute('width') +
-			  "&height=" + node.getAttribute('height') +
-			  "&format=" + node.getAttribute('format') +
-			  "&start=" + node.getAttribute('start') + 
-			  "&end=" + node.getAttribute('end') +
-			  "&db=" + node.getAttribute('db') +
-			  "&tab=graph" +
-			  "&loadfactor=" + node.getAttribute('loadfactor') +
-			   getURL(url, fn2);
+            var view = data[0];
+            var period = data[1];
+            var start = data[2];
+		
+            svgElement.setAttributeNS(null,'view',view);
+            svgElement.setAttributeNS(null,'period',period);
+			svgElement.setAttributeNS(null,'start',start);
 			
-			  
-function fn2(obj) {
+            updateAllGraphs();
+        }
+    } 
+    else {
+    	//reschedule this function to be called again
+        window.setTimeout("chckSubmit()", 250);
+    }
+} // end chckSubmit
 
+function updateGraph2(node, url, v, p) {
+    url = url + "gdefid=" + node.getAttribute('gdefid') +
+		  "&view=" + v +
+          "&period=" + p +
+          "&width=" + node.getAttribute('width') +
+          "&height=" + node.getAttribute('height') +
+          "&format=" + node.getAttribute('format') +
+          "&start=" + node.getAttribute('start') + 
+    	  "&period=" + node.getAttribute('period') +
+          "&db=" + node.getAttribute('db') +
+          "&tab=graph" +
+          "&loadfactor=" + node.getAttribute('loadfactor') +
+          getURL(url, fn2);
+    
+    
+    function fn2(obj) {
+        var Newnode = parseXML(obj.content, SVGDoc);
+        var gdefid = node.getAttribute('gdefid');
+ 		var view = v;
+        var period = p;
+        var width = node.getAttribute('width');
+        var height = node.getAttribute('height');
+        var format = node.getAttribute('format');
+        var start = node.getAttribute('start');
+        var period = node.getAttribute('period');
+        var loadfactor = node.getAttribute('loadfactor');
+        var db = node.getAttribute('db');
+        var x = node.getAttribute('x');
+        var y = node.getAttribute('y');
 
-var Newnode = parseXML(obj.content, SVGDoc);
-var gdefid = node.getAttribute('gdefid');
-var model = v;
-var period = p;
-var width = node.getAttribute('width');
-var height = node.getAttribute('height');
-var format = node.getAttribute('format');
-var start = node.getAttribute('start');
-var end = node.getAttribute('end');
-var loadfactor = node.getAttribute('loadfactor');
-var db = node.getAttribute('db');
-var x = node.getAttribute('x');
-var y = node.getAttribute('y');
+        svgDoc.documentElement.removeChild(node);
+        svgDoc.documentElement.appendChild(Newnode);
 
+        var svgElements = Newnode.getOwnerDocument().documentElement.getElementsByTagName('svg');
 
-
-svgDoc.documentElement.removeChild(node);
-svgDoc.documentElement.appendChild(Newnode);
-
-var svgElements = Newnode.getOwnerDocument().documentElement.getElementsByTagName('svg');
-
-for (j = 0; j<svgElements.getLength(); j++) {
-
-     var svgElem = svgElements.item(j);
-     if (svgElem.getAttribute('gdefid') == gdefid) {
-     	
-     	svgElem.setAttributeNS(null, 'model', model);
-     	svgElem.setAttributeNS(null, 'period', period);
-     	svgElem.setAttributeNS(null, 'width', width);
-     	svgElem.setAttributeNS(null, 'height', height);
-     	svgElem.setAttributeNS(null, 'format', format);
-     	svgElem.setAttributeNS(null, 'start', start);
-     	//svgElem.setAttributeNS(null, 'end', end);
-     	svgElem.setAttributeNS(null, 'db', db);
-     	svgElem.setAttributeNS(null, 'loadfactor', loadfactor);
-     	svgElem.setAttributeNS(null, 'x', x);
-     	svgElem.setAttributeNS(null, 'y', y);
-     	svgElem.setAttributeNS(null, 'object', 'graph');
-     	svgElem.setAttributeNS(null, 'onclick', 'updateGraphChange(evt)');
-     	
-     	}
-  
-	else  {
-	  continue;
-	  
-	  } 
-
-}
-
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        for (j = 0; j<svgElements.getLength(); j++) {
+            var svgElem = svgElements.item(j);
+            if (svgElem.getAttribute('gdefid') == gdefid) {               
+				svgElem.setAttributeNS(null, 'view', view);
+                svgElem.setAttributeNS(null, 'period', period);
+                svgElem.setAttributeNS(null, 'width', width);
+                svgElem.setAttributeNS(null, 'height', height);
+                svgElem.setAttributeNS(null, 'format', format);
+                svgElem.setAttributeNS(null, 'start', start);
+                svgElem.setAttributeNS(null, 'period', period);
+                svgElem.setAttributeNS(null, 'db', db);
+                svgElem.setAttributeNS(null, 'loadfactor', loadfactor);
+                svgElem.setAttributeNS(null, 'x', x);
+                svgElem.setAttributeNS(null, 'y', y);
+                svgElem.setAttributeNS(null, 'object', 'graph');
+                svgElem.setAttributeNS(null, 'onclick', 'updateGraph2Change(evt)');                
+            }
+            else {
+                continue;                
+            } 
+        }
+    } //end fn2
+} // end updateGraph2
 
 function update() {
+    var view = document.MForm.view.value;
+    var period = document.MForm.period.value;
+	var start = document.MForm.start.value;
 
-var view;
-var period;
-var views = document.MForm.view;
-var periods = document.MForm.period;
+    opener.dataRequest =  view + ":" + period + ":" + start;
+    self.close();
 
-for (var i=0; i<views.length; i++) {
-	if (views[i].checked) {
-	view = views[i].value;
-	
-	break;
+} //end update
+
+/* Recursively attempt to find the root graph element */
+function findParentGraph(elem) {
+	if(elem.getAttribute('object') == 'graph') {
+		return elem;
 	}
-}
-
-for (var j=0; j<periods.length; j++) {
-
-if (periods[j].checked) {
-	period = periods[j].value;
-	
-	break;
-}
-
-}
-
-opener.document.getElementById('dataRequest').value = view + ":" + period + ":" + "true";
-self.close();
-}
-
-
-
-function fn(obj) {
-	document.getElementById('dataRequest').innerHTML = "";
-}
+	else {
+		return findParentGraph(elem.getParentNode());
+	}
+} //end findParentGraph
 

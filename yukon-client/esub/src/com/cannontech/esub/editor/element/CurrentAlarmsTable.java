@@ -23,6 +23,8 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 	private static final int DEFAULT_HEIGHT = 600;
 
 	private transient Drawing drawing = null;
+	private String linkTo = null;
+	
 	private Properties props = new Properties();
 
 	private Table table;
@@ -133,6 +135,22 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 	 */
 	public void setDeviceID(int deviceID) {
 		((PointAlarmTableModel) getTable().getModel()).setDeviceID(deviceID);
+	}
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
 	}
 
 }

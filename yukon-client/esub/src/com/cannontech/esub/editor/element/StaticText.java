@@ -20,6 +20,7 @@ public class StaticText extends LxAbstractText implements DrawingElement {
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	
 	private Drawing drawing;
+	private String linkTo;
 	private Properties props = new Properties();
 /**
  * StaticText constructor comment.
@@ -97,7 +98,7 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
         setPaint(c);
         
         //restore link
-        //setLinkTo( LxSaveUtils.readString(in) );
+        setLinkTo( LxSaveUtils.readString(in) );
                 
         LxSaveUtils.readEndOfPart(in);
 }
@@ -121,9 +122,25 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LxSaveUtils.writeInt(out, textColor.getBlue());
         
         //save link
-       // LxSaveUtils.writeString(out, getLinkTo() );
+        LxSaveUtils.writeString(out, getLinkTo() );
         
         LxSaveUtils.writeEndOfPart(out);
 }
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
+	}
 
 }

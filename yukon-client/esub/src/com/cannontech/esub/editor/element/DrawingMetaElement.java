@@ -27,9 +27,12 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	private int version = 1;
 	private int drawingWidth;
 	private int drawingHeight;
-	private int roleID = DEFAULT_ROLE_ID;	
-	
+	private int viewRoleID = DEFAULT_ROLE_ID;
+	private int editRoleID = DEFAULT_ROLE_ID;
+	private int controlRoleID = Integer.MAX_VALUE;	
+		
 	private transient Drawing drawing = null;
+	private String linkTo = null;
 	private Properties props = new Properties();
 	
 	public DrawingMetaElement() {
@@ -47,7 +50,9 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 		setVersion(LxSaveUtils.readInt(in));
 		setDrawingWidth(LxSaveUtils.readInt(in));
 		setDrawingHeight(LxSaveUtils.readInt(in));
-		setRoleID(LxSaveUtils.readInt(in));
+		setViewRoleID(LxSaveUtils.readInt(in));
+		setEditRoleID(LxSaveUtils.readInt(in));
+		setControlRoleID(LxSaveUtils.readInt(in));
 		LxSaveUtils.readEndOfPart(in);
 	}
 
@@ -60,7 +65,9 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 		LxSaveUtils.writeInt(out, getVersion());
 		LxSaveUtils.writeInt(out, getDrawingWidth());
 		LxSaveUtils.writeInt(out, getDrawingHeight());
-		LxSaveUtils.writeInt(out, getRoleID());
+		LxSaveUtils.writeInt(out, getViewRoleID());
+		LxSaveUtils.writeInt(out, getEditRoleID());
+		LxSaveUtils.writeInt(out, getControlRoleID());
 		LxSaveUtils.writeEndOfPart(out);
 	}
 
@@ -113,22 +120,6 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	}
 
 	/**
-	 * Returns the roleID.
-	 * @return int
-	 */
-	public int getRoleID() {
-		return roleID;
-	}
-
-	/**
-	 * Sets the roleID.
-	 * @param roleID The roleID to set
-	 */
-	public void setRoleID(int roleID) {
-		this.roleID = roleID;
-	}
-
-	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
 	 */
 	public Drawing getDrawing() {
@@ -156,6 +147,70 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	 */
 	public void setElementProperties(Properties props) {
 		this.props = props;
+	}
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
+	}
+
+	/**
+	 * Returns the controlRoleID.
+	 * @return int
+	 */
+	public int getControlRoleID() {
+		return controlRoleID;
+	}
+
+	/**
+	 * Returns the editRoleID.
+	 * @return int
+	 */
+	public int getEditRoleID() {
+		return editRoleID;
+	}
+
+	/**
+	 * Returns the viewRoleID.
+	 * @return int
+	 */
+	public int getViewRoleID() {
+		return viewRoleID;
+	}
+
+	/**
+	 * Sets the controlRoleID.
+	 * @param controlRoleID The controlRoleID to set
+	 */
+	public void setControlRoleID(int controlRoleID) {
+		this.controlRoleID = controlRoleID;
+	}
+
+	/**
+	 * Sets the editRoleID.
+	 * @param editRoleID The editRoleID to set
+	 */
+	public void setEditRoleID(int editRoleID) {
+		this.editRoleID = editRoleID;
+	}
+
+	/**
+	 * Sets the viewRoleID.
+	 * @param viewRoleID The viewRoleID to set
+	 */
+	public void setViewRoleID(int viewRoleID) {
+		this.viewRoleID = viewRoleID;
 	}
 
 }

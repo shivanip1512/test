@@ -3,6 +3,8 @@
 <title>Graph Settings</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script langauge = "Javascript" src = "updateGraph.js"></script>
+<script langauge = "Javascript" src = "refresh.js"></script>
+<script  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></script>
 </head>
 
 <body bgcolor="#000000" text="#000000"><form name = "MForm">
@@ -48,6 +50,28 @@
               </tr>
             </table>
           </td>
+        </tr>
+        
+        <tr>
+        	<td>
+        		<table>
+        			<tr>
+        				<td>
+        					<font face="Arial, Helvetica, sans-serif" size="2">Start Date:</font>
+        				</td>
+        				<td>
+        					<input type="text" name="startDate" size="5">
+        					<!--<a HREF="javascript:show_calendar('MForm.startDate')"
+                            	onMouseOver="window.status='Pop Calendar';return true;"
+                                onMouseOut="window.status='';return true;"><img SRC="StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
+                            </a>-->
+        				</td>
+        				<td>
+        					<font face="Arial, Helvetica, sans-serif" size="2">(mm/dd/yy)</font>
+        				</td>
+        			</tr>
+        		</table>
+        	</td>
         </tr>
         <tr> 
           <td height="103" width="50%" valign = "top"> 

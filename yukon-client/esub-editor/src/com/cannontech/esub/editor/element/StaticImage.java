@@ -21,6 +21,7 @@ public class StaticImage extends LxAbstractImage implements DrawingElement {
 	private LiteYukonImage yukonImage = LiteYukonImage.NONE_IMAGE;
 	
 	private Drawing drawing;
+	private String linkTo = null;
 	private Properties props = new Properties();
 /**
  * StaticImage constructor comment.
@@ -101,7 +102,7 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
         int imgID = LxSaveUtils.readInt(in);
         LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(imgID);
         setYukonImage(img);
-        //setLinkTo(LxSaveUtils.readString(in));
+        setLinkTo(LxSaveUtils.readString(in));
         
         LxSaveUtils.readEndOfPart(in);
 }
@@ -114,10 +115,26 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         super.saveAsJLX(out);
 
         LxSaveUtils.writeInt(out, getYukonImage().getImageID());
-      //  LxSaveUtils.writeString(out, getLinkTo());
+        LxSaveUtils.writeString(out, getLinkTo());
         
         LxSaveUtils.writeEndOfPart(out);
 }
 
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
+	}
 
 }

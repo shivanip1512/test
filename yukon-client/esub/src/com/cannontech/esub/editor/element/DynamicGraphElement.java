@@ -27,27 +27,27 @@ import com.loox.jloox.LxSaveUtils;
 public class DynamicGraphElement extends LxAbstractRectangle implements DrawingElement {
 
 	// Possible date ranges
-	public static final int TODAY = 0;
+	/*public static final int TODAY = 0;
 	public static final int YESTERDAY = 1;
 	public static final int PREV2DAYS = 2;
 	public static final int PREV3DAYS = 3;
 	public static final int PREV7DAYS = 4;
-	
+	*/
 	private static final int INVALID_GRAPH_DEFINITION = -1;
 	private static final Dimension DEFAULT_SIZE = new Dimension(640,480);
 	private static final Color DEFAULT_COLOR = Color.white;
 		
 	private Graph ctiGraph;
 	private Date currentStartDate;
-	private Date currentEndDate;
 	private Date lastUpdated;
 	private boolean dirty; //flag to determine if update is required
 	
 	//persistent fields	
 	private LiteGraphDefinition graphDefinition;
 	private int viewType; // see com.cannontech.graph.model.TrendModelType;
-	private int displayRange; // one of the static ints above
+	private String displayPeriod; 
 	private transient Drawing drawing = null;
+	private String linkTo = null;
 	private Properties props = new Properties();
  	
 	/** 
@@ -65,7 +65,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	private void initialize() {
 		setGraphDefinition(new LiteGraphDefinition(INVALID_GRAPH_DEFINITION));
 		setTrendType(TrendModelType.LINE_VIEW);
-		setDisplayRange(TODAY);
+		setDisplayPeriod(ServletUtil.TODAY);
 		resetDisplayRange();
 		setSize(DEFAULT_SIZE.getWidth(), DEFAULT_SIZE.getHeight());
 		setPaint(DEFAULT_COLOR);
@@ -239,9 +239,13 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 			{   //make sure to close the connection
 				try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
 			}
-			
-		gDef.getGraphDefinition().setStartDate( getCurrentStartDate() );
-			gDef.getGraphDefinition().setStopDate( getCurrentEndDate() );
+
+			resetDisplayRange();
+					
+			gDef.getGraphDefinition()
+				.setStartDate(ServletUtil.getStartingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()));
+			gDef.getGraphDefinition()
+				.setStopDate(ServletUtil.getEndingDateOfInterval(getCurrentStartDate(),getDisplayPeriod()));
 						
 			Graph graph = getCTIGraph();
 			
@@ -268,15 +272,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 		
 		setLastUpdated(new Date());
 		setDirty(false);
-	}
-
-	/**
-	 * Returns the currentEndDate.
-	 * @return Date
-	 */
-	public Date getCurrentEndDate() {
-		return currentEndDate;
-	}
+	} 
 
 	/**
 	 * Returns the currentStartDate.
@@ -290,13 +286,13 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * Sets the currentEndDate.
 	 * @param currentEndDate The currentEndDate to set
 	 */
-	public void setCurrentEndDate(Date currentEndDate) {
+	/*public void setCurrentEndDate(Date currentEndDate) {
 		if( this.currentEndDate == null ||
 			!this.currentEndDate.equals(currentEndDate) ) {
 			this.currentEndDate = currentEndDate;
 			setDirty(true);
 		}
-	}
+	}*/
 
 	/**
 	 * Sets the currentStartDate.
@@ -310,73 +306,17 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 		}
 	}
 
-	/**
-	 * Returns the displayRange.
-	 * @return int
-	 */
-	public int getDisplayRange() {
-		return displayRange;
-	}
-
-	/**
-	 * Sets the displayRange.
-	 * @param displayRange The displayRange to set
-	 */
-	public void setDisplayRange(int displayRange) {
-		if( this.displayRange != displayRange ) {
-			this.displayRange = displayRange;
-			resetDisplayRange();
-			setDirty(true);
-		}
-	}
+	
 
 	/**
 	 * Set the current start and stop dates to correspond with
 	 * the graphs display range
 	 */
-	private void resetDisplayRange() {
+	private void resetDisplayRange() {		
+		Date start = ServletUtil.getToday();
+		String period = getDisplayPeriod();
+		setCurrentStartDate(start);		
 		
-		setCurrentEndDate(ServletUtil.getTommorow());
-		  
-		switch(getDisplayRange()) {
-			
-			case YESTERDAY:
-				setCurrentStartDate(ServletUtil.getYesterday());
-				setCurrentEndDate(ServletUtil.getToday());
-			break;
-			
-			case PREV2DAYS:
-				setCurrentStartDate(ServletUtil.getDate(-2));
-			break;
-			
-			case PREV3DAYS:
-				setCurrentStartDate(ServletUtil.getDate(-3));
-			break;
-			
-			case PREV7DAYS:
-				setCurrentStartDate(ServletUtil.getDate(-7));
-			break;
-
-			case TODAY:			
-			default:
-				setCurrentStartDate(ServletUtil.getToday());
-			break;
-		}
-	}
-	/**
-	 * Returns the lastUpdated.
-	 * @return Date
-	 */
-	public Date getLastUpdated() {
-		return lastUpdated;
-	}
-
-	/**
-	 * Sets the lastUpdated.
-	 * @param lastUpdated The lastUpdated to set
-	 */
-	public void setLastUpdated(Date lastUpdated) {
-		this.lastUpdated = lastUpdated;
 	}
 	
 	public boolean shouldUpdate() {			
@@ -424,7 +364,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
         
                 setGraphDefinitionID(LxSaveUtils.readInt(in));
                 setTrendType(LxSaveUtils.readInt(in));
-                setDisplayRange(LxSaveUtils.readInt(in));
+                setDisplayPeriod(LxSaveUtils.readString(in));
                 resetDisplayRange();
                 
                 //read link
@@ -441,7 +381,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
         
                 LxSaveUtils.writeInt(out, getGraphDefinitionID());
                 LxSaveUtils.writeInt(out, getTrendType());
-                LxSaveUtils.writeInt(out, getDisplayRange());
+                LxSaveUtils.writeString(out, getDisplayPeriod());
                 
                 //save link
                 //LxSaveUtils.writeString(out, getLinkTo() );
@@ -450,6 +390,57 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
         }
 
 
+
+	/**
+	 * Returns the displayPeriod.
+	 * @return String
+	 */
+	public String getDisplayPeriod() {
+		return displayPeriod;
+	}
+
+	/**
+	 * Sets the displayPeriod.
+	 * @param displayPeriod The displayPeriod to set
+	 */
+	public void setDisplayPeriod(String displayPeriod) {
+		if(!displayPeriod.equals(this.displayPeriod)) {
+			this.displayPeriod = displayPeriod;
+			setDirty(true);
+		}
+	}
+
+	/**
+	 * Returns the lastUpdated.
+	 * @return Date
+	 */
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+
+	/**
+	 * Sets the lastUpdated.
+	 * @param lastUpdated The lastUpdated to set
+	 */
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
+	}
 
 }
  

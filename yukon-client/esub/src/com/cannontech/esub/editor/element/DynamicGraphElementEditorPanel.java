@@ -1,6 +1,7 @@
 package com.cannontech.esub.editor.element;
 
 import com.cannontech.graph.model.TrendModelType;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Creation date: (9/25/2002 11:58:02 AM)
@@ -575,30 +576,30 @@ public Object getValue(Object o) {
 	
 	graph.setTrendType(trendType);
 	
-	int displayRange = DynamicGraphElement.TODAY;
+	String displayRange = ServletUtil.TODAY;	
 	
 	if( getTodayRadioButton().isSelected() ) {
-		displayRange = DynamicGraphElement.TODAY;
+		displayRange = ServletUtil.TODAY;
 	}
 	else
 	if( getYesterdayRadioButton().isSelected() ) {
-		displayRange = DynamicGraphElement.YESTERDAY;
+		displayRange = ServletUtil.YESTERDAY;
 	}
 	else
 	if( getPrevious2DaysRadioButton().isSelected() ) {
-		displayRange = DynamicGraphElement.PREV2DAYS;
+		displayRange = ServletUtil.PREVTWODAYS;
 	}
 	else
 	if( getPrevious3DaysRadioButton().isSelected() ) {
-		displayRange = DynamicGraphElement.PREV3DAYS;
+		displayRange = ServletUtil.PREVTHREEDAYS;
 	}
 	else
 	if( getPrevious7DaysRadioButton().isSelected() ) {
-		displayRange = DynamicGraphElement.PREV7DAYS;
+		displayRange = ServletUtil.PREVSEVENDAYS;
 	}
 	
-	graph.setDisplayRange(displayRange);
-	
+	graph.setDisplayPeriod(displayRange);
+	graph.setDirty(true);
 	return graph;
 }
 /**
@@ -713,7 +714,7 @@ public void setValue(Object o) {
 	getGraphDefinitionSelectionPanel().selectGraphDefinition(graph.getGraphDefinition());
 	
 	int trendType = graph.getTrendType();
-	int displayRange = graph.getDisplayRange();
+	String displayPeriod = graph.getDisplayPeriod();
 	
 	switch(trendType) {
 		
@@ -736,29 +737,24 @@ public void setValue(Object o) {
 		
 	}
 	
-	switch(displayRange) {
-		case DynamicGraphElement.YESTERDAY:
-			getYesterdayRadioButton().setSelected(true);
-		break;
-		
-		case DynamicGraphElement.PREV2DAYS:
-			getPrevious2DaysRadioButton().setSelected(true);
-		break;
-		
-		case DynamicGraphElement.PREV3DAYS:
-			getPrevious3DaysRadioButton().setSelected(true);
-		break;
-		
-		case DynamicGraphElement.PREV7DAYS:
-			getPrevious7DaysRadioButton().setSelected(true);
-		break;
-		
-		default:
-		case DynamicGraphElement.TODAY:
-			getTodayRadioButton().setSelected(true);
-		break;
+	if(displayPeriod.equals(ServletUtil.YESTERDAY)) {
+		getYesterdayRadioButton().setSelected(true);
 	}
-
+	else
+	if(displayPeriod.equals(ServletUtil.PREVTWODAYS)) {
+		getPrevious2DaysRadioButton().setSelected(true);
+	}
+	else
+	if(displayPeriod.equals(ServletUtil.PREVTHREEDAYS)) {
+		getPrevious3DaysRadioButton().setSelected(true);
+	}
+	else
+	if(displayPeriod.equals(ServletUtil.PREVSEVENDAYS)) {
+		getPrevious7DaysRadioButton().setSelected(true);
+	}
+	else {
+		getTodayRadioButton().setSelected(true);
+	}
 }
 	/** 
 	  * Called whenever the value of the selection changes.

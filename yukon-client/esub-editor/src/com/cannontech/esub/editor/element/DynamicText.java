@@ -32,6 +32,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private int displayAttribs = 0x00;
 	
 	private transient Drawing drawing = null;
+	private String linkTo = null;
 	private Properties props = new Properties();
 	
 /**
@@ -218,7 +219,7 @@ public void readFromJLX(InputStream in, String version) throws IOException
         setDisplayAttribs(LxSaveUtils.readInt(in));        
                 
         //read link
-        //setLinkTo( LxSaveUtils.readString(in));
+        setLinkTo( LxSaveUtils.readString(in));
         
         LxSaveUtils.readEndOfPart(in);
 }
@@ -232,12 +233,28 @@ public void saveAsJLX(OutputStream out) throws IOException
         
         LxSaveUtils.writeInt(out, getPointID());
         LxSaveUtils.writeInt(out, getDisplayAttribs());
-        
+   
         //save link
-       // LxSaveUtils.writeString(out, getLinkTo() );
+        LxSaveUtils.writeString(out, getLinkTo() );
         
         LxSaveUtils.writeEndOfPart(out);
 }
 
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
+	}
 
 }

@@ -30,7 +30,7 @@ function acknowledgeAlarm(evt) {
 	}
 	
 	function fn(obj) {
-		setTimeout('updateTables()',4000);
+		setTimeout('updateAllTables()',4000);
 	}
 }
 

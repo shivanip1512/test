@@ -388,7 +388,7 @@ public Object getValue(Object o) {
 		
 	String link = getLinkToPanel().getLinkTo();
 	if(link.length() > 0) {
-		staticText.getElementProperties().put("onclick","followLink('"+link+"')");
+		staticText.setLinkTo(link);
 	}
 	staticText.setText( getTextTextField().getText() );
 	staticText.setFont( getFontComboBox().getSelectedItem().toString(),
@@ -494,7 +494,7 @@ public static void main(java.lang.String[] args) {
 public void setValue(Object o) {
 	staticText = (StaticText) o;
 
-	getLinkToPanel().setLinkTo(Util.stripArgument(staticText.getElementProperties().getProperty("onclick")));
+	getLinkToPanel().setLinkTo(staticText.getLinkTo());
 	getTextTextField().setText( staticText.getText());
 	
 	for( int i = 0; i < getFontComboBox().getItemCount(); i++ ) {

@@ -4,8 +4,6 @@
 <display-name>Esubstation</display-name>
  <description>Esubstation web application</description>
  
- 
- 
   <filter>
     <filter-name>timerFilter</filter-name>
     <filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
@@ -25,7 +23,12 @@
  	<filter-name>imageFilter</filter-name>
  	<filter-class>com.cannontech.esub.web.filter.ImageFilter</filter-class>
  </filter>
-   
+<!-- 
+ <filter>
+ 	<filter-name>htmlFilter</filter-name>
+ 	<filter-class>com.cannontech.esub.web.filter.HTMLFilter</filter-class>
+ </filter>
+-->   
  <filter-mapping>
     <filter-name>timerFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -67,11 +70,18 @@
  	<url-pattern>*.jpg</url-pattern>
  </filter-mapping>
  
- <!-- <servlet>
+<!--
+ <filter-mapping>
+ 	<filter-name>htmlFilter</filter-name>
+ 	<url-pattern>*.html</url-pattern>
+ </filter-mapping>
+-->
+ 
+ <servlet>
    <servlet-name>svgGenerator</servlet-name>
    <servlet-class>com.cannontech.esub.web.servlet.SVGGenerator</servlet-class>   
-  </servlet> -->
- 
+  </servlet> 
+
   <!-- <servlet>
    <servlet-name>htmlGenerator</servlet-name>
    <servlet-class>com.cannontech.esub.web.servlet.HTMLGenerator</servlet-class>
@@ -120,14 +130,16 @@
   
 <!-- end of deprecated servlets -->
 
- <!-- 
- 	commented out because runtime generation of these things
- 	isn't necessary anymore
+  
+	
  <servlet-mapping>
  	<servlet-name>svgGenerator</servlet-name>
  	<url-pattern>*.svg</url-pattern>
  </servlet-mapping>
-  
+
+ <!-- 
+ commented out because runtime generation of these things
+ 	isn't necessary anymore
  <servlet-mapping>
    <servlet-name>htmlGenerator</servlet-name>
    <url-pattern>*.html</url-pattern>

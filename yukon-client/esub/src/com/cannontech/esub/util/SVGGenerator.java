@@ -1,15 +1,13 @@
 package com.cannontech.esub.util;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.Random;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -24,9 +22,6 @@ import org.w3c.dom.svg.SVGDocument;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
-import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.CurrentAlarmsTable;
 import com.cannontech.esub.editor.element.DrawingElement;
@@ -49,17 +44,28 @@ import com.loox.jloox.LxRectangle;
 public class SVGGenerator {
 	
 	private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;	
+	private static final Random randomGen = new Random(System.currentTimeMillis());
+	
+	// flags to decide whenter to generate code for editing and controlling
+	private boolean editEnabled = false;
+	private boolean controlEnabled = false;
 		
 	public SVGGenerator() {
 	} 
-		
+	
+	public void generate(Writer writer, Drawing d, boolean edit, boolean control) throws IOException {
+		setEditEnabled(edit);
+	 	setControlEnabled(control);
+		generate(writer, d);
+	}	
+	
 	/**  
 	 * Writes an svg document to the given write based on the graph passed.
 	 * @param writer
 	 * @param graph
 	 * @throws IOException
 	 */
-	public void generate(Writer writer, Drawing d) throws IOException {
+	public void generate(Writer writer, Drawing d) throws IOException {		
 	 	LxGraph graph = d.getLxGraph();
 	 	
 	 	DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
@@ -76,6 +82,11 @@ public class SVGGenerator {
 		scriptElem.setAttributeNS(null, "type", "text/ecmascript");
 		scriptElem.setAttributeNS(null, "xlink:href", "refresh.js");
 		svgRoot.appendChild(scriptElem);
+		
+		Element scriptElem2 = doc.createElementNS(null, "script");
+		scriptElem2.setAttributeNS(null, "type", "text/ecmascript");
+		scriptElem2.setAttributeNS(null, "xlink:href", "updateGraph.js");
+		svgRoot.appendChild(scriptElem2);
 		
 		Element scriptElem3 = doc.createElementNS(null, "script");
 		scriptElem3.setAttributeNS(null, "type", "text/ecmascript");
@@ -142,19 +153,15 @@ public class SVGGenerator {
 			
 			//	elem.setAttributeNS(null,"onclick","editValue()");
 			if( comp instanceof DrawingElement ) {
-			/*	Properties props = ((DrawingElement) comp).getElementProperties();
-				Enumeration e = props.propertyNames();
-				while(e.hasMoreElements()) {
-					String key = e.nextElement().toString();
-					String val = props.getProperty(key);
-					if(val != null) {
-						elem.setAttributeNS(null, key, val);
-					}
-				}*/
+				DrawingElement de = (DrawingElement) comp;
+				String link = de.getLinkTo();
+				if(link != null && link.length() > 0) {
+					elem.setAttributeNS(null,"onclick", "followLink(\"" + link + "\")");
+				}
 			}
 			
 			if( elem != null ) {
-				elem.setAttributeNS(null,"classid",comp.getClass().getName());				
+				elem.setAttributeNS(null,"classid",comp.getClass().getName());					
 			}
 		
 		return elem;
@@ -196,8 +203,7 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "y", Integer.toString(y));
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
 		
-		if(text.isEditable()) {
-//			textElem.setAttributeNS(null, "onclick", "go()");
+		if(isEditEnabled() && text.isEditable()) {
 			textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
 		}
 		
@@ -253,7 +259,11 @@ public class SVGGenerator {
 		lineElem.setAttributeNS(null, "id", line.getName());
 		lineElem.setAttributeNS(null, "style", "fill:none;opacity:" + opacity + ";stroke:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + "); stroke-width:" + width);
 		lineElem.setAttributeNS(null, "d", pathStr);
-		
+	/*NamedNodeMap nnm = lineElem.getAttributes();
+	for(int i = 0; i < nnm.getLength(); i++ ) {
+		Node n = nnm.item(i);
+	n.getN
+	}*/
 		return lineElem;		
 	}
 	
@@ -272,9 +282,9 @@ public class SVGGenerator {
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
 		//graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width,height));
 		retElement = svgGenerator.getRoot();
-		
-		
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
+
+		//java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
 			
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
 		retElement.setAttributeNS(null, "y", Integer.toString(y));
@@ -282,12 +292,15 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "height", Integer.toString(height));			
 		retElement.setAttributeNS(null, "object", "graph");
 		retElement.setAttributeNS(null, "gdefid", Integer.toString(graph.getGraphDefinitionID()));
-		retElement.setAttributeNS(null, "model",  Integer.toString(graph.getTrendType()));
+//		retElement.setAttributeNS(null, "model",  Integer.toString(graph.getTrendType()));
+		retElement.setAttributeNS(null, "view", Integer.toString(graph.getTrendType()));
 		retElement.setAttributeNS(null, "format", "svg");
 		retElement.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
 		retElement.setAttributeNS(null, "loadfactor", "false");
 		retElement.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
-		retElement.setAttributeNS(null, "end", dateFormat.format(graph.getCurrentEndDate()));
+//		retElement.setAttributeNS(null, "end", dateFormat.format(graph.getCurrentEndDate()));
+		retElement.setAttributeNS(null, "period", graph.getDisplayPeriod());
+		retElement.setAttributeNS(null, "onclick", "updateGraphChange(evt)");
 		
 		return retElement;
 	}
@@ -400,16 +413,19 @@ public class SVGGenerator {
 		retElement.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
  		retElement.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
 		
-		Element text = doc.createElementNS(svgNS,"text");
-		text.setAttributeNS(null, "fill","rgb(0,125,122)");
-		text.setAttributeNS(null, "x", Integer.toString(ackX));
-		text.setAttributeNS(null, "y", Integer.toString(ackY));
-		text.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
- 		text.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
-		text.setAttributeNS(null, "onclick", "acknowledgeAlarm(evt)");
-		Text theText = doc.createTextNode("Clear Alarms");
-		text.insertBefore(theText,null);
-		retElement.appendChild(text);
+		if(editEnabled) {
+			Element text = doc.createElementNS(svgNS,"text");
+			text.setAttributeNS(null, "fill","rgb(0,125,122)");
+			text.setAttributeNS(null, "x", Integer.toString(ackX));
+			text.setAttributeNS(null, "y", Integer.toString(ackY));
+			text.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
+	 		text.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
+			text.setAttributeNS(null, "onclick", "acknowledgeAlarm(evt)");
+			Text theText = doc.createTextNode("Clear Alarms");
+			text.insertBefore(theText,null);
+			retElement.appendChild(text);
+		}
+		
 		return retElement;
 		
 	}
@@ -450,4 +466,36 @@ public class SVGGenerator {
 		}
 		return pathStr;		
 	}		
+	/**
+	 * Returns the controlEnabled.
+	 * @return boolean
+	 */
+	public boolean isControlEnabled() {
+		return controlEnabled;
+	}
+
+	/**
+	 * Returns the editEnabled.
+	 * @return boolean
+	 */
+	public boolean isEditEnabled() {
+		return editEnabled;
+	}
+
+	/**
+	 * Sets the controlEnabled.
+	 * @param controlEnabled The controlEnabled to set
+	 */
+	public void setControlEnabled(boolean controlEnabled) {
+		this.controlEnabled = controlEnabled;
+	}
+
+	/**
+	 * Sets the editEnabled.
+	 * @param editEnabled The editEnabled to set
+	 */
+	public void setEditEnabled(boolean editEnabled) {
+		this.editEnabled = editEnabled;
+	}
+
 }

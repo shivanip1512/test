@@ -7,21 +7,35 @@ A 0 1 0 0 ffffffff 1 ! 0
 1
 "0" 1
 
-2
+4
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 20;30;240;60 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+40 "www.esubstation.com"
+
+com.cannontech.esub.editor.element.StaticImage
+! 110101100 10;670;250;90 5 0 $ ! ! 0
+A 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+46 "www.cannontech.com"
+
+com.cannontech.esub.editor.element.StaticText
+! 110101100 40;160;44.927734;13.109375 5 0 $ ! ! 0
+A 0 0 0 0 $ 1 C ff00cc33 0 0
+0 0
+"Arial Bold" 0 18 "Enter"
+"Arial Bold" 18 0 204 51 "allyourbase.html"
 
 com.cannontech.esub.editor.element.DrawingMetaElement
 ! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0
 A 0 0 0 0 $ 1 C $ 0 0
 0 0
 "Default" 0 32 "_"
-1 2400 1800 200
-
-com.cannontech.esub.editor.element.DynamicText
-! 110101100 90;70;164.609375;8.890625 5 0 $ ! ! 0
-A 0 0 0 0 $ 1 C ffffffff 0 0
-0 0
-"Arial Bold" 0 12 "Fri Dec 20 16:42:32 CST 2002"
-765 8
+1 1024 768 200 200 2147483647
 
 
 0

@@ -1,3 +1,5 @@
+/* refresh needs to be called once and it will set up
+   periodic updates */   
 function refresh(evt) {	
 	SVGDoc = evt.getTarget().getOwnerDocument();
 	dynText = SVGDoc.getElementsByTagName('text');
@@ -7,15 +9,17 @@ function refresh(evt) {
 		
 	updateAll();
 	
-	setInterval('updateAll()',30000);
+	setInterval('updateAll()',120000); //5 minutes
 } //end refresh
 
+/* update everything! */
 function updateAll() {
-	updatePoints();
-	updateGraphs();
-	updateTables();
-}
-function updatePoints() {
+	updateAllPoints();
+	updateAllGraphs();
+	updateAllTables();
+} //end updateAll
+
+function updateAllPoints() {
 	dynText = SVGDoc.getElementsByTagName('text');
 	for (var i=0; i<dynText.getLength(); i++) 
 	{
@@ -30,15 +34,13 @@ function updatePoints() {
 	
 } //end updatePoints
 
-function updateGraphs() {
+function updateAllGraphs() {
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
 	
-	var url = '/servlet/GraphGenerator?';
-
 	for (i=0; i < dynSVG.getLength(); i++) {
 		var svgElement = dynSVG.item(i);
 		if (svgElement.getAttribute('object') == 'graph') {
-			updateGraph(svgElement, url);
+			updateGraph(svgElement);
 		}
 		else {
 			continue;
@@ -46,29 +48,31 @@ function updateGraphs() {
 	}
 } //end updateGraphs
 
-function updateTables() {
+function updateAllTables() {
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
 	
-	var url = '/servlet/AlarmsTableGenerator?';
 	for(i=0; i < dynSVG.getLength(); i++ ) {
 		var svgElement = dynSVG.item(i);
 		if(svgElement.getAttribute('object') == 'table') {
-			updateAlarmsTable(svgElement,url);
+			updateAlarmsTable(svgElement);
 		}
 		else {
 			continue;
 		}
 	}
 } //end updateTables
- 
-function updateGraph(node, url) {
-	url = url + "gdefid=" + node.getAttribute('gdefid') +
-      		"&model=" + node.getAttribute('model') +
+
+/* update an individual graph */
+function updateGraph(node) {
+
+	url =   "/servlet/GraphGenerator?" + 
+			"gdefid=" + node.getAttribute('gdefid') +
+			"&view=" + node.getAttribute('view') +
 			"&width=" + node.getAttribute('width') +
 			"&height=" + node.getAttribute('height') +
 			"&format=" + node.getAttribute('format') +
 			"&start=" + node.getAttribute('start') + 
-			"&end=" + node.getAttribute('end') +
+			"&period=" + node.getAttribute('period') +
 			"&db=" + node.getAttribute('db') +
 			"&loadfactor=" + node.getAttribute('loadfactor');	
 			
@@ -77,36 +81,36 @@ function updateGraph(node, url) {
 	function fn2(obj) {   
 		var Newnode = parseXML(obj.content, SVGDoc);
 		var gdefid = node.getAttribute('gdefid');
-		var model = node.getAttribute('model');
+		var view = node.getAttribute('view');
 		var width = node.getAttribute('width');
 		var height = node.getAttribute('height');
 		var format = node.getAttribute('format');
 		var start = node.getAttribute('start');
-		var end = node.getAttribute('end');
+		var period = node.getAttribute('period');
 		var loadfactor = node.getAttribute('loadfactor');
 		var db = node.getAttribute('db');
 		var x = node.getAttribute('x');
 		var y = node.getAttribute('y');
-
-		SVGDoc.documentElement.removeChild(node);
-		SVGDoc.documentElement.appendChild(Newnode);
-
+		
+		SVGDoc.documentElement.replaceChild(Newnode,node);
+		
 		var svgElements = Newnode.getOwnerDocument().documentElement.getElementsByTagName('svg');
 
 		for (j = 0; j<svgElements.getLength(); j++) {
 			var svgElem = svgElements.item(j);
 			if (svgElem.getAttribute('gdefid') == gdefid) {     	
-     			svgElem.setAttributeNS(null, 'model', model);
+				svgElem.setAttributeNS(null, 'view', view);
      			svgElem.setAttributeNS(null, 'width', width);
      			svgElem.setAttributeNS(null, 'height', height);
 			 	svgElem.setAttributeNS(null, 'format', format);
 			 	svgElem.setAttributeNS(null, 'start', start);
-			 	svgElem.setAttributeNS(null, 'end', end);
+				svgElem.setAttributeNS(null, 'period', period);
 			 	svgElem.setAttributeNS(null, 'db', db);
 			 	svgElem.setAttributeNS(null, 'loadfactor', loadfactor);
 			 	svgElem.setAttributeNS(null, 'x', x);
 			 	svgElem.setAttributeNS(null, 'y', y);
 			 	svgElem.setAttributeNS(null, 'object', 'graph');     	
+			 	svgElem.setAttributeNS(null, 'onclick', 'updateGraphChange(evt)');
      		}
 			else  {
 	  			continue;	  
@@ -115,8 +119,10 @@ function updateGraph(node, url) {
 	} // end f2
 } // end updateGraph
 
+/* update an individual table */
 function updateAlarmsTable(node,url) {
-	url = url + 'deviceid=' + node.getAttribute('deviceid') +
+	url =		'/servlet/AlarmsTableGenerator?' +
+				'deviceid=' + node.getAttribute('deviceid') +
 				'&x=' + node.getAttribute('x') + 
 				'&y=' + node.getAttribute('y') +
 				'&width=' + node.getAttribute('width') +
@@ -146,7 +152,7 @@ function updateNode(node) {
 	}
 } //end updateNode
 
-
+/* update a single state image */
 function updateImage(node) {
 	var imageID = node.getAttribute('id');
     if( !isNaN(imageID) ) {        
@@ -161,6 +167,7 @@ function updateImage(node) {
 		}
 	} //end fn
 } //end updateImage
+
 
 function go() {
 alert("going!");

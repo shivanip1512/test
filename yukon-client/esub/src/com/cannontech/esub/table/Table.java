@@ -23,7 +23,7 @@ public class Table {
 	
 	private static final int COMPONENT_INSETS = 3;
 	
-	private static final Font TITLE_FONT = new Font("Arial",Font.BOLD,14);
+	private static final Font TITLE_FONT = new Font("Arial",Font.BOLD,12);
 	private static final Font COLUMN_HEADER_FONT = new Font("Arial",Font.PLAIN,12);
 	private static final Font TABLE_FONT = COLUMN_HEADER_FONT;
 		

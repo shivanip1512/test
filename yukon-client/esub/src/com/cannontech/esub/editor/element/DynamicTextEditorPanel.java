@@ -456,7 +456,7 @@ public Object getValue(Object o) {
 	
 	String link = getLinkToPanel().getLinkTo();
 	if(link.length() > 0 ) {
-		dynamicText.getElementProperties().put("onclick","followLink('" + link + "')");
+		dynamicText.setLinkTo(link);
 	}
 	
 	int att = PointAttributes.VALUE;
@@ -629,7 +629,7 @@ public void setValue(Object o) {
 		getPointSelectionPanel().selectPoint(point);
 	}
 		
-	getLinkToPanel().setLinkTo(Util.stripArgument(dynamicText.getElementProperties().getProperty("onclick")));
+	getLinkToPanel().setLinkTo(dynamicText.getLinkTo());
 
 	for( int i = 0; i < getFontComboBox().getItemCount(); i++ ) {
 		if( getFontComboBox().getItemAt(i).toString().equalsIgnoreCase(dynamicText.getFont().getFontName()) ) {

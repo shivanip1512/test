@@ -16,9 +16,6 @@ import javax.swing.JOptionPane;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.editor.element.CurrentAlarmsTable;
 import com.cannontech.esub.editor.element.DynamicGraphElement;
-import com.cannontech.esub.editor.element.TableElement;
-import com.cannontech.esub.editor.element.TestGroupElement;
-import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.loox.jloox.LxAbstractAction;
@@ -50,7 +47,7 @@ class EditorActions {
 	public static final String STATE_IMAGE = "STATE IMAGE";
 	public static final String STATIC_TEXT = "STATIC TEXT";
 	public static final String DYNAMIC_GRAPH = "DYNAMIC GRAPH";
-	public static final String TEST_ELEMENT = "TEST ELEMENT";
+	public static final String ALARM_TABLE_ELEMENT = "ALARM TABLE";
 		
 	//Element or group of elements related actions
 	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
@@ -547,26 +544,14 @@ class EditorActions {
 		}
 	};
 	
-	private final LxAbstractAction testElementAction =
+	private final LxAbstractAction alarmTableElementAction =
 		new LxAbstractAction(
-			TEST_ELEMENT,
-			"Test Element",
-			"Test Element",
-			"X.gif",
+			ALARM_TABLE_ELEMENT,
+			"Alarm Table",
+			"Alarm Table",
+			"AlarmIcon.gif",
 			true) {
-		public void processAction(ActionEvent e) {
-				/*TestGroupElement elem = 
-					new TestGroupElement();
-					
-				editor.setBehavior(elem);
-				editor.elementPlacer.setElement(elem);
-				editor.elementPlacer.setIsPlacing(true);*/
-				
-				//PointAlarmTableModel model = new PointAlarmTableModel();
-				//model.setPointID(new int[] { 300 } );
-				//TableElement table = new TableElement();
-				//table.setModel(model);
-				
+		public void processAction(ActionEvent e) {				
 				CurrentAlarmsTable table = new CurrentAlarmsTable();
 				
 				editor.setBehavior(table);
@@ -633,7 +618,7 @@ class EditorActions {
 		actionMap.put(STATIC_TEXT, staticTextAction);
 		actionMap.put(SET_DYNAMIC_TEXT_COLOR, setDynamicTextColor);
 		actionMap.put(DYNAMIC_GRAPH, dynamicGraphAction);
-		actionMap.put(TEST_ELEMENT, testElementAction);
+		actionMap.put(ALARM_TABLE_ELEMENT, alarmTableElementAction);
 		
 		actionMap.put(ABOUT_ESUB_EDITOR, aboutEsubEditor);
 		

@@ -1,6 +1,5 @@
 package com.cannontech.esub.web.servlet;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,19 +12,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.util.DrawingUpdater;
+import com.cannontech.esub.editor.element.DrawingMetaElement;
 import com.cannontech.esub.web.SessionInfo;
-
 
 /**
  * Description Here
  * @author alauinger
  */
 public class SVGGenerator extends HttpServlet {
-
  
 	/**
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)
@@ -57,50 +55,22 @@ public class SVGGenerator extends HttpServlet {
 			//Check if this user has access to this drawing!	
 			SessionInfo	info = (SessionInfo) req.getSession(false).getAttribute(SessionInfo.SESSION_KEY);	
 			LiteYukonUser user = info.getUser();
-	//		if( AuthFuncs.checkRole(user, d.getMetaElement().getRoleName()) != null) {
-				DrawingUpdater du = new DrawingUpdater(d);
-				du.run();
-				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();
-				gen.generate(w, d);	
-	//		}
+			DrawingMetaElement metaElem = d.getMetaElement();
+			if( AuthFuncs.checkRole(user, metaElem.getViewRoleID()) != null) {
+				Pair editPair = AuthFuncs.checkRole(user, metaElem.getEditRoleID());
+				boolean canEdit = (editPair != null);
+
+				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();				
+				gen.generate(w, d, canEdit, false);	
+			
+				//req.getRequestDispatcher(uri).forward(req,resp);
+			}
 		}
 		catch(Exception e ) {
 			e.printStackTrace(new PrintWriter(w));
-			//log(e.getMessage());
 		}
-
-		
-/*		log("request URI: " + req.getRequestURI());
-		
-		String uri = req.getRequestURI();
-		
-		if( uri.endsWith(".svg") ) {
-			uri = uri.substring(0, uri.length()-4);
-		}
-		
-		log("new uri: " + uri);
-		
-		Properties sysprops = System.getProperties();
-		String sep = sysprops.getProperty("file.separator");
-		String path = null;
-		
-		try {
-  			ServletContext sc = this.getServletContext();
-		    path = sc.getRealPath(uri);
-		    log(path);
-		    (BufferedInputStream bin = new BufferedInputStream(new FileInputStream(path + c + 
-		    
-  			FileOutputStream fos = new FileOutputStream(path + c + filename);
-  byte[] bytes = notes.getBytes();
-  fos.write(bytes);
-  out.println("Created " + filename + " in " + path);
-} catch (Exception e) {
-  //out.println(e.toString());*/
 }
 	
-		
-	
-
 	/**
 	 * @see javax.servlet.Servlet#init(ServletConfig)
 	 */
@@ -108,5 +78,4 @@ public class SVGGenerator extends HttpServlet {
 		super.init(arg0);
 		log("loaded...");
 	}
-
 }

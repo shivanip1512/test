@@ -171,7 +171,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 	public Object getValue(Object o) {
 		String link = getLinkToPanel().getLinkTo();
 		if(link.length() > 0) {
-			staticImage.getElementProperties().put("onclick","followLink('"+link+"')");
+			staticImage.setLinkTo(link);
 		}
 		
 		return staticImage;
@@ -290,7 +290,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 	public void setValue(Object o) {
 		staticImage = (StaticImage) o;
 
-		getLinkToPanel().setLinkTo(Util.stripArgument(staticImage.getElementProperties().getProperty("onclick")));
+		getLinkToPanel().setLinkTo(staticImage.getLinkTo());
 				
 		getImageNameLabel().setText(staticImage.getYukonImage().getImageName());
 		getImageNameLabel().setIcon(new javax.swing.ImageIcon(staticImage.getYukonImage().getImageValue()));

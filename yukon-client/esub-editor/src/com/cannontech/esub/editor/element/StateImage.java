@@ -27,6 +27,8 @@ public class StateImage extends LxAbstractImage implements DrawingElement {
 	private LiteState currentState;
 		
 	private Drawing drawing;
+	private String linkTo = null;
+	
 	private Properties props = new Properties();
 	
 /**
@@ -149,7 +151,7 @@ public synchronized void readFromJLX(InputStream in, String version) throws IOEx
         setPoint(lp);
                                 
         //restore link
-       // setLinkTo(LxSaveUtils.readString(in));        
+        setLinkTo(LxSaveUtils.readString(in));        
         LxSaveUtils.readEndOfPart(in);
         
         updateImage();
@@ -173,10 +175,26 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         LxSaveUtils.writeInt(out, pointID);
         
         //save link
-        //LxSaveUtils.writeString(out, getLinkTo());
+        LxSaveUtils.writeString(out, getLinkTo());
         
         LxSaveUtils.writeEndOfPart(out);
 }
 
+
+	/**
+	 * Returns the linkTo.
+	 * @return String
+	 */
+	public String getLinkTo() {
+		return linkTo;
+	}
+
+	/**
+	 * Sets the linkTo.
+	 * @param linkTo The linkTo to set
+	 */
+	public void setLinkTo(String linkTo) {
+		this.linkTo = linkTo;
+	}
 
 }

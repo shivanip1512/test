@@ -129,7 +129,7 @@ private PointSelectionPanel getPointSelectionPanel() {
 public Object getValue(Object o) {
 	String link = getLinkToPanel().getLinkTo();
 	if(link.length() > 0 ) {
-		stateImage.getElementProperties().put("onclick","followLink('"+link+"')");
+		stateImage.setLinkTo(link);
 	}
 	stateImage.setPoint(getPointSelectionPanel().getSelectedPoint());
 	
@@ -206,7 +206,7 @@ public void setValue(Object o) {
 	stateImage = (StateImage) o;
 
 	// Set link
-	getLinkToPanel().setLinkTo(Util.stripArgument(stateImage.getElementProperties().getProperty("onclick")));
+	getLinkToPanel().setLinkTo(stateImage.getLinkTo());
 
 	// Set selected point
 	LitePoint lp = stateImage.getPoint();

@@ -30,6 +30,5 @@
     <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="src" path="/yukonappclient"/>
     <classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-    <classpathentry kind="lib" path="/third-party/jfreereport-0.8.0_1.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
