@@ -16,6 +16,7 @@ public class YCCommandMenu extends javax.swing.JMenu {
 	public JMenuItem executeMenuItem;
 	public JMenuItem locateRoute;
 	public JMenuItem installAddressing;
+	public JMenuItem editCustomCommandFile;
 	
 	public JMenuItem advancedOptionsMenuItem;	
 /**
@@ -67,6 +68,11 @@ private void initialize() {
 	//areYouSureItem.setText("Confirm Execute");
 	//areYouSureItem.setMnemonic('c');
 
+	editCustomCommandFile = new JMenuItem();
+	editCustomCommandFile.setFont(f);
+	editCustomCommandFile.setText("Edit Custom Commands");
+	editCustomCommandFile.setMnemonic('d');	
+
 	advancedOptionsMenuItem = new JMenuItem();
 	advancedOptionsMenuItem.setFont( f );
 	advancedOptionsMenuItem.setText("Options...");
@@ -81,6 +87,7 @@ private void initialize() {
 	add( locateRoute );
 	add( installAddressing );
 	add( separator1 );
+	add( editCustomCommandFile );
 	add( advancedOptionsMenuItem );
 	//add( queueMCTCommandsMenuItem );
 	//add( areYouSureItem );

@@ -193,6 +193,11 @@ public class YC
 	{
 		return getYCDefaults().getCommandFileDirectory();
 	}
+	public String getCustomCommandFileDirectory()
+	{
+		return getYCDefaults().getCommandFileDirectory()+"Custom\\";
+	}
+	
 	public int getCommandPriority()
 	{
 		return getYCDefaults().getCommandPriority();

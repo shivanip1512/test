@@ -19,6 +19,7 @@ import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -171,6 +172,32 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				getCommandPanel().getExecuteCommandComboBoxTextField().requestFocusInWindow();
 			}
 			
+		}
+		else if( event.getSource() == getYCCommandMenu().editCustomCommandFile)
+		{
+			if( getTreeItem() == null )
+			{
+				getCommandLogPanel().addLogElement(" ** Warning: Please make a selection from the tree.");
+			}
+			else if( getTreeViewPanel().getSelectedNode().getParent() == null )
+			{
+				getCommandLogPanel().addLogElement(" ** Warning: Please select a specific tree item");
+			}
+			else
+			{			
+			
+			CustomCommandEditPanel commandEditPanel = new CustomCommandEditPanel();
+			KeysAndValuesFile keysAndValuesFile = new KeysAndValuesFile(ycClass.getCustomCommandFileDirectory(), ycClass.getCommandFileName());
+			keysAndValuesFile.retrieve();
+			commandEditPanel.setDialogTitle("File: " + keysAndValuesFile.getPath().toString());
+			commandEditPanel.setValue(keysAndValuesFile.getKeysAndValues());
+			Object o = commandEditPanel.showAdvancedOptions(this);
+			if( o instanceof KeysAndValues)
+			{
+				keysAndValuesFile.setKeysAndValues((KeysAndValues)o);
+				keysAndValuesFile.writeToFile();
+			}
+			}			
 		}
 		else if( event.getSource() == getYCCommandMenu().installAddressing)
 		{
