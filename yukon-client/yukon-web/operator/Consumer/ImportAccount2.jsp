@@ -105,9 +105,9 @@
                   <td width="25%">
                     <div align="center"> 
 <%
-		if (listName.equals("ServiceCompany") ||
-			listName.equals("ApplianceCategory") ||
-			list.getUserUpdateAvailable().equalsIgnoreCase("Y")) {
+		if (list != null && list.getUserUpdateAvailable().equalsIgnoreCase("Y") ||
+			listName.equals("ServiceCompany"))
+		{
 %> 
                       <input type="button" name="New" value="New" onclick="location.href='AssignSelectionList.jsp?List=<%= listName %>&New=true'">
 <%
