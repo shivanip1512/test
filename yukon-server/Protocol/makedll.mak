@@ -53,6 +53,9 @@ prot_fpcbc.obj \
 prot_sixnet.obj \
 prot_dnp.obj \
 $(DNPOBJS) \
+prot_ansi.obj \
+ansi_application.obj \
+ansi_datalink.obj \
 dll_prot.obj \
 
 
