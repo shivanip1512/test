@@ -613,6 +613,22 @@ public final static String getApplicationName()
 }
 
 /**
+ * This method will return the java.awt.Dialog associated with a component
+ * If no parent dialog is found null will be returned
+ * @return java.awt.Dialog
+ * @param comp java.awt.Component
+ */
+public final static java.awt.Dialog getParentDialog(java.awt.Component comp) {
+	
+	while( comp != null && !( comp instanceof java.awt.Dialog) )
+	{
+		comp = comp.getParent();
+	}
+
+	return (java.awt.Dialog) comp;
+}
+
+/**
  * This method will return the java.awt.Frame associated with a component
  * If no parent frame is found null will be returned
  * @return java.awt.Frame
@@ -627,7 +643,6 @@ public final static java.awt.Frame getParentFrame(java.awt.Component comp) {
 
 	return (java.awt.Frame) comp;
 }
-
 
 /**
  * This method was created in VisualAge.
