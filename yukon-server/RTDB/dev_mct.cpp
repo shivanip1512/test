@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/05/20 15:11:23 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/05/20 21:26:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -738,11 +738,6 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
 
         if(getOperation(CtiProtocolEmetcon::Scan_Integrity, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
         {
-            //  should we scan the IED for demand instead?
-            if(getType() == TYPEMCT360 || getType() == TYPEMCT370)
-                if( ((CtiDeviceMCT31X *)this)->getIEDPort().getRealTimeScanFlag() )
-                    getOperation(CtiProtocolEmetcon::GetValue_IEDDemand, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
             OutMessage->TargetID  = getID();
@@ -1227,6 +1222,15 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         {
             function = CtiProtocolEmetcon::Scan_Integrity;
             found = getOperation(CtiProtocolEmetcon::Scan_Integrity, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+            //  should we scan the IED for demand instead?
+            if(getType() == TYPEMCT360 || getType() == TYPEMCT370)
+            {
+                //  if we're supposed to be scanning the IED, change it to the appropriate request
+                if( ((CtiDeviceMCT31X *)this)->getIEDPort().getRealTimeScanFlag() )
+                     getOperation(CtiProtocolEmetcon::GetValue_IEDDemand, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            }
+
             break;
         }
         case ScanRateLoadProfile:
