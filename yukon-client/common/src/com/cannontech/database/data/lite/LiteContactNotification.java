@@ -115,6 +115,14 @@ public class LiteContactNotification extends LiteBase
 	public String getDisableFlag() {
 		return disableFlag;
 	}
+    
+    /**
+     * Returns the disableFlag.
+     * @return boolean
+     */
+    public boolean isDisabled() {
+        return CtiUtilities.isDisabled(getDisableFlag());
+    }    
 
 	/**
 	 * Returns the notification.
