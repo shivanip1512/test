@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 14:22:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/28 21:25:20 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,8 +87,6 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
    {
       if( processData( xfer.getInBuffer() ))  //temp!
          setNextState();
-
-      _finished = true;
    }
 
    return( _finished );
@@ -118,6 +116,8 @@ void CtiTransdataApplication::setNextState( void )
 
 bool CtiTransdataApplication::processData( BYTE *data )
 {
+//      _finished = true;  //this needs to happen when we really have the big data
+
    return( true );
 }
 

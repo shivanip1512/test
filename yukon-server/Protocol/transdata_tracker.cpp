@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/08/28 14:22:58 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/08/28 21:25:20 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,9 @@ CtiTransdataTracker::~CtiTransdataTracker()
 
 bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 {
-   bool datalinkDone;
+   bool  datalinkDone;
+   BYTE  temp[2000];
+   int   bytes = 0;
 
    _datalink.readMsg( xfer, status );
 
@@ -107,10 +109,29 @@ bool CtiTransdataTracker::decode( CtiXfer &xfer, int status )
 
    if( datalinkDone )
    {
-      _datalink.retreiveData( _storage, &_bytesReceived );
-      processData( _storage );
+      _datalink.retreiveData( temp, &bytes );
+
+      if( bytes != 0 )
+      {
+         memcpy( _storage + _bytesReceived, temp, bytes );
+         _bytesReceived += bytes;
+
+         processData( _storage );
+      }
+      else
+      {
+         setNextState();
+      }
 
       datalinkDone = false;
+   }
+   else
+   {
+      if( _datalink.getError() == failed )
+      {
+         setError();
+         _waiting = false;
+      }
    }
 
    return( _finished );
@@ -126,17 +147,14 @@ bool CtiTransdataTracker::processData( BYTE *_storage )
    int   index;
    char  temp[7];
 
-   if( _bytesReceived )
-   {
-      //copy the last little chunk of the data
-      memset( temp, '\0', sizeof( temp ));
-      index = _bytesReceived - 5;
-      memcpy( temp, _storage + index, 5 );
-   }
+   //copy the last little chunk of the data
+   memset( temp, '\0', sizeof( temp ));
+   index = _bytesReceived - 5;
+   memcpy( temp, _storage + index, 5 );
 
    if(( strstr( temp, _good_return ) != NULL ) ||
-      ( strstr( temp, _prot_message ) != NULL ) ||
-      ( _ignore ))
+      ( strstr( temp, _prot_message ) != NULL )
+      )
    {
       setNextState();
 
@@ -144,6 +162,7 @@ bool CtiTransdataTracker::processData( BYTE *_storage )
       {
          _moveAlong = false;
          _didSomeWork = true;
+         _finished = true;
       }
 
       return( true );
@@ -213,7 +232,7 @@ bool CtiTransdataTracker::logOn( CtiXfer &xfer )
 
       case doIdentify:
          {
-            setXfer( xfer, _identify, 10, true, 0 );
+            setXfer( xfer, _identify, 10, false, 0 );
             _moveAlong = true;
          }
          break;
@@ -247,13 +266,13 @@ bool CtiTransdataTracker::general( CtiXfer &xfer )
       {
       case doScroll:
          {
-            setXfer( xfer, _search_scrolls, strlen( _search_scrolls ) +  strlen( _good_return ), true, 0 );
+            setXfer( xfer, _search_scrolls, strlen( _search_scrolls ) +  strlen( _good_return ), false, 0 );
          }
          break;
 
       case doPullBuffer:
          {
-            setXfer( xfer, _send_comm_buff, strlen( _send_comm_buff ) + strlen( _good_return ), true, 0 );
+            setXfer( xfer, _send_comm_buff, strlen( _send_comm_buff ) + strlen( _good_return ), false, 0 );
          }
          break;
 
@@ -375,7 +394,18 @@ bool CtiTransdataTracker::isCrcValid( void )
       _didSomeWork = true;
    }
 
-   return _didSomeWork;         //just for now
+   return false;         //just for now
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiTransdataTracker::setError( void )
+{
+   if( ++_failCount > 3 )
+      _error = failed;
+   else
+      _error = working;
 }
 
 

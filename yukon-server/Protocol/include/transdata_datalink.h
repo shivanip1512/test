@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 14:22:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/28 21:25:19 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -56,9 +56,8 @@ class IM_EX_PROT CtiTransdataDatalink
 
       BYTE     *_storage;
 
-      ULONG    _totalBytesExpected;
-      ULONG    _totalBytesReceived;
-      ULONG    _transBytesExpected;
+      ULONG    _bytesReceived;
+      ULONG    _bytesExpected;
 };
 
 #endif // #ifndef __TRANSDATA_DATALINK_H__

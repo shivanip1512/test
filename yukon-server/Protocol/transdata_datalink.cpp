@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/28 14:22:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/28 21:25:20 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,9 +29,8 @@ CtiTransdataDatalink::CtiTransdataDatalink()
    _failCount           = 0;
    _error               = 0;
    _ioState             = 0;
-   _totalBytesExpected  = 0;
-   _totalBytesReceived  = 0;
-   _transBytesExpected  = 0;
+   _bytesExpected       = 0;
+   _bytesReceived       = 0;
 
    _finished            = true;
 
@@ -51,7 +50,7 @@ CtiTransdataDatalink::~CtiTransdataDatalink()
 void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
 {
    _finished = false;
-   _transBytesExpected = xfer.getInCountExpected();
+   _bytesExpected = xfer.getInCountExpected();
 }
 
 //=====================================================================================================================
@@ -59,17 +58,24 @@ void CtiTransdataDatalink::buildMsg( CtiXfer &xfer )
 
 bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 {
-   _totalBytesReceived += xfer.getInCountActual();
-
-   if( _totalBytesReceived >= _totalBytesExpected )
+   if( xfer.getInCountActual() >= _bytesExpected )
    {
       _finished = true;
    }
+   else
+   {
+      setError();
+   }
 
-   setError();
+   //
+   // copy the data into our main container and record how many bytes we got
+   //
+   if( xfer.getInCountActual() )
+   {
+      memcpy( ( _storage + _bytesReceived ), xfer.getInBuffer(), xfer.getInCountActual() );
 
-   //copy the data into our main container
-   memcpy( ( _storage + _totalBytesReceived ), xfer.getInBuffer(), xfer.getInCountActual() );
+      _bytesReceived += xfer.getInCountActual();
+   }
 
    return( _finished );
 }
@@ -89,13 +95,13 @@ void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 {
    if( _storage != NULL )
    {
-      memcpy( data, _storage, _totalBytesReceived );
-      *bytes = _totalBytesReceived;
+      memcpy( data, _storage, _bytesReceived );
+      *bytes = _bytesReceived;
 
       memset( _storage, '\0', sizeof( _storage ));
 
-      _transBytesExpected = 0;
-      _totalBytesReceived = 0;
+      _bytesExpected = 0;
+      _bytesReceived = 0;
    }
 }
 
