@@ -73,7 +73,7 @@
 <script language="JavaScript">
 function validate(form) {
 	if (form.SerialNo.value == "") {
-		alert(document.getElementById("NameLabel").innerText + " cannot be empty!");
+		alert("Serial # cannot be empty!");
 		return false;
 	}
 	return true;
