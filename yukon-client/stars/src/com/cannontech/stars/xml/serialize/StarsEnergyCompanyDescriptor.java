@@ -287,13 +287,11 @@ public class StarsEnergyCompanyDescriptor extends org.exolab.castor.xml.util.XML
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _companyAddress
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsEnergyCompanyDescriptor()

@@ -1229,20 +1229,27 @@ public class StarsLiteFactory {
 		starsCompany.setCompanyName( liteCompany.getName() );
 		
 		LiteContact liteContact = com.cannontech.database.cache.functions.CustomerContactFuncs.getCustomerContact( liteCompany.getPrimaryContactID() );
-		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-			LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
-			if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_PHONE)
-				starsCompany.setMainPhoneNumber( liteNotif.getNotification() );
-			else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_FAX)
-				starsCompany.setMainFaxNumber( liteNotif.getNotification() );
-			else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_EMAIL)
-				starsCompany.setEmail( liteNotif.getNotification() );
+		if (liteContact == null) {
+			starsCompany.setMainPhoneNumber( "N/A" );
+			starsCompany.setMainFaxNumber( "N/A" );
+			starsCompany.setEmail( "N/A" );
 		}
-		
-		LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
-		CompanyAddress starsAddr = new CompanyAddress();
-		setStarsCustomerAddress( starsAddr, liteAddr );
-		starsCompany.setCompanyAddress( starsAddr );
+		else {
+			for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
+				LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
+				if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_PHONE)
+					starsCompany.setMainPhoneNumber( liteNotif.getNotification() );
+				else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_FAX)
+					starsCompany.setMainFaxNumber( liteNotif.getNotification() );
+				else if (liteNotif.getNotificationCategoryID() == SOAPServer.YUK_LIST_ENTRY_ID_EMAIL)
+					starsCompany.setEmail( liteNotif.getNotification() );
+			}
+			
+			LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
+			CompanyAddress starsAddr = new CompanyAddress();
+			setStarsCustomerAddress( starsAddr, liteAddr );
+			starsCompany.setCompanyAddress( starsAddr );
+		}
 		
 		return starsCompany;
 	}

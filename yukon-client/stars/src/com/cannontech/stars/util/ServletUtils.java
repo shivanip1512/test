@@ -317,6 +317,8 @@ public class ServletUtils {
     }
     
     public static String getFormattedAddress(StarsCustomerAddress starsAddr) {
+    	if (starsAddr == null) return "";
+    	
     	StringBuffer sBuf = new StringBuffer( starsAddr.getStreetAddr1() );
     	if (starsAddr.getStreetAddr2().length() > 0)
     		sBuf.append( ", " ).append( starsAddr.getStreetAddr2() );
