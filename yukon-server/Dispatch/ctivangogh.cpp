@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2003/12/12 20:41:03 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2003/12/30 21:46:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1315,6 +1315,7 @@ INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
             case MSG_SIGNAL:
             case MSG_DBCHANGE:            // How about this potential recursion....
             case MSG_EMAIL:
+            case MSG_TAG:
             default:
                 {
                     processMessageData( pMsg );
@@ -1411,6 +1412,12 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
             {
                 CtiEmailMsg &Email = *((CtiEmailMsg*)pMsg);
                 mail(Email);
+                break;
+            }
+        case MSG_TAG:
+            {
+                CtiTagMsg &tagMsg = *((CtiTagMsg*)pMsg);
+                processTagMessage(tagMsg);
                 break;
             }
         case MSG_LMCONTROLHISTORY:
@@ -1560,6 +1567,11 @@ INT CtiVanGogh::assembleMultiForConnection(const CtiVanGoghConnectionManager &Co
             status = assembleMultiFromPointDataForConnection(Conn, pMsg, aOrdered);
             break;
         }
+    case MSG_TAG:
+        {
+            status = assembleMultiFromTagForConnection(Conn, pMsg, aOrdered);
+            break;
+        }
     case MSG_DBCHANGE:
     case MSG_POINTREGISTRATION:
     case MSG_REGISTER:
@@ -1641,6 +1653,36 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiVanGoghConnectionM
                 }
 
                 Ord.insert(pNewSig);
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return status;
+}
+
+INT CtiVanGogh::assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn,
+                                                  CtiMessage                        *pMsg,
+                                                  RWOrdered                         &Ord)
+{
+    INT            status   = NORMAL;
+    CtiTagMsg      *pTag    = (CtiTagMsg*)pMsg;
+
+    try
+    {
+        if(pTag != NULL)
+        {
+            if(isTagForConnection(Conn, *pTag))
+            {
+                // At this point we may want to stuff an entire multi of all pointid related tags out onto the clients.
+                // This ensures that any processing can occur naturally.???  Beware of removals... Not sure how to handle them?
+                // May have to blitz the const-ness of the processing to account for that??
+                CtiTagMsg *pNewTag = (CtiTagMsg *)pTag->replicateMessage();
+                Ord.insert(pNewTag);
             }
         }
     }
@@ -1773,6 +1815,24 @@ BOOL CtiVanGogh::isSignalForConnection(const CtiVanGoghConnectionManager   &Conn
     return bStatus;
 }
 
+BOOL CtiVanGogh::isTagForConnection(const CtiVanGoghConnectionManager &Conn, const CtiTagMsg &Msg)
+{
+    BOOL bStatus = FALSE;
+
+    CtiPoint *pPoint = PointMgr.getEqual(Msg.getPointID());
+
+    if( pPoint && Conn.isRegForChangeType(pPoint->getType()) )
+    {
+        bStatus = TRUE;
+    }
+    else
+    {
+        bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getPointID());
+    }
+
+    return bStatus;
+}
+
 BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Conn, const CtiPointDataMsg &Msg)
 {
     BOOL bStatus = FALSE;
@@ -1836,8 +1896,7 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg)
     return bStatus;
 }
 
-BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManager   &Conn,
-                                                const LONG                          pID)
+BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManager   &Conn, const LONG pID)
 {
     BOOL bStatus = FALSE;
 
@@ -2056,6 +2115,16 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
                                 pMulti->getData().insert(pSigMulti);
                             }
                         }
+
+                        // We add all the assigned tags into the multi as well.
+                        {
+                            CtiMultiMsg *pTagMulti = _tagManager.getPointTags(TempPoint->getID());
+                            if(pTagMulti)
+                            {
+                                pMulti->getData().insert(pTagMulti);
+                            }
+                        }
+
                     }
                 }
             }
@@ -2654,6 +2723,13 @@ INT CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper &aWrap)
     case MSG_SIGNAL:
         {
             status = checkSignalStateQuality((CtiSignalMsg*)pMsg, aWrap);
+            break;
+        }
+    case MSG_TAG:
+        {
+            // Allocate instance number to any non-allocated message!
+            _tagManager.allocateInstance(*((CtiTagMsg*)pMsg));
+
             break;
         }
     default:
@@ -4727,6 +4803,8 @@ CtiVanGogh::CtiVanGogh()
             _alarmToDestInfo[i].grpid = 0; // Zero is invalid!
         }
     }
+
+    _tagManager.start();
 }
 
 void  CtiVanGogh::shutdown()
@@ -4735,6 +4813,9 @@ void  CtiVanGogh::shutdown()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Dispatch Server Shutting Down " << endl;
     }
+
+    _tagManager.interrupt(CtiThread::SHUTDOWN);
+    _tagManager.join();
 
     try
     {
@@ -6518,3 +6599,13 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
         pSigNew = 0;
     }
 }
+
+int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
+{
+    int status = NORMAL;
+
+    _tagManager.processTagMsg(tagMsg);
+
+    return status;
+}
+

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_ptchg.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/08 23:22:23 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/12/30 21:46:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,6 +72,7 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
       case MSG_SIGNAL:
       case MSG_POINTDATA:
       case MSG_PCRETURN:
+      case MSG_TAG:
          {
             try
             {

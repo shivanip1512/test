@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2003/09/12 02:39:56 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2003/12/30 21:46:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,10 +48,12 @@ using namespace std;
 #include "msg_email.h"
 #include "msg_commerrorhistory.h"
 #include "msg_lmcontrolhistory.h"
+#include "msg_tag.h"
 #include "guard.h"
 #include "mutex.h"
 #include "pending_info.h"
 #include "signalmanager.h"
+#include "tagmanager.h"
 #include "tbl_state_grp.h"
 #include "tbl_alm_ngroup.h"
 #include "tbl_lm_controlhist.h"
@@ -115,6 +117,7 @@ private:
     CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
 
     CtiSignalManager           _signalManager;
+    CtiTagManager              _tagManager;
 
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
     void verifyControlTimesValid( CtiPendingPointOperations &ppc );
@@ -191,14 +194,15 @@ public:
     INT   assembleMultiFromSignalForConnection(const CtiVanGoghConnectionManager &Conn,
                                                CtiMessage                        *pMsg,
                                                RWOrdered                         &Ord);
+    INT assembleMultiFromTagForConnection(const CtiVanGoghConnectionManager &Conn, CtiMessage *pMsg, RWOrdered &Ord);
 
     BOOL  isConnectionAttachedToMsgPoint(const CtiVanGoghConnectionManager   &Conn,
                                          const LONG                          pID);
     BOOL  isPointDataForConnection(const CtiVanGoghConnectionManager   &Conn,
                                    const CtiPointDataMsg               &Msg);
     BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg);
-    BOOL  isSignalForConnection(const CtiVanGoghConnectionManager   &Conn,
-                                const CtiSignalMsg                  &Msg);
+    BOOL  isSignalForConnection(const CtiVanGoghConnectionManager   &Conn, const CtiSignalMsg &Msg);
+    BOOL  isTagForConnection(const CtiVanGoghConnectionManager   &Conn, const CtiTagMsg &Msg);
 
     int   processMessage(CtiMessage *pMsg);
     INT   postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int flags);
@@ -269,6 +273,8 @@ public:
     void pruneCommErrorHistory();
     void deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
     void reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
+
+    int processTagMessage(CtiTagMsg &tagMsg);
 
 };
 

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/08/22 21:43:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/12/30 21:50:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
 #include "msg_email.h"
+#include "msg_tag.h"
 #include "msg_commerrorhistory.h"
 #include "msg_lmcontrolhistory.h"
 #include "connection.h"
@@ -45,6 +46,32 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "pointtypes.h"
 
 BOOL           bQuit = FALSE;
+
+void tagExecute(int argc, char **argv);
+void tagHelp();
+void defaultExecute(int argc, char **argv);
+void defaultHelp();
+
+typedef void (*XFUNC)(int argc, char **argv);       // Execution function
+typedef void (*HFUNC)();                           // Help Function
+
+
+
+typedef struct
+{
+    char    cmd[24];
+    XFUNC   xecute;
+    HFUNC   help;
+
+} TESTFUNC_t;
+
+TESTFUNC_t testfunction[] = {
+    {"tags", tagExecute, tagHelp},
+    {"default", defaultExecute, defaultHelp},
+    {"", 0, 0}
+};
+
+
 
 BOOL MyCtrlHandler(DWORD fdwCtrlType)
 {
@@ -104,15 +131,248 @@ static double GetPointValue(int pointtype)
 
 void main(int argc, char **argv)
 {
+    int i;
     INT point_type;
-
-    CtiPointManager PointMgr;
 
     dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory.data());
     dout.setOutputFile(argv[0]);
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
+
+    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
+    {
+        cerr << "Could not install control handler" << endl;
+        return;
+    }
+
+    for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
+    {
+        if(!strnicmp(testfunction[i].cmd, argv[1], strlen(testfunction[i].cmd)))
+        {
+            (*testfunction[i].xecute)(argc, argv);
+            break;
+        }
+    }
+
+
+    // Make sure all the logs get output and done!
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
+
+
+    exit(0);
+
+}
+
+
+void DoTheNasty(int argc, char **argv)
+{
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+        CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
+
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+        pM->setMessagePriority(15);
+        pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE));
+
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+
+        pM->getData().insert(PtRegMsg);
+
+        Connect.WriteConnQue( pM );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        for(k = 0; k < atoi(argv[4]); k++ )
+        {
+            pMsg = Connect.ReadConnQue(1000);
+
+            if( NULL != pMsg)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+                delete pMsg;
+            }
+        }
+
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+    }
+    catch(RWxmsg &msg)
+    {
+        cout << "Tester Exception: ";
+        cout << msg.why() << endl;
+    }
+}
+
+void tagExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+    CtiMessage  *pMsg;
+
+    CtiPointManager PointMgr;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+
+        srand(1);   // This is replicable.
+
+        PointMgr.refreshList();     // This should give me all the points in the box.
+        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+        pM->setMessagePriority(15);
+
+        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        PtRegMsg->setMessagePriority(15);
+        Connect.WriteConnQue( PtRegMsg );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reading inbound messages from registration" << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(1000)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Done reading registration messages" << endl;
+        }
+
+        CtiTagMsg *pTag = 0;
+
+        if(argc >= 7)
+        {
+            // argv[6] is a new string for msg 5
+            pTag = CTIDBG_new CtiTagMsg;
+
+            pTag->setInstanceID(atoi(argv[5]));
+            pTag->setTagID(1);
+            pTag->setPointID(1);
+            pTag->setAction(CtiTagMsg::UpdateAction);
+            pTag->setDescriptionStr(RWTime().asString() + " TEST");
+            pTag->setSource("Corey's Tester");
+            pTag->setClientMsgId(52);
+            pTag->setUser("Harley's Ghost");
+
+            pTag->dump();
+        }
+        else if(atoi(argv[5]) == 0)
+        {
+            pTag = CTIDBG_new CtiTagMsg;
+
+            pTag->setTagID(1);
+            pTag->setPointID(1);
+            pTag->setAction(CtiTagMsg::AddAction);
+            pTag->setDescriptionStr(RWTime().asString() + " TEST");
+            pTag->setSource("Corey's Tester");
+            pTag->setClientMsgId(57);
+            pTag->setUser("Marley's Ghost");
+
+            pTag->dump();
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Removing tag " << atoi(argv[5]) << endl;
+            }
+
+            pTag = CTIDBG_new CtiTagMsg;
+            pTag->setInstanceID(atoi(argv[5]));
+            pTag->setAction(CtiTagMsg::RemoveAction);
+            pTag->dump();
+        }
+
+        Connect.WriteConnQue(pTag);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reading inbound messages caused by tag message submission." << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Request application shutdown." << endl;
+        }
+
+        Sleep(1000);
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+        Connect.ShutdownConnection();
+        Sleep(2500);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return;
+}
+
+void tagHelp()
+{
+    return;
+}
+
+void defaultHelp()
+{
+    return;
+}
+
+void defaultExecute(int argc, char **argv)
+{
+    CtiPointManager PointMgr;
 
     if(argc < 5)
     {
@@ -123,13 +383,6 @@ void main(int argc, char **argv)
 
         exit(-1);
     }
-
-    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
-    {
-        cerr << "Could not install control handler" << endl;
-        return;
-    }
-
 
     if(argc == 5)
     {
@@ -164,11 +417,58 @@ void main(int argc, char **argv)
             pM->setMessagePriority(15);
 
             Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), FALSE));
-            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NONE);
+            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+            PtRegMsg->setMessagePriority(15);
 
             Connect.WriteConnQue( PtRegMsg );
 
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
 
+            while( NULL != (pMsg = Connect.ReadConnQue(5000)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+
+                delete pMsg;
+            }
+
+            CtiTagMsg *pTag = 0;
+
+            if(atoi(argv[4]) == 0)
+            {
+                pTag = CTIDBG_new CtiTagMsg;
+
+                pTag->setTagID(1);
+                pTag->setPointID(1);
+                pTag->setAction(CtiTagMsg::AddAction);
+                pTag->setDescriptionStr(RWTime().asString() + " TEST");
+                pTag->setSource("Corey's Tester");
+                pTag->setClientMsgId(57);
+                pTag->setUser("Marley's Ghost");
+
+                pTag->dump();
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " Removing tag " << atoi(argv[4]) << endl;
+                }
+
+                pTag = CTIDBG_new CtiTagMsg;
+                pTag->setInstanceID(atoi(argv[4]));
+                pTag->setAction(CtiTagMsg::RemoveAction);
+                pTag->dump();
+            }
+
+            Connect.WriteConnQue(pTag);
 
             CtiPointDataMsg  *pData = NULL;
             CtiMultiMsg   *pChg  = CTIDBG_new CtiMultiMsg();
@@ -177,7 +477,7 @@ void main(int argc, char **argv)
 
             CtiPointManager::CtiRTDBIterator itr(PointMgr.getMap());
 
-            for(k = 0; !bQuit && k < atoi(argv[3]); k++)
+            for(k = 0; !bQuit && PointMgr.entries() > 0 && k < atoi(argv[3]); k++)
             {
                 if( !itr() )
                 {
@@ -202,6 +502,7 @@ void main(int argc, char **argv)
                 Connect.WriteConnQue(CTIDBG_new CtiCommErrorHistoryMsg( pPoint->getDeviceID(), SYSTEM, 0, "ERROR TEST"));
                 Connect.WriteConnQue(CTIDBG_new CtiLMControlHistoryMsg( pPoint->getDeviceID(), 1, 0, RWTime(), -1, 100 ));
                 Connect.WriteConnQue(CTIDBG_new CtiPointDataMsg( pPoint->getID(), 1, NormalQuality,  pPoint->getType(), __FILE__));
+
 
                 pData = CTIDBG_new CtiPointDataMsg( pPoint->getID(), GetPointValue(pPoint->getType()), NormalQuality,  pPoint->getType(), __FILE__);
 
@@ -269,6 +570,11 @@ void main(int argc, char **argv)
                 pChg = NULL;
             }
 
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
             INT cnt;
             while( (cnt = Connect.outQueueCount()) > 0 )
             {
@@ -284,9 +590,20 @@ void main(int argc, char **argv)
                 dout << RWTime()  << " **** OutQueue is cleared" << endl;
             }
 
-            Sleep(5000);
+            while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    pMsg->dump();
+                }
+
+                delete pMsg;
+            }
 
             Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+
+            Sleep(5000);
         }
         catch(RWxmsg &msg)
         {
@@ -303,60 +620,5 @@ void main(int argc, char **argv)
             DoTheNasty(argc, argv);
             Sleep(atoi(argv[4]));
         }
-    }
-
-    // Make sure all the logs get output and done!
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
-
-
-    exit(0);
-
-}
-
-
-void DoTheNasty(int argc, char **argv)
-{
-    try
-    {
-        int Op, k;
-
-        unsigned    timeCnt = rwEpoch;
-        unsigned    pt = 1;
-        CtiMessage  *pMsg;
-
-        CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
-
-        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
-        pM->setMessagePriority(15);
-        pM->getData().insert(CTIDBG_new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE));
-
-        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
-
-        pM->getData().insert(PtRegMsg);
-
-        Connect.WriteConnQue( pM );
-
-        for(k = 0; k < atoi(argv[4]); k++ )
-        {
-            pMsg = Connect.ReadConnQue(1000);
-
-            if( NULL != pMsg)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    pMsg->dump();
-                }
-                delete pMsg;
-            }
-        }
-
-        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
-    }
-    catch(RWxmsg &msg)
-    {
-        cout << "Tester Exception: ";
-        cout << msg.why() << endl;
     }
 }
