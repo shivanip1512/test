@@ -131,7 +131,7 @@ public class CreateApplianceAction implements ActionBase {
 				AirConditioner ac = new AirConditioner();
 				ac.setTonnage( (Tonnage)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_TONNAGE, Integer.parseInt(req.getParameter("AC_Tonnage"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE, Integer.parseInt(req.getParameter("AC_Tonnage"))),
 						Tonnage.class) );
 				ac.setACType( (ACType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
@@ -144,11 +144,11 @@ public class CreateApplianceAction implements ActionBase {
 				WaterHeater wh = new WaterHeater();
 				wh.setNumberOfGallons( (NumberOfGallons)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_GALLONS, Integer.parseInt(req.getParameter("WH_GallonNum"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS, Integer.parseInt(req.getParameter("WH_GallonNum"))),
 						NumberOfGallons.class) );
 				wh.setEnergySource( (EnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE, Integer.parseInt(req.getParameter("WH_EnergySrc"))),
 						EnergySource.class) );
 				wh.setNumberOfElements( Integer.parseInt(req.getParameter("WH_ElementNum")) );
 				newApp.setWaterHeater( wh );
@@ -158,12 +158,12 @@ public class CreateApplianceAction implements ActionBase {
 				DualFuel df = new DualFuel();
 				df.setSwitchOverType( (SwitchOverType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE, Integer.parseInt(req.getParameter("DF_SwitchOverType"))),
 						SwitchOverType.class) );
 				df.setSecondaryKWCapacity( Integer.parseInt(req.getParameter("DF_KWCapacity2")) );
 				df.setSecondaryEnergySource( (SecondaryEnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE, Integer.parseInt(req.getParameter("DF_EnergySrc2"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE, Integer.parseInt(req.getParameter("DF_SecondarySrc"))),
 						SecondaryEnergySource.class) );
 				newApp.setDualFuel( df );
 			}
@@ -172,11 +172,11 @@ public class CreateApplianceAction implements ActionBase {
 				Generator gen = new Generator();
 				gen.setTransferSwitchType( (TransferSwitchType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_TYPE, Integer.parseInt(req.getParameter("GEN_TranSwitchType"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE, Integer.parseInt(req.getParameter("GEN_TranSwitchType"))),
 						TransferSwitchType.class) );
 				gen.setTransferSwitchManufacturer( (TransferSwitchManufacturer)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG, Integer.parseInt(req.getParameter("GEN_TranSwitchMfg"))),
 						TransferSwitchManufacturer.class) );
 				gen.setPeakKWCapacity( Integer.parseInt(req.getParameter("GEN_KWCapacity")) );
 				gen.setFuelCapGallons( Integer.parseInt(req.getParameter("GEN_FuelCapGal")) );
@@ -188,23 +188,23 @@ public class CreateApplianceAction implements ActionBase {
 				GrainDryer gd = new GrainDryer();
 				gd.setDryerType( (DryerType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_DRYER_TYPE, Integer.parseInt(req.getParameter("GD_DryerType"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE, Integer.parseInt(req.getParameter("GD_DryerType"))),
 						DryerType.class) );
 				gd.setBinSize( (BinSize)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_BIN_SIZE, Integer.parseInt(req.getParameter("GD_BinSize"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE, Integer.parseInt(req.getParameter("GD_BinSize"))),
 						BinSize.class) );
 				gd.setBlowerEnergySource( (BlowerEnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerEnergySrc"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerEnergySrc"))),
 						BlowerEnergySource.class) );
 				gd.setBlowerHorsePower( (BlowerHorsePower)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER, Integer.parseInt(req.getParameter("GD_BlowerHorsePower"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER, Integer.parseInt(req.getParameter("GD_BlowerHorsePower"))),
 						BlowerHorsePower.class) );
 				gd.setBlowerHeatSource( (BlowerHeatSource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerHeatSrc"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE, Integer.parseInt(req.getParameter("GD_BlowerHeatSrc"))),
 						BlowerHeatSource.class) );
 				newApp.setGrainDryer( gd );
 			}
@@ -213,7 +213,7 @@ public class CreateApplianceAction implements ActionBase {
 				StorageHeat sh = new StorageHeat();
 				sh.setStorageType( (StorageType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE, Integer.parseInt(req.getParameter("SH_StorageType"))),
 						StorageType.class) );
 				sh.setPeakKWCapacity( Integer.parseInt(req.getParameter("SH_KWCapacity")) );
 				sh.setHoursToRecharge( Integer.parseInt(req.getParameter("SH_RechargeHour")) );
@@ -224,11 +224,11 @@ public class CreateApplianceAction implements ActionBase {
 				HeatPump hp = new HeatPump();
 				hp.setPumpType( (PumpType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_PUMP_TYPE, Integer.parseInt(req.getParameter("HP_PumpType"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE, Integer.parseInt(req.getParameter("HP_PumpType"))),
 						PumpType.class) );
 				hp.setStandbySource( (StandbySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE, Integer.parseInt(req.getParameter("HP_StandbySrc"))),
 						StandbySource.class) );
 				hp.setRestartDelaySeconds( Integer.parseInt(req.getParameter("HP_RestartDelaySec")) );
 				newApp.setHeatPump( hp );
@@ -242,15 +242,15 @@ public class CreateApplianceAction implements ActionBase {
 						IrrigationType.class) );
 				irr.setHorsePower( (HorsePower)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER, Integer.parseInt(req.getParameter("IRR_HorsePower"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER, Integer.parseInt(req.getParameter("IRR_HorsePower"))),
 						HorsePower.class) );
 				irr.setEnergySource( (EnergySource)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE, Integer.parseInt(req.getParameter("IRR_EnergySrc"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE, Integer.parseInt(req.getParameter("IRR_EnergySrc"))),
 						EnergySource.class) );
 				irr.setSoilType( (SoilType)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(
-							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_SOIL_TYPE, Integer.parseInt(req.getParameter("IRR_SoilType"))),
+							selectionLists, YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE, Integer.parseInt(req.getParameter("IRR_SoilType"))),
 						SoilType.class) );
 				irr.setMeterLocation( (MeterLocation)StarsFactory.newStarsCustListEntry(
 						ServletUtils.getStarsCustListEntryByID(

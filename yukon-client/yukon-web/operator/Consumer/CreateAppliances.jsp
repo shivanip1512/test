@@ -201,7 +201,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="AC_Tonnage">
 <%
-		StarsCustSelectionList tonnageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_TONNAGE );
+		StarsCustSelectionList tonnageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TONNAGE );
 		for (int i = 0; i < tonnageList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = tonnageList.getStarsSelectionListEntry(i);
 %>
@@ -245,7 +245,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="WH_GallonNum">
 <%
-		StarsCustSelectionList gallonNumList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_NUM_OF_GALLONS );
+		StarsCustSelectionList gallonNumList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_WH_NUM_OF_GALLONS );
 		for (int i = 0; i < gallonNumList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = gallonNumList.getStarsSelectionListEntry(i);
 %>
@@ -263,7 +263,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="WH_EnergySrc">
 <%
-		StarsCustSelectionList energySrcList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE );
+		StarsCustSelectionList energySrcList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_WH_ENERGY_SOURCE );
 		for (int i = 0; i < energySrcList1.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = energySrcList1.getStarsSelectionListEntry(i);
 %>
@@ -297,7 +297,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="DF_SwitchOverType">
 <%
-		StarsCustSelectionList switchOverTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SWITCH_OVER_TYPE );
+		StarsCustSelectionList switchOverTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SWITCH_OVER_TYPE );
 		for (int i = 0; i < switchOverTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = switchOverTypeList.getStarsSelectionListEntry(i);
 %>
@@ -321,9 +321,9 @@ function showAdditionalAppInfo(index)
                       <div align="right">Secondary Energy Source:</div>
                     </td>
                     <td width="200" height="2"> 
-                      <select name="DF_EnergySrc2">
+                      <select name="DF_SecondarySrc2">
 <%
-		StarsCustSelectionList energySrcList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE );
+		StarsCustSelectionList energySrcList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DF_SECONDARY_SOURCE );
 		for (int i = 0; i < energySrcList2.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = energySrcList2.getStarsSelectionListEntry(i);
 %>
@@ -349,7 +349,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="GEN_TranSwitchType">
 <%
-		StarsCustSelectionList tranSwitchTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_TYPE );
+		StarsCustSelectionList tranSwitchTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_TYPE );
 		for (int i = 0; i < tranSwitchTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = tranSwitchTypeList.getStarsSelectionListEntry(i);
 %>
@@ -367,7 +367,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="GEN_TranSwitchMfg">
 <%
-		StarsCustSelectionList tranSwitchMfgList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_TRANSFER_SWITCH_MFG );
+		StarsCustSelectionList tranSwitchMfgList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GEN_TRANSFER_SWITCH_MFG );
 		for (int i = 0; i < tranSwitchMfgList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = tranSwitchMfgList.getStarsSelectionListEntry(i);
 %>
@@ -417,7 +417,7 @@ function showAdditionalAppInfo(index)
                     <td width="200" height="17"> 
                       <select name="GD_DryerType">
 <%
-		StarsCustSelectionList dryerTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DRYER_TYPE );
+		StarsCustSelectionList dryerTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GRAIN_DRYER_TYPE );
 		for (int i = 0; i < dryerTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = dryerTypeList.getStarsSelectionListEntry(i);
 %>
@@ -435,7 +435,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="GD_BinSize">
 <%
-		StarsCustSelectionList binSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_BIN_SIZE );
+		StarsCustSelectionList binSizeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_BIN_SIZE );
 		for (int i = 0; i < binSizeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = binSizeList.getStarsSelectionListEntry(i);
 %>
@@ -453,7 +453,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="GD_BlowerEenrgySrc">
 <%
-		StarsCustSelectionList energySrcList3 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE );
+		StarsCustSelectionList energySrcList3 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_ENERGY_SOURCE );
 		for (int i = 0; i < energySrcList3.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = energySrcList3.getStarsSelectionListEntry(i);
 %>
@@ -471,7 +471,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="GD_BlowerHorsePower">
 <%
-		StarsCustSelectionList horsePowerList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER );
+		StarsCustSelectionList horsePowerList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_HORSE_POWER );
 		for (int i = 0; i < horsePowerList1.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = horsePowerList1.getStarsSelectionListEntry(i);
 %>
@@ -489,7 +489,7 @@ function showAdditionalAppInfo(index)
                     <td width="200" height="2"> 
                       <select name="GD_BlowerHeatSrc">
 <%
-		StarsCustSelectionList heatSrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_SOURCE );
+		StarsCustSelectionList heatSrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_GD_HEAT_SOURCE );
 		for (int i = 0; i < heatSrcList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = heatSrcList.getStarsSelectionListEntry(i);
 %>
@@ -515,7 +515,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="SH_StorageType">
 <%
-		StarsCustSelectionList storageTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_TYPE );
+		StarsCustSelectionList storageTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_STORAGE_HEAT_TYPE );
 		for (int i = 0; i < storageTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = storageTypeList.getStarsSelectionListEntry(i);
 %>
@@ -557,7 +557,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="HP_PumpType">
 <%
-		StarsCustSelectionList pumpTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_PUMP_TYPE );
+		StarsCustSelectionList pumpTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HEAT_PUMP_TYPE );
 		for (int i = 0; i < pumpTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = pumpTypeList.getStarsSelectionListEntry(i);
 %>
@@ -575,7 +575,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="HP_StandbySrc">
 <%
-		StarsCustSelectionList standbySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_STANDBY_SOURCE );
+		StarsCustSelectionList standbySrcList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HP_STANDBY_SOURCE );
 		for (int i = 0; i < standbySrcList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = standbySrcList.getStarsSelectionListEntry(i);
 %>
@@ -627,7 +627,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="IRR_HorsePower">
 <%
-		StarsCustSelectionList horsePowerList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_HORSE_POWER );
+		StarsCustSelectionList horsePowerList2 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_HORSE_POWER );
 		for (int i = 0; i < horsePowerList2.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = horsePowerList2.getStarsSelectionListEntry(i);
 %>
@@ -645,7 +645,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="IRR_EnergySrc">
 <%
-		StarsCustSelectionList energySrcList4 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_ENERGY_SOURCE );
+		StarsCustSelectionList energySrcList4 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_ENERGY_SOURCE );
 		for (int i = 0; i < energySrcList4.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = energySrcList4.getStarsSelectionListEntry(i);
 %>
@@ -663,7 +663,7 @@ function showAdditionalAppInfo(index)
                     <td width="200"> 
                       <select name="IRR_SoilType">
 <%
-		StarsCustSelectionList soilTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SOIL_TYPE );
+		StarsCustSelectionList soilTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_SOIL_TYPE );
 		for (int i = 0; i < soilTypeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = soilTypeList.getStarsSelectionListEntry(i);
 %>
@@ -681,9 +681,9 @@ function showAdditionalAppInfo(index)
                     <td width="200" height="2"> 
                       <select name="IRR_MeterLoc">
 <%
-		StarsCustSelectionList locationList1 = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION );
-		for (int i = 0; i < locationList1.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = locationList1.getStarsSelectionListEntry(i);
+		StarsCustSelectionList meterLocList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_LOCATION );
+		for (int i = 0; i < meterLocList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = meterLocList.getStarsSelectionListEntry(i);
 %>
                         <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
 <%
@@ -699,9 +699,9 @@ function showAdditionalAppInfo(index)
                     <td width="200" height="2"> 
                       <select name="IRR_MeterVolt">
 <%
-		StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
-		for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
+		StarsCustSelectionList meterVoltList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_IRR_METER_VOLTAGE );
+		for (int i = 0; i < meterVoltList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = meterVoltList.getStarsSelectionListEntry(i);
 %>
                         <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
 <%
