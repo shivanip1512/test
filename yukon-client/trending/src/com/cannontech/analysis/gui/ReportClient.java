@@ -19,7 +19,7 @@ import javax.swing.JMenuItem;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.DatabaseReport;
 import com.cannontech.analysis.report.DisconnectReport;
-import com.cannontech.analysis.report.EnergyCompanyActivityLogReport;
+import com.cannontech.analysis.report.ECActivityLogReport;
 import com.cannontech.analysis.report.LGAccountingReport;
 import com.cannontech.analysis.report.MissedMeterReport;
 import com.cannontech.analysis.report.PowerFailReport;
@@ -245,8 +245,14 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 		{
 			enableComponents(true, true);
 			loadTreeModels(EC_MODELS);
-			setModel(new ActivityModel(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA));
+			setModel(new ActivityModel(ReportTypes.EC_ACTIVITY_LOG_DATA));
 		}
+//		else if (event.getSource() == getReportsMenu().getActivityDetailMenuItem())
+//		{
+//			enableComponents(true, true);
+//			loadTreeModels(EC_MODELS);
+//			setModel(new ActivityModel(ReportTypes.EC_ACTIVITY_DETAIL_DATA));
+//		}
 		else if (event.getSource() == getReportsMenu().getLoadProfileMenuItem())
 		{
 			//TODO
@@ -279,7 +285,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 				int[] ecIDs = getLiteIDsFromNodes();
 				if (model instanceof ActivityModel)
 					((ActivityModel)model).setECIDs(ecIDs);
-				report = new EnergyCompanyActivityLogReport();
+				report = new ECActivityLogReport();
 			}
 			else if (model instanceof DatabaseModel)
 			{
