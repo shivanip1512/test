@@ -149,7 +149,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 		resp.sendRedirect(redirectURL + "?sn=" + serialNumber);
 	}
 	else {
-		resp.sendRedirect(req.getContextPath() + "/operator/switch_commands.jsp?sn=" + serialNumber );
+		resp.sendRedirect(req.getContextPath() + "/operator/LoadControl/switch_commands.jsp?sn=" + serialNumber );
 	}
 }
 /**
