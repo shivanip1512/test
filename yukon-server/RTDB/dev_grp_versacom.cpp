@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:54 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/26 20:32:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,7 +147,9 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
         }
         else
         {
-            reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction"), vgList, getLastCommand() );
+            if(parse.getCommand() == ControlRequest)
+                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction"), vgList, getLastCommand() );
+
             delete pRet;
         }
     }
