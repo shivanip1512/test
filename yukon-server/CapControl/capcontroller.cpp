@@ -1221,7 +1221,7 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
                       << text << " Additional Info: " << additional << endl;
     }
 
-    BOOL found = FALSE;
+    /*BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
@@ -1260,7 +1260,7 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
         {
             break;
         }
-    }
+    }*/
 
     return;
 }
