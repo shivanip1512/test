@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/22/2002 9:45:28 AM                        */
+/* Created on:     11/25/2002 9:58:09 AM                        */
 /*==============================================================*/
 
 
@@ -290,13 +290,13 @@ create table ApplianceBase (
 ApplianceID          numeric              not null,
 AccountID            numeric              not null,
 ApplianceCategoryID  numeric              not null,
-DEVICEID             numeric              null,
-Notes                varchar(100)         null,
+LMProgramID          numeric              null,
 YearManufactured     numeric              null,
 ManufacturerID       numeric              null,
 LocationID           numeric              null,
 KWCapacity           numeric              null,
 EfficiencyRating     numeric              null,
+Notes                varchar(100)         null,
 constraint PK_APPLIANCEBASE primary key  (ApplianceID)
 )
 go
@@ -307,9 +307,9 @@ go
 /*==============================================================*/
 create table ApplianceCategory (
 ApplianceCategoryID  numeric              not null,
+Description          varchar(40)          null,
 CategoryID           numeric              null,
 WebConfigurationID   numeric              null,
-Description          varchar(40)          null,
 constraint PK_APPLIANCECATEGORY primary key  (ApplianceCategoryID)
 )
 go
@@ -335,10 +335,10 @@ CallID               numeric              not null,
 CallNumber           varchar(20)          null,
 CallTypeID           numeric              null,
 DateTaken            datetime             null,
+TakenBy              varchar(30)          null,
 Description          varchar(300)         null,
 AccountID            numeric              null,
 CustomerID           numeric              null,
-TakenBy              varchar(30)          null,
 constraint PK_CALLREPORTBASE primary key  (CallID)
 )
 go
@@ -528,13 +528,13 @@ InventoryID          numeric              not null,
 AccountID            numeric              null,
 InstallationCompanyID numeric              null,
 CategoryID           numeric              not null,
-DEVICEID             numeric              null,
 ReceiveDate          datetime             null,
 InstallDate          datetime             null,
 RemoveDate           datetime             null,
 AlternateTrackingNumber varchar(40)          null,
 VoltageID            numeric              null,
 Notes                varchar(100)         null,
+DEVICEID             numeric              null,
 constraint PK_INVENTORYBASE primary key  (InventoryID)
 )
 go
@@ -596,7 +596,7 @@ go
 create table LMProgramEvent (
 EventID              numeric              not null,
 AccountID            numeric              not null,
-DEVICEID             numeric              null,
+LMProgramID          numeric              null,
 constraint PK_LMPROGRAMEVENT primary key  (EventID)
 )
 go
@@ -609,7 +609,6 @@ create table LMProgramWebPublishing (
 ApplianceCategoryID  numeric              not null,
 LMProgramID          numeric              not null,
 WebsettingsID        numeric              null,
-DeviceID             numeric              null,
 ChanceOfControlID    numeric              null,
 constraint PK_LMPROGRAMWEBPUBLISHING primary key  (ApplianceCategoryID, LMProgramID)
 )
@@ -636,7 +635,6 @@ go
 create table LMThermostatSeason (
 SeasonID             numeric              not null,
 InventoryID          numeric              null,
-ConfigurationID      numeric              null,
 WebConfigurationID   numeric              null,
 StartDate            datetime             null,
 DisplayOrder         numeric              null,
@@ -664,10 +662,10 @@ go
 create table ServiceCompany (
 CompanyID            numeric              not null,
 CompanyName          varchar(40)          null,
-ContactID            numeric              null,
 AddressID            numeric              null,
 MainPhoneNumber      varchar(14)          null,
 MainFaxNumber        varchar(14)          null,
+PrimaryContactID     numeric              null,
 HIType               varchar(40)          null,
 constraint PK_SERVICECOMPANY primary key  (CompanyID)
 )
@@ -713,11 +711,11 @@ CustomerID           numeric              not null,
 SiteID               numeric              not null,
 ServiceCompanyID     numeric              null,
 DateReported         datetime             null,
+OrderedBy            varchar(30)          null,
 Description          varchar(200)         null,
 DateScheduled        datetime             null,
 DateCompleted        datetime             null,
 ActionTaken          varchar(200)         null,
-OrderedBy            varchar(30)          null,
 constraint PK_WORKORDERBASE primary key  (OrderID)
 )
 go
@@ -773,7 +771,7 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (AddressID)
-      references CustomerAddress ()
+      references CustomerAddress (AddressID)
 go
 
 
@@ -784,8 +782,8 @@ go
 
 
 alter table ApplianceBase
-   add constraint FK_AppBs_LMPr foreign key (DEVICEID)
-      references LMPROGRAM ()
+   add constraint FK_AppBs_LMPr foreign key (LMProgramID)
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -803,7 +801,7 @@ go
 
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references CustomerContact ()
+      references CustomerContact (ContactID)
 go
 
 
@@ -892,7 +890,7 @@ go
 
 
 alter table LMThermostatSeason
-   add constraint FK_CsWbC_LThSs foreign key (ConfigurationID)
+   add constraint FK_CsWbC_LThSs foreign key (WebConfigurationID)
       references CustomerWebConfiguration (ConfigurationID)
 go
 
@@ -911,7 +909,7 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references CustomerAddress ()
+      references CustomerAddress (AddressID)
 go
 
 
@@ -935,13 +933,13 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (ContactID)
-      references CustomerContact ()
+      references CustomerContact (ContactID)
 go
 
 
 alter table ServiceCompany
-   add constraint FK_CstCnt_SrvC foreign key (ContactID)
-      references CustomerContact ()
+   add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
+      references CustomerContact (ContactID)
 go
 
 
@@ -971,7 +969,7 @@ go
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references DEVICE ()
+      references DEVICE (DEVICEID)
 go
 
 
@@ -983,13 +981,13 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1001,7 +999,7 @@ go
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1013,13 +1011,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1031,7 +1029,7 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references EnergyCompany ()
+      references EnergyCompany (EnergyCompanyID)
 go
 
 
@@ -1055,7 +1053,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (DeviceID)
-      references LMGroup ()
+      references LMGroup (DeviceID)
 go
 
 
@@ -1066,8 +1064,8 @@ go
 
 
 alter table LMProgramEvent
-   add constraint FK_LMPrg_LMPrEv foreign key (DEVICEID)
-      references LMPROGRAM ()
+   add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
+      references LMPROGRAM (DEVICEID)
 go
 
 
@@ -1078,8 +1076,14 @@ go
 
 
 alter table LMProgramWebPublishing
-   add constraint FK_LMprApp_LMPrg foreign key (DeviceID)
-      references LMPROGRAM ()
+   add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
+      references LMPROGRAM (DEVICEID)
+go
+
+
+alter table Substation
+   add constraint FK_Sub_Rt foreign key (RouteID)
+      references Route (RouteID)
 go
 
 

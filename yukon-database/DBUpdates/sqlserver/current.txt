@@ -19,3 +19,6 @@ update yukonpaobject set paoname = replace(paoname, '\', '-')
 update yukonpaobject set paoname = replace(paoname, '|', '-')
 update yukonpaobject set paoname = replace(paoname, '"', '-')
 go
+
+
+update display set description = 'com.cannontech.tdc.windows.WinServicePanel' where displaynum=-4

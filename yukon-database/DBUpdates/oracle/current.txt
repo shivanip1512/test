@@ -15,3 +15,6 @@ alter table DynamicCCCapBank add OriginalSwitchingOrder NUMBER;
 update DynamicCCCapBank set OriginalSwitchingOrder = 0;
 alter TABLE DynamicCCCapBank MODIFY OriginalSwitchingOrder NOT NULL;
 /
+
+
+update display set description = 'com.cannontech.tdc.windows.WinServicePanel' where displaynum=-4
