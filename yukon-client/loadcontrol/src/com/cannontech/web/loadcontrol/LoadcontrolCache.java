@@ -750,7 +750,7 @@ public void setDbAlias(java.lang.String newDbAlias) {
  */
 public synchronized void update(java.util.Observable o, java.lang.Object arg) 
 {
-	CTILogger.info( getClass() + ": received type: " + arg.getClass());
+	CTILogger.debug( getClass() + ": received type: " + arg.getClass());
 
 	if( arg instanceof LCChangeEvent )
 	{
