@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2004/11/09 06:13:53 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2004/11/16 20:51:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -595,6 +595,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     /* Misc Definitions */
     INT    i, j;
     extern USHORT PrintLogEvent;
+    time_t last_print = 0;
 
     BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -880,7 +881,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             time(&timeStart);
 #endif
 
-            if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))     // There is something ther if we succeed.
+            if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count) && (Count > 0))     // There is something ther if we succeed.
             {
                 if(inRecord.EventType != KEY_EVENT)
                 {
@@ -926,6 +927,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                     }
                 }
             }
+        }
+
+        if( last_print + 60 <= ::time(0) )
+        {
+            last_print = ::time(0);
+
+            processInputFunction(0x71);  //  do an alt-q every 30 seconds
         }
 
         CTISleep(250);
