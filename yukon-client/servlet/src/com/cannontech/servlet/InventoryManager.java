@@ -85,7 +85,8 @@ public class InventoryManager extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
+		throws ServletException, IOException
+	{
 		HttpSession session = req.getSession(false);
 		if (session == null) {
 			resp.sendRedirect( req.getContextPath() + SOAPClient.LOGIN_URL ); return;
@@ -99,7 +100,7 @@ public class InventoryManager extends HttpServlet {
 		}
         
 		referer = req.getParameter( ServletUtils.ATT_REFERRER );
-		if (referer == null) req.getHeader( "referer" );
+		if (referer == null) referer = req.getHeader( "referer" );
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
 		
