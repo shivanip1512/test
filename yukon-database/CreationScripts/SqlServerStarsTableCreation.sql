@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     9/25/2003 5:22:16 PM                         */
+/* Created on:     2/13/2004 10:16:44 AM                        */
 /*==============================================================*/
 
 
@@ -1339,7 +1339,7 @@ go
 
 alter table CustomerAccount
    add constraint FK_CstBs_CstAcc foreign key (CustomerID)
-      references Customer ()
+      references Customer (CustomerID)
 go
 
 
@@ -1615,19 +1615,19 @@ go
 
 alter table ApplianceCategory
    add constraint FK_YkWC_ApCt foreign key (WebConfigurationID)
-      references YukonWebConfiguration ()
+      references YukonWebConfiguration (ConfigurationID)
 go
 
 
 alter table LMProgramWebPublishing
    add constraint FK_YkWC_LMPrWPb foreign key (WebsettingsID)
-      references YukonWebConfiguration ()
+      references YukonWebConfiguration (ConfigurationID)
 go
 
 
 alter table LMThermostatSeason
    add constraint FK_YkWbC_LThSs foreign key (WebConfigurationID)
-      references YukonWebConfiguration ()
+      references YukonWebConfiguration (ConfigurationID)
 go
 
 
