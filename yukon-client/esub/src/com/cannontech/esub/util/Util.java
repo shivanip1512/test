@@ -15,10 +15,13 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.message.dispatch.ClientConnection;
@@ -436,5 +439,18 @@ public class Util {
 	public static boolean isStatusPoint(int pointID) {
 		LitePoint lp = PointFuncs.getLitePoint(pointID);		
 		return (lp != null && lp.getPointType() == PointTypes.STATUS_POINT);	
+	}
+	
+	public static void logActivity(int userID, String action, String description) {
+		try {		
+			ActivityLog al = new ActivityLog();
+			al.setUserID(userID);
+			al.setAction(action);
+			al.setDescription(description);
+			Transaction t = Transaction.createTransaction(Transaction.INSERT, al);
+			t.execute(); 
+		} catch(TransactionException te) {
+			te.printStackTrace();
+		}		
 	}
 }
