@@ -36,11 +36,11 @@ public class PointUtil {
 			 || val instanceof MCT470
 			 || val instanceof MCT410_KWH_Only )
 		{
-			if(val instanceof MCT410IL)
+			if(val instanceof MCT400SeriesBase)
 			{
-				//sloppy way of setting a 410 load profile default...
+				//sloppy way of setting a 400 series load profile default...
 				//improve this later
-				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));	
+				((MCT400SeriesBase)val).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));	
 			}
 			
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
