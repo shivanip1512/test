@@ -55,11 +55,11 @@ public static synchronized SmartMultiDBPersistent createPoints( Integer paoID )
 	
 	smartDB.addDBPersistent( 
 		PointFactory.createAnalogPoint(
-			"Total kVArh",
+			"kW",
 			paoID,
 			new Integer(ids[1]),
 			2,
-			com.cannontech.database.data.point.PointUnits.UOMID_KVARH) );
+			com.cannontech.database.data.point.PointUnits.UOMID_KW) );
 		
 	
 	return smartDB;	
