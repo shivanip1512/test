@@ -9,8 +9,6 @@ package com.cannontech.graph;
 import java.io.IOException;
 import java.util.Date;
 
-import org.jfree.chart.JFreeChart;
-
 import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
@@ -18,6 +16,7 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.util.ServletUtil;
+import org.jfree.chart.JFreeChart;
 
 public class GraphBean implements GraphDefines
 {
