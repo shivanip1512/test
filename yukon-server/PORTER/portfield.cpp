@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2003/11/06 21:15:56 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2003/11/10 18:20:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -236,6 +236,8 @@ VOID PortThread(void *pid)
                 }
 
                 PortManager.apply( applyPortQueuePurge, (void*)Port->getPortID() );
+
+                //  !!!  MUST RESET LGRPQ STUFF FOR CCU'S PINFO  !!!
             }
             else
             {
@@ -2679,7 +2681,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     DSTRUCT        DSt;
 
                     /* This is I so decode dword(s) for the result */
-                    status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
+                    CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
                     DSt.Time = InMessage->Time;
                     DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
                     InMessage->Buffer.DSt = DSt;
