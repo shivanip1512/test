@@ -9,6 +9,7 @@ import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
+
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
@@ -29,6 +30,11 @@ public class Drawing implements Serializable {
 	// The jloox graph and view to use
 	private LxGraph lxGraph;
 	private LxView lxView;
+	
+	public Drawing() {
+		//init the view
+		getLxView();
+	}
 	
 	public synchronized void clear() {
 		fileName = null;
@@ -125,8 +131,7 @@ public class Drawing implements Serializable {
 	 */
 	public LxView getLxView() {
 		if (lxView == null) {
-			lxView = new LxView();
-			lxView.setGraph(getLxGraph());
+			lxView = (LxView) getLxGraph().addView();
 			lxView.setEditMode(LxView.EDITOR_MODE);
 			lxView.setAntialiasingActivated(false);
 			lxView.lassoSetDisplayed(true);
@@ -194,7 +199,7 @@ public class Drawing implements Serializable {
 	
 	public DrawingMetaElement getMetaElement() {	
 		// Fix up each element so they know who their drawing is
-		LxComponent[] comps = lxGraph.getComponents();
+		LxComponent[] comps = getLxGraph().getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof DrawingMetaElement)
 				return (DrawingMetaElement) comps[i];
