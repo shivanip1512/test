@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/06/21 15:41:00 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/06/24 15:00:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "utility.h"
 #include "logger.h"
 
+
+void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 
 void DumpOutMessage(void *Mess)
 {
@@ -230,16 +232,7 @@ void CtiPILServer::mainThread()
 
             if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
             {
-                if(MsgPtr->isA() == MSG_PCREQUEST)
-                {
-                    CtiDevice *DeviceRecord = DeviceManager->RemoteGetEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
-                    if(DeviceRecord)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Pilserver mainThread received a CtiRequestMsg for " << DeviceRecord->getName();
-                        dout << " at priority " << MsgPtr->getMessagePriority() << endl;
-                    }
-                }
+                ReportMessagePriority(MsgPtr, DeviceManager);
             }
 
             /* Check if we need to reopen the port pipe */
@@ -1214,4 +1207,38 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     }
 
     return status;
+}
+
+void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager )
+{
+    if(MsgPtr->isA() == MSG_PCREQUEST)
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
+        CtiDevice *DeviceRecord = DeviceManager->RemoteGetEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
+        if(DeviceRecord)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Pilserver mainThread received a CtiRequestMsg for " << DeviceRecord->getName();
+            dout << " at priority " << MsgPtr->getMessagePriority() << endl;
+
+            CtiRequestMsg *pCmd = (CtiRequestMsg*)MsgPtr;
+
+            if(!pCmd->CommandString().isNull())
+            {
+                dout << RWTime() << "   Command string: \"" << pCmd->CommandString() << "\"" << endl;
+            }
+        }
+    }
+    else if(MsgPtr->isA() == MSG_MULTI)
+    {
+        RWOrderedIterator itr( ((CtiMultiMsg*)MsgPtr)->getData() );
+        CtiMessage *pMyMsg;
+
+        while(NULL != (pMyMsg = (CtiMessage*)itr()))
+        {
+            ReportMessagePriority(pMyMsg, DeviceManager);                  // And recurse.
+        }
+    }
+
+    return;
 }
