@@ -15,6 +15,21 @@ public final class VersionTools
 	public static final String COMMON_JAR = "common.jar";
 	public static String yukonVersion = null;
 
+	//we need a set of query strings for backward compatability
+	// since this is used in DBUpdates that get executed before
+	// the DB structure is changed
+	public static final String[] QUERY_STRS =
+	{
+		//latest query string is first!
+		"select Version, CTIEmployeeName, DateApplied, Notes, Build from " + 
+			com.cannontech.database.db.version.CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
+			"order by Version desc",
+
+		"select Version, CTIEmployeeName, DateApplied, Notes from " + 
+			com.cannontech.database.db.version.CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
+			"order by Version desc"
+	};
+
 
 /**
  * VersionTools constructor comment.
@@ -32,23 +47,38 @@ public final static com.cannontech.database.db.version.CTIDatabase getDatabaseVe
 	com.cannontech.database.db.version.CTIDatabase db = new com.cannontech.database.db.version.CTIDatabase();
 	java.sql.Connection conn = PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 	java.sql.PreparedStatement stat = null;
-	
-	try
-	{
-		//get the latest version
-		stat = conn.prepareStatement( "select Version, " +
-					"CTIEmployeeName, DateApplied, Notes, Build from " + 
-					com.cannontech.database.db.version.CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
-					"order by Version desc" );
 
-		java.sql.ResultSet rs = stat.executeQuery();
+	try
+	{	
+		java.sql.ResultSet rs = null;
+		
+		int i = 0;
+		for( i = 0; i < QUERY_STRS.length; i++ )
+		{
+			try
+			{
+				//get the latest version
+				stat = conn.prepareStatement( QUERY_STRS[i] );
+
+				//chucks if columns are not up to date
+				rs = stat.executeQuery();
+			}
+			catch( Exception exx )
+			{}
+
+			if( rs != null )
+				break;
+		}
+	
 		rs.next();
 		
 		db.setVersion( rs.getString("Version") );
 		db.setCtiEmployeeName( rs.getString("CTIEmployeeName") );
 		db.setDateApplied( new java.util.Date( rs.getTimestamp("DateApplied").getTime() ) );
 		db.setNotes( rs.getString("Notes") );
-		db.setBuild( new Integer(rs.getInt("Build")) );
+		
+		if( i == 0 ) //zeroth query string has the build column
+			db.setBuild( new Integer(rs.getInt("Build")) );
 	}
 	catch( java.sql.SQLException e )
 	{
