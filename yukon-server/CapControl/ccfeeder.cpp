@@ -1052,8 +1052,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
     CtiRequestMsg* request = NULL;
 
-    if( !_IGNORE_NOT_NORMAL_FLAG ||
-        getCurrentVarPointQuality() == NormalQuality )
+    if( !getDisableFlag() &&
+        ( !_IGNORE_NOT_NORMAL_FLAG ||
+          getCurrentVarPointQuality() == NormalQuality ) )
     {
         if( controlUnits == CtiCCSubstationBus::KVARControlUnits )
         {
