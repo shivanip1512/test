@@ -20,26 +20,14 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
-function setAssignEmpty(form, checked) {
-	if (form.EntryTextEmpty != null)
-		form.EntryTextEmpty.disabled = !checked;
-	else
-		form.EntryIDEmpty.disabled = !checked;
-}
-
-function prepareSubmit(form) {
-	if (form.AssignEmpty.checked) {
-		var html = "<input type='hidden' name='ImportValue' value=''>";
-		form.insertAdjacentHTML("afterBegin", html);
-		
-		if (form.EntryTextEmpty != null) {
-			html = "<input type='hidden' name='EntryText' value='" + form.EntryTextEmpty.value + "'>";
-			form.insertAdjacentHTML("afterBegin", html);
-		}
-		else {
-			html = "<input type='hidden' name='EntryID' value='" + form.EntryIDEmpty.value + "'>";
-			form.insertAdjacentHTML("afterBegin", html);
-		}
+function setEnabled(form, checked, idx) {
+	if (form.EntryText != null) {
+		form.EntryText[idx].disabled = !checked;
+		form.EntryText.disabled = !checked;	// in case there is only one entry
+	}
+	else {
+		form.EntryID[idx].disabled = !checked;
+		form.EntryID.disabled = !checked;
 	}
 }
 </script>
@@ -97,158 +85,106 @@ function prepareSubmit(form) {
                 <tr> 
                   <td class="MainText"> 
                     <div align="center">Select or enter a new selection list entry 
-                      for each value appeared in the import file.</div>
+                      for each value appeared in the import file. Uncheck the 
+                      checkbox before the import value if you don't want to assign 
+                      any entry to it.</div>
                   </td>
                 </tr>
               </table>
             </div>
 			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin" onsubmit="prepareSubmit(this)">
+			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
 			  <input type="hidden" name="action" value="AssignSelectionList">
 			  <input type="hidden" name="ListName" value="<%= listName %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount2.jsp">
               <table width="500" border="1" cellspacing="0" cellpadding="3" align="center" class="MainText">
                 <tr> 
-                  <td width="40%" class="HeaderCell">Import File Value</td>
-                  <td width="60%" class="HeaderCell">Selection List Entry</td>
+                  <td width="5%" class="HeaderCell">&nbsp;</td>
+                  <td width="45%" class="HeaderCell">Import Value</td>
+                  <td width="50%" class="HeaderCell">Selection List Entry</td>
                 </tr>
 <%
+	int idx = 0;
 	Iterator it = valueIDMap.entrySet().iterator();
 	while (it.hasNext()) {
 		Map.Entry valueIDPair = (Map.Entry) it.next();
 		String value = (String) valueIDPair.getKey();
-		int id = ((Integer)valueIDPair.getValue()).intValue();
-		
-		if (value.equals("")) {
-%>
-				<tr> 
-                  <td width="40%" class="TableCell">Assign empty import value 
-                    <input type="checkbox" name="AssignEmpty" onclick="setAssignEmpty(this.form, this.checked)">
-                  </td>
-                  <td width="60%" class="TableCell"> 
-                    <%
-			if (newList) {
-%>
-                    <input type="text" name="EntryTextEmpty" disabled>
-<%
-			}
-			else {
-%>
-                    <select name="EntryIDEmpty" disabled>
-<%
-				if (list != null) {		
-					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
-						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
-						String selected = (entry.getEntryID() == id)? "selected" : "";
-%>
-                      <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
-<%
-					}
-				}
-				else if (listName.equals("ApplianceType")) {
-					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-						String selected = (category.getApplianceCategoryID() == id)? "selected" : "";
-%>
-                      <option value="<%= category.getApplianceCategoryID() %>" <%= selected %>><%= category.getDescription() %></option>
-<%
-					}
-				}
-				else if (listName.equals("ServiceCompany")) {
-					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
-						StarsServiceCompany company = companies.getStarsServiceCompany(j);
-						String selected = (company.getCompanyID() == id)? "selected" : "";
-%>
-                      <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
-<%
-					}
-				}
-				else {
-%>
-                      <option value="0">(none)</option>
-<%
-				}
-%>
-                    </select>
-<%
-			}	// if (newList)
-%>
-				  </td>
-				</tr>
-<%
-		}
-		else {	// value is not empty
+		Integer id = (Integer) valueIDPair.getValue();
+		boolean enabled = (id != null) && (value.length() > 0 || id.intValue() > 0);
 %>
                 <input type="hidden" name="ImportValue" value="<%= value %>">
-				<tr> 
-                  <td width="40%" class="TableCell"><%= value %></td>
-                  <td width="60%" class="TableCell"> 
-                    <%
-			if (newList) {
-%>
-                    <input type="text" name="EntryText">
+                <tr> 
+                  <td width="5%" class="TableCell">
+                    <input type="checkbox" name="Enabled" value="<%= idx %>" <% if (enabled) out.write("checked"); %>
+					  onclick="setEnabled(this.form, this.checked, <%= idx++ %>)">
+                  </td>
+                  <td width="45%" class="TableCell"><%= (value.length() > 0)? value : "(Empty Value)" %></td>
+                  <td width="50%" class="TableCell"> 
 <%
-			}
-			else {
+		if (newList) {
 %>
-                    <select name="EntryID">
+                    <input type="text" name="EntryText" <% if (!enabled) out.write("disabled"); %>>
 <%
-				if (list != null) {		
-					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
-						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
-						String selected = (entry.getEntryID() == id)? "selected" : "";
+		}
+		else {
+%>
+                    <select name="EntryID" <% if (!enabled) out.write("disabled"); %>>
+<%
+			if (list != null) {		
+				for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+					YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+					String selected = (id != null && entry.getEntryID() == id.intValue())? "selected" : "";
 %>
                       <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
-					}
 				}
-				else if (listName.equals("ApplianceType")) {
-					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-						String selected = (category.getApplianceCategoryID() == id)? "selected" : "";
+			}
+			else if (listName.equals("ApplianceType")) {
+				for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+					StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+					String selected = (id != null && category.getApplianceCategoryID() == id.intValue())? "selected" : "";
 %>
                       <option value="<%= category.getApplianceCategoryID() %>" <%= selected %>><%= category.getDescription() %></option>
 <%
-					}
 				}
-				else if (listName.equals("ServiceCompany")) {
-					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
-						StarsServiceCompany company = companies.getStarsServiceCompany(j);
-						String selected = (company.getCompanyID() == id)? "selected" : "";
+			}
+			else if (listName.equals("ServiceCompany")) {
+				for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
+					StarsServiceCompany company = companies.getStarsServiceCompany(j);
+					String selected = (id != null && company.getCompanyID() == id.intValue())? "selected" : "";
 %>
                       <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
 <%
-					}
 				}
-				else if (listName.equals("LoadGroup")) {
-					for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-						StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
-						for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-							StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
-							for (int l = 0; l < program.getAddressingGroupCount(); l++) {
-								AddressingGroup group = program.getAddressingGroup(l);
-								String selected = (group.getEntryID() == id)? "selected" : "";
+			}
+			else if (listName.equals("LoadGroup")) {
+				for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+					StarsApplianceCategory category = categories.getStarsApplianceCategory(j);
+					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+						StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
+						for (int l = 0; l < program.getAddressingGroupCount(); l++) {
+							AddressingGroup group = program.getAddressingGroup(l);
+							String selected = (id != null && group.getEntryID() == id.intValue())? "selected" : "";
 %>
                       <option value="<%= group.getEntryID() %>" <%= selected %>><%= group.getContent() %></option>
 <%
-							}
 						}
 					}
 				}
-				else {
+			}
+			else {
 %>
                       <option value="0">(none)</option>
 <%
-				}
+			}
 %>
                     </select>
 <%
-			}	// if (newList)
+		}	// if (newList)
 %>
-				  </td>
+                  </td>
                 </tr>
 <%
-		}	// if (value.equals(""))
 	}
 %>
               </table>
