@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2003/08/12 13:06:50 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2003/09/23 00:36:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,7 @@ using namespace std;
 #include "dev_base.h"
 #include "dev_single.h"
 #include "dev_mct.h"  //  for DLC loadprofile scans
+#include "dev_welco.h"
 
 #include "logger.h"
 #include "exchange.h"
@@ -1317,6 +1318,12 @@ void LoadScannableDevices(void *ptr)
                             pChg->dump();
                         }
                         pBase->RefreshDevicePoints();
+
+                        // Do anything required be particular devices on a reload here.
+                        if(pBase->getType() == TYPE_WELCORTU)
+                        {
+                            ((CtiDeviceWelco*)pBase)->setDeadbandsSent(false);
+                        }
                     }
                     else if(pChg->getTypeOfChange() == ChangeTypeDelete)
                     {
