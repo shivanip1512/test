@@ -36,24 +36,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupVersacom )
     CtiLMGroupVersacom(const CtiLMGroupVersacom& groupversa);
 
     virtual ~CtiLMGroupVersacom();
-    
-    ULONG getUtilityAddress() const;
-    ULONG getSectionAddress() const;
-    ULONG getClassAddress() const;
-    ULONG getDivisionAddress() const;
-    const RWCString& getAddressUsage() const;
-    const RWCString& getRelayUsage() const;
-    ULONG getRouteId() const;
-
-    CtiLMGroupVersacom& setUtilityAddress(ULONG utiladd);
-    CtiLMGroupVersacom& setSectionAddress(ULONG sectadd);
-    CtiLMGroupVersacom& setClassAddress(ULONG classadd);
-    CtiLMGroupVersacom& setDivisionAddress(ULONG divadd);
-    CtiLMGroupVersacom& setAddressUsage(const RWCString& adduse);
-    CtiLMGroupVersacom& setRelayUsage(const RWCString& relayuse);
-    CtiLMGroupVersacom& setRouteId(ULONG rteid);
-
-    void restoreVersacomSpecificDatabaseEntries(RWDBReader& rdr);
 
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const;
@@ -73,14 +55,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupVersacom )
     /* Static Members */
 
 private:
-
-    ULONG _utilityaddress;
-    ULONG _sectionaddress;
-    ULONG _classaddress;
-    ULONG _divisionaddress;
-    RWCString _addressusage;
-    RWCString _relayusage;
-    ULONG _routeid;
 
     void restore(RWDBReader& rdr);
 };
