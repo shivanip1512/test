@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/05/23 22:22:51 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/06/27 20:10:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,8 @@
 #include "msg_pdata.h"
 #include "pt_status.h"
 #include "pt_analog.h"
+
+#include "dev_base.h"
 
 class CtiDeviceGroupBase : public CtiDeviceBase
 {
