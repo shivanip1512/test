@@ -47,7 +47,7 @@ public class NotificationServer implements Runnable
 	public NotificationServer()
 	{
 		super();
-		setBindAddress( "127.0.0.1" );		
+		setBindAddress( "ryan" );		
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class NotificationServer implements Runnable
 			server = new ServerSocket( 
 					getPort(), 
 					getBacklog(), 
-					bindAddress );
+					null ); //bindAddress );
 
 			CTILogger.info("Started Notification server: " + server);
 
