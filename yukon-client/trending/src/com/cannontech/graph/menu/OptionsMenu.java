@@ -1,5 +1,7 @@
 package com.cannontech.graph.menu;
 
+import com.cannontech.graph.model.TrendModelType;
+
 /**
  * This type was created in VisualAge.
  */
@@ -22,6 +24,8 @@ public class OptionsMenu extends javax.swing.JMenu {
 	private javax.swing.JMenu ivjResolutionMenu = null;
 	private javax.swing.JRadioButtonMenuItem ivjMinuteResMenuItem = null;
 	private javax.swing.JRadioButtonMenuItem ivjSecondResMenuItem = null;
+	private javax.swing.JMenuItem advancedOptionsMenuItem = null;
+	private javax.swing.JSeparator ivjJSeparator2 = null;
 /**
  * YukonCommanderFileMenu constructor comment.
  */
@@ -29,6 +33,17 @@ public OptionsMenu() {
 	super();
 	initialize();
 }
+
+/**
+ * YukonCommanderFileMenu constructor comment.
+ */
+public OptionsMenu(int optionsMask, long resolution) {
+	super();
+	initialize();
+	setSelectedOptions(optionsMask);
+	setSelectedResolution(resolution);
+}
+
 /**
  * 
  */
@@ -114,6 +129,27 @@ private javax.swing.JSeparator getJSeparator1() {
 	}
 	return ivjJSeparator1;
 }
+/**
+ * Return the JSeparator2 property value.
+ * @return javax.swing.JSeparator
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JSeparator getJSeparator2() {
+	if (ivjJSeparator2 == null) {
+		try {
+			ivjJSeparator2 = new javax.swing.JSeparator();
+			ivjJSeparator2.setName("JSeparator2");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJSeparator2;
+}
+
 /**
  * Return the LegendMenu property value.
  * @return javax.swing.JMenu
@@ -396,6 +432,27 @@ public javax.swing.JCheckBoxMenuItem getShowMinMaxMenuItem() {
 	return ivjShowMinMaxMenuItem;
 }
 /**
+ * Return the AdvancedOptions property value.
+ * @return javax.swing.JCheckBoxMenuItem
+ */
+public javax.swing.JMenuItem getAdvancedOptionsMenuItem() {
+	if (advancedOptionsMenuItem == null) {
+		try {
+			advancedOptionsMenuItem = new javax.swing.JMenuItem();
+			advancedOptionsMenuItem.setName("AdvancedOptionsMenuItem");
+			advancedOptionsMenuItem.setText("Advanced...");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return advancedOptionsMenuItem;
+}
+
+/**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
  */
@@ -426,11 +483,39 @@ private void initialize() {
 		add(getJSeparator1());
 		add(getLegendMenu());
 		add(getResolutionMenu());
+		add(getJSeparator2());
+		add(getAdvancedOptionsMenuItem());
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
 	// user code end
+}
+public void setSelectedOptions(int optionsMask)
+{
+	if( (optionsMask & TrendModelType.GRAPH_MULTIPLIER_MASK) == TrendModelType.GRAPH_MULTIPLIER_MASK)
+		getMultiplierMenuItem().setSelected(true);
+
+	if( (optionsMask & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
+		getPlotMinMaxValuesMenuItem().setSelected(true);
+
+	if( (optionsMask & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+		getLoadDurationMenuItem().setSelected(true);
+		
+	if( (optionsMask & TrendModelType.LEGEND_MIN_MAX_MASK) == TrendModelType.LEGEND_MIN_MAX_MASK)
+		getShowMinMaxMenuItem().setSelected(true);
+
+	if( (optionsMask & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
+		getShowLoadFactorMenuItem().setSelected(true);
+}
+private void setSelectedResolution(long resolution)
+{
+	if( resolution == 1000)
+		getSecondResMenuItem().setSelected(true);
+	else if( resolution == 60000)
+		getMinuteResMenuItem().setSelected(true);
+	else
+		getNoneResMenuItem().setSelected(true);
 }
 /**
  * main entrypoint - starts the part when it is run as an application
