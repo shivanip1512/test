@@ -97,7 +97,7 @@ void CtiCCCommandExecutor::EnableSubstationBus(RWCountedPointer< CtiCountedPCPtr
     
     ULONG subID = _command->getId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -125,7 +125,7 @@ void CtiCCCommandExecutor::DisableSubstationBus(RWCountedPointer< CtiCountedPCPt
 
     ULONG subID = _command->getId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -154,7 +154,7 @@ void CtiCCCommandExecutor::EnableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<R
     ULONG feederID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -192,7 +192,7 @@ void CtiCCCommandExecutor::DisableFeeder(RWCountedPointer< CtiCountedPCPtrQueue<
     ULONG feederID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -230,7 +230,7 @@ void CtiCCCommandExecutor::EnableCapBank(RWCountedPointer< CtiCountedPCPtrQueue<
     ULONG capBankID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -286,7 +286,7 @@ void CtiCCCommandExecutor::DisableCapBank(RWCountedPointer< CtiCountedPCPtrQueue
     ULONG capBankID = _command->getId();
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -349,7 +349,7 @@ void CtiCCCommandExecutor::OpenCapBank(RWCountedPointer< CtiCountedPCPtrQueue<RW
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -521,7 +521,7 @@ void CtiCCCommandExecutor::CloseCapBank(RWCountedPointer< CtiCountedPCPtrQueue<R
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -694,7 +694,7 @@ void CtiCCCommandExecutor::ConfirmOpen(RWCountedPointer< CtiCountedPCPtrQueue<RW
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -865,7 +865,7 @@ void CtiCCCommandExecutor::ConfirmClose(RWCountedPointer< CtiCountedPCPtrQueue<R
     CtiMultiMsg* multi = new CtiMultiMsg();
     RWOrdered& pointChanges = multi->getData();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(ULONG i=0;i<ccSubstationBuses.entries();i++)
     {
@@ -1031,7 +1031,7 @@ void CtiCCCommandExecutor::SendAllSubstationBuses(RWCountedPointer< CtiCountedPC
     CtiCCExecutorFactory f;
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses())));
+    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds()))));
     executor->Execute(queue);
     delete executor;
 }
@@ -1107,10 +1107,10 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
     //if( _CC_DEBUG )
 	{
         char tempchar[80];
-        RWCString outString = "Point data message received from a client. ID:";
+        RWCString outString = "Manual point value received from client, ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
-        outString += " Value:";
+        outString += " Val:";
         int precision = 3;
         _snprintf(tempchar,80,"%.*f",precision,value);
         outString += tempchar;
@@ -1127,7 +1127,7 @@ void CtiCCPointDataMsgExecutor::Execute(RWCountedPointer< CtiCountedPCPtrQueue<R
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
     for(int i=0;i<ccSubstationBuses.entries();i++)
     {

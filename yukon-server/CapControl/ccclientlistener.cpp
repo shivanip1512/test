@@ -128,18 +128,20 @@ void CtiCCClientListener::_listen()
 
                     _connections.insert(conn);
                 }
+
+                ULONG secondsFrom1901 = RWDBDateTime().seconds();
                 CtiCCExecutorFactory f;
                 RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
                 CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses())));
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(secondsFrom1901))));
                 try
                 {
                     executor->Execute(queue);
                     delete executor;
-                    executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates()));
+                    executor = f.createExecutor(new CtiCCCapBankStatesMsg(store->getCCCapBankStates(secondsFrom1901)));
                     executor->Execute(queue);
                     delete executor;
-                    executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas()));
+                    executor = f.createExecutor(new CtiCCGeoAreasMsg(store->getCCGeoAreas(secondsFrom1901)));
                     executor->Execute(queue);
                 }
                 catch(...)
