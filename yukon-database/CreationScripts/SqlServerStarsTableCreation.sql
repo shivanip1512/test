@@ -1688,8 +1688,8 @@ go
 
 
 alter table LMThermostatSeason
-   add constraint FK_InvB_LThSs foreign key (ScheduleID)
-      references InventoryBase (InventoryID)
+   add constraint FK_ThSc_LThSs foreign key (ScheduleID)
+      references LMThermostatSchedule (ScheduleID)
 go
 
 
@@ -1730,7 +1730,7 @@ go
 
 
 alter table LMThermostatSchedule
-   add constraint FK_LMThSc_InvB foreign key (ScheduleID)
+   add constraint FK_LMThSc_InvB foreign key (InventoryID)
       references InventoryBase (InventoryID)
 go
 
