@@ -84,9 +84,9 @@ public class LMThermostatSeason extends DBPersistent {
 		}
 	}
 	
-	public static LMThermostatSeason[] getAllLMThermostatSeasons(int inventoryID) {
+	public static LMThermostatSeason[] getAllLMThermostatSeasons(int scheduleID) {
 		com.cannontech.database.db.stars.hardware.LMThermostatSeason[] seasonDBs =
-				com.cannontech.database.db.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( inventoryID );
+				com.cannontech.database.db.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( scheduleID );
 		if (seasonDBs == null) return null;
 		
 		try {

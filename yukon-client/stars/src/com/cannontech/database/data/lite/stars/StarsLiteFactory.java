@@ -204,7 +204,7 @@ public class StarsLiteFactory {
 		if (liteInv instanceof LiteStarsLMHardware) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			if (liteHw.isThermostat())
-				liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
+				liteHw.setThermostatSettings( ECUtils.getThermostatSettings(liteHw, energyCompany) );
 		}
 		
 		liteInv.setExtended( true );
@@ -304,7 +304,7 @@ public class StarsLiteFactory {
 
 	public static void setLiteLMThermostatSeason(LiteLMThermostatSeason liteSeason, com.cannontech.database.db.stars.hardware.LMThermostatSeason season) {
 		liteSeason.setSeasonID( season.getSeasonID().intValue() );
-		liteSeason.setInventoryID( season.getInventoryID().intValue() );
+		liteSeason.setScheduleID( season.getScheduleID().intValue() );
 		liteSeason.setWebConfigurationID( season.getWebConfigurationID().intValue() );
 		liteSeason.setStartDate( season.getStartDate().getTime() );
 		liteSeason.setDisplayOrder( season.getDisplayOrder().intValue() );
@@ -331,6 +331,27 @@ public class StarsLiteFactory {
 		}
 		
 		return liteSeason;
+	}
+	
+	public static void setLiteLMThermostatSchedule(LiteLMThermostatSchedule liteSchedule, com.cannontech.database.db.stars.hardware.LMThermostatSchedule schedule) {
+		liteSchedule.setScheduleID( schedule.getScheduleID().intValue() );
+		liteSchedule.setScheduleName( schedule.getScheduleName() );
+		liteSchedule.setThermostatTypeID( schedule.getThermostatTypeID().intValue() );
+		liteSchedule.setAccountID( schedule.getAccountID().intValue() );
+		liteSchedule.setInventoryID( schedule.getInventoryID().intValue() );
+	}
+	
+	public static LiteLMThermostatSchedule createLiteLMThermostatSchedule(com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule) {
+		LiteLMThermostatSchedule liteSchedule = new LiteLMThermostatSchedule();
+		setLiteLMThermostatSchedule( liteSchedule, schedule.getLmThermostatSchedule() );
+		
+		for (int i = 0; i < schedule.getThermostatSeasons().size(); i++) {
+			com.cannontech.database.data.stars.hardware.LMThermostatSeason season =
+					(com.cannontech.database.data.stars.hardware.LMThermostatSeason) schedule.getThermostatSeasons().get(i);
+			liteSchedule.getThermostatSeasons().add( createLiteLMThermostatSeason(season) );
+		}
+		
+		return liteSchedule;
 	}
 	
 	public static void setLiteLMThermostatManualEvent(LiteLMThermostatManualEvent liteEvent, com.cannontech.database.data.stars.event.LMThermostatManualEvent event) {
@@ -771,7 +792,7 @@ public class StarsLiteFactory {
 	
 	public static void setLMThermostatSeason(com.cannontech.database.db.stars.hardware.LMThermostatSeason season, LiteLMThermostatSeason liteSeason) {
 		season.setSeasonID( new Integer(liteSeason.getSeasonID()) );
-		season.setInventoryID( new Integer(liteSeason.getInventoryID()) );
+		season.setScheduleID( new Integer(liteSeason.getScheduleID()) );
 		season.setWebConfigurationID( new Integer(liteSeason.getWebConfigurationID()) );
 		season.setStartDate( new Date(liteSeason.getStartDate()) );
 		season.setDisplayOrder( new Integer(liteSeason.getDisplayOrder()) );
@@ -1102,22 +1123,38 @@ public class StarsLiteFactory {
 			starsDynData.addInfoString( (String) liteDynData.getInfoStrings().get(i) );
 	}
 	
-	public static void setStarsThermostatSettings(StarsThermoSettings starsSettings, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
-		starsSettings.setInventoryID( liteSettings.getInventoryID() );
-		starsSettings.setThermostatType( ECUtils.getThermostatType(liteHw.getLmHardwareTypeID()) );
+	public static StarsThermostatProgram createStarsThermostatProgram(LiteLMThermostatSchedule liteSchedule, LiteStarsEnergyCompany energyCompany) {
+		StarsThermostatProgram starsThermProg = new StarsThermostatProgram();
 		
-		for (int i = 0; i < liteSettings.getThermostatSeasons().size(); i++) {
-			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSettings.getThermostatSeasons().get(i);
+		starsThermProg.setScheduleID( liteSchedule.getScheduleID() );
+		if (!liteSchedule.getScheduleName().equals( CtiUtilities.STRING_NONE ))
+			starsThermProg.setScheduleName( liteSchedule.getScheduleName() );
+		starsThermProg.setThermostatType( ECUtils.getThermostatType(liteSchedule.getThermostatTypeID()) );
+		for (int i = 0; i < liteSchedule.getThermostatSeasons().size(); i++) {
+			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSchedule.getThermostatSeasons().get(i);
 			StarsThermostatSeason starsSeason = createStarsThermostatSeason( liteSeason, energyCompany );
-			starsSettings.addStarsThermostatSeason( starsSeason );
-			
-			if (liteSettings.getInventoryID() < 0) {
-				// Add thermostat season web configuration only to default settings
-				starsSeason.setStarsWebConfig( energyCompany.getStarsWebConfig(liteSeason.getWebConfigurationID()) );
-			}
+			starsThermProg.addStarsThermostatSeason( starsSeason );
 		}
 		
+		return starsThermProg;
+		
+	}
+	
+	public static void setStarsThermostatSettings(StarsThermostatSettings starsSettings, LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
+		LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
+		
+		if (liteSettings.getThermostatSchedule().getScheduleName().equals( CtiUtilities.STRING_NONE )) {
+			starsSettings.setStarsThermostatProgram( createStarsThermostatProgram(liteSettings.getThermostatSchedule(), energyCompany) );
+		}
+		else {
+			StarsThermostatProgram starsThermProg = new StarsThermostatProgram();
+			starsThermProg.setScheduleID( liteSettings.getThermostatSchedule().getScheduleID() );
+			starsThermProg.setScheduleName( liteSettings.getThermostatSchedule().getScheduleName() );
+			starsThermProg.setThermostatType( ECUtils.getThermostatType(liteSettings.getThermostatSchedule().getThermostatTypeID()) );
+			starsSettings.setStarsThermostatProgram( starsThermProg );
+		}
+		
+		starsSettings.removeAllStarsThermostatManualEvent();
 		for (int i = 0; i < liteSettings.getThermostatManualEvents().size(); i++) {
 			LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) liteSettings.getThermostatManualEvents().get(i);
 			starsSettings.addStarsThermostatManualEvent( StarsLiteFactory.createStarsThermostatManualEvent(liteEvent) );
@@ -1330,6 +1367,15 @@ public class StarsLiteFactory {
 		{
 			LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
 			starsAcctInfo.setStarsUser( createStarsUser(liteUser, energyCompany) );
+		}
+		
+		ArrayList liteSchedules = liteAcctInfo.getThermostatSchedules();
+		StarsSavedThermostatSchedules starsSchedules = new StarsSavedThermostatSchedules();
+		starsAcctInfo.setStarsSavedThermostatSchedules( starsSchedules );
+		
+		for (int i = 0; i < liteSchedules.size(); i++) {
+			LiteLMThermostatSchedule liteSchedule = (LiteLMThermostatSchedule) liteSchedules.get(i);
+			starsSchedules.addStarsThermostatProgram( createStarsThermostatProgram(liteSchedule, energyCompany) );
 		}
 		
 		if (isOperator) {

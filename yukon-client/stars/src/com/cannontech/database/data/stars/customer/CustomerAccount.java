@@ -85,6 +85,10 @@ public class CustomerAccount extends DBPersistent {
     	com.cannontech.database.data.stars.report.CallReportBase.deleteAllCallReports(
     			getCustomerAccount().getAccountID() );
         
+        // Delete thermostat schedules
+        com.cannontech.database.data.stars.hardware.LMThermostatSchedule.deleteAllThermostatSchedules(
+        		getCustomerAccount().getAccountID().intValue() );
+        
         getCustomerAccount().delete();
         getAccountSite().delete();
         getBillingAddress().delete();

@@ -9,6 +9,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -145,7 +146,7 @@ public class SearchCustAccountAction implements ActionBase {
 		            
 					if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
 						// Get up-to-date thermostat settings and register the account
-						energyCompany.updateThermostatSettings( liteAcctInfo );
+						ECUtils.updateThermostatSettings( liteAcctInfo, energyCompany );
 						
 						java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
 						synchronized (accountList) {

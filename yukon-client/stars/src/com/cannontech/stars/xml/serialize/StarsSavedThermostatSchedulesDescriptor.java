@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: AdditionalContactDescriptor.java,v 1.74 2004/05/18 17:48:43 zyao Exp $
+ * $Id: StarsSavedThermostatSchedulesDescriptor.java,v 1.1 2004/05/18 17:48:46 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.74 $ $Date: 2004/05/18 17:48:43 $
+ * @version $Revision: 1.1 $ $Date: 2004/05/18 17:48:46 $
 **/
-public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor {
+public class StarsSavedThermostatSchedulesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,18 +47,53 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
      //- Constructors -/
     //----------------/
 
-    public AdditionalContactDescriptor() {
+    public StarsSavedThermostatSchedulesDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsCustomerContactDescriptor());
-        xmlName = "AdditionalContact";
+        xmlName = "stars-SavedThermostatSchedules";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.AdditionalContactDescriptor()
+        //-- _starsThermostatProgramList
+        desc = new XMLFieldDescriptorImpl(StarsThermostatProgram.class, "_starsThermostatProgramList", "stars-ThermostatProgram", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSavedThermostatSchedules target = (StarsSavedThermostatSchedules) object;
+                return target.getStarsThermostatProgram();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSavedThermostatSchedules target = (StarsSavedThermostatSchedules) object;
+                    target.addStarsThermostatProgram( (StarsThermostatProgram) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatProgram();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatProgramList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsSavedThermostatSchedulesDescriptor()
 
 
       //-----------/
@@ -76,15 +111,13 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -92,7 +125,7 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.AdditionalContact.class;
+        return com.cannontech.stars.xml.serialize.StarsSavedThermostatSchedules.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.73 2004/05/10 22:13:27 zyao Exp $
+ * $Id: StarsOperation.java,v 1.74 2004/05/18 17:48:45 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.73 $ $Date: 2004/05/10 22:13:27 $
+ * @version $Revision: 1.74 $ $Date: 2004/05/18 17:48:45 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -139,8 +139,6 @@ public class StarsOperation implements java.io.Serializable {
     private StarsUpdateLogin _starsUpdateLogin;
 
     private StarsUpdateLoginResponse _starsUpdateLoginResponse;
-
-    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
 
     private StarsUpdateThermostatSchedule _starsUpdateThermostatSchedule;
 
@@ -261,16 +259,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsCreateServiceRequestResponse;
     } //-- StarsCreateServiceRequestResponse getStarsCreateServiceRequestResponse() 
-
-    /**
-     * Returns the value of field 'starsDefaultThermostatSettings'.
-     * 
-     * @return the value of field 'starsDefaultThermostatSettings'.
-    **/
-    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings()
-    {
-        return this._starsDefaultThermostatSettings;
-    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
 
     /**
      * Returns the value of field 'starsDeleteAppliance'.
@@ -944,17 +932,6 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsCreateServiceRequestResponse = starsCreateServiceRequestResponse;
     } //-- void setStarsCreateServiceRequestResponse(StarsCreateServiceRequestResponse) 
-
-    /**
-     * Sets the value of field 'starsDefaultThermostatSettings'.
-     * 
-     * @param starsDefaultThermostatSettings the value of field
-     * 'starsDefaultThermostatSettings'.
-    **/
-    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings starsDefaultThermostatSettings)
-    {
-        this._starsDefaultThermostatSettings = starsDefaultThermostatSettings;
-    } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
 
     /**
      * Sets the value of field 'starsDeleteAppliance'.

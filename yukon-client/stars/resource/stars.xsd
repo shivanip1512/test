@@ -300,15 +300,6 @@
 			<xs:element name="Fan" type="stars-ThermoFanSettings" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="stars-ThermoSettings">
-		<xs:sequence>
-			<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/>
-			<xs:element ref="stars-ThermostatManualEvent" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element ref="stars-ThermostatDynamicData" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attribute name="inventoryID" type="xs:int"/>
-		<xs:attribute name="thermostatType" type="stars-ThermostatTypes"/>
-	</xs:complexType>
 	<xs:complexType name="stars-Usr">
 		<xs:sequence>
 			<xs:element name="Username" type="xs:string"/>
@@ -397,7 +388,6 @@
 				<xs:element ref="stars-DeleteLMHardware" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLogin" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLoginResponse" minOccurs="0"/>
-				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatSchedule" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatScheduleResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOption" minOccurs="0"/>
@@ -501,6 +491,13 @@
 				<xs:element ref="stars-CallReportHistory" minOccurs="0"/>
 				<xs:element ref="stars-ServiceRequestHistory" minOccurs="0"/>
 				<xs:element ref="stars-User" minOccurs="0"/>
+				<xs:element name="stars-SavedThermostatSchedules" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="stars-ThermostatProgram" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -901,15 +898,31 @@
 	<xs:element name="stars-ThermostatSeason">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="stars-WebConfig" minOccurs="0"/>
 				<xs:element ref="stars-ThermostatSchedule" minOccurs="0" maxOccurs="7"/>
 			</xs:sequence>
 			<xs:attribute name="mode" type="stars-ThermoModeSettings"/>
 			<xs:attribute name="startDate" type="xs:date"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-ThermostatSettings" type="stars-ThermoSettings"/>
-	<xs:element name="stars-DefaultThermostatSettings" type="stars-ThermoSettings"/>
+	<xs:element name="stars-ThermostatProgram">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ScheduleName" type="xs:string" minOccurs="0"/>
+				<xs:element name="ThermostatType" type="stars-ThermostatTypes" minOccurs="0"/>
+				<xs:element ref="stars-ThermostatSeason" minOccurs="0" maxOccurs="2"/>
+			</xs:sequence>
+			<xs:attribute name="scheduleID" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-ThermostatSettings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-ThermostatProgram"/>
+				<xs:element ref="stars-ThermostatManualEvent" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="stars-ThermostatDynamicData" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="stars-ThermostatManualEvent">
 		<xs:complexType>
 			<xs:complexContent>
@@ -1108,7 +1121,13 @@
 				<xs:element ref="stars-CustomerFAQs" minOccurs="0"/>
 				<xs:element ref="stars-ServiceCompanies" minOccurs="0"/>
 				<xs:element ref="stars-ExitInterviewQuestions" minOccurs="0"/>
-				<xs:element ref="stars-DefaultThermostatSettings" minOccurs="0" maxOccurs="3"/>
+				<xs:element name="stars-DefaultThermostatSchedules" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="stars-ThermostatProgram" minOccurs="0" maxOccurs="3"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="energyCompanyID" type="xs:int"/>
 		</xs:complexType>

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsDefaultThermostatSchedulesDescriptor.java,v 1.1 2004/05/18 17:48:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/05/18 17:48:49 $
 **/
-public class StarsDefaultThermostatSettingsDescriptor extends StarsThermoSettingsDescriptor {
+public class StarsDefaultThermostatSchedulesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,18 +47,54 @@ public class StarsDefaultThermostatSettingsDescriptor extends StarsThermoSetting
      //- Constructors -/
     //----------------/
 
-    public StarsDefaultThermostatSettingsDescriptor() {
+    public StarsDefaultThermostatSchedulesDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsThermoSettingsDescriptor());
-        xmlName = "stars-DefaultThermostatSettings";
+        xmlName = "stars-DefaultThermostatSchedules";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettingsDescriptor()
+        //-- _starsThermostatProgramList
+        desc = new XMLFieldDescriptorImpl(StarsThermostatProgram.class, "_starsThermostatProgramList", "stars-ThermostatProgram", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsDefaultThermostatSchedules target = (StarsDefaultThermostatSchedules) object;
+                return target.getStarsThermostatProgram();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsDefaultThermostatSchedules target = (StarsDefaultThermostatSchedules) object;
+                    target.addStarsThermostatProgram( (StarsThermostatProgram) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatProgram();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatProgramList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMaxOccurs(3);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedulesDescriptor()
 
 
       //-----------/
@@ -76,15 +112,13 @@ public class StarsDefaultThermostatSettingsDescriptor extends StarsThermoSetting
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -92,7 +126,7 @@ public class StarsDefaultThermostatSettingsDescriptor extends StarsThermoSetting
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings.class;
+        return com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

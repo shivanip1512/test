@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnergyCompanySettings.java,v 1.5 2004/05/10 22:13:31 zyao Exp $
+ * $Id: StarsEnergyCompanySettings.java,v 1.6 2004/05/18 17:48:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -25,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2004/05/10 22:13:31 $
+ * @version $Revision: 1.6 $ $Date: 2004/05/18 17:48:49 $
 **/
 public class StarsEnergyCompanySettings implements java.io.Serializable {
 
@@ -55,7 +53,7 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
 
     private StarsExitInterviewQuestions _starsExitInterviewQuestions;
 
-    private java.util.Vector _starsDefaultThermostatSettingsList;
+    private StarsDefaultThermostatSchedules _starsDefaultThermostatSchedules;
 
 
       //----------------/
@@ -64,7 +62,6 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
 
     public StarsEnergyCompanySettings() {
         super();
-        _starsDefaultThermostatSettingsList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings()
 
 
@@ -73,47 +70,11 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     //-----------/
 
     /**
-     * 
-     * 
-     * @param vStarsDefaultThermostatSettings
-    **/
-    public void addStarsDefaultThermostatSettings(StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        if (!(_starsDefaultThermostatSettingsList.size() < 3)) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsDefaultThermostatSettingsList.addElement(vStarsDefaultThermostatSettings);
-    } //-- void addStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsDefaultThermostatSettings
-    **/
-    public void addStarsDefaultThermostatSettings(int index, StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        if (!(_starsDefaultThermostatSettingsList.size() < 3)) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsDefaultThermostatSettingsList.insertElementAt(vStarsDefaultThermostatSettings, index);
-    } //-- void addStarsDefaultThermostatSettings(int, StarsDefaultThermostatSettings) 
-
-    /**
     **/
     public void deleteEnergyCompanyID()
     {
         this._has_energyCompanyID= false;
     } //-- void deleteEnergyCompanyID() 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsDefaultThermostatSettings()
-    {
-        return _starsDefaultThermostatSettingsList.elements();
-    } //-- java.util.Enumeration enumerateStarsDefaultThermostatSettings() 
 
     /**
      * Returns the value of field 'energyCompanyID'.
@@ -146,39 +107,15 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     } //-- StarsCustomerSelectionLists getStarsCustomerSelectionLists() 
 
     /**
+     * Returns the value of field
+     * 'starsDefaultThermostatSchedules'.
      * 
-     * 
-     * @param index
+     * @return the value of field 'starsDefaultThermostatSchedules'.
     **/
-    public StarsDefaultThermostatSettings getStarsDefaultThermostatSettings(int index)
-        throws java.lang.IndexOutOfBoundsException
+    public StarsDefaultThermostatSchedules getStarsDefaultThermostatSchedules()
     {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsDefaultThermostatSettingsList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsDefaultThermostatSettings) _starsDefaultThermostatSettingsList.elementAt(index);
-    } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings(int) 
-
-    /**
-    **/
-    public StarsDefaultThermostatSettings[] getStarsDefaultThermostatSettings()
-    {
-        int size = _starsDefaultThermostatSettingsList.size();
-        StarsDefaultThermostatSettings[] mArray = new StarsDefaultThermostatSettings[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsDefaultThermostatSettings) _starsDefaultThermostatSettingsList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsDefaultThermostatSettings[] getStarsDefaultThermostatSettings() 
-
-    /**
-    **/
-    public int getStarsDefaultThermostatSettingsCount()
-    {
-        return _starsDefaultThermostatSettingsList.size();
-    } //-- int getStarsDefaultThermostatSettingsCount() 
+        return this._starsDefaultThermostatSchedules;
+    } //-- StarsDefaultThermostatSchedules getStarsDefaultThermostatSchedules() 
 
     /**
      * Returns the value of field 'starsEnergyCompany'.
@@ -275,25 +212,6 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-    **/
-    public void removeAllStarsDefaultThermostatSettings()
-    {
-        _starsDefaultThermostatSettingsList.removeAllElements();
-    } //-- void removeAllStarsDefaultThermostatSettings() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsDefaultThermostatSettings removeStarsDefaultThermostatSettings(int index)
-    {
-        java.lang.Object obj = _starsDefaultThermostatSettingsList.elementAt(index);
-        _starsDefaultThermostatSettingsList.removeElementAt(index);
-        return (StarsDefaultThermostatSettings) obj;
-    } //-- StarsDefaultThermostatSettings removeStarsDefaultThermostatSettings(int) 
-
-    /**
      * Sets the value of field 'energyCompanyID'.
      * 
      * @param energyCompanyID the value of field 'energyCompanyID'.
@@ -327,37 +245,15 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     } //-- void setStarsCustomerSelectionLists(StarsCustomerSelectionLists) 
 
     /**
+     * Sets the value of field 'starsDefaultThermostatSchedules'.
      * 
-     * 
-     * @param index
-     * @param vStarsDefaultThermostatSettings
+     * @param starsDefaultThermostatSchedules the value of field
+     * 'starsDefaultThermostatSchedules'.
     **/
-    public void setStarsDefaultThermostatSettings(int index, StarsDefaultThermostatSettings vStarsDefaultThermostatSettings)
-        throws java.lang.IndexOutOfBoundsException
+    public void setStarsDefaultThermostatSchedules(StarsDefaultThermostatSchedules starsDefaultThermostatSchedules)
     {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsDefaultThermostatSettingsList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (!(index < 3)) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsDefaultThermostatSettingsList.setElementAt(vStarsDefaultThermostatSettings, index);
-    } //-- void setStarsDefaultThermostatSettings(int, StarsDefaultThermostatSettings) 
-
-    /**
-     * 
-     * 
-     * @param starsDefaultThermostatSettingsArray
-    **/
-    public void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings[] starsDefaultThermostatSettingsArray)
-    {
-        //-- copy array
-        _starsDefaultThermostatSettingsList.removeAllElements();
-        for (int i = 0; i < starsDefaultThermostatSettingsArray.length; i++) {
-            _starsDefaultThermostatSettingsList.addElement(starsDefaultThermostatSettingsArray[i]);
-        }
-    } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
+        this._starsDefaultThermostatSchedules = starsDefaultThermostatSchedules;
+    } //-- void setStarsDefaultThermostatSchedules(StarsDefaultThermostatSchedules) 
 
     /**
      * Sets the value of field 'starsEnergyCompany'.

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.stars.util.ECUtils;
@@ -21,8 +22,8 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	private static final java.text.SimpleDateFormat dateFormat =
 			new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss z" );
 	private static final String UNKNOWN_STRING = "(UNKNOWN)";
-				
-	private ArrayList thermostatSeasons = null;		// List of LiteLMThermostatSeason
+	
+	private LiteLMThermostatSchedule thermostatSchedule = null;
 	private ArrayList thermostatManualEvents = null;	// List of LMThermostatManualEvent
 	private LiteStarsGatewayEndDevice dynamicData = null;
 	
@@ -49,7 +50,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		Object[][] data = com.cannontech.database.db.stars.hardware.GatewayEndDevice.getHardwareData(
 				liteHw.getManufacturerSerialNumber(), new Integer(hwTypeDefID) );
 		if (data == null || data.length == 0) return;
-				
+		
 		/* Thermostat schedules
 		 * First dimension: monday, tuesday, ..., sunday
 		 * Second dimension: wake, leave, return, sleep
@@ -368,6 +369,9 @@ public class LiteStarsThermostatSettings extends LiteBase {
 			}
 		}
 		
+		// Set the schedule name to "(none)", so that the schedule will be considered "unnamed" and get updated
+		getThermostatSchedule().setScheduleName( CtiUtilities.STRING_NONE);
+		
 		int mondayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY ).getEntryID();
 		int tuesdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY ).getEntryID();
 		int wednesdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY ).getEntryID();
@@ -376,8 +380,10 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		int saturdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID();
 		int sundayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY ).getEntryID();
 		
-		for (int i = 0; i < thermostatSeasons.size(); i++) {
-			LiteLMThermostatSeason season = (LiteLMThermostatSeason) thermostatSeasons.get(i);
+		ArrayList seasons = getThermostatSchedule().getThermostatSeasons();
+		for (int i = 0; i < seasons.size(); i++) {
+			LiteLMThermostatSeason season = (LiteLMThermostatSeason) seasons.get(i);
+			
 			int dim3 = (season.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
 			int[] towCnt = { 0, 0, 0, 0, 0, 0, 0 };
 			
@@ -428,24 +434,6 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	}
 
 	/**
-	 * Returns the thermostatSeasons.
-	 * @return java.util.ArrayList
-	 */
-	public ArrayList getThermostatSeasons() {
-		if (thermostatSeasons == null)
-			thermostatSeasons = new java.util.ArrayList();
-		return thermostatSeasons;
-	}
-
-	/**
-	 * Sets the thermostatSeasons.
-	 * @param thermostatSeasons The thermostatSeasons to set
-	 */
-	public void setThermostatSeasons(ArrayList thermostatSeasons) {
-		this.thermostatSeasons = thermostatSeasons;
-	}
-
-	/**
 	 * Returns the thermostatOption.
 	 * @return LiteLMThermostatManualOption
 	 */
@@ -477,6 +465,20 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 */
 	public void setDynamicData(LiteStarsGatewayEndDevice dynamicData) {
 		this.dynamicData = dynamicData;
+	}
+
+	/**
+	 * @return
+	 */
+	public LiteLMThermostatSchedule getThermostatSchedule() {
+		return thermostatSchedule;
+	}
+
+	/**
+	 * @param schedule
+	 */
+	public void setThermostatSchedule(LiteLMThermostatSchedule schedule) {
+		thermostatSchedule = schedule;
 	}
 
 }

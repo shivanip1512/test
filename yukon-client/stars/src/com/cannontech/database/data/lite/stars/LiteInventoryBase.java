@@ -23,9 +23,9 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteInventoryBase extends LiteBase {
 
-	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
+	private int accountID = CtiUtilities.NONE_ID;
 	private int categoryID = CtiUtilities.NONE_ID;
-	private int installationCompanyID = com.cannontech.database.db.stars.report.ServiceCompany.NONE_INT;
+	private int installationCompanyID = CtiUtilities.NONE_ID;
 	private long receiveDate = 0;
 	private long installDate = 0;
 	private long removeDate = 0;

@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMThermostatSeason extends LiteBase {
 	
-	private int inventoryID = CtiUtilities.NONE_ID;
+	private int scheduleID = CtiUtilities.NONE_ID;
 	private int webConfigurationID = CtiUtilities.NONE_ID;
 	private long startDate = 0;
 	private int displayOrder = 0;
@@ -48,11 +48,11 @@ public class LiteLMThermostatSeason extends LiteBase {
 	}
 
 	/**
-	 * Returns the inventoryID.
+	 * Returns the scheduleID.
 	 * @return int
 	 */
-	public int getInventoryID() {
-		return inventoryID;
+	public int getScheduleID() {
+		return scheduleID;
 	}
 
 	/**
@@ -80,11 +80,11 @@ public class LiteLMThermostatSeason extends LiteBase {
 	}
 
 	/**
-	 * Sets the inventoryID.
-	 * @param inventoryID The inventoryID to set
+	 * Sets the scheduleID.
+	 * @param scheduleID The scheduleID to set
 	 */
-	public void setInventoryID(int inventoryID) {
-		this.inventoryID = inventoryID;
+	public void setScheduleID(int scheduleID) {
+		this.scheduleID = scheduleID;
 	}
 
 	/**

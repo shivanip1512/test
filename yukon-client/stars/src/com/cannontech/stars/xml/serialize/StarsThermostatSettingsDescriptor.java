@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsThermostatSettingsDescriptor extends StarsThermoSettingsDescriptor {
+public class StarsThermostatSettingsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -49,14 +49,115 @@ public class StarsThermostatSettingsDescriptor extends StarsThermoSettingsDescri
 
     public StarsThermostatSettingsDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsThermoSettingsDescriptor());
         xmlName = "stars-ThermostatSettings";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
+        
+        //-- _starsThermostatProgram
+        desc = new XMLFieldDescriptorImpl(StarsThermostatProgram.class, "_starsThermostatProgram", "stars-ThermostatProgram", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermostatSettings target = (StarsThermostatSettings) object;
+                return target.getStarsThermostatProgram();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermostatSettings target = (StarsThermostatSettings) object;
+                    target.setStarsThermostatProgram( (StarsThermostatProgram) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatProgram();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatProgram
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsThermostatManualEventList
+        desc = new XMLFieldDescriptorImpl(StarsThermostatManualEvent.class, "_starsThermostatManualEventList", "stars-ThermostatManualEvent", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermostatSettings target = (StarsThermostatSettings) object;
+                return target.getStarsThermostatManualEvent();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermostatSettings target = (StarsThermostatSettings) object;
+                    target.addStarsThermostatManualEvent( (StarsThermostatManualEvent) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatManualEvent();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatManualEventList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsThermostatDynamicData
+        desc = new XMLFieldDescriptorImpl(StarsThermostatDynamicData.class, "_starsThermostatDynamicData", "stars-ThermostatDynamicData", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermostatSettings target = (StarsThermostatSettings) object;
+                return target.getStarsThermostatDynamicData();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermostatSettings target = (StarsThermostatSettings) object;
+                    target.setStarsThermostatDynamicData( (StarsThermostatDynamicData) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsThermostatDynamicData();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsThermostatDynamicData
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsThermostatSettingsDescriptor()
 
@@ -76,15 +177,13 @@ public class StarsThermostatSettingsDescriptor extends StarsThermoSettingsDescri
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

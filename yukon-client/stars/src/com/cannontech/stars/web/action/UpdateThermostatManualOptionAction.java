@@ -251,7 +251,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             	}
             	catch (InterruptedException e) {}
             	
-				energyCompany.updateThermostatSettings( liteAcctInfo );
+				ECUtils.updateThermostatSettings( liteAcctInfo, energyCompany );
             }
 			
 			respOper.setStarsUpdateThermostatManualOptionResponse( resp );

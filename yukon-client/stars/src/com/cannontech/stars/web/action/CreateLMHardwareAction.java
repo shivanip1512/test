@@ -10,11 +10,11 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -187,100 +187,96 @@ public class CreateLMHardwareAction implements ActionBase {
 		return operation;
 	}
 	
-	public static LMThermostatSeason[] populateThermostatTables(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) 
-		throws java.sql.SQLException
+	private static LiteLMThermostatSchedule initThermostatSchedule(int hwTypeID, int accountID, int invID, LiteStarsEnergyCompany energyCompany) 
+		throws TransactionException
 	{
-		java.sql.Connection conn = null;
-		boolean autoCommit = true;
+		com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule =
+				new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
+		com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB = schedule.getLmThermostatSchedule();
 		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit( false );
+		scheduleDB.setThermostatTypeID( new Integer(hwTypeID) );
+		scheduleDB.setAccountID( new Integer(accountID) );
+		scheduleDB.setInventoryID( new Integer(invID) );
+		
+		int weekdayID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
+		int[] weekdayIDs = new int[] {
+				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID(),
+				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY).getEntryID(),
+				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY).getEntryID(),
+				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY).getEntryID(),
+				energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID()
+		};
+		
+		// If we are creating the default commercial thermostat schedule
+		int hwTypeDefID = YukonListFuncs.getYukonListEntry( hwTypeID ).getYukonDefID();
+		boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
+				&& ECUtils.isDefaultEnergyCompany( energyCompany );
+		
+		ArrayList liteSeasons = energyCompany.getDefaultThermostatSchedule(hwTypeDefID).getThermostatSeasons();
+		for (int i = 0; i < liteSeasons.size(); i++) {
+			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
 			
-			int weekdayID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY).getEntryID();
-			int[] weekdayIDs = new int[] {
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY).getEntryID(),
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_TUESDAY).getEntryID(),
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_WEDNESDAY).getEntryID(),
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_THURSDAY).getEntryID(),
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_TOW_FRIDAY).getEntryID()
-			};
+			LMThermostatSeason season = new LMThermostatSeason();
+			StarsLiteFactory.setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
+			season.getLMThermostatSeason().setSeasonID( null );
 			
-			int hwTypeDefID = YukonListFuncs.getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID();
-			// If we are populating the default commercial thermostat tables
-			boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
-					&& ECUtils.isDefaultEnergyCompany( energyCompany );
+			ArrayList entries = season.getLMThermostatSeasonEntries();
 			
-			ArrayList liteSeasons = energyCompany.getDefaultLMHardware(hwTypeDefID).getThermostatSettings().getThermostatSeasons();
-			LMThermostatSeason[] seasons = new LMThermostatSeason[ liteSeasons.size() ];
-			
-			for (int i = 0; i < liteSeasons.size(); i++) {
-				LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
+			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
+				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
 				
-				seasons[i] = new LMThermostatSeason();
-				StarsLiteFactory.setLMThermostatSeason( seasons[i].getLMThermostatSeason(), liteSeason );
-				seasons[i].getLMThermostatSeason().setSeasonID( null );
-				seasons[i].getLMThermostatSeason().setInventoryID( new Integer(liteHw.getInventoryID()) );
-				
-				ArrayList entries = seasons[i].getLMThermostatSeasonEntries();
-				
-				for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
-					LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
+				if (hwTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO || liteEntry.getTimeOfWeekID() != weekdayID)
+				{
+					com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
+							new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
+					StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
+					entry.setEntryID( null );
 					
-					if (!liteHw.isTwoWayThermostat() || liteEntry.getTimeOfWeekID() != weekdayID) {
+					if (isDftCommTstat && (j % 4 == 1 || j % 4 == 2))
+						entry.setTemperature( new Integer(-1) );
+					entries.add( entry );
+				}
+				else {
+					for (int k= 0; k < weekdayIDs.length; k++) {
 						com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
 								new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
 						StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
 						entry.setEntryID( null );
+						entry.setTimeOfWeekID( new Integer(weekdayIDs[k]) );
 						
-						if (isDftCommTstat) {
-							// Because Occupied(Sleep) time should be earlier than Unoccupied(Wake) time,
-							// the insert order of time schedules need to be changed to Sleep, Leave, Return, Wake
-							if (j % 4 == 0) {	// Wake(Unoccupied)
-								entries.add( entry );
-							}
-							else if (j % 4 == 1 || j % 4 == 2) {	// Leave, Return
-								entry.setTemperature( new Integer(-1) );
-								entries.add( entries.size() - 1, entry );
-							}
-							else {	// Sleep(Occupied)
-								entries.add( entries.size() - 3, entry );
-							}
-						}
-						else
-							entries.add( entry );
-					}
-					else {
-						for (int k= 0; k < weekdayIDs.length; k++) {
-							com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
-									new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
-							StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
-							entry.setEntryID( null );
-							entry.setTimeOfWeekID( new Integer(weekdayIDs[k]) );
-							seasons[i].getLMThermostatSeasonEntries().add( entry );
-						}
+						entries.add( entry );
 					}
 				}
-				
-				seasons[i].setDbConnection( conn );
-				seasons[i].add();
 			}
 			
-			conn.commit();
-			return seasons;
+			schedule.getThermostatSeasons().add( season );
 		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-			conn.rollback();
-			throw e;
-		}
-		finally {
-			if (conn != null) {
-				conn.setAutoCommit( autoCommit );
-				conn.close();
-			}
-		}
+		
+		schedule = (com.cannontech.database.data.stars.hardware.LMThermostatSchedule)
+				Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
+		
+		return StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
+	}
+	
+	/**
+	 * Used to create the default thermostat schedule for an energy company
+	 * @throws TransactionException
+	 */
+	public static LiteLMThermostatSchedule initThermostatSchedule(int hwTypeDefID) throws TransactionException
+	{
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getDefaultEnergyCompany();
+		int hwTypeID = energyCompany.getYukonListEntry( hwTypeDefID ).getEntryID();
+		return initThermostatSchedule( hwTypeID, 0, 0, energyCompany );
+	}
+	
+	/**
+	 * Used to create the thermostat schedule for a given LM hardware (thermostat)
+	 * @throws TransactionException
+	 */
+	public static LiteLMThermostatSchedule initThermostatSchedule(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany)
+		throws TransactionException
+	{
+		return initThermostatSchedule( liteHw.getLmHardwareTypeID(), liteHw.getAccountID(), liteHw.getInventoryID(), energyCompany );
 	}
 	
 	/**
@@ -329,8 +325,9 @@ public class CreateLMHardwareAction implements ActionBase {
 					
 					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
+					
 					if (liteHw.isThermostat())
-						populateThermostatTables( liteHw, energyCompany );
+						initThermostatSchedule( liteHw, energyCompany );
 	            	
 					liteInv = liteHw;
 					energyCompany.addInventory( liteInv );

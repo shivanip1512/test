@@ -214,6 +214,21 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 					}
 				}
 				
+				// Delete all default thermostat schedules
+				currentAction = "Deleting default thermostat schedules";
+				
+				ECToGenericMapping[] schedules = ECToGenericMapping.getAllMappingItems(
+						energyCompany.getEnergyCompanyID(), com.cannontech.database.db.stars.hardware.LMThermostatSchedule.TABLE_NAME );
+				if (schedules != null) {
+					for (int i = 0; i < schedules.length; i++) {
+						com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule =
+								new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
+						schedule.setScheduleID( schedules[i].getItemID() );
+						
+						Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
+					}
+				}
+				
 				// Delete all substations, CANNOT cancel the operation from now on
 				currentAction = "Deleting substations";
 				

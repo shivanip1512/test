@@ -87,7 +87,7 @@ public class RefreshTimerTask extends StarsTimerTask {
 			
 			for (int j = 0; j < accountList.size(); j++) {
 				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accountList.get(j);
-				company.updateThermostatSettings( liteAcctInfo );
+				ECUtils.updateThermostatSettings( liteAcctInfo, company );
 			}
 		}
 		

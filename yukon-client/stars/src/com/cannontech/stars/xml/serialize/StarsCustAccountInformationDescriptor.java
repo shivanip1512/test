@@ -320,6 +320,38 @@ public class StarsCustAccountInformationDescriptor extends org.exolab.castor.xml
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
+        //-- _starsSavedThermostatSchedules
+        desc = new XMLFieldDescriptorImpl(StarsSavedThermostatSchedules.class, "_starsSavedThermostatSchedules", "stars-SavedThermostatSchedules", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                return target.getStarsSavedThermostatSchedules();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustAccountInformation target = (StarsCustAccountInformation) object;
+                    target.setStarsSavedThermostatSchedules( (StarsSavedThermostatSchedules) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsSavedThermostatSchedules();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsSavedThermostatSchedules
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
     } //-- com.cannontech.stars.xml.serialize.StarsCustAccountInformationDescriptor()
 
 

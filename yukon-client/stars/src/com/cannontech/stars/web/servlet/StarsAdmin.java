@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -40,11 +41,11 @@ import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -77,7 +78,7 @@ import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQ;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQGroup;
 import com.cannontech.stars.xml.serialize.StarsCustomerFAQs;
-import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings;
+import com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
@@ -86,6 +87,7 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
+import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
@@ -246,7 +248,7 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Delete customer accounts failed");
 		}
 	}
@@ -303,7 +305,7 @@ public class StarsAdmin extends HttpServlet {
 			
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update address information");
 			redirect = referer;
 		}
@@ -465,7 +467,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company information updated successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update energy company information");
 			redirect = referer;
 		}
@@ -748,7 +750,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update appliance category information");
 			redirect = referer;
 		}
@@ -867,7 +869,7 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category has been deleted successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete appliance category");
 			redirect = referer;
 		}
@@ -1011,7 +1013,7 @@ public class StarsAdmin extends HttpServlet {
 			redirect = referer;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update service company information");
 			redirect = referer;
 		}
@@ -1102,7 +1104,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the service company");
 			redirect = referer;
 		}
@@ -1159,7 +1161,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ link updated successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ link");
 			redirect = referer;
 		}
@@ -1198,7 +1200,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "FAQ subjects updated successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update FAQ subjects");
 			redirect = referer;
 		}
@@ -1314,7 +1316,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer FAQs updated successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer FAQs");
 			redirect = referer;
 		}
@@ -1371,7 +1373,7 @@ public class StarsAdmin extends HttpServlet {
 				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company has been deleted successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete service company");
 			redirect = referer;
 		}
@@ -1446,7 +1448,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Interview questions updated successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update interview questions");
 			redirect = referer;
 		}
@@ -1526,7 +1528,7 @@ public class StarsAdmin extends HttpServlet {
 						substation.delete();
 					}
 					catch (java.sql.SQLException e) {
-						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+						CTILogger.error( e.getMessage(), e );
 						conn.rollback();
 						throw new WebClientException("Cannot delete substation with id = " + entryID + ", make sure it is not referenced");
 					}
@@ -1596,7 +1598,7 @@ public class StarsAdmin extends HttpServlet {
 						entry.delete();
 					}
 					catch (java.sql.SQLException e) {
-						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+						CTILogger.error( e.getMessage(), e );
 						conn.rollback();
 						throw new WebClientException("Cannot delete list entry with id = " + entryID + ", make sure it is not referenced");
 					}
@@ -1705,7 +1707,7 @@ public class StarsAdmin extends HttpServlet {
 			selectionListTable.put( starsList.getListName(), starsList );
 			
 			if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
-				energyCompany.updateStarsDefaultThermostatSettings();
+				energyCompany.updateStarsDefaultThermostatSchedules();
 			
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
 		}
@@ -1714,7 +1716,7 @@ public class StarsAdmin extends HttpServlet {
 			redirect = referer;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer selection list");
 			redirect = referer;
 		}
@@ -1729,13 +1731,14 @@ public class StarsAdmin extends HttpServlet {
         	
 			StarsUpdateThermostatSchedule updateSched = UpdateThermostatScheduleAction.getRequestOperation(req).getStarsUpdateThermostatSchedule();
         	
-			LiteStarsLMHardware liteHw = energyCompany.getDefaultLMHardware( hwTypeDefID );
-			StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
+			LiteLMThermostatSchedule liteSchedule = energyCompany.getDefaultThermostatSchedule( hwTypeDefID );
+			StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteSchedule, energyCompany );
         	
-			StarsDefaultThermostatSettings[] dftSettings = energyCompany.getStarsDefaultThermostatSettings();
-			for (int i = 0; i < dftSettings.length; i++) {
-				if (dftSettings[i].getThermostatType().getType() == thermType.getType()) {
-					UpdateThermostatScheduleAction.parseResponse( resp, dftSettings[i] );
+			StarsDefaultThermostatSchedules dftSchedules = energyCompany.getStarsDefaultThermostatSchedules();
+			for (int i = 0; i < dftSchedules.getStarsThermostatProgramCount(); i++) {
+				StarsThermostatProgram schedule = dftSchedules.getStarsThermostatProgram(i);
+				if (schedule.getThermostatType().getType() == thermType.getType()) {
+					UpdateThermostatScheduleAction.parseResponse( resp, schedule );
 					break;
 				}
 			}
@@ -1743,7 +1746,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Default thermostat schedule updated successfully");
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update default thermostat schedule");
 			redirect = referer;
 		}
@@ -1839,7 +1842,7 @@ public class StarsAdmin extends HttpServlet {
 			redirect = referer;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update operator login");
 			redirect = referer;
 		}
@@ -2015,7 +2018,7 @@ public class StarsAdmin extends HttpServlet {
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the energy company");
 		}
 	}
@@ -2061,7 +2064,7 @@ public class StarsAdmin extends HttpServlet {
 					LoginController.SAVE_CURRENT_USER + "=true";
 		}
 		catch (java.io.UnsupportedEncodingException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			redirect = redir;
 		}
 	}
@@ -2138,7 +2141,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add new member");
 		}
 	}
@@ -2201,7 +2204,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update member login");
 		}
 	}
@@ -2249,7 +2252,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to remove member(s)");
 		}
 	}

@@ -8,16 +8,27 @@ package com.cannontech.stars.util;
 
 import java.util.ArrayList;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
+import com.cannontech.database.data.lite.stars.LiteLMThermostatManualEvent;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsGatewayEndDevice;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.LiteStarsThermostatSettings;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsThermostatSettings;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
@@ -56,7 +67,7 @@ public class ECUtils {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -83,7 +94,7 @@ public class ECUtils {
 			}
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 	}
 	
@@ -279,6 +290,105 @@ public class ECUtils {
 	public static boolean isMCT(int categoryID) {
 		YukonListEntry entry = YukonListFuncs.getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
+	}
+	
+	public static LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
+		try {
+			LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
+			settings.setInventoryID( liteHw.getInventoryID() );
+        	
+			// Check to see if thermostat schedule is complete, if not, re-create the schedule
+			com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
+					com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule( liteHw.getInventoryID() );
+			
+			com.cannontech.database.data.stars.hardware.LMThermostatSchedule schedule = null;
+			if (scheduleDB != null) {
+				schedule = new com.cannontech.database.data.stars.hardware.LMThermostatSchedule();
+				schedule.setScheduleID( scheduleDB.getScheduleID() );
+				schedule = (com.cannontech.database.data.stars.hardware.LMThermostatSchedule)
+						Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
+			}
+			
+			boolean thermTableComplete = true;
+			if (schedule == null || schedule.getThermostatSeasons().size() != 2)
+				thermTableComplete = false;
+			else {
+				for (int i = 0; i < schedule.getThermostatSeasons().size(); i++) {
+					int numSeasonEntries = ((com.cannontech.database.data.stars.hardware.LMThermostatSeason) schedule.getThermostatSeasons().get(i)).getLMThermostatSeasonEntries().size();
+					if (liteHw.isOneWayThermostat() && numSeasonEntries != 12 ||
+						liteHw.isTwoWayThermostat() && numSeasonEntries != 28)
+					{
+						thermTableComplete = false;
+						break;
+					}
+				}
+			}
+			
+			if (!thermTableComplete) {
+				if (schedule != null)
+					Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
+				
+				if (liteHw.getInventoryID() >= 0)
+					settings.setThermostatSchedule( CreateLMHardwareAction.initThermostatSchedule(liteHw, energyCompany) );
+				else
+					settings.setThermostatSchedule( CreateLMHardwareAction.initThermostatSchedule(liteHw, SOAPServer.getDefaultEnergyCompany()) );
+			}
+			else {
+				settings.setThermostatSchedule( StarsLiteFactory.createLiteLMThermostatSchedule(schedule) );
+			}
+        	
+			com.cannontech.database.data.stars.event.LMThermostatManualEvent[] events =
+					com.cannontech.database.data.stars.event.LMThermostatManualEvent.getAllLMThermostatManualEvents( liteHw.getInventoryID() );
+			if (events != null) {
+				for (int i = 0; i < events.length; i++)
+					settings.getThermostatManualEvents().add(
+						(LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
+			}
+        	
+			if (liteHw.isTwoWayThermostat()) {
+				settings.setDynamicData( new LiteStarsGatewayEndDevice() );
+				settings.updateThermostatSettings( liteHw, energyCompany );
+			}
+        	
+			return settings;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		
+		return null;
+	}
+	
+	public static void updateThermostatSettings(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
+		StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );
+		
+		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			
+			LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
+			if (!(liteInv instanceof LiteStarsLMHardware)) continue;
+			
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+			if (!liteHw.isTwoWayThermostat()) continue;
+			
+			LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
+			liteSettings.updateThermostatSettings( liteHw, energyCompany );
+			
+			StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
+			for (int j = 0; j < starsInvs.getStarsInventoryCount(); j++) {
+				if (starsInvs.getStarsInventory(j).getInventoryID() == invID) {
+					StarsThermostatSettings starsSettings = starsInvs.getStarsInventory(j).getLMHardware().getStarsThermostatSettings();
+					
+					starsSettings.setStarsThermostatProgram( StarsLiteFactory.createStarsThermostatProgram(liteSettings.getThermostatSchedule(), energyCompany) );
+					if (starsSettings.getStarsThermostatDynamicData() != null) {
+						StarsLiteFactory.setStarsThermostatDynamicData(
+								starsSettings.getStarsThermostatDynamicData(), liteSettings.getDynamicData(), energyCompany );
+					}
+					
+					break;
+				}
+			}
+		}
 	}
 	
 	/**

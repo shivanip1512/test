@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: AdditionalContactDescriptor.java,v 1.74 2004/05/18 17:48:43 zyao Exp $
+ * $Id: ThermostatTypeDescriptor.java,v 1.1 2004/05/18 17:48:48 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.74 $ $Date: 2004/05/18 17:48:43 $
+ * @version $Revision: 1.1 $ $Date: 2004/05/18 17:48:48 $
 **/
-public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor {
+public class ThermostatTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,10 +47,9 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
      //- Constructors -/
     //----------------/
 
-    public AdditionalContactDescriptor() {
+    public ThermostatTypeDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsCustomerContactDescriptor());
-        xmlName = "AdditionalContact";
+        xmlName = "ThermostatType";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,7 +57,7 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.AdditionalContactDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.ThermostatTypeDescriptor()
 
 
       //-----------/
@@ -76,15 +75,13 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -92,7 +89,7 @@ public class AdditionalContactDescriptor extends StarsCustomerContactDescriptor 
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.AdditionalContact.class;
+        return com.cannontech.stars.xml.serialize.ThermostatType.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

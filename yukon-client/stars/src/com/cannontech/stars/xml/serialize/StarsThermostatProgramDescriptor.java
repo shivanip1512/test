@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsThermostatProgramDescriptor.java,v 1.1 2004/05/18 17:48:44 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/05/18 17:48:44 $
 **/
-public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsThermostatProgramDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
      //- Constructors -/
     //----------------/
 
-    public StarsThermoSettingsDescriptor() {
+    public StarsThermostatProgramDescriptor() {
         super();
-        xmlName = "stars-ThermoSettings";
+        xmlName = "stars-ThermostatProgram";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -58,28 +58,28 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _inventoryID
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_inventoryID", "inventoryID", NodeType.Attribute);
+        //-- _scheduleID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_scheduleID", "scheduleID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermoSettings target = (StarsThermoSettings) object;
-                if(!target.hasInventoryID())
+                StarsThermostatProgram target = (StarsThermostatProgram) object;
+                if(!target.hasScheduleID())
                     return null;
-                return new Integer(target.getInventoryID());
+                return new Integer(target.getScheduleID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    StarsThermostatProgram target = (StarsThermostatProgram) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
-                        target.deleteInventoryID();
+                        target.deleteScheduleID();
                         return;
                     }
-                    target.setInventoryID( ((Integer)value).intValue());
+                    target.setScheduleID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -92,7 +92,7 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _inventoryID
+        //-- validation code for: _scheduleID
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
@@ -100,20 +100,60 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         }
         desc.setValidator(fieldValidator);
         
-        //-- _thermostatType
-        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes.class, "_thermostatType", "thermostatType", NodeType.Attribute);
+        //-- initialize element descriptors
+        
+        //-- _scheduleName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_scheduleName", "ScheduleName", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermoSettings target = (StarsThermoSettings) object;
+                StarsThermostatProgram target = (StarsThermostatProgram) object;
+                return target.getScheduleName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsThermostatProgram target = (StarsThermostatProgram) object;
+                    target.setScheduleName( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _scheduleName
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _thermostatType
+        desc = new XMLFieldDescriptorImpl(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes.class, "_thermostatType", "ThermostatType", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsThermostatProgram target = (StarsThermostatProgram) object;
                 return target.getThermostatType();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    StarsThermostatProgram target = (StarsThermostatProgram) object;
                     target.setThermostatType( (com.cannontech.stars.xml.serialize.types.StarsThermostatTypes) value);
                 }
                 catch (Exception ex) {
@@ -126,13 +166,12 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         } );
         desc.setHandler( new EnumFieldHandler(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes.class, handler));
         desc.setImmutable(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _thermostatType
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
-        
-        //-- initialize element descriptors
         
         //-- _starsThermostatSeasonList
         desc = new XMLFieldDescriptorImpl(StarsThermostatSeason.class, "_starsThermostatSeasonList", "stars-ThermostatSeason", NodeType.Element);
@@ -140,14 +179,14 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsThermoSettings target = (StarsThermoSettings) object;
+                StarsThermostatProgram target = (StarsThermostatProgram) object;
                 return target.getStarsThermostatSeason();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsThermoSettings target = (StarsThermoSettings) object;
+                    StarsThermostatProgram target = (StarsThermostatProgram) object;
                     target.addStarsThermostatSeason( (StarsThermostatSeason) value);
                 }
                 catch (Exception ex) {
@@ -168,72 +207,7 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
         fieldValidator.setMaxOccurs(2);
         desc.setValidator(fieldValidator);
         
-        //-- _starsThermostatManualEventList
-        desc = new XMLFieldDescriptorImpl(StarsThermostatManualEvent.class, "_starsThermostatManualEventList", "stars-ThermostatManualEvent", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsThermoSettings target = (StarsThermoSettings) object;
-                return target.getStarsThermostatManualEvent();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsThermoSettings target = (StarsThermoSettings) object;
-                    target.addStarsThermostatManualEvent( (StarsThermostatManualEvent) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsThermostatManualEvent();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsThermostatManualEventList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsThermostatDynamicData
-        desc = new XMLFieldDescriptorImpl(StarsThermostatDynamicData.class, "_starsThermostatDynamicData", "stars-ThermostatDynamicData", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsThermoSettings target = (StarsThermoSettings) object;
-                return target.getStarsThermostatDynamicData();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsThermoSettings target = (StarsThermoSettings) object;
-                    target.setStarsThermostatDynamicData( (StarsThermostatDynamicData) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsThermostatDynamicData();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsThermostatDynamicData
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsThermoSettingsDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsThermostatProgramDescriptor()
 
 
       //-----------/
@@ -265,7 +239,7 @@ public class StarsThermoSettingsDescriptor extends org.exolab.castor.xml.util.XM
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsThermoSettings.class;
+        return com.cannontech.stars.xml.serialize.StarsThermostatProgram.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

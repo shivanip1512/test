@@ -27,7 +27,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private ArrayList programHistory = null;	// List of LiteLMProgramEvent
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
-	//private LiteStarsThermostatSettings thermostatSettings = null;
+	private ArrayList thermostatSchedules = null;	// List of LiteLMThermostatSchedule
 	
 	private long lastLoginTime = 0;
 	private boolean extended = false;
@@ -281,6 +281,22 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public void setProgramHistory(ArrayList list) {
 		programHistory = list;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList getThermostatSchedules() {
+		if (thermostatSchedules == null)
+			thermostatSchedules = new ArrayList();
+		return thermostatSchedules;
+	}
+
+	/**
+	 * @param list
+	 */
+	public void setThermostatSchedules(ArrayList list) {
+		thermostatSchedules = list;
 	}
 
 }

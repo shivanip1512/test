@@ -1,5 +1,7 @@
 package com.cannontech.database.data.stars.hardware;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -34,15 +36,16 @@ public class LMHardwareBase extends InventoryBase {
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration(
 				getInventoryBase().getInventoryID() );
 		
-		// delete from LMThermostatSeason
-		LMThermostatSeason[] thermSeasons = LMThermostatSeason.getAllLMThermostatSeasons(
-				getInventoryBase().getInventoryID().intValue() );
+		// delete from LMThermostatSchedule if it's "unnamed"
+		com.cannontech.database.db.stars.hardware.LMThermostatSchedule scheduleDB =
+				com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getThermostatSchedule(
+					getInventoryBase().getInventoryID().intValue() );
 		
-		if (thermSeasons != null) {
-			for (int i = 0; i < thermSeasons.length; i++) {
-				thermSeasons[i].setDbConnection( getDbConnection() );
-				thermSeasons[i].delete();
-			}
+		if (scheduleDB != null && scheduleDB.getScheduleName().equals( CtiUtilities.STRING_NONE )) {
+			LMThermostatSchedule schedule = new LMThermostatSchedule();
+			schedule.setScheduleID( scheduleDB.getScheduleID() );
+			schedule.setDbConnection( getDbConnection() );
+			schedule.delete();
 		}
 		
 		// delete from LMThermostatManualEvent

@@ -39,8 +39,6 @@ public class StarsThermostatSeason implements java.io.Serializable {
 
     private org.exolab.castor.types.Date _startDate;
 
-    private StarsWebConfig _starsWebConfig;
-
     private java.util.Vector _starsThermostatScheduleList;
 
 
@@ -138,16 +136,6 @@ public class StarsThermostatSeason implements java.io.Serializable {
     {
         return _starsThermostatScheduleList.size();
     } //-- int getStarsThermostatScheduleCount() 
-
-    /**
-     * Returns the value of field 'starsWebConfig'.
-     * 
-     * @return the value of field 'starsWebConfig'.
-    **/
-    public StarsWebConfig getStarsWebConfig()
-    {
-        return this._starsWebConfig;
-    } //-- StarsWebConfig getStarsWebConfig() 
 
     /**
      * Returns the value of field 'startDate'.
@@ -257,16 +245,6 @@ public class StarsThermostatSeason implements java.io.Serializable {
             _starsThermostatScheduleList.addElement(starsThermostatScheduleArray[i]);
         }
     } //-- void setStarsThermostatSchedule(StarsThermostatSchedule) 
-
-    /**
-     * Sets the value of field 'starsWebConfig'.
-     * 
-     * @param starsWebConfig the value of field 'starsWebConfig'.
-    **/
-    public void setStarsWebConfig(StarsWebConfig starsWebConfig)
-    {
-        this._starsWebConfig = starsWebConfig;
-    } //-- void setStarsWebConfig(StarsWebConfig) 
 
     /**
      * Sets the value of field 'startDate'.

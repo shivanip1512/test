@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: StarsThermostatProgram.java,v 1.1 2004/05/18 17:48:49 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -26,68 +26,42 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/05/18 17:48:49 $
 **/
-public abstract class StarsThermoSettings implements java.io.Serializable {
+public class StarsThermostatProgram implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _inventoryID;
+    private int _scheduleID;
 
     /**
-     * keeps track of state for field: _inventoryID
+     * keeps track of state for field: _scheduleID
     **/
-    private boolean _has_inventoryID;
+    private boolean _has_scheduleID;
+
+    private java.lang.String _scheduleName;
 
     private com.cannontech.stars.xml.serialize.types.StarsThermostatTypes _thermostatType;
 
     private java.util.Vector _starsThermostatSeasonList;
-
-    private java.util.Vector _starsThermostatManualEventList;
-
-    private StarsThermostatDynamicData _starsThermostatDynamicData;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsThermoSettings() {
+    public StarsThermostatProgram() {
         super();
         _starsThermostatSeasonList = new Vector();
-        _starsThermostatManualEventList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsThermoSettings()
+    } //-- com.cannontech.stars.xml.serialize.StarsThermostatProgram()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * 
-     * 
-     * @param vStarsThermostatManualEvent
-    **/
-    public void addStarsThermostatManualEvent(StarsThermostatManualEvent vStarsThermostatManualEvent)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsThermostatManualEventList.addElement(vStarsThermostatManualEvent);
-    } //-- void addStarsThermostatManualEvent(StarsThermostatManualEvent) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsThermostatManualEvent
-    **/
-    public void addStarsThermostatManualEvent(int index, StarsThermostatManualEvent vStarsThermostatManualEvent)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsThermostatManualEventList.insertElementAt(vStarsThermostatManualEvent, index);
-    } //-- void addStarsThermostatManualEvent(int, StarsThermostatManualEvent) 
 
     /**
      * 
@@ -120,17 +94,10 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     /**
     **/
-    public void deleteInventoryID()
+    public void deleteScheduleID()
     {
-        this._has_inventoryID= false;
-    } //-- void deleteInventoryID() 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsThermostatManualEvent()
-    {
-        return _starsThermostatManualEventList.elements();
-    } //-- java.util.Enumeration enumerateStarsThermostatManualEvent() 
+        this._has_scheduleID= false;
+    } //-- void deleteScheduleID() 
 
     /**
     **/
@@ -140,59 +107,24 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     } //-- java.util.Enumeration enumerateStarsThermostatSeason() 
 
     /**
-     * Returns the value of field 'inventoryID'.
+     * Returns the value of field 'scheduleID'.
      * 
-     * @return the value of field 'inventoryID'.
+     * @return the value of field 'scheduleID'.
     **/
-    public int getInventoryID()
+    public int getScheduleID()
     {
-        return this._inventoryID;
-    } //-- int getInventoryID() 
+        return this._scheduleID;
+    } //-- int getScheduleID() 
 
     /**
-     * Returns the value of field 'starsThermostatDynamicData'.
+     * Returns the value of field 'scheduleName'.
      * 
-     * @return the value of field 'starsThermostatDynamicData'.
+     * @return the value of field 'scheduleName'.
     **/
-    public StarsThermostatDynamicData getStarsThermostatDynamicData()
+    public java.lang.String getScheduleName()
     {
-        return this._starsThermostatDynamicData;
-    } //-- StarsThermostatDynamicData getStarsThermostatDynamicData() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsThermostatManualEvent getStarsThermostatManualEvent(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsThermostatManualEventList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsThermostatManualEvent) _starsThermostatManualEventList.elementAt(index);
-    } //-- StarsThermostatManualEvent getStarsThermostatManualEvent(int) 
-
-    /**
-    **/
-    public StarsThermostatManualEvent[] getStarsThermostatManualEvent()
-    {
-        int size = _starsThermostatManualEventList.size();
-        StarsThermostatManualEvent[] mArray = new StarsThermostatManualEvent[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsThermostatManualEvent) _starsThermostatManualEventList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsThermostatManualEvent[] getStarsThermostatManualEvent() 
-
-    /**
-    **/
-    public int getStarsThermostatManualEventCount()
-    {
-        return _starsThermostatManualEventList.size();
-    } //-- int getStarsThermostatManualEventCount() 
+        return this._scheduleName;
+    } //-- java.lang.String getScheduleName() 
 
     /**
      * 
@@ -241,10 +173,10 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
 
     /**
     **/
-    public boolean hasInventoryID()
+    public boolean hasScheduleID()
     {
-        return this._has_inventoryID;
-    } //-- boolean hasInventoryID() 
+        return this._has_scheduleID;
+    } //-- boolean hasScheduleID() 
 
     /**
     **/
@@ -264,23 +196,24 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
      * 
      * @param out
     **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void marshal(java.io.Writer out)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        
+        Marshaller.marshal(this, out);
+    } //-- void marshal(java.io.Writer) 
 
     /**
      * 
      * 
      * @param handler
     **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
-
-    /**
-    **/
-    public void removeAllStarsThermostatManualEvent()
+    public void marshal(org.xml.sax.ContentHandler handler)
+        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        _starsThermostatManualEventList.removeAllElements();
-    } //-- void removeAllStarsThermostatManualEvent() 
+        
+        Marshaller.marshal(this, handler);
+    } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
     **/
@@ -288,18 +221,6 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     {
         _starsThermostatSeasonList.removeAllElements();
     } //-- void removeAllStarsThermostatSeason() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsThermostatManualEvent removeStarsThermostatManualEvent(int index)
-    {
-        java.lang.Object obj = _starsThermostatManualEventList.elementAt(index);
-        _starsThermostatManualEventList.removeElementAt(index);
-        return (StarsThermostatManualEvent) obj;
-    } //-- StarsThermostatManualEvent removeStarsThermostatManualEvent(int) 
 
     /**
      * 
@@ -314,56 +235,25 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     } //-- StarsThermostatSeason removeStarsThermostatSeason(int) 
 
     /**
-     * Sets the value of field 'inventoryID'.
+     * Sets the value of field 'scheduleID'.
      * 
-     * @param inventoryID the value of field 'inventoryID'.
+     * @param scheduleID the value of field 'scheduleID'.
     **/
-    public void setInventoryID(int inventoryID)
+    public void setScheduleID(int scheduleID)
     {
-        this._inventoryID = inventoryID;
-        this._has_inventoryID = true;
-    } //-- void setInventoryID(int) 
+        this._scheduleID = scheduleID;
+        this._has_scheduleID = true;
+    } //-- void setScheduleID(int) 
 
     /**
-     * Sets the value of field 'starsThermostatDynamicData'.
+     * Sets the value of field 'scheduleName'.
      * 
-     * @param starsThermostatDynamicData the value of field
-     * 'starsThermostatDynamicData'.
+     * @param scheduleName the value of field 'scheduleName'.
     **/
-    public void setStarsThermostatDynamicData(StarsThermostatDynamicData starsThermostatDynamicData)
+    public void setScheduleName(java.lang.String scheduleName)
     {
-        this._starsThermostatDynamicData = starsThermostatDynamicData;
-    } //-- void setStarsThermostatDynamicData(StarsThermostatDynamicData) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsThermostatManualEvent
-    **/
-    public void setStarsThermostatManualEvent(int index, StarsThermostatManualEvent vStarsThermostatManualEvent)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsThermostatManualEventList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsThermostatManualEventList.setElementAt(vStarsThermostatManualEvent, index);
-    } //-- void setStarsThermostatManualEvent(int, StarsThermostatManualEvent) 
-
-    /**
-     * 
-     * 
-     * @param starsThermostatManualEventArray
-    **/
-    public void setStarsThermostatManualEvent(StarsThermostatManualEvent[] starsThermostatManualEventArray)
-    {
-        //-- copy array
-        _starsThermostatManualEventList.removeAllElements();
-        for (int i = 0; i < starsThermostatManualEventArray.length; i++) {
-            _starsThermostatManualEventList.addElement(starsThermostatManualEventArray[i]);
-        }
-    } //-- void setStarsThermostatManualEvent(StarsThermostatManualEvent) 
+        this._scheduleName = scheduleName;
+    } //-- void setScheduleName(java.lang.String) 
 
     /**
      * 
@@ -407,6 +297,17 @@ public abstract class StarsThermoSettings implements java.io.Serializable {
     {
         this._thermostatType = thermostatType;
     } //-- void setThermostatType(com.cannontech.stars.xml.serialize.types.StarsThermostatTypes) 
+
+    /**
+     * 
+     * 
+     * @param reader
+    **/
+    public static com.cannontech.stars.xml.serialize.StarsThermostatProgram unmarshal(java.io.Reader reader)
+        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    {
+        return (com.cannontech.stars.xml.serialize.StarsThermostatProgram) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsThermostatProgram.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsThermostatProgram unmarshal(java.io.Reader) 
 
     /**
     **/

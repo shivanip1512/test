@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id$
+ * $Id: ThermostatType.java,v 1.1 2004/05/18 17:48:47 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,20 +23,18 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision$ $Date$
+ * @version $Revision: 1.1 $ $Date: 2004/05/18 17:48:47 $
 **/
-public class StarsDefaultThermostatSettings extends StarsThermoSettings 
-implements java.io.Serializable
-{
+public class ThermostatType implements java.io.Serializable {
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsDefaultThermostatSettings() {
+    public ThermostatType() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings()
+    } //-- com.cannontech.stars.xml.serialize.ThermostatType()
 
 
       //-----------/
@@ -85,11 +83,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.ThermostatType unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSettings unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.ThermostatType) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ThermostatType.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.ThermostatType unmarshal(java.io.Reader) 
 
     /**
     **/

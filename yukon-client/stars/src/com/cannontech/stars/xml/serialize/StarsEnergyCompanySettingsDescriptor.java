@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnergyCompanySettingsDescriptor.java,v 1.5 2004/05/10 22:13:30 zyao Exp $
+ * $Id: StarsEnergyCompanySettingsDescriptor.java,v 1.6 2004/05/18 17:48:48 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.5 $ $Date: 2004/05/10 22:13:30 $
+ * @version $Revision: 1.6 $ $Date: 2004/05/18 17:48:48 $
 **/
 public class StarsEnergyCompanySettingsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -328,38 +328,36 @@ public class StarsEnergyCompanySettingsDescriptor extends org.exolab.castor.xml.
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
-        //-- _starsDefaultThermostatSettingsList
-        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSettings.class, "_starsDefaultThermostatSettingsList", "stars-DefaultThermostatSettings", NodeType.Element);
+        //-- _starsDefaultThermostatSchedules
+        desc = new XMLFieldDescriptorImpl(StarsDefaultThermostatSchedules.class, "_starsDefaultThermostatSchedules", "stars-DefaultThermostatSchedules", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
-                return target.getStarsDefaultThermostatSettings();
+                return target.getStarsDefaultThermostatSchedules();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
-                    target.addStarsDefaultThermostatSettings( (StarsDefaultThermostatSettings) value);
+                    target.setStarsDefaultThermostatSchedules( (StarsDefaultThermostatSchedules) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsDefaultThermostatSettings();
+                return new StarsDefaultThermostatSchedules();
             }
         } );
         desc.setHandler(handler);
-        desc.setMultivalued(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsDefaultThermostatSettingsList
+        //-- validation code for: _starsDefaultThermostatSchedules
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        fieldValidator.setMaxOccurs(3);
         desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsEnergyCompanySettingsDescriptor()

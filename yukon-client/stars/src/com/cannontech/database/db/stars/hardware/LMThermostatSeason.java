@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -20,13 +21,13 @@ public class LMThermostatSeason extends DBPersistent {
 	public static final int NONE_INT = 0;
 	
 	private Integer seasonID = null;
-	private Integer inventoryID = new Integer(CtiUtilities.NONE_ID);
+	private Integer scheduleID = new Integer(CtiUtilities.NONE_ID);
 	private Integer webConfigurationID = new Integer(CtiUtilities.NONE_ID);
 	private Date startDate = new Date(0);
 	private Integer displayOrder = new Integer(0);
 	
 	public static final String[] SETTER_COLUMNS = {
-		"InventoryID", "WebConfigurationID", "StartDate", "DisplayOrder"
+		"ScheduleID", "WebConfigurationID", "StartDate", "DisplayOrder"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "SeasonID" };
@@ -75,7 +76,7 @@ public class LMThermostatSeason extends DBPersistent {
 			setSeasonID( getNextSeasonID() );
 			
 		Object[] addValues = {
-			getSeasonID(), getInventoryID(), getWebConfigurationID(),
+			getSeasonID(), getScheduleID(), getWebConfigurationID(),
 			getStartDate(), getDisplayOrder()
 		};
 		add( TABLE_NAME, addValues );
@@ -97,7 +98,7 @@ public class LMThermostatSeason extends DBPersistent {
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setInventoryID( (Integer) results[0] );
+			setScheduleID( (Integer) results[0] );
 			setWebConfigurationID( (Integer) results[1] );
 			setStartDate( new Date(((java.sql.Timestamp) results[2]).getTime()) );
 			setDisplayOrder( (Integer) results[3] );
@@ -111,17 +112,16 @@ public class LMThermostatSeason extends DBPersistent {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = {
-			getInventoryID(), getWebConfigurationID(), getStartDate(), getDisplayOrder()
+			getScheduleID(), getWebConfigurationID(), getStartDate(), getDisplayOrder()
 		};
 		Object[] constraintValues = { getSeasonID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
-	public static LMThermostatSeason[] getAllLMThermostatSeasons(int inventoryID) {
-		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = " + inventoryID
+	public static LMThermostatSeason[] getAllLMThermostatSeasons(int scheduleID) {
+		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ScheduleID = " + scheduleID
 				   + " ORDER BY DisplayOrder";
-		com.cannontech.database.SqlStatement stmt =
-				new com.cannontech.database.SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
 			stmt.execute();
@@ -132,7 +132,7 @@ public class LMThermostatSeason extends DBPersistent {
 				seasons[i] = new LMThermostatSeason();
 				
 				seasons[i].setSeasonID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				seasons[i].setInventoryID(  new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+				seasons[i].setScheduleID(  new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				seasons[i].setWebConfigurationID(  new Integer(((java.math.BigDecimal) row[2]).intValue()) );
 				seasons[i].setStartDate( (Date) row[3] );
 				seasons[i].setDisplayOrder(  new Integer(((java.math.BigDecimal) row[4]).intValue()) );
@@ -156,11 +156,11 @@ public class LMThermostatSeason extends DBPersistent {
 	}
 
 	/**
-	 * Returns the inventoryID.
+	 * Returns the scheduleID.
 	 * @return Integer
 	 */
-	public Integer getInventoryID() {
-		return inventoryID;
+	public Integer getScheduleID() {
+		return scheduleID;
 	}
 
 	/**
@@ -196,11 +196,11 @@ public class LMThermostatSeason extends DBPersistent {
 	}
 
 	/**
-	 * Sets the inventoryID.
-	 * @param inventoryID The inventoryID to set
+	 * Sets the scheduleID.
+	 * @param scheduleID The scheduleID to set
 	 */
-	public void setInventoryID(Integer inventoryID) {
-		this.inventoryID = inventoryID;
+	public void setScheduleID(Integer scheduleID) {
+		this.scheduleID = scheduleID;
 	}
 
 	/**
