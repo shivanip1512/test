@@ -6,6 +6,8 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.MenuComponent;
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 import com.cannontech.database.Transaction;
@@ -27,8 +29,7 @@ public final class CtiUtilities
 	
 	public static final String COPYRIGHT = "Copyright (C)1999-2004 Cannon Technologies";
 	
-	public static final String USER_DIR = System.getProperty("user.dir") + "/";
-	//+ System.getProperty("file.seperator"); //for some reason, this is null in VA
+	public static final String USER_DIR = System.getProperty("user.dir") + System.getProperty("file.separator");
 	
 	public static final String STRING_NONE = "(none)";
 	public static final String STRING_DEFAULT = "Default";
@@ -62,11 +63,11 @@ public final class CtiUtilities
 	static
 	{
 		gc1990 = new java.util.GregorianCalendar();
-		gc1990.set( gc1990.YEAR, 1990 );
-		gc1990.set( gc1990.DAY_OF_YEAR, 1 );
-		gc1990.set( gc1990.HOUR, 0 );
-		gc1990.set( gc1990.MINUTE, 0 );
-		gc1990.set( gc1990.SECOND, 0 );
+		gc1990.set( Calendar.YEAR, 1990 );
+		gc1990.set( Calendar.DAY_OF_YEAR, 1 );
+		gc1990.set( Calendar.HOUR, 0 );
+		gc1990.set( Calendar.MINUTE, 0 );
+		gc1990.set( Calendar.SECOND, 0 );
 
 
 		try
@@ -662,13 +663,89 @@ public final static Integer getIntervalSecondsValueFromDecimal(String selectedSt
 
 	return new Integer(retVal.intValue());
 }
+
 /**
- * This method will return the java.awt.Frame associated with a component
- * If no parent frame is found null will be returned
+ * Returns whether we are executing as a client application or not
+ * @return
+ */
+public final static boolean isRunningAsClient() 
+{
+	//TODO: Is this reliable enough?
+	return (System.getProperty("cti.app.name") != null);
+}
+
+/**
+ * Returns the directory log files should go to
  */
 public final static String getLogDirPath()
+{   
+	//Logs go different places depending on whether we are running
+	//as a client application or a server application
+	String yb = getYukonBase(); 
+	final String fs = System.getProperty("file.separator");	
+	if(isRunningAsClient()) 
+	{
+		return yb + fs + "client" + fs + "log";
+	}
+	else 
+	{
+		return yb + fs + "server" + fs + "log";
+	}
+}
+
+/**
+ * Returns the base/home directory where yukon is installed.
+ * From here we can assume the canonical yukon directory
+ * structure.
+ * @return
+ */
+public final static String getYukonBase() 
 {
-	return USER_DIR + "../log/";
+	final String fs = System.getProperty("file.separator");	
+	
+	//First try to use yukon.base
+	String yukonBase = System.getProperty("yukon.base");
+	if(yukonBase != null) 
+	{
+		return yukonBase;
+	}
+	
+	//That failed, so...
+	//Are we running inside tomcat? assume we live in yukon/server/web then
+	//and calculate yukon base accordingly 
+	final String catBase = System.getProperty("catalina.base");
+	if(catBase != null) 
+	{
+		try 
+		{
+			File yb = new File(catBase + fs + ".." + fs + "..");			
+			return yb.getCanonicalPath();
+		}
+		catch(IOException ioe) {} 
+
+		//maybe we are in a development environment where we might not be running in a 
+		//good yukon directory structure?
+		return fs + "yukon";
+	}
+	
+	//So, we must be a client running from the command line?
+	//assume we are running from the yukon/client/bin directory
+	try 
+	{
+		File yb = new File(".." + fs + "..");
+		return yb.getCanonicalPath();
+	}
+	catch(IOException ioe) {}
+	
+	//Last resort, return the current directory
+	try 
+	{
+		return new File(".").getCanonicalPath();
+	}
+	catch(IOException ioe) {}
+	
+	//total failure, doh!
+	return fs + "yukon";
 }
 
 /**
