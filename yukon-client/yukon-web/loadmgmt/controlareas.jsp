@@ -50,7 +50,7 @@
                                 
                 <td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle" class="MainText"> 
-                  <div align="center"><span><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                  <div align="center"><span><a href="../operator/Operations.jsp" class="Link3">Home</a></span></div>
                 </td>
                 <td width="57" valign="middle" class="MainText"> 
                   <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 

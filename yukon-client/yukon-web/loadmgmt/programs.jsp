@@ -103,7 +103,7 @@ else
 
                 <td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
-                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../operator/Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                 <td width="57" valign="middle"> 
                   <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
