@@ -322,15 +322,15 @@ public class ServerUtils {
 	}
 	
 	public static boolean isOperator(StarsYukonUser user) {
-		return (AuthFuncs.getRoleValue(user.getYukonUser(), RoleTypes.WEB_OPERATOR) != null);
+		return (AuthFuncs.getRolePropertyValue(user.getYukonUser(), RoleTypes.WEB_OPERATOR) != null);
 	}
 	
 	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return (AuthFuncs.getRoleValue(user.getYukonUser(), RoleTypes.WEB_RESIDENTIAL_CUSTOMER) != null);
+		return (AuthFuncs.getRolePropertyValue(user.getYukonUser(), RoleTypes.WEB_RESIDENTIAL_CUSTOMER) != null);
 	}
 	
 	public static boolean isCICustomer(StarsYukonUser user) {
-		return (AuthFuncs.getRoleValue(user.getYukonUser(), RoleTypes.WEB_CICUSTOMER) != null);
+		return (AuthFuncs.getRolePropertyValue(user.getYukonUser(), RoleTypes.WEB_CICUSTOMER) != null);
 	}
 	
 	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {

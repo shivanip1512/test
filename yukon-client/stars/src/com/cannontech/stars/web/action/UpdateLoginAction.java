@@ -208,7 +208,7 @@ public class UpdateLoginAction implements ActionBase {
         
     	dataUser = (com.cannontech.database.data.user.YukonUser)
         		Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
-        LiteYukonUser liteUser = new LiteYukonUser( dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getPassword() );
+        LiteYukonUser liteUser = new LiteYukonUser( dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getPassword(), null );
         ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         
         liteAccount.setLoginID( dbUser.getUserID().intValue() );
