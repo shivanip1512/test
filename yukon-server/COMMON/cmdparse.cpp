@@ -13,6 +13,7 @@ using namespace std;
 #include <limits.h>
 #include "yukon.h"
 #include "cmdparse.h"
+#include "cparms.h"
 #include "devicetypes.h"
 #include "logger.h"
 #include "numstr.h"
@@ -2552,7 +2553,23 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
         }
         else
         {
-            _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+            int xcom_base = gConfigParms.getValueAsInt("LCR_EXPRESSCOM_SERIAL_BASE", -1);
+
+            if(xcom_base >= 0)
+            {
+                if( getiValue("serial", 0) >= xcom_base )
+                {
+                    _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
+                }
+                else
+                {
+                    _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+                }
+            }
+            else
+            {
+                _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+            }
         }
     }
     else
