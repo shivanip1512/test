@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:54:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/04/25 20:10:57 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,11 @@ bool CtiDeviceRepeater900::initCommandStore()
     bool failed = false;
 
     CtiDLCCommandStore cs;
+
+    cs._cmd = CtiProtocolEmetcon::Scan_General;
+    cs._io = IO_READ;
+    cs._funcLen = make_pair((int)Rpt_ModelAddr, 1);
+    _commandStore.insert( cs );
 
     cs._cmd = CtiProtocolEmetcon::Command_Loop;
     cs._io = IO_READ;
@@ -105,6 +110,11 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     switch( parse.getCommand() )
     {
+        case ScanRequest:
+        {
+            nRet = executeScan(pReq, parse, OutMessage, vgList, retList, outList);
+            break;
+        }
         case LoopbackRequest:
         {
             nRet = executeLoopback(pReq, parse, OutMessage, vgList, retList, outList);
@@ -187,7 +197,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             else
                 pOut->Priority = MAXPRIORITY - 4;
 
-            if( (Route = CtiDeviceBase::getRoute( getRouteID() )) != NULL )    // This is "this's" route
+            if( (Route = CtiDeviceBase::getRoute( routeID )) != NULL )    // This is "this's" route
             {
                 pOut->TargetID                = getID();
                 pOut->EventCode               = BWORD | RESULT | WAIT;
@@ -268,6 +278,52 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
     }
 
     return nRet;
+}
+
+
+INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
+{
+    INT status = NORMAL;
+
+    if(OutMessage != NULL)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+
+        if(getOperation(CtiProtocolEmetcon::Command_Loop, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        {
+            // Load all the other stuff that is needed
+            OutMessage->DeviceID  = getID();
+            OutMessage->TargetID  = getID();
+            OutMessage->Port      = getPortID();
+            OutMessage->Remote    = getAddress();
+            OutMessage->RouteID   = getRouteID();
+            OutMessage->Priority  = ScanPriority;
+            OutMessage->TimeOut   = 2;
+            OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
+            OutMessage->Retry     = 3;
+
+            // Tell the porter side to complete the assembly of the message.
+            OutMessage->Request.BuildIt = TRUE;
+            strcpy(OutMessage->Request.CommandStr, "loop");
+
+            outList.insert(OutMessage);
+            OutMessage = NULL;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " Device " << getName() << endl;
+
+            status = NoMethod;
+        }
+    }
+
+    return status;
 }
 
 

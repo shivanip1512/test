@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/25 20:10:57 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,14 @@ public:
                       RWTPtrSlist< CtiMessage >      &vgList,
                       RWTPtrSlist< CtiMessage >      &retList,
                       RWTPtrSlist< OUTMESS >         &outList);
+
+   INT GeneralScan(CtiRequestMsg              *pReq,
+                   CtiCommandParser           &parse,
+                   OUTMESS                   *&OutMessage,
+                   RWTPtrSlist< CtiMessage >  &vgList,
+                   RWTPtrSlist< CtiMessage >  &retList,
+                   RWTPtrSlist< OUTMESS >     &outList,
+                   INT                         ScanPriority);
 
    INT executeLoopback(CtiRequestMsg                  *pReq,
                        CtiCommandParser               &parse,
