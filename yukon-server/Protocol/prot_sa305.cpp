@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/02/17 23:35:45 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.11  2005/02/17 23:35:45  cplender
+* Modified the cycling selection to aim for control percentage, not period.
+*
 * Revision 1.10  2005/02/17 19:02:58  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -277,9 +280,13 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             {
                 // It is a cycle command!
 
-                if(cycle_period < 20)
+                if(cycle_period <= 8 && _percentageOff == 100.0)            // We can do 7.5 / 7.5
                 {
                     _period = 7.5;
+                }
+                else if(cycle_period <= 15 && _percentageOff == 50.0)        // We can do 7.5 / 15.0
+                {
+                    _period = 15.0;
                 }
                 else if(cycle_period < 30)
                 {
