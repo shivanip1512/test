@@ -184,8 +184,8 @@ location="control.jsp?pointid=<%= pointID %>&instanceid=" + instanceID + "&actio
       <div class="TableCell" style="text-align: center;">Point:&nbsp;
 <%= lPoint.getPointName() %><br>
       </div>
-      <div class="TableCell" style="text-align: center;">Current
-State:&nbsp; Open<br>
+      <div class="TableCell" style="text-align: center;">Current State:&nbsp;
+<%= lState.getStateText() %><br>
       </div>
       <br>
 <%
