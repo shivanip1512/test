@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:38 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/10/12 01:17:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -605,6 +605,47 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
         pos++;
 
     return pos;
+}
+
+
+bool CtiDNPObjectBlock::isBinaryOutputControl( void ) const
+{
+    bool retVal = false;
+
+    if( _group     == CtiDNPBinaryOutputControl::Group &&
+        _variation == CtiDNPBinaryOutputControl::ControlRelayOutputBlock &&
+        _objectList.size() == 1 )
+    {
+        retVal = true;
+    }
+
+    return retVal;
+}
+
+
+int CtiDNPObjectBlock::getBinaryOutputControlStatus( void ) const
+{
+    int retVal = CtiDNPBinaryOutputControl::Status_InvalidStatus;
+
+    if( isBinaryOutputControl() )
+    {
+        retVal = ((CtiDNPBinaryOutputControl *)_objectList[0])->getStatus();
+    }
+
+    return retVal;
+}
+
+
+long CtiDNPObjectBlock::getBinaryOutputControlOffset( void ) const
+{
+    long retVal = -1;
+
+    if( isBinaryOutputControl() )
+    {
+        retVal = _objectIndices[0];
+    }
+
+    return retVal;
 }
 
 

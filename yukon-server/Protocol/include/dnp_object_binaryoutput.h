@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/10/12 01:16:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,6 +96,7 @@ private:
 protected:
 
 public:
+
     CtiDNPBinaryOutputControl(int variation);
 
     enum Variation
@@ -126,12 +127,26 @@ public:
         Trip  = 2
     };
 
+    enum Status
+    {
+        Status_RequestAccepted      = 0,
+        Status_ArmTimeout           = 1,
+        Status_NoSelect             = 2,
+        Status_FormattingError      = 3,
+        Status_PointNotControllable = 4,
+        Status_QueueFullPointActive = 5,
+        Status_HardwareError        = 6,
+        Status_InvalidStatus
+    };
+
     void setControlBlock(unsigned long onTime, unsigned long offTime, unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose);
 
     int restore(unsigned char *buf, int len);
     int restoreBits(unsigned char *buf, int bitoffset, int len);
     int serialize(unsigned char *buf);
     int getSerializedLen(void);
+
+    int getStatus( void ) const;
 };
 
 #pragma pack( pop )

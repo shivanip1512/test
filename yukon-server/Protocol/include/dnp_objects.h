@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:46 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/12 01:17:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,6 +106,10 @@ public:
     int  restore( unsigned char *buf, int len );
     bool hasPoints( void );
     void getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+
+    bool isBinaryOutputControl( void )        const;
+    int  getBinaryOutputControlStatus( void ) const;
+    long getBinaryOutputControlOffset( void ) const;
 };
 
 #endif // #ifndef __DNP_OBJECTS_H__

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/10/12 01:16:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -284,8 +284,8 @@ int CtiDNPBinaryOutputControl::restoreBits(unsigned char *buf, int bitoffset, in
         default:
         {
             {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             bitpos = len * 8;
@@ -359,4 +359,12 @@ int CtiDNPBinaryOutputControl::getSerializedLen(void)
 }
 
 
+int CtiDNPBinaryOutputControl::getStatus( void ) const
+{
+    int retVal;
+
+    retVal = _crob_or_pcb.block.status;
+
+    return retVal;
+}
 
