@@ -228,7 +228,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
     
     Sets the group selection method of the energy exchange program
 ---------------------------------------------------------------------------*/    
-DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
@@ -278,7 +278,7 @@ void CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 
     Handles manual control messages for the energy exchange program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 

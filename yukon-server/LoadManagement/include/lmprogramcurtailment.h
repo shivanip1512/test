@@ -77,10 +77,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     void dumpDynamicData();
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL hasControlHoursAvailable() const;
     virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    virtual BOOL handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

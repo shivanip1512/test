@@ -421,7 +421,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCStr
 
     Sets the group selection method of the curtailment program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 
@@ -505,7 +505,7 @@ void CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 
     Handles manual control messages for the curtailment program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
 

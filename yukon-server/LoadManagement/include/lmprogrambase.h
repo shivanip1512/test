@@ -92,14 +92,14 @@ public:
     CtiLMProgramBase& setManualControlReceivedFlag(BOOL manualreceived);
 
     BOOL isAvailableToday();
-    BOOL isWithinValidControlWindow(ULONG nowInSeconds);
+    BOOL isWithinValidControlWindow(ULONG secondsFromBeginningOfDay);
     void dumpDynamicData();
 
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG nowInSeconds, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, ULONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
     virtual BOOL hasControlHoursAvailable() const = 0;
     virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
-    virtual BOOL handleManualControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

@@ -713,7 +713,7 @@ BOOL CtiLMProgramBase::isAvailableToday()
 
     Returns boolean if this program is in a valid control window.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG nowInSeconds)
+BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG secondsFromBeginningOfDay)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
 
@@ -723,7 +723,7 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(ULONG nowInSeconds)
         for(ULONG i=0;i<_lmprogramcontrolwindows.entries();i++)
         {
             CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
-            if( currentControlWindow->getAvailableStartTime() <= nowInSeconds && nowInSeconds <= currentControlWindow->getAvailableStopTime() )
+            if( currentControlWindow->getAvailableStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= currentControlWindow->getAvailableStopTime() )
             {
                 returnBoolean = TRUE;
                 break;
@@ -924,6 +924,10 @@ void CtiLMProgramBase::dumpDynamicData()
 
                 updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
 
+                /*{
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << updater.asString().data() << endl;
+                }*/
                 updater.execute( conn );
             }
             else
@@ -974,6 +978,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     RWDBDateTime dynamicTimeStamp;
     RWCString tempBoolString;
     RWCString tempTypeString;
+    _insertDynamicDataFlag = FALSE;
 
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
