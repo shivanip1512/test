@@ -49,7 +49,7 @@
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
-            <div align="center"> 
+            <div align="center"><br> 
               <table width="600" border="0" cellspacing="0">
                 <tr> 
                   <td width="202"> 
