@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/02/21 20:34:01 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/03/06 18:07:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,17 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 CtiConnection::~CtiConnection()
 {
-    cleanConnection();
+    try
+    {
+        cleanConnection();
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error cleaning the outbound queue for connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 }
 
 void CtiConnection::cleanConnection()
@@ -61,7 +71,25 @@ void CtiConnection::cleanConnection()
         _ptRegMsg = 0;
     }
 
-    outQueue.clearAndDestroy();
+    try
+    {
+        outQueue.clearAndDestroy();
+    }
+    catch( RWxmsg &e )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error cleaning the outbound queue for connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << e.why() << endl;
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Error cleaning the outbound queue for connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 }
 
 int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleaniftimedout)
@@ -738,73 +766,83 @@ INT CtiConnection::verifyConnection()
     INT ok = NORMAL;
     INT status;
 
-    if( (status = inthread_.getCompletionState())  != RW_THR_PENDING )
+    try
     {
-        if(getDebugLevel() & 0x00001000)
+        if( (status = inthread_.getCompletionState())  != RW_THR_PENDING )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " InThread " << who() << " has exited with a completion state of " << status;
-            if(!_serverConnection)
+            if(getDebugLevel() & 0x00001000)
             {
-                dout << ". May restart";
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " InThread " << who() << " has exited with a completion state of " << status;
+                if(!_serverConnection)
+                {
+                    dout << ". May restart";
+                }
+
+                dout << endl;
             }
 
-            dout << endl;
-        }
-
-        if(!_serverConnection)
-        {
-            if( inthread_.start() != RW_THR_PENDING )
+            if(!_serverConnection)
+            {
+                if( inthread_.start() != RW_THR_PENDING )
+                {
+                    ok = InThreadTerminated; // the inthread has exited!
+                }
+            }
+            else
             {
                 ok = InThreadTerminated; // the inthread has exited!
             }
         }
-        else
+        else if( (status = outthread_.getCompletionState()) != RW_THR_PENDING )
         {
-            ok = InThreadTerminated; // the inthread has exited!
-        }
-    }
-    else if( (status = outthread_.getCompletionState()) != RW_THR_PENDING )
-    {
-        if(getDebugLevel() & 0x00001000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " OutThread " << who() << " has exited with a completion state of " << status;
+            if(getDebugLevel() & 0x00001000)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " OutThread " << who() << " has exited with a completion state of " << status;
+
+                if(!_serverConnection)
+                {
+                    dout << ". May restart";
+                }
+
+                dout << endl;
+            }
 
             if(!_serverConnection)
             {
-                dout << ". May restart";
+                if( outthread_.start() != RW_THR_PENDING )
+                {
+                    ok = OutThreadTerminated; // the outthread has exited!
+                }
             }
-
-            dout << endl;
-        }
-
-        if(!_serverConnection)
-        {
-            if( outthread_.start() != RW_THR_PENDING )
+            else
             {
-                ok = OutThreadTerminated; // the outthread has exited!
+                ok = OutThreadTerminated; // the inthread has exited!
+            }
+
+            if(ok == OutThreadTerminated)
+            {
+                outQueue.clearAndDestroy();
             }
         }
-        else
+        else if(Ex != NULL)
         {
-            ok = OutThreadTerminated; // the inthread has exited!
-        }
-
-        if(ok == OutThreadTerminated)
-        {
-            outQueue.clearAndDestroy();
+            if( Ex->In().bad() )
+            {
+                ok = InboundSocketBad; // the stream indicates a bad condition.
+            }
+            else if( Ex->Out().bad() )
+            {
+                ok = OutboundSocketBad; // the stream indicates a bad condition.
+            }
         }
     }
-    else if(Ex != NULL)
+    catch(...)
     {
-        if( Ex->In().bad() )
         {
-            ok = InboundSocketBad; // the stream indicates a bad condition.
-        }
-        else if( Ex->Out().bad() )
-        {
-            ok = OutboundSocketBad; // the stream indicates a bad condition.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
