@@ -943,9 +943,9 @@ insert into YukonUserRole values(-109,-1,-100,-10009,'true');
 
 
 insert into YukonRoleProperty values(-20118,-201,'Create Trend','false','Controls whether to allow new trends to assigned to the customer');
-insert into YukonUserRole values (-738,-1,-201,-20118,'(none)');
-insert into YukonGroupRole values (-738,-301,-201,-20118,'(none)');
-insert into YukonGroupRole values (-1205,-2,-201,-20118,'(none)');
+insert into YukonUserRole values (-738,-1,-201,-20118,'true');
+insert into YukonGroupRole values (-738,-301,-201,-20118,'true');
+insert into YukonGroupRole values (-1205,-2,-201,-20118,'true');
 
 
 /******************************************************************************/
