@@ -29,7 +29,8 @@ class EditorActions {
 	public static final String OPEN_DRAWING = "OPEN DRAWING";
 	public static final String SAVE_DRAWING = "SAVE DRAWING";
 	public static final String SAVE_AS_DRAWING = "SAVE AS DRAWING";
-	public static final String EXPORT_DRAWING = "EXPORT DRAWING";
+//	public static final String EXPORT_DRAWING = "EXPORT DRAWING";
+	public static final String DRAWING_PROPERTIES = "DRAWING PROPERTIES";
 	public static final String EXIT_EDITOR = "EXIT EDITOR";
 	public static final String MAGNETIC_GRID = "MAGNETIC GRID";
 
@@ -134,18 +135,15 @@ class EditorActions {
 		}
 	};
 
-	private final LxAbstractAction exportDrawingAction =
+	private final LxAbstractAction drawingPropertiesAction =
 		new LxAbstractAction(
-			EXPORT_DRAWING,
-			"Export...",
-			"Export drawings to svg",
+			DRAWING_PROPERTIES,
+			"Properties...",
+			"Set drawing properties",
 			null,
 			true) {
 		public void processAction(ActionEvent evt) {
-			LxComponent[] c = editor.getDrawing().getLxGraph().getComponents();
-			for (int i = 0; i < c.length; i++) {
-				c[i].rotateCenter(66.0, c[i].getCenter());
-			}
+			editor.editDrawingProperties();
 		}
 	};
 
@@ -567,7 +565,7 @@ class EditorActions {
 		actionMap.put(OPEN_DRAWING, openDrawingAction);
 		actionMap.put(SAVE_DRAWING, saveDrawingAction);
 		actionMap.put(SAVE_AS_DRAWING, saveDrawingAsAction);
-		actionMap.put(EXPORT_DRAWING, exportDrawingAction);
+		actionMap.put(DRAWING_PROPERTIES, drawingPropertiesAction);
 		actionMap.put(EXIT_EDITOR, exitEditorAction);
 
 		actionMap.put(DELETE_ELEMENT, deleteElementAction);

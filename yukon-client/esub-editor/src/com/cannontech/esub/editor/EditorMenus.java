@@ -78,10 +78,9 @@ private void initialize(EditorActions actions) {
 	action = actions.getAction(EditorActions.SAVE_AS_DRAWING);
 	JMenuItem saveAsItem = createMenuItem(action.getLabel(), action);
 
-	action = actions.getAction(EditorActions.EXPORT_DRAWING);	
-	JMenuItem exportItem = createMenuItem(action.getLabel(), action);
-	exportItem.setEnabled(false);
-	
+	action = actions.getAction(EditorActions.DRAWING_PROPERTIES);	
+	JMenuItem propertiesItem = createMenuItem(action.getLabel(), action);
+		
 	action = actions.getAction(EditorActions.EXIT_EDITOR);
 	JMenuItem exitItem = createMenuItem(action.getLabel(), action);
 
@@ -90,7 +89,7 @@ private void initialize(EditorActions actions) {
 	fileMenu.add(saveItem);
 	fileMenu.add(saveAsItem);
 	fileMenu.add(new JSeparator());
-	fileMenu.add(exportItem);
+	fileMenu.add(propertiesItem);
 	fileMenu.add(new JSeparator());
 	fileMenu.add(exitItem);
 

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.editor.EditorPrefs;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxSaveUtils;
 
@@ -19,17 +20,21 @@ import com.loox.jloox.LxSaveUtils;
  * @author alauinger
  */
 public class DrawingMetaElement extends LxAbstractText implements DrawingElement {
-	private static final int DEFAULT_WIDTH = 1024;
-	private static final int DEFAULT_HEIGHT = 768;	
+
 	private static final int DEFAULT_ROLE_ID = 200;
 	
 	private int version = 1;
-	private int drawingWidth = DEFAULT_WIDTH;
-	private int drawingHeight = DEFAULT_HEIGHT;
+	private int drawingWidth;
+	private int drawingHeight;
 	private int roleID = DEFAULT_ROLE_ID;	
 	
 	private transient Drawing drawing = null;
 
+	public DrawingMetaElement() {
+		EditorPrefs prefs = EditorPrefs.getPreferences();		
+		setDrawingWidth(prefs.getDefaultDrawingWidth());
+		setDrawingHeight(prefs.getDefaultDrawingHeight());
+	}	
 	
 	/**
 	 * @see com.loox.jloox.LxComponent#readFromJLX(InputStream, String)

@@ -22,7 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
@@ -75,6 +74,7 @@ public class Editor extends JPanel {
 			}
 		}
 	};
+	
 	// Handles double clicks on an LxElement in the LxView
 	final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
 		public void mouseDoubleClicked(LxMouseEvent evt) {
@@ -129,6 +129,7 @@ public class Editor extends JPanel {
 			}
 		});
 	}
+	
 	/**
 	 * Creation date: (12/18/2001 2:53:17 PM)
 	 * @param elem com.loox.jloox.LxElement
@@ -144,8 +145,7 @@ public class Editor extends JPanel {
 					com.cannontech.common.util.CtiUtilities.getParentFrame(
 						getDrawing().getLxView()),
 					true);
-
-		//	final com.cannontech.esub.editor.element.DynamicTextEditor editor = new com.cannontech.esub.editor.element.DynamicTextEditor();
+		
 		final com.cannontech.common.editor.PropertyPanel editor =
 			com
 				.cannontech
@@ -157,30 +157,29 @@ public class Editor extends JPanel {
 				.createEditorPanel(elem.getClass());
 
 		if( editor != null ) {
-		editor.addPropertyPanelListener(new PropertyPanelListener() {
-			public void selectionPerformed(PropertyPanelEvent e) {
-				if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
-
-				} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
-					editor.getValue(elem);
+			editor.addPropertyPanelListener(new PropertyPanelListener() {
+				public void selectionPerformed(PropertyPanelEvent e) {
+					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {
+	
+					} else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
+						editor.getValue(elem);
+					}
+					propertyDialog.setVisible(false);								
 				}
-				propertyDialog.setVisible(false);								
-			}
-		});
-
-		editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
-		editor.setValue(elem);
-		propertyDialog.setContentPane(editor);
-		//	propertyDialog.setSize(475, 500);
-		propertyDialog.pack();
-		propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
-		propertyDialog.show();
-		
-		// start the updates again
-		drawingUpdater = new DrawingUpdater();	
-		drawingUpdater.setDrawing( getDrawing() );
-		drawingUpdateTimer = new Timer();
-		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
+			});
+	
+			editor.getPropertyButtonPanel().getApplyJButton().setVisible(false);
+			editor.setValue(elem);
+			propertyDialog.setContentPane(editor);		
+			propertyDialog.pack();
+			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
+			propertyDialog.show();
+			
+			// start the updates again
+			drawingUpdater = new DrawingUpdater();	
+			drawingUpdater.setDrawing( getDrawing() );
+			drawingUpdateTimer = new Timer();
+			drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
 		}
 	}
 
@@ -227,7 +226,7 @@ public class Editor extends JPanel {
 		p.add(scrollPane, java.awt.BorderLayout.CENTER);
 		p.add(menuBar, java.awt.BorderLayout.NORTH);
 		p.add(toolBar, java.awt.BorderLayout.WEST);
-		p.setPreferredSize(new Dimension(prefs.getDefaultDrawingWidth(),prefs.getDefaultDrawingHeight()));
+//		p.setPreferredSize(new Dimension(prefs.getDefaultDrawingWidth(),prefs.getDefaultDrawingHeight()));
 		lxView.addMouseListener(viewMouseListener);		
 					
 		drawingUpdater = new DrawingUpdater();	
@@ -275,9 +274,7 @@ public class Editor extends JPanel {
 		}
 	}
 	public void newDrawing() {
-
-		getDrawing().clear();
-		editDrawingProperties();	
+		getDrawing().clear();	
 	}
 
 	/**
@@ -319,10 +316,6 @@ public class Editor extends JPanel {
 		frame.getContentPane().add(editor);
 		frame.setSize(defaultSize);
 		
-		//set the location of the frame to the center of the screen
-        frame.setLocation( (java.awt.Toolkit.getDefaultToolkit().getScreenSize().width - frame.getSize().width) / 2,
-                     (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - frame.getSize().height) / 2);
-
         frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("esubEditorIcon.png"));
 
 		frame.pack();
@@ -343,14 +336,8 @@ public class Editor extends JPanel {
 			.getInstance()
 			.getAllPoints();
 
-		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());
-		
-		if (args.length == 1) {
-			String file = args[0];
-
-			CTILogger.info("Loading " + file);
-			editor.loadDrawing(file);
-		}
+		// fire up the db change listener
+		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());	
 	}
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
@@ -499,6 +486,7 @@ public class Editor extends JPanel {
 			}
 		});
 	}
+	
 	void editDrawingProperties() {
 		editElement(getDrawing().getMetaElement());				
 		updateSize();

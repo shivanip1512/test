@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor;
 
+import java.awt.Dimension;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
@@ -32,14 +33,14 @@ public class Drawing implements Serializable {
 	public synchronized void clear() {
 		fileName = null;
 		getLxGraph().removeAll();
-		addMetaElement();
 		setModified(false);
 	}
+	
 	public synchronized void load(String file) {
 		clear();
 		
 		// the saved drawing willhave its own meta element, remove the default
-		getLxGraph().remove(getMetaElement());
+	//	getLxGraph().remove(getMetaElement());
 		
 		getLxGraph().read(file);
 		fileName = file;
@@ -125,8 +126,7 @@ public class Drawing implements Serializable {
 	public LxGraph getLxGraph() {
 		if (lxGraph == null) {
 			lxGraph = new LxGraph();			
-			lxGraph.setDefaultLineColor(java.awt.Color.white);
-			addMetaElement();
+			lxGraph.setDefaultLineColor(java.awt.Color.white);			
 		}
 
 		return lxGraph;
@@ -149,8 +149,9 @@ public class Drawing implements Serializable {
 			lxView.setMagneticGridVisible(true);
 			lxView.setMagneticGridSize(10);
 			lxView.setLocation(0,0); 
-			lxView.setSize(EditorPrefs.getPreferences().getDefaultDrawingWidth(),
-							EditorPrefs.getPreferences().getDefaultDrawingHeight());
+			lxView.setPreferredSize(new Dimension(getMetaElement().getDrawingWidth(),
+									getMetaElement().getDrawingHeight()));
+														
 		}
 
 		return lxView;
@@ -204,7 +205,7 @@ public class Drawing implements Serializable {
 		getLxGraph().setModified(modified);
 	}
 	
-	public DrawingMetaElement getMetaElement() {
+	public DrawingMetaElement getMetaElement() {	
 		// Fix up each element so they know who their drawing is
 		LxComponent[] comps = lxGraph.getComponents();
 		for (int i = 0; i < comps.length; i++) {
@@ -212,14 +213,9 @@ public class Drawing implements Serializable {
 				return (DrawingMetaElement) comps[i];
 			}
 		
-		return null;									
-	}
-
-	private void addMetaElement() {
-		if( getMetaElement() == null ) {
-			DrawingMetaElement metaInfo = new DrawingMetaElement();
-			metaInfo.setDrawing(this);
-			getLxGraph().add(metaInfo);
-		}
+		DrawingMetaElement metaInfo = new DrawingMetaElement();
+		metaInfo.setDrawing(this);			
+		getLxGraph().add(metaInfo);
+		return metaInfo;							
 	}
 }
