@@ -1,5 +1,3 @@
-
-#pragma warning( disable : 4786 )
 #pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
@@ -10,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2002/09/06 19:03:43 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2002/09/09 14:51:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +44,8 @@
 
 #include <windows.h>       // These next few are required for Win32
 #include <process.h>
+#include <vector>
+using namespace std;
 
 #include <rw/toolpro/winsock.h>
 #include <rw\cstring.h>
@@ -921,6 +921,7 @@ VOID NexusThread (VOID *Arg)
         {
             if(!(i++ % 30))
             {
+                PortPipeInit(NOWAIT);
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " NexusThread: Waiting for reconnection to Port Control" << endl;
             }
@@ -1535,9 +1536,11 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         {
             if(!(j++ % 30))
             {
+                PortPipeInit(NOWAIT);
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " MakePorterRequests: Waiting for reconnection to Port Control" << endl;
             }
+
 
             CTISleep (1000L);
 
@@ -1661,8 +1664,38 @@ INT RecordDynamicData()
     {
         CtiDevice *Device;
 
-        RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
-        CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
+        vector< CtiTableDeviceScanData > dirtyData;
+
+        /*
+         *  We will be going with the idea that a minimal duration locking of the Manager is KEY KEY KEY here.
+         */
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator   itr_dev(ScannerDeviceManager.getMap());
+
+            for(; ++itr_dev ;)
+            {
+                Device = (CtiDevice*) itr_dev.value();
+
+                if( Device->isSingle() )
+                {
+                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device;
+
+                    if(DeviceRecord->getScanData().isDirty())
+                    {
+                        if(ScannerDebugLevel & SCANNER_DEBUG_DYNAMICDATA)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
+                        }
+                        // DeviceRecord->getScanData().Update(conn);
+                        CtiTableDeviceScanData msd = DeviceRecord->getScanData();
+                        dirtyData.push_back( msd );
+                        DeviceRecord->getScanData().resetDirty();
+                    }
+                }
+            }
+        }
 
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
@@ -1673,31 +1706,16 @@ INT RecordDynamicData()
 
             try
             {
-                for(; ++itr_dev ;)
+                vector< CtiTableDeviceScanData >::iterator dirtyit;
+
+                for(dirtyit = dirtyData.begin(); dirtyit != dirtyData.end(); dirtyit++)
                 {
-                    Device = (CtiDevice*) itr_dev.value();
-
-                    if( Device->isSingle() )
-                    {
-                        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device;
-
-                        if(DeviceRecord->getScanData().isDirty())
-                        {
-                            if(ScannerDebugLevel & SCANNER_DEBUG_DYNAMICDATA)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
-                            }
-                            DeviceRecord->getScanData().Update(conn);
-                        }
-                    }
+                    CtiTableDeviceScanData &dirty = *dirtyit;
+                    dirty.Update(conn);
                 }
-
-                conn.commitTransaction();
             }
             catch(...)
             {
-                conn.commitTransaction();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
@@ -1705,6 +1723,7 @@ INT RecordDynamicData()
 
                 }
             }
+            conn.commitTransaction();
         }
     }
 
