@@ -180,12 +180,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			cal.add(java.util.Calendar.DATE, -90);
 			long start = cal.getTimeInMillis();
 */
-			//Define the report Paper properties and format.
-			java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-			reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-			java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-			pageFormat.setPaper(reportPaper);
-		
 			//Create the report
 			JFreeReport report = (JFreeReport)session.getAttribute(reportKey + "Report");
 			if( report == null )
@@ -199,11 +193,12 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				rpt.getModel().collectData();
 				
 				report = rpt.createReport();
-				report.setDefaultPageFormat(pageFormat);
 				report.setData(rpt.getModel());
 				session.setAttribute(reportKey + "Report", report);
 			}
 
+			java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
+			
 			//create buffered image
 			BufferedImage image = createImage(pageFormat);
 			final Graphics2D g2 = image.createGraphics();
