@@ -24,6 +24,8 @@ import com.cannontech.analysis.report.ECActivityDetailReport;
 import com.cannontech.analysis.report.ECActivityLogReport;
 import com.cannontech.analysis.report.LGAccountingReport;
 import com.cannontech.analysis.report.MeterReadReport;
+import com.cannontech.analysis.report.PointDataIntervalReport;
+import com.cannontech.analysis.report.PointDataSummaryReport;
 import com.cannontech.analysis.report.PowerFailReport;
 import com.cannontech.analysis.report.ProgramDetailReport;
 import com.cannontech.analysis.report.RouteMacroReport;
@@ -92,6 +94,11 @@ public class ReportFuncs
 			case ReportTypes.EC_WORK_ORDER_DATA:
 				return new WorkOrder();
 			
+			case ReportTypes.POINT_DATA_INTERVAL_DATA:
+				return new PointDataIntervalReport();
+			case ReportTypes.POINT_DATA_SUMMARY_DATA:
+				return new PointDataSummaryReport();
+				
 			default:
 				return null;
 		}

@@ -39,6 +39,8 @@ public class ReportTypes
 	/** Cap Bank Reports */
 	public static final int CBC_BANK_DATA = 15;
 
+	public static final int POINT_DATA_INTERVAL_DATA = 16;	//Coincidental
+	public static final int POINT_DATA_SUMMARY_DATA = 17;	//Peaks/Usage
 	
 	/** String names for report types */
 	public static final String STATISTIC_DATA_STRING = "Communication Statistics";
@@ -62,6 +64,9 @@ public class ReportTypes
 	public static final String EC_WORK_ORDER_DATA_STRING = "Work Order";
 	
 	public static final String CAPBANK_DATA_STRING = "CapBank Details";
+	
+	public static final String POINT_DATA_INTERVAL_DATA_STRING = "Point Data Interval";
+	public static final String POINT_DATA_SUMMARY_DATA_STRING = "Point Data Summary";
 
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -86,12 +91,15 @@ public class ReportTypes
 		EC_WORK_ORDER_DATA_STRING,
 		
 		//Capcontrol
-		CAPBANK_DATA_STRING
+		CAPBANK_DATA_STRING,
+		
+		POINT_DATA_INTERVAL_DATA_STRING,
+		POINT_DATA_SUMMARY_DATA_STRING
 	};
 
 
 	/* Report groupings */	
-	public static final int ADMIN_LOG_REPORTS_GROUP = 0;
+	public static final int ADMIN_REPORTS_GROUP = 0;
 	public static final int AMR_REPORTS_GROUP = 1;
 	public static final int STATISTICAL_REPORTS_GROUP = 2;
 	public static final int LOAD_MANAGEMENT_REPORTS_GROUP = 3;
@@ -100,7 +108,7 @@ public class ReportTypes
 	public static final int STARS_REPORTS_GROUP = 6;
 	public static final int OTHER_REPORTS_GROUP = 7;
 	
-	public static final String ADMIN_LOG_REPORTS_GROUP_STRING = "Administrative Reports";
+	public static final String ADMIN_REPORTS_GROUP_STRING = "Administrative Reports";
 	public static final String AMR_REPORTS_GROUP_STRING = "AMR Reports";
 	public static final String STATISTICAL_REPORTS_GROUP_STRING = "Communication Statistics Reports";
 	public static final String LOAD_MANAGEMENT_REPORTS_GROUP_STRING = "Load Management Reports";
@@ -111,7 +119,7 @@ public class ReportTypes
 
 	/** Report String to enum mapping */
 	public static final String[] reportGroupName = {
-		ADMIN_LOG_REPORTS_GROUP_STRING,
+		ADMIN_REPORTS_GROUP_STRING,
 		AMR_REPORTS_GROUP_STRING,
 		STATISTICAL_REPORTS_GROUP_STRING,
 		LOAD_MANAGEMENT_REPORTS_GROUP_STRING,
@@ -124,7 +132,8 @@ public class ReportTypes
 //	[groupID][typeID array]
 // xxx_reports_group may appear in multiple mappings
 	private static int[][] groupToTypeMap = {
-		{EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//admin log reports
+		{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, 
+				EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//archive data, admin log reports
 		{METER_READ_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LOAD_PROFILE_DATA},	//amr reports
 		{STATISTIC_DATA},	//stat reports
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA},		//lm reports
