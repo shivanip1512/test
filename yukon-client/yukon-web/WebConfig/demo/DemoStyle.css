@@ -1,0 +1,14 @@
+a.Link4:active {color: #003399}
+a.Link4:visited {color: #003399}
+a.Link4:link {color: #003399}
+a.Link4:hover {color: #003399}
+
+.Background {  background-color: #003399}
+
+.tempText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 35px; font-style: normal; color: #FF0000}
+.optmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #003399; color: #FFFFFF;   border: 1px #003399; cursor:default; width:120 px;}
+.navmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #003399; color: #FFFFFF;   border: 1px #003399; cursor:default; width:120 px;}
+.SchedText { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #003399 }
+
+.cal_day_header {  background-color: #003399; height: 14px; width: 20px; font-size: 9px; font-weight: bold; color: #FFFFFF; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
+.cal_day_mouseover { font-size: 9px; font-weight: bold; color:#003399; background-color: buttonface; height: 14px; width: 20px; text-align: center; cursor: default; border: 1px #FFFFFF outset; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px}
