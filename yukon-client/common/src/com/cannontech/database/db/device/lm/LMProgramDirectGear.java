@@ -4,6 +4,7 @@ import java.sql.Statement;
 
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
+import com.cannontech.database.db.NestedDBPersistent;
 
 /**
  * This type was created in VisualAge.
@@ -11,7 +12,7 @@ import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
  */
 
 public abstract class LMProgramDirectGear
-	extends com.cannontech.database.db.DBPersistent
+	extends NestedDBPersistent
 	implements DeviceListItem, IlmDefines
 {
 	private Integer deviceID = null;
@@ -190,10 +191,10 @@ public abstract class LMProgramDirectGear
 	 * @return LMProgramDirectGear[]
 	 * @param stateGroup java.lang.Integer
 	 */
-	public static final LMProgramDirectGear[] getAllDirectGears( Integer deviceID, java.sql.Connection conn)
+	public static final java.util.Vector getAllDirectGears( Integer deviceID, java.sql.Connection conn)
 		throws java.sql.SQLException
 	{
-		java.util.ArrayList tmpList = new java.util.ArrayList(30);
+		java.util.Vector gearList = new java.util.Vector();
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 
@@ -226,7 +227,7 @@ public abstract class LMProgramDirectGear
 				
 				gear.setDbConnection(conn);
 				gear.retrieve();
-				tmpList.add(gear);
+				gearList.add(gear);
 			}
 
 		}
@@ -247,10 +248,7 @@ public abstract class LMProgramDirectGear
 			}
 		}
 
-		LMProgramDirectGear retVal[] = new LMProgramDirectGear[tmpList.size()];
-		tmpList.toArray(retVal);
-
-		return retVal;
+		return gearList;
 	}
 	
 public static final java.util.Vector getTheGearIDs(

@@ -6,6 +6,8 @@ package com.cannontech.database.data.device.lm;
  * @author: 
  */
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.NestedDBPersistent;;
 
 public class LMProgramDirect extends LMProgramBase
 {
@@ -104,9 +106,9 @@ public void retrieve() throws java.sql.SQLException
 	getDirectProgram().retrieve();
 
 	//retrieve all the gears for this Program
-	LMProgramDirectGear[] gears = LMProgramDirectGear.getAllDirectGears( getPAObjectID(), getDbConnection() );
-	for( int i = 0; i < gears.length; i++ )
-		getLmProgramDirectGearVector().add( gears[i] );
+	java.util.Vector gears = LMProgramDirectGear.getAllDirectGears( getPAObjectID(), getDbConnection() );
+	for( int i = 0; i < gears.size(); i++ )
+		getLmProgramDirectGearVector().add( gears.elementAt(i) );
 
 	//retrieve all the Groups for this Program
 	com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups = com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( getPAObjectID() );
@@ -164,6 +166,7 @@ public void update() throws java.sql.SQLException
 {
 	super.update();
 	getDirectProgram().update();
+	java.util.Vector gearVector = new java.util.Vector();
 
 	//to prevent violation of a SQL deletion constraint, remove the proper gears
 	//from the thermostat DB table to allow for deletion from the main table
@@ -175,18 +178,19 @@ public void update() throws java.sql.SQLException
 		com.cannontech.database.db.device.lm.LMThermostatGear.deleteSomeThermoGears(((Integer)someIDs.remove(j)), getDbConnection() );
 	}
 	
-	//delete all the current gears from the DB
-	LMProgramDirectGear.deleteAllDirectGears( getPAObjectID(), getDbConnection() );
+	//grab all the previous gear entries for this program
+	java.util.Vector oldGears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
+	
+	//unleash the power of the NestedDBPersistent
+	gearVector = CtiUtilities.NestedDBPersistentComparator(oldGears, getLmProgramDirectGearVector());
 
-	//add the gears
-	for( int i = 0; i < getLmProgramDirectGearVector().size(); i++ )
+	//throw the gears into the Db
+	for( int i = 0; i < gearVector.size(); i++ )
 	{
-		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).setDeviceID( getPAObjectID() );
-		
-		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).add();
+		((LMProgramDirectGear)gearVector.elementAt(i)).setDeviceID( getPAObjectID() );
+		((NestedDBPersistent)gearVector.elementAt(i)).executeNestedOp();
 
 	}
-
 
 	//delete all the current associated groups from the DB
 	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( 
