@@ -26,7 +26,7 @@
 
     java.text.NumberFormat hourFormat = new java.text.DecimalFormat();
     hourFormat.setMinimumIntegerDigits(2);
-	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,###.00");
+	java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("####.00");
                    
     // has this customer accepted any current revisions?
 	LMEnergyExchangeOffer offer = null;
@@ -218,6 +218,7 @@
 
 				if (checker.validate()) {
 					response.sendRedirect("user_ee.jsp?tab=confirm");
+					tab = "";
 				}
 			}
 		}
@@ -259,12 +260,14 @@
 				catch (NumberFormatException ne) {
 					checker.setError("formaterror", "Some of the values below have invalid format");
 					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
+					tab = "";
 				}
 			}                                          
 			else {	// decline the offer
 				if (checker.get("initials").equals("")) {
 					checker.setError("initials", "Initials cannot be empty");
 					response.sendRedirect("user_ee.jsp?tab=accept&error=true");
+				    tab = "";
 				}
 				else {
 System.out.println("&&&&&&&&&&&&&&&& sending decline message");
@@ -286,6 +289,7 @@ System.out.println("&&&&&&&&&&&&&&&& sending decline message");
 					if (checker != null)
 						checker.clear();
 					response.sendRedirect("user_ee.jsp?pending=decline");
+					tab = "";
 				}
 			}
 		}
@@ -318,6 +322,8 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 			if (checker != null)
 				checker.clear();
 			response.sendRedirect("user_ee.jsp?pending=confirm");
+			tab = "";
+
 		}
 	}
 
