@@ -394,10 +394,12 @@ insert into YukonGroupRole values(66,-1,-3,-1216,'(none)');
 
 
 /* Update stars role properties */
+insert into YukonRoleProperty values(-20118,-201,'Hardwares Meter','false','Controls whether to allow assigning meters to customer account');
 insert into YukonRoleProperty values(-20157,-201,'Opt Out Rules','(none)','Defines the rules for opting out.');
 insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
 
 insert into yukongrouprole values (555,-300,-400,-40055,'(none)');
+insert into yukongrouprole values (738,-301,-201,-20118,'true');
 insert into yukongrouprole values (757,-301,-201,-20157,'(none)');
 
 
