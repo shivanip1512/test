@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2003/09/12 02:36:45 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2003/09/24 16:07:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -852,7 +852,7 @@ void CtiPILServer::nexusWriteThread()
         {
             if(PorterNexus.NexusState != CTINEXUS_STATE_NULL) /* And send them to porter */
             {
-                if(OutMessage->TargetID != 0 && OutMessage->DeviceID != 0 && OutMessage->Port > 0)
+                if((OutMessage->TargetID != 0 || OutMessage->DeviceID != 0) && OutMessage->Port > 0)
                 {
                     if(PorterNexus.CTINexusWrite (OutMessage, sizeof (OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
                     {
