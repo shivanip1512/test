@@ -9,11 +9,13 @@ public interface IYukon
    
    public IDBPersistent createIDBPersistent();
 
-	public ISQLStatement createISQLStatement();
+   public ISQLStatement createISQLStatement();
 	
    public IDBPersistent getDBPersistent();
 
    public IDatabaseCache getDBCache();
+   
+   public ITimedDatabaseCache getTimedDBCache();
 
    public ISQLStatement getSQLStatement();
 

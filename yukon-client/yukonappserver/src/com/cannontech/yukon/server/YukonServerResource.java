@@ -1,14 +1,11 @@
 package com.cannontech.yukon.server;
 
 import com.cannontech.yukon.IConnectionBase;
-import java.util.List;
-import java.util.Map;
-
-import com.cannontech.ejb.SqlStatementBean;
 import com.cannontech.yukon.IDBPersistent;
+import com.cannontech.yukon.ITimedDatabaseCache;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.ISQLStatement;
 import com.cannontech.yukon.IMACSConnection;
+import com.cannontech.yukon.ISQLStatement;
 import com.cannontech.yukon.concrete.YukonResourceBase;
 
 /**
@@ -49,8 +46,23 @@ public class YukonServerResource extends YukonResourceBase
          dbCache = new com.cannontech.ejb.DatabaseCacheBean();
       }
       
-      
+     
       return dbCache;
+   }
+
+
+   // ---------------------------------------------------------------------------------
+   //  START of the ITimedDatabase implementation
+   // ---------------------------------------------------------------------------------   
+   public synchronized ITimedDatabaseCache getTimedDBCache()
+   {
+      if( timedDBCache == null )
+      {         
+         timedDBCache = new com.cannontech.ejb.TimedDatabaseCacheBean();
+      }
+      
+      
+      return timedDBCache;
    }
 
 

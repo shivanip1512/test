@@ -4,6 +4,7 @@ import com.cannontech.ejb.MACSConnectionBean;
 import com.cannontech.yukon.IConnectionBase;
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.ITimedDatabaseCache;
 import com.cannontech.yukon.ISQLStatement;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.concrete.YukonResourceBase;
@@ -51,7 +52,21 @@ public class YukonClientResource extends YukonResourceBase
       return dbCache;
    }
 
-
+   // ---------------------------------------------------------------------------------
+   //  START of the ITimedDatabase implementation
+   // ---------------------------------------------------------------------------------   
+   public synchronized com.cannontech.yukon.ITimedDatabaseCache getTimedDBCache()
+   {
+      if( timedDBCache == null )
+      {         
+         //db = new com.cannontech.yukonserver.cache.DefaultDatabaseCache();
+         timedDBCache = new TimedClientCache();
+      }
+      
+      
+      return timedDBCache;
+   }
+   
    // ---------------------------------------------------------------------------------
    //  START of the ISqlStatement implementation
    // ---------------------------------------------------------------------------------   

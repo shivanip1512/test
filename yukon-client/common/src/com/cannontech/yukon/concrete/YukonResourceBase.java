@@ -2,6 +2,7 @@ package com.cannontech.yukon.concrete;
 
 import com.cannontech.yukon.IDBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.ITimedDatabaseCache;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.ISQLStatement;
 import com.cannontech.yukon.IYukon;
@@ -15,6 +16,7 @@ import com.cannontech.yukon.IYukon;
 public abstract class YukonResourceBase implements IYukon
 {	
    protected static IDatabaseCache dbCache = null;
+   protected static ITimedDatabaseCache timedDBCache = null;
    protected static IDBPersistent dbPersistent = null;
    protected static ISQLStatement sqlStatement = null;
    protected static IMACSConnection macsConnection = null;

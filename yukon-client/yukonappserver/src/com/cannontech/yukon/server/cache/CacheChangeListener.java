@@ -4,8 +4,6 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.util.ClientConnection;
-
-import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 /**
  * @author rneuharth
  * Sep 25, 2002 at 4:07:47 PM
