@@ -96,6 +96,13 @@ public final class GraphRenderers
 	{
 		return getRendererString(viewID);
 	}
+	public final static boolean isAreaGraph(int viewID)
+	{
+		if( viewID == LINE_AREA || viewID == LINE_AREA_SHAPES ||
+			viewID == STEP_AREA || viewID == STEP_AREA_SHAPES)
+			return true;
+		return false;
+	}
 	
 	public final static int getRendererID(String rendString)
 	{
