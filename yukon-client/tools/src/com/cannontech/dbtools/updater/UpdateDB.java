@@ -95,16 +95,20 @@ public class UpdateDB
 
 	public static double getDBVersion()
 	{
-		if( dbVersion <= 0.0 )
-		{
-			CTIDatabase db = VersionTools.getDatabaseVersion();			
+		//do not lazy init this, just in case!!
+		CTIDatabase db = VersionTools.getDatabaseVersion();			
 
-			dbVersion = Double.parseDouble( db.getVersion() );
-		}				
-
+		dbVersion = Double.parseDouble( db.getVersion() );
 		return dbVersion;					
 	}
 
+	/**
+	 * Deals with a file name in following format:
+	 *   2.42.sql
+	 * 
+	 * @param file_
+	 * @return
+	 */
 	public static double getFileVersion( File file_ )
 	{
 		try

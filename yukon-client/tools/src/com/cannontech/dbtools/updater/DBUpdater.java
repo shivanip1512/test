@@ -79,6 +79,8 @@ public class DBUpdater extends MessageFrameAdaptor
 {
 	//local class to execute update functions
 	private UpdateDB updateDB = null;
+	private boolean isIgnoreAllErrors = false;
+
 	
 	private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
 	
@@ -220,6 +222,7 @@ public class DBUpdater extends MessageFrameAdaptor
 			{
 				sqlFile = files[i];
 				validLines = updateDB.readFile( sqlFile );
+				isIgnoreAllErrors = false;
 
 				for( int j = 0; j < validLines.length; j++ )
 				{
@@ -245,7 +248,8 @@ public class DBUpdater extends MessageFrameAdaptor
 		catch( Exception e )
 		{
 			getIMessageFrame().addOutput( "   **FAILURE : " + cmd );
-			getIMessageFrame().addOutput( "     Please fix in file : " + sqlFile.getName() );
+			getIMessageFrame().addOutput( "     Please fix in file : " + 
+					sqlFile.getAbsolutePath() );
 
 			handleException( e );  //array-index, SQLException, .....
 			
@@ -283,7 +287,10 @@ public class DBUpdater extends MessageFrameAdaptor
 						0,
 						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
 
-			if( line_.isIgnoreError() )
+			//once True, always True
+			isIgnoreAllErrors |= line_.isIgnoreRemainingErrors();
+
+			if( line_.isIgnoreError() || isIgnoreAllErrors )
 			{
 				try
 				{

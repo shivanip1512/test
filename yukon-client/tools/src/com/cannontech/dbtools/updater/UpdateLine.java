@@ -153,6 +153,18 @@ public class UpdateLine
 		else
 			return false;
 	}
+	
+	/**
+	 * @return
+	 */
+	public boolean isIgnoreRemainingErrors()
+	{
+		Object o = getMetaProps().get( DBMSDefines.META_ERROR );
+		if( o != null )
+			return DBMSDefines.OPTIONS_ERROR[3].equalsIgnoreCase(o.toString());
+		else
+			return false;
+	}
 
 	/**
 	 * @param b
