@@ -31,6 +31,8 @@ private:
 
     unsigned long _lastLPTime;
 
+    int _postControlScanCount;
+
     CtiProtocolION    _ion;
     CtiTableDeviceDNP _address;
 
@@ -49,7 +51,8 @@ protected:
 
     enum IONConstants
     {
-        IONRetries = 2
+        IONRetries = 2,
+        IONPostControlScanMax = 5
     };
 
 public:

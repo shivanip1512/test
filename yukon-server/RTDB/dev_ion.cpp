@@ -40,6 +40,7 @@
 #include "utility.h"
 
 #include "dllyukon.h"
+#include "cparms.h"
 #include "numstr.h"
 
 CtiDeviceION::CtiDeviceION()
@@ -117,7 +118,18 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 case ScanRateStatus:
                 case ScanRateGeneral:
                 {
-                    _ion.setCommand(CtiProtocolION::Command_ExceptionScan);
+                    if( pReq->CommandString().contains("post_control", RWCString::ignoreCase) )
+                    {
+                        //  post-control scan
+                        _ion.setCommand(CtiProtocolION::Command_ExceptionScanPostControl);
+
+                        _postControlScanCount++;
+                    }
+                    else
+                    {
+                        //  normal scan
+                        _ion.setCommand(CtiProtocolION::Command_ExceptionScan);
+                    }
 
                     found = true;
 
@@ -176,6 +188,8 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 if( offset > 0 )
                 {
                     _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);
+
+                    _postControlScanCount = 0;
 
                     found = true;
                 }
@@ -273,7 +287,7 @@ void CtiDeviceION::initEventLogPosition( void )
             }
             else
             {
-                //if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "**** Checkpoint: Invalid Reader/No RawPointHistory for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -472,24 +486,18 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
     _ion.recvCommResult(InMessage, outList);
 
-    if( _ion.hasInboundData() )
-    {
-        _ion.getInboundData(pointData, eventData);
-
-        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
-    }
-
     switch( _ion.getCommand() )
     {
         case CtiProtocolION::Command_ExternalPulseTrigger:
         {
+            if( getDebugLevel() && DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             CtiRequestMsg newReq(getID(),
-                                 "scan general",
+                                 "scan general post_control",
                                  InMessage->Return.UserID,
                                  InMessage->Return.TrxID,
                                  InMessage->Return.RouteID,
@@ -507,13 +515,54 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             break;
         }
 
+        case CtiProtocolION::Command_ExceptionScanPostControl:
+        {
+            RWCString retryStr = gConfigParms.getValueAsString("DUKE_ISSG");
+
+            if( retryStr.compareTo("true", RWCString::ignoreCase) == 0 )
+            {
+                CtiCommandParser parse(InMessage->Return.CommandStr);
+
+                if( _postControlScanCount < IONPostControlScanMax )
+                {
+                    if( parse.getFlags() & CMD_FLAG_OFFSET && parse.getFlags() & CMD_FLAG_CTL_CLOSE )
+                    {
+                        if( parse.getiValue("offset") == 22 )
+                        {
+                            if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) != 0 ||
+                                _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) != 0 )
+                            {
+                                CtiRequestMsg newReq(getID(),
+                                                     "scan general post_control",
+                                                     InMessage->Return.UserID,
+                                                     InMessage->Return.TrxID,
+                                                     InMessage->Return.RouteID,
+                                                     InMessage->Return.MacroOffset,
+                                                     InMessage->Return.Attempt);
+
+                                newReq.setMessagePriority(15);
+
+                                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+                                CtiCommandParser parse(newReq.CommandString());
+
+                                CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
+                            }
+                        }
+                    }
+                }
+            }
+
+            break;
+        }
+
         case CtiProtocolION::Command_EventLogRead:
         {
             if( !_ion.areEventLogsComplete() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 CtiRequestMsg newReq(getID(),
@@ -553,6 +602,13 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
             break;
         }*/
+    }
+
+    if( _ion.hasInboundData() )
+    {
+        _ion.getInboundData(pointData, eventData);
+
+        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData);
     }
 
 
@@ -647,6 +703,11 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         //  only send to Dispatch
         vgList.append(tmpSignal->replicateMessage());
+    }
+
+    if( !_ion.areEventLogsComplete() )
+    {
+        retMsg->setExpectMore(true);
     }
 
     retList.append(retMsg);
