@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/11/15 14:08:11 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/11/20 22:28:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,7 @@ LONG CtiDeviceDLCBase::getAddress() const   {   return CarrierSettings.getAddres
 LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
+INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, int status, CtiReturnMsg *retMsg, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList )
 {
     CtiReturnMsg *tmpVGRetMsg = NULL;
     RWOrdered subMsgs;
@@ -192,6 +192,8 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg,
                     vgList.append( tmpVGRetMsg );
                 }
             }
+
+            retMsg->setStatus(status);
 
             retList.append( retMsg );
 

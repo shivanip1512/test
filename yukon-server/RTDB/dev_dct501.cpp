@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:11 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/20 22:28:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -516,7 +516,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     {
         if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
         {
-            retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
             //  retList.append( ReturnMsg );
         }
         else
@@ -670,7 +670,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     }
 
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -760,7 +760,7 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( sspec + options );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
 

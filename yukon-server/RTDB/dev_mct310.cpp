@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/11/15 14:08:15 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/11/20 22:28:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -582,7 +582,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -659,7 +659,7 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         }
     }
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -776,7 +776,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     }
 
 
-    retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -854,7 +854,7 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setResultString(resultString);
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -904,7 +904,7 @@ INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
 
         ReturnMsg->setResultString(resultString);
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -1000,7 +1000,7 @@ INT CtiDeviceMCT310::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
             ReturnMsg->setResultString(resultStr);
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -1137,7 +1137,7 @@ INT CtiDeviceMCT310::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( sspec + options );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -1234,7 +1234,7 @@ INT CtiDeviceMCT310::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
         ReturnMsg->setUserMessageId( InMessage->Return.UserID );
         ReturnMsg->setResultString( options );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
 

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:08:16 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/11/20 22:28:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,7 +157,7 @@ INT CtiDeviceMCT_LMT2::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, 
       ReturnMsg->setUserMessageId(InMessage->Return.UserID);
       ReturnMsg->setResultString( sspec + options );
 
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }
 
    return status;

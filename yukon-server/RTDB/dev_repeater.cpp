@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/11/15 14:08:17 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/11/20 22:28:40 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -742,7 +742,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
 
       ReturnMsg->setResultString( getName() + " / loopback successful" );
 
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }
 
    return status;
@@ -789,7 +789,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNo
 
       ReturnMsg->setResultString( modelStr );
 
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }
 
    return status;
@@ -845,7 +845,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, RWTime &TimeNow
 
       ReturnMsg->setResultString( roleStr );
 
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }
 
    return status;
@@ -882,7 +882,7 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, RWTime &TimeNow
 
       ReturnMsg->setResultString( resultString );
 
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }
 
    return status;

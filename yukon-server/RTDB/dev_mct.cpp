@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2002/11/15 14:08:14 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2002/11/20 22:28:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2314,7 +2314,7 @@ INT CtiDeviceMCT::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         resultString = getName( ) + " / Loopback successful";
         ReturnMsg->setResultString( resultString );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -2380,7 +2380,7 @@ INT CtiDeviceMCT::decodeGetValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -2559,7 +2559,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             }
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -2593,7 +2593,7 @@ INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         resultString = getName( ) + " / command complete";
         ReturnMsg->setResultString( resultString );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -2627,7 +2627,7 @@ INT CtiDeviceMCT::decodePutStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         resultString = getName( ) + " / command complete";
         ReturnMsg->setResultString( resultString );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -2773,7 +2773,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             }
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;

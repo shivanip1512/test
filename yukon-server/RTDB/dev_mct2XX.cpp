@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/11/15 14:08:15 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/11/20 22:28:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -276,7 +276,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
             ReturnMsg->setResultString(resultString);
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
    return status;
@@ -364,7 +364,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             ReturnMsg->setResultString(resultString);
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
    return status;
@@ -467,7 +467,7 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setResultString(resultString);
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
@@ -558,7 +558,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
       ReturnMsg->setUserMessageId(InMessage->Return.UserID);
       ReturnMsg->setResultString( sspec + options );
 
-      retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
    }
 
 
@@ -603,7 +603,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, RWTime &TimeNow, 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( options );
 
-        retMsgHandler( InMessage->Return.CommandStr, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
 
