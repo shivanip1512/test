@@ -9,12 +9,14 @@
 <%@ page import="com.cannontech.stars.web.action.*" %>
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
+<%@ page import="com.cannontech.common.constants.RoleTypes" %>
 
 <%
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
+	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	if (lYukonUser == null) {

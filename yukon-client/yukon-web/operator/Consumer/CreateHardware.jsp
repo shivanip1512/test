@@ -74,7 +74,7 @@
                                 <td width="200"> 
                                   <select name="DeviceType">
                               <%
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICETYPE );
+	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
 %>
@@ -124,7 +124,7 @@
                                 <td width="200"> 
 								  <select name="Voltage">
                               <%
-	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICEVOLTAGE );
+	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
 %>
@@ -142,7 +142,7 @@
                                 <td width="200"> 
                                   <select name="Status">
                               <%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS );
+	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
 %>

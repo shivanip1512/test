@@ -14,7 +14,7 @@
       <td align = "right" width="33%"><span class="Main"><b> 
         <select name="SearchBy">
 <%
-	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
+	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
 %>

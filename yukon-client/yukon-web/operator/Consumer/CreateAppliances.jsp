@@ -72,7 +72,7 @@
                     <td width="200"> 
                       <select name="Category">
 <%
-	StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
+	StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY );
 	for (int i = 0; i < appCatList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = appCatList.getStarsSelectionListEntry(i);
 %>
@@ -90,7 +90,7 @@
                     <td width="200"> 
                       <select name="Manufacturer">
 <%
-	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
+	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER );
 	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
 %>
@@ -116,7 +116,7 @@
                     <td width="200"> 
                       <select name="Location">
 <%
-	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_LOCATION );
 	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
 %>

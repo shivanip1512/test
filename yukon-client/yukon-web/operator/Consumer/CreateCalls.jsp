@@ -2,7 +2,6 @@
 <%
 	String callNo = null;
 %>
-<cti:checkRole name="CALL_NUMBER_MANUAL">
 <%
 	callNo = (String) user.getAttribute(ServletUtils.ATT_CALL_TRACKING_NUMBER);
 	if (callNo == null) {
@@ -12,7 +11,6 @@
 			callNo = "";
 	}
 %>
-</cti:checkRole>
 
 <html>
 <head>
@@ -126,20 +124,18 @@ function checkCallNo(form) {
 						onMouseOut="window.status='';return true;"> <img src="StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a> 
                           </td>
                         </tr>
-<cti:checkRole name="CALL_NUMBER_MANUAL">
                         <tr> 
                           <td width = "50%" align = "right">Tracking #:</td>
                           <td width="50%"> 
                             <input type="text" name="CallNo" size="10" value="<%= callNo %>">
                           </td>
                         </tr>
-</cti:checkRole>
 						<tr> 
                           <td width = "50%" align = "right">Type:</td>
                           <td width="50%"> 
                             <select name="CallType">
 <%
-	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
+	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_CALL_TYPE );
 	for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(i);
 %>

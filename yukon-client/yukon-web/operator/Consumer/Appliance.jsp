@@ -144,7 +144,7 @@ function deleteAppliance(form) {
                           <td width="200"> 
                             <select name="Manufacturer">
 <%
-	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_MANUFACTURER );
+	StarsCustSelectionList manuList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER );
 	for (int i = 0; i < manuList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = manuList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == appliance.getManufacturer().getEntryID()) ? "selected" : "";
@@ -171,7 +171,7 @@ function deleteAppliance(form) {
                           <td width="200"> 
                             <select name="Location">
 <%
-	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LOCATION );
+	StarsCustSelectionList locationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_LOCATION );
 	for (int i = 0; i < locationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = locationList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == appliance.getLocation().getEntryID()) ? "selected" : "";

@@ -2,7 +2,6 @@
 <%
 	String orderNo = null;
 %>
-<cti:checkRole name="ORDER_NUMBER_MANUAL">
 <%
 	orderNo = (String) user.getAttribute(ServletUtils.ATT_ORDER_TRACKING_NUMBER);
 	if (orderNo == null) {
@@ -12,7 +11,6 @@
 			orderNo = "";
 	}
 %>
-</cti:checkRole>
 
 <html>
 <head>
@@ -88,7 +86,6 @@ function checkOrderNumber(form) {
                     <td valign="top" bgcolor="#FFFFFF"> 
                         
                       <table width="400" border="0" cellspacing="0" cellpadding="3" align="center">
-<cti:checkRole name="ORDER_NUMBER_MANUAL"> 
                         <tr>
                           <td width="100" class="TableCell"> 
                             <div align="right">Service Order #:</div>
@@ -97,7 +94,6 @@ function checkOrderNumber(form) {
                             <input type="text" name="OrderNo" size="14" value="<%= orderNo %>">
                           </td>
                         </tr>
-</cti:checkRole>
                         <tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Date Reported:</div>
@@ -113,7 +109,7 @@ function checkOrderNumber(form) {
                           <td width="210"> 
                             <select name="ServiceType">
                               <%
-	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
+	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.common.constants.YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
 %>
