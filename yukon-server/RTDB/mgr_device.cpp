@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2004/11/18 23:48:47 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2004/11/23 21:34:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2475,7 +2475,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                 {
                     // We will preempt transmitter devS if and only if we have been waiting longer than it or we have more work to do
                     if( !devS || (devS && (devS->getExclusion().getExecutionGrant() < devA->getExclusion().getExecutionGrant()) ||
-                                          (devS->deviceQueueCommunicationTime()     < devA->deviceQueueCommunicationTime()) )
+                                          (devS->deviceQueueCommunicationTime()     < devA->deviceQueueCommunicationTime()) ))
                     {
                         // Select the transmitter with the oldest LastExclusionGrant.
                         devS = devA;
