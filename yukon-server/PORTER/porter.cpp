@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2004/05/10 21:35:51 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2004/05/19 14:57:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1125,6 +1125,9 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
+
+    slog.interrupt(CtiThread::SHUTDOWN);
+    slog.join();
 }
 
 
