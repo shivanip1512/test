@@ -17,7 +17,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.data.time.Second;
+import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -158,7 +158,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-						    TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Second.class);
+						    TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Millisecond.class);
 
 							if( serie.getDataItemsMap() != null)
 							{
@@ -350,7 +350,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			return null;
 
 		DefaultCategoryDataset[] dataset = new DefaultCategoryDataset[2];
-		SimpleDateFormat catFormat = CATEGORY_FORMAT;
+		SimpleDateFormat catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm_ss_SSS;
 		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
 		{
 			int count = 0;				
@@ -361,8 +361,10 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
 						count++;
-						if( tSeries[i].resolution <= 1000)
-						    catFormat = CATEGORY_WITH_SS_FORMAT;
+						if( tSeries[i].resolution == 1000)
+						    catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm_ss;
+						else if (tSeries[i].resolution > 1000)
+						    catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm;
 					}
 				}
 			}
