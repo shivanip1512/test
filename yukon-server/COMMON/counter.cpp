@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2002/05/28 17:55:22 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2002/06/03 20:24:10 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -54,6 +54,11 @@ int CtiCounter::get( int index ) const
     return retVal;
 }
 
+void CtiCounter::set( int index, int val )
+{
+    CtiLockGuard<CtiMutex> guard(_counterMapMux);
+    _counterMap[index] = val;
+}
 
 void CtiCounter::reset( int index )
 {

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/28 18:29:37 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/03 20:24:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,10 +117,6 @@ static ULONG   gQueSlot = 0;
 extern void DisplayTraceList( CtiPort *Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
 
-typedef set< CtiStatistics > CtiStatisticsSet_t;
-typedef CtiStatisticsSet_t::iterator CtiStatisticsIterator_t;
-
-
 bool deviceCanSurviveThisStatus(INT status);
 void commFail(CtiDeviceBase *Device, INT state);
 BOOL areAnyOutMessagesForMyDevID(void *pId, void* d);
@@ -149,13 +145,6 @@ INT TerminateHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSl
 INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT ReturnLoadProfileData ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT LogonToDevice( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-CtiStatisticsIterator_t deviceStatsFind(const LONG paoId);
-
-
-// Global Statistics set
-
-static CtiStatisticsSet_t devicestatset;
-
 
 /* Threads that handle each port for communications */
 VOID PortThread (VOID *arg)
@@ -271,17 +260,7 @@ VOID PortThread (VOID *arg)
             }
         }
 
-        // 20020521 CGP Add request increment code here for the statistics!
-        if(OutMessage->DeviceID > 0)
-        {
-            CtiStatisticsIterator_t dStatItr = deviceStatsFind( OutMessage->DeviceID );
-
-            if( dStatItr != devicestatset.end() )
-            {
-                CtiStatistics &dStats = *dStatItr;
-                dStats.incrementRequest( RWTime() );
-            }
-        }
+        statisticsNewRequest(OutMessage->DeviceID);
 
         if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
         {
@@ -2219,14 +2198,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTME
 
     if(status == RETRY_SUBMITTED)
     {
-        // 20020521 CGP Add incrementRetry Code here!
-        CtiStatisticsIterator_t dStatItr = deviceStatsFind( OutMessage->DeviceID );
-
-        if( dStatItr != devicestatset.end() )
-        {
-            CtiStatistics &dStats = *dStatItr;
-            dStats.incrementAttempts( RWTime() );
-        }
+        statisticsNewAttempt( OutMessage->DeviceID, CommResult );
     }
 
     return status;
@@ -2453,23 +2425,11 @@ INT DoProcessInMessage(INT CommResult, CtiPort *Port, INMESS *InMessage, OUTMESS
     // Statistics processing.
     if(status == RETRY_SUBMITTED)
     {
-        CtiStatisticsIterator_t dStatItr = deviceStatsFind( InMessage->DeviceID );
-
-        if( dStatItr != devicestatset.end() )
-        {
-            CtiStatistics &dStats = *dStatItr;
-            dStats.incrementAttempts( RWTime() );
-        }
+        statisticsNewAttempt( InMessage->DeviceID, CommResult );
     }
     else
     {
-        CtiStatisticsIterator_t dStatItr = deviceStatsFind( InMessage->DeviceID );
-
-        if( dStatItr != devicestatset.end() )
-        {
-            CtiStatistics &dStats = *dStatItr;
-            dStats.incrementCompletion( RWTime(), CommResult );
-        }
+        statisticsNewCompletion( InMessage->DeviceID, CommResult );
     }
 
     return status;
@@ -2990,37 +2950,4 @@ bool deviceCanSurviveThisStatus(INT status)
 }
 
 
-CtiStatisticsIterator_t deviceStatsFind(const LONG paoId)
-{
-    CtiStatisticsIterator_t dstatitr = devicestatset.end();
-
-    if(paoId > 0)
-    {
-        CtiStatistics &dStats = CtiStatistics(paoId);
-
-        dstatitr = devicestatset.find( dStats );
-
-        if( dstatitr == devicestatset.end() )       // It is not in there!  Make an entry!
-        {
-            // We need to load it up, and/or then insert it!
-            // dStats.Restore();
-            pair< CtiStatisticsSet_t::iterator, bool > resultpair;
-
-            // Try to insert. Return indicates success.
-            resultpair = devicestatset.insert( dStats );
-
-            if(resultpair.second == true)           // Insert was successful.
-            {
-                dstatitr = resultpair.first;        // Iterator which points to the set entry.
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-
-    return dstatitr;
-}
 

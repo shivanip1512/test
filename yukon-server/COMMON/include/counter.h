@@ -13,8 +13,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2002/05/28 17:55:22 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2002/06/03 20:24:10 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ public:
     void inc( int index );
     void dec( int index );
     int  get( int index ) const;
+    void set( int index, int val );
     void reset( int index );
     void resetAll();
 

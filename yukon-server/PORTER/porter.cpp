@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/05/28 18:29:36 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/03 20:24:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,7 +168,7 @@ using namespace std;
 #define DO_PORTERCONNECTIONTHREAD      1     // Probably a must....
 #define DO_TIMESYNCTHREAD              1
 #define DO_PERFTHREAD                  0
-#define DO_PERFUPDATETHREAD            0
+#define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
 
@@ -1288,7 +1288,7 @@ INT RefreshPorterRTDB(void *ptr)
         {
             DeviceManager.RefreshList();
         }
-        DeviceManager.RefreshStatistics();
+        // DeviceManager.RefreshStatistics();
         DeviceManager.RefreshRoutes();
     }
 
@@ -1335,7 +1335,6 @@ INT RefreshPorterRTDB(void *ptr)
     }
     else
     {
-        PorterCleanUp(0);
         return -1;
     }
 

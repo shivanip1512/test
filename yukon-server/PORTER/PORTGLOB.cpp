@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/17 18:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/03 20:24:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,4 +91,5 @@ CHAR* hPorterEventNames[] = {
    { NULL },
    { NULL },
 };
+
 

@@ -13,13 +13,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/05/29 15:14:10 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/03 20:24:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <rw/rwtime.h>
+#include <rw/db/status.h>
+
 #include "counter.h"
 #include "yukon.h"
 
@@ -72,49 +74,20 @@ public:
     };
 
 
-    CtiStatistics(long id = 0) :
-        _pid(id)
-    {
-        int i;
-        for(i = 0; i < FinalCounterSlot; i++)
-        {
-            _threshold[i] = 0.0;
-            _thresholdAlarm[i] = false;
-        }
-    }
-
-    CtiStatistics(const CtiStatistics& aRef)
-    {
-        *this = aRef;
-    }
-
+    CtiStatistics(long id = 0);
+    CtiStatistics(const CtiStatistics& aRef);
     virtual ~CtiStatistics() {}
 
     bool operator<( const CtiStatistics &rhs ) const;
     bool operator==( const CtiStatistics &rhs ) const;
     bool operator()(const CtiStatistics &aRef) const;
 
-    CtiStatistics& operator=(const CtiStatistics& aRef)
-    {
-        if(this != &aRef)
-        {
-            _pid = aRef._pid;
-            _previoustime = aRef._previoustime;
+    CtiStatistics& operator=(const CtiStatistics& aRef);
 
-            int i;
-
-            for(i = 0; i < FinalCounterSlot; i++)
-            {
-                _counter[i] = aRef._counter[i];
-                _threshold[i] = aRef._threshold[i];
-                _thresholdAlarm[i] = aRef._thresholdAlarm[i];
-            }
-        }
-        return *this;
-    }
-
+    void markForUpdate();
     void incrementRequest(const RWTime &stattime);
-    void incrementAttempts(const RWTime &stattime);        // This is a retry scenario
+    void decrementRequest(const RWTime &stattime);
+    void incrementAttempts(const RWTime &stattime, int CompletionStatus);        // This is a retry scenario
     void incrementCompletion(const RWTime &stattime, int CompletionStatus);
     long getID() const;
     CtiStatistics& setID(long id);
@@ -126,23 +99,45 @@ public:
     double getThreshold(int Counter) const;
     CtiStatistics& setThreshold(int Counter, double thresh);
 
+    int get(int counter, int index ) const;
+    static RWCString getTableName();
+
+    RWDBStatus::ErrorCode Update(RWDBConnection &conn);
+    RWDBStatus::ErrorCode Update();
+    RWDBStatus::ErrorCode Insert(RWDBConnection &conn);
+    RWDBStatus::ErrorCode Insert();
+    RWDBStatus::ErrorCode Restore();
+    int resolveStatisticsType(RWCString rwsTemp) const;
+    void computeHourInterval(int hournumber, pair<RWTime, RWTime> &myinterval);
+    void computeDailyInterval(pair<RWTime, RWTime> &myinterval);
+    void computeYesterdayInterval(pair<RWTime, RWTime> &myinterval);
+    void computeMonthInterval(pair<RWTime, RWTime> &myinterval);
+    void computeLastMonthInterval(pair<RWTime, RWTime> &myinterval);
+
+
 protected:
 
     long _pid;                   // paoid.
     static RWCString _counterName[FinalCounterSlot];
 
-    CtiCounter _counter[FinalCounterSlot];
-    int _threshold[FinalCounterSlot];
-    bool _thresholdAlarm[FinalCounterSlot];
-    void verifyThresholds();
+    CtiCounter  _counter[FinalCounterSlot];
+    int         _threshold[FinalCounterSlot];
+    bool        _thresholdAlarm[FinalCounterSlot];
+    pair<RWTime, RWTime> _startStopTimePairs[FinalCounterSlot];
+
+    void        verifyThresholds();
 
     static RWCString getCounterName( int Counter )
     {
         return _counterName[Counter];
     }
 
-
 private:
+
+    mutable CtiMutex _statMux;
+
+    bool _restoreworked;
+    bool _updateOnNextCompletion;     // If set, the next completion causes an update
 
     RWTime _previoustime;
 

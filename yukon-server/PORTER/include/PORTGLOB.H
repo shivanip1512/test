@@ -9,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/17 18:47:19 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/03 20:24:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#include <set>
+using namespace std;
 
 #include <rw/tpslist.h>
 
@@ -23,6 +26,7 @@
 #include "tcpsup.h"
 #include "porter.h"
 #include "logger.h"
+#include "statistics.h"
 
 #define PORTER_DEBUG_VERBOSE           0x00000001
 #define PORTER_DEBUG_NEXUSREAD         0x00000004
@@ -45,6 +49,9 @@
 
 #define NUMPORTEREVENTS                6
 
+
+typedef set< CtiStatistics > CtiStatisticsSet_t;
+typedef CtiStatisticsSet_t::iterator CtiStatisticsIterator_t;
 
 extern IM_EX_PORTGLOB INT           PorterRefreshRate;
 extern IM_EX_PORTGLOB ULONG         PortFlags[MAXPORT];
@@ -93,5 +100,6 @@ extern IM_EX_PORTGLOB bool          gIgnoreTCU5000QueFull;
 
 extern CtiSyncDefStruct             PorterSyncs[];
 extern IM_EX_PORTGLOB CTINEXUS      PorterListenNexus;
+
 
 
