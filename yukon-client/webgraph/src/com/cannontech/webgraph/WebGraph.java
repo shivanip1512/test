@@ -118,7 +118,7 @@ public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinit
 					
 		graph.setDatabaseAlias("yukon");
 		//graph.setSize(width, height);
-		graph.setCurrentGraphDefinition(gDef);
+		graph.setGraphDefinition(gDef);
 		graph.setViewType(TrendModelType.LINE_VIEW );
 
 		// Graph .gif file creation
