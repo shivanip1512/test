@@ -8,6 +8,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -18,6 +19,7 @@ import org.w3c.dom.Text;
 import org.w3c.dom.svg.SVGDocument;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -238,12 +240,23 @@ System.out.println(d.getMetaElement().getDrawingHeight());
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
 		graph.getCTIGraph().getFreeChart().draw(svgGenerator, new Rectangle(width,height));
 		retElement = svgGenerator.getRoot();
+		
+		
+		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:dd:ss");
 						
 		retElement.setAttributeNS(null, "x", Integer.toString(x));
 		retElement.setAttributeNS(null, "y", Integer.toString(y));
 		retElement.setAttributeNS(null, "width", Integer.toString(width));
 		retElement.setAttributeNS(null, "height", Integer.toString(height));			
-	
+		retElement.setAttributeNS(null, "object", "graph");
+		retElement.setAttributeNS(null, "gdefid", Integer.toString(graph.getGraphDefinitionID()));
+		retElement.setAttributeNS(null, "model",  Integer.toString(graph.getTrendType()));
+		retElement.setAttributeNS(null, "format", "svg");
+		retElement.setAttributeNS(null, "db", CtiUtilities.getDatabaseAlias());
+		retElement.setAttributeNS(null, "loadfactor", "false");
+		retElement.setAttributeNS(null, "start", dateFormat.format(graph.getCurrentStartDate()));
+		retElement.setAttributeNS(null, "end", dateFormat.format(graph.getCurrentEndDate()));
+		
 		return retElement;
 	}
 	

@@ -15,6 +15,8 @@ package com.cannontech.graph;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
+import org.w3c.dom.Element;
+
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
@@ -174,10 +176,14 @@ public void encodeSVG(java.io.OutputStream out) throws java.io.IOException
 		
 		getFreeChart().draw(svgGenerator, new Rectangle(getWidth(),getHeight()));
 		
+		Element svgRoot = svgGenerator.getRoot();
+		
+		svgRoot.setAttributeNS(null,"gdefid",getCurrentGraphDefinition().getGraphDefinition().getGraphDefinitionID().toString() );
+		
 		// Finally, stream out SVG to the standard output 
 		// is this a good encoding to use?
 		java.io.Writer writer = new java.io.OutputStreamWriter(out,"ISO-8859-1");
-		svgGenerator.stream(writer, true);		
+		svgGenerator.stream(svgRoot, writer, true);		
 	}
 }
 
