@@ -1,12 +1,8 @@
 package com.cannontech.yukon;
 
-import java.util.Observer;
-
 import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.Message;
-import com.roguewave.vsj.CollectableStreamer;
 
 /**
  * Interface for connections to metering and control server (MACS)
