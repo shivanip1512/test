@@ -37,6 +37,9 @@ public EnergyCompany() {
  */
 public void add() throws java.sql.SQLException 
 {
+	if (getEnergyCompanyID() == null)
+		setEnergyCompanyID( getNextEnergyCompanyID() );
+	
 	Object[] addValues = 
 	{ 
 		getEnergyCompanyID(),
