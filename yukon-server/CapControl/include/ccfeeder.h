@@ -22,6 +22,7 @@
 #include <rw/thr/recursiv.h> 
 #include <rw/sortvec.h> 
 
+#include "dbaccess.h"
 #include "connection.h"
 #include "types.h"
 #include "observe.h"
@@ -143,7 +144,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(ULONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
+    BOOL isDirty() const;
     void dumpDynamicData();
+    void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -201,8 +204,7 @@ private:
 
     //don't stream
     BOOL _insertDynamicDataFlag;
-
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    BOOL _dirty;
 
     void restore(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
