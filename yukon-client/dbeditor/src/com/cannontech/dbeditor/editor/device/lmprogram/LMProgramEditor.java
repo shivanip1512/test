@@ -7,10 +7,13 @@ import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPan
 /**
  * This type was created in VisualAge.
  */
-public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
+public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor, java.awt.event.ActionListener
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
+	
+	private LMProgramBasePanel basePanel;
+	private LMProgramControlWindowPanel controlWindowPanel;
 	
 	private static final int[][] EDITOR_TYPES =
 	{
@@ -41,7 +44,16 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 		{ PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM},
 	};
 	
+	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 	private javax.swing.JTabbedPane ivjStateEditorTabbedPane = null;
+	
+	class IvjEventHandler implements java.awt.event.ActionListener {
+		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == basePanel.getActionPasser())
+				controlWindowPanel.getWindowChangePasser().doClick();
+		};
+	}
+	
 public LMProgramEditor() {
 	super();
 	initialize();
@@ -62,7 +74,8 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel();
+			basePanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel();
+			objs[0] = basePanel;
 			objs[1] = "General";
 			break;
 
@@ -82,7 +95,8 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 4:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel();
+			controlWindowPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel();
+			objs[0] = controlWindowPanel;
 			objs[1] = "Control Window";
 			break;
 			
@@ -181,6 +195,7 @@ private void handleException(java.lang.Throwable exception) {
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
+
 /**
  * Initialize the class.
  */
@@ -189,7 +204,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("RouteEditorPanel");
+		setName("LMProgramEditorPanel");
 		setPreferredSize(new java.awt.Dimension(400, 350));
 		setLayout(null);
 		setSize(400, 350);
@@ -216,11 +231,9 @@ private void initialize() {
 public boolean isInputValid() 
 {
 	//do what is necessary for Timed operational state
-	
 	//checkTimedOpStatus();
 	
 	boolean retVal = super.isInputValid();
-	boolean isTimedOpState = false;
 	
 	boolean isLatching = false;
 	boolean hasLMGroupPoint = false;
@@ -246,8 +259,6 @@ public boolean isInputValid()
 			
 		}
 
-			
-		
 		if( !isLatching && hasLMGroupPoint )
 		{
 			setErrorString("The '" + errTitle + "' panel had the following error(s): \n   -> " +
@@ -288,7 +299,6 @@ public void setValue(Object val)
 				break;				
 			}
 	 	}
-
  	}
 	
 	this.inputPanels = new DataInputPanel[panels.size()];
@@ -301,7 +311,9 @@ public void setValue(Object val)
 	super.setValue( val );
 	
 	//check for special Timed Operational State case
-	//checkTimedOpStatus();
+	controlWindowPanel.setTimedOperationalStateCondition(basePanel.isTimedOperationalState());
+	controlWindowPanel.getWindowChangePasser().setSelected(basePanel.isTimedOperationalState());
+	basePanel.getActionPasser().addActionListener(ivjEventHandler);
 }
 /**
  * This method was created in VisualAge.
@@ -309,25 +321,6 @@ public void setValue(Object val)
  */
 public String toString() {
 	return "LMProgram Editor";
-}
-
-public void checkTimedOpStatus()
-{
-
-	boolean isTimedOpState = false;
-	
-	for( int i = 0; i < getInputPanels().length; i++ )
-	{
-		if(getInputPanels()[i] instanceof LMProgramBasePanel )
-		{
-			isTimedOpState = ((LMProgramBasePanel)getInputPanels()[i]).isTimedOperationalState(); 
-		}
-			
-		if(getInputPanels()[i] instanceof LMProgramControlWindowPanel)
-		{
-			((LMProgramControlWindowPanel)getInputPanels()[i]).setTimedOperationalStateCondition(isTimedOpState); 
-		}
-	}
 }
 
 /**

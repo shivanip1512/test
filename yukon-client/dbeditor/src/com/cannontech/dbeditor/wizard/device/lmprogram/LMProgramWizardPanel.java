@@ -208,6 +208,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	else if( currentInputPanel == getLmProgramDirectPanel() )
 	{
 		getLMProgramControlWindowPanel().setTimedOperationalStateCondition(getLmProgramBasePanel().isTimedOperationalState());
+		getLMProgramControlWindowPanel().getWindowChangePasser().setSelected(getLmProgramBasePanel().isTimedOperationalState());
 		return getLMProgramControlWindowPanel();
 	}
 	else if( currentInputPanel == getLMProgramControlWindowPanel() )

@@ -14,6 +14,8 @@ public class LMProgramControlWindowPanel extends com.cannontech.common.gui.util.
 	private com.cannontech.common.gui.util.TimeComboJPanel ivjTimeComboStop2 = null;
 	private javax.swing.JCheckBox ivjJCheckBoxUse1 = null;
 	private javax.swing.JCheckBox ivjJCheckBoxUse2 = null;
+	
+	private javax.swing.JToggleButton ivjwindowChangePasser = null;
 /**
  * Constructor
  */
@@ -42,6 +44,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJCheckBoxUse1()) 
 		connEtoC6(e);
 	// user code begin {2}
+	if (e.getSource() == getWindowChangePasser())
+		setTimedOperationalStateCondition(getWindowChangePasser().isSelected());
 	// user code end
 }
 /**
@@ -461,6 +465,24 @@ public Object getValue(Object o)
 	
 	return o;
 }
+
+public javax.swing.JToggleButton getWindowChangePasser() {
+	if (ivjwindowChangePasser == null) {
+		try {
+			ivjwindowChangePasser = new javax.swing.JToggleButton();
+			ivjwindowChangePasser.setName("windowChangePasser");
+			ivjwindowChangePasser.setText("");
+			ivjwindowChangePasser.setVisible(false);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjwindowChangePasser;
+}
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -485,6 +507,7 @@ private void initConnections() throws java.lang.Exception {
 	getTimeComboStop2().addActionListener(this);
 	getJCheckBoxUse2().addActionListener(this);
 	getJCheckBoxUse1().addActionListener(this);
+	getWindowChangePasser().addActionListener(this);
 }
 /**
  * Initialize the class.
@@ -519,6 +542,12 @@ private void initialize() {
 		constraintsJPanelOptionalWindow2.ipady = -5;
 		constraintsJPanelOptionalWindow2.insets = new java.awt.Insets(3, 4, 13, 5);
 		add(getJPanelOptionalWindow2(), constraintsJPanelOptionalWindow2);
+		
+		java.awt.GridBagConstraints constraintswindowChangePasser = new java.awt.GridBagConstraints();
+		constraintswindowChangePasser.gridx = 1; constraintswindowChangePasser.gridy = 2;
+		constraintswindowChangePasser.insets = new java.awt.Insets(4, 4, 4, 4);
+		add(getWindowChangePasser(), constraintswindowChangePasser);
+		
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -536,6 +565,20 @@ private void initialize() {
  */
 public boolean isInputValid() 
 {
+	if(getWindowChangePasser().isSelected())
+	{
+		int start = 0, stop = 0;
+		
+		start = getTimeComboStart1().getTimeInSeconds();
+		stop = getTimeComboStop1().getTimeInSeconds();
+		
+		if(start == 0 && stop == 0)
+		{
+			setErrorString("A timed program requires a non-zero control time to be specified under the Control Window tab.");
+			return false;
+		}
+	}
+	
 	/*int start = 0, stop = 0;
 	
 	if( getJCheckBoxUse1().isSelected() )
@@ -646,10 +689,8 @@ public void setValue(Object o)
 				getTimeComboStart2().setTimeInSeconds( startTime );
 				getTimeComboStop2().setTimeInSeconds( stopTime );
 			}
-			
 		}	
 	}
-
 }
 
 public void setTimedOperationalStateCondition(boolean timedOrNot)
