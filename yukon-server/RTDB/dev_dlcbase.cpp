@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/13 19:35:53 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/07/17 22:22:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,11 +17,16 @@
 #pragma warning( disable : 4786)
 
 
+#include "cparms.h"
 #include "devicetypes.h"
 #include "dev_dlcbase.h"
 #include "pt_base.h"
 #include "dsm2.h"
 #include "utility.h"
+
+unsigned int CtiDeviceDLCBase::_lpRetryMultiplier = 0;
+unsigned int CtiDeviceDLCBase::_lpRetryMinimum    = 0;
+unsigned int CtiDeviceDLCBase::_lpRetryMaximum    = 0;
 
 CtiDeviceDLCBase::CtiDeviceDLCBase()   {}
 
@@ -399,5 +404,65 @@ inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
     }
 
     return offset;
+}
+
+
+unsigned int CtiDeviceDLCBase::getLPRetryRate( unsigned int interval )
+{
+    unsigned int retVal;
+
+    //  check if it's been initialized
+    if( _lpRetryMultiplier == 0 )
+    {
+        _lpRetryMultiplier = gConfigParms.getValueAsInt("DLC_LP_RETRY_MULTIPLIER", DefaultLPRetryMultiplier);
+
+        if( _lpRetryMultiplier < DefaultLPRetryMultiplier )
+        {
+            _lpRetryMultiplier = DefaultLPRetryMultiplier;
+        }
+    }
+
+    //  check if it's been initialized
+    if( _lpRetryMinimum == 0 )
+    {
+        _lpRetryMinimum = gConfigParms.getValueAsInt("DLC_LP_RETRY_MINIMUM", DefaultLPRetryMinimum);
+
+        if( _lpRetryMinimum < DefaultLPRetryMinimum )
+        {
+            _lpRetryMinimum = DefaultLPRetryMinimum;
+        }
+    }
+
+    //  check if it's been initialized
+    if( _lpRetryMaximum == 0 )
+    {
+        _lpRetryMaximum = gConfigParms.getValueAsInt("DLC_LP_RETRY_MAXIMUM", DefaultLPRetryMaximum);
+
+        if( _lpRetryMaximum > DefaultLPRetryMaximum )
+        {
+            _lpRetryMaximum = DefaultLPRetryMaximum;
+        }
+    }
+
+    if( _lpRetryMinimum > _lpRetryMaximum )
+    {
+        unsigned int tmp;
+        tmp             = _lpRetryMinimum;
+        _lpRetryMinimum = _lpRetryMaximum;
+        _lpRetryMaximum = tmp;
+    }
+
+    retVal = interval * _lpRetryMultiplier;
+
+    if( retVal > _lpRetryMaximum )
+    {
+        retVal = _lpRetryMaximum;
+    }
+    else if( retVal < _lpRetryMinimum )
+    {
+        retVal = _lpRetryMinimum;
+    }
+
+    return retVal;
 }
 
