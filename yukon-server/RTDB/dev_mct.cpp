@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/05/28 21:12:55 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/07/24 14:38:33 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -402,6 +402,16 @@ bool CtiDeviceMCT::initCommandStore()
    cs._io      = IO_READ;
    cs._funcLen = make_pair( (int)MCT_ModelAddr,
                             (int)MCT_SspecLen );
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
+   cs._io      = IO_FCT_WRITE;
+   cs._funcLen = make_pair( (int)MCT_GroupAddrEnable, 0 );
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
+   cs._io      = IO_FCT_WRITE;
+   cs._funcLen = make_pair( (int)MCT_GroupAddrInhibit, 0 );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::GetConfig_Raw;
@@ -945,6 +955,8 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         }
 
         case CtiProtocolEmetcon::PutConfig_Install:
+        case CtiProtocolEmetcon::PutConfig_GroupAddrEnable:
+        case CtiProtocolEmetcon::PutConfig_GroupAddrInhibit:
         case CtiProtocolEmetcon::PutConfig_Raw:
         case CtiProtocolEmetcon::PutConfig_TSync:
         case CtiProtocolEmetcon::PutConfig_DemandInterval:
@@ -1079,8 +1091,19 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
                     resetForScan(ScanRateIntegrity);
 
                     break;
+
                 case ScanRateLoadProfile:
-                    break;
+                    /*for( i = 0; i < MAX_COLLECTED_CHANNEL; i++ )
+                    {
+                        if( getLoadProfile().isChannelValid(i) )
+                        {
+                            insertPointFail( InMessage, pPIL, ScanRateLoadProfile, i + 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+                            continue;
+                        }
+                    }
+
+                    break;*/
+
                 default:
                     break;
             }
@@ -1887,6 +1910,19 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         function = CtiProtocolEmetcon::PutConfig_Install;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
+    else if( parse.isKeyValid("groupaddr") )
+    {
+        if( parse.getiValue("groupaddr") == 0 )
+        {
+            function = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
+        }
+        else
+        {
+            function = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
+        }
+
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
     else if( parse.isKeyValid("ied") )
     {
         if( parse.isKeyValid("scan") )
@@ -2645,30 +2681,54 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                     //  reset the meter
                     pReq = new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
-                    pReq->setConnectionHandle( InMessage->Return.Connection );
 
-                    CtiCommandParser parse(pReq->CommandString());
-                    CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
-                    delete pReq;
+                    if( pReq != NULL )
+                    {
+                        pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                        CtiCommandParser parse(pReq->CommandString());
+                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        delete pReq;
+                    }
+
+                    //  enable group addressing
+                    pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+
+                    if( pReq != NULL )
+                    {
+                        pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                        CtiCommandParser parse(pReq->CommandString());
+                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        delete pReq;
+                    }
 
                     //  put the load profile interval if it's a lp device
                     if( getType( ) == TYPEMCT310IL || getType( ) == TYPEMCT318L )
                     {
                         pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
-                        pReq->setConnectionHandle( InMessage->Return.Connection );
-                        parse = CtiCommandParser(pReq->CommandString());
 
-                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
-                        delete pReq;
+                        if( pReq != NULL )
+                        {
+                            pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                            CtiCommandParser parse(pReq->CommandString());
+                            CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            delete pReq;
+                        }
                     }
 
                     //  put the demand interval
                     pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
-                    pReq->setConnectionHandle( InMessage->Return.Connection );
-                    parse = CtiCommandParser(pReq->CommandString());
 
-                    CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
-                    delete pReq;
+                    if( pReq != NULL )
+                    {
+                        pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                        CtiCommandParser parse(pReq->CommandString());
+                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        delete pReq;
+                    }
 
                     if( OutTemplate != NULL )
                     {
