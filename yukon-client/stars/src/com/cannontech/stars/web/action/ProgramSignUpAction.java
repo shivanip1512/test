@@ -359,9 +359,6 @@ public class ProgramSignUpAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	/**
-	 * Returns a description of the program enrollment changes (used in activity log)
-	 */
 	public static void updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
 		Integer invID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws java.sql.SQLException
 	{

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -172,6 +173,10 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
     				}
     			}
             }
+            
+			// Log activity
+			ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+					"Hardware Configuration", "Serial #:" + liteHw.getManufacturerSerialNumber() );
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "LM Hardware configuration updated successfully" );
