@@ -9,6 +9,5 @@
     <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/yukonappserver"/>
-    <classpathentry kind="src" path="/yukonappclient"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
