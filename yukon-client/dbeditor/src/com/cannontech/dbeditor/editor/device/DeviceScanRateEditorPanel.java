@@ -1949,16 +1949,14 @@ public void setDeviceType(int type)
 		}
 
       setIntegrityObjectsVisible(
-         !(type == PAOGroups.LMT_2
-          || type == PAOGroups.RTUILEX
+         !(type == PAOGroups.RTUILEX
           || type == PAOGroups.ION_7700
 		    || type == PAOGroups.ION_7330
 		    || type == PAOGroups.ION_8300               
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
-            !(type == PAOGroups.LMT_2 
-              || type == PAOGroups.DCT_501
+            !(type == PAOGroups.DCT_501
               || DeviceTypesFuncs.isMCT3xx(type) ) );
       
 		setAccumulatorObjectsVisible( 
