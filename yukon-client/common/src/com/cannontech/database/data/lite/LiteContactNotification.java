@@ -121,7 +121,7 @@ public class LiteContactNotification extends LiteBase
      * @return boolean
      */
     public boolean isDisabled() {
-        return CtiUtilities.isDisabled(getDisableFlag());
+        return "y".equalsIgnoreCase(getDisableFlag());
     }    
 
 	/**
