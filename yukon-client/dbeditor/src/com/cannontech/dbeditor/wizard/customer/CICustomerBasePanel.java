@@ -259,7 +259,7 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 			ivjJComboBoxEnergyCompany = new javax.swing.JComboBox();
 			ivjJComboBoxEnergyCompany.setName("JComboBoxEnergyCompany");
 			ivjJComboBoxEnergyCompany.setToolTipText("What energy company owns this customer");
-			ivjJComboBoxEnergyCompany.setEnabled(false);
+			ivjJComboBoxEnergyCompany.setVisible(false);
 			// user code begin {1}
 			
 			getJComboBoxEnergyCompany().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
@@ -273,8 +273,8 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 						com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
 				conn.close();
 					
-				getJLabelEnergyCmpy().setEnabled( companies.length > 0 );
-				getJComboBoxEnergyCompany().setEnabled( companies.length > 0 );
+				getJLabelEnergyCmpy().setVisible( companies.length > 0 );
+				getJComboBoxEnergyCompany().setVisible( companies.length > 0 );
 
 				for( int i = 0; i < companies.length; i++ )
 					getJComboBoxEnergyCompany().addItem( companies[i] );
@@ -282,7 +282,6 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 			catch( java.sql.SQLException e )
 			{}
 			
-			ivjJComboBoxEnergyCompany.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
