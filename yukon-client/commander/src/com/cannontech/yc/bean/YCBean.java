@@ -56,6 +56,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	/** Contains String(name from returnMessage parse), Object(PointData, made up one though) values */
 	private Map returnNameToRecentReadMap = null;
 
+	/** A collection of pointIDs registered with.*/
 	private Vector pointIDs = new Vector();
 
 	/**
@@ -67,9 +68,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		System.setProperty("cti.app.name", "Commander_Web");		
 	}
 
-	/**
-	 * Sets the deviceID
-	 * @param deviceID_ int
+	/* (non-Javadoc)
+	 * Sets the current deviceID from the session.
+	 * Loads a collection of points to register with dispatch.
+	 * Writes the pointRegistration message to dispatch.
+	 * @see com.cannontech.yc.gui.YC#setDeviceID(int)
 	 */
 	public void setDeviceID(int deviceID_)
 	{
@@ -134,22 +137,24 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		return connToDispatch;
 	}
 	/* (non-Javadoc)
+	 * Load the data maps with the returned pointData 
 	 * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
 	 */
 	public void messageReceived(MessageEvent e)
 	{
-		Message in = e.getMessage();		
+		Message in = e.getMessage();
 		if( in instanceof PointData )
 		{           
 			PointData point = (PointData) in;
 			Integer x = new Integer(point.getId());
 			getPointIDToRPHMap().put(x, point);
+			CTILogger.info("Put (pointIDToRPHMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+point.getPointDataTimeStamp());
 			pointRegCounter--;
-			System.out.println(" POINT DATA " + point.getId() + "  " + point.getValue() + " " + point.getPointDataTimeStamp() + " " + getPointIDToRPHMap().size()); 
 		}
 		else if( in instanceof Return)
 		{
 			Return returnMsg = (Return)in;
+			
 			if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 				return;
 			
@@ -163,19 +168,20 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						PointData point = (PointData) o;
 						Integer x = new Integer(point.getId());
 						getPointIDToRecentReadMap().put(x, point);
-						System.out.println(" RETURN POINT DATA " + point.getId() + "  " + point.getValue() + " " + point.getPointDataTimeStamp() + " " + point.toString()); 
+						CTILogger.info("Put (pointIDToRecentReadMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+point.getPointDataTimeStamp());
 					}
-					else
-						System.out.println("NOTHING");
 				}
 			}
-//			else
+//			else	//Tried to do an else here because there is no reason to do both,
+					//But if the ReturnMessage contains more the one point's data, but only one of the points 
+					//  is in the returnMsg.getVector(), we have no real way of knowing that we need to parse the 
+					// returnMsg.resultString.  Therefore, we do them both.
 			{
 				String resultStr = returnMsg.getResultString();
 				int multLineIndex = 0;
 				int beginIndex = 0;
 				String tempResult = resultStr;
-				//Loop through the resultStr in case it is a multiline return, containing more than one point info.
+				//Loop through the resultStr in case it is a multi-line return with more than one point info.
 				do
 				{
 					multLineIndex = tempResult.indexOf('\n');					
@@ -219,7 +225,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 								dateStr = tempResult.substring(at+1).trim();
 						
 							timestamp = ServletUtil.parseDateStringLiberally(dateStr);
-							System.out.println(dateStr + ": TIME:"+timestamp+":");
 						}
 						PointData fakePtData = new PointData();
 						fakePtData.setValue(value.doubleValue());
@@ -228,7 +233,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						fakePtData.setType(PointTypes.DEMAND_ACCUMULATOR_POINT);
 						//The key is deviceID+STRING parsed from return message
 						getReturnNameToRecentReadMap().put(id, fakePtData);
-						System.out.println("value IS:"+ value.doubleValue()+":");
+						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
 					}
 					else if( tempResult.indexOf(':') > 0)	//outage stuff
 					{					
@@ -237,7 +242,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 
 						//The String "ID" is the deviceID + the value after the slash and before the equal sign
 						String id = String.valueOf(returnMsg.getDeviceID()) + tempResult.substring(slash, colon).trim();
-						System.out.println("VALUE:"+id+":");
 
 						//The Timestamp is the value after the colon sign to the 'for' string
 						Date date = null;
@@ -271,10 +275,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						fakePtData.setType(PointTypes.DEMAND_ACCUMULATOR_POINT);
 						//The key is deviceID+STRING parsed from return message
 						getReturnNameToRecentReadMap().put(id, fakePtData);
-						System.out.println("value IS:"+ value.doubleValue()+":");
-						
+						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
 					}
-					
 				}
 				while (multLineIndex > 0);
 			}
@@ -300,7 +302,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			{
 				list.insert(new Long( ((Integer)pointIDs.get(i)).longValue() ));
 				pointRegCounter++;
-				CTILogger.info("REGISTERING FOR POINTID: " + ((Integer)pointIDs.get(i)).intValue());
+				CTILogger.info("Registered for ID: " + ((Integer)pointIDs.get(i)).intValue());
 			}	
 			pReg.setPointList( list );
 		}
@@ -324,6 +326,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		return pointIDToRPHMap;
 	}
 	/**
+	 * A map of points found in the DB.
+	 * A map of (Integer, PointData) values.
+	 * Integer - the pointID of the read data
+	 * PointData - the pointData from Return Message 
 	 * @return
 	 */
 	public Map getPointIDToRecentReadMap()
@@ -340,8 +346,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public void valueBound(HttpSessionBindingEvent arg0)
 	{
-		// TODO Auto-generated method stub
-		CTILogger.info("***** Value Bound " + arg0.getValue().toString() + "*****");
+		CTILogger.info("YCBean value bound to session.");
 		getClientConnection().addMessageListener(this);		
 	}
 	/* (non-Javadoc)
@@ -349,11 +354,12 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public void valueUnbound(HttpSessionBindingEvent arg0)
 	{
-		// TODO Is removing the messageListener enough?
-		CTILogger.info("***** Value UNBound " + arg0.getValue().toString() + "*****");
+		CTILogger.info("YCBean value UnBound from session.");
 		getClientConnection().removeMessageListener(this);
 	}
 	/**
+	 * A count of Points Registered with Dispatch.
+	 * Will return 0 when all message registations have been returned from dispatch.
 	 * @return
 	 */
 	public int getPointRegCounter()
@@ -361,6 +367,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		return pointRegCounter;
 	}
 	/**
+	 * A map of points NOT found in the DB, stored by name instead of PointID. 
+	 * A map of (String, PointData) values.
+	 * String - a name found in the Return Message
+	 * PointData - a "fake" pointData created to store the data parsed from the Return Message.
 	 * @return
 	 */
 	public Map getReturnNameToRecentReadMap()
@@ -372,6 +382,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		return returnNameToRecentReadMap;
 	}
 
+	/**
+	 * Return PointData value from pointIDToRPHMap.
+	 * The pointID (KEY) is determined by the deviceid, pointoffset, and pointtype parameters
+	 * @param deviceID
+	 * @param pointOffset
+	 * @param pointType
+	 * @return
+	 */
 	public PointData getRPHPointData(int deviceID, int pointOffset, int pointType)
 	{
 		int pointID = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);		
@@ -379,6 +397,19 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		return pd;		
 	}
 	
+	/**
+	 * Return PointData value from poinIDToRecentReadMap, if found.
+	 * If pointIDToRecentReadMap get returns null
+	 * 	then attempt to find an entry in the returnNameToRecentReadMap using a regular expression.
+	 * 
+	 * The pointID (KEY) is determined by the deviceid, pointoffset, and pointtype parameters
+	 *   If pointID is -1 (some default value) then a null PointData message will be found and
+	 *   then combinations of the parameters will be used to take a best guess.
+	 * @param deviceID
+	 * @param pointOffset
+	 * @param pointType
+	 * @return
+	 */
 	public PointData getRecentPointData(int deviceID, int pointOffset, int pointType)
 	{
 		int pointID = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
