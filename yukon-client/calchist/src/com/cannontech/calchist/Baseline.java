@@ -628,7 +628,9 @@ public class Baseline implements Serializable
 						Double[] v = (Double[])tempArray[i];
 						double counter = v[0].doubleValue();
 						double totalVal = v[1].doubleValue();
-						returnData.values[i] = new Double(totalVal/counter);
+//TODO - allow for kWh calculations from either kW or kWh readings
+//						returnData.values[i] = new Double(totalVal/counter);	//kW values.
+						returnData.values[i] = new Double(totalVal/validTimestampsVector.size());	//kWh values
 					}
 				}
 			}
