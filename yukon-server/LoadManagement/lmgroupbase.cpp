@@ -484,6 +484,11 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState, int prio
 
     returnCommandMsg->setMessagePriority(priority);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending latch command, LM Group: " << getPAOName() << endl;
+    }
     return returnCommandMsg;
 }
 
@@ -645,7 +650,7 @@ RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(ULONG shedTime) const
 
     doesMasterCycleNeedToBeUpdated
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG nowInSeconds, ULONG groupControlDone, ULONG offTime)
+BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -667,6 +672,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     RWDBDateTime dynamicTimeStamp;
     RWCString tempBoolString;
     RWCString tempTypeString;
+    _insertDynamicDataFlag = FALSE;
 
     rdr["paobjectid"] >> _paoid;
     rdr["category"] >> _paocategory;
@@ -719,11 +725,19 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setCurrentHoursAnnually(0);
         setLastControlSent(RWDBDateTime(1990,1,1,0,0,0,0));
 
-        if( _paotype != TYPE_MACRO )
-        {
-            _insertDynamicDataFlag = TRUE;
-        }
+        _insertDynamicDataFlag = TRUE;
     }
+
+    /*if( getPAOId() == 4181 || getPAOId() == 4195 || getPAOId() == 4154 )
+    {//debug for MVEA only !!!
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - " << __FILE__ << "(" << __LINE__ << ")" << endl;
+        dout << "isNull-" << isNull << endl;
+        dout << "PAOId-" << getPAOId() << "  GroupControlState-" << getGroupControlState() << endl;
+        dout << "CurrentHoursDaily-" << getCurrentHoursDaily() << "  CurrentHoursMonthly-" << getCurrentHoursMonthly() << endl;
+        dout << "CurrentHoursSeasonal-" << getCurrentHoursSeasonal() << "  CurrentHoursAnnually-" << getCurrentHoursAnnually() << endl;
+        dout << "LastControlSent-" << getLastControlSent().rwtime() << "  _insertDynamicDataFlag-" << _insertDynamicDataFlag << endl;
+    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -759,6 +773,21 @@ void CtiLMGroupBase::dumpDynamicData()
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
 
+                /*{
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << updater.asString().data() << endl;
+                }*/
+                /*if( getPAOId() == 4181 || getPAOId() == 4195 || getPAOId() == 4154 )
+                {//debug for MVEA only !!!
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    dout << "PAOId-" << getPAOId() << "  GroupControlState-" << getGroupControlState() << endl;
+                    dout << "CurrentHoursDaily-" << getCurrentHoursDaily() << "  CurrentHoursMonthly-" << getCurrentHoursMonthly() << endl;
+                    dout << "CurrentHoursSeasonal-" << getCurrentHoursSeasonal() << "  CurrentHoursAnnually-" << getCurrentHoursAnnually() << endl;
+                    dout << "LastControlSent-" << getLastControlSent().rwtime() << "  currentDateTime-" << currentDateTime.rwtime() << endl;
+                    dout << "_insertDynamicDataFlag-" << _insertDynamicDataFlag << endl;
+                    dout << RWTime() << " - " << updater.asString().data() << endl;
+                }*/
                 updater.execute( conn );
             }
             else
@@ -784,9 +813,20 @@ void CtiLMGroupBase::dumpDynamicData()
                     dout << RWTime() << " - " << inserter.asString().data() << endl;
                 }*/
 
-                inserter.execute( conn );
-
                 _insertDynamicDataFlag = FALSE;
+                /*if( getPAOId() == 4181 || getPAOId() == 4195 || getPAOId() == 4154 )
+                {//debug for MVEA only !!!
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    dout << "PAOId-" << getPAOId() << "  GroupControlState-" << getGroupControlState() << endl;
+                    dout << "CurrentHoursDaily-" << getCurrentHoursDaily() << "  CurrentHoursMonthly-" << getCurrentHoursMonthly() << endl;
+                    dout << "CurrentHoursSeasonal-" << getCurrentHoursSeasonal() << "  CurrentHoursAnnually-" << getCurrentHoursAnnually() << endl;
+                    dout << "LastControlSent-" << getLastControlSent().rwtime() << "  currentDateTime-" << currentDateTime.rwtime() << endl;
+                    dout << "_insertDynamicDataFlag-" << _insertDynamicDataFlag << endl;
+                    dout << RWTime() << " - " << inserter.asString().data() << endl;
+                }*/
+
+                inserter.execute( conn );
             }
         }
         else

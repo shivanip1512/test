@@ -221,6 +221,11 @@ CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(ULONG refreshRate
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -243,6 +248,11 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(ULONG percent, ULO
     controlString += " period ";
     controlString += convertSecondsToEvenTimeString(period);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -257,6 +267,11 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(ULONG sendRate, ULON
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
@@ -271,6 +286,11 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(ULONG offTime, UL
     RWCString controlString = RWCString("control shed ");
     controlString += convertSecondsToEvenTimeString(offTime-60);
 
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << endl;
+    }
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
