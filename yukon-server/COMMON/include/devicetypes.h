@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/10/08 20:14:12 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/01/07 21:00:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,9 @@
 #define TYPE_WELCORTU                        1101
 #define TYPE_SES92RTU                        1102
 #define TYPE_DNPRTU                          1103
-#define TYPE_ION7700                         1150
+#define TYPE_ION7330                         1150
+#define TYPE_ION7700                         1151
+#define TYPE_ION8300                         1152
 #define TYPE_LCU415                          1200
 #define TYPE_LCU415LG                        1205
 #define TYPE_LCU415ER                        1210

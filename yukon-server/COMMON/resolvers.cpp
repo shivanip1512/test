@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/12/11 21:49:45 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/01/07 21:01:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -302,9 +302,17 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_DNPRTU;
     }
+    else if(rwsTemp == "ion-7330")
+    {
+        nRet = TYPE_ION7330;
+    }
     else if(rwsTemp == "ion-7700")
     {
         nRet = TYPE_ION7700;
+    }
+    else if(rwsTemp == "ion-8300")
+    {
+        nRet = TYPE_ION8300;
     }
     else if(rwsTemp == "davis weather")
     {
@@ -947,7 +955,9 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_WELCORTU:
     case TYPE_SES92RTU:
     case TYPE_DNPRTU:
+    case TYPE_ION7330:
     case TYPE_ION7700:
+    case TYPE_ION8300:
     case TYPE_LCU415:
     case TYPE_LCU415LG:
     case TYPE_LCU415ER:
@@ -1449,7 +1459,9 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_TAPTERM:
     case TYPE_WCTP:
     case TYPE_KV2:
+    case TYPE_ION7330:
     case TYPE_ION7700:
+    case TYPE_ION8300:
         {
             slaveAddress = -1;
             break;
