@@ -406,6 +406,16 @@ LONG CtiCCFeeder::getCurrentVarPointQuality() const
 }
 
 /*---------------------------------------------------------------------------
+    getWaiveControlFlag
+
+    Returns the WaiveControlFlag of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getWaiveControlFlag() const
+{
+    return _waivecontrolflag;
+}
+
+/*---------------------------------------------------------------------------
     getCCCapBanks
 
     Returns the list of cap banks in the feeder
@@ -892,6 +902,25 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(LONG cvpq)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setWaiveControlFlag
+
+    Sets the WaiveControlFlag in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setWaiveControlFlag(BOOL waive)
+{
+    if( _waivecontrolflag != waive )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _waivecontrolflag = waive;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     findCapBankToDecreaseVars
@@ -1096,6 +1125,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     CtiRequestMsg* request = NULL;
 
     if( !getDisableFlag() &&
+        !getWaiveControlFlag() &&
         ( !_IGNORE_NOT_NORMAL_FLAG ||
           getCurrentVarPointQuality() == NormalQuality ) )
     {
@@ -1486,7 +1516,7 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
     isAlreadyControlled
 
     Returns a boolean if the last cap bank controlled expected var changes
-    are reflected in the current var level before the min response time
+    are reflected in the current var level before the max confirm time
 ---------------------------------------------------------------------------*/
 BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
 {
@@ -1546,15 +1576,16 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
 }
 
 /*---------------------------------------------------------------------------
-    isPastResponseTime
+    isPastMaxConfirmTime
 
-    Returns a boolean if the last control is past the minimum response time.
+    Returns a boolean if the last control is past the maximum confirm time.
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, LONG minResponseTime)
+BOOL CtiCCFeeder::isPastMaxConfirmTime(const RWDBDateTime& currentDateTime, LONG maxConfirmTime, LONG subBusRetries)
 {
     BOOL returnBoolean = FALSE;
 
-    if( ((getLastOperationTime().seconds() + (minResponseTime/_SEND_TRIES)) <= currentDateTime.seconds()) )
+    if( ((getLastOperationTime().seconds() + (maxConfirmTime/_SEND_TRIES)) <= currentDateTime.seconds()) ||
+        ((getLastOperationTime().seconds() + (maxConfirmTime/(subBusRetries+1))) <= currentDateTime.seconds()) )
     {
         returnBoolean = TRUE;
     }
@@ -1567,7 +1598,7 @@ BOOL CtiCCFeeder::isPastResponseTime(const RWDBDateTime& currentDateTime, LONG m
 
     Returns a .
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG minResponseTime)
+BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime)
 {
     BOOL returnBoolean = FALSE;
 
@@ -1576,7 +1607,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
         if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
         {
-            if( currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + minResponseTime )
+            if( currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + maxConfirmTime )
             {
                 if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
                 {
@@ -1635,7 +1666,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
             else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cannot Resend Control, Past Response Time in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << RWTime() << " - Cannot Resend Control, Past Confirm Time in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
             break;
         }
@@ -1786,7 +1817,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << dynamicCCFeederTable["powerfactorvalue"].assign( _powerfactorvalue )
             << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution )
             << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
-            << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality );
+            << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality )
+            << dynamicCCFeederTable["waivecontrolflag"].assign( RWCString((_waivecontrolflag?'Y':'N')) );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1840,7 +1872,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << _powerfactorvalue
             << _kvarsolution
             << _estimatedpowerfactorvalue
-            << _currentvarpointquality;
+            << _currentvarpointquality
+            << RWCString((_waivecontrolflag?'Y':'N'));
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -1918,7 +1951,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _powerfactorvalue
     >> _kvarsolution
     >> _estimatedpowerfactorvalue
-    >> _currentvarpointquality;
+    >> _currentvarpointquality
+    >> _waivecontrolflag;
     istrm >> numberOfCapBanks;
     for(LONG i=0;i<numberOfCapBanks;i++)
     {
@@ -1982,7 +2016,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << temppowerfactorvalue
     << _kvarsolution
     << tempestimatedpowerfactorvalue
-    << _currentvarpointquality;
+    << _currentvarpointquality
+    << _waivecontrolflag;
     ostrm << _cccapbanks.entries();
     for(LONG i=0;i<_cccapbanks.entries();i++)
     {
@@ -2030,6 +2065,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _kvarsolution = right._kvarsolution;
         _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
         _currentvarpointquality = right._currentvarpointquality;
+        _waivecontrolflag = right._waivecontrolflag;
 
         _cccapbanks.clearAndDestroy();
         for(LONG i=0;i<right._cccapbanks.entries();i++)
@@ -2125,6 +2161,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["kvarsolution"] >> _kvarsolution;
         rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
         rdr["currentvarpointquality"] >> _currentvarpointquality;
+        rdr["waivecontrolflag"] >> tempBoolString;
+        tempBoolString.toLower();
+        _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -2147,6 +2186,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         _kvarsolution = 0.0;
         _estimatedpowerfactorvalue = -1000000.0;
         _currentvarpointquality = NormalQuality;
+        _waivecontrolflag = FALSE;
 
         _insertDynamicDataFlag = TRUE;
     }

@@ -101,6 +101,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getKVARSolution() const;
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
+    BOOL getWaiveControlFlag() const;
 
     RWSortedVector& getCCCapBanks();
 
@@ -140,18 +141,19 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setKVARSolution(DOUBLE solution);
     CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
+    CtiCCFeeder& setWaiveControlFlag(BOOL waive);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
-    BOOL isPastResponseTime(const RWDBDateTime& currentDateTime, LONG minResponseTime);
+    BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime, LONG maxConfirmTime, LONG subBusRetries);
     BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const RWCString& controlUnits);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
-    BOOL attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG minResponseTime);
+    BOOL attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -212,6 +214,7 @@ private:
     DOUBLE _kvarsolution;
     DOUBLE _estimatedpowerfactorvalue;
     LONG _currentvarpointquality;
+    BOOL _waivecontrolflag;
 
     RWSortedVector _cccapbanks;
 
