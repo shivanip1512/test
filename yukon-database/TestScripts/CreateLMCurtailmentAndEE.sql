@@ -326,3 +326,14 @@ insert into energycompanycustomerlist values(2,340);
 insert into energycompanycustomerlist values(2,350);
 insert into energycompanycustomerlist values(2,360);
 insert into energycompanycustomerlist values(2,370);
+
+
+/******************* Clean up points in the DB, i.e. make sure they all have "pointalarming" entry ***************************/
+insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
+	select pointid,
+	'',
+	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
+	'N',
+	1, 0  from point where pointid not in (select pointid from pointalarming);
+
+

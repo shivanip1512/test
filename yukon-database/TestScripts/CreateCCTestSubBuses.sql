@@ -944,3 +944,14 @@ INSERT INTO PointAlarming VALUES( 1403,'','NNNNN
 INSERT INTO PointUnit VALUES( 1403,0,3,1.0E30,-1.0E30); 
 INSERT INTO PointAnalog VALUES( 1403,-1.0,'None',1.0,0.0); 
 
+
+
+/******************* Clean up points in the DB, i.e. make sure they all have "pointalarming" entry ***************************/
+insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
+	select pointid,
+	'',
+	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
+	'N',
+	1, 0  from point where pointid not in (select pointid from pointalarming);
+
+
