@@ -318,7 +318,7 @@ private javax.swing.JCheckBox getJCheckBoxDisplayVars() {
 			ivjJCheckBoxDisplayVars = new javax.swing.JCheckBox();
 			ivjJCheckBoxDisplayVars.setName("JCheckBoxDisplayVars");
 			ivjJCheckBoxDisplayVars.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJCheckBoxDisplayVars.setText("Display only points measured in Vars & KQ");
+			ivjJCheckBoxDisplayVars.setText("Display only points measured in Vars & kQ");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

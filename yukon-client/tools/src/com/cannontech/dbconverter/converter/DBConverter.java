@@ -615,7 +615,7 @@ public boolean processAccumulatorPoints()
 			accumPoint.getPointUnit().setUomID( new Integer( 20 ) );
 		else if( comparer.compareTo( "MWh" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 21 ) );
-		else if( comparer.compareTo( "KQ" ) == 0 )
+		else if( comparer.compareTo( "kQ" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 7 ) );
 		else if( comparer.compareTo( "PF" ) == 0 )
 			accumPoint.getPointUnit().setUomID( new Integer( 27 ) );
@@ -795,7 +795,7 @@ public boolean processAnalogPoints()
 			analogPoint.getPointUnit().setUomID( new Integer( 20 ) );
 		else if( comparer.compareTo( "MWh" ) == 0 )
 			analogPoint.getPointUnit().setUomID( new Integer( 21 ) );
-		else if( comparer.compareTo( "KQ" ) == 0 )
+		else if( comparer.compareTo( "kQ" ) == 0 )
 			analogPoint.getPointUnit().setUomID( new Integer( 7 ) );
 		else if( comparer.compareTo( "PF" ) == 0 )
 			analogPoint.getPointUnit().setUomID( new Integer( 27 ) );

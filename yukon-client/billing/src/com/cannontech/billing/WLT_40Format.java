@@ -522,7 +522,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups, String dbA
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(5));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KQ") )
+					else if( unitMeasureName.equalsIgnoreCase("kQ") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(6));
 					}
@@ -1048,7 +1048,7 @@ public boolean retrieveBillingData(String dbAlias)
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(5));
 					}
-					else if( unitMeasureName.equalsIgnoreCase("KQ") )
+					else if( unitMeasureName.equalsIgnoreCase("kQ") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(6));
 					}
