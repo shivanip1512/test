@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/09/29 22:21:53 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/03/18 19:51:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include "portglob.h"
 
 extern CtiDeviceManager DeviceManager;
-static ULONG   gQueSlot = 0;
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 
 INT AllocateOutMessagesToChildPorts(CtiPortSPtr &ParentPort);
@@ -88,7 +87,7 @@ VOID PortPoolDialoutThread(void *pid)
             continue;
         }
 
-        if((status = ParentPort->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
+        if((status = ParentPort->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
         {
             /*
              *  This is a Read from the CTI queueing structures which will originate from

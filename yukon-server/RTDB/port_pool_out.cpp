@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/09/26 03:33:14 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/03/18 19:51:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,8 +298,9 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
                                 ULONG          QueEntries;
                                 ULONG          ReadLength;
 
+                                setQueueSlot(qloc);
                                 // Move the OM from the pool queue to the child queue.
-                                if( readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, qloc, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+                                if( readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
                                 {
                                     childport->writeQueue( OutMessage->EventCode, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority );
 

@@ -466,7 +466,10 @@ _commFailCount(0),
 _attemptCount(0),
 _attemptCommFailCount(0),
 _attemptOtherFailCount(0),
-_attemptSuccessCount(0)
+_attemptSuccessCount(0),
+_queueSlot(0),
+_devicesQueued(false),
+_devicesQueuedTime(YUKONEOT)
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 }
@@ -1206,17 +1209,42 @@ INT CtiPort::searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*))
 }
 
 
-INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount )
+INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount )
 {
+    static RWTime lastQueueReportTime;
     INT status = QUEUE_READ;
+
+    ULONG Element = getQueueSlot();
 
     if(_portQueue)
     {
-        status = status = ReadQueue(_portQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+        status = ReadQueue(_portQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+
+        if(status == NORMAL)
+        {
+            setLastOMRead();
+        }
     }
+
+    if(pElementCount && *pElementCount > 5000 && RWTime() > lastQueueReportTime)  // Ok, we may have an issue here....
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port " << getName() << " has " << *pElementCount << " pending OUTMESS requests " << endl;
+        }
+        lastQueueReportTime = RWTime() + 300;
+    }
+
+    setQueueSlot(0);   // Set this back to zero every time.
 
     return status;
 }
+
+INT CtiPort::searchQueue( void *ptr, BOOL (*myFunc)(void*, void*) )
+{
+    return SearchQueue( _portQueue, ptr, myFunc );
+}
+
 
 #ifndef  COMM_FAIL_REPORT_TIME
     #define COMM_FAIL_REPORT_TIME 300
@@ -1305,10 +1333,12 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
         ULONG          QueEntries;
         ULONG          ReadLength;
 
+        setQueueSlot(0);
+
         while(queueCount())
         {
             // Move the OM from the pool queue to the child queue.
-            if( readQueue( &ReadResult, &ReadLength, (PPVOID) &NewOutMessage, 0, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+            if( readQueue( &ReadResult, &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
             {
                 _parentPort->writeQueue( NewOutMessage->EventCode, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
                 {
@@ -1402,3 +1432,52 @@ void CtiPort::setLastOMComplete(RWTime &atime)
 {
     _lastOMComplete = atime;
 }
+
+bool CtiPort::shouldProcessQueuedDevices() const
+{
+    bool doit = false;
+
+    if( getDevicesQueued() == true && queueCount() == 0 )
+    {
+        RWTime now;
+
+        if(now > _devicesQueuedTime + 30)
+        {
+            doit = true;
+
+            // Think about this a bit
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+
+    return doit;
+}
+
+bool CtiPort::getDevicesQueued() const
+{
+    return _devicesQueued;
+}
+CtiPort& CtiPort::setDevicesQueued(bool set)
+{
+    if(getDevicesQueued() == false && set == true)
+    {
+        setDevicesQueuedTime(RWTime());
+    }
+    else if(getDevicesQueued() == true && set == false)
+    {
+        setDevicesQueuedTime(YUKONEOT);
+    }
+
+    _devicesQueued = set;
+    return *this;
+}
+CtiPort& CtiPort::setDevicesQueuedTime(const RWTime &tme)
+{
+    _devicesQueuedTime = tme;
+    return *this;
+}
+

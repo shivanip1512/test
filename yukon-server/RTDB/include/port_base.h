@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/11/06 21:15:56 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/03/18 19:51:58 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,8 @@ public:
 
     HCTIQUEUE&  getPortQueueHandle();
     INT writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);
-    INT readQueue( PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount );
+    INT readQueue( PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount );
+    INT searchQueue( void *ptr, BOOL (*myFunc)(void*, void*) );
 
     INT queueInit(HANDLE hQuit);                 // Sets up the PortQueue
     INT queueDeInit();               // Blasts the PortQueue
@@ -226,6 +227,17 @@ public:
     RWTime getLastOMComplete() const;
     void setLastOMComplete(RWTime &atime = RWTime());
 
+    ULONG getQueueSlot() const;
+    CtiPort& setQueueSlot(const ULONG slot = 0);
+
+    bool shouldProcessQueuedDevices() const;
+
+    bool getDevicesQueued() const;
+    CtiPort& setDevicesQueued(bool set = true);
+    CtiPort& setDevicesQueuedTime(const RWTime &tme);
+
+
+
 protected:
 
     CtiTblPAO           _tblPAO;
@@ -269,6 +281,11 @@ private:
 
     RWTime                      _lastOMRead;
     RWTime                      _lastOMComplete;
+
+    bool                        _devicesQueued;
+    RWTime                      _devicesQueuedTime;
+
+    ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 };
 
 inline CtiMutex& CtiPort::getExclusionMux() { return _exclusionMux; }
@@ -315,8 +332,8 @@ inline HANDLE CtiPort::setQuitEventHandle(HANDLE quit) { HANDLE oldQuit = _quitE
 inline HANDLE CtiPort::getQuitEventHandle() { return _quitEvent; }
 
 inline bool CtiPort::isExecutionProhibitedByInternalLogic() const { return false;}
-
-
+inline ULONG CtiPort::getQueueSlot() const { return _queueSlot; }
+inline CtiPort& CtiPort::setQueueSlot(const ULONG slot) { _queueSlot = slot; return *this; }
 
 
 #endif // #ifndef __PORT_BASE_H__
