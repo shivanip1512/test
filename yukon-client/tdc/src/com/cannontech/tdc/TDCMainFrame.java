@@ -2868,7 +2868,7 @@ public void initialize() {
 
 		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(
 			this,
-			"d:/yukon/client/bin/ctismall.gif",
+			"ctismall.gif",
 			"Loading " + System.getProperty("cti.app.name") + "...",
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 
