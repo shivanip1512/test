@@ -175,7 +175,7 @@ public class WorkOrderBean {
 	public String getHTML(HttpServletRequest req) {
 		ArrayList soList = getWorkOrderList();
 		if (soList == null || soList.size() == 0)
-			return "<p class='MainText'>No service order found.</p>";
+			return "<p class='ErrorMsg'>No service order found.</p>";
 		
 		String uri = req.getRequestURI();
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );

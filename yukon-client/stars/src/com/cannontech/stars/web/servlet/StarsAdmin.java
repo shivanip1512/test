@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -20,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -32,7 +30,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -70,14 +67,17 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
+import com.cannontech.stars.util.task.ImportCustAccountsTask;
+import com.cannontech.stars.util.task.ImportStarsDataTask;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.UpdateApplianceAction;
+import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
+import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.web.action.UpdateLoginAction;
@@ -121,12 +121,12 @@ import com.cannontech.stars.xml.serialize.ConstructionMaterial;
 import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.DecadeBuilt;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
+import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.Email;
 import com.cannontech.stars.xml.serialize.GeneralCondition;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.InsulationDepth;
 import com.cannontech.stars.xml.serialize.LMHardware;
-import com.cannontech.stars.xml.serialize.LMHardwareType;
 import com.cannontech.stars.xml.serialize.Location;
 import com.cannontech.stars.xml.serialize.MainCoolingSystem;
 import com.cannontech.stars.xml.serialize.MainFuelType;
@@ -144,6 +144,7 @@ import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsApp;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
+import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsCustAccount;
@@ -249,172 +250,182 @@ public class StarsAdmin extends HttpServlet {
 		{"OwnershipType", "Ownership Type"},
 		{"FuelType", "Main Fuel Type"},
 	};
-    
+	
     // Customer account fields
-	private static final int IDX_ACCOUNT_ID = 0;
-	private static final int IDX_ACCOUNT_NO = 1;
-	private static final int IDX_CUSTOMER_TYPE = 2;
-	private static final int IDX_COMPANY_NAME = 3;
-	private static final int IDX_LAST_NAME = 4;
-	private static final int IDX_FIRST_NAME = 5;
-	private static final int IDX_HOME_PHONE = 6;
-	private static final int IDX_WORK_PHONE = 7;
-	private static final int IDX_WORK_PHONE_EXT = 8;
-	private static final int IDX_EMAIL = 9;
-	private static final int IDX_ACCOUNT_NOTES = 10;
-	private static final int IDX_STREET_ADDR1 = 11;
-	private static final int IDX_STREET_ADDR2 = 12;
-	private static final int IDX_CITY = 13;
-	private static final int IDX_STATE = 14;
-	private static final int IDX_ZIP_CODE = 15;
-	private static final int IDX_COUNTY = 16;
-	private static final int IDX_MAP_NO = 17;
-	private static final int IDX_PROP_NOTES = 18;
-	private static final int IDX_USERNAME = 19;
-	private static final int IDX_PASSWORD = 20;
-	private static final int IDX_SUBSTATION = 21;
-	private static final int IDX_FEEDER = 22;
-	private static final int IDX_POLE = 23;
-	private static final int IDX_TRFM_SIZE = 24;
-	private static final int IDX_SERV_VOLT = 25;
-	private static final int NUM_ACCOUNT_FIELDS = 26;
+	public static int acct_idx = 0;
+    public static final int IDX_LINE_NUM = acct_idx++;
+	public static final int IDX_ACCOUNT_ID = acct_idx++;
+	public static final int IDX_ACCOUNT_NO = acct_idx++;
+	public static final int IDX_CUSTOMER_TYPE = acct_idx++;
+	public static final int IDX_COMPANY_NAME = acct_idx++;
+	public static final int IDX_LAST_NAME = acct_idx++;
+	public static final int IDX_FIRST_NAME = acct_idx++;
+	public static final int IDX_HOME_PHONE = acct_idx++;
+	public static final int IDX_WORK_PHONE = acct_idx++;
+	public static final int IDX_WORK_PHONE_EXT = acct_idx++;
+	public static final int IDX_EMAIL = acct_idx++;
+	public static final int IDX_ACCOUNT_NOTES = acct_idx++;
+	public static final int IDX_STREET_ADDR1 = acct_idx++;
+	public static final int IDX_STREET_ADDR2 = acct_idx++;
+	public static final int IDX_CITY = acct_idx++;
+	public static final int IDX_STATE = acct_idx++;
+	public static final int IDX_ZIP_CODE = acct_idx++;
+	public static final int IDX_COUNTY = acct_idx++;
+	public static final int IDX_MAP_NO = acct_idx++;
+	public static final int IDX_PROP_NOTES = acct_idx++;
+	public static final int IDX_USERNAME = acct_idx++;
+	public static final int IDX_PASSWORD = acct_idx++;
+	public static final int IDX_SUBSTATION = acct_idx++;
+	public static final int IDX_FEEDER = acct_idx++;
+	public static final int IDX_POLE = acct_idx++;
+	public static final int IDX_TRFM_SIZE = acct_idx++;
+	public static final int IDX_SERV_VOLT = acct_idx++;
+	public static final int NUM_ACCOUNT_FIELDS = acct_idx;
 	
 	// Inventory fields
-	// IDX_ACCOUNT_ID = 0
-	private static final int IDX_INV_ID = 1;
-	private static final int IDX_SERIAL_NO = 2;
-	private static final int IDX_DEVICE_TYPE = 3;
-	private static final int IDX_RECEIVE_DATE = 4;
-	private static final int IDX_INSTALL_DATE = 5;
-	private static final int IDX_REMOVE_DATE = 6;
-	private static final int IDX_SERVICE_COMPANY = 7;
-	private static final int IDX_ALT_TRACK_NO = 8;
-	private static final int IDX_DEVICE_VOLTAGE = 9;
-	private static final int IDX_DEVICE_STATUS = 10;
-	private static final int IDX_INV_NOTES = 11;
-	private static final int IDX_DEVICE_NAME = 12;
-	private static final int IDX_ADDR_GROUP = 13;
-	private static final int IDX_HARDWARE_ACTION = 14;
-	private static final int IDX_R1_GROUP = 15;
-	private static final int IDX_R2_GROUP = 16;
-	private static final int IDX_R3_GROUP = 17;
-	private static final int IDX_R1_STATUS = 18;
-	private static final int IDX_R2_STATUS = 19;
-	private static final int IDX_R3_STATUS = 20;
-	private static final int NUM_INV_FIELDS = 21;
+	// IDX_LINE_NUM = 0
+	// IDX_ACCOUNT_ID = 1
+	public static int inv_idx = 2;
+	public static final int IDX_INV_ID = inv_idx++;
+	public static final int IDX_SERIAL_NO = inv_idx++;
+	public static final int IDX_DEVICE_TYPE = inv_idx++;
+	public static final int IDX_RECEIVE_DATE = inv_idx++;
+	public static final int IDX_INSTALL_DATE = inv_idx++;
+	public static final int IDX_REMOVE_DATE = inv_idx++;
+	public static final int IDX_SERVICE_COMPANY = inv_idx++;
+	public static final int IDX_ALT_TRACK_NO = inv_idx++;
+	public static final int IDX_DEVICE_VOLTAGE = inv_idx++;
+	public static final int IDX_DEVICE_STATUS = inv_idx++;
+	public static final int IDX_INV_NOTES = inv_idx++;
+	public static final int IDX_DEVICE_NAME = inv_idx++;
+	public static final int IDX_ADDR_GROUP = inv_idx++;
+	public static final int IDX_HARDWARE_ACTION = inv_idx++;
+	public static final int IDX_R1_GROUP = inv_idx++;
+	public static final int IDX_R2_GROUP = inv_idx++;
+	public static final int IDX_R3_GROUP = inv_idx++;
+	public static final int IDX_R1_STATUS = inv_idx++;
+	public static final int IDX_R2_STATUS = inv_idx++;
+	public static final int IDX_R3_STATUS = inv_idx++;
+	public static final int NUM_INV_FIELDS = inv_idx;
 	
 	// Appliance fields
-	// IDX_ACCOUNT_ID = 0
-	// IDX_INV_ID = 1;
-	private static final int IDX_APP_ID = 2;
-	private static final int IDX_RELAY_NUM = 3;
-	private static final int IDX_APP_TYPE = 4;
-	private static final int IDX_APP_NOTES = 5;
-	private static final int IDX_MANUFACTURER = 6;
-	private static final int IDX_YEAR_MADE = 7;
-	private static final int IDX_APP_KW = 8;
-	private static final int IDX_AC_TONNAGE = 9;
-	private static final int IDX_WH_NUM_GALLONS = 10;
-	private static final int IDX_WH_NUM_ELEMENTS = 11;
-	private static final int IDX_WH_ENERGY_SRC = 12;
-	private static final int IDX_GEN_TRAN_SWITCH_TYPE = 13;
-	private static final int IDX_GEN_TRAN_SWITCH_MFC = 14;
-	private static final int IDX_GEN_CAPACITY = 15;
-	private static final int IDX_GEN_FUEL_CAP = 16;
-	private static final int IDX_GEN_START_DELAY = 17;
-	private static final int IDX_IRR_TYPE = 18;
-	private static final int IDX_IRR_HORSE_POWER = 19;
-	private static final int IDX_IRR_ENERGY_SRC = 20;
-	private static final int IDX_IRR_SOIL_TYPE = 21;
-	private static final int IDX_IRR_METER_LOC = 22;
-	private static final int IDX_IRR_METER_VOLT = 23;
-	private static final int IDX_GDRY_TYPE = 24;
-	private static final int IDX_GDRY_BIN_SIZE = 25;
-	private static final int IDX_GDRY_ENERGY_SRC = 26;
-	private static final int IDX_GDRY_HORSE_POWER = 27;
-	private static final int IDX_GDRY_HEAT_SRC = 28;
-	private static final int IDX_HP_TYPE = 29;
-	private static final int IDX_HP_SIZE = 30;
-	private static final int IDX_HP_STANDBY_SRC = 31;
-	private static final int IDX_HP_RESTART_DELAY = 32;
-	private static final int IDX_SH_TYPE = 33;
-	private static final int IDX_SH_CAPACITY = 34;
-	private static final int IDX_SH_RECHARGE_TIME = 35;
-	private static final int IDX_DF_SWITCH_OVER_TYPE = 36;
-	private static final int IDX_DF_2ND_CAPACITY = 37;
-	private static final int IDX_DF_2ND_ENERGY_SRC = 38;
-	private static final int IDX_APP_CAT_DEF_ID = 39;
-	private static final int NUM_APP_FIELDS = 40;
+	// IDX_LINE_NUM = 0
+	// IDX_ACCOUNT_ID = 1
+	// IDX_INV_ID = 2
+	public static int app_idx = 3;
+	public static final int IDX_APP_ID = app_idx++;
+	public static final int IDX_RELAY_NUM = app_idx++;
+	public static final int IDX_APP_TYPE = app_idx++;
+	public static final int IDX_APP_NOTES = app_idx++;
+	public static final int IDX_MANUFACTURER = app_idx++;
+	public static final int IDX_YEAR_MADE = app_idx++;
+	public static final int IDX_APP_KW = app_idx++;
+	public static final int IDX_AC_TONNAGE = app_idx++;
+	public static final int IDX_WH_NUM_GALLONS = app_idx++;
+	public static final int IDX_WH_NUM_ELEMENTS = app_idx++;
+	public static final int IDX_WH_ENERGY_SRC = app_idx++;
+	public static final int IDX_GEN_TRAN_SWITCH_TYPE = app_idx++;
+	public static final int IDX_GEN_TRAN_SWITCH_MFC = app_idx++;
+	public static final int IDX_GEN_CAPACITY = app_idx++;
+	public static final int IDX_GEN_FUEL_CAP = app_idx++;
+	public static final int IDX_GEN_START_DELAY = app_idx++;
+	public static final int IDX_IRR_TYPE = app_idx++;
+	public static final int IDX_IRR_HORSE_POWER = app_idx++;
+	public static final int IDX_IRR_ENERGY_SRC = app_idx++;
+	public static final int IDX_IRR_SOIL_TYPE = app_idx++;
+	public static final int IDX_IRR_METER_LOC = app_idx++;
+	public static final int IDX_IRR_METER_VOLT = app_idx++;
+	public static final int IDX_GDRY_TYPE = app_idx++;
+	public static final int IDX_GDRY_BIN_SIZE = app_idx++;
+	public static final int IDX_GDRY_ENERGY_SRC = app_idx++;
+	public static final int IDX_GDRY_HORSE_POWER = app_idx++;
+	public static final int IDX_GDRY_HEAT_SRC = app_idx++;
+	public static final int IDX_HP_TYPE = app_idx++;
+	public static final int IDX_HP_SIZE = app_idx++;
+	public static final int IDX_HP_STANDBY_SRC = app_idx++;
+	public static final int IDX_HP_RESTART_DELAY = app_idx++;
+	public static final int IDX_SH_TYPE = app_idx++;
+	public static final int IDX_SH_CAPACITY = app_idx++;
+	public static final int IDX_SH_RECHARGE_TIME = app_idx++;
+	public static final int IDX_DF_SWITCH_OVER_TYPE = app_idx++;
+	public static final int IDX_DF_2ND_CAPACITY = app_idx++;
+	public static final int IDX_DF_2ND_ENERGY_SRC = app_idx++;
+	public static final int IDX_APP_CAT_DEF_ID = app_idx++;
+	public static final int NUM_APP_FIELDS = app_idx;
 	
 	// Work order fields
-	// IDX_ACCOUNT_ID = 0
-	// IDX_INV_ID = 1;
-	private static final int IDX_ORDER_NO = 2;
-	private static final int IDX_ORDER_TYPE = 3;
-	private static final int IDX_ORDER_STATUS = 4;
-	private static final int IDX_ORDER_CONTRACTOR = 5;
-	private static final int IDX_DATE_REPORTED = 6;
-	private static final int IDX_DATE_SCHEDULED = 7;
-	private static final int IDX_TIME_SCHEDULED = 8;
-	private static final int IDX_DATE_COMPLETED = 9;
-	private static final int IDX_ORDER_DESC = 10;
-	private static final int IDX_ACTION_TAKEN = 11;
-	private static final int NUM_ORDER_FIELDS = 12;
+	// IDX_LINE_NUM = 0
+	// IDX_ACCOUNT_ID = 1
+	// IDX_INV_ID = 2
+	public static int order_idx = 3;
+	public static final int IDX_ORDER_NO = order_idx++;
+	public static final int IDX_ORDER_TYPE = order_idx++;
+	public static final int IDX_ORDER_STATUS = order_idx++;
+	public static final int IDX_ORDER_CONTRACTOR = order_idx++;
+	public static final int IDX_DATE_REPORTED = order_idx++;
+	public static final int IDX_DATE_SCHEDULED = order_idx++;
+	public static final int IDX_TIME_SCHEDULED = order_idx++;
+	public static final int IDX_DATE_COMPLETED = order_idx++;
+	public static final int IDX_ORDER_DESC = order_idx++;
+	public static final int IDX_ACTION_TAKEN = order_idx++;
+	public static final int NUM_ORDER_FIELDS = order_idx;
 	
 	// Customer residence fields
-	// IDX_ACCOUNT_ID = 0
-	private static final int IDX_RES_TYPE = 1;
-	private static final int IDX_CONSTRUCTION_TYPE = 2;
-	private static final int IDX_DECADE_BUILT = 3;
-	private static final int IDX_SQUARE_FEET = 4;
-	private static final int IDX_INSULATION_DEPTH = 5;
-	private static final int IDX_GENERAL_COND = 6;
-	private static final int IDX_MAIN_COOLING_SYS = 7;
-	private static final int IDX_MAIN_HEATING_SYS = 8;
-	private static final int IDX_NUM_OCCUPANTS = 9;
-	private static final int IDX_OWNERSHIP_TYPE = 10;
-	private static final int IDX_MAIN_FUEL_TYPE = 11;
-	private static final int IDX_RES_NOTES = 12;
-	private static final int NUM_RES_FIELDS = 13;
+	// IDX_LINE_NUM = 0
+	// IDX_ACCOUNT_ID = 1
+	public static int res_idx = 2;
+	public static final int IDX_RES_TYPE = res_idx++;
+	public static final int IDX_CONSTRUCTION_TYPE = res_idx++;
+	public static final int IDX_DECADE_BUILT = res_idx++;
+	public static final int IDX_SQUARE_FEET = res_idx++;
+	public static final int IDX_INSULATION_DEPTH = res_idx++;
+	public static final int IDX_GENERAL_COND = res_idx++;
+	public static final int IDX_MAIN_COOLING_SYS = res_idx++;
+	public static final int IDX_MAIN_HEATING_SYS = res_idx++;
+	public static final int IDX_NUM_OCCUPANTS = res_idx++;
+	public static final int IDX_OWNERSHIP_TYPE = res_idx++;
+	public static final int IDX_MAIN_FUEL_TYPE = res_idx++;
+	public static final int IDX_RES_NOTES = res_idx++;
+	public static final int NUM_RES_FIELDS = res_idx;
 	
 	// Tables of index of lists(in LIST_NAMES) and index of fields(in corresponding field definition above)
-	private static final int[][] SERVINFO_LIST_FIELDS = {
+	public static final int[][] SERVINFO_LIST_FIELDS = {
 		{0, IDX_SUBSTATION},
 	};
 	
-	private static final int[][] INV_LIST_FIELDS = {
+	public static final int[][] INV_LIST_FIELDS = {
 		{1, IDX_DEVICE_TYPE},
 		{2, IDX_DEVICE_VOLTAGE},
 		{3, IDX_SERVICE_COMPANY},
 	};
 	
-	private static final int[][] RECV_LIST_FIELDS = {
+	public static final int[][] RECV_LIST_FIELDS = {
 		{4, IDX_DEVICE_STATUS},
 		{5, IDX_R1_GROUP},
 		{5, IDX_R2_GROUP},
 		{5, IDX_R3_GROUP},
 	};
 	
-	private static final int[][] APP_LIST_FIELDS = {
+	public static final int[][] APP_LIST_FIELDS = {
 		{6, IDX_APP_TYPE},
 		{7, IDX_MANUFACTURER},
 	};
 	
-	private static final int[][] AC_LIST_FIELDS = {
+	public static final int[][] AC_LIST_FIELDS = {
 		{8, IDX_AC_TONNAGE},
 	};
 	
-	private static final int[][] WH_LIST_FIELDS = {
+	public static final int[][] WH_LIST_FIELDS = {
 		{9, IDX_WH_NUM_GALLONS},
 		{10, IDX_WH_ENERGY_SRC},
 	};
 	
-	private static final int[][] GEN_LIST_FIELDS = {
+	public static final int[][] GEN_LIST_FIELDS = {
 		{11, IDX_GEN_TRAN_SWITCH_TYPE},
 		{12, IDX_GEN_TRAN_SWITCH_MFC},
 	};
 	
-	private static final int[][] IRR_LIST_FIELDS = {
+	public static final int[][] IRR_LIST_FIELDS = {
 		{13, IDX_IRR_TYPE},
 		{14, IDX_IRR_ENERGY_SRC},
 		{15, IDX_IRR_HORSE_POWER},
@@ -423,7 +434,7 @@ public class StarsAdmin extends HttpServlet {
 		{18, IDX_IRR_SOIL_TYPE},
 	};
 	
-	private static final int[][] GDRY_LIST_FIELDS = {
+	public static final int[][] GDRY_LIST_FIELDS = {
 		{19, IDX_GDRY_TYPE},
 		{20, IDX_GDRY_ENERGY_SRC},
 		{21, IDX_GDRY_HORSE_POWER},
@@ -431,28 +442,28 @@ public class StarsAdmin extends HttpServlet {
 		{23, IDX_GDRY_BIN_SIZE},
 	};
 	
-	private static final int[][] HP_LIST_FIELDS = {
+	public static final int[][] HP_LIST_FIELDS = {
 		{24, IDX_HP_TYPE},
 		{25, IDX_HP_SIZE},
 		{26, IDX_HP_STANDBY_SRC},
 	};
 	
-	private static final int[][] SH_LIST_FIELDS = {
+	public static final int[][] SH_LIST_FIELDS = {
 		{27, IDX_SH_TYPE},
 	};
 	
-	private static final int[][] DF_LIST_FIELDS = {
+	public static final int[][] DF_LIST_FIELDS = {
 		{28, IDX_DF_SWITCH_OVER_TYPE},
 		{29, IDX_DF_2ND_ENERGY_SRC},
 	};
 	
-	private static final int[][] ORDER_LIST_FIELDS = {
+	public static final int[][] ORDER_LIST_FIELDS = {
 		{30, IDX_ORDER_STATUS},
 		{31, IDX_ORDER_TYPE},
 		{3, IDX_ORDER_CONTRACTOR},
 	};
 	
-	private static final int[][] RES_LIST_FIELDS = {
+	public static final int[][] RES_LIST_FIELDS = {
 		{32, IDX_RES_TYPE},
 		{33, IDX_CONSTRUCTION_TYPE},
 		{34, IDX_DECADE_BUILT},
@@ -466,16 +477,16 @@ public class StarsAdmin extends HttpServlet {
 		{42, IDX_MAIN_FUEL_TYPE},
 	};
     
-    private static final String NEW_ADDRESS = "NEW_ADDRESS";
+    public static final String HARDWARE_ACTION_INSERT = "INSERT";
+    public static final String HARDWARE_ACTION_UPDATE = "UPDATE";
+    public static final String HARDWARE_ACTION_REMOVE = "REMOVE";
     
-    private static final String HARDWARE_ACTION_INSERT = "INSERT";
-    private static final String HARDWARE_ACTION_UPDATE = "UPDATE";
-    private static final String HARDWARE_ACTION_REMOVE = "REMOVE";
+	public static final java.text.SimpleDateFormat starsDateFormat =
+			new java.text.SimpleDateFormat( "yyyyMMdd" );
+	public static final java.text.SimpleDateFormat starsTimeFormat =
+			new java.text.SimpleDateFormat( "HHmm" );
     
-    private static final java.text.SimpleDateFormat starsDateFormat =
-    		new java.text.SimpleDateFormat( "yyyyMMdd" );
-    private static final java.text.SimpleDateFormat starsTimeFormat =
-    		new java.text.SimpleDateFormat( "HHmm" );
+	private static final String NEW_ADDRESS = "NEW_ADDRESS";
     
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     
@@ -501,6 +512,21 @@ public class StarsAdmin extends HttpServlet {
 		return st;
     }
     
+    private static String[] prepareFields(int numFields, StreamTokenizer st, boolean parseLineNo)
+    throws java.io.IOException {
+    	String[] fields = new String[ numFields ];
+    	for (int i = 0; i < numFields; i++)
+    		fields[i] = "";
+		
+		if (parseLineNo) {
+			st.nextToken();
+			if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_LINE_NUM] = st.sval;
+			if (st.ttype != ',') st.nextToken();
+		}
+		
+		return fields;
+    }
+    
     private static final Hashtable parsers = new Hashtable();
     static {
     	parsers.put("Idaho", new ImportFileParser() {
@@ -521,11 +547,8 @@ public class StarsAdmin extends HttpServlet {
 			 * 14		SERVICE_COMPANY
 			 */
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype != ',') st.nextToken();
@@ -609,11 +632,8 @@ public class StarsAdmin extends HttpServlet {
 			 * 20		----
 			 */
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
@@ -704,11 +724,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
     	parsers.put("San Antonio", new ImportFileParser() {
     		public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-					
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS + NUM_INV_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
@@ -792,11 +809,8 @@ public class StarsAdmin extends HttpServlet {
     	 */
     	parsers.put("STARS Customer", new ImportFileParser() {
     		public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_ACCOUNT_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-					
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -875,12 +889,9 @@ public class StarsAdmin extends HttpServlet {
     	 */
 		parsers.put("STARS ServiceInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_ACCOUNT_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-					
 				StreamTokenizer st = prepareStreamTokenzier( line );
-
+				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS, st, false);
+				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
 				if (st.ttype != ',') st.nextToken();
@@ -940,11 +951,8 @@ public class StarsAdmin extends HttpServlet {
     	 */
 		parsers.put("STARS Inventory", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_INV_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-					
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_INV_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
@@ -1016,11 +1024,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS Receiver", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_INV_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_INV_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1084,11 +1089,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS Meter", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_INV_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_INV_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1131,11 +1133,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS LoadInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
@@ -1212,11 +1211,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS WorkOrder", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_ORDER_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_ORDER_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ORDER_NO] = st.sval;
@@ -1301,11 +1297,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS ResInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_RES_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_RES_FIELDS, st, true);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1405,11 +1398,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS ACInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1454,11 +1444,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS WHInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1508,11 +1495,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS GenInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1562,11 +1546,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS IrrInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1622,11 +1603,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS GDryInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1678,11 +1656,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS HPInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1733,11 +1708,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS SHInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1788,11 +1760,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS DFInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1839,11 +1808,8 @@ public class StarsAdmin extends HttpServlet {
 		 */
 		parsers.put("STARS GenlInfo", new ImportFileParser() {
 			public String[] populateFields(String line) throws Exception {
-				String[] fields = new String[ NUM_APP_FIELDS ];
-				for (int i = 0; i < fields.length; i++)
-					fields[i] = "";
-				
 				StreamTokenizer st = prepareStreamTokenzier( line );
+				String[] fields = prepareFields(NUM_APP_FIELDS, st, false);
 				
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
@@ -1936,7 +1902,7 @@ public class StarsAdmin extends HttpServlet {
     	resp.sendRedirect( redirect );
 	}
 	
-	private void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany) {
+	private static void setStarsCustAccount(StarsCustAccount account, String[] fields, LiteStarsEnergyCompany energyCompany) {
         account.setAccountNumber( fields[IDX_ACCOUNT_NO] );
         account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") );
         account.setCompany( fields[IDX_COMPANY_NAME] );
@@ -1996,7 +1962,7 @@ public class StarsAdmin extends HttpServlet {
         account.setPrimaryContact( primContact );
 	}
 	
-	private LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
+	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields, StarsYukonUser user, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 		// Build the request message
@@ -2016,7 +1982,7 @@ public class StarsAdmin extends HttpServlet {
 		return NewCustAccountAction.newCustomerAccount( newAccount, user, energyCompany );
 	}
 	
-	private void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
+	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
 		throws Exception
 	{
         StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
@@ -2025,7 +1991,7 @@ public class StarsAdmin extends HttpServlet {
         UpdateCustAccountAction.updateCustomerAccount( updateAccount, liteAcctInfo, energyCompany, conn );
 	}
 	
-	private void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	public static void updateLogin(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
 		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
@@ -2044,7 +2010,7 @@ public class StarsAdmin extends HttpServlet {
         UpdateLoginAction.updateLogin( updateLogin, liteAcctInfo, energyCompany );
 	}
 	
-	private int getDeviceTypeID(LiteStarsEnergyCompany energyCompany, String deviceType) {
+	private static int getDeviceTypeID(LiteStarsEnergyCompany energyCompany, String deviceType) {
 		try {
 			// If importing old STARS data, the string is the device type id
 			return Integer.parseInt( deviceType );
@@ -2061,7 +2027,7 @@ public class StarsAdmin extends HttpServlet {
 		return -1;
 	}
 	
-	private void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany) {
+	private static void setStarsInventory(StarsInv inv, String[] fields, LiteStarsEnergyCompany energyCompany) {
 		if (fields[IDX_ALT_TRACK_NO].length() > 0)
 			inv.setAltTrackingNumber( fields[IDX_ALT_TRACK_NO] );
 		if (fields[IDX_INV_NOTES].length() > 0)
@@ -2134,25 +2100,30 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		
+		if (fields[IDX_DEVICE_TYPE].length() > 0) {
+			DeviceType devType = new DeviceType();
+			devType.setEntryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]) );
+			inv.setDeviceType( devType );
+		}
+		
 		if (fields[IDX_DEVICE_NAME].equals("")) {
 			LMHardware hw = new LMHardware();
-			LMHardwareType hwType = new LMHardwareType();
-			hwType.setEntryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]) );
-			hw.setLMHardwareType( hwType );
 			hw.setManufacturerSerialNumber( fields[IDX_SERIAL_NO] );
-			
 			inv.setLMHardware( hw );
 		}
 		else {
-			// Now we only have meters
+			// Now we only have MCTs
 			MCT mct = new MCT();
 			mct.setDeviceName( fields[IDX_DEVICE_NAME] );
-			
 			inv.setMCT( mct );
+			
+			// If the device is not found in Yukon, use the label field to store the device name
+			if (inv.getDeviceID() == 0)
+				inv.setDeviceLabel( fields[IDX_DEVICE_NAME] );
 		}
 	}
 	
-	private LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
+	public static LiteInventoryBase insertLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		// Check inventory and build request message
@@ -2161,14 +2132,20 @@ public class StarsAdmin extends HttpServlet {
 			throw new WebClientException("Invalid device type \"" + fields[IDX_DEVICE_TYPE] + "\"");
 		
 		StarsCreateLMHardware createHw = null;
-		LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
+		LiteInventoryBase liteInv = null;
 		
-		if (liteHw != null) {
-			if (liteHw.getAccountID() == liteAcctInfo.getAccountID())
-				throw new WebClientException("Cannot insert hardware with serial # " + fields[IDX_SERIAL_NO] + " because it already exists");
+		int categoryID = ECUtils.getInventoryCategoryID( devTypeID, energyCompany );
+		if (ECUtils.isLMHardware( categoryID ))
+			liteInv = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
+		else if (fields[IDX_DEVICE_NAME].length() > 0)
+			liteInv = energyCompany.searchForDevice( categoryID, fields[IDX_DEVICE_NAME] );
+		
+		if (liteInv != null) {
+			if (liteInv.getAccountID() == liteAcctInfo.getAccountID())
+				throw new WebClientException("Cannot insert duplicate hardware into the customer account");
 			
 			createHw = new StarsCreateLMHardware();
-			StarsLiteFactory.setStarsInv( createHw, liteHw, energyCompany );
+			StarsLiteFactory.setStarsInv( createHw, liteInv, energyCompany );
 			createHw.setInstallDate( new java.util.Date() );
 			createHw.setRemoveDate( new java.util.Date(0) );
 			createHw.setInstallationNotes( "" );
@@ -2183,7 +2160,7 @@ public class StarsAdmin extends HttpServlet {
         return CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany, conn );
 	}
 	
-	private void updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
+	public static void updateLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		if (liteAcctInfo.getInventories().size() != 1)
@@ -2247,7 +2224,7 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
+	public static void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws Exception
 	{
 		// Check if the hardware to be deleted exists
@@ -2276,7 +2253,7 @@ public class StarsAdmin extends HttpServlet {
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany, conn );
 	}
 	
-	private void programSignUp(ArrayList programs, LiteStarsCustAccountInformation liteAcctInfo,
+	public static void programSignUp(ArrayList programs, LiteStarsCustAccountInformation liteAcctInfo,
 		Integer invID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn)
 		throws Exception
 	{
@@ -2298,223 +2275,7 @@ public class StarsAdmin extends HttpServlet {
         ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, invID, energyCompany, conn );
 	}
 	
-	private void deleteCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        
-		try {
-			String acctNo = req.getParameter( "AcctNo" );
-			int[] accountIDs = CustomerAccount.searchByAccountNumber(
-					energyCompany.getEnergyCompanyID(), acctNo.replace('*', '%') );
-			
-			if (accountIDs != null) {
-				if (accountIDs.length < 50) {
-					for (int i = 0; i < accountIDs.length; i++) {
-						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
-						DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
-					}
-					
-					if (accountIDs.length > 1)
-						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer accounts have been deleted");
-					else
-						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer account have been deleted");
-				}
-				else {
-					// Too many accounts to be deleted, it may take a while
-					DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
-					long id = ProgressChecker.addTask( task );
-					session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-					redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
-				}
-			}
-			else
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-        	session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Delete customer accounts failed");
-		}
-	}
-	
-	private ArrayList readFile(File file) {
-		if (file.exists()) {
-			try {
-				java.io.BufferedReader fr = new java.io.BufferedReader(
-						new java.io.FileReader(file) );
-				ArrayList lines = new ArrayList();
-				String line = null;
-				
-				while ((line = fr.readLine()) != null) {
-					if (line.charAt(0) == '#') continue;
-					if (line.length() > 0) lines.add(line);
-				}
-				
-				fr.close();
-				return lines;
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-				CTILogger.error("Failed to read file \"" + file.getPath() + "\"");
-			}
-		}
-		else {
-			CTILogger.error("Unable to find file \"" + file.getPath() + "\"");
-		}
-		
-		return null;
-	}
-	
-	private void writeFile(File file, ArrayList lines) throws IOException {
-		java.io.PrintWriter fw = new java.io.PrintWriter(
-				new java.io.BufferedWriter( new java.io.FileWriter(file) ));
-		
-		for (int i = 0; i < lines.size(); i++)
-			fw.println( (String)lines.get(i) );
-		
-		fw.close();
-	}
-	
-	private void importCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-        
-		int numAdded = 0;
-		int numUpdated = 0;
-		int lineNo = 0;
-		java.sql.Connection conn = null;
-		
-		try {
-			String importID = ServerUtils.forceNotNone(
-					AuthFuncs.getRolePropertyValue(user.getYukonUser(), ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT) );
-			ImportFileParser parser = (ImportFileParser) parsers.get(importID);
-			if (parser == null)
-				throw new WebClientException("Invalid import ID: " + importID);
-			
-			String importFile = req.getParameter( "ImportFile" );
-			ArrayList lines = readFile( new File(importFile) );
-			if (lines == null)
-				throw new WebClientException("Failed to read file '" + importFile + "'");
-			
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			for (lineNo = 1; lineNo <= lines.size(); lineNo++) {
-				String line = (String) lines.get(lineNo - 1);
-				
-				String[] custFields = parser.populateFields( line );
-				String[] invFields = new String[ NUM_INV_FIELDS ];
-				System.arraycopy( custFields, NUM_ACCOUNT_FIELDS, invFields, 0, NUM_INV_FIELDS );
-				
-				// Process request parameters for program enrollment
-				ArrayList programs = new ArrayList();
-				String[] catIDs = req.getParameterValues( "CatID" );
-				String[] progIDs = req.getParameterValues( "ProgID" );
-				
-				if (progIDs != null) {
-					for (int i = 0; i < progIDs.length; i++) {
-						if (progIDs[i].length() == 0) continue;
-						
-						int progID = Integer.parseInt(progIDs[i]);
-						LiteLMProgram liteProg = energyCompany.getLMProgram( progID );
-						
-						int groupID = 0;
-						if (invFields[IDX_ADDR_GROUP].length() > 0 && liteProg.getGroupIDs() != null) {
-							for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-								if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( invFields[IDX_ADDR_GROUP] ))
-								{
-									groupID = liteProg.getGroupIDs()[j];
-									break;
-								}
-							}
-						}
-						
-						int[] prog = new int[3];
-						prog[0] = progID;
-						prog[1] = Integer.parseInt(catIDs[i]);
-						prog[2] = groupID;
-						programs.add( prog );
-					}
-				}
-				
-				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchByAccountNumber( custFields[IDX_ACCOUNT_NO] );
-				
-				if (liteAcctInfo == null) {
-					liteAcctInfo = newCustomerAccount( custFields, user, energyCompany );
-					
-					LiteInventoryBase liteInv = null;
-					if (!invFields[IDX_SERIAL_NO].equalsIgnoreCase(""))
-						liteInv = insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-					
-					Integer invID = null;
-					if (liteInv != null)
-						invID = new Integer( liteInv.getInventoryID() );
-					programSignUp( programs, liteAcctInfo, invID, energyCompany, conn );
-					
-					numAdded++;
-				}
-				else {
-					updateCustomerAccount( custFields, liteAcctInfo, energyCompany, conn );
-					//updateLogin( fields, liteAcctInfo, energyCompany, session );
-					
-					if (!invFields[IDX_SERIAL_NO].equalsIgnoreCase(""))
-					{
-						if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_INSERT ))
-							insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-						else if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_UPDATE ))
-							updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-						else if (invFields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_REMOVE ))
-							removeLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-						else {	// Hardware action field not specified
-							if (liteAcctInfo.getInventories().size() == 0)
-								insertLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-							else
-								updateLMHardware( invFields, liteAcctInfo, energyCompany, conn );
-						}
-					}
-					
-					if (liteAcctInfo.getInventories().size() > 0) {
-						Integer dftInvID = null;
-						if (liteAcctInfo.getInventories().size() == 1)
-							dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
-						programSignUp( programs, liteAcctInfo, dftInvID, energyCompany, conn );
-					}
-					
-					numUpdated++;
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			
-			String errorMsg = null;
-			if (lineNo > 0)
-				errorMsg = "Error encountered when processing line #" + lineNo;
-			else
-				errorMsg = "Failed to import customer accounts";
-			
-			if (e instanceof WebClientException)
-				errorMsg += ": " + e.getMessage();
-			
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
-			redirect = referer;
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-		
-		if (numAdded + numUpdated > 0) {
-			StringBuffer confirmMsg = new StringBuffer();
-			if (numAdded > 0)
-				confirmMsg.append(numAdded).append(" customer accounts added");
-			if (numUpdated > 0) {
-				if (numAdded > 0) confirmMsg.append(", ");
-				confirmMsg.append(numUpdated).append(" customer accounts updated");
-			}
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg.toString());
-		}
-	}
-	
-	private void setStarsAppliance(StarsApp app, String[] fields, LiteStarsEnergyCompany energyCompany) {
+	private static void setStarsAppliance(StarsApp app, String[] fields, LiteStarsEnergyCompany energyCompany) {
 		app.setApplianceCategoryID( Integer.parseInt(fields[IDX_APP_TYPE]) );
 		app.setYearManufactured( fields[IDX_YEAR_MADE] );
 		app.setNotes( fields[IDX_APP_NOTES] );
@@ -2695,7 +2456,16 @@ public class StarsAdmin extends HttpServlet {
 		}
 	}
 	
-	private void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
+	public static void newAppliance(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		throws Exception
+	{
+		StarsCreateAppliance newApp = new StarsCreateAppliance();
+		setStarsAppliance( newApp, fields, energyCompany );
+		
+		CreateApplianceAction.createAppliance( newApp, liteAcctInfo, energyCompany );
+	}
+	
+	public static void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		StarsUpdateAppliance updateApp = new StarsUpdateAppliance();
@@ -2705,7 +2475,7 @@ public class StarsAdmin extends HttpServlet {
 		UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
 	}
 	
-	private String formatTimeString(String str) {
+	private static String formatTimeString(String str) {
 		StringBuffer strBuf = new StringBuffer( str.toUpperCase() );
 		strBuf.reverse();
 		
@@ -2724,7 +2494,7 @@ public class StarsAdmin extends HttpServlet {
 		return strBuf.reverse().toString();
 	}
 	
-	private void newServiceRequest(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
+	public static void newServiceRequest(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 		StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
@@ -2791,7 +2561,7 @@ public class StarsAdmin extends HttpServlet {
 		CreateServiceRequestAction.createServiceRequest( createOrder, liteAcctInfo, energyCompany );
 	}
 	
-	private void newResidenceInfo(String[] fields, LiteStarsCustAccountInformation liteAcctInfo)
+	public static void newResidenceInfo(String[] fields, LiteStarsCustAccountInformation liteAcctInfo)
 		throws Exception
 	{
 		StarsUpdateResidenceInformation updateResInfo = new StarsUpdateResidenceInformation();
@@ -2844,6 +2614,104 @@ public class StarsAdmin extends HttpServlet {
 		UpdateResidenceInfoAction.updateResidenceInformation( updateResInfo, liteAcctInfo );
 	}
 	
+	private void deleteCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+        
+		try {
+			String acctNo = req.getParameter( "AcctNo" );
+			int[] accountIDs = CustomerAccount.searchByAccountNumber(
+					energyCompany.getEnergyCompanyID(), acctNo.replace('*', '%') );
+			
+			if (accountIDs != null) {
+				if (accountIDs.length < 20) {
+					for (int i = 0; i < accountIDs.length; i++) {
+						LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[i], true );
+						DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+					}
+					
+					if (accountIDs.length > 1)
+						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer accounts have been deleted");
+					else
+						session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, accountIDs.length + " customer account have been deleted");
+				}
+				else {
+					// Too many accounts to be deleted, it may take a while
+					DeleteCustAccountsTask task = new DeleteCustAccountsTask(user, accountIDs);
+					long id = ProgressChecker.addTask( task );
+					session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+					redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+				}
+			}
+			else
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Search for account number failed");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Delete customer accounts failed");
+		}
+	}
+	
+	private void importCustomerAccounts(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			String importID = ServerUtils.forceNotNone(
+					AuthFuncs.getRolePropertyValue(user.getYukonUser(), ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT) );
+			
+			ImportFileParser parser = (ImportFileParser) parsers.get(importID);
+			if (parser == null)
+				throw new WebClientException("Invalid import ID: " + importID);
+			
+			String importFile = req.getParameter( "ImportFile" );
+			ArrayList lines = ServerUtils.readFile( new File(importFile), true );
+			if (lines == null)
+				throw new WebClientException("Failed to read file '" + importFile + "'");
+			
+			ArrayList fieldsList = new ArrayList();
+			String line = null;
+			
+			try {
+				for (int i = 0; i < lines.size(); i++) {
+					line = (String) lines.get(i);
+					String[] fields = parser.populateFields( line );
+					fieldsList.add( fields );
+				}
+			}
+			catch (Exception e) {
+				throw new WebClientException("Failed to parse the line '" + line + "'");
+			}
+			
+			// Process request parameters for program enrollment
+			ArrayList programs = new ArrayList();
+			String[] catIDs = req.getParameterValues( "CatID" );
+			String[] progIDs = req.getParameterValues( "ProgID" );
+			
+			if (progIDs != null) {
+				for (int i = 0; i < progIDs.length; i++) {
+					if (progIDs[i].length() == 0) continue;
+					
+					int[] prog = new int[3];
+					prog[0] = Integer.parseInt(progIDs[i]);
+					prog[1] = Integer.parseInt(catIDs[i]);
+					prog[2] = 0;
+					programs.add( prog );
+				}
+			}
+			
+			ImportCustAccountsTask task = new ImportCustAccountsTask( user, fieldsList, programs );
+			long id = ProgressChecker.addTask( task );
+			
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+		}
+		catch (WebClientException e) {
+			e.printStackTrace();
+			
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			redirect = referer;
+		}
+	}
+	
 	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
@@ -2866,23 +2734,23 @@ public class StarsAdmin extends HttpServlet {
 			File workOrderFile = new File( req.getParameter("WorkOrderFile") );
 			File resInfoFile = new File( req.getParameter("ResInfoFile") );
 			
-			ArrayList custLines = readFile( custFile );
-			ArrayList servInfoLines = readFile( servInfoFile );
-			ArrayList invLines = readFile( invFile );
-			ArrayList recvrLines = readFile( recvrFile );
-			ArrayList meterLines = readFile( meterFile );
-			ArrayList loadInfoLines = readFile( loadInfoFile );
-			ArrayList acInfoLines = readFile( acInfoFile );
-			ArrayList whInfoLines = readFile( whInfoFile );
-			ArrayList genInfoLines = readFile( genInfoFile );
-			ArrayList irrInfoLines = readFile( irrInfoFile );
-			ArrayList gdryInfoLines = readFile( gdryInfoFile );
-			ArrayList hpInfoLines = readFile( hpInfoFile );
-			ArrayList shInfoLines = readFile( shInfoFile );
-			ArrayList dfInfoLines = readFile( dfInfoFile );
-			ArrayList genlInfoLines = readFile( genlInfoFile );
-			ArrayList workOrderLines = readFile( workOrderFile );
-			ArrayList resInfoLines = readFile( resInfoFile );
+			ArrayList custLines = ServerUtils.readFile( custFile, true );
+			ArrayList servInfoLines = ServerUtils.readFile( servInfoFile );
+			ArrayList invLines = ServerUtils.readFile( invFile, true );
+			ArrayList recvrLines = ServerUtils.readFile( recvrFile );
+			ArrayList meterLines = ServerUtils.readFile( meterFile );
+			ArrayList loadInfoLines = ServerUtils.readFile( loadInfoFile, true );
+			ArrayList acInfoLines = ServerUtils.readFile( acInfoFile );
+			ArrayList whInfoLines = ServerUtils.readFile( whInfoFile );
+			ArrayList genInfoLines = ServerUtils.readFile( genInfoFile );
+			ArrayList irrInfoLines = ServerUtils.readFile( irrInfoFile );
+			ArrayList gdryInfoLines = ServerUtils.readFile( gdryInfoFile );
+			ArrayList hpInfoLines = ServerUtils.readFile( hpInfoFile );
+			ArrayList shInfoLines = ServerUtils.readFile( shInfoFile );
+			ArrayList dfInfoLines = ServerUtils.readFile( dfInfoFile );
+			ArrayList genlInfoLines = ServerUtils.readFile( genlInfoFile );
+			ArrayList workOrderLines = ServerUtils.readFile( workOrderFile, true );
+			ArrayList resInfoLines = ServerUtils.readFile( resInfoFile, true );
 			
 			Hashtable preprocessedData = (Hashtable) session.getAttribute(PREPROCESSED_STARS_DATA);
 			if (preprocessedData == null)
@@ -2913,13 +2781,14 @@ public class StarsAdmin extends HttpServlet {
 			if (custLines != null) {
 				if (custFile.getName().equals("customer.map")) {
 					// customer.map file format: import_account_id,db_account_id
+					// Notice: the parsed lines have line# inserted at the beginning
 					Hashtable acctIDMap = new Hashtable();
 					
 					for (int i = 0; i < custLines.size(); i++) {
 						String[] fields = ((String) custLines.get(i)).split(",");
-						if (fields.length != 2)
+						if (fields.length != 3)
 							throw new WebClientException("Invalid format of file '" + custFile.getPath() + "'");
-						acctIDMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
+						acctIDMap.put( Integer.valueOf(fields[1]), Integer.valueOf(fields[2]) );
 					}
 					
 					preprocessedData.put("CustomerAccountMap", acctIDMap);
@@ -2965,17 +2834,18 @@ public class StarsAdmin extends HttpServlet {
 			if (invLines != null) {
 				if (invFile.getName().equals("hwconfig.map")) {
 					// hwconfig.map file format: import_inv_id,relay1_db_app_id,relay2_db_app_id,relay3_db_app_id
+					// Notice: the parsed lines have line# inserted at the beginning
 					Hashtable appIDMap = new Hashtable();
 					
 					for (int i = 0; i < invLines.size(); i++) {
 						String[] fields = ((String) invLines.get(i)).split(",");
-						if (fields.length != 4)
+						if (fields.length != 5)
 							throw new WebClientException("Invalid format of file '" + invFile.getPath() + "'");
 						
-						Integer invID = Integer.valueOf( fields[0] );
+						Integer invID = Integer.valueOf( fields[1] );
 						int[] appIDs = new int[3];
 						for (int j = 0; j < 3; j++)
-							appIDs[j] = Integer.parseInt( fields[j+1] );
+							appIDs[j] = Integer.parseInt( fields[j+2] );
 						
 						appIDMap.put( invID, appIDs );
 					}
@@ -3386,21 +3256,33 @@ public class StarsAdmin extends HttpServlet {
 		
 		String listName = req.getParameter("ListName");
 		String[] values = req.getParameterValues("ImportValue");
+		String[] enabled = req.getParameterValues("Enabled");
 		String[] entryIDs = req.getParameterValues("EntryID");
 		String[] entryTexts = req.getParameterValues("EntryText");
 		
 		Hashtable preprocessedData = (Hashtable) session.getAttribute(PREPROCESSED_STARS_DATA);
 		TreeMap valueIDMap = (TreeMap) preprocessedData.get(listName);
 		
+		for (int i = 0; i < values.length; i++)
+			valueIDMap.put( values[i], null );
+		
+		ArrayList assignedValues = new ArrayList();
+		if (enabled != null) {
+			for (int i = 0; i < enabled.length; i++) {
+				int idx = Integer.parseInt( enabled[i] );
+				assignedValues.add( values[idx] );
+			}
+		}
+		
 		java.sql.Connection conn = null;
 		boolean autoCommit = true;
 		
 		try {
 			if (entryIDs != null) {
-				for (int i = 0; i < values.length; i++)
-					valueIDMap.put( values[i], Integer.valueOf(entryIDs[i]) );
+				for (int i = 0; i < assignedValues.size(); i++)
+					valueIDMap.put( assignedValues.get(i), Integer.valueOf(entryIDs[i]) );
 			}
-			else {
+			else if (entryTexts != null) {
 				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 				
 				if (listName.equals("ServiceCompany")) {
@@ -3428,7 +3310,7 @@ public class StarsAdmin extends HttpServlet {
 						StarsLiteFactory.setStarsServiceCompany( starsCompany, liteCompany, energyCompany );
 						ecSettings.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
 						
-						valueIDMap.put( values[i], companyDB.getCompanyID() );
+						valueIDMap.put( assignedValues.get(i), companyDB.getCompanyID() );
 					}
 				}
 				else {
@@ -3450,7 +3332,7 @@ public class StarsAdmin extends HttpServlet {
 							cEntry.setEntryText( substation.getSubstation().getSubstationName() );
 							cEntries.add( cEntry );
 							
-							valueIDMap.put( values[i], new Integer(cEntry.getEntryID()) );
+							valueIDMap.put( assignedValues.get(i), new Integer(cEntry.getEntryID()) );
 						}
 					}
 					else {	// All other selection lists
@@ -3497,7 +3379,7 @@ public class StarsAdmin extends HttpServlet {
 							cEntries.add( cEntry );
 							YukonListFuncs.getYukonListEntries().put( new Integer(cEntry.getEntryID()), cEntry );
 							
-							valueIDMap.put( values[i], new Integer(cEntry.getEntryID()) );
+							valueIDMap.put( assignedValues.get(i), new Integer(cEntry.getEntryID()) );
 						}
 					}
 					
@@ -3548,20 +3430,6 @@ public class StarsAdmin extends HttpServlet {
 		TreeMap[] valueIDMaps = new TreeMap[ LIST_NAMES.length ];
 		for (int i = 0; i < LIST_NAMES.length; i++)
 			valueIDMaps[i] = (TreeMap) preprocessedData.get( LIST_NAMES[i][0] );
-		
-		// Map of import_account_id(Integer) to db_account_id(Integer) or LiteStarsCustAccountInformation object
-		Hashtable acctIDMap = (Hashtable) preprocessedData.get( "CustomerAccountMap" );
-		if (acctIDMap == null) {
-			acctIDMap = new Hashtable();
-			preprocessedData.put( "CustomerAccountMap", acctIDMap );
-		}
-		
-		// Map of import_inv_id(Integer) to db_app_ids (int[]: {relay1_app_id, relay2_app_id, relay3_app_id})
-		Hashtable appIDMap = (Hashtable) preprocessedData.get( "HwConfigAppMap" );
-		if (appIDMap == null) {
-			appIDMap = new Hashtable();
-			preprocessedData.put( "HwConfigAppMap", appIDMap );
-		}
 		
 		// Replace import values with ids assigned to them
 		for (int i = 0; i < acctFieldsList.size(); i++) {
@@ -3697,439 +3565,11 @@ public class StarsAdmin extends HttpServlet {
 			}
 		}
 		
-		int numAcctAdded = 0;
-		int numInvAdded = 0;
-		int numRecvrAdded = 0;
-		int numMeterAdded = 0;
-		int numAppAdded = 0;
-		int numACAdded = 0;
-		int numWHAdded = 0;
-		int numGenAdded = 0;
-		int numIrrAdded = 0;
-		int numGDryAdded = 0;
-		int numHPAdded = 0;
-		int numSHAdded = 0;
-		int numDFAdded = 0;
-		int numGenlAdded = 0;
-		int numAppUpdated = 0;
-		int numOrderAdded = 0;
-		int numResAdded = 0;
+		ImportStarsDataTask task = new ImportStarsDataTask(user, preprocessedData);
+		long id = ProgressChecker.addTask( task );
 		
-		int lineNo = 0;
-		java.sql.Connection conn = null;
-		ArrayList logMsg = new ArrayList();
-		String errorMsg = null;
-		
-		long startTime = System.currentTimeMillis();
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-			for (lineNo = 1; lineNo <= acctFieldsList.size(); lineNo++) {
-				String[] fields = (String[]) acctFieldsList.get(lineNo - 1);
-				LiteStarsCustAccountInformation liteAcctInfo = newCustomerAccount( fields, user, energyCompany );
-				acctIDMap.put( Integer.valueOf(fields[IDX_ACCOUNT_ID]), liteAcctInfo );
-				
-				numAcctAdded++;
-			}
-			
-			for (lineNo = 1; lineNo <= invFieldsList.size(); lineNo++) {
-				String[] fields = (String[]) invFieldsList.get(lineNo - 1);
-				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
-				
-				if (acctID.intValue() < 0) {
-					// The hardware is not assigned to any account, add it to inventory
-					int devTypeID = Integer.parseInt( fields[IDX_DEVICE_TYPE] );
-					LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
-					if (liteHw != null)
-						throw new Exception("Cannot insert hardware with serial # " + fields[IDX_SERIAL_NO] + " because it already exists");
-					
-					StarsCreateLMHardware createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
-					setStarsInventory( createHw, fields, energyCompany );
-					
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
-					com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
-					
-					StarsFactory.setInventoryBase( invDB, createHw );
-					invDB.setCategoryID( new Integer(ECUtils.getInventoryCategoryID(devTypeID, energyCompany)) );
-					hwDB.setManufacturerSerialNumber( fields[IDX_SERIAL_NO] );
-					hwDB.setLMHardwareTypeID( new Integer(devTypeID) );
-					hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-					hardware.setDbConnection( conn );
-					hardware.add();
-					
-					liteHw = new LiteStarsLMHardware();
-					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-					energyCompany.addInventory( liteHw );
-				}
-				else {
-					LiteStarsCustAccountInformation liteAcctInfo = null;
-					
-					Object obj = acctIDMap.get(acctID);
-					if (obj != null) {
-						if (obj instanceof LiteStarsCustAccountInformation) {
-							liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-						}
-						else if (obj instanceof Integer) {
-							// This is loaded from file customer.map
-							liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-							if (liteAcctInfo != null)
-								acctIDMap.put(acctID, liteAcctInfo);
-						}
-					}
-					
-					if (liteAcctInfo == null)
-						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
-					
-					LiteInventoryBase liteInv = insertLMHardware( fields, liteAcctInfo, energyCompany, conn );
-					
-					if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
-						logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is out of service");
-					else if (liteInv.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL)
-						logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") is temporarily out of service");
-					
-					// If load groups for relays are specified, automatically add appliances through program enrollment
-					ArrayList appCats = energyCompany.getAllApplianceCategories();
-					ArrayList programs = new ArrayList();
-					int[] progIDs = new int[3];	// Save the program ID on each relay here so we can map them to appliance id later
-					
-					for (int i = 0; i < 3; i++) {
-						if (fields[IDX_R1_GROUP + i].equals("") || fields[IDX_R1_GROUP + i].equals("0"))
-							continue;
-						
-						int groupID = Integer.parseInt( fields[IDX_R1_GROUP + i] );
-						int progID = 0;
-						int appCatID = 0;
-						
-						for (int j = 0; j < appCats.size(); j++) {
-							LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
-							for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
-								LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
-								for (int l = 0; l < liteProg.getGroupIDs().length; l++) {
-									if (liteProg.getGroupIDs()[l] == groupID) {
-										progID = liteProg.getProgramID();
-										appCatID = liteAppCat.getApplianceCategoryID();
-										progIDs[i] = progID;
-										break;
-									}
-								}
-								if (progID > 0) break;
-							}
-							if (progID > 0) break;
-						}
-						
-						if (progID == 0)
-							throw new Exception( "Cannot find LM program for load group id = " + groupID );
-						
-						programs.add( new int[] {progID, appCatID, groupID} );
-					}
-					
-					if (programs.size() > 0) {
-						programSignUp( programs, liteAcctInfo, new Integer(liteInv.getInventoryID()), energyCompany, conn );
-						
-						for (int i = 0; i < 3; i++) {
-							if (fields[IDX_R1_STATUS + i].equals("1"))
-								logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " is out of service");
-							else if (fields[IDX_R1_STATUS + i].equals("2"))
-								logMsg.add("Receiver (import_inv_id=" + fields[IDX_INV_ID] + ",db_inv_id=" + liteInv.getInventoryID() + ") relay " + (i+1) + " was out before switch placed out");
-						}
-						
-						int[] appIDs = new int[3];
-						for (int i = 0; i < 3; i++) {
-							if (progIDs[i] == 0) continue;
-							
-							for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-								LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-								if (liteApp.getLmProgramID() == progIDs[i]) {
-									appIDs[i] = liteApp.getApplianceID();
-									break;
-								}
-							}
-							
-							if (appIDs[i] == 0)	// shouldn't happen
-								throw new Exception("Cannot find appliance with RelayNum = " + (i+1));
-						}
-						
-						appIDMap.put( new Integer(fields[IDX_INV_ID]), appIDs );
-						numAppAdded += programs.size();
-					}
-				}
-				
-				numInvAdded++;
-				if (fields[IDX_DEVICE_NAME].equals(""))
-					numRecvrAdded++;
-				else
-					numMeterAdded++;
-			}
-			
-			for (lineNo = 1; lineNo <= appFieldsList.size(); lineNo++) {
-				String[] fields = (String[]) appFieldsList.get(lineNo - 1);
-				
-				Integer invID = Integer.valueOf( fields[IDX_INV_ID] );
-				int relayNum = Integer.parseInt( fields[IDX_RELAY_NUM] );
-				int appID = 0;
-				
-				int[] appIDs = (int[]) appIDMap.get( invID );
-				if (appIDs != null) appID = appIDs[relayNum - 1];
-				
-				if (appID == 0)
-					throw new Exception("Cannot find appliance with InventoryID = " + invID + " and RelayNum = " + relayNum);
-				
-				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				Object obj = acctIDMap.get(acctID);
-				if (obj != null) {
-					if (obj instanceof LiteStarsCustAccountInformation) {
-						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-					}
-					else if (obj instanceof Integer) {
-						// This is loaded from file customer.map
-						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-						if (liteAcctInfo != null)
-							acctIDMap.put(acctID, liteAcctInfo);
-					}
-				}
-				
-				if (liteAcctInfo == null)
-					throw new Exception("Cannot find customer account with id=" + acctID.intValue());
-				
-				updateAppliance(fields, appID, liteAcctInfo, energyCompany);
-				numAppUpdated++;
-				
-				if (fields[IDX_APP_CAT_DEF_ID].equals("")) continue;
-				int catDefID = Integer.parseInt( fields[IDX_APP_CAT_DEF_ID] );
-				
-				if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER)
-					numACAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER)
-					numWHAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR)
-					numGenAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION)
-					numIrrAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER)
-					numGDryAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP)
-					numHPAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT)
-					numSHAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL)
-					numDFAdded++;
-				else if (catDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT)
-					numGenlAdded++;
-			}
-			
-			for (lineNo = 1; lineNo <= orderFieldsList.size(); lineNo++) {
-				String[] fields = (String[]) orderFieldsList.get(lineNo - 1);
-				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
-				
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				if (acctID.intValue() > 0) {
-					Object obj = acctIDMap.get(acctID);
-					if (obj instanceof LiteStarsCustAccountInformation) {
-						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-					}
-					else if (obj instanceof Integer) {
-						// This is loaded from file customer.map
-						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-						if (liteAcctInfo != null)
-							acctIDMap.put(acctID, liteAcctInfo);
-					}
-					
-					if (liteAcctInfo == null)
-						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
-				}
-				
-				newServiceRequest( fields, liteAcctInfo, energyCompany );
-				numOrderAdded++;
-			}
-			
-			for (lineNo = 1; lineNo <= resFieldsList.size(); lineNo++) {
-				String[] fields = (String[]) resFieldsList.get(lineNo - 1);
-				Integer acctID = Integer.valueOf( fields[IDX_ACCOUNT_ID] );
-				
-				LiteStarsCustAccountInformation liteAcctInfo = null;
-				
-				if (acctID.intValue() > 0) {
-					Object obj = acctIDMap.get(acctID);
-					if (obj instanceof LiteStarsCustAccountInformation) {
-						liteAcctInfo = (LiteStarsCustAccountInformation) obj;
-					}
-					else if (obj instanceof Integer) {
-						// This is loaded from file customer.map
-						liteAcctInfo = energyCompany.getCustAccountInformation( ((Integer)obj).intValue(), true );
-						if (liteAcctInfo != null)
-							acctIDMap.put(acctID, liteAcctInfo);
-					}
-					
-					if (liteAcctInfo == null)
-						throw new Exception("Cannot find customer account with id=" + acctID.intValue());
-				}
-				
-				newResidenceInfo( fields, liteAcctInfo );
-				numResAdded++;
-			}
-			
-			//session.removeAttribute( PREPROCESSED_STARS_DATA );
-			//session.removeAttribute( UNASSIGNED_LISTS );
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			
-			if (lineNo == 0) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import old STARS data");
-				errorMsg = e.getMessage();
-			}
-			else {
-				if (numAcctAdded < acctFieldsList.size())
-					errorMsg = "Error encountered when processing customer file line #" + lineNo;
-				else if (numInvAdded < invFieldsList.size())
-					errorMsg = "Error encountered when processing inventory file line #" + lineNo;
-				else if (numAppUpdated < appFieldsList.size())
-					errorMsg = "Error encountered when processing loadinfo file line #" + lineNo;
-				else if (numOrderAdded < orderFieldsList.size())
-					errorMsg = "Error encountered when processing workorder file line #" + lineNo;
-				else if (numResAdded < resFieldsList.size())
-					errorMsg = "Error encountered when processing resinfo file line #" + lineNo;
-				if (errorMsg != null)
-					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
-			}
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
-		
-		// Directory where the map and log files will be written into
-		String path = (String) preprocessedData.get( "CustomerFilePath" );
-		
-		if (numAcctAdded > 0) {
-			// New accounts added, regenerate the 'customer.map' file
-			ArrayList lines = new ArrayList();
-			
-			Iterator it = acctIDMap.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry) it.next();
-				
-				Integer acctID = (Integer) entry.getKey();
-				int acctID2 = -1;
-				if (entry.getValue() instanceof LiteStarsCustAccountInformation)
-					acctID2 = ((LiteStarsCustAccountInformation) entry.getValue()).getAccountID();
-				else if (entry.getValue() instanceof Integer)
-					acctID2 = ((Integer) entry.getValue()).intValue();
-				
-				String line = acctID.toString() + "," + String.valueOf(acctID2);
-				lines.add( line );
-			}
-			
-			try {
-				File custMapFile = new File(path, "customer.map");
-				writeFile(custMapFile, lines);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		if (numAppAdded > 0) {
-			// New appliances added, regenerate the 'hwconfig.map' file
-			ArrayList lines = new ArrayList();
-			
-			Iterator it = appIDMap.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry entry = (Map.Entry) it.next();
-				Integer invID = (Integer) entry.getKey();
-				int[] appIDs = (int[]) entry.getValue();
-				
-				String line = invID.toString()
-						+ "," + appIDs[0]
-						+ "," + appIDs[1]
-						+ "," + appIDs[2];
-				lines.add( line );
-			}
-			
-			try {
-				File hwConfigMapFile = new File(path, "hwconfig.map");
-				writeFile(hwConfigMapFile, lines);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		long stopTime = System.currentTimeMillis();
-		
-		int minutes = (int) ((stopTime - startTime) * 0.001 / 60 + 0.5);
-		int hourTaken = minutes / 60;
-		int minTaken = minutes % 60;
-		String timeTaken = "";
-		if (hourTaken > 1)
-			timeTaken += hourTaken + " hours ";
-		else if (hourTaken == 1)
-			timeTaken += hourTaken + " hour ";
-		if (minTaken > 1)
-			timeTaken += minTaken + " minutes";
-		else
-			timeTaken += minTaken + " minute";
-		
-		int idx = 0;
-		logMsg.add(idx++, "Start Time: " + ServerUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
-		logMsg.add(idx++, "Time Taken: " + timeTaken);
-		logMsg.add(idx++, "");
-		
-		if (errorMsg != null) {
-			logMsg.add(idx++, errorMsg);
-			logMsg.add(idx++, "");
-		}
-		
-		if (numAcctAdded > 0)
-			logMsg.add(idx++, numAcctAdded + " customer accounts added");
-		if (numInvAdded > 0)
-			logMsg.add(idx++, numInvAdded + " hardwares added (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)");
-		if (numAppAdded > 0)
-			logMsg.add(idx++, numAppAdded + " appliances automatically added");
-		if (numAppUpdated > 0)
-			logMsg.add(idx++, numAppUpdated + " appliances updated (" +
-					numACAdded + " ac, " +
-					numWHAdded + " wh, " +
-					numGenAdded + " gen, " +
-					numIrrAdded + " irr, " +
-					numGDryAdded + " gdry, " +
-					numHPAdded + " hp, " +
-					numSHAdded + " sh, " +
-					numDFAdded + " df, " +
-					numGenlAdded + " genl)"
-					);
-		if (numOrderAdded > 0)
-			logMsg.add(idx++, numOrderAdded + " work orders added");
-		if (numResAdded > 0)
-			logMsg.add(idx++, numResAdded + " residence info added");
-		logMsg.add(idx++, "");
-		
-		Date logDate = new Date();
-		String logFileName = "import_" + starsDateFormat.format(logDate) + "_" + starsTimeFormat.format(logDate) + ".log";
-		File logFile = new File(path, logFileName);
-		
-		try {
-			writeFile(logFile, logMsg);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		String confirmMsg = "";
-		if (errorMsg == null)
-			confirmMsg += "Old STARS data imported successfully. ";
-		if (logFile != null)
-			confirmMsg += "For detailed information, view the log file '" + logFile.getPath() + "'.";
-		if (confirmMsg.length() > 0)
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, confirmMsg);
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 	private void updateAddress(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
