@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_email.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/11/15 14:07:55 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/07/21 22:02:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,14 +107,14 @@ CtiMessage* CtiEmailMsg::replicateMessage() const
 
 void CtiEmailMsg::dump() const
 {
-   Inherited::dump();
-
    CtiLockGuard<CtiLogger> doubt_guard(dout);
+   Inherited::dump();
 
    dout << " Id                            " << getID() << endl;
    dout << " Type                          " << getType() << endl;
    dout << " Subject                       " << getSubject() << endl;
    dout << " Text                          " << getText() << endl;
+   dout << " Sender                        " << getSender() << endl;
 }
 
 CtiEmailMsg::CtiEmailMsg( LONG id, INT type) :
