@@ -14,10 +14,20 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.LogWriter;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.holiday.DateOfHoliday;
+import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.roles.application.CalcHistoricalRole;
 
 public class Baseline implements Serializable
 {
@@ -75,8 +85,8 @@ public class Baseline implements Serializable
 		}
 //		nextBaselineCalcTime.set(java.util.Calendar.HOUR_OF_DAY, getBaselineCalcTime().intValue());
 	
-		CalcHistorical.logEvent("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime(), com.cannontech.common.util.LogWriter.INFO);	
-		com.cannontech.clientutils.CTILogger.info("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime());
+		CalcHistorical.logEvent("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime(), LogWriter.INFO);	
+		CTILogger.info("...Next Baseline Calculation to occur at: " + nextBaselineCalcTime.getTime());
 	}
 	/**
 	 * Insert the method's description here.
@@ -87,27 +97,12 @@ public class Baseline implements Serializable
 	{
 		if( baselineCalcTime == null )
 		{
-			try
-			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				baselineCalcTime = new Integer( bundle.getString("calc_historical_baseline_calctime") );
-				daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
-				CalcHistorical.logEvent(" (config.prop) Baseline calculation time = " + baselineCalcTime + ":00", com.cannontech.common.util.LogWriter.INFO);
-				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calculation time from config.properties is " + baselineCalcTime + ":00");
-			}
-			catch( Exception e)
-			{
-				e.printStackTrace();
-				baselineCalcTime = new Integer(14400);	//default to 4am.
-				CalcHistorical.logEvent("Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.", com.cannontech.common.util.LogWriter.INFO);
-				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Baseline calc start time was NOT found in config.properties, defaulted to " + baselineCalcTime + " seconds.");
-				CalcHistorical.logEvent("Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))", com.cannontech.common.util.LogWriter.DEBUG);
-				com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'calc_historical_baseline_calctime' to config.properties. (ex. =4 (as 4am), =23 (as 11pm))");
-				baselineCalcTime = new Integer(4);	//default this bad boy to run at 4am
-				daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
-			}
+			String propValue = RoleFuncs.getGlobalPropertyValue(CalcHistoricalRole.BASELINE_CALCTIME);
+			baselineCalcTime = Integer.valueOf(propValue);
+			
+			CalcHistorical.logEvent("Baseline calculation time = " + baselineCalcTime + ":00", LogWriter.INFO);
+			CTILogger.info("Baseline calculation time from Global Properties is " + baselineCalcTime + ":00");
 		}
-		
 		return baselineCalcTime;
 	}
 	
@@ -145,7 +140,7 @@ public class Baseline implements Serializable
 			{
 				// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
 				// Begining Timestamp 00:00:01
-				pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
+				pointDataMsg = new PointData();
 				pointDataMsg.setId(pointID.intValue());
 		
 				pointDataMsg.setValue( data.getValues()[i].doubleValue());
@@ -161,7 +156,7 @@ public class Baseline implements Serializable
 				pointDataMsg.setTime(cal.getTime());
 				
 				pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
-				pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
+				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				pointDataMsg.setTags(0x00008000); //load profile tag setting
 				pointDataMsg.setStr("Baseline Calc Historical");
 				pointDataVector.addElement(pointDataMsg);
@@ -179,16 +174,10 @@ public class Baseline implements Serializable
 	{
 		if( daysPreviousToCollect == null )
 		{
-			try
-			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				daysPreviousToCollect = new Integer( bundle.getString("calc_historical_daysprevioustocollect") );
-			}
-			catch( Exception e)
-			{
-				e.printStackTrace();
-				daysPreviousToCollect = new Integer( 7); //default to collect 7 days previous
-			}
+			String propValue = RoleFuncs.getGlobalPropertyValue(CalcHistoricalRole.DAYS_PREVIOUS_TO_COLLECT);
+			daysPreviousToCollect = Integer.valueOf(propValue);
+			CalcHistorical.logEvent("Baseline days previous to collect is " + daysPreviousToCollect, LogWriter.INFO);
+			CTILogger.info("Baseline days previous to collect is " + daysPreviousToCollect);
 		}
 		
 		return daysPreviousToCollect;
@@ -380,28 +369,28 @@ public class Baseline implements Serializable
 	
 	private boolean isHoliday(GregorianCalendar cal)
 	{
-		com.cannontech.database.data.holiday.HolidaySchedule schedule = new com.cannontech.database.data.holiday.HolidaySchedule(getBaselineProperties().getHolidaysUsed());
+		HolidaySchedule schedule = new HolidaySchedule(getBaselineProperties().getHolidaysUsed());
 		try
 		{
-			com.cannontech.database.Transaction t = com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, schedule);
-			schedule = (com.cannontech.database.data.holiday.HolidaySchedule)t.execute();
+			Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, schedule);
+			schedule = (HolidaySchedule)t.execute();
 		}
 		catch(Exception e)
 		{
-			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+			CTILogger.error(e.getMessage(), e);
 		}
 		
 		for ( int j = 0; j < schedule.getHolidayDatesVector().size(); j++)
 		{
 			if( ( ( cal.get(java.util.Calendar.MONTH) == 
-				((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayMonth().intValue())
+				((DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayMonth().intValue())
 				&& (cal.get(java.util.Calendar.DAY_OF_MONTH) ==
-				((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayDay().intValue())) )
+				((DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayDay().intValue())) )
 			{
-				if(((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayYear().intValue() > 0)
+				if(((DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayYear().intValue() > 0)
 				{
 					if((cal.get(java.util.Calendar.YEAR) ==
-						((com.cannontech.database.db.holiday.DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayYear().intValue()))
+						((DateOfHoliday)schedule.getHolidayDatesVector().get(j)).getHolidayYear().intValue()))
 						return true;
 				}
 				else
@@ -468,7 +457,7 @@ public class Baseline implements Serializable
 		java.sql.ResultSet rset = null;
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			String sql = "SELECT DISTINCT LMEEPO.OFFERDATE FROM LMENERGYEXCHANGEPROGRAMOFFER LMEEPO, "+
 							"DEVICECUSTOMERLIST DCL, " +
 							"LMENERGYEXCHANGECUSTOMERREPLY LMEECR, "+
@@ -562,7 +551,7 @@ public class Baseline implements Serializable
 	{
 		HoursAndValues returnData = null;
 		long DAY = 86400000;
-		com.cannontech.message.dispatch.message.PointData pointDataMsg = null;
+		PointData pointDataMsg = null;
 	
 		StringBuffer sql = new StringBuffer("SELECT VALUE, TIMESTAMP FROM RAWPOINTHISTORY WHERE ");
 	
@@ -581,12 +570,12 @@ public class Baseline implements Serializable
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if (conn == null)
 			{
-				com.cannontech.clientutils.CTILogger.info("Error getting database connection.");
-				CalcHistorical.logEvent("Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);			
+				CTILogger.info("Error getting database connection.");
+				CalcHistorical.logEvent("Error getting database connection.", LogWriter.ERROR);			
 				return null;
 			}
 			else
@@ -614,7 +603,7 @@ public class Baseline implements Serializable
 
 				if (!values.isEmpty() && !hours.isEmpty())	//hours and values we always both have data or both be empty.
 				{
-					com.cannontech.database.db.point.PointUnit pUnit = new com.cannontech.database.db.point.PointUnit();
+					PointUnit pUnit = new PointUnit();
 					pUnit.setPointID(pointID);
 					pUnit.setDbConnection(conn);
 					pUnit.retrieve();
@@ -634,9 +623,9 @@ public class Baseline implements Serializable
 						double counter = v[0].doubleValue();
 						double totalVal = v[1].doubleValue();
 						
-						if( pUnit.getUomID().intValue() == com.cannontech.database.data.point.PointUnits.UOMID_KW)
+						if( pUnit.getUomID().intValue() == PointUnits.UOMID_KW)
 							returnData.values[i] = new Double(totalVal/counter);	//kW values.
-						else if( pUnit.getUomID().intValue() == com.cannontech.database.data.point.PointUnits.UOMID_KWH)
+						else if( pUnit.getUomID().intValue() == PointUnits.UOMID_KWH)
 							returnData.values[i] = new Double(totalVal/validTimestampsVector.size());	//kWh values
 					}
 				}
@@ -801,12 +790,12 @@ public class Baseline implements Serializable
 	
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 	
 			if( conn == null )
 			{
-				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
-				CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
+				CTILogger.info(getClass() + ":  Error getting database connection.");
+				CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", LogWriter.ERROR);
 				return;
 			}
 			else
