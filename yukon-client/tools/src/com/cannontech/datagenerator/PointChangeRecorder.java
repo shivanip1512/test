@@ -28,7 +28,7 @@ public class PointChangeRecorder {
 		String outputFile = args[0];
 		Date startDate = new Date(args[1]);
 		Timestamp start = new Timestamp(startDate.getTime());
-		Timestamp end = new Timestamp(startDate.getTime() * 86400 * 1000 );
+		Timestamp end = new Timestamp(startDate.getTime() + (86400L * 1000L) );
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
