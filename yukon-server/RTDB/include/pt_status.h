@@ -2,8 +2,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/12/21 21:23:28 $
 *
 */
 #ifndef __PT_STATUS_H__
@@ -42,6 +42,7 @@ public:
    virtual double getDefaultValue( ) const;
    virtual double getInitialValue( ) const;
    virtual int getControlExpirationTime() const;
+   virtual int getControlOffset() const;
 
 };
 #endif // #ifndef __PT_STATUS_H__

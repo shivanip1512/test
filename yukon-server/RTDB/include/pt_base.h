@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/12 20:14:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/21 21:23:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,6 +144,8 @@ public:
    bool isNumeric() const;
    bool isStatus() const;
    bool hasAlarming() const;
+
+   virtual int getControlOffset() const { return 0; }
 };
 
 typedef CtiPointBase CtiPoint;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/12 20:14:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/12/21 21:23:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,5 +132,14 @@ int CtiPointStatus::getControlExpirationTime() const
     }
 
     return ct;
+}
+
+int CtiPointStatus::getControlOffset() const
+{
+    int pOff = 0;
+    if(_pointStatus.getControlType() != NoneControlType && _pointStatus.getControlType() != InvalidControlType)
+        pOff = _pointStatus.getControlOffset();
+
+    return pOff;
 }
 
