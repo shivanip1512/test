@@ -29,12 +29,17 @@
 
   	// YUKON_USER is an ugly name, give it an alias
 	LiteYukonUser user = YUKON_USER;	
-    int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
+    int energyCompanyID = 1;
+    LiteYukonUser ecUser = null;
+    TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
+    if( EnergyCompanyFuncs.getEnergyCompany(user) != null)
+    {
+    	energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
+	    ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
+		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+	}
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
-        
-    LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
-	TimeZone tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
    	
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");

@@ -26,11 +26,17 @@
 	LiteCICustomer liteCICustomer = ContactFuncs.getCICustomer(liteContact.getContactID());
 	
 	int customerID = liteCICustomer.getCustomerID();
-	int energyCompanyID =EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
 	
-	LiteYukonUser ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
-	TimeZone tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
-
+	//Default energycompany properties in case we can't find one?
+	int energyCompanyID = 1;	//default?
+	LiteYukonUser ecUser = null;
+	TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
+	if( EnergyCompanyFuncs.getEnergyCompany(liteYukonUser) != null)
+	{
+		energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(liteYukonUser).getEnergyCompanyID();
+		ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
+		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
+	}
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
