@@ -1054,7 +1054,10 @@ private javax.swing.JTextField getJTextFieldConstraintName() {
  */
 public Object getValue(Object o) 
 {
-	LMProgramConstraint con = new LMProgramConstraint();
+	LMProgramConstraint con = (LMProgramConstraint)o;
+	 
+	if(con == null)
+		con = new LMProgramConstraint();
 	
 	con.setConstraintName(getJTextFieldConstraintName().getText());
 	
