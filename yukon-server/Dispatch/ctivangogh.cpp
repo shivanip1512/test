@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2003/05/09 15:45:57 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2003/05/23 22:25:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -838,7 +838,8 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pendingControlRequest.getControl().setPAOID( did );
                                 pendingControlRequest.getControl().setStartTime(RWTime(YUKONEOT));
 
-                                CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+                                RWCString devicename= resolveDeviceName(*pPoint);
+                                CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmStates(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
                                 pendingControlRequest.setSignal( pFailSig );
 
@@ -846,7 +847,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << resolveDeviceName(*pPoint) << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
+                                    dout << RWTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << RWTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
                                 }
 
                                 CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", RWCString(), GeneralLogType, SignalEvent, Cmd->getUser());
@@ -982,6 +983,23 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
     case (CtiCommandMsg::AlternateScanRate):
         {
             writeMessageToScanner( Cmd );
+            break;
+        }
+    case (CtiCommandMsg::PointTagAdjust):
+        {
+            // Vector contains token, pointid, tag(s) to set.
+            LONG token      = Cmd->getOpArgList().at(0);
+            LONG pointid    = Cmd->getOpArgList().at(1);
+            LONG tagstoset  = Cmd->getOpArgList().at(2);
+            LONG tagstoreset= Cmd->getOpArgList().at(3);
+
+            {
+                CtiPoint *pPt = PointMgr.getEqual( pointid );
+                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                pDyn->getDispatch().setTags( tagstoset );
+                pDyn->getDispatch().resetTags( tagstoreset );
+            }
+
             break;
         }
     default:
@@ -4004,8 +4022,12 @@ void CtiVanGogh::doPendingOperations()
                                     dout << "  *************************************************** " << endl;
                                 }
 
-                                // dout << "  MODIFY THE CONTROL HISTORY RUNNING TABLE NOW PLEASE " << endl;
-
+                                CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointTagAdjust, 15);
+                                pCmd->insert(-1);                   // token
+                                pCmd->insert(pSig->getId());        // PointID
+                                pCmd->insert(0x00000000);           // Tags to set
+                                pCmd->insert(TAG_CONTROL_PENDING);  // Tags to reset.
+                                MainQueue_.putQueue( pCmd );
                                 MainQueue_.putQueue( pSig );
                             }
 
@@ -4131,6 +4153,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
     CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)pMsg;
     ULONG   deltaT;
 
+    ResetBreakAlloc();  // Make certain the debug allocator does not break our spirit.
 
     if(pChg != NULL && pChg->getSource() == DISPATCH_APPLICATION_NAME)
     {
