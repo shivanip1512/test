@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2002/12/19 20:30:11 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2002/12/24 18:51:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2985,8 +2985,9 @@ VOID PortDialbackThread(void *pid)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << " UNABLE TO START!" << endl;
         }
+
         return;
     }
 
@@ -3031,7 +3032,7 @@ VOID PortDialbackThread(void *pid)
             {
                 while( !PorterQuit )
                 {
-                    if(!(tout++ % (4*300)))
+                    if(!(tout++ % (4*3600)))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3064,7 +3065,7 @@ VOID PortDialbackThread(void *pid)
                 char mych = '\0';
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Phone has been answered..." << endl;
+                    dout << RWTime() << " " << Port->getName() << " line has been answered..." << endl;
                 }
 
                 bytesRead = -1;
@@ -3197,8 +3198,6 @@ VOID PortDialbackThread(void *pid)
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
-    Port->disconnect(0, true);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
