@@ -10,9 +10,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
-import com.cannontech.common.gui.util.JDialogWait;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -1534,9 +1532,7 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 	if( getSelectedControlArea() != null )
 	{
 		//set all the LMProgram values
-		updateProgramTableModel();
-		//getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
-
+		//updateProgramTableModel();
 		
 		//set all the LMGroup values
 		getGroupTableModel().setCurrentData( 
@@ -1618,7 +1614,7 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 	if( event.getSource() == getJTableControlArea().getSelectionModel()
 		 || event.getSource() == getJTableProgram().getSelectionModel() )
 	{
-		updateProgramTableModel();
+		//updateProgramTableModel();
 	}
 
 	//set all the LMGroup values from the Control Area
@@ -1628,6 +1624,8 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 	synchControlAreaAndButtons();
 }
 
+// Seems to cause a memory leak, the final object never gets GC'd
+/*
 private void updateProgramTableModel()
 {
 	final JDialogWait d = new JDialogWait( CtiUtilities.getParentFrame(this) );
@@ -1652,6 +1650,7 @@ private void updateProgramTableModel()
 	}, "CtrlHstThread").start();
 	
 }
+*/
 
 /**
  * 
