@@ -36,6 +36,9 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	private String fontName = "dialog";
 	private int fontSize = 12;
 
+	public static final String UNKNOWN_STATE = "Unknown";
+	public static final Color MOVED_BANK_BG_COLOR = new Color( 30, 50, 110);
+
 	//The columns and their column index
 	public static final int CB_NAME_COLUMN = 0;
 	public static final int BANK_ADDRESS_COLUMN = 1;
@@ -68,8 +71,6 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 		"Close Pending"
 	};
 	
-	public static final String UNKNOWN_STATE = "Unknown";
-
 		
 	//The color schemes - based on the capbanks stateNames
 	// colors are [fg][bg]
@@ -160,10 +161,17 @@ public synchronized com.cannontech.tdc.alarms.gui.AlarmingRowVector getAlarmingR
  * @param col int
  */
 public java.awt.Color getCellBackgroundColor(int row, int col) 
-{
+{	
 	if( row < getRowCount() && col <= getColumnCount() && getRowAt(row) != null)
-	{
-		return Colors.getColor( getCurrentRowBGColors(row) );
+	{		
+		
+		if( getRowAt(row).isBankMoved() )
+		{
+			return MOVED_BANK_BG_COLOR; //mark moved banks as a different BG Color
+		}
+		else
+			return Colors.getColor( getCurrentRowBGColors(row) );
+	
 	}
 
 	return CapControlTableModel.DEFUALT_BGCOLOR;

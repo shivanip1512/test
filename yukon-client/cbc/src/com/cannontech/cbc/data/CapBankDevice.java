@@ -26,8 +26,9 @@ public class CapBankDevice extends StreamableCapObject
 	private java.util.Date lastStatusChangeTime = null;
 	private Integer tagControlStatus = null;
 	
-	private int capBankTags = 0;
-	
+	private int origFeederID = 0;
+	private int origSwitchOrder = 0;
+
 	/**
 	 * CapBankDevice constructor comment.
 	 */
@@ -363,21 +364,40 @@ public class CapBankDevice extends StreamableCapObject
 	}
 
 	/**
-	 * Returns the capBankTags.
+	 * Returns the origFeederID.
 	 * @return int
 	 */
-	public int getCapBankTags() 
-	{
-		return capBankTags;
+	public int getOrigFeederID() {
+		return origFeederID;
 	}
 
 	/**
-	 * Sets the tags.
-	 * @param tags The tags to set
+	 * Returns the origSwitchOrder.
+	 * @return int
 	 */
-	public void setCapBankTags(int tags) 
-	{
-		this.capBankTags = tags;
+	public int getOrigSwitchOrder() {
+		return origSwitchOrder;
 	}
 
+	/**
+	 * Sets the origFeederID.
+	 * @param origFeederID The origFeederID to set
+	 */
+	public void setOrigFeederID(int origFeederID) {
+		this.origFeederID = origFeederID;
+	}
+
+	/**
+	 * Sets the origSwitchOrder.
+	 * @param origSwitchOrder The origSwitchOrder to set
+	 */
+	public void setOrigSwitchOrder(int origSwitchOrder) {
+		this.origSwitchOrder = origSwitchOrder;
+	}
+
+	public boolean isBankMoved()
+	{
+		return getOrigFeederID() != 0;
+	}
+	
 }

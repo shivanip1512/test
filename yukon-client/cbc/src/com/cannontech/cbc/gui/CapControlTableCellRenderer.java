@@ -115,18 +115,8 @@ private void handleCapBankTableModel(CapBankTableModel model, int row, int colum
 	}
 	else
 		this.setHorizontalAlignment( javax.swing.SwingConstants.LEFT );
-
-	if( CapControlTags.isTemporaryMove(model.getRowAt(row).getCapBankTags()) )
-	{
-		setForeground( Colors.getColor(Colors.GRAY_ID) );
-	}
-	else if( CapControlTags.isTemporaryMoveOrig(model.getRowAt(row).getCapBankTags()) )
-	{
-		setForeground( Colors.getColor(Colors.GRAY_ID) );
-	}
-	
-	
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (8/23/00 1:51:05 PM)

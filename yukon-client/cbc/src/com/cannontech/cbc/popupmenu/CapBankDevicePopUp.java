@@ -676,15 +676,17 @@ public void setCapBankDevice(CapBankDevice newCapDevice, Feeder feeder )
 
       getJMenuItemConfirm().setEnabled( !getCapBankDevice().getCcDisableFlag().booleanValue() );
 
-		//allow any bank that has not been temp moved to be moved
-      getJMenuItemTempMove().setEnabled( 
-      	!CapControlTags.isTemporaryMove(getCapBankDevice().getCapBankTags()) );
+		//allow any bank that have not been temp moved to be moved
+      getJMenuItemTempMove().setEnabled( !getCapBankDevice().isBankMoved() );
+      	//feeder.getCcId().intValue() ); 
+//      	!CapControlTags.isTemporaryMove(getCapBankDevice().getCapBankTags()) );
 
 		//allow a return to the og feeder if this bank is the moved feeder OR
 		// it is the original bank that has been moved
-      getJMenuItemMoveBack().setEnabled(
-      	CapControlTags.isTemporaryMove(getCapBankDevice().getCapBankTags())
-      	|| CapControlTags.isTemporaryMoveOrig(getCapBankDevice().getCapBankTags()) );
+      getJMenuItemMoveBack().setEnabled( getCapBankDevice().isBankMoved() );
+      	//feeder.getCcId().intValue() );
+//      	CapControlTags.isTemporaryMove(getCapBankDevice().getCapBankTags())
+//      	|| CapControlTags.isTemporaryMoveOrig(getCapBankDevice().getCapBankTags()) );
       
 		// set the state of the alarm menu items
 		setAlarmMenuItems();			
