@@ -27,6 +27,7 @@ import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -1440,14 +1441,10 @@ private com.cannontech.message.dispatch.ClientConnection getConnToDispatch()
 		int port = 1510;
 		try
 		{
-         host = ClientSession.getInstance().getRolePropertyValue(
-                  SystemRole.DISPATCH_MACHINE, 
-                  "127.0.0.1");
-            
-			port = (new Integer( 
-						ClientSession.getInstance().getRolePropertyValue(
-                  SystemRole.DISPATCH_PORT, 
-                  "1510"))).intValue();			
+         host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+
+			port = Integer.parseInt(
+						RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
 		}
 		catch( Exception e)
 		{

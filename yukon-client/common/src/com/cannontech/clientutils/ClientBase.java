@@ -7,7 +7,7 @@ package com.cannontech.clientutils;
  * @Version: <version>
  */
 
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -102,13 +102,10 @@ private void getExternalResources()
 {
 	try
 	{
-      HOST = ClientSession.getInstance().getRolePropertyValue(
-               SystemRole.DISPATCH_MACHINE, 
-               "127.0.0.1");
-         
-      PORT = (new Integer( ClientSession.getInstance().getRolePropertyValue(
-               SystemRole.DISPATCH_PORT, 
-               "1510"))).intValue();         
+      HOST = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+
+      PORT = Integer.parseInt(
+					RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
    }
    catch( Exception e)
    {

@@ -6,9 +6,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -80,8 +80,8 @@ protected PointChangeCache()
  */
 public synchronized void connect() 
 {
-	String host = ClientSession.getInstance().getRolePropertyValue(SystemRole.DISPATCH_MACHINE, "127.0.0.1");
-	String portStr = ClientSession.getInstance().getRolePropertyValue(SystemRole.DISPATCH_PORT, "1510");
+	String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+	String portStr = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
 	int port = 1510;
 	
 	try {

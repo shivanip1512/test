@@ -9,9 +9,9 @@ package com.cannontech.servlet;
  */
  
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
@@ -78,15 +78,11 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	int lcPort = 1920;
 
 	try {
-		lcHost =
-			ClientSession.getInstance().getRolePropertyValue(
-				SystemRole.LOADCONTROL_MACHINE,
-				"127.0.0.1");
-		lcPort =
-			Integer.parseInt(
-		ClientSession.getInstance().getRolePropertyValue(
-					SystemRole.LOADCONTROL_PORT,
-					"1920"));
+		lcHost = RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
+
+		lcPort = Integer.parseInt(
+			RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
+
 
 	} catch (Exception e) {
 		com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
@@ -132,15 +128,10 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 			int port;
 
 			try {
-				host =
-					ClientSession.getInstance().getRolePropertyValue(
-						SystemRole.DISPATCH_MACHINE,
-						"127.0.0.1");
-				port =
-					Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.DISPATCH_PORT,
-							"1510"));
+				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+
+				port = Integer.parseInt(
+						RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
 
 			} catch (Exception e) {
 				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);

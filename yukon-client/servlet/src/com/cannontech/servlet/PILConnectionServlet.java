@@ -9,7 +9,7 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 
@@ -59,11 +59,10 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 {
 	super.init(config);
 
-	String host = ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.PORTER_MACHINE,"127.0.0.1");
+	String host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
+
 	int port = Integer.parseInt(
-						ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.PORTER_PORT,"1540"));
+						RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) );
 	
 	CTILogger.info("Will attempt to connect to porter @" + host + ":" + port);
 	conn = new ClientConnection();

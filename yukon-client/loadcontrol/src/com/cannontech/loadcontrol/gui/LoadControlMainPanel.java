@@ -13,6 +13,7 @@ import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.JDialogWait;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMGroupBase;
@@ -1046,18 +1047,15 @@ private void handleException(java.lang.Throwable exception)
  */
 private void initClientConnection()
 {
-	Integer port = new Integer("1920");
+	int port = 1920;
 
 	//figure out where the LoadControl server is
-	String host = 
-		ClientSession.getInstance().getRolePropertyValue(
-				SystemRole.LOADCONTROL_MACHINE, "127.0.0.1" );
+	String host = RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
 
 	try
 	{
-		String portStr = ClientSession.getInstance().getRolePropertyValue(
-				SystemRole.LOADCONTROL_PORT, "1920");
-		port = new Integer(portStr);
+		port = Integer.parseInt(
+			RoleFuncs.getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
 	}
 	catch (Exception e)
 	{
@@ -1071,7 +1069,7 @@ private void initClientConnection()
 
 
    LoadControlClientConnection.getInstance().setHost(host);
-   LoadControlClientConnection.getInstance().setPort(port.intValue());
+   LoadControlClientConnection.getInstance().setPort(port);
    LoadControlClientConnection.getInstance().setAutoReconnect(true);
    LoadControlClientConnection.getInstance().setTimeToReconnect(5);
 

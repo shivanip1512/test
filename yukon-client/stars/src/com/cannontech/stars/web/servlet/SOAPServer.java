@@ -9,8 +9,8 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -135,14 +135,12 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 	}
 	
 	void initDispatchConnection() {
-		String host =
-			ClientSession.getInstance().getRolePropertyValue(
-				SystemRole.DISPATCH_MACHINE, "127.0.0.1" ).toString();
-		
-		
+//		CtiProperties properties = CtiProperties.getInstance();
+		//String host = properties.getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
+		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+
 		int port = Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue(
-					SystemRole.DISPATCH_PORT, "1510" ) );
+						RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
 		
 		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 		

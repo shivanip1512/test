@@ -12,11 +12,10 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
@@ -196,16 +195,16 @@ public class PILCommandCache implements MessageListener, Observer {
 	 */
 	private void connect() 
 	{
-		String host = ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.PORTER_MACHINE, "127.0.0.1");
-		String portStr = ClientSession.getInstance().getRolePropertyValue(
-								SystemRole.PORTER_PORT, "1540");
-
+		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
 		int port = 1510;
-	
-		try {
-			port = Integer.parseInt(portStr);
-		} catch(NumberFormatException nfe) {
+
+		try 
+		{
+			port = Integer.parseInt(
+				RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) );
+		}
+		catch(NumberFormatException nfe) 
+		{
 			CTILogger.warn("Bad value for PORTER_PORT property");		
 		}			
 

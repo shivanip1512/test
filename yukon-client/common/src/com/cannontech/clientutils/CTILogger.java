@@ -8,8 +8,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.roles.yukon.LoggingRole;
 
 /**
@@ -27,8 +29,6 @@ import com.cannontech.roles.yukon.LoggingRole;
  *	  Level ALL   = new Level(MIN_INT, "ALL", 7);
  *
  *
- * The initial uses of this Logger class will have a (null) Clientsession user.
- * This is why for a small fraction of time, the defaults will be used.
  *   
  * */
 public class CTILogger
@@ -144,14 +144,23 @@ public class CTILogger
 		for( int i = 0; i < ALL_NAMES.length; i++ )
 			if( logger_.getName().equalsIgnoreCase(ALL_NAMES[i][0].toString()) )
 			{
-				level = ClientSession.getInstance().getRolePropertyValue(
-									((Integer)ALL_NAMES[i][1]).intValue(), "ALL");
+				level = RoleFuncs.getGlobalPropertyValue( 
+						((Integer)ALL_NAMES[i][1]).intValue() );
 			}
 			
 		//just in case we can not find the name above
 		if( level == null )
-			level = ClientSession.getInstance().getRolePropertyValue(
-							LoggingRole.GENERAL_LEVEL, "ALL");				
+		{
+			LiteYukonRoleProperty p =
+				AuthFuncs.getRoleProperty( LoggingRole.GENERAL_LEVEL );
+			
+			//extra special case since we may not be inited yet with out properties
+			if( p != null )
+				level = RoleFuncs.getGlobalPropertyValue( LoggingRole.GENERAL_LEVEL );
+			else
+				level = "ALL";
+		}				
+
 
 		return level;
 	}
@@ -167,8 +176,7 @@ public class CTILogger
    	Logger log = getLogger();
 		setLogLevel( getLoggerLevel(log) );
 		
-		String writeToFile = ClientSession.getInstance().getRolePropertyValue(
-										LoggingRole.LOG_TO_FILE, "false" );		
+		String writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
 
 //System.out.println( "   USR = " + ClientSession.getInstance().getUser() +
 //",  " + log.getLevel() +  

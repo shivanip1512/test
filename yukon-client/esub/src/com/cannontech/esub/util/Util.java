@@ -15,9 +15,9 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.editor.Drawing;
@@ -353,15 +353,10 @@ public class Util {
 			int port;
 
 			try {
-				host =
-					ClientSession.getInstance().getRolePropertyValue(
-						SystemRole.DISPATCH_MACHINE,
-						"127.0.0.1");
-				port =
-					Integer.parseInt(
-						ClientSession.getInstance().getRolePropertyValue(
-							SystemRole.DISPATCH_PORT,
-							"1510"));
+				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+
+				port = Integer.parseInt(
+							RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) );
 
 			} catch (Exception e) {
 				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
