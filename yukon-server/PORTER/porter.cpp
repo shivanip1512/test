@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2003/09/29 16:05:18 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2003/10/28 16:04:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1571,6 +1571,18 @@ void LoadPorterGlobals(void)
         gDelayDatFile = Temp;
 
     }
+
+    if(!(Temp = gConfigParms.getValueAsString("PORTER_PORTINIT_QPURGE_DELAY")).isNull())
+    {
+        if(!(PorterPortInitQueuePurgeDelay = abs(atoi(Temp.data()))))
+        {
+            /* Unable to convert so assume default of 5 minutes (20 * 15s) */
+            PorterPortInitQueuePurgeDelay = 20;
+        }
+    }
+
+
+
 
     if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
     {
