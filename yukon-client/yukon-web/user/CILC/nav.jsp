@@ -1,7 +1,7 @@
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%
-	// Map of page name / link text
-	String linkMap[][] = {{"user_ee.jsp", AuthFuncs.getRolePropertyValue(liteYukonUser, EnergyBuybackRole.ENERGY_BUYBACK_LABEL)},
+	// Table of (link, page name) pairs
+	String linkPairs[][] = {{"user_ee.jsp", AuthFuncs.getRolePropertyValue(liteYukonUser, EnergyBuybackRole.ENERGY_BUYBACK_LABEL)},
 						  {"user_curtail.jsp", AuthFuncs.getRolePropertyValue(liteYukonUser, DirectCurtailmentRole.CURTAILMENT_LABEL)},
 						  {"user_lm_control.jsp", "Auto Control"},
 						  {"user_lm_time.jsp", "Time Based"},
@@ -9,17 +9,24 @@
 						  {"user_trending.jsp", "Trending"},
 						  {"user_ee_profile.jsp", "Profile"}
 						 };
+	String bulletImg = "<img src='../../WebConfig/" + AuthFuncs.getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
 	
+	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkMap.length; i++) {
-		if (linkMap[i][0].equalsIgnoreCase(pageName))
+	for (int i = 0; i < linkPairs.length; i++) {
+		String linkImg = null;
+		String linkHtml = null;
+		if (linkPairs[i][0].equalsIgnoreCase(pageName))
 		{
-			links.put(linkMap[i][0], "<img src=\"../../WebConfig/" + AuthFuncs.getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) +"\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkMap[i][1] + "</span>");
+			linkImg = bulletImg;
+			linkHtml = "<span class='Nav'>" + linkPairs[i][1] + "</span>";
 		}
 		else
 		{
-			links.put(linkMap[i][0], "<img src=\"../../WebConfig/" + AuthFuncs.getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET) +"\" width=\"12\" height=\"12\"><a href=\"" + linkMap[i][0] + "\" class=\"Link2\"><span class=\"NavText\">" + linkMap[i][1] + "</span></a>");
+			linkImg = "";
+			linkHtml = "<a href='" + linkPairs[i][0] + "' class='Link2'><span class='NavText'>" + linkPairs[i][1] + "</span></a>";
 		}
+		links.put(linkPairs[i][0], new String[] {linkImg, linkHtml});
 	}
 %>
 
@@ -40,28 +47,43 @@
   <tr> 
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Trending</span><br>
-	    <%   /* Retrieve all the predefined graphs for this user*/                       
+        <%   /* Retrieve all the predefined graphs for this user*/                       
 		if( gData != null )
-		{
+		{%>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<%
 			for( int i = 0; i < gData.length; i++ )                                                          
 			{
-				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkMap[5][0].equalsIgnoreCase(pageName))
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[5][0].equalsIgnoreCase(pageName))
 				{%>
-					<img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET_SELECTED%>"/>" width="12" height="12"><span class="Nav"><%=gData[i][1] %></span><br>
+          <tr> 
+            <td width="10"><%= bulletImg %></td>
+            <td style="padding:1"><span class="Nav"><%=gData[i][1] %></span></td>
+          </tr>
 				<%}
 				else 
 				{%>
-					<img src="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>" width="12" height="12"><a href="<%=request.getContextPath()%>/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+          <tr> 
+            <td width="10">&nbsp;</td>
+            <td style="padding:1"><a href="<%=request.getContextPath()%>/user/CILC/user_trending.jsp?<%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
+          </tr>
 				<%}
-			}
-		}%></div>
+			}%>
+        </table>
+		<%}%>
+	  </div>
     </td>
   </tr>
   <cti:checkProperty propertyid="<%=CommercialMeteringRole.TRENDING_GET_DATA_NOW_BUTTON%>">
   <tr>
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Display</span><br>
-        <img src='../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>' width="12" height="12"><a href="<%=request.getContextPath()%>/user/CILC/user_trending.jsp?update=now" class="link2"><span class="NavText">Get Data Now</span></a><br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10">&nbsp;</td>
+            <td style="padding:1"><a href="<%=request.getContextPath()%>/user/CILC/user_trending.jsp?update=now" class="link2"><span class="NavText">Get Data Now</span></a></td>
+          </tr>
+        </table>
       </div>
     </td>
   </tr>
@@ -72,22 +94,35 @@
   <tr>
     <td height="20">
       <div align="left"><span class="NavHeader">Buyback</span><br>
-        <cti:checkRole roleid="<%=EnergyBuybackRole.ROLEID%>">
-		<%= links.get("user_ee.jsp") %><br>
-		</cti:checkRole>
-		<cti:checkRole roleid="<%=DirectCurtailmentRole.ROLEID%>">
-		<%= links.get("user_curtail.jsp") %><br>
-		</cti:checkRole>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <cti:checkRole roleid="<%=EnergyBuybackRole.ROLEID%>">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_ee.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_ee.jsp"))[1] %></td>
+          </tr>
+          </cti:checkRole>
+		  <cti:checkRole roleid="<%=DirectCurtailmentRole.ROLEID%>"> 
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_curtail.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_curtail.jsp"))[1] %></td>
+          </tr>
+          </cti:checkRole>
+        </table>
       </div>
     </td>
   </tr>
   <tr>
     <td height="20">
       <div align="left"><span class="NavHeader">Administration</span><br>
-        <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>">
-		<%= links.get("user_ee_profile.jsp") %><br>
-		</cti:checkRole>
-	  </div>
+        <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr> 
+            <td width="10"><%= ((String[]) links.get("user_ee_profile.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("user_ee_profile.jsp"))[1] %></td>
+          </tr>
+        </table>
+        </cti:checkRole>
+      </div>
     </td>
   </tr>
   </cti:checkMultiRole>
