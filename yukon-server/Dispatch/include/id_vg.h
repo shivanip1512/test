@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/id_vg.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/05/06 14:34:08 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/05/09 00:24:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,8 @@
 #define PROJECT   "CTI Dispatch "
 
 #define MAJORREVISION   2
-#define MINORREVISION   18
-#define BUILDNUMBER     2
+#define MINORREVISION   19
+#define BUILDNUMBER     0
 
 CTICOMPILEINFO CompileInfo = {
    PROJECT,
