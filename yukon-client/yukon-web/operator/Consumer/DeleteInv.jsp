@@ -72,7 +72,7 @@
                     <td width="25">
                       <input type="radio" name="DeletePerm" value="true">
                     </td>
-                    <td width="271">Delete it from inventory permanantly.</td>
+                    <td width="271">Delete it from inventory permanently.</td>
                   </tr>
                 </table>
                 <br>
