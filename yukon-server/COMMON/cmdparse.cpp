@@ -2486,9 +2486,10 @@ bool CtiCommandParser::isTwoWay() const
 {
     bool bret = false;
 
-    if(getCommand() == GetValueRequest      ||
-       getCommand() == GetConfigRequest     ||
-       getCommand() == ScanRequest )
+    if(getCommand() == GetValueRequest  ||
+       getCommand() == GetConfigRequest ||
+       getCommand() == ScanRequest      ||
+       getCommand() == LoopbackRequest)
     {
         bret = true;
     }
