@@ -5,6 +5,7 @@
 %>
 
 <%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
+<%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
@@ -322,8 +323,7 @@ function confirmDelete() {
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
 </cti:checkRole> 
-
-<cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+<cti:checkMultiRole roleid="<%= Integer.toString(ReportingRole.ROLEID) + ',' + Integer.toString(CommanderRole.ROLEID)%>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
@@ -344,13 +344,16 @@ function confirmDelete() {
             <div align = "center" style = "border:solid 1px #666999;"><a href = "../analysis/reporting.jsp" class = "Link1" style = "text-decoration:none;"> 
               Reports</a></div>
             </cti:checkRole></td>
+          <td align = "center" class = "MainText" width="25%"><cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "../apps/SelectDevice.jsp" class = "Link1" style = "text-decoration:none;"> 
+              Commander</a></div>
+            </cti:checkRole></td>
         </tr>
       </table>
     </td>
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="16"></td>
   </tr>
-</cti:checkRole>
-
+</cti:checkMultiRole>
 <cti:checkRole roleid="<%= AdministratorRole.ROLEID %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
