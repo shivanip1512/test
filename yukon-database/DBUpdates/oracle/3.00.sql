@@ -425,23 +425,23 @@ insert into yukongrouprole values ( 988, -302, -306, -30603, 'true');
 /* Start CapControl Changes */
 alter table capbank add RecloseDelay number;
 update capbank set RecloseDelay = 0;
-alter table capbank modify column RecloseDelay not null;
+alter table capbank modify RecloseDelay not null;
 
 alter table dynamicccsubstationbus add WaiveControlFlag char(1);
 update dynamicccsubstationbus set WaiveControlFlag = 'N';
-alter table dynamicccsubstationbus modify column WaiveControlFlag not null;
+alter table dynamicccsubstationbus modify WaiveControlFlag not null;
 
 alter table dynamicccfeeder add WaiveControlFlag char(1);
 update dynamicccfeeder set WaiveControlFlag = 'N';
-alter table dynamicccfeeder modify column WaiveControlFlag not null;
+alter table dynamicccfeeder modify WaiveControlFlag not null;
 
 alter table capcontrolsubstationbus add ControlDelayTime number;
 update capcontrolsubstationbus set ControlDelayTime = 0;
-alter table capcontrolsubstationbus modify column ControlDelayTime not null;
+alter table capcontrolsubstationbus modify ControlDelayTime not null;
 
 alter table capcontrolsubstationbus add ControlSendRetries number;
 update capcontrolsubstationbus set ControlSendRetries = 0;
-alter table capcontrolsubstationbus modify column ControlSendRetries not null;
+alter table capcontrolsubstationbus modify ControlSendRetries not null;
 
 
 
