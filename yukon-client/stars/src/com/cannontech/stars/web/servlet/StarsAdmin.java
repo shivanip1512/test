@@ -197,6 +197,12 @@ public class StarsAdmin extends HttpServlet {
 			switchContext( user, req, session );
 		else if (action.equalsIgnoreCase("RestoreContext"))
 			restoreContext( user, req, session );
+		else if (action.equalsIgnoreCase("AddMemberEnergyCompany"))
+			addMemberEnergyCompany( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateMemberEnergyCompany"))
+			updateMemberEnergyCompany( user, req, session );
+		else if (action.equalsIgnoreCase("RemoveMemberEnergyCompany"))
+			removeMemberEnergyCompany( user, req, session );
         
     	resp.sendRedirect( redirect );
 	}
@@ -2095,6 +2101,149 @@ public class StarsAdmin extends HttpServlet {
 		if (backURL != null) redirect = backURL;
 		
 		user.removeAttribute( ServletUtils.ATT_CONTEXT_SWITCHED );
+	}
+	
+	private void addMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		int memberID = Integer.parseInt( req.getParameter("MemberID") );
+		int loginID = Integer.parseInt( req.getParameter("LoginID") );
+		
+		try {
+			String sql = "INSERT INTO ECToGenericMapping VALUES (" +
+					energyCompany.getEnergyCompanyID() + ", " + memberID + ", 'EnergyCompany')";
+			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			LiteStarsEnergyCompany member = SOAPServer.getEnergyCompany( memberID );
+			ArrayList members = energyCompany.getChildren();
+			synchronized (members) { members.add(member); }
+			
+			if (loginID != -1) {
+				sql = "INSERT INTO ECToGenericMapping VALUES (" +
+						energyCompany.getEnergyCompanyID() + ", " + loginID + ", 'MemberLogin')";
+				stmt.setSQLString( sql );
+				stmt.execute();
+				
+				ArrayList loginIDs = energyCompany.getMemberLoginIDs();
+				synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to add new member");
+		}
+	}
+	
+	private void updateMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		int memberID = Integer.parseInt( req.getParameter("MemberID") );
+		int loginID = Integer.parseInt( req.getParameter("LoginID") );
+		
+		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
+		Integer prevLoginID = null;
+		
+		synchronized (loginIDs) {
+			for (int i = 0; i < loginIDs.size(); i++) {
+				Integer id = (Integer) loginIDs.get(i);
+				LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( id.intValue() );
+				if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
+					prevLoginID = id;
+					break;
+				}
+			}
+		}
+		
+		try {
+			if (prevLoginID != null) {
+				if (prevLoginID.intValue() == loginID) return;
+				
+				if (loginID != -1) {
+					String sql = "UPDATE ECToGenericMapping SET ItemID = " + loginID +
+							" WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+							" AND MappingCategory = 'MemberLogin'";
+					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+					stmt.execute();
+					
+					synchronized (loginIDs) {
+						loginIDs.remove( prevLoginID );
+						loginIDs.add( new Integer(loginID) );
+					}
+				}
+				else {
+					String sql = "DELETE FROM ECToGenericMapping " +
+							"WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+							" AND ItemID = " + prevLoginID + " AND MappingCategory = 'MemberLogin'";
+					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+					stmt.execute();
+					
+					synchronized (loginIDs) { loginIDs.remove(prevLoginID); }
+				}
+			}
+			else {
+				if (loginID == -1) return;
+				
+				String sql = "INSERT INTO ECToGenericMapping VALUES (" +
+						energyCompany.getEnergyCompanyID() + ", " + loginID + ", 'MemberLogin')";
+				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+				stmt.execute();
+				
+				synchronized (loginIDs) { loginIDs.add(new Integer(loginID)); }
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update member login");
+		}
+	}
+	
+	private void removeMemberEnergyCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		int memberID = Integer.parseInt( req.getParameter("MemberID") );
+		ArrayList members = energyCompany.getChildren();
+		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
+		
+		try {
+			synchronized (members) {
+				Iterator it = members.iterator();
+				while (it.hasNext()) {
+					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
+					if (memberID != -1 && member.getLiteID() != memberID) continue;
+					
+					String sql = "DELETE FROM ECToGenericMapping " +
+							"WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+							" AND ItemID = " + member.getLiteID() + " AND MappingCategory = 'EnergyCompany'";
+					SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+					stmt.execute();
+					
+					it.remove();
+					
+					synchronized (loginIDs) {
+						for (int i = 0; i < loginIDs.size(); i++) {
+							Integer loginID = (Integer) loginIDs.get(i);
+							LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser( loginID.intValue() );
+							
+							if (EnergyCompanyFuncs.getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
+								sql = "DELETE FROM ECToGenericMapping " +
+										" WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+										" AND ItemID = " + loginID + " AND MappingCategory = 'MemberLogin'";
+								stmt.setSQLString( sql );
+								stmt.execute();
+								
+								loginIDs.remove(i);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to remove member(s)");
+		}
 	}
 	
 }

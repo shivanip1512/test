@@ -1,7 +1,10 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
-<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
+<%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
+<%@ page import="com.cannontech.stars.util.ECUtils" %>
+<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
 	}
@@ -9,6 +12,19 @@
 <%
 	LiteStarsEnergyCompany liteEnergyCompany = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEnergyCompany.getResidentialCustomerGroups();
+	
+	ArrayList members = liteEnergyCompany.getChildren();
+	ArrayList memberCandidates = new ArrayList();
+	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
+		ArrayList energyCompanies = SOAPServer.getAllEnergyCompanies();
+		for (int i = 0; i < energyCompanies.size(); i++) {
+			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) energyCompanies.get(i);
+			if (ECUtils.isDefaultEnergyCompany(company)) continue;	// exclude default energy company
+			if (members.contains(company)) continue;	// exclude existing members
+			if (ECUtils.getAllDescendants(company).contains(liteEnergyCompany)) continue;	// prevent circular reference
+			memberCandidates.add(company);
+		}
+	}
 %>
 <html>
 <head>
@@ -51,6 +67,72 @@ function confirmDeleteOperatorLogin() {
 
 function confirmDeleteAllOperatorLogins() {
 	return confirm("Are you sure you want to delete all operator logins (except the default login)?");
+}
+
+var memberLoginList = new Array(<%= memberCandidates.size() %>);
+<%
+	for (int i = 0; i < memberCandidates.size(); i++) {
+		LiteStarsEnergyCompany candidate = (LiteStarsEnergyCompany) memberCandidates.get(i);
+		ArrayList loginIDs = candidate.getOperatorLoginIDs();
+%>
+memberLoginList[<%= i %>] = new Array(<%= loginIDs.size() %>);
+<%
+		for (int j = 0; j < loginIDs.size(); j++) {
+			int loginID = ((Integer) loginIDs.get(j)).intValue();
+			LiteYukonUser login = YukonUserFuncs.getLiteYukonUser(loginID);
+%>
+memberLoginList[<%= i %>][<%= j %>] = new Array(2);
+memberLoginList[<%= i %>][<%= j %>][0] = <%= loginID %>;
+memberLoginList[<%= i %>][<%= j %>][1] = '<%= login.getUsername() %>';
+<%
+		}
+	}
+%>
+
+function updateMemberLoginList(form) {
+	var idx = form.NewMember.selectedIndex - 1;
+	for (i = form.NewMemberLogin.options.length - 1; i > 0; i--)
+		form.NewMemberLogin.options.remove(i);
+	if (idx >= 0 && idx < memberLoginList.length) {
+		for (i = 0; i < memberLoginList[idx].length; i++) {
+			form.NewMemberLogin.options.add(document.createElement("OPTION"));
+			form.NewMemberLogin.options[i+1].value = memberLoginList[idx][i][0];
+			form.NewMemberLogin.options[i+1].innerText = memberLoginList[idx][i][1];
+		}
+	}
+}
+
+function addMember(form) {
+	if (form.NewMember.value == -1) {
+		alert("Please select an energy company from the list");
+		return;
+	}
+	form.MemberID.value = form.NewMember.value;
+	form.LoginID.value = form.NewMemberLogin.value;
+	form.action.value = "AddMemberEnergyCompany";
+	form.submit();
+}
+
+function updateMember(form, idx) {
+	form.MemberID.value = document.getElementsByName("Member")[idx].value;
+	form.LoginID.value = document.getElementsByName("MemberLogin")[idx].value;
+	form.submit();
+}
+
+function removeMember(form, idx) {
+	if (!confirm("Are you sure you want to remove the member?"))
+		return;
+	form.MemberID.value = document.getElementsByName("Member")[idx].value;
+	form.action.value = "RemoveMemberEnergyCompany";
+	form.submit();
+}
+
+function removeAllMembers(form) {
+	if (!confirm("Are you sure you want to remove all members?"))
+		return;
+	form.MemberID.value = -1;
+	form.action.value = "RemoveMemberEnergyCompany";
+	form.submit();
 }
 </script>
 </head>
@@ -477,7 +559,7 @@ function confirmDeleteAllOperatorLogins() {
 		int userID = ((Integer) operLoginIDs.get(i)).intValue();
 		if (userID == lYukonUser.getUserID()) continue;
 		
-		LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(userID);
+		LiteYukonUser liteUser = YukonUserFuncs.getLiteYukonUser(userID);
 		userGroups = (List) userGroupMap.get(liteUser);
 		groupNames = "";
 		for (int j = 0; j < userGroups.size(); j++) {
@@ -518,6 +600,107 @@ function confirmDeleteAllOperatorLogins() {
                         </form>
                       </td>
                     </tr>
+<cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>">
+					<tr>
+					  <td>
+                        <form name="form2" method="post" action="<%= request.getContextPath() %>/servlet/StarsAdmin">
+                          <b><font color="#0000FF">Member Energy Companies:</font></b> 
+                          <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                  <input type="hidden" name="action" value="UpdateMemberEnergyCompany">
+                                  <input type="hidden" name="MemberID" value="-1">
+                                  <input type="hidden" name="LoginID" value="-1">
+                                  <tr> 
+                                    <td class="HeaderCell" width="5%">&nbsp;</td>
+                                    <td class="HeaderCell" width="30%">Company 
+                                      Name</td>
+                                    <td class="HeaderCell" width="40%">Member 
+                                      Login </td>
+                                    <td width="10%" class="HeaderCell">&nbsp;</td>
+                                    <td width="15%" class="HeaderCell">&nbsp;</td>
+                                  </tr>
+<%
+	ArrayList memberLoginIDs = liteEnergyCompany.getMemberLoginIDs();
+	for (int i = 0; i < members.size(); i++) {
+		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
+%>
+                                  <tr> 
+                                    <input type="hidden" name="Member" value="<%= member.getLiteID() %>">
+                                    <td class="TableCell" width="5%">&nbsp;</td>
+                                    <td class="TableCell" width="30%"><%= member.getName() %></td>
+                                    <td class="TableCell" width="40%"> 
+                                      <select name="MemberLogin">
+                                        <option value="-1">(none)</option>
+<%
+		for (int j = 0; j < member.getOperatorLoginIDs().size(); j++) {
+			Integer loginID = (Integer) member.getOperatorLoginIDs().get(j);
+			LiteYukonUser login = YukonUserFuncs.getLiteYukonUser(loginID.intValue());
+			String selected = memberLoginIDs.contains(loginID)? "selected" : "";
+%>
+                                        <option value="<%= loginID %>" <%= selected %>><%= login.getUsername() %></option>
+<%
+		}
+%>
+                                      </select>
+                                    </td>
+                                    <td width="10%" class="TableCell"> 
+                                      <input type="button" name="Update" value="Update" onclick="updateMember(this.form, <%= i %>)">
+                                    </td>
+                                    <td width="15%" class="TableCell"> 
+                                      <input type="button" name="Remove" value="Remove" onclick="removeMember(this.form, <%= i %>)">
+                                    </td>
+                                  </tr>
+<%
+	}
+%>
+                                  <tr> 
+                                    <td class="TableCell" colspan="5"> 
+                                      <hr>
+                                    </td>
+                                  </tr>
+                                  <tr> 
+                                    <td class="TableCell" width="5%">&nbsp;</td>
+                                    <td class="TableCell" width="30%"> 
+                                      <select name="NewMember" onchange="updateMemberLoginList(this.form)">
+                                        <option value="-1">(Select)</option>
+<%
+	for (int i = 0; i < memberCandidates.size(); i++) {
+		LiteStarsEnergyCompany candidate = (LiteStarsEnergyCompany) memberCandidates.get(i);
+%>
+                                        <option value="<%= candidate.getLiteID() %>"><%= candidate.getName() %></option>
+<%
+	}
+%>
+                                      </select>
+                                    </td>
+                                    <td class="TableCell" width="40%"> 
+                                      <select name="NewMemberLogin">
+                                        <option value="-1">(Select)</option>
+                                      </select>
+                                    </td>
+                                    <td width="10%" class="TableCell"> 
+                                      <input type="button" name="Add" value="Add" onclick="addMember(this.form)">
+                                    </td>
+                                    <td width="15%" class="TableCell">&nbsp; </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                            <tr> 
+                              <td width="20%"> 
+                                <input type="button" name="RemoveAll" value="Remove All" onclick="removeAllMembers(this.form)">
+                              </td>
+                              <td width="80%">&nbsp; </td>
+                            </tr>
+                          </table>
+                        </form>
+                      </td>
+					</tr>
+</cti:checkProperty>
                   </table>
                 </td>
               </tr>
