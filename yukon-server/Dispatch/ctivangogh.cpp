@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2002/09/06 19:03:39 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2002/09/09 21:50:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4638,7 +4638,7 @@ LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
     return ngid;
 }
 
-void CtiVanGogh::sendSignalToGroup(LONG ngid, CtiSignalMsg sig)
+void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 {
     CtiTableNotificationGroup mygroup( ngid );
     CtiLockGuard<CtiMutex> guard(server_mux);
@@ -4693,7 +4693,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, CtiSignalMsg sig)
     }
 }
 
-void CtiVanGogh::sendEmailToGroup(LONG ngid, CtiEmailMsg email)
+void CtiVanGogh::sendEmailToGroup(LONG ngid, const CtiEmailMsg& email)
 {
     CtiTableNotificationGroup mygroup( ngid );
     CtiLockGuard<CtiMutex> guard(server_mux);
