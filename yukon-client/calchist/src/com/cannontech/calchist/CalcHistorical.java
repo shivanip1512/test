@@ -40,7 +40,40 @@ public final class CalcHistorical
 	public static boolean isService = true;
 	public static Thread sleepThread = null;
 	private static com.cannontech.common.util.LogWriter logger = null;
+	
+	private static final int KW_UNITMEASURE = 0;
+	private static final int KVA_UNITMEASURE = 2;
+	private static final int KVAR_UNITMEASURE = 3;
+	private static final int KQ_UNITMEASURE = 7;
+	
+/*	private class PF
+	{
+		private double kw_value = 0;
+		private double kvar_value = 0;
+	}
+	private PF powerFactor = null;
+*/	
+/*	
+	private double getPowerFactor(CalcComponent calcComp, double value)
+	{
+		if( powerFactor == null)
+		{
+			powerFactor = new PF();
+		}
 
+		com.cannontech.database.data.lite.LitePointUnit ltPU = new com.cannontech.database.data.lite.LitePointUnit(calcComp.getPointID().intValue());
+		ltPU.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		
+		if( ltPU.getUomID() == KW_UNITMEASURE)
+			powerFactor.kw_value = calcComp.getConstant().doubleValue();
+		else if( ltPU.getUomID() == KVAR_UNITMEASURE)
+			powerFactor.kvar_value = calcComp.getConstant().doubleValue();
+			
+		return value;
+	}
+*/	
+	
+//	private java.util.List pointUnits = null;
 	//private GregorianCalendar nextBaselineCalcTime = null;
 	
 	//private Integer baselineCalcTime = null;//time to start calcs in seconds from midnight (14400 = 4am)
@@ -99,10 +132,12 @@ public void figureNextCalcTime()
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public double figurePointDataMsgValue(Vector calcComponentVector, Vector currentRawPointHistoryVector)
+public Double figurePointDataMsgValue(Vector calcComponentVector, Vector currentRawPointHistoryVector)
 {
 	double returnValue = 0;
-System.out.println("ENTERING figurePointDataMsgValue");
+//	double kwValue = 0; 
+//	double kvarValue = 0;
+	
 	for(int i=0;i<calcComponentVector.size();i++)
 	{
 		if( ((CalcComponent)calcComponentVector.get(i)).getComponentType().equalsIgnoreCase(CalcComponentTypes.OPERATION_COMP_TYPE) )
@@ -133,12 +168,14 @@ System.out.println("ENTERING figurePointDataMsgValue");
 						{
 							logEvent("Can not divide by zero CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
 							System.out.println("Can not divide by zero CalcHistorical::figurePointDataMsgValue()");
+							return null;
 						}
 					}
 					else
 					{
 						logEvent("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
 						System.out.println("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()");
+						return null;
 					}
 				}
 			}
@@ -167,26 +204,54 @@ System.out.println("ENTERING figurePointDataMsgValue");
 				{
 					logEvent("Can not divide by zero CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
 					System.out.println("Can not divide by zero CalcHistorical::figurePointDataMsgValue()");
+					return null;
 				}
 			}
 			else
 			{
 				logEvent("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()", com.cannontech.common.util.LogWriter.ERROR);
 				System.out.println("Can not determine the Operation in CalcHistorical::figurePointDataMsgValue()");
+				return null;
 			}
 		}
 		else if( ((CalcComponent)calcComponentVector.get(i)).getComponentType().equalsIgnoreCase(CalcComponentTypes.FUNCTION_COMP_TYPE) )
 		{
+			/*
+			if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION) )
+			{
+				PF testPf = new PF();
+				testPf.kvar_value = 0;
+				com.cannontech.database.data.lite.LitePointUnit ltPU = 
+					new com.cannontech.database.data.lite.LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getPointID().intValue());
+				ltPU.retrieve(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+				
+				if( ltPU.getUomID() == KW_UNITMEASURE)
+					kwValue  = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+				else if( ltPU.getUomID() == KVAR_UNITMEASURE)
+					kvarValue = ((CalcComponent)calcComponentVector.get(i)).getConstant().doubleValue();
+					
+			}
+			*/
+			/*
+			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVA_FUNCTION) )
+			{
+			}
+			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
+			{
+			}
+			*/			
 			//For this to ever work the query in getCalcComponentPoints(...)
 			// must be changed at the spot of != 'Function'
 //			System.out.println("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
+			return null;
 		}
 		else
 		{
 			System.out.println("Can not determine the ComponentType in CalcHistorical::figurePointDataMsgValue()");
+			return null;
 		}
 	}
-	return returnValue;
+	return new Double(returnValue);
 }
 /**
  * Insert the method's description here.
@@ -517,6 +582,22 @@ public GregorianCalendar getNextCalcTime()
 {
 	return this.nextCalcTime;
 }
+/*
+private java.util.List getAllPointUnits()
+{
+	if( pointUnits == null)
+	{	
+		com.cannontech.database.cache.DefaultDatabaseCache cache =
+			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized (cache)
+		{
+			pointUnits = cache.getAllPointsUnits();
+		}	
+	}
+	return pointUnits;
+	
+}
+*/
 /**
  * Insert the method's description here.
  * Creation date: (2/1/2002 11:13:14 AM)
@@ -831,18 +912,21 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 			&& tempRawPointHistoryVector.size() > 0
 			&& tempRawPointHistoryVector.size() == rawPointHistoryVectorOfVectors.size())
 		{
-			pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
-			pointDataMsg.setId(getPointID());
-			pointDataMsg.setValue(figurePointDataMsgValue(calcComponentVector, tempRawPointHistoryVector));
-			pointDataMsg.setTimeStamp(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
-			pointDataMsg.setTime(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
-			pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
-			pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
-			pointDataMsg.setTags(0x00008000); //load profile tag setting
-			pointDataMsg.setStr("Calc Historical");
-
-			returnVector.addElement(pointDataMsg);
-
+			Double value = figurePointDataMsgValue(calcComponentVector, tempRawPointHistoryVector);
+			if( value != null)
+			{
+				pointDataMsg = new com.cannontech.message.dispatch.message.PointData();
+				pointDataMsg.setId(getPointID());
+				pointDataMsg.setValue(value.doubleValue());
+				pointDataMsg.setTimeStamp(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
+				pointDataMsg.setTime(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
+				pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
+				pointDataMsg.setType(com.cannontech.database.data.point.PointTypes.CALCULATED_POINT);
+				pointDataMsg.setTags(0x00008000); //load profile tag setting
+				pointDataMsg.setStr("Calc Historical");
+	
+				returnVector.addElement(pointDataMsg);
+			}	
 			for (int i = 0; i < rawPointHistoryVectorOfVectors.size(); i++)
 			{
 				arrayOfIndexes[i]++;
@@ -852,7 +936,8 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 		//( (RawPointHistory) tempRawPointHistoryVector.get(0) ).getTimeStamp()
 		tempRawPointHistoryVector = null;
 	}
-	updateDynamicCalcHistorical(pointDataMsg.getTimeStamp());
+	if( pointDataMsg != null)
+		updateDynamicCalcHistorical(pointDataMsg.getTimeStamp());
 	//DONE HERE>>>>
 	//System.out.println("[" + new java.util.Date() + "] EXIT parseAndCalculateRawPointHistories");
 	return returnVector;
