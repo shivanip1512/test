@@ -19,6 +19,7 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphBean implements GraphDataFormats, GraphDefines
 {
+	private java.text.SimpleDateFormat beanDateFormat = dateFormat;
 	private Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 //	private String directory = null;
@@ -1041,6 +1042,18 @@ private com.cannontech.database.data.graph.GraphDefinition updateGraphDefinition
 	return gDef;
 	
 }*/
+
+public void setBeanDateFormat(String dateFormatString)
+{
+	beanDateFormat = new java.text.SimpleDateFormat(dateFormatString);
+}
+public java.text.SimpleDateFormat getBeanDateFormat()
+{
+	return beanDateFormat;
+}
+
+
+
 public void encode(java.io.OutputStream out) throws IOException
 {
 	if( getFormat().equalsIgnoreCase("gif") )								
