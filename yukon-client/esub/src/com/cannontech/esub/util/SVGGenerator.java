@@ -138,7 +138,7 @@ public class SVGGenerator {
 				svgRoot.appendChild(elem);
 		}
 	
-		OutputFormat format  = new OutputFormat( doc );   //Serialize DOM
+		OutputFormat format  = new OutputFormat( doc, "ISO-8859-1", true );   //Serialize DOM
         XMLSerializer    serial = new XMLSerializer(writer, format);
         serial.asDOMSerializer();                            // As a DOM Serializer
         serial.serialize( doc.getDocumentElement() );                           		
