@@ -9,8 +9,9 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCallReportFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.CallType;
@@ -47,9 +48,10 @@ public class CreateCallAction implements ActionBase {
 			if (user == null) return null;
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
-			StarsCreateCallReport createCall = new StarsCreateCallReport();			
-			createCall.setCallNumber( req.getParameter("CallNumber") );
-			createCall.setCallDate( new Date() );
+			StarsCreateCallReport createCall = new StarsCreateCallReport();
+			if (req.getParameter("CallNo") != null)
+				createCall.setCallNumber( req.getParameter("CallNo") );
+			createCall.setCallDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("CallDate")) );
 			
 			CallType callType = new CallType();
 			callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );
@@ -103,12 +105,23 @@ public class CreateCallAction implements ActionBase {
         	}
             
             StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
+            if (createCall.getCallNumber() != null) {
+            	if (ServerUtils.callNumberExists( createCall.getCallNumber(), user.getEnergyCompanyID() )) {
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Track number already exists, please choose a different one") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+            	}
+            }
+            else {
+            	String callNo = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getNextCallNumber();
+            	createCall.setCallNumber( callNo );
+            }
+            
             com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();
             com.cannontech.database.db.stars.report.CallReportBase callReportDB = callReport.getCallReportBase();
             
             StarsCallReportFactory.setCallReportBase( callReportDB, createCall );
             callReportDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
-            
             callReport.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );

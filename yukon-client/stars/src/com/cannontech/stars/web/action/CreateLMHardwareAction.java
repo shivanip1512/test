@@ -7,6 +7,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
+import com.cannontech.database.db.stars.CustomerListEntry;
+import com.cannontech.database.db.stars.CustomerSelectionList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -232,10 +234,16 @@ public class CreateLMHardwareAction implements ActionBase {
 	            		deviceStatusEntry, DeviceStatus.class) );
             }
             
-            SOAPServer.getAllLMHardwares( energyCompanyID ).add( liteHw );
-            if (liteAcctInfo.getInventories() == null)
-            	liteAcctInfo.setInventories( new ArrayList() );
-            liteAcctInfo.getInventories().add( new Integer(liteHw.getLiteID()) );
+            ArrayList lmHardwareList = SOAPServer.getAllLMHardwares( energyCompanyID );
+            synchronized (lmHardwareList) { lmHardwareList.add( liteHw ); }
+            liteAcctInfo.getInventories().add( new Integer(liteHw.getInventoryID()) );
+            
+            // If this is a thermostat, add lite object for thermostat settings
+			int thermostatTypeID = StarsCustListEntryFactory.getStarsCustListEntry(
+				(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_DEVICETYPE),
+				CustomerListEntry.YUKONDEF_DEVTYPE_THERMOSTAT ).getEntryID();
+        	if (liteHw.getLmHardwareTypeID() == thermostatTypeID)
+            	liteAcctInfo.setThermostatSettings( SOAPServer.getEnergyCompany( energyCompanyID ).getThermostatSettings(liteHw.getInventoryID()) );
             
             StarsCreateLMHardwareResponse resp = new StarsCreateLMHardwareResponse();
             resp.setStarsLMHardware( starsHw );

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.20 2003/01/28 18:11:07 zyao Exp $
+ * $Id: StarsOperation.java,v 1.21 2003/02/12 19:25:12 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.20 $ $Date: 2003/01/28 18:11:07 $
+ * @version $Revision: 1.21 $ $Date: 2003/02/12 19:25:12 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -46,6 +46,8 @@ public class StarsOperation implements java.io.Serializable {
     private StarsNewCustomerAccount _starsNewCustomerAccount;
 
     private StarsProgramSignUp _starsProgramSignUp;
+
+    private StarsProgramSignUpResponse _starsProgramSignUpResponse;
 
     private StarsSearchCustomerAccount _starsSearchCustomerAccount;
 
@@ -92,17 +94,31 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsGetLMControlHistoryResponse _starsGetLMControlHistoryResponse;
 
+    private StarsGetNextCallNumber _starsGetNextCallNumber;
+
+    private StarsGetNextCallNumberResponse _starsGetNextCallNumberResponse;
+
     private StarsCreateCallReport _starsCreateCallReport;
 
     private StarsCreateCallReportResponse _starsCreateCallReportResponse;
+
+    private StarsUpdateCallReport _starsUpdateCallReport;
 
     private StarsGetCallReportHistory _starsGetCallReportHistory;
 
     private StarsGetCallReportHistoryResponse _starsGetCallReportHistoryResponse;
 
+    private StarsGetNextOrderNumber _starsGetNextOrderNumber;
+
+    private StarsGetNextOrderNumberResponse _starsGetNextOrderNumberResponse;
+
     private StarsCreateServiceRequest _starsCreateServiceRequest;
 
     private StarsCreateServiceRequestResponse _starsCreateServiceRequestResponse;
+
+    private StarsUpdateServiceRequest _starsUpdateServiceRequest;
+
+    private StarsUpdateServiceRequestResponse _starsUpdateServiceRequestResponse;
 
     private StarsGetServiceRequestHistory _starsGetServiceRequestHistory;
 
@@ -120,23 +136,25 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsCreateApplianceResponse _starsCreateApplianceResponse;
 
+    private StarsUpdateAppliance _starsUpdateAppliance;
+
+    private StarsDeleteAppliance _starsDeleteAppliance;
+
     private StarsCreateLMHardware _starsCreateLMHardware;
 
     private StarsCreateLMHardwareResponse _starsCreateLMHardwareResponse;
-
-    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
 
     private StarsUpdateLMHardware _starsUpdateLMHardware;
 
     private StarsUpdateLMHardwareResponse _starsUpdateLMHardwareResponse;
 
-    private StarsUpdateAppliance _starsUpdateAppliance;
-
-    private StarsUpdateApplianceResponse _starsUpdateApplianceResponse;
+    private StarsDeleteLMHardware _starsDeleteLMHardware;
 
     private StarsUpdateLogin _starsUpdateLogin;
 
     private StarsUpdateLoginResponse _starsUpdateLoginResponse;
+
+    private StarsDefaultThermostatSettings _starsDefaultThermostatSettings;
 
     private StarsGetDefaultThermostatSettings _starsGetDefaultThermostatSettings;
 
@@ -257,6 +275,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsDefaultThermostatSettings getStarsDefaultThermostatSettings() 
 
     /**
+     * Returns the value of field 'starsDeleteAppliance'.
+     * 
+     * @return the value of field 'starsDeleteAppliance'.
+    **/
+    public StarsDeleteAppliance getStarsDeleteAppliance()
+    {
+        return this._starsDeleteAppliance;
+    } //-- StarsDeleteAppliance getStarsDeleteAppliance() 
+
+    /**
      * Returns the value of field 'starsDeleteCustomerAccount'.
      * 
      * @return the value of field 'starsDeleteCustomerAccount'.
@@ -265,6 +293,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsDeleteCustomerAccount;
     } //-- StarsDeleteCustomerAccount getStarsDeleteCustomerAccount() 
+
+    /**
+     * Returns the value of field 'starsDeleteLMHardware'.
+     * 
+     * @return the value of field 'starsDeleteLMHardware'.
+    **/
+    public StarsDeleteLMHardware getStarsDeleteLMHardware()
+    {
+        return this._starsDeleteLMHardware;
+    } //-- StarsDeleteLMHardware getStarsDeleteLMHardware() 
 
     /**
      * Returns the value of field 'starsFailure'.
@@ -433,6 +471,47 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsGetLMControlHistoryResponse getStarsGetLMControlHistoryResponse() 
 
     /**
+     * Returns the value of field 'starsGetNextCallNumber'.
+     * 
+     * @return the value of field 'starsGetNextCallNumber'.
+    **/
+    public StarsGetNextCallNumber getStarsGetNextCallNumber()
+    {
+        return this._starsGetNextCallNumber;
+    } //-- StarsGetNextCallNumber getStarsGetNextCallNumber() 
+
+    /**
+     * Returns the value of field 'starsGetNextCallNumberResponse'.
+     * 
+     * @return the value of field 'starsGetNextCallNumberResponse'.
+    **/
+    public StarsGetNextCallNumberResponse getStarsGetNextCallNumberResponse()
+    {
+        return this._starsGetNextCallNumberResponse;
+    } //-- StarsGetNextCallNumberResponse getStarsGetNextCallNumberResponse() 
+
+    /**
+     * Returns the value of field 'starsGetNextOrderNumber'.
+     * 
+     * @return the value of field 'starsGetNextOrderNumber'.
+    **/
+    public StarsGetNextOrderNumber getStarsGetNextOrderNumber()
+    {
+        return this._starsGetNextOrderNumber;
+    } //-- StarsGetNextOrderNumber getStarsGetNextOrderNumber() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetNextOrderNumberResponse'.
+     * 
+     * @return the value of field 'starsGetNextOrderNumberResponse'.
+    **/
+    public StarsGetNextOrderNumberResponse getStarsGetNextOrderNumberResponse()
+    {
+        return this._starsGetNextOrderNumberResponse;
+    } //-- StarsGetNextOrderNumberResponse getStarsGetNextOrderNumberResponse() 
+
+    /**
      * Returns the value of field 'starsGetServiceRequestHistory'.
      * 
      * @return the value of field 'starsGetServiceRequestHistory'.
@@ -537,6 +616,16 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsProgramSignUp getStarsProgramSignUp() 
 
     /**
+     * Returns the value of field 'starsProgramSignUpResponse'.
+     * 
+     * @return the value of field 'starsProgramSignUpResponse'.
+    **/
+    public StarsProgramSignUpResponse getStarsProgramSignUpResponse()
+    {
+        return this._starsProgramSignUpResponse;
+    } //-- StarsProgramSignUpResponse getStarsProgramSignUpResponse() 
+
+    /**
      * Returns the value of field 'starsReloadCustomerAccount'.
      * 
      * @return the value of field 'starsReloadCustomerAccount'.
@@ -611,14 +700,14 @@ public class StarsOperation implements java.io.Serializable {
     } //-- StarsUpdateAppliance getStarsUpdateAppliance() 
 
     /**
-     * Returns the value of field 'starsUpdateApplianceResponse'.
+     * Returns the value of field 'starsUpdateCallReport'.
      * 
-     * @return the value of field 'starsUpdateApplianceResponse'.
+     * @return the value of field 'starsUpdateCallReport'.
     **/
-    public StarsUpdateApplianceResponse getStarsUpdateApplianceResponse()
+    public StarsUpdateCallReport getStarsUpdateCallReport()
     {
-        return this._starsUpdateApplianceResponse;
-    } //-- StarsUpdateApplianceResponse getStarsUpdateApplianceResponse() 
+        return this._starsUpdateCallReport;
+    } //-- StarsUpdateCallReport getStarsUpdateCallReport() 
 
     /**
      * Returns the value of field 'starsUpdateCustomerAccount'. The
@@ -695,6 +784,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsUpdateLoginResponse;
     } //-- StarsUpdateLoginResponse getStarsUpdateLoginResponse() 
+
+    /**
+     * Returns the value of field 'starsUpdateServiceRequest'.
+     * 
+     * @return the value of field 'starsUpdateServiceRequest'.
+    **/
+    public StarsUpdateServiceRequest getStarsUpdateServiceRequest()
+    {
+        return this._starsUpdateServiceRequest;
+    } //-- StarsUpdateServiceRequest getStarsUpdateServiceRequest() 
+
+    /**
+     * Returns the value of field
+     * 'starsUpdateServiceRequestResponse'.
+     * 
+     * @return the value of field
+     * 'starsUpdateServiceRequestResponse'.
+    **/
+    public StarsUpdateServiceRequestResponse getStarsUpdateServiceRequestResponse()
+    {
+        return this._starsUpdateServiceRequestResponse;
+    } //-- StarsUpdateServiceRequestResponse getStarsUpdateServiceRequestResponse() 
 
     /**
      * Returns the value of field 'starsUpdateThermostatSettings'.
@@ -864,6 +975,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsDefaultThermostatSettings(StarsDefaultThermostatSettings) 
 
     /**
+     * Sets the value of field 'starsDeleteAppliance'.
+     * 
+     * @param starsDeleteAppliance the value of field
+     * 'starsDeleteAppliance'.
+    **/
+    public void setStarsDeleteAppliance(StarsDeleteAppliance starsDeleteAppliance)
+    {
+        this._starsDeleteAppliance = starsDeleteAppliance;
+    } //-- void setStarsDeleteAppliance(StarsDeleteAppliance) 
+
+    /**
      * Sets the value of field 'starsDeleteCustomerAccount'.
      * 
      * @param starsDeleteCustomerAccount the value of field
@@ -873,6 +995,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsDeleteCustomerAccount = starsDeleteCustomerAccount;
     } //-- void setStarsDeleteCustomerAccount(StarsDeleteCustomerAccount) 
+
+    /**
+     * Sets the value of field 'starsDeleteLMHardware'.
+     * 
+     * @param starsDeleteLMHardware the value of field
+     * 'starsDeleteLMHardware'.
+    **/
+    public void setStarsDeleteLMHardware(StarsDeleteLMHardware starsDeleteLMHardware)
+    {
+        this._starsDeleteLMHardware = starsDeleteLMHardware;
+    } //-- void setStarsDeleteLMHardware(StarsDeleteLMHardware) 
 
     /**
      * Sets the value of field 'starsFailure'.
@@ -1045,6 +1178,50 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsGetLMControlHistoryResponse(StarsGetLMControlHistoryResponse) 
 
     /**
+     * Sets the value of field 'starsGetNextCallNumber'.
+     * 
+     * @param starsGetNextCallNumber the value of field
+     * 'starsGetNextCallNumber'.
+    **/
+    public void setStarsGetNextCallNumber(StarsGetNextCallNumber starsGetNextCallNumber)
+    {
+        this._starsGetNextCallNumber = starsGetNextCallNumber;
+    } //-- void setStarsGetNextCallNumber(StarsGetNextCallNumber) 
+
+    /**
+     * Sets the value of field 'starsGetNextCallNumberResponse'.
+     * 
+     * @param starsGetNextCallNumberResponse the value of field
+     * 'starsGetNextCallNumberResponse'.
+    **/
+    public void setStarsGetNextCallNumberResponse(StarsGetNextCallNumberResponse starsGetNextCallNumberResponse)
+    {
+        this._starsGetNextCallNumberResponse = starsGetNextCallNumberResponse;
+    } //-- void setStarsGetNextCallNumberResponse(StarsGetNextCallNumberResponse) 
+
+    /**
+     * Sets the value of field 'starsGetNextOrderNumber'.
+     * 
+     * @param starsGetNextOrderNumber the value of field
+     * 'starsGetNextOrderNumber'.
+    **/
+    public void setStarsGetNextOrderNumber(StarsGetNextOrderNumber starsGetNextOrderNumber)
+    {
+        this._starsGetNextOrderNumber = starsGetNextOrderNumber;
+    } //-- void setStarsGetNextOrderNumber(StarsGetNextOrderNumber) 
+
+    /**
+     * Sets the value of field 'starsGetNextOrderNumberResponse'.
+     * 
+     * @param starsGetNextOrderNumberResponse the value of field
+     * 'starsGetNextOrderNumberResponse'.
+    **/
+    public void setStarsGetNextOrderNumberResponse(StarsGetNextOrderNumberResponse starsGetNextOrderNumberResponse)
+    {
+        this._starsGetNextOrderNumberResponse = starsGetNextOrderNumberResponse;
+    } //-- void setStarsGetNextOrderNumberResponse(StarsGetNextOrderNumberResponse) 
+
+    /**
      * Sets the value of field 'starsGetServiceRequestHistory'.
      * 
      * @param starsGetServiceRequestHistory the value of field
@@ -1156,6 +1333,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsProgramSignUp(StarsProgramSignUp) 
 
     /**
+     * Sets the value of field 'starsProgramSignUpResponse'.
+     * 
+     * @param starsProgramSignUpResponse the value of field
+     * 'starsProgramSignUpResponse'.
+    **/
+    public void setStarsProgramSignUpResponse(StarsProgramSignUpResponse starsProgramSignUpResponse)
+    {
+        this._starsProgramSignUpResponse = starsProgramSignUpResponse;
+    } //-- void setStarsProgramSignUpResponse(StarsProgramSignUpResponse) 
+
+    /**
      * Sets the value of field 'starsReloadCustomerAccount'.
      * 
      * @param starsReloadCustomerAccount the value of field
@@ -1234,15 +1422,15 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void setStarsUpdateAppliance(StarsUpdateAppliance) 
 
     /**
-     * Sets the value of field 'starsUpdateApplianceResponse'.
+     * Sets the value of field 'starsUpdateCallReport'.
      * 
-     * @param starsUpdateApplianceResponse the value of field
-     * 'starsUpdateApplianceResponse'.
+     * @param starsUpdateCallReport the value of field
+     * 'starsUpdateCallReport'.
     **/
-    public void setStarsUpdateApplianceResponse(StarsUpdateApplianceResponse starsUpdateApplianceResponse)
+    public void setStarsUpdateCallReport(StarsUpdateCallReport starsUpdateCallReport)
     {
-        this._starsUpdateApplianceResponse = starsUpdateApplianceResponse;
-    } //-- void setStarsUpdateApplianceResponse(StarsUpdateApplianceResponse) 
+        this._starsUpdateCallReport = starsUpdateCallReport;
+    } //-- void setStarsUpdateCallReport(StarsUpdateCallReport) 
 
     /**
      * Sets the value of field 'starsUpdateCustomerAccount'. The
@@ -1324,6 +1512,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateLoginResponse = starsUpdateLoginResponse;
     } //-- void setStarsUpdateLoginResponse(StarsUpdateLoginResponse) 
+
+    /**
+     * Sets the value of field 'starsUpdateServiceRequest'.
+     * 
+     * @param starsUpdateServiceRequest the value of field
+     * 'starsUpdateServiceRequest'.
+    **/
+    public void setStarsUpdateServiceRequest(StarsUpdateServiceRequest starsUpdateServiceRequest)
+    {
+        this._starsUpdateServiceRequest = starsUpdateServiceRequest;
+    } //-- void setStarsUpdateServiceRequest(StarsUpdateServiceRequest) 
+
+    /**
+     * Sets the value of field 'starsUpdateServiceRequestResponse'.
+     * 
+     * @param starsUpdateServiceRequestResponse the value of field
+     * 'starsUpdateServiceRequestResponse'.
+    **/
+    public void setStarsUpdateServiceRequestResponse(StarsUpdateServiceRequestResponse starsUpdateServiceRequestResponse)
+    {
+        this._starsUpdateServiceRequestResponse = starsUpdateServiceRequestResponse;
+    } //-- void setStarsUpdateServiceRequestResponse(StarsUpdateServiceRequestResponse) 
 
     /**
      * Sets the value of field 'starsUpdateThermostatSettings'.

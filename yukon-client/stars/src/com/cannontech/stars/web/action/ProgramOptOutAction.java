@@ -120,8 +120,8 @@ public class ProgramOptOutAction implements ActionBase {
             for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
             	LiteStarsLMProgram program = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
             	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-            		StarsAppliance appliance = (StarsAppliance) liteAcctInfo.getAppliances().get(j);
-            		if (appliance.getLmProgramID() == program.getProgramID()) {
+            		LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+            		if (appliance.getLmProgramID() == program.getLmProgram().getProgramID()) {
             			Integer hardwareID = new Integer( appliance.getInventoryID() );
             			if (!hwIDList.contains( hardwareID )) hwIDList.add( hardwareID );
             			break;
@@ -169,7 +169,7 @@ public class ProgramOptOutAction implements ActionBase {
         		
 	            // Add "Temp Opt Out" and "Future Activation" to program events
         		for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-                	StarsAppliance appliance = (StarsAppliance) liteAcctInfo.getAppliances().get(j);
+                	LiteStarsAppliance appliance = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
 	                if (appliance.getInventoryID() != liteHw.getInventoryID()) continue;
 	                
 		            if (appliance.getLmProgramID() == 0) continue;
@@ -177,7 +177,7 @@ public class ProgramOptOutAction implements ActionBase {
                 	
                 	for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
 	                	LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-	                	if (liteProg.getProgramID() == programID.intValue()) {
+	                	if (liteProg.getLmProgram().getProgramID() == programID.intValue()) {
 	                		ServerUtils.processFutureActivation( liteProg.getProgramHistory(), futureActEntryID, actCompEntryID );
 	                		break;
 	                	}
@@ -241,7 +241,7 @@ public class ProgramOptOutAction implements ActionBase {
 					
 					for (int k = 0; k < liteAcctInfo.getLmPrograms().size(); k++) {
 						LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(k);
-						if (liteProg.getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
+						if (liteProg.getLmProgram().getProgramID() != event1.getLMProgramEvent().getLMProgramID().intValue()) continue;
 						
 						liteProg.getProgramHistory().add( liteEvent );
 						
@@ -250,7 +250,7 @@ public class ProgramOptOutAction implements ActionBase {
 						liteProg.getProgramHistory().add( liteEvent );
 						
 						StarsLMProgramHistory progHist = new StarsLMProgramHistory();
-						progHist.setProgramID( liteProg.getProgramID() );
+						progHist.setProgramID( liteProg.getLmProgram().getProgramID() );
 						for (int l = 0; l < liteProg.getProgramHistory().size(); l++) {
 							liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(l);
 							StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();

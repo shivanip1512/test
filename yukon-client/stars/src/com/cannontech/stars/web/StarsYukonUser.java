@@ -1,6 +1,7 @@
 package com.cannontech.stars.web;
 
 import java.util.*;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServerUtils;
@@ -16,17 +17,41 @@ import com.cannontech.stars.util.ServerUtils;
 public class StarsYukonUser {
 
 	private LiteYukonUser yukonUser = null;
+	private int userID = 0;
 	private int energyCompanyID = 0;
 	private int[] accountIDs = null;
 	private Hashtable attributes = new Hashtable();
 	
 	public StarsYukonUser(LiteYukonUser user) {
 		yukonUser = user;
+		userID = user.getUserID();
 		init();
 	}
 	
+	public int getUserID() {
+		return userID;
+	}
+	
 	public LiteYukonUser getYukonUser() {
-		return yukonUser;
+		if (yukonUser != null) return yukonUser;
+		
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized(cache) {
+			Iterator i = cache.getAllYukonUsers().iterator();
+			while(i.hasNext()) {
+				LiteYukonUser user = (LiteYukonUser) i.next();
+				if (user.getUserID() == userID) {
+					yukonUser = user;
+					return yukonUser;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public void resetYukonUser() {
+		yukonUser = null;
 	}
 	
 	public int getEnergyCompanyID() {
@@ -64,44 +89,15 @@ public class StarsYukonUser {
 	
 	private void init() {
 		if (ServerUtils.isOperator(this)) {
-			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(yukonUser).getLiteID();
-			
-			String sql1 = "SELECT CallNumber FROM CallReportBase WHERE CallID = "
-						+ "(SELECT MAX(CallReportID) FROM ECToCallReportMapping WHERE EnergyCompanyID = ?)";
-			String sql2 = "SELECT OrderNumber FROM WorkOrderBase WHERE OrderID = "
-						+ "(SELECT MAX(WorkOrderID) FROM ECToWorkOrderMapping WHERE EnergyCompanyID = ?)";
-						
-			com.cannontech.database.SqlStatement stmt1 = new com.cannontech.database.SqlStatement(
-					sql1, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			com.cannontech.database.SqlStatement stmt2 = new com.cannontech.database.SqlStatement(
-					sql2, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-					
-			try {
-				stmt1.execute();
-				if (stmt1.getRowCount() > 0) {
-					String callNoStr = (String) stmt1.getRow(0)[0];
-					int callNo = Integer.parseInt( callNoStr );
-					setAttribute( "NEXT_CALL_NUMBER", new Integer(++callNo) );
-				}
-				
-				stmt2.execute();
-				if (stmt2.getRowCount() > 0) {
-					String orderNoStr = (String) stmt2.getRow(0)[0];
-					int orderNo = Integer.parseInt( orderNoStr );
-					setAttribute( "NEXT_ORDER_NUMBER", new Integer(++orderNo) );
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() ).getLiteID();
 		}
 		else if (ServerUtils.isCICustomer(this)) {
-			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(yukonUser).getLiteID();
+			energyCompanyID = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() ).getLiteID();
 		}
 		else if (ServerUtils.isResidentialCustomer(this)) {
 			String sql = "SELECT map.EnergyCompanyID, acct.AccountID "
 					   + "FROM CustomerAccount acct, CustomerBase cust, CustomerContact cont, ECToAccountMapping map "
-					   + "WHERE cont.LogInID = " + yukonUser.getUserID() + " AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
+					   + "WHERE cont.LogInID = " + getYukonUser().getUserID() + " AND cust.PrimaryContactID = cont.ContactID AND acct.CustomerID = cust.CustomerID AND acct.AccountID = map.AccountID";
 			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
 					sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 					

@@ -25,23 +25,27 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateApplianceResponse implements java.io.Serializable {
+public class StarsGetNextCallNumber implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsAppliance _starsAppliance;
+    /**
+     * internal content storage
+    **/
+    private java.lang.String _content = "";
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateApplianceResponse() {
+    public StarsGetNextCallNumber() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponse()
+        setContent("");
+    } //-- com.cannontech.stars.xml.serialize.StarsGetNextCallNumber()
 
 
       //-----------/
@@ -49,14 +53,15 @@ public class StarsUpdateApplianceResponse implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'starsAppliance'.
+     * Returns the value of field 'content'. The field 'content'
+     * has the following description: internal content storage
      * 
-     * @return the value of field 'starsAppliance'.
+     * @return the value of field 'content'.
     **/
-    public StarsAppliance getStarsAppliance()
+    public java.lang.String getContent()
     {
-        return this._starsAppliance;
-    } //-- StarsAppliance getStarsAppliance() 
+        return this._content;
+    } //-- java.lang.String getContent() 
 
     /**
     **/
@@ -96,25 +101,26 @@ public class StarsUpdateApplianceResponse implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'starsAppliance'.
+     * Sets the value of field 'content'. The field 'content' has
+     * the following description: internal content storage
      * 
-     * @param starsAppliance the value of field 'starsAppliance'.
+     * @param content the value of field 'content'.
     **/
-    public void setStarsAppliance(StarsAppliance starsAppliance)
+    public void setContent(java.lang.String content)
     {
-        this._starsAppliance = starsAppliance;
-    } //-- void setStarsAppliance(StarsAppliance) 
+        this._content = content;
+    } //-- void setContent(java.lang.String) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponse unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsGetNextCallNumber unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponse.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponse unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsGetNextCallNumber) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsGetNextCallNumber.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsGetNextCallNumber unmarshal(java.io.Reader) 
 
     /**
     **/

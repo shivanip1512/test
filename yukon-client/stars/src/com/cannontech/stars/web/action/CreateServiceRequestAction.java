@@ -1,33 +1,17 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Date;
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
+import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.stars.xml.StarsFailureFactory;
-import com.cannontech.stars.xml.StarsServiceRequestFactory;
-import com.cannontech.stars.xml.serialize.CurrentState;
-import com.cannontech.stars.xml.serialize.ServiceCompany;
-import com.cannontech.stars.xml.serialize.ServiceType;
-import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
-import com.cannontech.stars.xml.serialize.StarsCreateServiceRequestResponse;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsServiceRequest;
-import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponse;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
-import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.*;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -51,9 +35,10 @@ public class CreateServiceRequestAction implements ActionBase {
 			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
-
-			createOrder.setOrderNumber( req.getParameter("OrderNumber") );
-			createOrder.setDateReported( new Date() );
+			
+			if (req.getParameter("OrderNo") != null)
+				createOrder.setOrderNumber( req.getParameter("OrderNo") );
+			createOrder.setDateReported( com.cannontech.util.ServletUtil.parseDateStringLiberally(req.getParameter("DateReported")) );
 			
 			ServiceType servType = new ServiceType();
 			servType.setEntryID( Integer.parseInt(req.getParameter("ServiceType")) );
@@ -80,7 +65,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			createOrder.setServiceCompany( company );
 			
 			createOrder.setOrderedBy( req.getParameter("OrderedBy") );
-			createOrder.setDescription( req.getParameter("Notes") );
+			createOrder.setDescription( req.getParameter("Notes").replaceAll("\r\n", "<br>") );
             
             StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
             for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
@@ -127,17 +112,28 @@ public class CreateServiceRequestAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
+        	
+            StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
+            if (createOrder.getOrderNumber() != null) {
+            	if (ServerUtils.orderNumberExists( createOrder.getOrderNumber(), user.getEnergyCompanyID() )) {
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Track number already exists, please choose a different one") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+            	}
+            }
+            else {
+            	String orderNo = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() ).getNextOrderNumber();
+            	createOrder.setOrderNumber( orderNo );
+            }
             
             int energyCompanyID = user.getEnergyCompanyID();
             Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             
-            StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
 
             StarsServiceRequestFactory.setWorkOrderBase( workOrderDB, createOrder );
             workOrderDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
-
             workOrder.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, workOrder );
@@ -150,6 +146,24 @@ public class CreateServiceRequestAction implements ActionBase {
             StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteOrder, selectionLists );
             StarsCreateServiceRequestResponse resp = new StarsCreateServiceRequestResponse();
             resp.setStarsServiceRequest( starsOrder );
+            
+            boolean newServiceCompany = true;
+            if (accountInfo.getServiceCompanies() == null)
+            	accountInfo.setServiceCompanies( new ArrayList() );
+            for (int i = 0; i < accountInfo.getServiceCompanies().size(); i++) {
+            	int companyID = ((Integer) accountInfo.getServiceCompanies().get(i)).intValue();
+            	if (liteOrder.getServiceCompanyID() == companyID) {
+            		newServiceCompany = false;
+            		break;
+            	}
+            }
+            
+            if (newServiceCompany) {
+            	LiteServiceCompany liteCompany = SOAPServer.getServiceCompany( energyCompanyID, liteOrder.getServiceCompanyID() );
+            	StarsServiceCompany starsCompany = StarsLiteFactory.createStarsServiceCompany( liteCompany, energyCompanyID );
+            	resp.setStarsServiceCompany( starsCompany );
+            	ServerUtils.updateServiceCompanies( accountInfo, energyCompanyID );
+            }
 
             respOper.setStarsCreateServiceRequestResponse( resp );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -183,16 +197,19 @@ public class CreateServiceRequestAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
-			StarsServiceRequest order = resp.getStarsServiceRequest();
-			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			if (accountInfo == null)
 				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 				
 			// Serivce request history must already be retrieved before, e.g. when the account info is loaded
-			accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, order );
+			StarsCreateServiceRequestResponse resp = operation.getStarsCreateServiceRequestResponse();
+			accountInfo.getStarsServiceRequestHistory().addStarsServiceRequest( 0, resp.getStarsServiceRequest() );
+			
+			StarsServiceCompany company = resp.getStarsServiceCompany();
+			if (company != null)
+				accountInfo.getStarsServiceCompanies().addStarsServiceCompany( company );
+
             return 0;
         }
         catch (Exception e) {

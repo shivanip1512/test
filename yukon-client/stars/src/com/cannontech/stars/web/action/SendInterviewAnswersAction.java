@@ -6,11 +6,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.lite.stars.LiteCustomerAddress;
-import com.cannontech.database.data.lite.stars.LiteCustomerContact;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -41,7 +37,7 @@ public class SendInterviewAnswersAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-            if (user != null) return null;
+            if (user == null) return null;
             
 			StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse)
 					user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
@@ -119,7 +115,7 @@ public class SendInterviewAnswersAction implements ActionBase {
 	            List devices = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().getAllDevices();
 	            for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
 	            	LiteStarsLMProgram program = (LiteStarsLMProgram)liteAcctInfo.getLmPrograms().get(i);
-            		text.append("    ").append(program.getProgramName()).append(" / ");
+            		text.append("    ").append(program.getLmProgram().getProgramName()).append(" / ");
 	            	
 	            	String groupName = "(N/A)";
 		            for (int j = 0; j < devices.size(); j++) {
@@ -133,8 +129,8 @@ public class SendInterviewAnswersAction implements ActionBase {
 	            	
 	            	String serialNo = "(N/A)";
 	            	for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-	            		StarsAppliance app = (StarsAppliance) liteAcctInfo.getAppliances().get(j);
-	            		if (app.getLmProgramID() == program.getProgramID()) {
+	            		LiteStarsAppliance app = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+	            		if (app.getLmProgramID() == program.getLmProgram().getProgramID()) {
 	            			for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
 	            				LiteLMHardwareBase hw = SOAPServer.getLMHardware( energyCompanyID, ((Integer) liteAcctInfo.getInventories().get(k)).intValue(), true );
 	            				if (hw.getInventoryID() == app.getInventoryID()) {
@@ -156,44 +152,36 @@ public class SendInterviewAnswersAction implements ActionBase {
             	text.append("Q: ").append(answer.getQuestion()).append("\r\n");
             	text.append("A: ").append(answer.getAnswer()).append("\r\n\r\n");
             }
-            
+        	
+			ResourceBundle bundle = ResourceBundle.getBundle( "config" );
+			
+			String toStr = null;
 			try {
-				ResourceBundle bundle = ResourceBundle.getBundle( "config" );
+				toStr = bundle.getString( "optout_notification_recipients" );
+				StringTokenizer st = new StringTokenizer( toStr, "," );
+				ArrayList toList = new ArrayList();
+				while (st.hasMoreTokens())
+					toList.add( st.nextToken() );
+				String[] to = new String[ toList.size() ];
+				toList.toArray( to );
 				
-				String toStr = null;
+				String from = null;
 				try {
-					toStr = bundle.getString( "optout_notification_recipients" );
-					StringTokenizer st = new StringTokenizer( toStr, "," );
-					ArrayList toList = new ArrayList();
-					while (st.hasMoreTokens())
-						toList.add( st.nextToken() );
-					String[] to = new String[ toList.size() ];
-					toList.toArray( to );
-					
-					String from = null;
-					try {
-						from = bundle.getString( "optout_notification_sender" );
-					}
-					catch (java.util.MissingResourceException mre) {
-						from = "";
-					}
-					String subject = "Override Notification";
-					
-					ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
+					from = bundle.getString( "optout_notification_sender" );
 				}
 				catch (java.util.MissingResourceException mre) {
-					CTILogger.info( "Property \"optout_notification_recipients\" not found, opt out notification email isn't sent" );
+					from = "";
 				}
+				String subject = "Opt Out Notification";
+				
+				ServerUtils.sendEmailMsg( from, to, null, subject, text.toString() );
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out overide interview answers") );
-            	return SOAPUtil.buildSOAPMessage( respOper );
+			catch (java.util.MissingResourceException mre) {
+				CTILogger.info( "Property \"optout_notification_recipients\" not found, opt out notification email isn't sent" );
 			}
             
             StarsSuccess success = new StarsSuccess();
-            success.setDescription( "Overide interview answers have been sent" );
+            success.setDescription( "Interview answers have been sent" );
             
             respOper.setStarsSuccess( success );
             return SOAPUtil.buildSOAPMessage( respOper );
@@ -203,7 +191,7 @@ public class SendInterviewAnswersAction implements ActionBase {
             
             try {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get overide interview questions") );
+            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot send out interview answers") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             catch (Exception e2) {

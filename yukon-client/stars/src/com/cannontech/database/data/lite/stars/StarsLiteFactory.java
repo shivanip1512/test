@@ -322,6 +322,10 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.data.stars.appliance.ApplianceBase();
 				setApplianceBase( (com.cannontech.database.data.stars.appliance.ApplianceBase) db, (LiteStarsAppliance) lite );
 				break;
+			case LiteTypes.STARS_WORK_ORDER_BASE:
+				db = new com.cannontech.database.db.stars.report.WorkOrderBase();
+				setWorkOrderBase( (com.cannontech.database.db.stars.report.WorkOrderBase) db, (LiteWorkOrderBase) lite );
+				break;
 		}
 		
 		return db;
@@ -445,6 +449,21 @@ public class StarsLiteFactory {
 			app.getLMHardwareConfig().setInventoryID( new Integer(liteApp.getInventoryID()) );
 			app.getLMHardwareConfig().setAddressingGroupID( new Integer(liteApp.getAddressingGroupID()) );
 		}
+	}
+	
+	public static void setWorkOrderBase(com.cannontech.database.db.stars.report.WorkOrderBase order, LiteWorkOrderBase liteOrder) {
+		order.setOrderID( new Integer(liteOrder.getOrderID()) );
+		order.setOrderNumber( liteOrder.getOrderNumber() );
+		order.setWorkTypeID( new Integer(liteOrder.getWorkTypeID()) );
+		order.setCurrentStateID( new Integer(liteOrder.getCurrentStateID()) );
+		order.setServiceCompanyID( new Integer(liteOrder.getServiceCompanyID()) );
+		order.setDateReported( new Date(liteOrder.getDateReported()) );
+		order.setOrderedBy( liteOrder.getOrderedBy() );
+		order.setDescription( liteOrder.getDescription() );
+		order.setDateScheduled( new Date(liteOrder.getDateScheduled()) );
+		order.setDateCompleted( new Date(liteOrder.getDateCompleted()) );
+		order.setActionTaken( liteOrder.getActionTaken() );
+		order.setAccountID( new Integer(liteOrder.getAccountID()) );
 	}
 	
 	
@@ -874,6 +893,46 @@ public class StarsLiteFactory {
         return starsCtrlHist;
 	}
 	
+	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsAppliance liteApp, int energyCompanyID) {
+		StarsLMProgram starsProg = new StarsLMProgram();
+		starsProg.setProgramID( liteProg.getLmProgram().getProgramID() );
+		starsProg.setGroupID( liteProg.getGroupID() );
+		starsProg.setProgramName( forceNotNull(liteProg.getLmProgram().getProgramName()) );
+		starsProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
+
+		LiteStarsLMControlHistory liteCtrlHist = SOAPServer.getLMControlHistory( energyCompanyID, liteProg.getGroupID() );
+		if (liteCtrlHist != null)
+			starsProg.setStarsLMControlHistory( createStarsLMControlHistory(liteCtrlHist, StarsCtrlHistPeriod.PASTDAY, true) );
+		
+		Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
+		
+		if (liteProg.getProgramHistory() != null) {
+			StarsLMProgramHistory progHist = new StarsLMProgramHistory();
+			for (int k = 0; k < liteProg.getProgramHistory().size(); k++) {
+				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(k);
+				StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
+				setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
+				progHist.addStarsLMProgramEvent( starsEvent );
+			}
+			starsProg.setStarsLMProgramHistory( progHist );
+			
+			if (ServerUtils.isInService(
+					liteProg.getProgramHistory(),
+					new Integer(StarsCustListEntryFactory.getStarsCustListEntry(
+						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+						CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION).getEntryID()),
+					new Integer(StarsCustListEntryFactory.getStarsCustListEntry(
+						(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
+						CustomerListEntry.YUKONDEF_ACT_COMPLETED).getEntryID())
+				))
+				starsProg.setStatus( "In Service" );
+			else
+				starsProg.setStatus( "Out of Service" );
+		}
+		
+		return starsProg;
+	}
+	
 	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, boolean isOperator) {
 		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
 		Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
@@ -926,51 +985,20 @@ public class StarsLiteFactory {
 		StarsLMPrograms starsProgs = new StarsLMPrograms();
 		starsAcctInfo.setStarsLMPrograms( starsProgs );
 		
-		ArrayList lProgs = SOAPServer.getAllLMPrograms( energyCompanyID );
 		for (int i = 0; i < liteProgs.size(); i++) {
 			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-			
-			StarsLMProgram starsProg = new StarsLMProgram();
-			starsProg.setProgramID( liteProg.getProgramID() );
-			starsProg.setGroupID( liteProg.getGroupID() );
-			starsProg.setProgramName( forceNotNull(liteProg.getProgramName()) );
+			LiteStarsAppliance liteApp = null;
 			
 			ArrayList liteApps = liteAcctInfo.getAppliances();
 			for (int k = 0; k < liteApps.size(); k++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(k);
-				if (liteApp.getLmProgramID() == liteProg.getProgramID())
-					starsProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
-			}
-	
-			LiteStarsLMControlHistory liteCtrlHist = SOAPServer.getLMControlHistory( energyCompanyID, liteProg.getGroupID() );
-			if (liteCtrlHist != null)
-				starsProg.setStarsLMControlHistory( createStarsLMControlHistory(liteCtrlHist, StarsCtrlHistPeriod.PASTDAY, true) );
-			
-			if (liteProg.getProgramHistory() != null) {
-				StarsLMProgramHistory progHist = new StarsLMProgramHistory();
-				for (int k = 0; k < liteProg.getProgramHistory().size(); k++) {
-					LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteProg.getProgramHistory().get(k);
-					StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
-					setStarsLMCustomerEvent( starsEvent, liteEvent, selectionLists );
-					progHist.addStarsLMProgramEvent( starsEvent );
+				LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
+				if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
+					liteApp = lApp;
+					break;
 				}
-				starsProg.setStarsLMProgramHistory( progHist );
-				
-				if (ServerUtils.isInService(
-						liteProg.getProgramHistory(),
-						new Integer(StarsCustListEntryFactory.getStarsCustListEntry(
-							(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-							CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION).getEntryID()),
-						new Integer(StarsCustListEntryFactory.getStarsCustListEntry(
-							(LiteCustomerSelectionList) selectionLists.get(CustomerSelectionList.LISTNAME_LMCUSTOMERACTION),
-							CustomerListEntry.YUKONDEF_ACT_COMPLETED).getEntryID())
-					))
-					starsProg.setStatus( "In Service" );
-				else
-					starsProg.setStatus( "Out of Service" );
 			}
 			
-			starsProgs.addStarsLMProgram( starsProg );
+			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompanyID) );
 		}
 		
 		if (liteAcctInfo.getThermostatSettings() != null && !isOperator) {
@@ -1161,8 +1189,12 @@ public class StarsLiteFactory {
         starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
     	starsApp.setInventoryID( liteApp.getInventoryID() );
     	starsApp.setLmProgramID( liteApp.getLmProgramID() );
-        starsApp.setYearManufactured( String.valueOf(liteApp.getYearManufactured()) );
         starsApp.setNotes( forceNotNull(liteApp.getNotes()) );
+        
+        if (liteApp.getYearManufactured() > 0)
+        	starsApp.setYearManufactured( String.valueOf(liteApp.getYearManufactured()) );
+        else
+        	starsApp.setYearManufactured( "" );
         
        	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
        	StarsSelectionListEntry entry = StarsCustListEntryFactory.getStarsCustListEntry(

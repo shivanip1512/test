@@ -1,13 +1,9 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
+import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -256,7 +252,21 @@ public class YukonSwitchCommandAction implements ActionBase {
 	            	return SOAPUtil.buildSOAPMessage( respOper );
         		}
         		
-        		/* Send out config command here !!! */
+        		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
+        				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( invID );
+        		if (configs == null) {
+	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the hardware configuration information") );
+	            	return SOAPUtil.buildSOAPMessage( respOper );
+        		}
+        		
+        		for (int i = 0; i < configs.length; i++) {
+        			if (configs[i].getAddressingGroupID().intValue() == 0) continue;
+        			
+        			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
+	                String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'" + routeStr;
+	                ServerUtils.sendCommand( cmd );
+        		}
 	            
 	            // Add "Config" to hardware events
         		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();

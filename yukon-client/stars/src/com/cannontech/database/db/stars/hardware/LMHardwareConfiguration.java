@@ -79,56 +79,33 @@ public class LMHardwareConfiguration extends DBPersistent {
         return null;
     }
 
-    public static LMHardwareConfiguration[] getALLHardwareConfigs(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ?";
-
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-        java.util.ArrayList configList = new java.util.ArrayList();
+    public static LMHardwareConfiguration[] getALLHardwareConfigs(Integer inventoryID) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = " + inventoryID;
+        com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+        		sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
         try
         {
-            if( conn == null )
-            {
-                throw new IllegalStateException("Database connection should not be null.");
+        	stmt.execute();
+        	LMHardwareConfiguration[] configs = new LMHardwareConfiguration[ stmt.getRowCount() ];
+
+            for (int i = 0; i < configs.length; i++) {
+            	Object[] row = stmt.getRow(i);
+                configs[i] = new LMHardwareConfiguration();
+
+                configs[i].setInventoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
+                configs[i].setApplianceID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
+                configs[i].setAddressingGroupID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
             }
-            else
-            {
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setInt( 1, inventoryID.intValue() );
-                rset = pstmt.executeQuery();
-
-                while (rset.next()) {
-                    LMHardwareConfiguration config = new LMHardwareConfiguration();
-
-                    config.setInventoryID( new Integer(rset.getInt("InventoryID")) );
-                    config.setApplianceID( new Integer(rset.getInt("ApplianceID")) );
-                    config.setAddressingGroupID( new Integer(rset.getInt("AddressingGroupID")) );
-
-                    configList.add(config);
-                }
-            }
+            
+            return configs;
         }
-        catch( java.sql.SQLException e )
+        catch(com.cannontech.common.util.CommandExecutionException e)
         {
             e.printStackTrace();
         }
-        finally
-        {
-            try
-            {
-                if (rset != null) rset.close();
-                if( pstmt != null ) pstmt.close();
-            }
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
-        }
-
-        LMHardwareConfiguration[] configs = new LMHardwareConfiguration[ configList.size() ];
-        configList.toArray( configs );
-        return configs;
+        
+        return null;
     }
 
     public static void deleteLMHardwareConfiguration(Integer applianceID, java.sql.Connection conn) {

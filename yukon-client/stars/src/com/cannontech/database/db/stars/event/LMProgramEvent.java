@@ -171,13 +171,10 @@ public class LMProgramEvent extends DBPersistent {
         }
     }
     
-    public static LMProgramEvent getLastLMProgramEvent(Integer accountID, Integer programID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventID = ("
-        		   + "SELECT MAX(EventID) FROM " + TABLE_NAME + " WHERE AccountID = ? AND LMProgramID = ?)";
+    public static void deleteAllLMProgramEvents(Integer accountID, Integer programID, java.sql.Connection conn) {
+    	String sql = "DELETE FROM " + TABLE_NAME + " WHERE AccountID = ? AND LMProgramID = ?";
 
         java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
         try
         {
             if( conn == null )
@@ -189,15 +186,7 @@ public class LMProgramEvent extends DBPersistent {
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setInt( 1, accountID.intValue() );
                 pstmt.setInt( 2, programID.intValue() );
-                rset = pstmt.executeQuery();
-
-                if (rset.next()) {
-                    LMProgramEvent event = new LMProgramEvent();
-                    event.setEventID( new Integer(rset.getInt("EventID")) );
-                    event.setAccountID( new Integer(rset.getInt("AccountID")) );
-                    event.setLMProgramID( new Integer(rset.getInt("LMProgramID")) );
-                    return event;
-                }
+                pstmt.execute();
             }
         }
         catch( java.sql.SQLException e )
@@ -208,7 +197,6 @@ public class LMProgramEvent extends DBPersistent {
         {
             try
             {
-                if (rset != null) rset.close();
                 if( pstmt != null ) pstmt.close();
             }
             catch( java.sql.SQLException e2 )
@@ -216,8 +204,6 @@ public class LMProgramEvent extends DBPersistent {
                 e2.printStackTrace();
             }
         }
-
-        return null;
     }
 
     public Integer getEventID() {

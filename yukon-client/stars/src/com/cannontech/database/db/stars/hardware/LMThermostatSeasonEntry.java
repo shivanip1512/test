@@ -74,7 +74,7 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 			setEntryID( getNextEntryID() );
 			
 		Object[] addValues = {
-			getSeasonID(), getTimeOfWeekID(), getStartTime(), getTemperature()
+			getEntryID(), getSeasonID(), getTimeOfWeekID(), getStartTime(), getTemperature()
 		};
 		add( TABLE_NAME, addValues );
 	}

@@ -71,6 +71,37 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	}
     }
     
+    public static void deleteAllLMProgramEvents(Integer accountID, Integer programID) {
+    	java.sql.Connection conn = null;
+
+    	try {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            if (conn == null) return;
+            
+    		Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID, programID );
+    		com.cannontech.database.db.stars.event.LMProgramEvent.deleteAllLMProgramEvents( accountID, programID, conn );
+    		
+	    	LMCustomerEventBase event = new LMCustomerEventBase();
+	    	for (int i = 0; i < eventIDs.length; i++) {
+	    		event.setEventID( eventIDs[i] );
+	    		event.setDbConnection( conn );
+	    		event.delete();
+	    	}
+    	}
+    	catch (java.sql.SQLException e) {
+    		e.printStackTrace();
+    	}
+    	finally {
+    		try {
+    			if (conn != null) conn.close();
+    		}
+    		catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    }
+    
     public static LMProgramEvent[] getAllLMProgramEvents(Integer accountID, Integer programID) {
     	try {
 	        Integer[] eventIDs = com.cannontech.database.db.stars.event.LMProgramEvent.getAllLMProgramEventIDs( accountID, programID );
@@ -133,40 +164,6 @@ public class LMProgramEvent extends LMCustomerEventBase {
     	return null;
     }
 */    
-    public static LMProgramEvent getLastProgramEvent(Integer accountID, Integer programID) {
-    	java.sql.Connection conn = null;
-
-    	try {
-            conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-                        com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            if (conn == null) return null;
-            
-	        com.cannontech.database.db.stars.event.LMProgramEvent eventDB =
-	        		com.cannontech.database.db.stars.event.LMProgramEvent.getLastLMProgramEvent( accountID, programID, conn );
-	        if (eventDB == null) return null;
-	        
-        	com.cannontech.database.data.stars.event.LMProgramEvent event = new com.cannontech.database.data.stars.event.LMProgramEvent();
-        	event.setDbConnection(conn);
-        	event.setEventID( eventDB.getEventID() );
-        	event.retrieve();
-	        
-	        return event;
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    	finally {
-    		try {
-    			if (conn != null) conn.close();
-    		}
-    		catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	
-    	return null;
-    }
-
 	/**
 	 * Returns the lmProgramEvent.
 	 * @return com.cannontech.database.db.stars.event.LMProgramEvent

@@ -166,13 +166,11 @@ public class StarsCallRprtDescriptor extends org.exolab.castor.xml.util.XMLClass
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _callDate
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _callType
@@ -200,13 +198,11 @@ public class StarsCallRprtDescriptor extends org.exolab.castor.xml.util.XMLClass
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _callType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _takenBy
@@ -235,13 +231,11 @@ public class StarsCallRprtDescriptor extends org.exolab.castor.xml.util.XMLClass
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _takenBy
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -275,13 +269,11 @@ public class StarsCallRprtDescriptor extends org.exolab.castor.xml.util.XMLClass
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _description
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

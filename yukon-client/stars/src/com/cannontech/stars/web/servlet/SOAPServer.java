@@ -16,6 +16,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -56,7 +57,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     };
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
-    private PILConnectionServlet connContainer = null;
 	
 	// Array of all the energy companies
 	private static LiteStarsEnergyCompany[] energyCompanies = null;
@@ -110,6 +110,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
      * Start implementation of ReqRespListener
      */
     public void init() throws javax.servlet.ServletException {
+    	if (instance != null) return;
+    	
 		getAllWebConfigurations();
     	LiteStarsEnergyCompany[] companies = getAllEnergyCompanies();
     	if (companies != null) {
@@ -122,8 +124,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	initDispatchConnection();    	
     	startTimers();
     	
-    	connContainer = (com.cannontech.servlet.PILConnectionServlet)
-        		getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
+		ServerUtils.setPILConnectionServlet( (com.cannontech.servlet.PILConnectionServlet)
+    			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
     	instance = this;
     }
 
@@ -242,11 +244,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     		else
     			timer.schedule( timerTasks[i], timerTasks[i].getInitialDelay(), timerTasks[i].getTimerPeriod() );
     	}
-    }
-    
-    public com.cannontech.message.porter.ClientConnection getPILClientConnection() {
-    	if (connContainer == null) return null;
-    	return connContainer.getConnection();
     }
     
     public static LiteStarsEnergyCompany[] getAllEnergyCompanies() {
@@ -411,20 +408,24 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
-	public static StarsYukonUser getStarsYukonUser(int userID) {
+	public static StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
 		ArrayList userList = getAllStarsYukonUsers();
-		for (int i = 0; i < userList.size(); i++) {
-			StarsYukonUser user = (StarsYukonUser) userList.get(i);
-			if (user.getYukonUser().getUserID() == userID)
-				return user;
+		synchronized (userList) {
+			for (int i = 0; i < userList.size(); i++) {
+				StarsYukonUser user = (StarsYukonUser) userList.get(i);
+				if (user.getUserID() == yukonUser.getUserID())
+					return user;
+			}
 		}
 		
-		return null;
+		StarsYukonUser user = new StarsYukonUser( yukonUser );
+		addStarsYukonUser( user );
+		return user;
 	}
 	
 	public static void addStarsYukonUser(StarsYukonUser user) {
 		ArrayList userList = getAllStarsYukonUsers();
-		userList.add( user );
+		synchronized (userList) { userList.add( user ); }
 	}
 	
 	public static LiteInterviewQuestion[] getInterviewQuestions(int energyCompanyID, int questionType) {

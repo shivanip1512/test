@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateApplianceResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsProgramSignUpResponseDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,9 +47,9 @@ public class StarsUpdateApplianceResponseDescriptor extends org.exolab.castor.xm
      //- Constructors -/
     //----------------/
 
-    public StarsUpdateApplianceResponseDescriptor() {
+    public StarsProgramSignUpResponseDescriptor() {
         super();
-        xmlName = "stars-UpdateApplianceResponse";
+        xmlName = "stars-ProgramSignUpResponse";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
@@ -60,28 +60,28 @@ public class StarsUpdateApplianceResponseDescriptor extends org.exolab.castor.xm
         
         //-- initialize element descriptors
         
-        //-- _starsAppliance
-        desc = new XMLFieldDescriptorImpl(StarsAppliance.class, "_starsAppliance", "stars-Appliance", NodeType.Element);
+        //-- _starsLMPrograms
+        desc = new XMLFieldDescriptorImpl(StarsLMPrograms.class, "_starsLMPrograms", "stars-LMPrograms", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsUpdateApplianceResponse target = (StarsUpdateApplianceResponse) object;
-                return target.getStarsAppliance();
+                StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                return target.getStarsLMPrograms();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsUpdateApplianceResponse target = (StarsUpdateApplianceResponse) object;
-                    target.setStarsAppliance( (StarsAppliance) value);
+                    StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                    target.setStarsLMPrograms( (StarsLMPrograms) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsAppliance();
+                return new StarsLMPrograms();
             }
         } );
         desc.setHandler(handler);
@@ -89,12 +89,44 @@ public class StarsUpdateApplianceResponseDescriptor extends org.exolab.castor.xm
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsAppliance
+        //-- validation code for: _starsLMPrograms
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-    } //-- com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponseDescriptor()
+        //-- _starsAppliances
+        desc = new XMLFieldDescriptorImpl(StarsAppliances.class, "_starsAppliances", "stars-Appliances", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                return target.getStarsAppliances();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsProgramSignUpResponse target = (StarsProgramSignUpResponse) object;
+                    target.setStarsAppliances( (StarsAppliances) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsAppliances();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsAppliances
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsProgramSignUpResponseDescriptor()
 
 
       //-----------/
@@ -126,7 +158,7 @@ public class StarsUpdateApplianceResponseDescriptor extends org.exolab.castor.xm
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsUpdateApplianceResponse.class;
+        return com.cannontech.stars.xml.serialize.StarsProgramSignUpResponse.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

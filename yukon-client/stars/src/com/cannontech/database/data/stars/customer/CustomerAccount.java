@@ -57,6 +57,9 @@ public class CustomerAccount extends DBPersistent {
             hw.delete();
         }
 
+        com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
+            getCustomerAccount().getAccountID(), getDbConnection() );
+
 /*		com.cannontech.database.db.stars.appliance.ApplianceBase[] apps =
         		com.cannontech.database.db.stars.appliance.ApplianceBase.getAllAppliances( getCustomerAccount().getAccountID() );*/
         for (int i = 0; i < getApplianceVector().size(); i++) {
@@ -65,9 +68,6 @@ public class CustomerAccount extends DBPersistent {
             app.setDbConnection( getDbConnection() );
             app.delete();
         }
-
-        com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
-            getCustomerAccount().getAccountID(), getDbConnection() );
         
         getCustomerAccount().delete();
         getAccountSite().delete();

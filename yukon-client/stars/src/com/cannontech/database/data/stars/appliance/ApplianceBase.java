@@ -50,10 +50,14 @@ public class ApplianceBase extends DBPersistent {
 
     public void add() throws java.sql.SQLException {
         getApplianceBase().add();
+        if (getLMHardwareConfig().getInventoryID() != null)
+        	getLMHardwareConfig().add();
     }
 
     public void update() throws java.sql.SQLException {
         getApplianceBase().update();
+        if (getLMHardwareConfig().getInventoryID() != null)
+        	getLMHardwareConfig().update();
     }
 
     public void retrieve() throws java.sql.SQLException {

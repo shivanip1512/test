@@ -57,6 +57,8 @@ public class CustomerListEntry extends DBPersistent {
     public static final String YUKONDEF_THERMMODE_OFF = "THERMMODE_OFF";
     public static final String YUKONDEF_FANSTATE_AUTO = "FANSTATE_AUTO";
     public static final String YUKONDEF_FANSTATE_ON = "FANSTATE_ON";
+    public static final String YUKONDEF_MANUFACTURER_UNKNOWN = "MANUFACTURER_UNKNOWN";
+    public static final String YUKONDEF_LOCATION_UNKNOWN = "LOCATION_UNKNOWN";
 
     private Integer entryID = null;
     private Integer listID = null;

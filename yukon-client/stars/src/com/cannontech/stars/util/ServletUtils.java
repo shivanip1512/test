@@ -44,6 +44,7 @@ public class ServletUtils {
 	public static final String TRANSIENT_ATT_LEADING = "$$";
 	
 	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
+	public static final String ATT_PASSWORD_VERIFIED = "PASSWORD_VERIFIED";
 	public static final String ATT_REDIRECT = "REDIRECT";
 	public static final String ATT_REDIRECT2 = "REDIRECT2";
 	public static final String ATT_REFERRER = "REFERRER";
@@ -58,6 +59,7 @@ public class ServletUtils {
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
 	public static final String ATT_CALL_TRACKING_NUMBER = "CALL_TRACKING_NUMBER";
+	public static final String ATT_ORDER_TRACKING_NUMBER = "ORDER_TRACKING_NUMBER";
 	
 	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
 	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";

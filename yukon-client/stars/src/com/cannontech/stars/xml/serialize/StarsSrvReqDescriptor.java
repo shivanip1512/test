@@ -165,13 +165,11 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _serviceType
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _dateReported
@@ -200,13 +198,11 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         } );
         desc.setHandler( new DateFieldHandler(handler));
         desc.setImmutable(true);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _dateReported
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _serviceCompany
@@ -234,13 +230,11 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _serviceCompany
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _orderedBy
@@ -269,13 +263,11 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _orderedBy
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");
@@ -309,13 +301,11 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             }
         } );
         desc.setHandler(handler);
-        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _description
         fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator sv = new StringValidator();
             sv.setWhiteSpace("preserve");

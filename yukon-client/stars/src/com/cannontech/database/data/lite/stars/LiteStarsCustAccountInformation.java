@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
+
 /**
  * @author yao
  *
@@ -14,12 +16,12 @@ public class LiteStarsCustAccountInformation {
 	private LiteCustomerBase customerBase = null;
 	private LiteAccountSite accountSite = null;
 	private LiteSiteInformation siteInformation = null;
-	private java.util.ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
-	private java.util.ArrayList appliances = null;	// List of LiteStarsAppliance
-	private java.util.ArrayList inventories = null;	// List of IDs of LiteLMHardware
-	private java.util.ArrayList serviceCompanies = null;	// List of IDs of LiteServiceCompany
-	private java.util.ArrayList callReportHistory = null;	// List of StarsCallReport
-	private java.util.ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
+	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
+	private ArrayList appliances = null;	// List of LiteStarsAppliance
+	private ArrayList inventories = null;	// List of IDs of LiteLMHardware
+	private ArrayList serviceCompanies = null;	// List of IDs of LiteServiceCompany
+	private ArrayList callReportHistory = null;	// List of StarsCallReport
+	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private LiteStarsThermostatSettings thermostatSettings = null;
 	private com.cannontech.database.data.lite.LiteYukonUser yukonUser = null;
 	
@@ -28,17 +30,21 @@ public class LiteStarsCustAccountInformation {
 	
 	/**
 	 * Returns the appliances.
-	 * @return java.util.ArrayList
+	 * @return ArrayList
 	 */
-	public java.util.ArrayList getAppliances() {
+	public ArrayList getAppliances() {
+		if (appliances == null)
+			appliances = new ArrayList();
 		return appliances;
 	}
 
 	/**
 	 * Returns the callReportHistory.
-	 * @return java.util.ArrayList
+	 * @return ArrayList
 	 */
-	public java.util.ArrayList getCallReportHistory() {
+	public ArrayList getCallReportHistory() {
+		if (callReportHistory == null)
+			callReportHistory = new ArrayList();
 		return callReportHistory;
 	}
 
@@ -52,25 +58,31 @@ public class LiteStarsCustAccountInformation {
 
 	/**
 	 * Returns the inventorys.
-	 * @return java.util.ArrayList
+	 * @return ArrayList
 	 */
-	public java.util.ArrayList getInventories() {
+	public ArrayList getInventories() {
+		if (inventories == null)
+			inventories = new ArrayList();
 		return inventories;
 	}
 
 	/**
 	 * Returns the lmPrograms.
-	 * @return java.util.ArrayList
+	 * @return ArrayList
 	 */
-	public java.util.ArrayList getLmPrograms() {
+	public ArrayList getLmPrograms() {
+		if (lmPrograms == null)
+			lmPrograms = new ArrayList();
 		return lmPrograms;
 	}
 
 	/**
 	 * Returns the serviceRequestHistory.
-	 * @return java.util.ArrayList
+	 * @return ArrayList
 	 */
-	public java.util.ArrayList getServiceRequestHistory() {
+	public ArrayList getServiceRequestHistory() {
+		if (serviceRequestHistory == null)
+			serviceRequestHistory = new ArrayList();
 		return serviceRequestHistory;
 	}
 
@@ -78,7 +90,7 @@ public class LiteStarsCustAccountInformation {
 	 * Sets the appliances.
 	 * @param appliances The appliances to set
 	 */
-	public void setAppliances(java.util.ArrayList appliances) {
+	public void setAppliances(ArrayList appliances) {
 		this.appliances = appliances;
 	}
 
@@ -86,7 +98,7 @@ public class LiteStarsCustAccountInformation {
 	 * Sets the callReportHistory.
 	 * @param callReportHistory The callReportHistory to set
 	 */
-	public void setCallReportHistory(java.util.ArrayList callReportHistory) {
+	public void setCallReportHistory(ArrayList callReportHistory) {
 		this.callReportHistory = callReportHistory;
 	}
 
@@ -102,7 +114,7 @@ public class LiteStarsCustAccountInformation {
 	 * Sets the inventorys.
 	 * @param inventorys The inventorys to set
 	 */
-	public void setInventories(java.util.ArrayList inventories) {
+	public void setInventories(ArrayList inventories) {
 		this.inventories = inventories;
 	}
 
@@ -110,7 +122,7 @@ public class LiteStarsCustAccountInformation {
 	 * Sets the lmPrograms.
 	 * @param lmPrograms The lmPrograms to set
 	 */
-	public void setLmPrograms(java.util.ArrayList lmPrograms) {
+	public void setLmPrograms(ArrayList lmPrograms) {
 		this.lmPrograms = lmPrograms;
 	}
 
@@ -119,7 +131,7 @@ public class LiteStarsCustAccountInformation {
 	 * @param serviceRequestHistory The serviceRequestHistory to set
 	 */
 	public void setServiceRequestHistory(
-		java.util.ArrayList serviceRequestHistory) {
+		ArrayList serviceRequestHistory) {
 		this.serviceRequestHistory = serviceRequestHistory;
 	}
 
@@ -173,9 +185,11 @@ public class LiteStarsCustAccountInformation {
 
 	/**
 	 * Returns the serviceCompanies.
-	 * @return java.util.ArrayList
+	 * @return ArrayList
 	 */
-	public java.util.ArrayList getServiceCompanies() {
+	public ArrayList getServiceCompanies() {
+		if (serviceCompanies == null)
+			serviceCompanies = new ArrayList();
 		return serviceCompanies;
 	}
 
@@ -183,7 +197,7 @@ public class LiteStarsCustAccountInformation {
 	 * Sets the serviceCompanies.
 	 * @param serviceCompanies The serviceCompanies to set
 	 */
-	public void setServiceCompanies(java.util.ArrayList serviceCompanies) {
+	public void setServiceCompanies(ArrayList serviceCompanies) {
 		this.serviceCompanies = serviceCompanies;
 	}
 

@@ -12,6 +12,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.CustomerSelectionList;
 import com.cannontech.database.db.stars.CustomerListEntry;
+import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
@@ -31,15 +32,24 @@ public class ServerUtils {
 
     // Increment this for every message
     private static long userMessageIDCounter = 1;
+    private static PILConnectionServlet connContainer = null;
     
     private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
 
+	public static void setPILConnectionServlet(PILConnectionServlet servlet) {
+		connContainer = servlet;
+	}
+	
     public static void sendCommand(String command)
     {
+		if (connContainer == null) {
+			CTILogger.error( "Cannot get PIL client connection" );
+			return;
+		}
+		
         com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
             new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
-
-        SOAPServer.getInstance().getPILClientConnection().write(req);
+        connContainer.getConnection().write( req );
 
         CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
     }
@@ -272,4 +282,25 @@ public class ServerUtils {
 		DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
     	SOAPServer.getInstance().getClientConnection().write( msg );
 	}
+	
+	public static boolean callNumberExists(String callNo, int energyCompanyID) throws com.cannontech.common.util.CommandExecutionException {
+		String sql = "SELECT CallID FROM CallReportBase call, ECToCallReportMapping map "
+				   + "WHERE CallNumber = '" + callNo + "' AND call.CallID = map.CallReportID AND map.EnergyCompanyID = " + energyCompanyID;
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		stmt.execute();
+		return (stmt.getRowCount() > 0);
+	}
+	
+	public static boolean orderNumberExists(String orderNo, int energyCompanyID) throws com.cannontech.common.util.CommandExecutionException {
+		String sql = "SELECT OrderID FROM WorkOrderBase o, ECToWorkOrderMapping map "
+				   + "WHERE OrderNumber = '" + orderNo + "' AND o.OrderID = map.WorkOrderID AND map.EnergyCompanyID = " + energyCompanyID;
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+				sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+		
+		stmt.execute();
+		return (stmt.getRowCount() > 0);
+	}
+
 }

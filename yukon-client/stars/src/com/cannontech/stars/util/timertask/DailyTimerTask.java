@@ -145,7 +145,7 @@ public class DailyTimerTask extends StarsTimerTask {
 							
 							for (int l = 0; l < programs.size(); l++) {
 								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) programs.get(l);
-								if (liteProg.getProgramID() != progEvent.getLMProgramID().intValue()) continue;
+								if (liteProg.getLmProgram().getProgramID() != progEvent.getLMProgramID().intValue()) continue;
 								
 								ArrayList progHist = liteProg.getProgramHistory();
 								if (progHist == null) break;

@@ -13,7 +13,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.*;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -36,7 +36,7 @@ public class SOAPClient extends HttpServlet {
 
     private static String SOAP_SERVER_URL = null;
     private static SOAPMessenger soapMsgr = null;
-    private static boolean serverInitiated = false;
+    private static boolean serverAtRemote = false;
 
     private static final String loginURL = "/login.jsp";
     private static final String homeURL = "/operator/Operations.jsp";
@@ -44,19 +44,25 @@ public class SOAPClient extends HttpServlet {
     public SOAPClient() {
         super();
     }
-	
-	public static SOAPMessenger getSOAPMessenger() {
-		if (soapMsgr == null) {
-			try {
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle( "config" );
-				SOAP_SERVER_URL = bundle.getString( "soap_server" );
-			}
-			catch (java.util.MissingResourceException mre) {
-				SOAP_SERVER_URL = "http://localhost/servlet/SOAPServer";
-			}
-			soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
+
+	/**
+	 * @see javax.servlet.GenericServlet#init()
+	 */
+	public void init() throws ServletException {
+		super.init();
+		try {
+			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle( "config" );
+			SOAP_SERVER_URL = bundle.getString( "soap_server" );
+			CTILogger.info( "SOAP Server is remotely at \"" + SOAP_SERVER_URL + "\"" );
+			
+			serverAtRemote = true;
+			ServerUtils.setPILConnectionServlet( (com.cannontech.servlet.PILConnectionServlet)
+        			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
 		}
-		return soapMsgr;
+		catch (java.util.MissingResourceException mre) {
+			SOAP_SERVER_URL = "http://localhost/servlet/SOAPServer";
+		}
+		soapMsgr = new SOAPMessenger( SOAP_SERVER_URL );
 	}
 
     private StarsOperation sendRecvOperation(StarsOperation operation) {
@@ -66,7 +72,7 @@ public class SOAPClient extends HttpServlet {
             String reqStr = XMLUtil.removeXMLDecl( sw.toString() );
 
             CTILogger.info( "*** Send Message ***  " + reqStr );
-            String respStr = getSOAPMessenger().call( reqStr );
+            String respStr = soapMsgr.call( reqStr );
             CTILogger.info( "*** Receive Message ***  " + respStr );
 
             StringReader sr = new StringReader( respStr );
@@ -80,19 +86,14 @@ public class SOAPClient extends HttpServlet {
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
+    	String referer = req.getHeader( "referer" );
         String action = req.getParameter( "action" );
-        if (action == null) return;
+        if (action == null) action = "";
 
         HttpSession session = req.getSession(false);
         if (session == null && !action.endsWith("Login")) {
         	resp.sendRedirect( loginURL ); return;
         }
-
-    	// call the SOAPServer once if it has been initiated
-    	if (!serverInitiated) {
-    		if (sendRecvOperation( new StarsOperation() ) != null)
-    			serverInitiated = true;
-    	}
     	
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;
@@ -150,8 +151,8 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("ReloadCustAccount")) {
         	clientAction = new ReloadCustAccountAction();
-            destURL = "/operator/Consumer/Update.jsp";
-            nextURL = errorURL = "/operator/Consumer/Update.jsp";
+            destURL = referer;
+            nextURL = errorURL = referer;
         }
         else if (action.equalsIgnoreCase("DeleteCustAccount")) {
         	clientAction = new DeleteCustAccountAction();
@@ -214,38 +215,43 @@ public class SOAPClient extends HttpServlet {
         }
         else if (action.equalsIgnoreCase("GetLMCtrlHist")) {
             clientAction = new GetLMCtrlHistAction();
-            destURL = req.getParameter(ServletUtils.ATT_REDIRECT) + "&REFERRER=" + java.net.URLEncoder.encode( req.getParameter(ServletUtils.ATT_REFERRER) );
-            nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
+            session.setAttribute( ServletUtils.ATT_REFERRER, referer );
+            destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+            nextURL = errorURL = referer;
+        }
+        else if (action.equalsIgnoreCase("GetNextCallNo")) {
+        	clientAction = new GetNextCallNumberAction();
+        	destURL = "/operator/Consumer/CreateCalls.jsp";
+        	nextURL = errorURL = "/operator/Consumer/CreateCalls.jsp?getCallNo=failed";
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        	if (user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
-	        	clientAction = new CreateCallAction();
-	        else {
-	        	MultiAction actions = new MultiAction();
-	        	actions.addAction( new CallTrackingAction(), req, session );
-	        	actions.addAction( new CreateCallAction(), req, session );
-	        	clientAction = (ActionBase) actions;
-	        }
+        	clientAction = new CreateCallAction();
         	destURL = "/operator/Consumer/Calls.jsp";
         	nextURL = errorURL = "/operator/Consumer/CreateCalls.jsp";
+        }
+        else if (action.equalsIgnoreCase("UpdateCalls")) {
+        	clientAction = new UpdateCallReportAction();
+        	destURL = "/operator/Consumer/Calls.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("CallTracking")) {
         	clientAction = new CallTrackingAction();
         	destURL = "/operator/Consumer/Calls.jsp";
         }
+        else if (action.equalsIgnoreCase("GetNextOrderNo")) {
+        	clientAction = new GetNextOrderNumberAction();
+        	destURL = "/operator/Consumer/Service.jsp";
+        	nextURL = errorURL = "/operator/Consumer/Service.jsp?getOrderNo=failed";
+        }
         else if (action.equalsIgnoreCase("CreateOrder")) {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        	if (user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
-	        	clientAction = new CreateServiceRequestAction();
-	        else {
-	        	MultiAction actions = new MultiAction();
-	        	actions.addAction( new GetServiceHistoryAction(), req, session );
-	        	actions.addAction( new CreateServiceRequestAction(), req, session );
-	        	clientAction = (ActionBase) actions;
-	        }
+        	clientAction = new CreateServiceRequestAction();
         	destURL = "/operator/Consumer/ServiceSummary.jsp";
         	nextURL = errorURL = "/operator/Consumer/Service.jsp";
+        }
+        else if (action.equalsIgnoreCase("UpdateOrders")) {
+        	clientAction = new UpdateServiceRequestAction();
+        	destURL = "/operator/Consumer/ServiceSummary.jsp";
+        	nextURL = errorURL = "/operator/Consumer/ServiceSummary.jsp";
         }
         else if (action.equalsIgnoreCase("GetServiceHistory")) {
         	clientAction = new GetServiceHistoryAction();
@@ -261,6 +267,16 @@ public class SOAPClient extends HttpServlet {
         	destURL = "/operator/Consumer/Appliance.jsp";
         	nextURL = errorURL = "/operator/Consumer/CreateAppliances.jsp";
         }
+        else if (action.equalsIgnoreCase("UpdateAppliance")) {
+        	clientAction = new UpdateApplianceAction();
+        	destURL = referer;
+        	nextURL = errorURL = referer;
+        }
+        else if (action.equalsIgnoreCase("DeleteAppliance")) {
+        	clientAction = new DeleteApplianceAction();
+        	destURL = "/operator/Consumer/Update.jsp";
+        	nextURL = errorURL = req.getHeader( "referer" );
+        }
         else if (action.equalsIgnoreCase("CreateLMHardware")) {
         	clientAction = new CreateLMHardwareAction();
         	destURL = "/operator/Consumer/Inventory.jsp";
@@ -271,10 +287,15 @@ public class SOAPClient extends HttpServlet {
         	destURL = "/operator/Consumer/Inventory.jsp";
         	nextURL = errorURL = "/operator/Consumer/Inventory.jsp";
         }
+        else if (action.equalsIgnoreCase("DeleteLMHardware")) {
+        	clientAction = new DeleteLMHardwareAction();
+        	destURL = "/operator/Consumer/Update.jsp";
+        	nextURL = errorURL = req.getHeader( "referer" );
+        }
         else if (action.equalsIgnoreCase("UpdateLogin")) {
         	clientAction = new UpdateLoginAction();
-        	destURL = "/operator/Consumer/Password.jsp";
-        	nextURL = errorURL = "/operator/Consumer/Password.jsp";
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("UpdateThermostatSchedule")) {
         	clientAction = new UpdateThermostatScheduleAction();
@@ -287,7 +308,9 @@ public class SOAPClient extends HttpServlet {
         	nextURL = errorURL = "/user/ConsumerStat/stat/Thermostat.jsp";
         }
         else {
-            CTILogger.info( "SOAPClient: Invalid action type: " + action );
+            CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");
+        	session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid action type '" + action + "'");
+        	resp.sendRedirect( referer ); return;
         }
 
         if (clientAction != null) {

@@ -16,6 +16,7 @@ public class LiteLMProgram extends LiteBase {
 	private String programName = null;
 	private int webSettingsID = com.cannontech.database.db.stars.CustomerWebConfiguration.NONE_INT;
 	private String programCategory = null;
+	private int[] groupIDs = null;
 	
 	public LiteLMProgram() {
 		super();
@@ -24,15 +25,6 @@ public class LiteLMProgram extends LiteBase {
 	public LiteLMProgram(int progID) {
 		super();
 		setProgramID( progID );
-		setLiteType( LiteTypes.STARS_LMPROGRAM );
-	}
-	
-	public LiteLMProgram(int progID, String progName, int configID, String progCategory) {
-		super();
-		setProgramID( progID );
-		programName = progName;
-		webSettingsID = configID;
-		programCategory = progCategory;
 		setLiteType( LiteTypes.STARS_LMPROGRAM );
 	}
 	
@@ -90,6 +82,22 @@ public class LiteLMProgram extends LiteBase {
 	 */
 	public void setProgramCategory(String programCategory) {
 		this.programCategory = programCategory;
+	}
+
+	/**
+	 * Returns the groupIDs.
+	 * @return int[]
+	 */
+	public int[] getGroupIDs() {
+		return groupIDs;
+	}
+
+	/**
+	 * Sets the groupIDs.
+	 * @param groupIDs The groupIDs to set
+	 */
+	public void setGroupIDs(int[] groupIDs) {
+		this.groupIDs = groupIDs;
 	}
 
 }

@@ -34,6 +34,8 @@ public class StarsCreateServiceRequestResponse implements java.io.Serializable {
 
     private StarsServiceRequest _starsServiceRequest;
 
+    private StarsServiceCompany _starsServiceCompany;
+
 
       //----------------/
      //- Constructors -/
@@ -47,6 +49,16 @@ public class StarsCreateServiceRequestResponse implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsServiceCompany'.
+     * 
+     * @return the value of field 'starsServiceCompany'.
+    **/
+    public StarsServiceCompany getStarsServiceCompany()
+    {
+        return this._starsServiceCompany;
+    } //-- StarsServiceCompany getStarsServiceCompany() 
 
     /**
      * Returns the value of field 'starsServiceRequest'.
@@ -94,6 +106,17 @@ public class StarsCreateServiceRequestResponse implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'starsServiceCompany'.
+     * 
+     * @param starsServiceCompany the value of field
+     * 'starsServiceCompany'.
+    **/
+    public void setStarsServiceCompany(StarsServiceCompany starsServiceCompany)
+    {
+        this._starsServiceCompany = starsServiceCompany;
+    } //-- void setStarsServiceCompany(StarsServiceCompany) 
 
     /**
      * Sets the value of field 'starsServiceRequest'.

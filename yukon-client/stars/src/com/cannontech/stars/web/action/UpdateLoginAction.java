@@ -87,47 +87,7 @@ public class UpdateLoginAction implements ActionBase {
             LiteYukonUser liteUser = liteAcctInfo.getYukonUser();
             
             if (liteUser == null) {
-	            com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
-	            com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
-	            
-	            dbUser.setUserID( com.cannontech.database.db.user.YukonUser.getNextUserID() );
-            	dbUser.setUsername( updateLogin.getUsername() );
-            	dbUser.setPassword( updateLogin.getPassword() );
-            	dbUser.setStatus( "Enabled" );
-	            
-	            DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-	            LiteYukonGroup liteGroup = null;
-	            
-	            synchronized (cache) {
-	            	Iterator it = cache.getAllYukonGroups().iterator();
-	            	while (it.hasNext()) {
-	            		LiteYukonGroup g = (LiteYukonGroup) it.next();
-	            		if (g.getGroupName().equalsIgnoreCase("Web Demo Residential Customers")) {
-	            			liteGroup = g;
-	            			break;
-	            		}
-	            	}
-	            }
-	            
-	            com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
-	            dbGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
-	            dataUser.getYukonGroups().addElement( dbGroup );
-	            
-            	dataUser = (com.cannontech.database.data.user.YukonUser)
-	            		Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
-	            
-	            LiteCustomerContact litePrimContact = SOAPServer.getCustomerContact( energyCompanyID, liteAcctInfo.getCustomerBase().getPrimaryContactID() );
-	            com.cannontech.database.db.customer.CustomerContact primContact =
-	            		(com.cannontech.database.db.customer.CustomerContact) StarsLiteFactory.createDBPersistent( litePrimContact );
-	            		
-	            primContact.setLogInID( dbUser.getUserID() );
-	            com.cannontech.database.db.stars.CustomerContact contactWrapper = new com.cannontech.database.db.stars.CustomerContact( primContact );
-	            Transaction.createTransaction( Transaction.UPDATE, contactWrapper ).execute();
-	            
-	            liteUser = new LiteYukonUser( dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getPassword() );
-	            liteAcctInfo.setYukonUser( liteUser );
-	            
-	            ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
+            	liteUser = createLogin( liteAcctInfo, energyCompanyID, updateLogin.getUsername(), updateLogin.getPassword() );
             }
             else {
 		        com.cannontech.database.db.user.YukonUser dbUser = new com.cannontech.database.db.user.YukonUser();
@@ -146,11 +106,10 @@ public class UpdateLoginAction implements ActionBase {
 	            ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
             }
             
-            StarsUser starsUser = StarsLiteFactory.createStarsUser( liteUser );
-            StarsUpdateLoginResponse resp = new StarsUpdateLoginResponse();
-            resp.setStarsUser( starsUser );
+            StarsSuccess success = new StarsSuccess();
+            success.setDescription( "User login updated successfully" );
             
-            respOper.setStarsUpdateLoginResponse( resp );
+            respOper.setStarsSuccess( success );
             return SOAPUtil.buildSOAPMessage( respOper );
         }
         catch (Exception e) {
@@ -182,13 +141,27 @@ public class UpdateLoginAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			StarsUpdateLoginResponse resp = operation.getStarsUpdateLoginResponse();
-			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			StarsSuccess success = operation.getStarsSuccess();
+			if (success == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			accountInfo.setStarsUser( resp.getStarsUser() );
+			if (ServerUtils.isOperator( user )) {	// Mixed with server side code!!!
+				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+				StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
+				StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
+						user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+						
+				StarsUser starsUser = accountInfo.getStarsUser();
+				if (starsUser == null) {
+					starsUser = new StarsUser();
+					accountInfo.setStarsUser( starsUser );
+				}
+				starsUser.setUsername( updateLogin.getUsername() );
+				starsUser.setPassword( updateLogin.getPassword() );
+			}
+			else if (ServerUtils.isResidentialCustomer( user )) {
+				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, success.getDescription() );
+			}
 			
             return 0;
         }
@@ -197,6 +170,52 @@ public class UpdateLoginAction implements ActionBase {
         }
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
+	}
+	
+	public static LiteYukonUser createLogin(LiteStarsCustAccountInformation liteAcctInfo, int energyCompanyID, String username, String password)
+	throws com.cannontech.database.TransactionException {
+        com.cannontech.database.data.user.YukonUser dataUser = new com.cannontech.database.data.user.YukonUser();
+        com.cannontech.database.db.user.YukonUser dbUser = dataUser.getYukonUser();
+        
+        dbUser.setUserID( com.cannontech.database.db.user.YukonUser.getNextUserID() );
+    	dbUser.setUsername( username );
+    	dbUser.setPassword( password );
+    	dbUser.setStatus( "Enabled" );
+        
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        LiteYukonGroup liteGroup = null;
+        
+        synchronized (cache) {
+        	Iterator it = cache.getAllYukonGroups().iterator();
+        	while (it.hasNext()) {
+        		LiteYukonGroup g = (LiteYukonGroup) it.next();
+        		if (g.getGroupName().equalsIgnoreCase("Web Demo Residential Customers")) {
+        			liteGroup = g;
+        			break;
+        		}
+        	}
+        }
+        
+        com.cannontech.database.db.user.YukonGroup dbGroup = new com.cannontech.database.db.user.YukonGroup();
+        dbGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
+        dataUser.getYukonGroups().addElement( dbGroup );
+        
+    	dataUser = (com.cannontech.database.data.user.YukonUser)
+        		Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
+        
+        LiteCustomerContact litePrimContact = SOAPServer.getCustomerContact( energyCompanyID, liteAcctInfo.getCustomerBase().getPrimaryContactID() );
+        com.cannontech.database.db.customer.CustomerContact primContact =
+        		(com.cannontech.database.db.customer.CustomerContact) StarsLiteFactory.createDBPersistent( litePrimContact );
+        		
+        primContact.setLogInID( dbUser.getUserID() );
+        com.cannontech.database.db.stars.CustomerContact contactWrapper = new com.cannontech.database.db.stars.CustomerContact( primContact );
+        Transaction.createTransaction( Transaction.UPDATE, contactWrapper ).execute();
+        
+        LiteYukonUser liteUser = new LiteYukonUser( dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getPassword() );
+        liteAcctInfo.setYukonUser( liteUser );
+        ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
+        
+        return liteUser;
 	}
 
 }

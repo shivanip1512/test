@@ -13,7 +13,7 @@ import com.cannontech.database.data.lite.LiteBase;
  */
 public class LiteStarsLMControlHistory extends LiteBase {
 	
-	private long timeBase = 0;
+	private long timeBase = 0;	// Time stamp of last index update
 	private int currentYearStartIndex = 0;
 	private int currentMonthStartIndex = 0;
 	private int currentWeekStartIndex = 0;
@@ -40,16 +40,14 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	public void updateStartIndices() {
 		if (lmControlHistory == null) return;
 		
-		Calendar oldCal = Calendar.getInstance();
-		oldCal.setTime( new java.util.Date(timeBase) );
+		java.util.Date endOfDay = com.cannontech.util.ServletUtil.getTommorow();
+		if (Math.abs(timeBase - endOfDay.getTime()) < 1000) return;	// The time stamp is on the same day
+		timeBase = endOfDay.getTime();
 		Calendar limitCal = Calendar.getInstance();
-		timeBase = limitCal.getTime().getTime();
 		
-		// Set the time limit to the beginning of the day
-		limitCal.set(Calendar.HOUR_OF_DAY, 0);
-		limitCal.set(Calendar.MINUTE, 0);
-		limitCal.set(Calendar.SECOND, 0);
-		if (oldCal.after(limitCal)) return;
+		// Set the time limit to the beginning of today
+		limitCal.setTime( endOfDay );
+		limitCal.add( Calendar.DAY_OF_YEAR, -1 );
 			
 		int curIndex = lmControlHistory.size() - 1;
 		while (curIndex >= 0) {
@@ -62,27 +60,23 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		}
 		if (curIndex < 0) currentDayStartIndex = 0;
 		
-		// Set the time limit to the beggining of the week
-		Calendar limitCal2 = Calendar.getInstance();
-		limitCal2.setTime( limitCal.getTime() );
-		limitCal2.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		// Set the time limit to a week ago
+		limitCal.setTime( endOfDay );
+		limitCal.add( Calendar.WEEK_OF_YEAR, -1 );
 		
-		if (oldCal.before(limitCal2)) {
-			int curIndex2 = curIndex;
-			while (curIndex2 >= 0) {
-				LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex2 );
-				if (ctrlHist.getStartDateTime() < limitCal2.getTime().getTime()) {
-					currentWeekStartIndex = curIndex2 + 1;
-					break;
-				}
-				curIndex2--;
+		while (curIndex >= 0) {
+			LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex );
+			if (ctrlHist.getStartDateTime() < limitCal.getTime().getTime()) {
+				currentWeekStartIndex = curIndex + 1;
+				break;
 			}
-			if (curIndex2 < 0) currentWeekStartIndex = 0;
+			curIndex--;
 		}
+		if (curIndex < 0) currentWeekStartIndex = 0;
 		
-		// Set the time limit to the beginning of the month
-		limitCal.set(Calendar.DAY_OF_MONTH, 1);
-		if (oldCal.after(limitCal)) return;
+		// Set the time limit to a month ago
+		limitCal.setTime( endOfDay );
+		limitCal.add( Calendar.MONTH, -1 );
 		
 		while (curIndex >= 0) {
 			LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex );
@@ -94,9 +88,9 @@ public class LiteStarsLMControlHistory extends LiteBase {
 		}
 		if (curIndex < 0) currentMonthStartIndex = 0;
 		
-		// Set the time limit to the beginning of the year
-		limitCal.set(Calendar.MONTH, Calendar.JANUARY);
-		if (oldCal.after(limitCal)) return;
+		// Set the time limit to a year ago
+		limitCal.setTime( endOfDay );
+		limitCal.add( Calendar.YEAR, -1 );
 		
 		while (curIndex >= 0) {
 			LiteLMControlHistory ctrlHist = (LiteLMControlHistory) lmControlHistory.get( curIndex );

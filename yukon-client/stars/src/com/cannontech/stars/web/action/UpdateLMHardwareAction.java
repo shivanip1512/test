@@ -7,7 +7,6 @@ import java.util.*;
 
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -135,26 +134,50 @@ public class UpdateLMHardwareAction implements ActionBase {
             		Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
             StarsLiteFactory.setLiteLMHardware( liteHw, hw );
             
-            // Update the "install" event if necessary
+            // Update the "install" and "config" event if necessary
             int installEntryID = StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION ),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_INSTALL ).getEntryID();
+            int configEntryID = StarsCustListEntryFactory.getStarsCustListEntry(
+            		(LiteCustomerSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_LMCUSTOMERACTION ),
+            		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_CONFIG ).getEntryID();
             
             ArrayList hwHist = liteHw.getLmHardwareHistory();
             for (int i = 0; i < hwHist.size(); i++) {
             	LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
             	if (liteEvent.getActionID() == installEntryID) {
-            		if (!liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
+            		long installTime = liteEvent.getEventDateTime();
+            		boolean timeChanged = Math.abs(installTime - updateHw.getInstallDate().getTime()) > 1000;
+            		
+            		if (timeChanged || !liteEvent.getNotes().equals( updateHw.getInstallationNotes() )) {
             			com.cannontech.database.data.stars.event.LMHardwareEvent event =
             					(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
             			com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
             			
+            			eventDB.setEventDateTime( updateHw.getInstallDate() );
             			eventDB.setNotes( updateHw.getInstallationNotes() );
             			eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
             					Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
             					
             			StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
             		}
+            		
+            		if (++i < hwHist.size()) {
+		            	liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
+		            	if (liteEvent.getActionID() == configEntryID && Math.abs(installTime - liteEvent.getEventDateTime()) < 1000 && timeChanged) {
+		            		// "Config" event happened at the same time as the "install event"
+	            			com.cannontech.database.data.stars.event.LMHardwareEvent event =
+	            					(com.cannontech.database.data.stars.event.LMHardwareEvent) StarsLiteFactory.createDBPersistent( liteEvent );
+	            			com.cannontech.database.db.stars.event.LMCustomerEventBase eventDB = event.getLMCustomerEventBase();
+	            			
+	            			eventDB.setEventDateTime( updateHw.getInstallDate() );
+	            			eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
+	            					Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
+	            					
+	            			StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
+		            	}
+            		}
+            		
             		break;
             	}
             }
