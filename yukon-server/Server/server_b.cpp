@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/10 16:29:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/28 16:11:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -416,10 +416,10 @@ int  CtiServer::clientPurgeQuestionables(PULONG pDeadClients)
 }
 
 
-CtiServer::CtiServer(int QueueSize) :
+CtiServer::CtiServer() :
 _listenerAvailable(0),
 mConnectionTable(),
-MainQueue_(QueueSize)
+MainQueue_()
 {
 }
 
