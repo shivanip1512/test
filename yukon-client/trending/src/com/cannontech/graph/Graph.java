@@ -12,16 +12,25 @@ import java.awt.Rectangle;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.w3c.dom.Element;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 
 public class Graph implements GraphDefines
@@ -95,29 +104,21 @@ public JCChart getChart()
 public com.cannontech.message.util.ClientConnection getClientConnection()
 {
 	if( connToDispatch == null)
-		initDispatchConnection();	
+		connect();	
 	return connToDispatch;
 }
-private void initDispatchConnection() 
+private void connect() 
 {
-	String host = null;
-	int port;
+	String host = "127.0.0.1";
+	int port = 1510;
 	try
 	{
-		java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-		host = bundle.getString("dispatch_machine");
-		port = (new Integer(bundle.getString("dispatch_port"))).intValue();
+		host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+		port = Integer.parseInt( RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
 	}
-	catch ( java.util.MissingResourceException mre )
+	catch( Exception e)
 	{
-		mre.printStackTrace();
-		host = "127.0.0.1";
-		port = 1510;
-	}
-	catch ( NumberFormatException nfe )
-	{
-		nfe.printStackTrace();
-		port = 1510;
+		CTILogger.error( e.getMessage(), e );
 	}
 
 	connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
@@ -800,4 +801,92 @@ public void getDataNow(java.util.List paobjects)
 		trendProperties = properties;
 	}
 
+	/**
+	 * @param item
+	 */
+	public void create(DBPersistent item) 
+	{
+		if( item != null )
+		{
+			try
+			{
+				Transaction t = Transaction.createTransaction(Transaction.INSERT, item);
+				item = t.execute();
+
+				//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
+				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_ADD);
+			
+				for( int i = 0; i < dbChange.length; i++)
+				{
+					DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+					getClientConnection().write(dbChange[i]);
+				}
+			}
+			catch( com.cannontech.database.TransactionException e )
+			{
+				CTILogger.error( e.getMessage(), e );
+			}
+		}
+	}
+	/**
+	 * @param item
+	 */
+	public void delete(DBPersistent item)
+	{
+		try
+		{
+			Transaction t = Transaction.createTransaction( Transaction.DELETE, item);
+			item = t.execute();
+			
+			//write the DBChangeMessage out to Dispatch since it was a Successfull DELETE
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_DELETE);
+					
+			for( int i = 0; i < dbChange.length; i++)
+			{
+				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+				getClientConnection().write(dbChange[i]);
+			}
+			/**TODO think about this a bit more, is this really what we want to do?*/
+			if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.CategoryPlot)
+			{
+				((CategoryPlot)getFreeChart().getPlot()).setDataset(null);
+				((CategoryPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+			}
+			else if( getFreeChart().getPlot() instanceof org.jfree.chart.plot.XYPlot)
+			{
+				((XYPlot)getFreeChart().getPlot()).setDataset(null);
+				((XYPlot)getFreeChart().getPlot()).setSecondaryDataset(0, null);
+			}
+		}
+		catch( com.cannontech.database.TransactionException e )
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
+	/**
+	 * @param item
+	 */
+	public void update(DBPersistent item)
+	{
+		try
+		{
+			Transaction t = Transaction.createTransaction( Transaction.UPDATE, item);
+			item = (GraphDefinition)t.execute();
+			
+			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_UPDATE);
+					
+			for( int i = 0; i < dbChange.length; i++)
+			{
+				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+				getClientConnection().write(dbChange[i]);
+			}
+		}
+		catch( com.cannontech.database.TransactionException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		//force an update on the GDEF update
+		setUpdateTrend(true);
+	}
 }
