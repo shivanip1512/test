@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/10/19 20:26:07 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/26 15:30:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,6 +140,10 @@ static int MyAllocHook(int nAllocType, void *pvData,
             twnetyfourcnt++;
         }
         else if( (nSize == 80) )
+        {
+            twnetyfourcnt++;
+        }
+        else if( (nSize == 144) )
         {
             twnetyfourcnt++;
         }
