@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/20 15:11:23 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/28 18:22:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include "devicetypes.h"
 #include "dev_dlcbase.h"
 #include "dsm2.h"
+#include "utility.h"
 
 CtiDeviceDLCBase::CtiDeviceDLCBase()   {}
 
@@ -124,7 +125,8 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg,
     //    (except the MCT31x;  it had some special error-handling code.  the replaced code
     //     is still there, commented out)
 
-    /*      if(ReturnMsg != NULL)
+    /*
+      if(ReturnMsg != NULL)
       {
          if(!(ReturnMsg->ResultString().isNull()) || ReturnMsg->getData().entries() > 0)
          {
@@ -144,8 +146,7 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg,
         if(!(retMsg->ResultString().isNull()) || retMsg->getData().entries() > 0)
         {
             //  if it's an update command
-            if( parse.isKeyValid("flag") &&
-                (parse.getFlags( ) & CMD_FLAG_UPDATE) )
+            if( parse.isKeyValid("flag") && (parse.getFlags( ) & CMD_FLAG_UPDATE) )
             {
                 //  make a copy for VanGogh
                 tmpVGRetMsg = (CtiReturnMsg *)retMsg->replicateMessage( );
@@ -177,7 +178,7 @@ INT CtiDeviceDLCBase::retMsgHandler( RWCString commandStr, CtiReturnMsg *retMsg,
 
 
 
-INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList)
+INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -310,6 +311,32 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
          *  ACH: Find the next route and resubmit request to porter
          *   if no more routes exist, plug the value points!
          */
+
+        if( InMessage->Return.MacroOffset > 0 )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  We should be filling out an OutMessage here if there is a MacroOffset > 0 specified! " << endl;
+            }
+
+            OUTMESS *NewOutMessage = new OUTMESS;
+
+            if(NewOutMessage)
+            {
+                InEchoToOut( InMessage, NewOutMessage);
+                outList.insert( NewOutMessage );
+            }
+        }
+		else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  We should be filling out an OutMessage here if there is a MacroOffset > 0 specified! " << endl;
+        }
+
+
+
     }
 
     return ErrReturn;
@@ -327,12 +354,32 @@ bool CtiDeviceDLCBase::processAdditionalRoutes( INMESS *InMessage ) const
         {
             bret = Route->processAdditionalRoutes(InMessage);
         }
+        else
+        {
+            bret = true;        // Presume the existence of MacroOffset != 0 indicates a GO status!
+        }
     }
     return bret;
 }
 
-inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset() const
+inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
 {
-    return 1L;
+    ULONG offset = 0;
+
+    CtiRoute *Route = 0;
+
+    if(routeid > 0 && (Route = CtiDeviceBase::getRoute( routeid )) != NULL )    // This is "this's" route
+    {
+        if(Route->getType() == MacroRouteType)
+        {
+            offset = 1;
+        }
+    }
+    else
+    {
+        offset = 1;
+    }
+
+    return offset;
 }
 
