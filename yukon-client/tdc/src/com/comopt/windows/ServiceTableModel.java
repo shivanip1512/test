@@ -95,6 +95,7 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
       String destState = e.getOldValue().toString();
       String serviceName = e.getNewValue().toString();
       
+System.out.println("PROP CHNG = " + destState+", " + serviceName+", " + src );
       startRefresh( destState, serviceName, src );
    }
    
@@ -362,8 +363,6 @@ public class ServiceTableModel extends AbstractTableModel implements com.cannont
    	{
 	   	String[] data = JNTServices.getInstance().getAllServices();
 	   	
-System.out.println("*** = " + data );
-
 	   	if( data == null)
 	   		return;
 	   
