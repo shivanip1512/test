@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/11/15 14:08:22 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/02/21 20:32:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,7 +69,12 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             }
             else
             {
-                cout << "Finish some code here " << __FILE__ << " (" << __LINE__ << ")"  << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint ACH. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                autopsy(__FILE__, __LINE__ );
             }
         }
     }
