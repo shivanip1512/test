@@ -9,8 +9,7 @@ import java.util.*;
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.StarsUser;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -68,15 +67,14 @@ public class GetCustSelListsAction implements ActionBase {
             int energyCompanyID = getSelLists.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-				StarsUser user = (StarsUser) session.getAttribute("USER");
-	            if (operator == null && user == null) {
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+	            if (user == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
 	            	return SOAPUtil.buildSOAPMessage( respOper );
 	            }
 	            
-            	energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
+            	energyCompanyID = user.getEnergyCompanyID();
             }
             
             Hashtable selectionListTable = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
@@ -129,12 +127,8 @@ public class GetCustSelListsAction implements ActionBase {
             	selectionListTable.put( list.getListName(), list );
             }
 
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-			if (operator != null)
-	            operator.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
-	        else
-	            user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        	user.setAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable );
             
             return 0;
         }

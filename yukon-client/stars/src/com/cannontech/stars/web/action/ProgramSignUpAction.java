@@ -10,7 +10,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.servlet.SOAPServer;
-import com.cannontech.stars.web.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.StarsCustomerContactFactory;
@@ -78,21 +78,17 @@ public class ProgramSignUpAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
+            }
 			
             StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
             int energyCompanyID = progSignUp.getEnergyCompanyID();
-            
-            if (energyCompanyID <= 0) {
-	            if (operator == null && user == null) {
-	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-	            	return SOAPUtil.buildSOAPMessage( respOper );
-	            }
-	            
-            	energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
-            }
+            if (energyCompanyID <= 0)
+            	energyCompanyID = user.getEnergyCompanyID();
             
             LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.searchByAccountNumber( energyCompanyID, progSignUp.getAccountNumber() );
             com.cannontech.database.data.stars.customer.CustomerAccount account =

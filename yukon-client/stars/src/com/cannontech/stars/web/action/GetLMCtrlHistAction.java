@@ -10,8 +10,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.*;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.StarsUser;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -74,15 +73,14 @@ public class GetLMCtrlHistAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-            if (operator == null && user == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            int energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
+            int energyCompanyID = user.getEnergyCompanyID();
 
             StarsGetLMControlHistory getHist = reqOper.getStarsGetLMControlHistory();
 
@@ -129,14 +127,8 @@ public class GetLMCtrlHistAction implements ActionBase {
             if (ctrlHist == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
 			// Update control history
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-			StarsCustAccountInformation accountInfo = null;
-			
-			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-			else
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsGetLMControlHistory getCtrlHist = reqOper.getStarsGetLMControlHistory();

@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsWebConfigFactory;
 import com.cannontech.stars.xml.StarsGetEnrollmentProgramsResponseFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -77,12 +77,9 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             int energyCompanyID = getEnrProgs.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-				StarsUser user = (StarsUser) session.getAttribute("USER");
-	            if (operator != null)
-	            	energyCompanyID = (int) operator.getEnergyCompanyID();
-	            else if (user != null)
-	            	energyCompanyID = user.getEnergyCompanyID();
+            	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            	if (user != null)
+            		energyCompanyID = user.getEnergyCompanyID();
 	            else {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
@@ -154,12 +151,8 @@ public class GetEnrollmentProgramsAction implements ActionBase {
             if (category != null && category.length() > 0)
             	attName.append("_").append( category.toUpperCase() );
 
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-			if (operator != null)
-	            operator.setAttribute(attName.toString(), programs);
-	        else
-	        	user.setAttribute(attName.toString(), programs);
+        	StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+    		user.setAttribute(attName.toString(), programs);
             
             return 0;
         }

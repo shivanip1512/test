@@ -4,12 +4,15 @@ import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.stars.CustomerListEntry;
 import com.cannontech.database.db.stars.CustomerSelectionList;
 
 import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.*;
@@ -44,18 +47,18 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteStarsEnergyCompany() {
 		super();
-		setLiteType( LiteTypes.STARS_ENERGY_COMPANY );
+		setLiteType( LiteTypes.ENERGY_COMPANY );
 	}
 	
 	public LiteStarsEnergyCompany(int companyID) {
 		super();
 		setLiteID( companyID );
-		setLiteType( LiteTypes.STARS_ENERGY_COMPANY );
+		setLiteType( LiteTypes.ENERGY_COMPANY );
 	}
 	
 	public LiteStarsEnergyCompany(com.cannontech.database.db.company.EnergyCompany energyCompany) {
 		super();
-		setLiteType( LiteTypes.STARS_ENERGY_COMPANY );
+		setLiteType( LiteTypes.ENERGY_COMPANY );
 		setLiteID( energyCompany.getEnergyCompanyID().intValue() );
 		setName( energyCompany.getName() );
 		setRouteID( energyCompany.getRouteID().intValue() );
@@ -876,9 +879,26 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	        	}
 	        }
 	        
-	        if (primContact.getLogInID().intValue() >= 0) {
-		        com.cannontech.database.db.customer.CustomerLogin login = com.cannontech.database.db.customer.CustomerLogin.getCustomerLogin( primContact.getLogInID() );
-		        accountInfo.setYukonUser( (com.cannontech.database.data.lite.LiteYukonUser) StarsLiteFactory.createLite(login) );
+	        int userID = primContact.getLogInID().intValue();
+	        if (userID >= 0) {
+	        	StarsYukonUser user = SOAPServer.getStarsYukonUser( userID );
+	        	if (user == null) {
+					DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+					
+					synchronized(cache) {
+						Iterator i = cache.getAllYukonUsers().iterator();
+						while(i.hasNext()) {
+							LiteYukonUser u = (LiteYukonUser) i.next();
+							if (u.getUserID() == userID) {
+								user = new StarsYukonUser(u);
+					        	SOAPServer.addStarsYukonUser( user );
+								break;
+							}
+						}
+					}		
+	        	}
+	        	
+		        accountInfo.setYukonUser( user );
 	        }
 
             custAcctInfoList.add( accountInfo );

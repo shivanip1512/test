@@ -10,7 +10,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsCallReportFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.CallType;
@@ -43,9 +43,9 @@ public class CreateCallAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			if (operator == null) return null;
-			Hashtable selectionLists = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			if (user == null) return null;
+			Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 			
 			StarsCreateCallReport createCall = new StarsCreateCallReport();			
 			createCall.setCallNumber( req.getParameter("CallNumber") );
@@ -88,14 +88,14 @@ public class CreateCallAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
@@ -109,7 +109,7 @@ public class CreateCallAction implements ActionBase {
             StarsCallReportFactory.setCallReportBase( callReportDB, createCall );
             callReportDB.setAccountID( new Integer(accountInfo.getCustomerAccount().getAccountID()) );
             
-            callReport.setEnergyCompanyID( new Integer((int) operator.getEnergyCompanyID()) );
+            callReport.setEnergyCompanyID( new Integer(user.getEnergyCompanyID()) );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );
             callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
@@ -156,9 +156,9 @@ public class CreateCallAction implements ActionBase {
 			StarsCreateCallReportResponse resp = operation.getStarsCreateCallReportResponse();
 			StarsCallReport call = resp.getStarsCallReport();
 			
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			

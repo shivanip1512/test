@@ -11,7 +11,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.db.stars.customer.*;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
@@ -45,15 +45,15 @@ public class SearchCustAccountAction implements ActionBase {
 
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-            StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) return null;
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) return null;
             
             // Remove the "transient"(account-related) attributes
-            Enumeration enum = (operator == null) ? session.getAttributeNames() : operator.getAttributeNames();
+            Enumeration enum = user.getAttributeNames();
             while (enum.hasMoreElements()) {
             	String attName = (String) enum.nextElement();
             	if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
-        			operator.removeAttribute(attName);
+        			user.removeAttribute(attName);
             }
 
             StarsSearchCustomerAccount searchAccount = new StarsSearchCustomerAccount();
@@ -81,14 +81,14 @@ public class SearchCustAccountAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-            StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            int energyCompanyID = (int) operator.getEnergyCompanyID();
+            int energyCompanyID = user.getEnergyCompanyID();
             Hashtable selectionLists = com.cannontech.stars.web.servlet.SOAPServer.getAllSelectionLists( energyCompanyID );
 
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
@@ -99,8 +99,7 @@ public class SearchCustAccountAction implements ActionBase {
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
             		com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_SEARCHBY_ACCTNO ).getEntryID()) {
             	/* Search by account number */
-            	liteAcctInfo = SOAPServer.searchByAccountNumber(
-            			energyCompanyID, searchAccount.getSearchValue() );
+            	liteAcctInfo = SOAPServer.searchByAccountNumber( energyCompanyID, searchAccount.getSearchValue() );
             }
             else if (searchAccount.getSearchBy().getEntryID() == StarsCustListEntryFactory.getStarsCustListEntry(
             		(LiteCustomerSelectionList) selectionLists.get(com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY),
@@ -130,7 +129,7 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsSearchCustomerAccountResponse resp = new StarsSearchCustomerAccountResponse();
 			
             if (liteAcctInfo != null) {
-	            operator.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+	            user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 	            StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 				resp.setStarsCustAccountInformation( starsAcctInfo );
             }
@@ -220,12 +219,12 @@ public class SearchCustAccountAction implements ActionBase {
 			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
             if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			if (resp.getStarsCustAccountInformation() != null)
-            	operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+            	user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
             else {
             	/* The return value is a list of results */
-            	operator.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
+            	user.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
             	session.setAttribute( ServletUtils.ATT_REDIRECT, "/OperatorDemos/Consumer/SearchResults.jsp" );
             }
             

@@ -9,7 +9,7 @@ import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
@@ -73,11 +73,8 @@ public class GetInterviewQuestionsAction implements ActionBase {
             int energyCompanyID = getQuestions.getEnergyCompanyID();
             
             if (energyCompanyID <= 0) {
-				StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-				StarsUser user = (StarsUser) session.getAttribute("USER");
-	            if (operator != null)
-	            	energyCompanyID = (int) operator.getEnergyCompanyID();
-	            else if (user != null)
+				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+	            if (user != null)
 	            	energyCompanyID = user.getEnergyCompanyID();
 	            else {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
@@ -142,12 +139,8 @@ public class GetInterviewQuestionsAction implements ActionBase {
             	session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
             }
 
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-			if (operator != null)
-	            operator.setAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS, questions);
-	        else
-	        	user.setAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS, questions);
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        	user.setAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS, questions);
             
             return 0;
         }

@@ -9,9 +9,9 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.data.stars.customer.CustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsUser;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountInformationFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -69,29 +69,28 @@ public class GetCustAccountAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-			StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-            StarsUser user = (StarsUser) session.getAttribute("USER");
-            if (operator == null && user == null) {
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
-                return SOAPUtil.buildSOAPMessage( respOper );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
+            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+            			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
+            	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            int energyCompanyID = (operator != null) ? (int) operator.getEnergyCompanyID() : user.getEnergyCompanyID();
+        	int energyCompanyID = user.getEnergyCompanyID();
 
             StarsGetCustomerAccount getAccount = reqOper.getStarsGetCustomerAccount();
             LiteStarsCustAccountInformation liteAcctInfo = null;
             
             if (getAccount.getAccountID() == -1) {
             	/* Get the first customer account after user login */
-				com.cannontech.database.db.stars.customer.CustomerAccount[] accounts = user.getCustomerAccounts();
-				if (accounts == null || accounts.length == 0) {
+				int[] accountIDs = user.getCustomerAccountIDs();
+				if (accountIDs == null || accountIDs.length == 0) {
 	                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "No account information found for this customer") );
 	                return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accounts[0].getAccountID().intValue(), true );
+				liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, accountIDs[0], true );
             }
             else
 	            liteAcctInfo = SOAPServer.getCustAccountInformation( energyCompanyID, getAccount.getAccountID(), true );
@@ -101,13 +100,11 @@ public class GetCustAccountAction implements ActionBase {
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
-            if (operator != null)
-            	operator.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
-            else
-        		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+            
+    		user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
         	
 			StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation(
-					liteAcctInfo, energyCompanyID, (operator != null) );
+					liteAcctInfo, energyCompanyID, ServerUtils.isOperator(user) );
 			
 			StarsGetCustomerAccountResponse resp = new StarsGetCustomerAccountResponse();
 			resp.setStarsCustAccountInformation( starsAcctInfo );
@@ -148,12 +145,8 @@ public class GetCustAccountAction implements ActionBase {
             StarsCustAccountInformation accountInfo = resp.getStarsCustAccountInformation();
             if (accountInfo == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-			if (operator != null)
-				operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
-			else
-            	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
+            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        	user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
             
             return 0;
         }

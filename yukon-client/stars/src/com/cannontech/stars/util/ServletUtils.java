@@ -41,16 +41,19 @@ public class ServletUtils {
 	}
 	
 	public static final String TRANSIENT_ATT_LEADING = "$$";
-	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
-	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
-	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
-	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
-	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
+	
 	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
 	public static final String ATT_REDIRECT = "REDIRECT";
 	public static final String ATT_REDIRECT2 = "REDIRECT2";
 	public static final String ATT_REFERRER = "REFERRER";
 	public static final String ATT_OVER_PAGE_ACTION = "OVER_PAGE_ACTION";
+	
+	public static final String ATT_YUKON_USER = "YUKON_USER";
+	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
+	public static final String ATT_ENROLLMENT_PROGRAMS = "ENROLLMENT_PROGRAMS";
+	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
+	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
+	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
 

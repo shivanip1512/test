@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.AdditionalContact;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
@@ -34,12 +34,12 @@ public class UpdateContacts extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session == null) resp.sendRedirect(loginURL);
 
-		StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-		if (operator == null) {
+		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+		if (user == null) {
 			resp.sendRedirect(loginURL); return;
 		}
 		
-        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) operator.getAttribute(
+        StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute(
         		ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
         if (account == null) {

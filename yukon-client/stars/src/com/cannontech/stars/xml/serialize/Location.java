@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: Location.java,v 1.1.2.12 2003/01/09 21:37:41 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.1.2.12 $ $Date: 2003/01/09 21:37:41 $
+ * @version $Revision$ $Date$
 **/
 public class Location extends StarsCustListEntry 
 implements java.io.Serializable

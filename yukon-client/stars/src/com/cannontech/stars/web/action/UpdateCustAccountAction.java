@@ -8,7 +8,7 @@ import java.util.*;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustAccountFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
@@ -48,12 +48,10 @@ public class UpdateCustAccountAction implements ActionBase {
 
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			StarsCustAccountInformation accountInfo = null;
-			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-			else
-				accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+			if (user != null)
+				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null) return null;
 
             StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
@@ -124,17 +122,17 @@ public class UpdateCustAccountAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            int energyCompanyID = (int) operator.getEnergyCompanyID();
+            int energyCompanyID = user.getEnergyCompanyID();
             StarsUpdateCustomerAccount updateAccount = reqOper.getStarsUpdateCustomerAccount();
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information") );
@@ -364,8 +362,8 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsUpdateCustomerAccountResponse resp = operation.getStarsUpdateCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-			operator.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
 			
             return 0;
         }

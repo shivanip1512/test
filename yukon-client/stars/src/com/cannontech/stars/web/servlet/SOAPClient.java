@@ -14,7 +14,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.*;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsGetExitInterviewQuestionsResponse;
@@ -103,7 +103,27 @@ public class SOAPClient extends HttpServlet {
         
         ActionBase clientAction = null;
 
-		if (action.equalsIgnoreCase("NewCustAccount")) {
+        if (action.equalsIgnoreCase("OperatorLogin")) {
+        	MultiAction actions = new MultiAction();
+        	actions.addAction( new LoginAction(), req, session );
+        	actions.addAction( new GetEnrollmentProgramsAction(), req, session );
+        	actions.addAction( new GetCustSelListsAction(), req, session );
+
+        	clientAction = (ActionBase) actions;
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+        }
+        else if (action.equalsIgnoreCase("UserLogin")) {
+            MultiAction actions = new MultiAction();
+        	actions.addAction( new LoginAction(), req, session );
+    		actions.addAction( new GetEnrollmentProgramsAction(), req, session );
+        	actions.addAction( new GetCustAccountAction(), req, session );
+        	
+        	clientAction = (ActionBase) actions;
+        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
+        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
+        }
+		else if (action.equalsIgnoreCase("NewCustAccount")) {
 			clientAction = new NewCustAccountAction();
 			destURL = "/OperatorDemos/Consumer/Update.jsp";
 			nextURL = errorURL = "/OperatorDemos/Consumer/New.jsp";
@@ -137,12 +157,9 @@ public class SOAPClient extends HttpServlet {
             destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
             nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         	
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
             StarsGetExitInterviewQuestionsResponse questions = null;
-            StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-            StarsUser user = (StarsUser) session.getAttribute( "USER" );
-            if (operator != null)
-            	questions = (StarsGetExitInterviewQuestionsResponse) operator.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
-            else 
+           	if (user != null)
             	questions = (StarsGetExitInterviewQuestionsResponse) user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
             	
             if (questions != null) {
@@ -191,8 +208,8 @@ public class SOAPClient extends HttpServlet {
             nextURL = errorURL = req.getParameter(ServletUtils.ATT_REFERRER);
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
-        	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-        	if (operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        	if (user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
 	        	clientAction = new CreateCallAction();
 	        else {
 	        	MultiAction actions = new MultiAction();
@@ -208,8 +225,8 @@ public class SOAPClient extends HttpServlet {
         	destURL = "/OperatorDemos/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
-        	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-        	if (operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+        	if (user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
 	        	clientAction = new CreateServiceRequestAction();
 	        else {
 	        	MultiAction actions = new MultiAction();
@@ -258,36 +275,6 @@ public class SOAPClient extends HttpServlet {
         	clientAction = new UpdateThermostatOptionAction();
         	destURL = "/UserDemos/ConsumerStat/stat/Thermostat.jsp";
         	nextURL = errorURL = "/UserDemos/ConsumerStat/stat/Thermostat.jsp";
-        }
-        else if (action.equalsIgnoreCase("OperatorLogin")) {
-        	session.removeAttribute("OPERATOR");
-        	session.removeAttribute("USER");
-        	
-        	MultiAction actions = new MultiAction();
-        	actions.addAction( new LoginAction(), req, session );
-        	actions.addAction( new GetEnrollmentProgramsAction(), req, session );
-        	actions.addAction( new GetCustSelListsAction(), req, session );
-
-        	clientAction = (ActionBase) actions;
-        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
-        }
-        else if (action.equalsIgnoreCase("UserLogin")) {
-        	session.removeAttribute("OPERATOR");
-        	session.removeAttribute("USER");
-        	
-            MultiAction actions = new MultiAction();
-        	actions.addAction( new LoginAction(), req, session );
-    		actions.addAction( new GetEnrollmentProgramsAction(), req, session );
-        	actions.addAction( new GetCustAccountAction(), req, session );
-        	
-        	clientAction = (ActionBase) actions;
-        	destURL = req.getParameter(ServletUtils.ATT_REDIRECT);
-        	nextURL = errorURL = req.getParameter( ServletUtils.ATT_REFERRER );
-        }
-        else if (action.equalsIgnoreCase("HoneywellSearchCustAccount")) {
-            clientAction = new com.cannontech.stars.honeywell.action.SearchCustAccountAction();
-            destURL = "/OperatorDemos/Consumer/Update.jsp";
         }
         else {
             CTILogger.debug( "SOAPClient: Invalid action type: " + action );

@@ -12,7 +12,7 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.stars.util.*;
-import com.cannontech.stars.web.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -40,19 +40,17 @@ public class SendInterviewAnswersAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user != null) return null;
+            
+			StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse)
+					user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
 			StarsSendExitInterviewAnswers sendAnswers = new StarsSendExitInterviewAnswers();
-			
-			StarsGetExitInterviewQuestionsResponse questions = null;
-            StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-            StarsUser user = (StarsUser) session.getAttribute( "USER" );
-            if (operator != null)
-            	questions = (StarsGetExitInterviewQuestionsResponse) operator.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
-            else
-            	questions = (StarsGetExitInterviewQuestionsResponse) user.getAttribute( ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS );
             
             if (questions != null && questions.getStarsExitInterviewQuestionCount() > 0) {
             	String[] qIDStrs = req.getParameterValues( "QID" );
             	String[] answers = req.getParameterValues( "Answer" );
+            	
             	for (int i = 0; i < qIDStrs.length; i++) {
             		int qID = Integer.parseInt( qIDStrs[i] );
             		for (int j = 0; j < questions.getStarsExitInterviewQuestionCount(); j++) {
@@ -91,13 +89,8 @@ public class SendInterviewAnswersAction implements ActionBase {
             LiteStarsCustAccountInformation liteAcctInfo = null;
             int energyCompanyID = 0;
             
-            StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
-            StarsUser user = (StarsUser) session.getAttribute( "USER" );
-            if (operator != null) {
-            	liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            	energyCompanyID = (int) operator.getEnergyCompanyID();
-            }
-            else if (user != null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user != null) {
             	liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             	energyCompanyID = user.getEnergyCompanyID();
             }

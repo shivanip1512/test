@@ -87,7 +87,6 @@ public class CustomerBase extends DBPersistent {
         for (int i = 0; i < getCustomerContactVector().size(); i++) {
             contact.setCustomerContact( (com.cannontech.database.db.customer.CustomerContact) getCustomerContactVector().elementAt(i) );
             contact.setContactID( new Integer(++contactID) );
-            contact.setLogInID( new Integer(com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID) );
             contact.add();
 
             Object[] addValues = {
@@ -127,7 +126,7 @@ public class CustomerBase extends DBPersistent {
         // use "data" class to delete from CustomerContact
         com.cannontech.database.data.customer.CustomerContact contact = new com.cannontech.database.data.customer.CustomerContact();
         for (int i = 0; i < contacts.length; i++) {
-            contact.setCustomerContact( contacts[i] );
+            contact.setContactID( contacts[i].getContactID() );
             contact.setDbConnection( getDbConnection() );
             contact.delete();
         }
@@ -135,7 +134,6 @@ public class CustomerBase extends DBPersistent {
 		// add back to CustomerAdditionalContact
         for (int i = 0; i < getCustomerContactVector().size(); i++) {
             contact.setCustomerContact( (com.cannontech.database.db.customer.CustomerContact) getCustomerContactVector().elementAt(i) );
-            contact.setLogInID( new Integer(com.cannontech.database.db.customer.CustomerLogin.NONE_LOGIN_ID) );
             contact.add();
 
             Object[] addValues = {

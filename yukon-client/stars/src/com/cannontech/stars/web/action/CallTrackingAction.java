@@ -9,7 +9,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
@@ -63,14 +63,14 @@ public class CallTrackingAction implements ActionBase {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             StarsOperation respOper = new StarsOperation();
             
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+        	LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (accountInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
@@ -79,7 +79,7 @@ public class CallTrackingAction implements ActionBase {
             
             if (accountInfo.getCallReportHistory() == null) {
 				StarsCallReport[] calls = StarsCallReportFactory.getStarsCallReports(
-						new Integer((int) operator.getEnergyCompanyID()), new Integer(accountInfo.getCustomerAccount().getAccountID()) );
+						new Integer(user.getEnergyCompanyID()), new Integer(accountInfo.getCustomerAccount().getAccountID()) );
 	            if (calls == null) {
 	            	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
 	            			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot get call report history") );
@@ -121,9 +121,9 @@ public class CallTrackingAction implements ActionBase {
             StarsGetCallReportHistoryResponse callTrackingResp = operation.getStarsGetCallReportHistoryResponse();
             if (callTrackingResp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
             	

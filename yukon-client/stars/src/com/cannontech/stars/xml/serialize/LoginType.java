@@ -25,18 +25,16 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class Manufacturer extends StarsCustListEntry 
-implements java.io.Serializable
-{
+public class LoginType implements java.io.Serializable {
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public Manufacturer() {
+    public LoginType() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.Manufacturer()
+    } //-- com.cannontech.stars.xml.serialize.LoginType()
 
 
       //-----------/
@@ -85,11 +83,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.Manufacturer unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.LoginType unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.Manufacturer) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.Manufacturer.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.Manufacturer unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.LoginType) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LoginType.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.LoginType unmarshal(java.io.Reader) 
 
     /**
     **/

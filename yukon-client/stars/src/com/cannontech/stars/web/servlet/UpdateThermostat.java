@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.*;
 
@@ -26,7 +27,7 @@ public class UpdateThermostat extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session == null) resp.sendRedirect(loginURL);
 
-		com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute( "USER" );
+		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 		if (user == null) {
 			resp.sendRedirect(loginURL); return;
 		}

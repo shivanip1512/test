@@ -12,6 +12,7 @@ import com.cannontech.database.db.stars.hardware.*;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.servlet.PILConnectionServlet;
 import com.cannontech.stars.util.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsFailureFactory;
@@ -36,7 +37,7 @@ public class UpdateThermostatOptionAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-            com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
             if (user == null) return null;
             
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
@@ -74,7 +75,7 @@ public class UpdateThermostatOptionAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-            com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
             if (user == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
@@ -87,14 +88,6 @@ public class UpdateThermostatOptionAction implements ActionBase {
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
-
-            ClientConnection conn = ServerUtils.getClientConnection();
-            if (conn == null) {
-                CTILogger.debug( "ConfigThermostatAction: Failed to retrieve a client connection" );
-                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
-                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Failed to send Expresscom command") );
-                return SOAPUtil.buildSOAPMessage( respOper );
-            }
                 
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany company = SOAPServer.getEnergyCompany( energyCompanyID );
@@ -113,7 +106,7 @@ public class UpdateThermostatOptionAction implements ActionBase {
 			if (!starsOption.getHold())
 				cmd.append(" timeout ").append(TIMEOUT_PERIOD_IN_MINUTE);
 			cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
-			ServerUtils.sendCommand( cmd.toString(), conn );
+			ServerUtils.sendCommand( cmd.toString() );
 			
 			LiteStarsThermostatSettings liteSettings = liteAcctInfo.getThermostatSettings();
 			LiteLMThermostatManualOption liteOption = liteSettings.getThermostatOption();
@@ -202,7 +195,7 @@ public class UpdateThermostatOptionAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             	
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            com.cannontech.stars.web.StarsUser user = (com.cannontech.stars.web.StarsUser) session.getAttribute("USER");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation) user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             accountInfo.getStarsThermostatSettings().setStarsThermostatManualOption(
             		reqOper.getStarsUpdateThermostatSettings().getStarsThermostatManualOption() );

@@ -89,7 +89,7 @@ public class DailyTimerTask extends StarsTimerTask {
 								Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
 								
 						String cmd = "putconfig service in serial " + hw.getManufacturerSerialNumber();
-						ServerUtils.sendCommand( cmd, ServerUtils.getClientConnection() );
+						ServerUtils.sendCommand( cmd );
 						
 						CTILogger.debug( "*** Send service in command to serial " + hw.getManufacturerSerialNumber() );
 						

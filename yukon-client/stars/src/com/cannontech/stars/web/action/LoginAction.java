@@ -4,9 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.web.StarsUser;
+import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFailureFactory;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsLogin;
@@ -14,6 +20,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
+import com.cannontech.stars.xml.serialize.types.StarsLoginType;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -32,12 +39,15 @@ public class LoginAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			session.removeAttribute("OPERATOR");
-			session.removeAttribute("USER");
+			session.removeAttribute( ServletUtils.ATT_YUKON_USER );
 			
 	        StarsLogin login = new StarsLogin();
 	        login.setUsername( req.getParameter("USERNAME") );
 	        login.setPassword( req.getParameter("PASSWORD") );
+	        if (req.getParameter("action").equalsIgnoreCase("OperatorLogin"))
+	        	login.setLoginType( StarsLoginType.OPERATORLOGIN );
+	        else
+	        	login.setLoginType( StarsLoginType.CONSUMERLOGIN );
 	        
 	        StarsOperation operation = new StarsOperation();
 	        operation.setStarsLogin( login );
@@ -61,27 +71,33 @@ public class LoginAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-            StarsOperator operator = null;
-            StarsUser user = null;
             StarsLogin login = reqOper.getStarsLogin();
-            
-            operator = authenticateOperator( login.getUsername(), login.getPassword() );
-            if (operator == null)
-            	user = authenticateUser( login.getUsername(), login.getPassword() );
-            
-            if (operator == null && user == null) {
+            LiteYukonUser user = AuthFuncs.login( login.getUsername(), login.getPassword() );
+            if (user == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            if (operator != null) {
-            	session.setAttribute( "OPERATOR", operator );
+            // check whether the login type matches the role
+            boolean typeMatch = false;
+            if (login.getLoginType().getType() == StarsLoginType.OPERATORLOGIN_TYPE)
+        		typeMatch = ServerUtils.isOperator( user );
+            else
+        		typeMatch = ServerUtils.isConsumer( user );
+            if (!typeMatch) {
+                respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
+                		StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Login failed, please check your username and password") );
+                return SOAPUtil.buildSOAPMessage( respOper );
             }
-            else {
-            	session.setAttribute( "USER", user );
-	            user.setDatabaseAlias( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+            
+            StarsYukonUser starsUser = SOAPServer.getStarsYukonUser( user.getUserID() );
+            if (starsUser == null) {
+            	starsUser = new StarsYukonUser( user );
+            	SOAPServer.addStarsYukonUser( starsUser );
             }
+            
+            initSession( starsUser, session );
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Login successful" );
@@ -128,100 +144,21 @@ public class LoginAction implements ActionBase {
 
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
-
-	private StarsOperator authenticateOperator(String username, String password)
-	{	
-		StarsOperator retVal = null;
+	
+	private void initSession(StarsYukonUser user, HttpSession session) throws TransactionException  {
+	
+		com.cannontech.database.data.user.YukonUser dbUser = 
+			(com.cannontech.database.data.user.YukonUser) LiteFactory.createDBPersistent(user);
 		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{		
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery("SELECT LoginID FROM OperatorLogin WHERE Username='" + username + "' AND Password='" + password + "'");
-	
-			if( rset.next() )
-			{			
-				retVal = new StarsOperator();
-				retVal.setLoginID(rset.getLong(1));
-			
-				retVal.setDbConnection(conn);
-				retVal.retrieve();
-				retVal.setDbConnection(null);	
-			}
-	
-			stmt.close();
-	
-			if( retVal != null )
-			{	
-				retVal.setDbConnection(conn);
-				retVal.retrieve();
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-                if (rset != null) rset.close();
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			} catch( Exception e ) { }
-		}
-			
-		return retVal;
-	}
-
-	private StarsUser authenticateUser(String username, String password) {
-		StarsUser retVal = null;
+		Transaction trans = Transaction.createTransaction(Transaction.RETRIEVE,dbUser);
+		trans.execute();
 		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{		
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-					com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery("SELECT LoginID FROM CustomerLogin WHERE Username='" + username + "' AND Password='" + password + "'");
-	
-			if( rset.next() )
-			{			
-				retVal = new StarsUser();
-				retVal.setId(rset.getLong(1));								
-			}
-	
-			stmt.close();
-	
-			if( retVal != null )
-			{	
-				retVal.setDbConnection(conn);
-				retVal.retrieve();
-				retVal.setDbConnection(null);
-			}		
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-                if (rset != null) rset.close();
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			} catch( Exception e ) { }
-		}
+		//update user stats
+		dbUser.setLoginCount(new Integer(dbUser.getLoginCount().intValue()+1));
+		dbUser.setLastLogin(new java.util.Date());
 			
-		return retVal;
+		trans = Transaction.createTransaction(Transaction.UPDATE,dbUser);
+		
+		session.setAttribute(ServletUtils.ATT_YUKON_USER, user);
 	}
 }

@@ -19,10 +19,12 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.servlet.PILConnectionServlet;
 
 import com.cannontech.stars.util.*;
 import com.cannontech.stars.util.timertask.*;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -54,12 +56,16 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     };
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
+    private PILConnectionServlet connContainer = null;
 	
 	// Array of all the energy companies
 	private static LiteStarsEnergyCompany[] energyCompanies = null;
     
     // List of web configurations
     private static ArrayList webConfigList = null;
+	
+    // List of stars yukon users
+    private static ArrayList starsUserList = null;
     
     
     public static void refreshCache() {
@@ -69,6 +75,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	}
     	energyCompanies = null;
 		webConfigList = null;
+    	starsUserList = null;
     }
 
     public SOAPServer() {
@@ -115,8 +122,8 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	initDispatchConnection();    	
     	startTimers();
     	
-    	ServerUtils.setConnectionContainer( (com.cannontech.servlet.PILConnectionServlet)
-        		getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID) );
+    	connContainer = (com.cannontech.servlet.PILConnectionServlet)
+        		getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
     	instance = this;
     }
 
@@ -237,6 +244,11 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	}
     }
     
+    public com.cannontech.message.porter.ClientConnection getPILClientConnection() {
+    	if (connContainer == null) return null;
+    	return connContainer.getConnection();
+    }
+    
     public static LiteStarsEnergyCompany[] getAllEnergyCompanies() {
     	if (energyCompanies == null) {
 	    	java.sql.Connection conn = null;
@@ -291,6 +303,12 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	}
     	
     	return webConfigList;
+    }
+    
+    public static ArrayList getAllStarsYukonUsers() {
+    	if (starsUserList == null)
+    		starsUserList = new ArrayList();
+    	return starsUserList;
     }
     
     public static LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
@@ -393,6 +411,22 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return null;
 	}
 	
+	public static StarsYukonUser getStarsYukonUser(int userID) {
+		ArrayList userList = getAllStarsYukonUsers();
+		for (int i = 0; i < userList.size(); i++) {
+			StarsYukonUser user = (StarsYukonUser) userList.get(i);
+			if (user.getUserID() == userID)
+				return user;
+		}
+		
+		return null;
+	}
+	
+	public static void addStarsYukonUser(StarsYukonUser user) {
+		ArrayList userList = getAllStarsYukonUsers();
+		userList.add( user );
+	}
+	
 	public static LiteInterviewQuestion[] getInterviewQuestions(int energyCompanyID, int questionType) {
 		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
 		if (company == null) return null;
@@ -426,17 +460,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		LiteStarsEnergyCompany company = getEnergyCompany( energyCompanyID );
 		if (company != null)
 			company.addCustomerContact( liteContact );
-	}
-	
-	public static void updateCustomerContact(LiteCustomerContact liteContact) {
-    	DBChangeMsg msg = new DBChangeMsg(
-    		liteContact.getContactID(),
-    		DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
-    		DBChangeMsg.CAT_CUSTOMERCONTACT,
-    		DBChangeMsg.CAT_CUSTOMERCONTACT,
-    		DBChangeMsg.CHANGE_TYPE_UPDATE
-    		);
-    	ServerUtils.getClientConnection().write( msg );
 	}
 	
 	public static void deleteCustomerContact(int energyCompanyID, LiteCustomerContact liteContact) {

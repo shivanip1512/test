@@ -1,7 +1,7 @@
 package com.cannontech.stars.xml;
 
 import java.util.*;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.util.*;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.database.data.lite.stars.LiteCustomerSelectionList;

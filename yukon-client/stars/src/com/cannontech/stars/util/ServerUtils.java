@@ -7,6 +7,9 @@ import javax.activation.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.database.db.stars.CustomerSelectionList;
 import com.cannontech.database.db.stars.CustomerListEntry;
@@ -14,8 +17,7 @@ import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.*;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
-import com.cannontech.servlet.PILConnectionServlet;
-import com.cannontech.message.porter.ClientConnection;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * @author yao
@@ -26,31 +28,20 @@ import com.cannontech.message.porter.ClientConnection;
  * Window>Preferences>Java>Code Generation.
  */
 public class ServerUtils {
-    
-    private static PILConnectionServlet connContainer = null;
 
     // Increment this for every message
     private static long userMessageIDCounter = 1;
     
     private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yy HH:mm");
 
-    public static void sendCommand(String command, ClientConnection conn)
+    public static void sendCommand(String command)
     {
         com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
             new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
 
-        conn.write(req);
+        SOAPServer.getInstance().getPILClientConnection().write(req);
 
         CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
-    }
-    
-    public static void setConnectionContainer(PILConnectionServlet servlet) {
-    	connContainer = servlet;
-    }
-    
-    public static ClientConnection getClientConnection() {
-    	if (connContainer == null) return null;
-    	return connContainer.getConnection();
     }
 	
 	public static void processFutureActivation(ArrayList custEventHist, Integer futureActEntryID, Integer actCompEntryID) {
@@ -251,5 +242,30 @@ public class ServerUtils {
 			return new Integer( StarsCustListEntryFactory.getStarsCustListEntry(fanList, CustomerListEntry.YUKONDEF_FANSTATE_ON).getEntryID() );
 		else
 			return null;
+	}
+	
+	public static boolean isOperator(LiteYukonUser user) {
+		return (AuthFuncs.getRoleValue(user, "WEB_OPERATOR") != null);
+	}
+	
+	public static boolean isConsumer(LiteYukonUser user) {
+		return (AuthFuncs.getRoleValue(user, "WEB_USER") != null);
+	}
+	
+	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
+		DBChangeMsg msg = null;
+		
+		if (lite instanceof com.cannontech.database.data.lite.LiteYukonUser) {
+	    	msg = new DBChangeMsg(
+	    		lite.getLiteID(),
+	    		DBChangeMsg.CHANGE_YUKON_USER_DB,
+	    		DBChangeMsg.CAT_YUKON_USER,
+	    		DBChangeMsg.CAT_YUKON_USER,
+	    		typeOfChange
+	    		);
+		}
+		
+		DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
+    	SOAPServer.getInstance().getClientConnection().write( msg );
 	}
 }

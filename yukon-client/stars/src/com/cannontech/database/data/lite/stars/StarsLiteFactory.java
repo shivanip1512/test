@@ -70,10 +70,6 @@ public class StarsLiteFactory {
 			lite = new LiteLMControlHistory();
 			setLiteLMControlHistory( (LiteLMControlHistory) lite, (com.cannontech.database.db.pao.LMControlHistory) db );
 		}
-		else if (db instanceof com.cannontech.database.db.customer.CustomerLogin) {
-			lite = new com.cannontech.database.data.lite.LiteYukonUser();
-			setLiteYukonUser( (com.cannontech.database.data.lite.LiteYukonUser) lite, (com.cannontech.database.db.customer.CustomerLogin) db );
-		}
 		else if (db instanceof com.cannontech.database.db.stars.hardware.LMThermostatSeason) {
 			lite = new LiteLMThermostatSeason();
 			setLiteLMThermostatSeason( (LiteLMThermostatSeason) lite, (com.cannontech.database.db.stars.hardware.LMThermostatSeason) db );
@@ -207,12 +203,6 @@ public class StarsLiteFactory {
 		liteCtrlHist.setCurrentSeasonalTime( ctrlHist.getCurrentSeasonalTime().longValue() );
 		liteCtrlHist.setCurrentAnnualTime( ctrlHist.getCurrentAnnualTime().longValue() );
 		liteCtrlHist.setActiveRestore( ctrlHist.getActiveRestore() );
-	}
-	
-	public static void setLiteYukonUser(com.cannontech.database.data.lite.LiteYukonUser liteUser, com.cannontech.database.db.customer.CustomerLogin login) {
-		liteUser.setUserID( login.getLoginID().intValue() );
-		liteUser.setUsername( login.getUserName() );
-		liteUser.setPassword( login.getUserPassword() );
 	}
 
 	public static void setLiteLMThermostatSeason(LiteLMThermostatSeason liteSeason, com.cannontech.database.db.stars.hardware.LMThermostatSeason season) {
@@ -456,7 +446,7 @@ public class StarsLiteFactory {
 				starsSeason.setMode( StarsThermoModeSettings.HEAT );
 			
 			Calendar startCal = Calendar.getInstance();
-			startCal.setTimeInMillis( liteSeason.getStartDate() );
+			startCal.setTime( new Date(liteSeason.getStartDate()) );
 			startCal.set( Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR) );
 			starsSeason.setStartDate( new org.exolab.castor.types.Date(startCal.getTime()) );
 			

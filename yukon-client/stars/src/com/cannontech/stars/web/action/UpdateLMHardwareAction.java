@@ -9,7 +9,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.*;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.*;
@@ -30,9 +30,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			if (operator == null) return null;
-			java.util.Hashtable selectionLists = (java.util.Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			if (user == null) return null;
+			java.util.Hashtable selectionLists = (java.util.Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 
 			StarsUpdateLMHardware updateHw = new StarsUpdateLMHardware();
 			
@@ -101,21 +101,21 @@ public class UpdateLMHardwareAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) operator.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+        	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) user.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	if (liteAcctInfo == null) {
             	respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
             			StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find customer account information, please login again") );
             	return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
-        	int energyCompanyID = (int) operator.getEnergyCompanyID();
+        	int energyCompanyID = user.getEnergyCompanyID();
             Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
             
             StarsUpdateLMHardware updateHw = reqOper.getStarsUpdateLMHardware();
@@ -212,9 +212,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 				return failure.getStatusCode();
 			}
 			
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
-					operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+					user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (accountInfo == null)
             	return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			

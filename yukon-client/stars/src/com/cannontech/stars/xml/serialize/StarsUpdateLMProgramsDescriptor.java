@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsUpdateLMProgramsDescriptor.java,v 1.18 2003/01/14 00:31:31 zyao Exp $
+ * $Id: StarsUpdateLMProgramsDescriptor.java,v 1.19 2003/01/15 20:12:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.18 $ $Date: 2003/01/14 00:31:31 $
+ * @version $Revision: 1.19 $ $Date: 2003/01/15 20:12:58 $
 **/
 public class StarsUpdateLMProgramsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

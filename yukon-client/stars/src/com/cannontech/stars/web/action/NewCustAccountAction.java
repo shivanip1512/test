@@ -9,7 +9,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.lite.stars.*;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.web.StarsOperator;
+import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsCustListEntryFactory;
 import com.cannontech.stars.xml.StarsCustomerAddressFactory;
@@ -143,14 +143,14 @@ public class NewCustAccountAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 
-            com.cannontech.stars.web.StarsOperator operator = (com.cannontech.stars.web.StarsOperator) session.getAttribute("OPERATOR");
-            if (operator == null) {
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            if (user == null) {
                 respOper.setStarsFailure( StarsFailureFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
 
-            int energyCompanyID = (int)operator.getEnergyCompanyID();
+            int energyCompanyID = user.getEnergyCompanyID();
         	Hashtable selectionLists = SOAPServer.getAllSelectionLists( energyCompanyID );
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
@@ -242,7 +242,7 @@ public class NewCustAccountAction implements ActionBase {
             
 			LiteStarsCustAccountInformation liteAcctInfo = SOAPServer.addCustAccountInformation( energyCompanyID, account );
             
-            operator.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
+            user.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
             StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, energyCompanyID, true );
 
             StarsNewCustomerAccountResponse resp = new StarsNewCustomerAccountResponse();
@@ -283,8 +283,8 @@ public class NewCustAccountAction implements ActionBase {
 			StarsNewCustomerAccountResponse resp = operation.getStarsNewCustomerAccountResponse();
 			if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation() );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+			user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation() );
 			
             return 0;
         }

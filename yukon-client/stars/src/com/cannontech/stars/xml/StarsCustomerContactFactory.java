@@ -65,17 +65,6 @@ public class StarsCustomerContactFactory {
 	    	CustomerContact contactDB = new CustomerContact();
 	    	setCustomerContact(contactDB, contact);
 	    	Transaction.createTransaction( Transaction.UPDATE, contactDB ).execute();
-	    	
-	    	DBChangeMsg msg = new DBChangeMsg(
-	    		contact.getContactID(),
-	    		DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
-	    		DBChangeMsg.CAT_CUSTOMERCONTACT,
-	    		DBChangeMsg.CAT_CUSTOMERCONTACT,
-	    		DBChangeMsg.CHANGE_TYPE_UPDATE
-	    		);
-	    	
-	    	//com.cannontech.stars.web.servlet.SOAPServer.getInstance().handleDBChangeMsg(msg, null);
-	    	com.cannontech.stars.util.ServerUtils.getClientConnection().write( msg );
     	}
     	catch (Exception e) {
     		e.printStackTrace();
@@ -88,19 +77,7 @@ public class StarsCustomerContactFactory {
     		setCustomerContact(contactDB, newContact);
     		contactDB = (CustomerContact)
     				Transaction.createTransaction( Transaction.INSERT, contactDB ).execute();
-    				
     		newContact.setContactID( contactDB.getContactID().intValue() );
-	    	
-	    	DBChangeMsg msg = new DBChangeMsg(
-	    		newContact.getContactID(),
-	    		DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
-	    		DBChangeMsg.CAT_CUSTOMERCONTACT,
-	    		DBChangeMsg.CAT_CUSTOMERCONTACT,
-	    		DBChangeMsg.CHANGE_TYPE_ADD
-	    		);
-	    	
-	    	//com.cannontech.stars.web.servlet.SOAPServer.getInstance().handleDBChangeMsg(msg, null);
-	    	com.cannontech.stars.util.ServerUtils.getClientConnection().write( msg );
 	    	
 	    	return newContact;
     	}
