@@ -62,6 +62,13 @@ public class DeleteSNRangeTask implements TimeConsumingTask {
 	}
 
 	/* (non-Javadoc)
+	 * @see com.cannontech.stars.util.task.TimeConsumingTask#setStatus(int)
+	 */
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
 	 */
 	public void cancel() {

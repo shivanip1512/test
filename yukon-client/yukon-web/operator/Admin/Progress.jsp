@@ -14,7 +14,7 @@
 	
 	if (task != null) {
 		if (request.getParameter("Cancel") != null) {
-			task.cancel();
+			ProgressChecker.cancelTask(id);
 			try {
 				Thread.sleep(1000);
 			}
@@ -57,6 +57,7 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
+
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr> 
@@ -108,7 +109,7 @@
                   </td>
                 </tr>
               </table>
-              <form name="form1" method="post" action="">
+              <form name="form1" method="post" action="" onsubmit="return confirm('Are you sure you want to cancel the current operation?')">
                 <input type="submit" name="Cancel" value="Cancel">
               </form>
               <p>&nbsp;</p>

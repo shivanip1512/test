@@ -23,9 +23,15 @@ public interface TimeConsumingTask extends Runnable {
 	
 	/**
 	 * Return the current status of the task, the return value
-	 * could be one of the four constants defined above.
+	 * could be one of the constants defined above.
 	 */
 	public int getStatus();
+	
+	/**
+	 * Set the current status of the task.
+	 * @param status
+	 */
+	public void setStatus(int status);
 	
 	/**
 	 * Cancel the task. It's up for the implementation to determine
