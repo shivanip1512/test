@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/06/25 17:48:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/25 20:01:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -779,7 +779,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                                     pData = NULL;  // We just put it on the list...
                                 }
 
-                                if(PValue > 100000.0)
+                                if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL && PValue > 100000.0)
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
