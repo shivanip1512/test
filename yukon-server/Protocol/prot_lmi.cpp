@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/03/17 16:55:04 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -503,6 +503,77 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         final_block = true;
                     }
 
+                    #if 1   // Try this a more "expirable" way.
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " LMI device \"" << _name << "\" loading " << num_codes << " (of " << waiting_codes << ") codes this pass:" << endl;
+                    }
+
+                    int i = 0;
+                    unsigned loaded_codes = 0;
+
+                    //for( int i = 0; i < (num_codes * 6); i += 6 )
+                    while( loaded_codes < num_codes && 0 != (om = _codes.front()) )
+                    {
+                        _untransmitted_codes = true;
+
+                        if( om->ExpirationTime <= 0 || om->ExpirationTime >= NowTime.seconds() )
+                        {
+                            loaded_codes++;
+
+                            om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
+                            char (&codestr)[7] = om->Buffer.SASt._codeSimple;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << om->Buffer.SASt._codeSimple << " ";
+                            }
+
+                            //  all offset by one because of the "num_codes" byte at the beginning
+                            _outbound.data[i++] = codestr[0];
+                            _outbound.data[i++] = codestr[1];
+                            _outbound.data[i++] = codestr[2];
+                            _outbound.data[i++] = codestr[3];
+                            _outbound.data[i++] = codestr[4];
+                            _outbound.data[i++] = codestr[5];
+
+                            //  new CtiVerificationWork message here
+                            if( !om->VerificationSequence )
+                            {
+                                om->VerificationSequence = VerificationSequenceGen();
+                            }
+
+                            long id = om->DeviceID;
+
+                            if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                            {
+                                ptime::time_duration_type expiration(seconds(60));
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+
+                                _verification_objects.push(work);
+                            }
+                        }
+                        else
+                        {
+                            // Must be expired.
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " LMI device \"" << _name << "\" expired code detected/deleted" << endl;
+                            }
+                        }
+
+                        //  this isn't very robust yet, as far as error-handling goes - one error, and all of these 40-something codes will go down the toilet
+                        //    i need to move them to a pending list or something until i get to decode(), where i can then pop them with vigor and prejudice
+                        _codes.pop();
+                        delete om;
+                    }
+
+                    _outbound.data[0] = loaded_codes;
+                    _outbound.length = (loaded_codes * 6) + 2;
+                    _transmitting_until += (loaded_codes * percode) / 1000;
+
+                    #else
+
                     _outbound.data[0] = num_codes;
 
                     {
@@ -546,18 +617,29 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                             long id = om->DeviceID;
 
-                            ptime::time_duration_type expiration(seconds(60));
-                            CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+                            if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                            {
+                                ptime::time_duration_type expiration(seconds(60));
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
 
-                            _verification_objects.push(work);
+                                _verification_objects.push(work);
+                            }
+                        }
+                        else if(om)
+                        {
+                            // Must be expired.
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " LMI device \"" << _name << "\" expired code detected" << endl;
+                            }
                         }
 
                         //  this isn't very robust yet, as far as error-handling goes - one error, and all of these 40-something codes will go down the toilet
                         //    i need to move them to a pending list or something until i get to decode(), where i can then pop them with vigor and prejudice
                         _codes.pop();
-
                         delete om;
                     }
+                    #endif
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
@@ -772,9 +854,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                     if( _command == Command_ReadEchoedCodes )
                                     {
-                                        CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
-
-                                        _verification_objects.push(report);
+                                        if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                                        {
+                                            CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, string(buf), second_clock::universal_time());
+                                            _verification_objects.push(report);
+                                        }
 
                                         _verification_pending = false;
                                     }

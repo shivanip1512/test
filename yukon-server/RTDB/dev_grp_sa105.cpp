@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/03/17 16:55:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,11 +154,19 @@ INT CtiDeviceGroupSA105::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     parse.parse();
 
     bool control = (parse.getFlags() & (CMD_FLAG_CTL_SHED | CMD_FLAG_CTL_CYCLE));
+    int func = _loadGroup.getFunction(control);
 
     parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
-    parse.setValue("sa_function", _loadGroup.getFunction(control));
+    parse.setValue("sa_function", func);
 
-    if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
+    if( !control && func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase) )
+    {
+        // restores on Function 3 must be handled with a 7.5m shed!
+        parse.setValue("sa_restore", TRUE);
+        parse.setValue("control_interval", 450);
+        parse.setValue("control_reduction", 100 );
+    }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
     {
         int shed_seconds = parse.getiValue("shed",86400);
         if(shed_seconds >= 0)

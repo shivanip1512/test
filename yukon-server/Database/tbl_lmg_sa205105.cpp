@@ -11,12 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/03/17 16:55:04 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "cparms.h"
 #include "logger.h"
 #include "tbl_lmg_sa205105.h"
 
@@ -90,7 +91,14 @@ int CtiTableSA205105Group::getFunction(bool shed) const
     }
     else if(!getLoadNumber().compareTo("load 3", RWCString::ignoreCase))
     {
-        function = shed ? 1 : 6;        // Restores to 1,2,3
+        if( gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase) )
+        {
+            function = shed ? 1 : 6;        // Restores to 1,2,3
+        }
+        else
+        {
+            function = 1; // restores must be handled with a 7.5m shed!
+        }
     }
     else if(!getLoadNumber().compareTo("load 4", RWCString::ignoreCase))
     {
