@@ -20,6 +20,11 @@
 
 
 /** include files **/
+
+#include <rw/cstring.h>
+#include <rw/ctoken.h>
+
+
 #include "fdrdestination.h"
 
 
@@ -74,5 +79,25 @@ CtiFDRDestination& CtiFDRDestination::setDestination (RWCString aDestination)
 {
   iDestination = aDestination;
   return *this;
+}
+
+RWCString CtiFDRDestination::getTranslationValue(RWCString propertyName) const {
+  RWCTokenizer pairTokenizer(getTranslation());
+
+  RWCString nameValuePair;
+  while (!(nameValuePair = pairTokenizer(";")).isNull()) {
+    RWCTokenizer valueTokenizer(nameValuePair);
+
+    RWCString thisPropertyName = valueTokenizer(":");
+    if (thisPropertyName == propertyName) {
+      // right now the string looks like this: ":thisvalue;nextproperty:nextvalue"
+      // we're going to return up to the ';', and then trim the first character
+      RWCString valueWithColon = valueTokenizer(";");
+      RWCString value = valueWithColon(1, valueWithColon.length() - 1);
+      return value;
+    }
+  }
+  RWCString blank("");
+  return blank;
 }
 

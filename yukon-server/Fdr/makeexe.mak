@@ -235,6 +235,34 @@ fdrlodestarimport_std.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
 		fdrlodestarinfo.h fdrlodestarimport_std.h
 fdrlodestarinfo.obj:	yukon.h precompiled.h ctidbgmem.h \
 		fdrlodestarinfo.h dlldefs.h fdr.h pointdefs.h
+fdrpibase.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_signal.h msg_ptreg.h msg_cmd.h msg_reg.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
+		dbaccess.h sema.h hashkey.h resolvers.h db_entry_defines.h \
+		fdr.h fdrdebuglevel.h fdrinterface.h mgr_fdrpoint.h rtdb.h \
+		fdrpoint.h fdrdestination.h fdrpointlist.h queues.h \
+		fdrpipoll.h fdrpibase.h fdrasciiimportbase.h device.h \
+		devicetypes.h fdrpinotify.h
+fdrpinotify.obj:	yukon.h precompiled.h ctidbgmem.h fdrpinotify.h \
+		dlldefs.h fdrpibase.h fdrinterface.h message.h collectable.h \
+		connection.h exchange.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h fdrasciiimportbase.h device.h \
+		devicetypes.h
+fdrpipoll.obj:	yukon.h precompiled.h ctidbgmem.h fdrpipoll.h dlldefs.h \
+		fdrpibase.h fdrinterface.h message.h collectable.h \
+		connection.h exchange.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h \
+		msg_reg.h queue.h mgr_fdrpoint.h rtdb.h hashkey.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h cparms.h fdrdebuglevel.h \
+		fdrpointlist.h queues.h fdrasciiimportbase.h device.h \
+		devicetypes.h
 fdrpoint.obj:	yukon.h precompiled.h ctidbgmem.h fdrpoint.h dlldefs.h \
 		pointtypes.h fdrdestination.h fdr.h pointdefs.h types.h \
 		logger.h thread.h mutex.h guard.h

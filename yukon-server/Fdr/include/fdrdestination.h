@@ -42,6 +42,8 @@ class IM_EX_FDRBASE CtiFDRDestination
         RWCString  getTranslation(void) const;
         CtiFDRDestination& setTranslation (RWCString aTranslation);
 
+        RWCString getTranslationValue(RWCString propertyName) const;
+
         RWCString & getDestination(void);
         RWCString  getDestination(void) const;
         CtiFDRDestination& setDestination (RWCString aDestination);
