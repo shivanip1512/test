@@ -52,8 +52,8 @@ public final static FileFormatBase createFileFormat(int type)
 			retFFB = new WLT_40Format();
 			break;
 			
-		case FileFormatTypes.DAFRON:
-			retFFB =  new DAFRONFormat();
+		case FileFormatTypes.DAFFRON:
+			retFFB =  new DAFFRONFormat();
 			break;
 			
 		default: //this is bad
