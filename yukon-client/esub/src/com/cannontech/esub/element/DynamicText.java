@@ -188,7 +188,9 @@ public void setPointID(int newPointID)  {
 		return 
 			(	displayAttribs == PointAttributes.LOW_LIMIT  ||
 			 	displayAttribs == PointAttributes.HIGH_LIMIT ||
-			 	displayAttribs == PointAttributes.LIMIT_DURATION );		
+			 	displayAttribs == PointAttributes.LIMIT_DURATION ||
+				displayAttribs == PointAttributes.MULTIPLIER ||
+				displayAttribs == PointAttributes.DATA_OFFSET );		
 	}
 
 	/**
