@@ -36,7 +36,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.Graph;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.graph.model.TrendModelType;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Signal;
@@ -2422,30 +2421,32 @@ public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEven
 	currDayPls1.setTime( new Date() );
 	currDayPls1.set( GregorianCalendar.DAY_OF_YEAR, currDayPls1.get(GregorianCalendar.DAY_OF_YEAR) + 1 );
 	
+	//Create a default freechart to use.  It will be refreshed with our data in a moment.
+	org.jfree.chart.JFreeChart freeChart = org.jfree.chart.ChartFactory.createTimeSeriesChart(
+				"TDC Trending", "Date/Time", "Value", new org.jfree.data.time.TimeSeriesCollection(), true, true, true);
+				
+	freeChart.setBackgroundPaint(java.awt.Color.white);
+
+	com.cannontech.jfreechart.chart.YukonChartPanel
+		freeChartPanel = new com.cannontech.jfreechart.chart.YukonChartPanel(freeChart);
 	
-	Graph graph = new Graph();
-	graph.setTrendModel(
-		new TrendModel(
+	//disable right click popup menu (it is not fully functionall as of jfreechart-0.9.12.jar)
+	freeChartPanel.setPopupMenu(null);
+	freeChartPanel.setVisible(true);
+	// turn all zoom on
+	freeChartPanel.setHorizontalZoom(true);
+	freeChartPanel.setVerticalZoom(true);
+	
+	TrendModel model = new TrendModel(
 			prev30.getTime(),
 			currDayPls1.getTime(),
 			"30 Day Trend Snapshot for " + pv.getPointName(),
 			new int[] { pv.getPointID() },
-			new String[] { pv.getPointName() }) );
+			new String[] { pv.getPointName() }) ;
 	
-	com.cannontech.jfreechart.chart.YukonChartPanel
-		freeChartPanel = new com.cannontech.jfreechart.chart.YukonChartPanel(
-				graph.getFreeChart());
-		
-	freeChartPanel.setVisible(true);
-
-	// turn all zoom on
-	freeChartPanel.setHorizontalZoom(true);
-	freeChartPanel.setVerticalZoom(true);
-
-	freeChartPanel.setChart(
-				graph.getTrendModel().refresh( TrendModelType.LINE_VIEW ) );
+	model.setTrendProps( new com.cannontech.graph.model.TrendProperties(false));//do not use saved TrendProperties from .dat file.
+	freeChartPanel.setChart( model.refresh() );
 	
-
 	JFrame jd = new JFrame(
 		pv.getPointName() + " - 30 Day Trend Snapshot");
 	
