@@ -1,6 +1,16 @@
-<br>
-<center>
 <%
+if( (graphBean.getOption() & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+{
+	graphBean.updateCurrentPane();
+	out.println(graphBean.getHtmlString());
+}
+else if( graphBean.getPeriod().equalsIgnoreCase(ServletUtil.ONEDAY))
+{
+	graphBean.updateCurrentPane();
+	out.println(graphBean.getHtmlString());
+}
+else
+{
     java.text.SimpleDateFormat shortDateFormat = new java.text.SimpleDateFormat("M/d");
 	int numDays = graphBean.getNumDays();
     int numWeeks = (numDays-1) / 7;
@@ -8,7 +18,6 @@
     int currentWeek = (page_-1) / 7;
     int basePage = currentWeek * 7 +  1;
     java.util.Date now = new java.util.Date();
-
     if( numWeeks > 0 )
     {
         if( currentWeek == 0 )
@@ -57,7 +66,10 @@
 			<FONT COLOR="black">  Next></FONT></A></CENTER>
 		<%}
 	}%>
-
+<%
+graphBean.updateCurrentPane();
+out.println(graphBean.getHtmlString());
+%>
 <br>
 <center>
 
@@ -105,5 +117,6 @@
 			<a href="<%= request.getRequestURI() %>?<%= "&page=" + (((currentWeek+1)*7)+1) %>">
 			<FONT COLOR="black">Next ></FONT></A></CENTER>
 		<%}
-    }%>
+    }
+   }%>
 <BR>
