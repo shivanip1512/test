@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2002/10/11 14:08:07 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2002/11/07 22:52:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,7 @@ using namespace std;
 #include "connection.h"
 
 #include "utility.h"
+#include "dllyukon.h"
 
 // #define DEBUG2 TRUE
 #define NEXT_SCAN       0
@@ -1194,6 +1195,11 @@ void LoadScannableDevices(void *ptr)
         dout << RWTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
     }
     ScannerDeviceManager.setIncludeScanInfo();
+
+    if(pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb) )
+    {
+        ReloadStateNames();
+    }
 
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
     {

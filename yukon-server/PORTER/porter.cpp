@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2002/10/31 18:30:25 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2002/11/07 22:52:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,6 +159,7 @@ using namespace std;
 #include "configparms.h"
 #include "trx_711.h"
 #include "utility.h"
+#include "dllyukon.h"
 
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
@@ -1256,6 +1257,11 @@ INT RefreshPorterRTDB(void *ptr)
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
     LoadPorterGlobals();
+
+    if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
+    {
+        ReloadStateNames();
+    }
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT)) )
     {
