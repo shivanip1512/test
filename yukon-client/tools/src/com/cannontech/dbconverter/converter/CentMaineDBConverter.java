@@ -680,7 +680,7 @@ public boolean processRouteMacrosFile()
 		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title lines and route list lines
 
-		if( i <= 5 || ts.nextToken().trim() == null)
+		if( i <= 5 || ts.nextToken().trim().equalsIgnoreCase(""))
 			continue;
 			
 		CTILogger.info("MACRO ROUTE line: " + lines.get(i).toString());
@@ -732,7 +732,7 @@ public boolean processRouteMacrosFile()
 		
 			MacroRoute.setRouteID(routeID);
 			MacroRoute.setSingleRouteID((Integer) myRouteID );
-			System.out.println("MyRouteID: "+myRouteID+"|");
+			System.out.println("MyRouteID: "+myRouteID);
 			MacroRoute.setRouteOrder(new Integer( count + 1 ) );
 
 			RouteMacroVector.addElement( MacroRoute );
@@ -786,17 +786,22 @@ public boolean processMCTFile()
 		CTILogger.info("MCT line: " + lines.get(i).toString());
 		
 		ts = new StringTokenizer(lines.get(i).toString(), "|");
+		//ignore title line
+		if( i < 9)
+			continue;
 		Integer deviceID = new Integer(MCT_ID);
 		MCT_ID++;
 		String deviceType = null;
 		String devID = ts.nextToken().trim();
+		System.out.println("devID: "+ devID);
 		String dType = ts.nextToken().trim();
+		System.out.println("dType: "+ dType);
 		String zone = ts.nextToken().trim();
 		String leadMeter = ts.nextToken().trim();
 		String leadLoad = ts.nextToken().trim();
 		String address = ts.nextToken().trim();
-		ts.nextToken();
-		ts.nextToken();
+		System.out.println("tokens: "+ ts.nextToken());
+		System.out.println("tokens: "+ ts.nextToken());
 		String active = ts.nextToken().trim();
 		if(dType.equalsIgnoreCase("MC210I")){
 			deviceType = DeviceTypes.STRING_MCT_210[0];
@@ -806,6 +811,8 @@ public boolean processMCTFile()
 			deviceType = DeviceTypes.STRING_MCT_250[0];
 		}else if(dType.equalsIgnoreCase("MC248P")){
 			deviceType = DeviceTypes.STRING_MCT_248[0];
+		}else if(dType.equalsIgnoreCase("MC310I")){
+			deviceType = DeviceTypes.STRING_MCT_310[0];
 		}else if(dType.equalsIgnoreCase("DCT501")){
 			deviceType = DeviceTypes.STRING_DCT_501[0];
 		}
@@ -833,6 +840,7 @@ public boolean processMCTFile()
 	
 			// set this devices route
 			Object myRouteID = macroRouteIDsMap.get("@"+zone);
+			System.out.println("set routeID: "+myRouteID);
 			device.getDeviceRoutes().setRouteID((Integer)myRouteID);
 		    		
 			// set group info
@@ -844,7 +852,6 @@ public boolean processMCTFile()
 	
 			//added
 			device.getDeviceMeterGroup().setBillingGroup( device.getDeviceMeterGroup().getBillingGroup() );
-	
 		    
 			if (deviceType.equals(new String("MCT-240"))  ||
 				deviceType.equals(new String("MCT-248"))  ||
@@ -871,11 +878,14 @@ public boolean processMCTFile()
 			
 			// default state group ID
 			accumPoint.getPoint().setPointID(new Integer(DEMAND_POINT_ID));
+			accumPoint.getPointUnit().setPointID(new Integer(DEMAND_POINT_ID));
+			accumPoint.getPointAccumulator().setPointID(new Integer(DEMAND_POINT_ID));
 			DEMAND_POINT_ID++;
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
 			accumPoint.getPoint().setPaoID( deviceID );
 			accumPoint.getPoint().setArchiveType("On Update");
-			accumPoint.getPointAccumulator().setDataOffset(new Double(1));
+			accumPoint.getPoint().setArchiveInterval(new Integer(0));
+			accumPoint.getPoint().setPointOffset(new Integer(1));
 			if(String.valueOf(dType.charAt(5)).equalsIgnoreCase("I")){
 				accumPoint.getPointAccumulator().setMultiplier(new Double(0.01));
 			}else accumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
@@ -902,11 +912,14 @@ public boolean processMCTFile()
 			}
 			pulseAccumPoint.getPoint().setPointType("Dial Read");
 			pulseAccumPoint.getPoint().setPointID(new Integer(DEMAND_POINT_ID));
+			pulseAccumPoint.getPointUnit().setPointID(new Integer(DEMAND_POINT_ID));
+			pulseAccumPoint.getPointAccumulator().setPointID(new Integer(DEMAND_POINT_ID));
 			DEMAND_POINT_ID++;
 			pulseAccumPoint.getPoint().setStateGroupID( new Integer(-2) );
 			pulseAccumPoint.getPoint().setPaoID( deviceID );
 			pulseAccumPoint.getPoint().setArchiveType("On Update");
-			pulseAccumPoint.getPointAccumulator().setDataOffset(new Double(1));
+			pulseAccumPoint.getPoint().setArchiveInterval(new Integer(0));
+			pulseAccumPoint.getPoint().setPointOffset(new Integer(1));
 			if(String.valueOf(dType.charAt(5)).equalsIgnoreCase("I")){
 				pulseAccumPoint.getPointAccumulator().setMultiplier(new Double(0.01));
 			}else pulseAccumPoint.getPointAccumulator().setMultiplier(new Double(1.0));
