@@ -44,4 +44,13 @@ public class HoursAndValues implements Serializable
 	{
 		return (getValues().length == getHours().length ? getValues().length : 0);
 	}
+	public Double getValue(int hourOfDay)
+	{
+		for (int i = 0; i < getHours().length; i++)
+		{
+			if( getHours()[i].intValue() == hourOfDay)
+				return getValues()[i];
+		}
+		return null;
+	}
 }

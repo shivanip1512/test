@@ -558,7 +558,7 @@ public class Baseline implements Serializable
 	 * @param pointID java.util.Integer
 	 * @param validTimestampsVector java.util.Vector contains java.util.Date values.
 	 */
-	public HoursAndValues retrieveData(Integer pointID, Vector validTimestampsVector)
+	public static HoursAndValues retrieveData(Integer pointID, Vector validTimestampsVector)
 	{
 		HoursAndValues returnData = null;
 		long DAY = 86400000;
@@ -585,8 +585,8 @@ public class Baseline implements Serializable
 	
 			if (conn == null)
 			{
-				com.cannontech.clientutils.CTILogger.info(getClass() + ":  Error getting database connection.");
-				CalcHistorical.logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);			
+				com.cannontech.clientutils.CTILogger.info("Error getting database connection.");
+				CalcHistorical.logEvent("Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);			
 				return null;
 			}
 			else
@@ -657,7 +657,7 @@ public class Baseline implements Serializable
 		return returnData; //hours and values of the retreived data.
 	}
 	
-	private int getAdjustedHour(java.sql.Timestamp ts)
+	private static int getAdjustedHour(java.sql.Timestamp ts)
 	{
 		int min = (new Integer ( new java.text.SimpleDateFormat("mm").format(ts).toString()).intValue());
 		int hr = (new Integer (new java.text.SimpleDateFormat("HH").format(ts).toString()).intValue());
@@ -684,7 +684,7 @@ public class Baseline implements Serializable
 	 * @param validTimestampsVector
 	 * @return Vector of java.util.Date values that will need to be set for the sql statement.
 	 */
-	private Vector appendTimestamps(StringBuffer sql, Vector validTimestampsVector)
+	private static Vector appendTimestamps(StringBuffer sql, Vector validTimestampsVector)
 	{
 		Vector vectorOfQueryDates = new Vector();
 		boolean newLine = false; 
