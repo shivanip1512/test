@@ -64,8 +64,8 @@ public HCurtailProgramActivity[] getCurtailProgramActivities() {
  * @return com.cannontech.web.history.HCurtailProgram[]
  */
 public HCurtailProgram[] getCurtailPrograms() {
-	String queryStr = "SELECT LMPROGRAMCURTAILMENT.DEVICEID, NAME FROM LMPROGRAMCURTAILMENT, DEVICE ";
-	queryStr += "WHERE LMPROGRAMCURTAILMENT.DEVICEID = DEVICE.DEVICEID ";
+	String queryStr = "SELECT LMPROGRAMCURTAILMENT.DEVICEID,PAONAME FROM LMPROGRAMCURTAILMENT, YUKONPAOBJECT ";
+	queryStr += "WHERE LMPROGRAMCURTAILMENT.DEVICEID = YUKONPAOBJECT.PAOBJECTID ";
 	queryStr += "ORDER BY LMPROGRAMCURTAILMENT.DEVICEID";
 	
 	try {

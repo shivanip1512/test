@@ -21,9 +21,10 @@ public HCurtailProgram() {
  * @return com.cannontech.web.history.HEnergyExchangeCustomer[]
  */
 public HCurtailCustomer[] getCurtailCustomers() {
-	String queryStr = "SELECT LMCUSTOMERDEVICEID, NAME, REQUIREACK FROM LMPROGRAMCURTAILCUSTOMERLIST, DEVICE ";
-	queryStr += "WHERE LMPROGRAMCURTAILCUSTOMERLIST.DEVICEID = " + deviceId + " AND LMCUSTOMERDEVICEID = DEVICE.DEVICEID ";
-	queryStr += " ORDER BY LMCUSTOMERDEVICEID";
+	String queryStr = "SELECT LMCUSTOMERDEVICEID,COMPANYNAME,REQUIREACK FROM LMPROGRAMCURTAILCUSTOMERLIST,CICUSTOMERBASE " +
+								" WHERE LMPROGRAMCURTAILCUSTOMERLIST.DEVICEID=" + deviceId + " AND LMCUSTOMERDEVICEID=CICUSTOMERBASE.CUSTOMERID" + 
+								" ORDER BY LMCUSTOMERDEVICEID";
+							
 
 	try {
 		java.sql.ResultSet rset = stmt.executeQuery(queryStr);
@@ -35,7 +36,7 @@ public HCurtailCustomer[] getCurtailCustomers() {
 			customer.setStatement(stmt);
 			customer.setDeviceId(deviceId);
 			customer.setCustomerId( rset.getLong(1) );
-			customer.setCustomerName( rset.getString(2) );
+			customer.setCompanyName( rset.getString(2) );
 			customer.setRequireAck( rset.getString(3) );
 
 			customerList.add(customer);

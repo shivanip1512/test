@@ -50,7 +50,7 @@ public HCurtailCustomerActivity getCurtailCustomerActivity(long curtailReference
 	public long getCustomerId() {
 		return customerId;
 	}
-	public String getCustomerName() {
+	public String getCompanyName() {
 		return customerName;
 	}
 	public long getDeviceId() {
@@ -62,7 +62,7 @@ public HCurtailCustomerActivity getCurtailCustomerActivity(long curtailReference
 	public void setCustomerId(long customerId) {
 		this.customerId = customerId;
 	}
-	public void setCustomerName(String customerName) {
+	public void setCompanyName(String customerName) {
 		this.customerName = customerName;
 	}
 	public void setDeviceId(long deviceId) {
