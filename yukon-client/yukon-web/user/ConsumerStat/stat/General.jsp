@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -46,7 +46,7 @@
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "General.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 

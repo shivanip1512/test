@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <%
 	int itemNo = Integer.parseInt(request.getParameter("Item"));
 	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
@@ -81,13 +81,13 @@ function goToManual() {
         <tr> 
           <td  valign="top" width="101">
 		  <% String pageName = "NewLabel.jsp?Item=" + itemNo; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
               <% String header = "THERMOSTAT - CHANGE LABEL"; %>
-              <%@ include file="InfoBar.jsp" %>
+              <%@ include file="include/InfoBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <table width="600" border="0" cellpadding="0" cellspacing="0">

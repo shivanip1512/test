@@ -1,6 +1,6 @@
 <html>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ include file="../user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -120,7 +120,7 @@
         <tr> 
           <td  valign="top" width="150"> 
 		  <% String pageName = "user_curtail.jsp"; %>
-          <%@ include file="nav.jsp" %>
+          <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 

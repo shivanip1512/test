@@ -1,5 +1,5 @@
 <html>
-<%@ include file="../user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList"%>
 <%@ page import="com.cannontech.common.constants.YukonListFuncs"%>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs"%>

@@ -1,6 +1,6 @@
 <html>
 <!-- Java script needed for the Calender Function--->
-<%@ include file="../user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 
 <%@ include file="../../include/trending_functions.jsp" %>
@@ -61,7 +61,7 @@ MM_reloadPage(true);
         <tr> 
           <td  valign="top" width="150"> 
             <% String pageName = "user_trending.jsp"; %> 
-            <%@ include file="nav.jsp" %>
+            <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" >

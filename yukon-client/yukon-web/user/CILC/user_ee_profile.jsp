@@ -1,5 +1,5 @@
 <html>
-<%@ include file="../user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList"%>
 <%@ page import="com.cannontech.common.constants.YukonListFuncs"%>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs"%>
@@ -67,7 +67,7 @@
         <tr> 
           <td  valign="top" width="150">
           <% String pageName = "user_ee_profile.jsp"; %>
-          <%@ include file="nav.jsp" %> </td>
+          <%@ include file="include/nav.jsp" %> </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF">
             <table width="609" border="0" cellspacing="0" cellpadding="0">
@@ -188,7 +188,7 @@
                         <hr>CONTACT</td>
                     </tr>
                   </table>
-                  <%@include file="user_ee_contacts.jsp"%>
+                  <%@include file="include/user_ee_contacts.jsp"%>
                   <!-- <CLIP> -->
                   <%}%>                                          
                   <table width="590" border="0" cellspacing="0" cellpadding="3">

@@ -1,6 +1,6 @@
 <html>
 <head>
-<%@ include file="../user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <!-- Find all the versacom serial groups associated with this operator -->
 <!-- a serial address of 0 indicates that we should NOT display the serial number text field -->
 
@@ -127,7 +127,7 @@
               <tr> 
                 <td valign="top"> 
                   <% String pageName = "switch_commands.jsp"; %>
-          		  <%@ include file="nav.jsp" %>
+          		  <%@ include file="include/nav.jsp" %>
                 </td>
               </tr>
             </table>

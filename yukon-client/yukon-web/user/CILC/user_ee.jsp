@@ -12,7 +12,7 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 
-<%@ include file="../user_header.jsp" %> 
+<%@ include file="../include/user_header.jsp" %> 
  
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
@@ -407,25 +407,25 @@ System.out.println("&&&&&&&&&&&&&&&& sending confirm message");
 	if (tab.equalsIgnoreCase(""))
 	{
 		%>
-			<%@ include file="user_ee_current.jsp" %>
+			<%@ include file="include/user_ee_current.jsp" %>
 		<%
 	}
 	else if (tab.equalsIgnoreCase("accept"))
 	{
 		%>
-			<%@ include file="user_ee_accept.jsp" %>
+			<%@ include file="include/user_ee_accept.jsp" %>
 		<%
 	}
 	else if (tab.equalsIgnoreCase("confirm"))
 	{
 		%>
-			<%@ include file="user_ee_confirm.jsp" %>
+			<%@ include file="include/user_ee_confirm.jsp" %>
 		<%
 	}
 	else if (tab.equalsIgnoreCase("offer"))
 	{
 		%>
-			<%@ include file="user_ee_offer.jsp" %>
+			<%@ include file="include/user_ee_offer.jsp" %>
 		<%
 	}
 %>

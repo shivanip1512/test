@@ -1,4 +1,4 @@
-<%@ include file="StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -46,7 +46,7 @@
         <tr> 
           <td  valign="top" width="101"> 
 		  <% String pageName = "Util.jsp"; %>
-          <%@ include file="Nav.jsp" %>
+          <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           
@@ -55,7 +55,7 @@
               
             <div align="center">
               <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY, "QUESTIONS - UTILITY"); %>
-              <%@ include file="InfoBar.jsp" %>
+              <%@ include file="include/InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
                   <td> 

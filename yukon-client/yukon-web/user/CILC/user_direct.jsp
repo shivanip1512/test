@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 </head>
 
-<%@ include file="../user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <%@ page import="com.cannontech.message.macs.messages.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="java.util.ArrayList" %>
@@ -83,7 +83,7 @@
         <tr> 
           <td  valign="top" width="150"> 
 		  <% String pageName = "user_lm_time.jsp"; %>
-          <%@ include file="nav.jsp" %>
+          <%@ include file="include/nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
 		  <td width="609" valign="top" bgcolor="#FFFFFF"> 
