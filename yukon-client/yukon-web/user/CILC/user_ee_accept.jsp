@@ -21,8 +21,8 @@ function decline_form()
 </head>
 <%
   //Look up the customer curtailable amount, use this as the default amount
-  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
-  String curtailAmount = gData2[0][0].toString();
+//  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
+//  String curtailAmount = gData2[0][0].toString();
 
   // Grab the 24 customers baseline values
   double[] baseLineValues = cache.getCustomerBaseLine( customerID);
@@ -92,7 +92,7 @@ function decline_form()
             </td>
             <td class="Main"> <%= revision.getOfferID() + " - " + revision.getRevisionNumber()%></td>
             <td class="Main"> 
-              <p align=RIGHT><b>Date:</b> 
+              <p align=RIGHT><b>Control Date:</b> 
             </td>
             <td class="Main"><%= datePart.format( offer.getOfferDate()) %></td>
             <td class="Main"> 
@@ -120,10 +120,10 @@ function decline_form()
                     <td width="75" height="23" valign="TOP" class="HeaderCell">Hour 
                       Ending </td>
                     <td width="75" height="23" valign="TOP" class="HeaderCell">Offer 
-                      in $ per Kwh</td>
-                    <td width="75" height="23" valign="TOP" class="HeaderCell">SCL 
-                      in Kw</td>
-                    <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>
+                      in $ per kWh</td>
+                    <td width="75" height="23" valign="TOP" class="HeaderCell">CLR 
+                      in kW</td>
+<!--                    <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
                   </tr>
                   <%
                for( int i = 0; i < 12; i++ ) {
@@ -142,7 +142,7 @@ function decline_form()
 				}
 				else {
 			%>
-                      <struts:text property="amount" size="8" value="<%= curtailAmount %>"/> 
+                      <struts:text property="amount" size="8" value="<%= amountStrs[i]%>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span> 
                       <%
 				}
 			%>
@@ -151,13 +151,13 @@ function decline_form()
                 if( baseLineValues[i] > 0 )
                 {                
             %>
-                    <td width="75" height="10" class="TableCell"><%= numberFormat.format(baseLineValues[i]) %></td>
+<!--                    <td width="75" height="10" class="TableCell"><%= numberFormat.format(baseLineValues[i]) %></td>-->
             <%
                 }
                 else
                 {                
             %>
-                    <td width="75" height="10" class="TableCell">-</td>
+<!--                    <td width="75" height="10" class="TableCell">-</td>-->
             <%
                 }
             %>
@@ -176,10 +176,10 @@ function decline_form()
                     <td width="75" height="23" valign="TOP" class="HeaderCell">Hour 
                       Ending </td>
                     <td width="75" height="23" valign="TOP" class="HeaderCell">Offer 
-                      in $ per Kwh</td>
-                    <td width="75" height="23" valign="TOP" class="HeaderCell">SCL 
-                      in Kw</td>
-                    <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>
+                      in $ per kWh</td>
+                    <td width="75" height="23" valign="TOP" class="HeaderCell">CLR 
+                      in kW</td>
+<!--                    <td width="75" height="23" valign="TOP" class="HeaderCell">Baseline</td>-->
                   </tr>
                   <%
                for( int i = 12; i < 24; i++ ) {
@@ -191,14 +191,14 @@ function decline_form()
                     <td width="75" height="10" valign="TOP" class="TableCell"> 
                       <%
 				if (amountStrs[i].equals("----")) {
-			%>
+				%>
                       <input type=hidden name="amount" value="0">
                       ---- 
                       <%
 				}
 				else {
-			%>
-                      <struts:text property="amount" size="8" value="<%= curtailAmount %>"/> 
+				%>
+                      <struts:text property="amount" size="8" pattern="@real" value="<%= amountStrs[i]%>"/><span class="TableCell"><%=checker.getError("amounterror"+String.valueOf(i))%></span>
                       <%
 				}
 			%>
@@ -207,13 +207,13 @@ function decline_form()
                 if( baseLineValues[i] > 0 )
                 {                
             %>
-                    <td width="75" height="10" class="TableCell"><%= numberFormat.format(baseLineValues[i]) %></td>
+<!--                    <td width="75" height="10" class="TableCell"><%= numberFormat.format(baseLineValues[i]) %></td>-->
             <%
                 }
                 else
                 {                
             %>
-                    <td width="75" height="10" class="TableCell">-</td>
+<!--                    <td width="75" height="10" class="TableCell">-</td>-->
             <%
                 }
             %>
@@ -227,9 +227,10 @@ function decline_form()
             </td>
           </tr>
         </table>
+         <span class="TableCell"><%=checker.getError("amounterror")%></span>        
                <p>IF 
           YOU ACCEPT THIS OFFER, INDICATE YOUR ACCEPTANCE ALONG WITH YOUR <br>
-          SCHEDULED CURTAILMENT LEVEL (SCL). 
+          COMMITTED LOAD REDUCTION (CLR). 
 		  </p>
 	<table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="Main">
           <tr> 
@@ -257,7 +258,6 @@ function decline_form()
             </td>
           </tr>
         </table>
-	                
                   </struts:form> 
                   <form method="get" action="">
                     <div align="center"><span class="Main">If you would like to 
