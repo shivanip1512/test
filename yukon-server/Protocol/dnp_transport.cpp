@@ -8,35 +8,38 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/03/10 21:16:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
+#include "dllbase.h"
 #include "logger.h"
-
 #include "dnp_transport.h"
 
-CtiDNPTransport::CtiDNPTransport()
+namespace Cti       {
+namespace Protocol  {
+namespace DNP       {
+
+Transport::Transport()
 {
     _ioState     = Uninitialized;
-    _outPayload = NULL;
-    _inPayload  = NULL;
+    _payload_out.data = 0;
+    _payload_in.data  = 0;
 }
 
-CtiDNPTransport::CtiDNPTransport(const CtiDNPTransport &aRef)
+Transport::Transport(const Transport &aRef)
 {
     *this = aRef;
 }
 
-CtiDNPTransport::~CtiDNPTransport()
+Transport::~Transport()
 {
 }
 
-CtiDNPTransport &CtiDNPTransport::operator=(const CtiDNPTransport &aRef)
+Transport &Transport::operator=(const Transport &aRef)
 {
     if( this != &aRef )
     {
@@ -50,54 +53,54 @@ CtiDNPTransport &CtiDNPTransport::operator=(const CtiDNPTransport &aRef)
 }
 
 
-void CtiDNPTransport::setAddresses(unsigned short dst, unsigned short src)
+void Transport::setAddresses(unsigned short dst, unsigned short src)
 {
     _datalink.setAddresses(dst, src);
 }
 
 
-void CtiDNPTransport::setOptions(int options)
+void Transport::setOptions(int options)
 {
     _datalink.setOptions(options);
 }
 
 
-void CtiDNPTransport::resetLink( void )
+void Transport::resetLink( void )
 {
     _datalink.resetLink();
 }
 
 
-int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr)
+int Transport::initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr)
 {
     int retVal = NoError;
 
-    _srcAddr = srcAddr;
-    _dstAddr = dstAddr;
+    _source_address      = srcAddr;
+    _destination_address = dstAddr;
 
-    if( len > 0 )
+    if( len > 0 && buf )
     {
-        _outPayload     = buf;
-        _outPayloadLen  = len;
-        _outPayloadSent = 0;
+        _payload_out.data   = buf;
+        _payload_out.length = len;
+        _payload_out.sent   = 0;
 
-        _seq = 0;
+        _sequence = 0;
 
         _ioState = Output;
     }
     else
     {
-        _outPayload     = NULL;
-        _outPayloadLen  = 0;
-        _outPayloadSent = 0;
+        _payload_out.data   = NULL;
+        _payload_out.length = 0;
+        _payload_out.sent   = 0;
+
         _ioState = Uninitialized;
 
         //  maybe set error return... ?
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "App layer size <= 0, not sending" << endl;
+            dout << RWTime() << " **** Checkpoint - error initializing transport layer, len = \"" << len << "\", buf = \"" << buf << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -105,13 +108,13 @@ int CtiDNPTransport::initForOutput(unsigned char *buf, int len, unsigned short d
 }
 
 
-int CtiDNPTransport::initForInput(unsigned char *buf)
+int Transport::initForInput(unsigned char *buf)
 {
     int retVal = NoError;
 
-    _inPayload     = buf;
-    _inPayloadLen  = 0;
-    _inPayloadRecv = 0;
+    _payload_in.data     = buf;
+    _payload_in.length   = 0;
+    _payload_in.received = 0;
 
     _ioState = Input;
 
@@ -119,9 +122,9 @@ int CtiDNPTransport::initForInput(unsigned char *buf)
 }
 
 
-int CtiDNPTransport::generate( CtiXfer &xfer )
+int Transport::generate( CtiXfer &xfer )
 {
-    int retVal = NoError;
+    int retval = NoError;
     int dataLen, packetLen, first, final;
 
     if( _datalink.isTransactionComplete() )
@@ -132,13 +135,13 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
             {
                 //  prepare transport layer buf dude here man like and stuff for y'all
 
-                first = !(_outPayloadSent > 0);
+                first = !(_payload_out.sent > 0);
 
-                _currentPacketLen = _outPayloadLen - _outPayloadSent;
+                _current_packet_length = _payload_out.length - _payload_out.sent;
 
-                if( _currentPacketLen > TransportMaxPayloadLen )
+                if( _current_packet_length > MaxPayloadLen )
                 {
-                    _currentPacketLen = TransportMaxPayloadLen;
+                    _current_packet_length = MaxPayloadLen;
 
                     final = 0;
                 }
@@ -148,17 +151,17 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 }
 
                 //  add on the header byte
-                packetLen = _currentPacketLen + TransportHeaderLen;
+                packetLen = _current_packet_length + HeaderLen;
 
                 //  set up the transport header
-                _outPacket.header.first = first;
-                _outPacket.header.final = final;
-                _outPacket.header.seq   = _seq;
+                _out_packet.header.first = first;
+                _out_packet.header.final = final;
+                _out_packet.header.seq   = _sequence;
 
                 //  copy the app layer chunk into the outbound packet
-                memcpy( (void *)_outPacket.data, (void *)&(_outPayload[_outPayloadSent]), _currentPacketLen );
+                memcpy( (void *)_out_packet.data, (void *)&(_payload_out.data[_payload_out.sent]), _current_packet_length );
 
-                _datalink.setToOutput((unsigned char *)&_outPacket, packetLen);
+                _datalink.setToOutput((unsigned char *)&_out_packet, packetLen);
 
                 break;
             }
@@ -180,13 +183,13 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
         }
     }
 
-    retVal = _datalink.generate(xfer);
+    retval = _datalink.generate(xfer);
 
-    return retVal;
+    return retval;
 }
 
 
-int CtiDNPTransport::decode( CtiXfer &xfer, int status )
+int Transport::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
     int datalinkStatus;
@@ -213,18 +216,18 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
             {
                 int transportPayloadLen;
 
-                _seq++;
-                _outPayloadSent += _currentPacketLen;
+                _sequence++;
+                _payload_out.sent += _current_packet_length;
 
-                if( _outPayloadLen <= _outPayloadSent )
+                if( _payload_out.length <= _payload_out.sent )
                 {
                     _ioState = Complete;
 
-                    if( _outPayloadLen < _outPayloadSent )
+                    if( _payload_out.length < _payload_out.sent )
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** Checkpoint - sent > length **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
@@ -237,18 +240,18 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
                 int dataLen;
 
                 //  copy out the data
-                if( _datalink.getInPayloadLength() >= TransportHeaderLen )
+                if( _datalink.getInPayloadLength() >= HeaderLen )
                 {
-                    dataLen = _datalink.getInPayloadLength() - TransportHeaderLen;
-                    _datalink.getInPayload((unsigned char *)&_inPacket);
+                    dataLen = _datalink.getInPayloadLength() - HeaderLen;
+                    _datalink.getInPayload((unsigned char *)&_in_packet);
 
-                    memcpy(&_inPayload[_inPayloadRecv], _inPacket.data, dataLen);
+                    memcpy(&_payload_in.data[_payload_in.received], _in_packet.data, dataLen);
 
-                    _inPayloadRecv += dataLen;
+                    _payload_in.received += dataLen;
 
                     //  ACH: verify incoming sequence numbers
 
-                    if( _inPacket.header.final )
+                    if( _in_packet.header.final )
                     {
                         _ioState = Complete;
                     }
@@ -277,20 +280,24 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 }
 
 
-bool CtiDNPTransport::isTransactionComplete( void )
+bool Transport::isTransactionComplete( void )
 {
     return _ioState == Complete || _ioState == Failed || _ioState == Uninitialized;
 }
 
 
-bool CtiDNPTransport::errorCondition( void )
+bool Transport::errorCondition( void )
 {
     return _ioState == Failed;
 }
 
 
-int CtiDNPTransport::getInputSize( void )
+int Transport::getInputSize( void )
 {
-    return _inPayloadRecv;
+    return _payload_in.received;
+}
+
+}
+}
 }
 
