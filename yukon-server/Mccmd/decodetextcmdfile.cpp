@@ -47,6 +47,9 @@ Function #  Comment in the file, will get moved to the exported file if needed
 ****************************
 */
 
+// we seem to go back and forth as to whether 0 is valid so this lets me make the change easily
+#define XCOM_ADDRESS_START 0
+
 bool validateAndDecodeLine( RWCString & line, int aProtocolFlag, RWCollectableString* programming, RWCString aFileName);
 
 int decodeTextCommandFile(const RWCString& fileName, 
@@ -661,9 +664,12 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                             bool haveLoad=false;
                             bool haveProgram=false;
                             bool haveSplinter=false;
+                            bool invalidSPID=false, invalidGEO=false, invalidSub=false,invalidFeeder=false,invalidZip=false;
+                            bool invalidUser=false, invalidProgram=false, invalidSplinter=false;
                             RWCString load,program,splinter,serialNum;
                             CHAR buffer[20];
                             int lastLoad=0;
+                            ULONG tmpAddress;
 
                             memset (&buffer, '\0', 20);
                             
@@ -682,43 +688,94 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                         if (tempString1.contains("spid"))
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,4);
-                                            currentCmd += " s" + tempString1;
+                                            tempString1 = tempString1.remove (0,5);
+                                            tmpAddress = atoi(tempString1.data());
+                                            if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
+                                            {
+                                                invalidSPID = true;
+                                            }
+                                            else
+                                            {
+                                                currentCmd += " s " + tempString1;
+                                            }
                                         }
                                         else if (tempString1.contains("geo"))
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,3);
-                                            currentCmd += " g" + tempString1;
+                                            tempString1 = tempString1.remove (0,4);
+                                            tmpAddress = atoi(tempString1.data());
+                                            if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
+                                            {
+                                                invalidGEO = true;
+                                            }
+                                            else
+                                            {
+                                                currentCmd += " g " + tempString1;
+                                            }
+
                                         }
                                         else if (tempString1.contains("sub"))
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,3);
-                                            currentCmd += " b" + tempString1;
+                                            tempString1 = tempString1.remove (0,4);
+                                            tmpAddress = atoi(tempString1.data());
+                                            if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
+                                            {
+                                                invalidSub = true;
+                                            }
+                                            else
+                                            {
+                                                currentCmd += " b " + tempString1;
+                                            }
+
                                         }
                                         else if (tempString1.contains("feeder"))
                                         {
                                             haveSomething = true;
                                             haveFeeder = true;
                                             tempString1 = tempString1.remove (0,6);
-                                            if (atoi (tempString1.data()) != 0);
+                                            if (atoi (tempString1.data()) != 0)
                                             {
-                                                feeder |= (0x0001 << ((atoi (tempString1.data())-1)));
+                                                tmpAddress = atoi (tempString1.data());
+                                                if ((tmpAddress < 1) || (tmpAddress > 16))
+                                                {
+                                                    invalidFeeder = true;
+                                                }
+                                                else
+                                                {
+                                                    feeder |= (0x0001 << ((atoi (tempString1.data())-1)));
+                                                }
                                             }
+
                                             //feeder |= setExpresscomFeederBit (atoi (tempString1.data()));
                                         }
                                         else if (tempString1.contains("zip"))
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,3);
-                                            currentCmd += " z" + tempString1;
+                                            tempString1 = tempString1.remove (0,4);
+                                            tmpAddress = atoi(tempString1.data());
+                                            if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 16777214)
+                                            {
+                                                invalidZip = true;
+                                            }
+                                            else
+                                            {
+                                                currentCmd += " z " + tempString1;
+                                            }
                                         }
                                         else if (tempString1.contains("user"))
                                         {
                                             haveSomething = true;
-                                            tempString1 = tempString1.remove (0,4);
-                                            currentCmd += " u" + tempString1;
+                                            tempString1 = tempString1.remove (0,5);
+                                            tmpAddress = atoi(tempString1.data());
+                                            if (tmpAddress < XCOM_ADDRESS_START || tmpAddress > 65534)
+                                            {
+                                                invalidUser = true;
+                                            }
+                                            else
+                                            {
+                                                currentCmd += " u " + tempString1;
+                                            }
                                         }
                                         else if (tempString1.contains("load"))
                                         {
@@ -777,19 +834,40 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                     if (workString.length() < 2)
                                                     {
                                                         if (!(workString = subCmd(" ")).isNull())
-                                                            program += workString;
+                                                        {
+                                                            tmpAddress = atoi(workString.data());
+                                                            //check address level
+                                                            if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
+                                                            {
+                                                                invalidProgram=true;
+                                                            }
+                                                            else
+                                                            {
+                                                                program += workString;
+                                                            }
+                                                        }
                                                     }
                                                     else
                                                     {
                                                         if (workString.length() > 1)
                                                         {
                                                             memcpy (&buffer, &workString.data()[1],workString.length()-1);
-                                                            program += RWCString(buffer);
+                                                            tmpAddress = atoi(buffer);
+                                                            //check address level
+                                                            if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
+                                                            {
+                                                                invalidProgram=true;
+                                                            }
+                                                            else
+                                                            {
+                                                                program += RWCString(buffer);
+                                                            }
                                                         }
                                                         else
                                                         {
                                                             // we've got a problem here of some sort
                                                             haveProgram = false;
+                                                            programCnt--;
                                                         }
                                                     }
                                                 }
@@ -809,19 +887,41 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                                     if (workString.length() < 2)
                                                     {
                                                         if (!(workString = subCmd(" ")).isNull())
-                                                            splinter+=workString;
+                                                        {
+                                                            tmpAddress = atoi(workString.data());
+                                                            //check address level
+                                                            if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
+                                                            {
+                                                                invalidSplinter=true;
+                                                            }
+                                                            else
+                                                            {
+                                                                splinter+=workString;
+                                                            }
+                                                        }
                                                     }
                                                     else
                                                     {
                                                         if (workString.length() > 1)
                                                         {
                                                             memcpy (&buffer, &workString.data()[1],workString.length()-1);
-                                                            splinter += RWCString(buffer);
+
+                                                            tmpAddress = atoi(buffer);
+                                                            //check address level
+                                                            if ((tmpAddress < XCOM_ADDRESS_START) || (tmpAddress > 254))
+                                                            {
+                                                                invalidSplinter=true;
+                                                            }
+                                                            else
+                                                            {
+                                                                splinter += RWCString(buffer);
+                                                            }
                                                         }
                                                         else
                                                         {
                                                             // we've got a problem here of some sort
                                                             haveSplinter = false;
+                                                            splinterCnt--;
                                                         }
                                                     }
                                                 }
@@ -832,47 +932,80 @@ bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableSt
                                             continueFlag = false;
                                     }
 
-                                    if (haveFeeder)
+                                    if (!(invalidSPID || invalidGEO || invalidSub || invalidFeeder ||invalidZip ||
+                                        invalidUser || invalidProgram || invalidSplinter))
                                     {
-                                        currentCmd += " f ";
-                                        currentCmd += RWCString (ltoa(feeder,buffer,10));
-                                    }
-                                    if (haveLoad)
-                                    {
-                                        if (haveProgram)
+                                        if (haveFeeder)
                                         {
-                                            currentCmd += program;
+                                            currentCmd += " f ";
+                                            currentCmd += RWCString (ltoa(feeder,buffer,10));
                                         }
-                                        if (haveSplinter)
+                                        if (haveLoad)
                                         {
-                                            currentCmd += splinter;
+                                            if (haveProgram)
+                                            {
+                                                currentCmd += program;
+                                            }
+                                            if (haveSplinter)
+                                            {
+                                                currentCmd += splinter;
+                                            }
+                                            currentCmd += load;
                                         }
-                                        currentCmd += load;
-                                    }
 
-                                    // make sure we found something
-                                    if (haveSomething)
-                                    {
-                                        if ((loadCnt == splinterCnt) && (loadCnt == programCnt))
+                                        // make sure we found something
+                                        if (haveSomething)
                                         {
-                                            *programming = currentCmd;
+                                            if ((loadCnt == splinterCnt) && (loadCnt == programCnt))
+                                            {
+                                                *programming = currentCmd;
+                                            }
+                                            else
+                                            {
+                                                {
+                                                    CtiLockGuard< CtiLogger > guard(dout);
+                                                    dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                                    dout << " --- Number of addressed loads/splinters/programs must be equal " << endl;
+                                                    dout << " --- " << input << endl;
+                                                }
+
+                                                retCode = false;
+                                            }
                                         }
                                         else
                                         {
-                                            {
-                                                CtiLockGuard< CtiLogger > guard(dout);
-                                                dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
-                                                dout << " --- Number of addressed loads/splinters/programs must be equal " << endl;
-                                                dout << " --- " << input << endl;
-                                            }
-
                                             retCode = false;
                                         }
                                     }
                                     else
                                     {
+                                        RWCString address;
+
+                                        if (invalidSPID)
+                                            address += RWCString (" Spid ");
+                                        if (invalidGEO)
+                                            address += RWCString (" Geo ");
+                                        if (invalidSub)
+                                            address += RWCString (" Substation ");
+                                        if (invalidFeeder)
+                                            address += RWCString (" Feeder ");
+                                        if (invalidZip)
+                                            address += RWCString (" Zip ");
+                                        if (invalidUser)
+                                            address += RWCString (" User ");
+                                        if (invalidProgram)
+                                            address += RWCString (" Program ");
+                                        if (invalidSplinter)
+                                            address += RWCString (" Splinter ");
+                                        {
+                                            CtiLockGuard< CtiLogger > guard(dout);
+                                            dout << RWTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
+                                            dout << " --- Address is out of range :" << address << endl;
+                                            dout << " --- " << input << endl;
+                                        }
+
                                         retCode = false;
-                                    }
+                                    }   
                                 }
                                 else
                                 {
