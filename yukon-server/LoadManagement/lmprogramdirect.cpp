@@ -4288,7 +4288,7 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
     CtiLMProgramDirectGear* cur_gear = (CtiLMProgramDirectGear*) lm_gears[proposed_gear];
     
     string method = cur_gear->getControlMethod();
-    long control_time = start - stop;
+    long control_time = stop - start;
 
     if(method == CtiLMProgramDirectGear::TimeRefreshMethod.data())
     {
