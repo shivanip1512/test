@@ -93,7 +93,7 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 			
 		case 7:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectCustomerListPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectNotifGroupListPanel();
 			objs[1] = "Notification";
 			break;
 			

@@ -6,13 +6,13 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
  * This type was created in VisualAge.
  */
 
-public class LMProgramDirectCustomerListPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
+public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
 	private com.cannontech.common.gui.util.AddRemovePanel ivjAddRemovePanel = null;
 /**
  * Constructor
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public LMProgramDirectCustomerListPanel() {
+public LMProgramDirectNotifGroupListPanel() {
 	super();
 	initialize();
 }
@@ -102,7 +102,7 @@ public Object getValue(Object o)
 		com.cannontech.database.db.device.lm.LMDirectNotificationGroupList group = new com.cannontech.database.db.device.lm.LMDirectNotificationGroupList();
 
 		group.setDeviceID( program.getPAObjectID() );
-		group.setCustomerID( new Integer(
+		group.setNotificationGrpID( new Integer(
 					((LiteNotificationGroup)getAddRemovePanel().rightListGetModel().getElementAt(i)).getNotificationGroupID() ) );
 		
 		program.getLmProgramDirectNotifyGroupVector().addElement( group );

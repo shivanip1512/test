@@ -12,23 +12,21 @@ package com.cannontech.database.db.device.lm;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-/*TODO: Direct Programs use notification groups now, instead of customers.  Table name and 
- * field names should reflect this.
- */
+
 public class LMDirectNotificationGroupList extends com.cannontech.database.db.DBPersistent implements DeviceListItem
 {
 	private Integer programID = null;
-	private Integer customerID = null;
+	private Integer notificationGrpID = null;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"CustomerID"
+		"NotificationGrpID"
 	};
 
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ProgramID" };
 
-	public static final String TABLE_NAME = "LMDirectCustomerList";
+	public static final String TABLE_NAME = "LMDirectNotifGrpList";
 /**
  * LMGroupVersacomSerial constructor comment.
  */
@@ -65,7 +63,7 @@ public Integer getDeviceID() {
  * @return java.lang.Integer
  */
 public java.lang.Integer getNotificationGroupID() {
-	return customerID;
+	return notificationGrpID;
 }
 /**
  * retrieve method comment.
@@ -77,7 +75,7 @@ public void retrieve() throws java.sql.SQLException
 
 	if( results.length == SETTER_COLUMNS.length )
 	{
-		setCustomerID( (Integer) results[0] );
+		setNotificationGrpID( (Integer) results[0] );
 
 	}
 	else
@@ -95,10 +93,10 @@ public void setDeviceID(Integer newValue) {
 /**
  * Insert the method's description here.
  * Creation date: (3/12/2004 3:20:23 PM)
- * @param newCustomerID java.lang.Integer
+ * @param newNotificationGrpID java.lang.Integer
  */
-public void setCustomerID(java.lang.Integer newCustomerID) {
-	customerID = newCustomerID;
+public void setNotificationGrpID(java.lang.Integer newNotificationGrpID) {
+	notificationGrpID = newNotificationGrpID;
 }
 /**
  * update method comment.

@@ -18,7 +18,7 @@ public class LMProgramWizardPanel extends com.cannontech.common.wizard.WizardPan
 	
 	private LMProgramCurtailmentPanel lmProgramCurtailmentPanel;
 	private LMProgramDirectNotificationPanel lmProgramDirectNotificationPanel;
-	private LMProgramDirectCustomerListPanel lmProgramDirectCustomerListPanel;
+	private LMProgramDirectNotifGroupListPanel lmProgramDirectNotifGroupListPanel;
 /**
  * LMGroupWizardPanel constructor comment.
  */
@@ -112,12 +112,12 @@ public LMProgramDirectNotificationPanel getLmProgramDirectNotificationPanel()
 	return lmProgramDirectNotificationPanel;
 }
 
-public LMProgramDirectCustomerListPanel getLmProgramDirectCustomerListPanel() 
+public LMProgramDirectNotifGroupListPanel getLmProgramDirectCustomerListPanel() 
 {
-	if( lmProgramDirectCustomerListPanel == null )
-		lmProgramDirectCustomerListPanel = new LMProgramDirectCustomerListPanel();
+	if( lmProgramDirectNotifGroupListPanel == null )
+		lmProgramDirectNotifGroupListPanel = new LMProgramDirectNotifGroupListPanel();
 
-	return lmProgramDirectCustomerListPanel;
+	return lmProgramDirectNotifGroupListPanel;
 }
 /**
  * Insert the method's description here.
@@ -237,7 +237,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
 	//we dont use the getters for each panel here since this call creates new instances of each
-	return ( currentPanel == lmProgramDirectCustomerListPanel
+	return ( currentPanel == lmProgramDirectNotifGroupListPanel
 				|| currentPanel == lmProgramCurtailListPanel
 				|| currentPanel == lmProgramEnergyExchangeCustomerListPanel );
 }

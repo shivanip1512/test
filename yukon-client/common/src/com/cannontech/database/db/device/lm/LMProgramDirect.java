@@ -86,11 +86,11 @@ public static final LMDirectNotificationGroupList[] getAllNotificationGroupsList
 	java.sql.ResultSet rset = null;
 
 	
-	String sql = "select l.ProgramID, l.CustomerID " +
+	String sql = "select l.ProgramID, l.NotificationGrpID " +
 				 "from " +
 				 LMDirectNotificationGroupList.TABLE_NAME + " l " +
 				 "where l.ProgramID = ? " +
-				 "order by l.CustomerID";
+				 "order by l.NotificationGrpID";
 
 	try
 	{		
@@ -110,12 +110,12 @@ public static final LMDirectNotificationGroupList[] getAllNotificationGroupsList
 	
 			while( rset.next() )
 			{
-				LMDirectNotificationGroupList customer = new LMDirectNotificationGroupList();
+				LMDirectNotificationGroupList group = new LMDirectNotificationGroupList();
 				
-				customer.setDeviceID( new Integer(rset.getInt("ProgramID")) );
-				customer.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+				group.setDeviceID( new Integer(rset.getInt("ProgramID")) );
+				group.setNotificationGrpID( new Integer(rset.getInt("NotificationGrpID")) );
 
-				tmpList.add( customer );
+				tmpList.add( group );
 			}
 					
 		}		
