@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/08/20 22:44:15 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/08/28 14:56:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -343,7 +343,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
 
 
 // Porter side info to retrieve transmitter device bookkeeping!
-CtiTransmitterInfo* CtiDeviceBase::getTrxInfo() const
+CtiTransmitterInfo* CtiDeviceBase::getTrxInfo()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
