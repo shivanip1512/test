@@ -1,11 +1,6 @@
-- Generate SVG+HTML+images so that the drawings can be viewed offline
-
-- Control.jsp
-
-- Add error handling to the GraphUpdate.jsp and make the various .js scripts
-  more robust
+- Don't display analog points in the StateImageEditorPanel
+- In the DynamicTextEditorPanel, update the point attributes based on the type of point selected.
+  i.e. don't allow the user to select State when an analog point is selected.
+- If a drawing is requested via the web and has a graph on it that has been deleted, the svg won't 
+  appear for like 15 seconds.  Why?
   
-- Alarm table fills up and doesn't show all the alarms.  
-	Either scroll it(?), page it(?), or have a way to link to a full list of the alarms.
-  
-- Accomdate future alarm changes, what are they?
