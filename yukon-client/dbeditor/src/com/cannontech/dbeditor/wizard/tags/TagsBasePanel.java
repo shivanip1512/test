@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.tags;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
+import com.cannontech.database.db.tags.Tag;
 
 /**
  * Insert the type's description here.
@@ -403,6 +404,9 @@ public Object getValue(Object o)
 	
 	com.cannontech.database.db.tags.Tag aTag = (com.cannontech.database.db.tags.Tag)o;
 	
+	if(o == null)
+		aTag = new Tag();
+	
 	aTag.setTagName(getNameTextField().getText());
 	aTag.setTagLevel(new Integer(getLevelTextField().getText()));
 	if(getInhibitCheckBox().isSelected())
@@ -668,13 +672,83 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
-public void setValue(Object o) {}
-	/* (non-Javadoc)
-	 * @see com.cannontech.common.gui.util.DataInputPanelListener#inputUpdate(com.cannontech.common.editor.PropertyPanelEvent)
-	 */
-	public void inputUpdate(PropertyPanelEvent event) {
-		// TODO Auto-generated method stub
-
+public void setValue(Object o) 
+{
+	Tag youAreIt;
+	
+	if( o != null )
+		youAreIt = (Tag)o;
+	else
+		youAreIt = new Tag();
+	
+	String name = youAreIt.getTagName();
+	if( name != null )
+	{
+		getNameTextField().setText(name);
 	}
+	
+	Integer temp = youAreIt.getTagLevel();
+	if( temp != null )
+	{
+		getLevelTextField().setText( temp.toString() );
+		temp = null;
+	}		
+	
+	Character elChar = youAreIt.getInhibit();
+	
+	if( elChar != null )
+	{
+		if(elChar.compareTo(new Character('Y')) == 0)
+		getInhibitCheckBox().setSelected(true);
+		temp = null;
+	}
+	
+	temp = youAreIt.getColorID();
+	if( temp != null )
+	{
+		getColorComboBox().setSelectedIndex(temp.intValue() );
+	}
+
+	//grab that image for the button
+	if(youAreIt.getImageID() != null)
+	{
+		int yukImgID = youAreIt.getImageID().intValue();
+		if( yukImgID > com.cannontech.database.db.state.YukonImage.NONE_IMAGE_ID )
+		{
+			com.cannontech.database.cache.DefaultDatabaseCache cache = 
+			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+          
+			LiteYukonImage liteYukImg = null;
+			synchronized( cache )
+			{
+				java.util.List imgList = cache.getAllYukonImages();
+       
+				for( int j = 0; j < imgList.size(); j++ )
+					if( ((LiteYukonImage)imgList.get(j)).getImageID() == yukImgID )
+					{
+						liteYukImg = (LiteYukonImage)imgList.get(j);
+						break;
+					}
+			}
+         
+			//be sure we have found a matching LiteYukonImage
+			if( liteYukImg != null )
+			{
+				setImageButton( 
+					getImageButton(),
+					new javax.swing.ImageIcon(liteYukImg.getImageValue()),
+					liteYukImg );
+			}
+		}
+	}
+}
+	
+
+
+
+public void inputUpdate(PropertyPanelEvent event) {
+	// TODO Auto-generated method stub
+
+}
 
 }

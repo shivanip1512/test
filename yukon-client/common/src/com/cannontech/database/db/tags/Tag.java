@@ -6,18 +6,20 @@
  */
 package com.cannontech.database.db.tags;
 
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+
 /**
  * @author jdayton
  *
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Tag extends com.cannontech.database.db.DBPersistent implements com.cannontech.common.editor.EditorPanel
+public class Tag extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {	
 	private Integer tagID = null;
 	private String tagName = null;
    	private Integer tagLevel = null;
-	private Character inhibit = new Character('N');
+	private Character inhibit = null;
    	private Integer colorID = null;
    	private Integer imageID = null;
    
@@ -132,7 +134,7 @@ public void retrieve()
 		{
 			setTagName( (String) results[0] );
 			setTagLevel( (Integer) results[1] );
-			setInhibit( (Character) results[2] );
+			setInhibit( new Character( ((String)results[2]).charAt(0) ) );
 			setColorID( (Integer) results[3] );
 			setImageID( (Integer) results[4] );
 		}
@@ -190,4 +192,23 @@ public void update()
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 }
+	/* (non-Javadoc)
+	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
+	 */
+public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+{
+	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
+	{
+		new com.cannontech.message.dispatch.message.DBChangeMsg(
+			getTagID().intValue(),
+			com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TAG_DB,
+			com.cannontech.message.dispatch.message.DBChangeMsg.CAT_TAG,
+			com.cannontech.message.dispatch.message.DBChangeMsg.CAT_TAG,
+			typeOfChange)
+	};
+
+
+	return msgs;
+}
+
 }
