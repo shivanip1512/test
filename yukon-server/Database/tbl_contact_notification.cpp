@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_contact_notification.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/02/19 16:02:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/08/24 13:51:08 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,13 +54,13 @@ CtiTableContactNotification& CtiTableContactNotification::operator=(const CtiTab
     _notification = aRef._notification;
     _dirty = aRef._dirty;
   }
-  return *this; 
+  return *this;
 }
 
 bool CtiTableContactNotification::operator<(const CtiTableContactNotification& rhs) const {
   return(_contactNotifID < rhs._contactNotifID);
 }
-  
+
 bool CtiTableContactNotification::operator==( const CtiTableContactNotification &rhs ) const {
   return(_contactNotifID == rhs._contactNotifID);
 }
@@ -144,7 +144,7 @@ RWDBStatus CtiTableContactNotification::Restore() {
     RWDBTable table = getDatabase().table(getTableName());
     RWDBSelector selector = getDatabase().selector();
 
-    selector << 
+    selector <<
       table["contactnotifid"] <<
       table["contactid"] <<
       table["notificationcategoryid"] <<
@@ -167,7 +167,7 @@ RWDBStatus CtiTableContactNotification::Restore() {
 
 void CtiTableContactNotification::DecodeDatabaseReader(RWDBReader& rdr) {
   RWCString rwstemp;
-  
+
   rdr["contactnotifid"] >> _contactNotifID;
   rdr["contactid"] >> _contactID;
   rdr["notificationcategoryid"] >> _notificationCategoryID;
@@ -176,6 +176,8 @@ void CtiTableContactNotification::DecodeDatabaseReader(RWDBReader& rdr) {
 
   rwstemp.toLower();
   _disabled = (rwstemp[(size_t)0] == 'y');
+
+  setDirty(false);  // Not dirty anymore
 }
 
 RWCString CtiTableContactNotification::getTableName() {
@@ -184,7 +186,7 @@ RWCString CtiTableContactNotification::getTableName() {
 
 void CtiTableContactNotification::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) {
   keyTable = db.table(getTableName());
-  
+
   selector <<
     keyTable["contactnotificationid"] <<
     keyTable["contactid"] <<
