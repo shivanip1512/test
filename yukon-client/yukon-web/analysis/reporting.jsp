@@ -23,7 +23,7 @@ function loadTarget(form)
 			if( extGroup[i].value == 'png')
 			{
 				form.target = '_blank';
-				form.REDIRECT.value = '../amr/reporting_png.jsp';
+				form.REDIRECT.value = '../analysis/reporting_png.jsp';
 			}
 			else
 			{
