@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/02/21 21:45:58 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/02/25 21:51:57 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,10 +59,10 @@ protected:
         MCT470_Memory_ModelLen             =    5,
 
         //  lengths are different for these
-        MCT470_Memory_StatusPos            = MCT410_StatusPos,
+        MCT470_Memory_StatusPos            = CtiDeviceMCT410::Memory_StatusPos,
         MCT470_Memory_StatusLen            =    3,
 
-        MCT470_FuncWrite_IntervalsPos      = MCT410_FuncWriteIntervalsPos,
+        MCT470_FuncWrite_IntervalsPos      = CtiDeviceMCT410::FuncWrite_IntervalsPos,
         MCT470_FuncWrite_IntervalsLen      =    3,
 
         MCT470_FuncRead_MReadPos           = 0x90,
@@ -78,6 +78,8 @@ protected:
         MCT470_FuncRead_CurrentPeak1Len    =   10
     };
 
+    void sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+
 private:
 
     static const DLCCommandSet _commandStore;
@@ -86,7 +88,6 @@ private:
 public:
 
     typedef CtiDeviceMCT Inherited;
-    typedef pair<double, PointQuality_t> data_pair;
 
     CtiDeviceMCT470( );
     CtiDeviceMCT470( const CtiDeviceMCT470 &aRef );
@@ -99,13 +100,9 @@ public:
     static DLCCommandSet initCommandStore( );
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-    void sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
-
     virtual ULONG calcNextLPScanTime( void );
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
-
-    data_pair getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
 
     virtual INT executeGetValueLoadProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
 
