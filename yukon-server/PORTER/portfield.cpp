@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2003/06/02 20:37:40 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2003/06/10 21:05:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -378,7 +378,12 @@ VOID PortThread(void *pid)
 
                 try
                 {
-                    SendError(OutMessage, status);
+                    // 060403 CGP.... No No no SendError(OutMessage, status);
+                    if(OutMessage)
+                    {
+                        delete OutMessage;
+                        OutMessage = 0;
+                    }
                 }
                 catch(...)
                 {
@@ -670,6 +675,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
     {
         if(Port->getType() == PortTypeTServerDirect)
         {
+            if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << Port->getName() << ": IP ports open on usage." << endl;
@@ -1107,6 +1113,11 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevice *Devic
                                         dout << RWTime() << " Error Replacing entry onto Queue\n" << endl;
                                     }
                                 }
+                                else
+                                {
+                                    OutMessage = 0;
+                                }
+
                                 CTISleep (50L);
                                 break;
                             }
@@ -2283,6 +2294,9 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
             }
         default:
             {
+                INT omRemote = OutMessage->Remote;
+                UINT omEventCode = OutMessage->EventCode;
+
                 if(OutMessage && OutMessage->Retry > 0)
                 {
                     /* decrement the retry counter */
@@ -2300,15 +2314,17 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                         }
 
                         delete OutMessage;
-                        OutMessage = NULL;
+                        OutMessage = 0;
 
                         status =  QUEUE_WRITE;
                     }
                     else
                     {
+                        OutMessage = 0; // Cannot use it anymore.  IT is owned by others!
+
                         /* don't free the memory, it is back on the queue!!! */
                         /* Update the CCUInfo if neccessary */
-                        if(OutMessage->Remote != 0)
+                        if(omRemote != 0)
                         {
                             switch(Device->getType())
                             {
@@ -2318,7 +2334,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 
                                     pInfo->PortQueueEnts++;
 
-                                    if(OutMessage->EventCode & RCONT)
+                                    if(omEventCode & RCONT)
                                         pInfo->PortQueueConts++;
                                 }
                             }
@@ -2335,7 +2351,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                         {
                             CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
 
-                            pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
+                            pInfo->reduceEntsConts(omEventCode & RCONT);
                         }
                     }
                 }
@@ -2350,7 +2366,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     {
         bool portwasquestionable = Port->isQuestionable();      // true if this is not his first time...
 
-        if(CommResult && GetErrorType( CommResult ) == ERRTYPECOMM)
+        if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && CommResult && GetErrorType( CommResult ) == ERRTYPECOMM)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port " << Port->getName() << " has a COMM category error. " << CommResult << endl;
@@ -2359,15 +2375,15 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
          // This tallies success/fail on the port.  The port decides when he has become questionable.
         bool reportablechange = Port->adjustCommCounts(CommResult);     // returns true if there is a reportable change!
 
-        if(reportablechange)
+        if((PorterDebugLevel & PORTER_DEBUG_COMMFAIL) && reportablechange)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  It is now " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << endl;
+                dout << RWTime() << " Port " << Port->getName() << " has had a comm status change (or timed report).  COMM STATUS: " << (Port->isQuestionable() ? "QUESTIONABLE" : "GOOD") << endl;
             }
         }
 
-        if(CommResult && portwasquestionable)
+        if(CommResult && portwasquestionable && status != RETRY_SUBMITTED)
         {
             status = Port->requeueToParent(OutMessage);     // Return all queue entries to the processing parent.
         }
@@ -2386,10 +2402,6 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     {
         try
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
             if(OutMessage && OutMessage->MessageFlags & MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL)
             {
                 CtiOutMessage *NewOM = CTIDBG_new CtiOutMessage(*OutMessage);
@@ -2595,6 +2607,10 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Error Requeing Command" << endl;
                     }
+                    else
+                    {
+                        OutMessage = 0;
+                    }
                 }
             }
             break;
@@ -2620,6 +2636,10 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Error Requeing Command" << endl;
+                    }
+                    else
+                    {
+                        OutMessage = 0;
                     }
                 }
             }
@@ -3112,7 +3132,7 @@ void commFail(CtiDeviceBase *Device, INT state)
             VanGoghConnection.WriteConnQue(pData);
         }
     }
-    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && state == CLOSED)
+    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device != NULL && state == CLOSED)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
