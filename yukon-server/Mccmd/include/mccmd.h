@@ -125,6 +125,13 @@ static void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd, RWSet& req_set);
 int StoreQueue(void* queue, int threadid );
 int ReleaseQueue(int threadid);
 
+/* Generates a user message id 
+   Used to make each request unique */
+unsigned int GenMsgID();
+
+/* Strips the thread id out of the msg_id and returns it */
+unsigned int GetThreadIDFromMsgID(unsigned int msg_id);
+
 /* Container for storing queues */
 struct thr_hash
 {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/04/16 15:59:15 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/04/19 19:01:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,9 @@ CtiConnection* PILConnection = 0;
 CtiConnection* VanGoghConnection = 0;
 RWThread MessageThr;
 
+// Used to distinguish unique requests/responses to/from pil
+unsigned char gUserMessageID = 0;
+
 void _MessageThrFunc()
 {
     try
@@ -75,7 +78,7 @@ void _MessageThrFunc()
             {
                 RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
 
-                int msgid = in->UserMessageId();
+                unsigned int msgid = in->UserMessageId();
 
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
@@ -85,9 +88,11 @@ void _MessageThrFunc()
                     {
                         {
                             CtiLockGuard< CtiLogger > guard(dout);
+                            dout << "msgid: " << msgid << endl;
+                            dout << "thrid: " << GetThreadIDFromMsgID(msgid) << endl;
                             dout << RWTime() << " [" << rwThreadId() <<
                                 "] Received unexpected message for interpreter [" <<
-                                msgid << "]" << endl;
+                                GetThreadIDFromMsgID(msgid) << "]" << endl;
                             DumpReturnMessage(*in);
                         }
                         delete in;
@@ -1091,12 +1096,13 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
    //Create a CountedPCPtrQueue and place it into the InQueueStore
    //Be sure to remove it before exiting
-   int thrid = (int) rwThreadId();
+   unsigned int msgid = GenMsgID();
+       
    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue_ptr = new CtiCountedPCPtrQueue<RWCollectable>();
 
    {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-        InQueueStore.insertKeyAndValue(  thrid, queue_ptr );
+        InQueueStore.insertKeyAndValue(msgid, queue_ptr);
    }
 
    BuildRequestSet(interp, cmd_line,req_set);
@@ -1107,6 +1113,8 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    for( ; iter(); ) {
 
        CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
+       req->setUserMessageId(msgid);
+
        CtiRequestMsg* req_copy = new CtiRequestMsg(*req);
        req_set_copy.insert( req_copy );
 
@@ -1140,7 +1148,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
                DumpReturnMessage(*ret_msg);
 
                if( !waiting_for_readings ) {
-                   if( ret_msg->UserMessageId() == thrid ) {
+                   if( ret_msg->UserMessageId() == msgid ) {
                        device_set.insert( ret_msg->DeviceId() );
 
                        if( !ret_msg->ExpectMore() ) {
@@ -1272,7 +1280,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    //Remove the queue from the InQueueStore
    {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-        InQueueStore.remove(thrid);
+        InQueueStore.remove(msgid);
    }
 
    if( interrupted ) {
@@ -1296,6 +1304,19 @@ int StoreQueue(void* queue, int threadid)
 int ReleaseQueue(int threadid)
 {
     return OutQueueStore.remove( threadid );
+}
+
+/* put the thread id into the high order and the messageid into the low*/
+unsigned int GenMsgID()
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
+    return  ((unsigned int) rwThreadId() << 16) + 
+            (unsigned int) gUserMessageID++;
+}
+
+unsigned int GetThreadIDFromMsgID(unsigned int msg_id)
+{
+    return (msg_id >> 16);
 }
 
 /*----------------------------------------------------------------------------
