@@ -113,48 +113,46 @@
 									  <td width="8" background="dot.gif">
 									  </td>
                                     <td width="128" class="Main"> 
-                                      <div align="center">
-                                        <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                                      <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                           <tr> 
-                                            <td> 
-                                              <%
+                                            
+                                          <td> 
+                                            <%
 		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-                                              <div align="center">Out of Service 
-                                                <%
+                                            <div align="center">Out of Service 
+                                              <%
 		}
 		else if (todayCtrlHist.getBeingControlled()) {
 %>
-                                                Currently<br>
-                                                <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/> 
-                                                <%
+                                              Currently<br>
+                                              <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/> 
+                                              <%
 		}
 		else if (todayCtrlHist.getControlHistoryCount() > 0) {
 %>
-                                                You have<br>
-                                                been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
-                                                <%
+                                              You have<br>
+                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
+                                              <%
 		}
 		else {
 %>
-                                                You have not<br>
-                                                been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
-                                                <%
+                                              You have not<br>
+                                              been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> 
+                                              <%
 		}
 %>
-                                              </div>
-                                            </td>
+                                            </div>
+                                          </td>
                                           </tr>
                                           <tr> 
-                                            <td> 
-                                              <div align="center">Control today 
-                                                is likely</div>
-                                            </td>
+                                            <td>
+                                            <div align="center">Control today 
+                                              is likely </div>
+                                          </td>
                                           </tr>
                                         </table>
-                                        
-                                      </div>
-                                    </td>
+                                       </td>
                                 </tr>
 								<tr>
 								  <td colspan="3" background="dot.gif" height="8"></td>
@@ -167,9 +165,10 @@
                           </table></td>
                       </tr>
                     </table>
-                    <p></p> 
-<cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>">
-<%
+                    <p><cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>"></cti:checkRole> 
+                    </p>
+                    <cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>"> 
+                    <%
 	boolean showNotification = false;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
@@ -190,31 +189,30 @@
 	
 	if (showNotification) {
 %>
-				<form name="form1" method="POST" action="/servlet/SOAPClient">
-				  <input type="hidden" name="action" value="UpdateCtrlNotification">
-				  <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
-				  <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/General.jsp">
-                    <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
-                      <tr> 
-                        <td height="58"> 
-                          <p align="center" class="TableCell1"> 
-                            <input type="checkbox" name="NotifyControl" value="true"
+                    <form name="form1" method="POST" action="/servlet/SOAPClient">
+                      <input type="hidden" name="action" value="UpdateCtrlNotification">
+                      <input type="hidden" name="REDIRECT" value="/user/ConsumerStat/stat/General.jsp">
+                      <input type="hidden" name="REFERRER" value="/user/ConsumerStat/stat/General.jsp">
+                      <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
+                        <tr> 
+                          <td height="58"> 
+                            <p align="center" class="TableCell1"> 
+                              <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                            <span class="TableCell3"> I would like to be notified 
-                            by e-mail the day of control.<br>
-                            My e-mail address is:<br>
-                            <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
-                            <input type="submit" name="Submit" value="Submit">
-                            </span></p>
-                        </td>
-                      </tr>
-                    </table>
-				</form>
-<%
+                              <span class="TableCell3"> I would like to be notified 
+                              by e-mail the day of control.<br>
+                              My e-mail address is:<br>
+                              <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
+                              <input type="submit" name="Submit" value="Submit">
+                              </span></p>
+                          </td>
+                        </tr>
+                      </table>
+                    </form>
+                    <%
 	}
 %>
-</cti:checkRole>
-                  </td>
+                    </cti:checkRole></td>
                   <td width="171"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
