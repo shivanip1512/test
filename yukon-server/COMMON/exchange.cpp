@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/exchange.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:24 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/10/08 20:35:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,55 +29,58 @@ extern RWMutexLock coutMux;
 
 CtiExchange::CtiExchange(RWSocketPortal portal) : Portal_(new RWSocketPortal(portal))
 {
-   LockGuard grd(monitor());
-   try
-   {
-      sinbuf  = new RWPortalStreambuf(*Portal_);
-      soubuf  = new RWPortalStreambuf(*Portal_);
-      oStream = new RWpostream(soubuf);
-      iStream = new RWpistream(sinbuf);
-   }
-   catch(RWxmsg& msg )
-   {
-      cout << "CtiExchange Creation Failed: " << msg.why() << endl;
-      msg.raise();
-   }
+    LockGuard grd(monitor());
+    try
+    {
+        sinbuf  = new RWPortalStreambuf(*Portal_);
+        soubuf  = new RWPortalStreambuf(*Portal_);
+        oStream = new RWpostream(soubuf);
+        iStream = new RWpistream(sinbuf);
+    }
+    catch(RWxmsg& msg )
+    {
+        cout << "CtiExchange Creation Failed: " << msg.why() << endl;
+        msg.raise();
+    }
 }
 
 CtiExchange::~CtiExchange()
 {
-   LockGuard grd(monitor());
-   try
-   {
-      delete sinbuf;
-      delete soubuf;
-      delete oStream;
-      delete iStream;
+    LockGuard grd(monitor());
+    try
+    {
+        // Attempt to keep the delete of sinbuf/soutbuf from blocking us!
+        SET_NON_BLOCKING( Portal_->socket() );
 
-      sinbuf = NULL;
-      soubuf = NULL;
-      oStream = NULL;
-      iStream = NULL;
+        delete sinbuf;
+        delete soubuf;
+        delete oStream;
+        delete iStream;
 
-      try
-      {
-         delete Portal_;
-      }
-      catch(RWSockErr& msg )
-      {
-         if(msg.errorNumber() != RWNETNOTINITIALISED)
-         {
-            cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
-            cout << "  " << msg.why() << endl;
-         }
-      }
-   }
-   catch(RWxmsg& msg )
-   {
-      cout << endl << "CtiExchange Deletion Failed: " ;
-      cout << msg.why() << endl;
-      throw;
-   }
+        sinbuf = NULL;
+        soubuf = NULL;
+        oStream = NULL;
+        iStream = NULL;
+
+        try
+        {
+            delete Portal_;
+        }
+        catch(RWSockErr& msg )
+        {
+            if(msg.errorNumber() != RWNETNOTINITIALISED)
+            {
+                cout << "Socket Error :" << msg.errorNumber() << " occurred" << endl;
+                cout << "  " << msg.why() << endl;
+            }
+        }
+    }
+    catch(RWxmsg& msg )
+    {
+        cout << endl << "CtiExchange Deletion Failed: " ;
+        cout << msg.why() << endl;
+        throw;
+    }
 }
 
 
