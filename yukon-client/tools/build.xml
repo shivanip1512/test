@@ -19,6 +19,12 @@
 
        <jar jarfile="${yukon.lib}/tools.jar"
             basedir="build/" />       
+
+		<copy todir="${yukon.lib}">
+	 	    <fileset dir="resource">
+	 		<include name="**/*.bat"/>
+		    </fileset>
+	    </copy>
    </target>
 
 	<target name="install" depends="build">
