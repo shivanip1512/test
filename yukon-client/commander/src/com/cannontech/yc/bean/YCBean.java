@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
@@ -28,7 +27,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
@@ -575,23 +573,5 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		deviceType = PAOGroups.getPAOTypeString(lPao.getType());
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
 		setLiteDeviceTypeCommandsVector(CommandFuncs.getAllDevTypeCommands(deviceType));
-	}
-	
-	public static DBPersistent retrieveDBPersistent(LiteBase liteObject)
-	{
-		//create a DBPersistent from a liteBase object
-		DBPersistent dbPersistent = null;
-		if( liteObject != null)
-		{
-			dbPersistent = LiteFactory.createDBPersistent(liteObject);
-			try {
-				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
-				dbPersistent = t.execute();
-			}
-			catch(Exception e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-			}
-		}
-		return dbPersistent;
 	}
 }
