@@ -145,11 +145,14 @@ protected:
     BOOL           _classReadComplete;
 
     ULONG          _totalByteCount;
-    BYTE           *_dataBuffer;
-    BYTE           *_inputBuffer;
 
+    BYTE           *_dataBuffer;
     BYTE           *_loadProfileBuffer;
-    BYTE           *_workBuffer;
+    BYTE           *_lpWorkBuffer;
+
+
+    BYTE           *_singleMsgBuffer;
+    USHORT         _singleMsgBufferBytes;
 
 
     CtiDeviceAlpha & operator=(const CtiDeviceAlpha & aRef)
@@ -171,43 +174,9 @@ public:
     CtiDeviceAlpha(BYTE         *dataPtr  = NULL,
                    BYTE          *lpPtr = NULL,
                    BYTE          *wPtr = NULL,
-                   ULONG         cnt=0) :
-    _dataBuffer(dataPtr),
-    _loadProfileBuffer(lpPtr),
-    _workBuffer(wPtr),
-    _inputBuffer (NULL),
-    _totalByteCount (cnt),
-    _readClass(0),
-    _readLength(0),
-    _readFunction(0),
-    _classReadComplete(FALSE)
-    {
-    }
+                   ULONG         cnt=0);
 
-
-    virtual ~CtiDeviceAlpha()
-    {
-        if (_dataBuffer != NULL)
-        {
-            delete []_dataBuffer;
-            _dataBuffer = NULL;
-        }
-
-        if (_inputBuffer != NULL)
-            _inputBuffer = NULL;
-
-        if (_loadProfileBuffer != NULL)
-        {
-            delete []_loadProfileBuffer;
-            _loadProfileBuffer = NULL;
-        }
-
-        if (_workBuffer != NULL)
-        {
-            delete []_workBuffer;
-            _workBuffer = NULL;
-        }
-    }
+    virtual ~CtiDeviceAlpha();
 
     // setters and getters
     USHORT            getReadLength () const;
@@ -228,6 +197,11 @@ public:
     ULONG             getTotalByteCount() const;
     CtiDeviceAlpha&   setTotalByteCount(ULONG c);
 
+    USHORT            getSingleMsgByteCount() const;
+    CtiDeviceAlpha&   setSingleMsgByteCount( USHORT c);
+
+    bool isReturnedBufferValid (CtiXfer  &Transfer);
+
 
     // general generate functions
     INT   generateCommandTerminate( CtiXfer  &Transfer, RWTPtrSlist< CtiMessage > &traceList );
@@ -236,6 +210,9 @@ public:
 
     UCHAR decodeAckNak(UCHAR AckNak);
     ULONG alphaCrypt(ULONG Key, ULONG PWord);
+    USHORT  addCRC(UCHAR* buffer, LONG length, BOOL bAdd);
+    INT checkCRC(BYTE *InBuffer,ULONG InCount);
+
 
     virtual INT GeneralScan(CtiRequestMsg              *pReq,
                             CtiCommandParser           &parse,

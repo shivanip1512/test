@@ -434,7 +434,6 @@ public:
     USHORT secondaryFunction (UCHAR function);
 
     USHORT calculateStartingByteCountForCurrentScanState (int aClass);
-    bool isReturnedBufferValid (CtiXfer  &Transfer);
 
     // defined first in dev_alph.cpp
     virtual UCHAR touBlockMapping (UCHAR config, USHORT type);

@@ -1,5 +1,25 @@
 #pragma warning( disable : 4786 )
 
+/*-----------------------------------------------------------------------------*
+*
+* File:   dev_alpha
+*
+* Date:   7/23/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/04/10 21:45:47 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*    History: 
+      $Log: dev_aplus.cpp,v $
+      Revision 1.6  2003/04/10 21:45:47  dsutton
+      Added code to check the CRC on the multiple message classes (ones over 64 bytes)
+      and added checks to make sure we had received the entire message
+
+
+*-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
 #include "porter.h"
@@ -15,6 +35,7 @@
 #include "msg_cmd.h"
 #include "msg_pdata.h"
 #include "msg_multi.h"
+#include "msg_trace.h"
 #include "cmdparse.h"
 
 #include "dupreq.h"
@@ -97,10 +118,6 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
         }
     }
 
-    // set this to out message where we need it
-    _inputBuffer = (BYTE *)&outMess->Buffer.OutMessage;
-
-
     if (_loadProfileBuffer == NULL)
     {
         _loadProfileBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusLoadProfile_t)];
@@ -110,6 +127,14 @@ INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)
             ((AlphaPPlusLoadProfile_t *)_loadProfileBuffer)->porterLPTime = outMess->Buffer.DUPReq.LP_Time;
         }
     }
+    // set this to our first class
+    if (_singleMsgBuffer == NULL)
+    {
+        // overkill, each msg is an alpha is supposed to be no more than 71 bytes (64+header(5)+CRC(2)
+        _singleMsgBuffer = CTIDBG_new BYTE[100];
+    }
+
+    _lpWorkBuffer = NULL;
 
     // make sure we're starting in the right place
     setClassReadComplete (FALSE);
@@ -216,10 +241,11 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.getOutBuffer()[5]      = reqOffset.ch[1];
                 Transfer.getOutBuffer()[6]      = reqOffset.ch[0];
                 Transfer.getOutBuffer()[7]      = classToRead;
+                Transfer.setCRCFlag (0);
 
                 // reset total byte count correctly in case we are doubling back here
                 setTotalByteCount (calculateStartingByteCountForCurrentScanState(getReadClass()));
-
+                setSingleMsgByteCount(0);
                 // note that we fall through again, no processing needed yet
             }
 
@@ -231,7 +257,11 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setOutCount (8);
                 Transfer.setInCountExpected (0);
                 Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC);
+                Transfer.setCRCFlag (0);
+
+                // add the CRC and update the outcount
+                addCRC (Transfer.getOutBuffer(),Transfer.getOutCount(),true);
+                Transfer.setOutCount (Transfer.getOutCount() +2);
 
                 // not sure about this DEBUG DLS
                 setPreviousState (StateScanValueSet2);
@@ -247,7 +277,7 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setOutCount (0);
                 Transfer.setInTimeout (1);
                 Transfer.setInCountExpected (getBytesToRetrieve());
-                Transfer.setCRCFlag (XFER_VERIFY_CRC);
+                Transfer.setCRCFlag (0);
                 setPreviousState (StateScanValueSet3);
                 setCurrentState (StateScanDecode3);
                 break;
@@ -259,8 +289,8 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setOutCount (0);
                 Transfer.setInTimeout (1);
                 Transfer.setInCountExpected (getBytesToRetrieve());
-
                 Transfer.setCRCFlag (0);
+
                 setPreviousState (StateScanValueSet4);
                 setCurrentState (StateScanDecode4);
                 break;
@@ -272,6 +302,7 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setInTimeout (1);
                 Transfer.setInCountExpected (getBytesToRetrieve());
                 Transfer.setCRCFlag (0);
+
                 setPreviousState (StateScanValueSet5);
                 setCurrentState (StateScanDecode5);
                 break;
@@ -288,7 +319,12 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setOutCount (2);
                 Transfer.setInCountExpected(0);
                 Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC);
+                Transfer.setCRCFlag (0);
+
+                // add the CRC and update the outcount
+                addCRC (Transfer.getOutBuffer(),Transfer.getOutCount(),true);
+                Transfer.setOutCount (Transfer.getOutCount() +2);
+
                 setPreviousState (StateScanValueSet6);
                 setCurrentState (StateScanDecode6);
 
@@ -312,11 +348,11 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 // if we failed to read this, make sure we are still copying into the correct place
                                 // for the next class
                                 setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t));
-                                setAttemptsRemaining(3);
                             }
-
                             setReadClass(6);
                             setReadFunction(6);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -341,12 +377,13 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 // for the next class
                                 setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t) +
                                                    sizeof (AlphaPPlusClass6Raw_t));
-                                setAttemptsRemaining(3);
                             }
 
                             // moving to load profile next, reset parameters
                             setReadClass(2);
                             setReadFunction(2);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -373,12 +410,12 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 setTotalByteCount (sizeof (AlphaPPlusClass0Raw_t) +
                                                    sizeof (AlphaPPlusClass6Raw_t) +
                                                    sizeof (AlphaPPlusClass2Raw_t));
-                                setAttemptsRemaining(3);
                             }
 
-                            // moving to load profile next, reset parameters
                             setReadClass(82);
                             setReadFunction(82);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -407,12 +444,12 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                                    sizeof (AlphaPPlusClass2Raw_t) +
                                                    sizeof (AlphaPPlusClass6Raw_t) +
                                                    sizeof (AlphaPPlusClass82Raw_t));
-                                setAttemptsRemaining(3);
                             }
 
-                            // moving to load profile next, reset parameters
                             setReadClass(11);
                             setReadFunction(11);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -443,9 +480,15 @@ INT CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, RWTPtrSlist< C
                                 setCurrentCommand(CmdLoadProfileTransition);
                                 setReadClass(0);
                                 setReadFunction(0);
+                                setSingleMsgByteCount(0);
 
-                                // allocate this on the fly
-                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass0Raw_t)];
+                                if (_lpWorkBuffer != NULL)
+                                {
+                                    delete []_lpWorkBuffer;
+                                    _lpWorkBuffer = NULL;
+                                }
+
+                                _lpWorkBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass0Raw_t)];
 
                                 setClassReadComplete (FALSE);
                                 setPreviousState (StateScanValueSet7);
@@ -544,6 +587,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
 
                 // we are restarting a scan
                 setTotalByteCount (0);
+                setSingleMsgByteCount(0);
 
 
                 // note that we fall through again, no processing needed yet
@@ -556,7 +600,11 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                 Transfer.setOutCount (8);
                 Transfer.setInCountExpected (0);
                 Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC);
+                Transfer.setCRCFlag (0);
+
+                // add the CRC and update the outcount
+                addCRC (Transfer.getOutBuffer(),Transfer.getOutCount(),true);
+                Transfer.setOutCount (Transfer.getOutCount() +2);
 
                 // not sure about this DEBUG DLS
                 setPreviousState (StateScanValueSet2);
@@ -570,7 +618,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                 Transfer.setOutCount (0);
                 Transfer.setInTimeout (1);
                 Transfer.setInCountExpected (getBytesToRetrieve());
-                Transfer.setCRCFlag (XFER_VERIFY_CRC);
+                Transfer.setCRCFlag (0);
                 setPreviousState (StateScanValueSet3);
                 setCurrentState (StateScanDecode3);
                 break;
@@ -581,8 +629,8 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                 Transfer.setOutCount (0);
                 Transfer.setInTimeout (1);
                 Transfer.setInCountExpected (getBytesToRetrieve());
-
                 Transfer.setCRCFlag (0);
+
                 setPreviousState (StateScanValueSet4);
                 setCurrentState (StateScanDecode4);
                 break;
@@ -594,6 +642,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                 Transfer.setInTimeout (1);
                 Transfer.setInCountExpected (getBytesToRetrieve());
                 Transfer.setCRCFlag (0);
+
                 setPreviousState (StateScanValueSet5);
                 setCurrentState (StateScanDecode5);
                 break;
@@ -609,7 +658,12 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                 Transfer.setOutCount (2);
                 Transfer.setInCountExpected(0);
                 Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC);
+                Transfer.setCRCFlag (0);
+
+                // add the CRC and update the outcount
+                addCRC (Transfer.getOutBuffer(),Transfer.getOutCount(),true);
+                Transfer.setOutCount (Transfer.getOutCount() +2);
+
                 setPreviousState (StateScanValueSet6);
                 setCurrentState (StateScanDecode6);
 
@@ -623,7 +677,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                 {
                     case 0:
                         {
-                            AlphaPPlusClass0Raw_t  * wPtr = (AlphaPPlusClass0Raw_t *)_workBuffer;
+                            AlphaPPlusClass0Raw_t  * wPtr = (AlphaPPlusClass0Raw_t *)_lpWorkBuffer;
 
                             ptr->class0.wattHoursPerRevolution = (ULONG) BCDtoBase10(wPtr->UKH,     3) / 1000.0;
                             ptr->class0.pulsesPerRevolution = (USHORT) BCDtoBase10(&wPtr->UPR,     1);
@@ -634,17 +688,21 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
 //                                dout << "pulses per : " << ptr->class0.pulsesPerRevolution << endl;
 //                            }
 
-                            if (_workBuffer != NULL)
+                            if (_lpWorkBuffer != NULL)
                             {
-                                delete []_workBuffer;
-                                _workBuffer = NULL;
-                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass6Raw_t)];
+                                delete []_lpWorkBuffer;
+                                _lpWorkBuffer = NULL;
                             }
+
+                            _lpWorkBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass6Raw_t)];
+
 
                             // moving to load profile next, reset parameters
                             setReadClass(6);
                             setReadFunction(6);
                             setTotalByteCount (0);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -658,7 +716,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
 
                     case 6:
                         {
-                            AlphaPPlusClass6Raw_t  * wPtr = (AlphaPPlusClass6Raw_t *)_workBuffer;
+                            AlphaPPlusClass6Raw_t  * wPtr = (AlphaPPlusClass6Raw_t *)_lpWorkBuffer;
                             // done with class 2, move to 82
 
                             ptr->class6.primaryFunction = primaryFunction(wPtr->XUOM[0]);
@@ -675,18 +733,20 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                                 dout << "Secondary : " << (USHORT)ptr->class6.secondaryFunction << endl;
                             }
 */
-
-                            if (_workBuffer != NULL)
+                            if (_lpWorkBuffer != NULL)
                             {
-                                delete []_workBuffer;
-                                _workBuffer = NULL;
-                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass2Raw_t)];
+                                delete []_lpWorkBuffer;
+                                _lpWorkBuffer = NULL;
                             }
+
+                            _lpWorkBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass2Raw_t)];
 
                             // moving to load profile next, reset parameters
                             setReadClass(2);
                             setReadFunction(2);
                             setTotalByteCount (0);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -699,7 +759,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                         }
                     case 2:
                         {
-                            AlphaPPlusClass2Raw_t  * wPtr = (AlphaPPlusClass2Raw_t *)_workBuffer;
+                            AlphaPPlusClass2Raw_t  * wPtr = (AlphaPPlusClass2Raw_t *)_lpWorkBuffer;
                             // done with class 2, move to 82
 
                             // try finding a config with primary block first
@@ -723,18 +783,20 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                               dout << "Blk 2 Mapping= " << (USHORT)ptr->class2.configTOUBlk2 << endl;
                             }
 */
-
-                            if (_workBuffer != NULL)
+                            if (_lpWorkBuffer != NULL)
                             {
-                                delete []_workBuffer;
-                                _workBuffer = NULL;
-                                _workBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass14Raw_t)];
+                                delete []_lpWorkBuffer;
+                                _lpWorkBuffer = NULL;
                             }
+
+                            _lpWorkBuffer = CTIDBG_new BYTE[sizeof (AlphaPPlusClass14Raw_t)];
 
                             // moving to load profile next, reset parameters
                             setReadClass(14);
                             setReadFunction(14);
                             setTotalByteCount (0);
+                            setSingleMsgByteCount(0);
+                            setAttemptsRemaining(3);
 
                             setClassReadComplete (FALSE);
                             setPreviousState (StateScanValueSet7);
@@ -748,7 +810,7 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
 
                     case 14:
                         {
-                            AlphaPPlusClass14Raw_t  * wPtr = (AlphaPPlusClass14Raw_t *)_workBuffer;
+                            AlphaPPlusClass14Raw_t  * wPtr = (AlphaPPlusClass14Raw_t *)_lpWorkBuffer;
 
                             ptr->class14.scalingFactor    = (USHORT) wPtr->scalingFactor;
                             ptr->class14.intervalLength   = (USHORT) wPtr->intervalLength;
@@ -784,25 +846,27 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
                             if (shouldRetrieveLoadProfile (ptr->porterLPTime, ptr->class14.intervalLength))
                             {
                                 // we're done with this as is, reallocate
-                                if (_workBuffer != NULL)
+                                if (_lpWorkBuffer != NULL)
                                 {
-                                    delete []_workBuffer;
-                                    _workBuffer = NULL;
-
-                                    /**********************
-                                    *   Workbuffer needs to be the size of day record + 100 bytes.  Since a day
-                                    *   record could end anywhere inside of the 64 bytes returned by the alpha
-                                    *   we need to have extra bytes in the workbuffer to hold the beginning
-                                    *   of the next day record
-                                    ***********************
-                                    */
-                                    _workBuffer = CTIDBG_new BYTE[ptr->class14.dayRecordSize + 100];
+                                    delete []_lpWorkBuffer;
+                                    _lpWorkBuffer = NULL;
 
                                 }
+
+                                /**********************
+                                *   Workbuffer needs to be the size of day record + 100 bytes.  Since a day
+                                *   record could end anywhere inside of the 64 bytes returned by the alpha
+                                *   we need to have extra bytes in the workbuffer to hold the beginning
+                                *   of the next day record
+                                ***********************
+                                */
+                                _lpWorkBuffer = CTIDBG_new BYTE[ptr->class14.dayRecordSize + 100];
 
                                 setReadClass(18);
                                 setReadFunction(18);
                                 setTotalByteCount (0);
+                                setSingleMsgByteCount(0);
+                                setAttemptsRemaining(3);
 
                                 setClassReadComplete (FALSE);
                                 setPreviousState (StateScanValueSet7);
@@ -858,19 +922,6 @@ INT CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer, RWTPtrS
     return retCode;
 }
 
-bool CtiDeviceAlphaPPlus::isReturnedBufferValid (CtiXfer  &Transfer)
-{
-    bool retVal = false;
-
-    if (Transfer.getInBuffer()[0] == STX)
-    {
-        if (!decodeAckNak (Transfer.getInBuffer()[2]))
-        {
-            retVal = true;
-        }
-    }
-    return retVal;
-}
 
 INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                                              INT      commReturnValue,
@@ -953,8 +1004,52 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
         case StateScanDecode3:
             {
                 // deciding if we go back to the beginning and try again
-                if (commReturnValue || (!isReturnedBufferValid(Transfer)))
+                int ret_crc,ret_length;
+
+                CtiTraceMsg trace;
+                RWCString msg;
+                CHAR traceBuffer[20];
+
+                /********************************************
+                * comm error return
+                *
+                * was the message in the correct format
+                *
+                * CRC violation
+                *
+                * check that the length of the message received matches what
+                * the message said it would be otherwise get out
+                * byte 5 is the length (msb is marker telling us whether this is the 
+                * last message in a class download) and add 4 for header and 2 for crc
+                *********************************************
+                */
+                if (commReturnValue || 
+                    (!isReturnedBufferValid(Transfer)) ||
+                    (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())) ||
+                    (ret_length=(Transfer.getInCountActual() != ((Transfer.getInBuffer()[4] & ~0x80)+7))))
                 {
+                    // print out CRC error if that was the error
+                    if (ret_crc)
+                    {
+                        trace.setBrightYellow();
+                        trace.setTrace( RWTime().asString() );
+                        traceList.insert(trace.replicateMessage());
+                        trace.setBrightRed();
+                        msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                        trace.setTrace(msg);
+                        traceList.insert (trace.replicateMessage());
+                    }
+                    else if (ret_length)
+                    {
+                        trace.setBrightYellow();
+                        trace.setTrace( RWTime().asString() );
+                        traceList.insert(trace.replicateMessage());
+                        trace.setBrightRed();
+                        msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                        trace.setTrace(msg);
+                        traceList.insert (trace.replicateMessage());
+                    }
+
                     // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);
                     if (getAttemptsRemaining() > 0)
@@ -971,21 +1066,24 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                 }
                 else
                 {
-                    /*
-                     * The data bytes are packed betwixt the header and CRC bytes.  The header is
-                     * located 0..4, the CRC is after all else and is 2 bytes long (total of 7)
-                     * we know we got incountactual bytes, so we just copy over the data with a
-                     * memcpy into the data buffer area.
-                     */
+                    try
+                    {
+                        memcpy(&_dataBuffer[getTotalByteCount()],
+                               &Transfer.getInBuffer()[5],
+                               (Transfer.getInCountActual()) - 7);
 
-                    memcpy(&_dataBuffer[getTotalByteCount()],
-                           &Transfer.getInBuffer()[5],
-                           (Transfer.getInCountActual()) - 7);
+                        setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
 
-                    setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
-
-                    // need to check if have any more info
-                    setCurrentState (StateScanValueSet7FirstScan);
+                        // need to check if have any more info
+                        setCurrentState (StateScanValueSet7FirstScan);
+                    }
+                    catch (...)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                        // the esc is inside of class 7
+                        setCurrentState (StateScanValueSet7FirstScan);
+                    }
                 }
                 break;
             }
@@ -994,7 +1092,6 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
             {
                 // deciding if we go back to the beginning and try again
                 if (commReturnValue || (!isReturnedBufferValid(Transfer)))
-//                if (commReturnValue || decodeAckNak(Transfer.getInBuffer()[2]))
                 {
                     // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);
@@ -1015,9 +1112,12 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                     // Got one last read.. get two crcs at end, minus the data byte we got last read and viola, add only one.
                     setBytesToRetrieve((Transfer.getInBuffer()[4] & ~0x80) + 1);
 
-                    // Copy in our solo data byte here .
-                    _dataBuffer[getTotalByteCount()] = Transfer.getInBuffer()[5];
-                    setTotalByteCount (getTotalByteCount() + 1);
+                    // grab the header information
+                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                            Transfer.getInBuffer(),
+                            Transfer.getInCountActual());
+
+                    setSingleMsgByteCount(getSingleMsgByteCount() + Transfer.getInCountActual());
 
                     //                        DUPRep->Status = InBuffer[3];
                     if (Transfer.getInBuffer()[4] & 0x80)
@@ -1056,22 +1156,88 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                 }
                 else
                 {
-                    /************************************************************
-                     * what we have now received is the rest of the data the alphas
-                     * had for us.  We need only subtract off the CRC and we are good to go
-                     ************************************************************
-                     */
-                    memcpy(&_dataBuffer[getTotalByteCount()],
-                           &Transfer.getInBuffer()[0],
-                           getBytesToRetrieve() - 2);
+                    // move the data into the working buffer
+                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                            Transfer.getInBuffer(),
+                            Transfer.getInCountActual());
 
-                    setTotalByteCount (getTotalByteCount() + (getBytesToRetrieve() - 2));
+                    setSingleMsgByteCount(getSingleMsgByteCount() + Transfer.getInCountActual());
 
-                    // if we are done
-                    if (isClassReadComplete())
-                        setCurrentState (StateScanValueSet7FirstScan);
+                    /********************************************
+                    * check that the length of the message received matches what
+                    * the message said it would be otherwise get out
+                    * byte 5 is the length (msb is marker telling us whether this is the 
+                    * last message in a class download) and add 4 for header and 2 for crc 
+                    *********************************************
+                    */
+                    int ret_crc,ret_length;
+                    CtiTraceMsg trace;
+                    RWCString msg;
+                    CHAR traceBuffer[20];
+
+                    if ((ret_crc=checkCRC(_singleMsgBuffer,getSingleMsgByteCount())) ||
+                        (ret_length=getSingleMsgByteCount() != ((_singleMsgBuffer[4] & ~0x80)+7)))
+                    {
+                        if (ret_crc)
+                        {
+                            trace.setBrightYellow();
+                            trace.setTrace( RWTime().asString() );
+                            traceList.insert(trace.replicateMessage());
+                            trace.setBrightRed();
+                            msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                            trace.setTrace(msg);
+                            traceList.insert (trace.replicateMessage());
+                        }
+                        else if (ret_length)
+                        {
+                            trace.setBrightYellow();
+                            trace.setTrace( RWTime().asString() );
+                            traceList.insert(trace.replicateMessage());
+                            trace.setBrightRed();
+                            msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                            trace.setTrace(msg);
+                            traceList.insert (trace.replicateMessage());
+                        }
+
+                        // decline attempts remaining first thing
+                        setAttemptsRemaining (getAttemptsRemaining() - 1);
+                        if (getAttemptsRemaining() > 0)
+                        {
+                            // try the class again
+                            setCurrentState (StateScanValueSet1);
+                        }
+                        else
+                        {
+                            // we don't abort until we've tried all the classes we want
+                            setCurrentState (StateScanValueSet7FirstScan);
+                        }
+                    }
                     else
-                        setCurrentState (StateScanValueSet6FirstScan);
+                    {
+                        try
+                        {
+                            memcpy(&_dataBuffer[getTotalByteCount()],
+                                   &_singleMsgBuffer[5],
+                                   getSingleMsgByteCount() - 7);
+
+                            setTotalByteCount (getTotalByteCount() + (getSingleMsgByteCount() - 7));
+                            setSingleMsgByteCount(0);
+
+                            // need to check if have any more info
+                            // if we are done
+                            if (isClassReadComplete())
+                                setCurrentState (StateScanValueSet7FirstScan);
+                            else
+                                setCurrentState (StateScanValueSet6FirstScan);
+                        }
+                        catch (...)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            // the esc is inside of class 7
+                            setCurrentState (StateScanValueSet7FirstScan);
+                        }
+                    }
                 }
 
                 break;
@@ -1211,9 +1377,50 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
             }
         case StateScanDecode3:
             {
-                if (commReturnValue || (!isReturnedBufferValid(Transfer)))
-//                if (commReturnValue || decodeAckNak(Transfer.getInBuffer()[2]))
+                int ret_crc,ret_length;
+                CtiTraceMsg trace;
+                RWCString msg;
+                CHAR traceBuffer[20];
+
+                /********************************************
+                * comm error return
+                *
+                * was the message in the correct format
+                *
+                * CRC violation
+                *
+                * check that the length of the message received matches what
+                * the message said it would be otherwise get out
+                * byte 5 is the length (msb is marker telling us whether this is the 
+                * last message in a class download) and add 4 for header and 2 for crc
+                *********************************************
+                */
+                if (commReturnValue || 
+                    (!isReturnedBufferValid(Transfer)) ||
+                    (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())) ||
+                    (ret_length=(Transfer.getInCountActual() != ((Transfer.getInBuffer()[4] & ~0x80)+7))))
                 {
+                    if (ret_crc)
+                    {
+                        trace.setBrightYellow();
+                        trace.setTrace( RWTime().asString() );
+                        traceList.insert(trace.replicateMessage());
+                        trace.setBrightRed();
+                        msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                        trace.setTrace(msg);
+                        traceList.insert (trace.replicateMessage());
+                    }
+                    else if (ret_length)
+                    {
+                        trace.setBrightYellow();
+                        trace.setTrace( RWTime().asString() );
+                        traceList.insert(trace.replicateMessage());
+                        trace.setBrightRed();
+                        msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                        trace.setTrace(msg);
+                        traceList.insert (trace.replicateMessage());
+                    }
+
                     // decline attempts remaining first thing
                     setAttemptsRemaining (getAttemptsRemaining() - 1);
                     if (getAttemptsRemaining() > 0)
@@ -1226,71 +1433,75 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                         setPreviousState (StateScanAbort);
                         setCurrentState (StateScanSendTerminate);
                     }
-                    CTISleep(500);
-
+                    CTISleep(500); 
                 }
                 else
                 {
-                    /*
-                     * The data bytes are packed betwixt the header and CRC bytes.  The header is
-                     * located 0..4, the CRC is after all else and is 2 bytes long (total of 7)
-                     * we know we got incountactual bytes, so we just copy over the data with a
-                     * memcpy into the data buffer area.
-                     */
-
-                    memcpy(&_workBuffer[getTotalByteCount()],
-                           &Transfer.getInBuffer()[5],
-                           (Transfer.getInCountActual()) - 7);
-
-                    setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
-
-                    // need to check if its time to send back load profile
-                    if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                    try
                     {
-                        BYTE buffer[100];
-                        ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_workBuffer[0],   1);
-                        ptr->class18.recordDateTime.Month = (UCHAR) BCDtoBase10(&_workBuffer[1],   1);
-                        ptr->class18.recordDateTime.Day = (UCHAR) BCDtoBase10(&_workBuffer[2],   1);
-                        memcpy (&ptr->class18.data[0], &_workBuffer[6], ptr->class14.dayRecordSize-6);
+                        memcpy(&_lpWorkBuffer[getTotalByteCount()],
+                               &Transfer.getInBuffer()[5],
+                               (Transfer.getInCountActual()) - 7);
 
-                        // now, readjust my workbuffer
-                        memcpy (&buffer[0], &_workBuffer[ptr->class14.dayRecordSize], getTotalByteCount()-ptr->class14.dayRecordSize);
-                        memcpy (&_workBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
-                        setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
+                        setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
 
-                        /*************************
-                        * Check the validity of the time received
-                        **************************
-                        */
-                        RWTime dateOfRecord(RWDate(ptr->class18.recordDateTime.Day,
-                                                   ptr->class18.recordDateTime.Month,
-                                                   ptr->class18.recordDateTime.Year + 2000));
-
-                        if (dateOfRecord < (RWTime()-(2*86400)) ||
-                            (dateOfRecord > (RWTime()+(2*86400))))
+                        // need to check if its time to send back load profile
+                        if (getTotalByteCount() >= ptr->class14.dayRecordSize)
                         {
-                            /***********************
-                            * if meter time is not within a 2 day window, its
-                            * invalid
-                            ************************
+                            BYTE buffer[100];
+                            ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_lpWorkBuffer[0],   1);
+                            ptr->class18.recordDateTime.Month = (UCHAR) BCDtoBase10(&_lpWorkBuffer[1],   1);
+                            ptr->class18.recordDateTime.Day = (UCHAR) BCDtoBase10(&_lpWorkBuffer[2],   1);
+                            memcpy (&ptr->class18.data[0], &_lpWorkBuffer[6], ptr->class14.dayRecordSize-6);
+
+                            // now, readjust my workbuffer
+                            memcpy (&buffer[0], &_lpWorkBuffer[ptr->class14.dayRecordSize], getTotalByteCount()-ptr->class14.dayRecordSize);
+                            memcpy (&_lpWorkBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
+                            setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
+
+                            /*************************
+                            * Check the validity of the time received
+                            **************************
                             */
+                            RWTime dateOfRecord(RWDate(ptr->class18.recordDateTime.Day,
+                                                       ptr->class18.recordDateTime.Month,
+                                                       ptr->class18.recordDateTime.Year + 2000));
+
+                            if (dateOfRecord < (RWTime()-(2*86400)) ||
+                                (dateOfRecord > (RWTime()+(2*86400))))
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Aborting scan: Invalid day record timestamp " << getName()  << " " << dateOfRecord.asString()<< endl;
+                                /***********************
+                                * if meter time is not within a 2 day window, its
+                                * invalid
+                                ************************
+                                */
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Aborting scan: Invalid day record timestamp " << getName()  << " " << dateOfRecord.asString()<< endl;
+                                }
+                                setPreviousState (StateScanAbort);
+                                setCurrentState (StateScanSendTerminate);
                             }
-                            setPreviousState (StateScanAbort);
-                            setCurrentState (StateScanSendTerminate);
+                            else
+                            {
+                                ptr->lastLPMessage = TRUE;
+                                setPreviousState (StateScanValueSet7FirstScan);
+                                setCurrentState (StateScanReturnLoadProfile);
+                            }
                         }
                         else
                         {
-                            ptr->lastLPMessage = TRUE;
-                            setPreviousState (StateScanValueSet7FirstScan);
-                            setCurrentState (StateScanReturnLoadProfile);
+                            // need to check if have any more info
+                            setCurrentState (StateScanValueSet7FirstScan);
                         }
                     }
-                    else
+                    catch (...)
                     {
-                        // need to check if have any more info
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                        }
+                        // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
                     }
                 }
@@ -1322,10 +1533,12 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                     // Got one last read.. get two crcs at end, minus the data byte we got last read and viola, add only one.
                     setBytesToRetrieve((Transfer.getInBuffer()[4] & ~0x80) + 1);
 
-                    // Copy in our solo data byte here .
-                    _workBuffer[getTotalByteCount()] = Transfer.getInBuffer()[5];
+                    // grab the header information
+                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                            Transfer.getInBuffer(),
+                            Transfer.getInCountActual());
 
-                    setTotalByteCount (getTotalByteCount() + 1);
+                    setSingleMsgByteCount(getSingleMsgByteCount() + Transfer.getInCountActual());
 
                     //                        DUPRep->Status = InBuffer[3];
                     if (Transfer.getInBuffer()[4] & 0x80)
@@ -1365,70 +1578,138 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                 }
                 else
                 {
-                    /************************************************************
-                     * what we have now received is the rest of the data the alphas
-                     * had for us.  We need only subtract off the CRC and we are good to go
-                     ************************************************************
-                     */
-                    memcpy(&_workBuffer[getTotalByteCount()],
-                           &Transfer.getInBuffer()[0],
-                           getBytesToRetrieve() - 2);
+                    // move the data into the working buffer
+                    memcpy (&_singleMsgBuffer[getSingleMsgByteCount()],
+                            Transfer.getInBuffer(),
+                            Transfer.getInCountActual());
 
-                    setTotalByteCount (getTotalByteCount() + (getBytesToRetrieve() - 2));
+                    setSingleMsgByteCount(getSingleMsgByteCount() + Transfer.getInCountActual());
 
+                    /********************************************
+                    * check that the length of the message received matches what
+                    * the message said it would be otherwise get out
+                    * byte 5 is the length (msb is marker telling us whether this is the 
+                    * last message in a class download) and add 4 for header and 2 for crc 
+                    *********************************************
+                    */
+                    int ret_crc,ret_length;
+                    CtiTraceMsg trace;
+                    RWCString msg;
+                    CHAR traceBuffer[20];
 
-                    // if we are done
-                    if (isClassReadComplete())
+                    if ((ret_crc=checkCRC(_singleMsgBuffer,getSingleMsgByteCount())) ||
+                        (ret_length=getSingleMsgByteCount() != ((_singleMsgBuffer[4] & ~0x80)+7)))
                     {
-                        // need to check if its time to send back load profile
-                        if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                        if (ret_crc)
                         {
-                            BYTE buffer[100];
+                            trace.setBrightYellow();
+                            trace.setTrace( RWTime().asString() );
+                            traceList.insert(trace.replicateMessage());
+                            trace.setBrightRed();
+                            msg = RWCString (" CRC error for ") + getName() + RWCString(" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString("\n");
+                            trace.setTrace(msg);
+                            traceList.insert (trace.replicateMessage());
+                        }
+                        else if (ret_length)
+                        {
+                            trace.setBrightYellow();
+                            trace.setTrace( RWTime().asString() );
+                            traceList.insert(trace.replicateMessage());
+                            trace.setBrightRed();
+                            msg = RWCString ("  Byte count mis-match  ") + getName() + RWCString (" while reading class ") + RWCString(itoa(getReadClass(),traceBuffer,10)) + RWCString ("\n");
+                            trace.setTrace(msg);
+                            traceList.insert (trace.replicateMessage());
+                        }
 
-                            ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_workBuffer[0],   1);
-                            ptr->class18.recordDateTime.Month = (UCHAR) BCDtoBase10(&_workBuffer[1],   1);
-                            ptr->class18.recordDateTime.Day = (UCHAR) BCDtoBase10(&_workBuffer[2],   1);
-                            memcpy (&ptr->class18.data[0], &_workBuffer[6], ptr->class14.dayRecordSize-6);
-
-                            // now, readjust my workbuffer
-                            memcpy (&buffer[0], &_workBuffer[ptr->class14.dayRecordSize], getTotalByteCount()-ptr->class14.dayRecordSize);
-                            memcpy (&_workBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
-                            setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
-
-                            ptr->lastLPMessage = TRUE;
-                            setPreviousState (StateScanValueSet7FirstScan);
-                            setCurrentState (StateScanReturnLoadProfile);
+                        // decline attempts remaining first thing
+                        setAttemptsRemaining (getAttemptsRemaining() - 1);
+                        if (getAttemptsRemaining() > 0)
+                        {
+                            // try the class again
+                            setCurrentState (StateScanValueSet1);
                         }
                         else
                         {
+                            // we don't abort until we've tried all the classes we want
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
                     }
                     else
                     {
-                        // need to check if its time to send back load profile
-                        if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+
+                        try
                         {
-                            BYTE buffer[100];
+                            memcpy(&_lpWorkBuffer[getTotalByteCount()],
+                                   &_singleMsgBuffer[5],
+                                   getSingleMsgByteCount() - 7);
 
-                            ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_workBuffer[0],   1);
-                            ptr->class18.recordDateTime.Month = (UCHAR) BCDtoBase10(&_workBuffer[1],   1);
-                            ptr->class18.recordDateTime.Day = (UCHAR) BCDtoBase10(&_workBuffer[2],   1);
-                            memcpy (&ptr->class18.data[0], &_workBuffer[6], ptr->class14.dayRecordSize-6);
+                            setTotalByteCount (getTotalByteCount() + (getSingleMsgByteCount() - 7));
+                            setSingleMsgByteCount(0);
 
-                            // now, readjust my workbuffer
-                            memcpy (&buffer[0], &_workBuffer[ptr->class14.dayRecordSize], getTotalByteCount()-ptr->class14.dayRecordSize);
-                            memcpy (&_workBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
-                            setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
+                            // need to check if have any more info
+                            // if we are done
+                            if (isClassReadComplete())
+                            {
+                                // need to check if its time to send back load profile
+                                if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                                {
+                                    BYTE buffer[100];
 
-                            ptr->lastLPMessage = FALSE;
-                            setPreviousState (StateScanValueSet6FirstScan);
-                            setCurrentState (StateScanReturnLoadProfile);
+                                    ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_lpWorkBuffer[0],   1);
+                                    ptr->class18.recordDateTime.Month = (UCHAR) BCDtoBase10(&_lpWorkBuffer[1],   1);
+                                    ptr->class18.recordDateTime.Day = (UCHAR) BCDtoBase10(&_lpWorkBuffer[2],   1);
+                                    memcpy (&ptr->class18.data[0], &_lpWorkBuffer[6], ptr->class14.dayRecordSize-6);
+
+                                    // now, readjust my workbuffer
+                                    memcpy (&buffer[0], &_lpWorkBuffer[ptr->class14.dayRecordSize], getTotalByteCount()-ptr->class14.dayRecordSize);
+                                    memcpy (&_lpWorkBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
+                                    setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
+
+                                    ptr->lastLPMessage = TRUE;
+                                    setPreviousState (StateScanValueSet7FirstScan);
+                                    setCurrentState (StateScanReturnLoadProfile);
+                                }
+                                else
+                                {
+                                    setCurrentState (StateScanValueSet7FirstScan);
+                                }
+                            }
+                            else
+                            {
+                                // need to check if its time to send back load profile
+                                if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                                {
+                                    BYTE buffer[100];
+
+                                    ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_lpWorkBuffer[0],   1);
+                                    ptr->class18.recordDateTime.Month = (UCHAR) BCDtoBase10(&_lpWorkBuffer[1],   1);
+                                    ptr->class18.recordDateTime.Day = (UCHAR) BCDtoBase10(&_lpWorkBuffer[2],   1);
+                                    memcpy (&ptr->class18.data[0], &_lpWorkBuffer[6], ptr->class14.dayRecordSize-6);
+
+                                    // now, readjust my workbuffer
+                                    memcpy (&buffer[0], &_lpWorkBuffer[ptr->class14.dayRecordSize], getTotalByteCount()-ptr->class14.dayRecordSize);
+                                    memcpy (&_lpWorkBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
+                                    setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
+
+                                    ptr->lastLPMessage = FALSE;
+                                    setPreviousState (StateScanValueSet6FirstScan);
+                                    setCurrentState (StateScanReturnLoadProfile);
+                                    setAttemptsRemaining(3);
+                                }
+                                else
+                                {
+                                    setCurrentState (StateScanValueSet6FirstScan);
+                                }
+                            }
                         }
-                        else
+                        catch (...)
                         {
-                            setCurrentState (StateScanValueSet6FirstScan);
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            // the esc is inside of class 7
+                            setCurrentState (StateScanValueSet7FirstScan);
                         }
+
                     }
                 }
                 break;

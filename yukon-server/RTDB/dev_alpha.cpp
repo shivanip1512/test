@@ -6,10 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:51 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/04/10 21:45:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*    History: 
+      $Log: dev_alpha.cpp,v $
+      Revision 1.9  2003/04/10 21:45:47  dsutton
+      Added code to check the CRC on the multiple message classes (ones over 64 bytes)
+      and added checks to make sure we had received the entire message
+
+
 *-----------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4786 )
@@ -38,6 +45,51 @@
 
 #include "utility.h"
 
+
+CtiDeviceAlpha::CtiDeviceAlpha(BYTE         *dataPtr,
+                               BYTE          *lpPtr,
+                               BYTE          *wPtr,
+                               ULONG         cnt) :
+_dataBuffer(dataPtr),
+_loadProfileBuffer(lpPtr),
+_lpWorkBuffer(wPtr),
+_singleMsgBuffer (NULL),
+_totalByteCount (cnt),
+_readClass(0),
+_readLength(0),
+_readFunction(0),
+_classReadComplete(FALSE)
+{
+}
+
+
+CtiDeviceAlpha::~CtiDeviceAlpha()
+{
+    if (_dataBuffer != NULL)
+    {
+        delete []_dataBuffer;
+        _dataBuffer = NULL;
+    }
+
+    if (_singleMsgBuffer != NULL)
+    {
+        delete []_singleMsgBuffer;
+        _singleMsgBuffer = NULL;
+    }
+
+    if (_loadProfileBuffer != NULL)
+    {
+        delete []_loadProfileBuffer;
+        _loadProfileBuffer = NULL;
+    }
+
+    if (_lpWorkBuffer != NULL)
+    {
+        delete []_lpWorkBuffer;
+        _lpWorkBuffer = NULL;
+    }
+}
+
 /***************************************************************
  all getters and setters
 ****************************************************************/
@@ -60,6 +112,17 @@ USHORT    CtiDeviceAlpha::getBytesToRetrieve() const
 CtiDeviceAlpha& CtiDeviceAlpha::setBytesToRetrieve( USHORT c)
 {
     _bytesToRetrieve = c;
+    return *this;
+}
+
+USHORT    CtiDeviceAlpha::getSingleMsgByteCount() const
+{
+    return _singleMsgBufferBytes;
+}
+
+CtiDeviceAlpha& CtiDeviceAlpha::setSingleMsgByteCount( USHORT c)
+{
+    _singleMsgBufferBytes = c;
     return *this;
 }
 
@@ -111,6 +174,20 @@ CtiDeviceAlpha& CtiDeviceAlpha::setClassReadComplete (BOOL aFlag)
 {
     _classReadComplete = aFlag;
     return *this;
+}
+
+bool CtiDeviceAlpha::isReturnedBufferValid (CtiXfer  &Transfer)
+{
+    bool retVal = false;
+
+    if (Transfer.getInBuffer()[0] == STX)
+    {
+        if (!decodeAckNak (Transfer.getInBuffer()[2]))
+        {
+            retVal = true;
+        }
+    }
+    return retVal;
 }
 
 INT CtiDeviceAlpha::GeneralScan(CtiRequestMsg *pReq,
@@ -289,6 +366,73 @@ UCHAR CtiDeviceAlpha::decodeAckNak(UCHAR AckNak)
     return ret;
 }
 
+
+USHORT  CtiDeviceAlpha::addCRC(UCHAR* buffer, LONG length, BOOL bAdd)
+{
+   ULONG       i,j;
+   BYTEUSHORT   CRC;
+
+   BYTE CRCMSB = 0xff;
+   BYTE CRCLSB = 0xff;
+   BYTE Temp;
+   BYTE Acc;
+
+   CRC.sh = 0;
+
+   if(length > 0)
+   {
+        for(i = 0; i < (ULONG)length; i++)
+        {
+           CRC.ch[1] ^= buffer[i];
+    
+           for(j = 0; j < 8; j++)
+           {
+              if(CRC.sh & 0x8000)
+              {
+                 CRC.sh = CRC.sh << 1;
+                 CRC.sh ^= 0x1021;
+              }
+              else
+              {
+                 CRC.sh = CRC.sh << 1;
+              }
+           }
+    
+        }
+    
+        if(bAdd)
+        {
+           buffer[length]     = CRC.ch[1];
+           buffer[length + 1] = CRC.ch[0];
+        }
+    
+   }
+   return CRC.sh;
+}
+
+INT CtiDeviceAlpha::checkCRC(BYTE *InBuffer,ULONG InCount)
+{
+   BYTEUSHORT  CRC;
+   INT         retval = NORMAL;
+
+    if(InCount > 3)
+    {
+        CRC.sh = addCRC(InBuffer, InCount - 2, FALSE);
+        
+        if( CRC.ch[0] == InBuffer[InCount - 1] &&
+            CRC.ch[1] == InBuffer[InCount - 2] )
+        {
+            retval = NORMAL;
+        }
+        else
+        {
+            retval=!NORMAL;
+        }
+    }
+
+   return retval;
+}
+
 INT CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, INT commReturnValue, RWTPtrSlist< CtiMessage > &traceList)
 {
     USHORT retCode=NORMAL;
@@ -339,9 +483,11 @@ INT CtiDeviceAlpha::freeDataBins  ()
         _dataBuffer = NULL;
     }
 
-    // used to grab input from the original outmessage
-    if (_inputBuffer != NULL)
-        _inputBuffer = NULL;
+    if (_singleMsgBuffer != NULL)
+    {
+        delete []_singleMsgBuffer;
+        _singleMsgBuffer = NULL;
+    }
 
     if (_loadProfileBuffer != NULL)
     {
@@ -350,10 +496,10 @@ INT CtiDeviceAlpha::freeDataBins  ()
     }
 
     // this should be null, but if not
-    if (_workBuffer != NULL)
+    if (_lpWorkBuffer != NULL)
     {
-        delete []_workBuffer;
-        _workBuffer = NULL;
+        delete []_lpWorkBuffer;
+        _lpWorkBuffer = NULL;
     }
 
     // re-init everything for next time through
@@ -596,7 +742,11 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setOutCount (6);
                 Transfer.setInCountExpected (15);
                 Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC | XFER_VERIFY_CRC);
+
+                // add the CRC and update the outcount
+                addCRC (Transfer.getOutBuffer(),Transfer.getOutCount(),true);
+                Transfer.setOutCount (Transfer.getOutCount() +2);
+
                 setCurrentState (StateHandshakeDecodeIdentify);
                 break;
             }
@@ -633,7 +783,10 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< C
                 Transfer.setOutCount (9);
                 Transfer.setInCountExpected (6);
                 Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC | XFER_VERIFY_CRC);
+
+                // add the CRC and update the outcount
+                addCRC (Transfer.getOutBuffer(),Transfer.getOutCount(),true);
+                Transfer.setOutCount (Transfer.getOutCount() +2);
                 setCurrentState (StateHandshakeDecodeSecurity);
                 break;
             }
@@ -702,9 +855,21 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
             }
         case StateHandshakeDecodeIdentify:
             {
+                int ret_crc;
+
                 // decode message
-                if ( commReturnValue || (Transfer.getInCountActual()) != 15 )
+                if ( commReturnValue || 
+                   (Transfer.getInCountActual() != 15 ) ||
+                   (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())))
+
                 {
+                    if (ret_crc)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " CRC error for " << getName() << " while handshaking" << endl;
+                        }
+                    }
                     Transfer.doTrace(ERRUNKNOWN);
                     setAttemptsRemaining (getAttemptsRemaining()-1);
                     if (getAttemptsRemaining() > 0)
@@ -727,9 +892,18 @@ INT CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, INT commReturnV
 
         case StateHandshakeDecodeSecurity:
             {
-                if (decodeAckNak(Transfer.getInBuffer()[2]) || (Transfer.getInCountActual()) != 6)
+                int ret_crc;
+
+                if (decodeAckNak(Transfer.getInBuffer()[2]) || 
+                    (Transfer.getInCountActual() != 6) ||
+                    (ret_crc=checkCRC(Transfer.getInBuffer(),Transfer.getInCountActual())))
+
                 {
-                    // This guy naked all over my password, or we got nothing back
+                    if (ret_crc)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " CRC error for " << getName() << " while handshaking" << endl;
+                    }
 
                     setAttemptsRemaining (getAttemptsRemaining()-1);
 
@@ -860,101 +1034,3 @@ BOOL CtiDeviceAlpha::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     return retCode;
 }
 
-
-
-// neither of these is currently used
-#if 0
-INT CtiDeviceAlpha::generateCommandWithData( CtiXfer  &Transfer )
-{
-    int               retCode = NORMAL;
-    int               i;
-    INT function  = getReadFunction();
-    INT DataBytes = APlusFunctions[getAPFuncOffset(KEY_ALPHA_FUNC, (void*) &function)].DataBytes;
-
-    // get appropriate data
-    switch (getCurrentState())
-    {
-        case StateHandshakeComplete:
-        case StateScanValueSet1FirstScan:  // done to set attempts only first time thru DLS
-        case StateScanValueSet1:
-            {
-                Transfer.getOutBuffer()[0] = STX;
-                Transfer.getOutBuffer()[1] = ALPHA_CMD_WITH_DATA;
-                Transfer.getOutBuffer()[2] = getReadFunction ();
-                Transfer.getOutBuffer()[3] = PAD;
-                Transfer.getOutBuffer()[4] = DataBytes;
-
-                for ( i = 5; i < 5 + DataBytes; i++)
-                {
-                    Transfer.getOutBuffer()[i] = _inputBuffer[i - 2];
-                }
-
-                Transfer.setOutCount (5 + DataBytes);
-                Transfer.setInCountExpected (6);
-                Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC | XFER_VERIFY_CRC);
-
-                // set our states
-                setPreviousState (StateScanValueSet1);
-                setCurrentState (StateScanDecode1);
-                break;
-            }
-        case StateScanSendTerminate:
-            {
-                generateCommandTerminate (Transfer);
-                break;
-            }
-        default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
-            }
-            generateCommandTerminate (Transfer);
-            setPreviousState (StateScanAbort);
-            retCode = !NORMAL;
-    }
-    return retCode;
-}
-
-INT CtiDeviceAlpha::generateCommandWithNoData( CtiXfer  &Transfer )
-{
-    int               retCode = NORMAL;
-
-    // get appropriate data
-    switch (getCurrentState())
-    {
-
-        case StateHandshakeComplete:
-        case StateScanValueSet1FirstScan:  // done to set attempts only first time thru DLS
-        case StateScanValueSet1:
-            {
-
-                // build the command
-                sprintf((PCHAR)Transfer.getOutBuffer(),"%c%c%c", STX, ALPHA_CMD_NO_DATA, getReadFunction());
-
-                Transfer.setOutCount (3);
-                Transfer.setInCountExpected (6);
-                Transfer.setInTimeout (1);
-                Transfer.setCRCFlag (XFER_ADD_CRC | XFER_VERIFY_CRC);
-
-                // set our states
-                setPreviousState (StateScanValueSet1);
-                setCurrentState (StateScanDecode1);
-                break;
-            }
-        case StateScanSendTerminate:
-            {
-                generateCommandTerminate (Transfer);
-                break;
-            }
-        default:
-            printf("Invalid \"State\" in %s = 0x%04X\n",__LINE__, __FILE__, getCurrentState());
-            generateCommandTerminate (Transfer);
-            setPreviousState (StateScanAbort);
-            retCode = !NORMAL;
-
-    }
-    return retCode;
-}
-
-#endif
