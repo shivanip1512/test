@@ -161,7 +161,7 @@ void CtiCapController::controlLoop()
         {
             if(_CC_DEBUG)
             {
-                if( (RWDBDateTime().seconds()%300) == 0 )
+                if( (RWDBDateTime().seconds()%1800) == 0 )
                 {//every five minutes tell the user if the control thread is still alive
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Controller thread pulse" << endl;
@@ -227,37 +227,26 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-                    if( currentSubstationBus->areAllCapBankStatusesReceived() )
+                    if( currentSubstationBus->areAllCapBankStatusesReceived() &&
+                        currentSubstationBus->isVarCheckNeeded(currentDateTime) )
                     {
                         if( currentSubstationBus->getRecentlyControlledFlag() )
                         {
                             try
                             {
-                                if( ( currentSubstationBus->isVarCheckNeeded(currentDateTime) &&
-                                      currentSubstationBus->isAlreadyControlled() ) ||
+                                if( currentSubstationBus->isAlreadyControlled() ||
                                     currentSubstationBus->isPastResponseTime(currentDateTime) )
                                 {
                                     if( currentSubstationBus->capBankControlStatusUpdate(pointChanges) )
                                     {
                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                                     }
-
-                                    if( currentSubstationBus->getControlInterval() > 0 )
-                                    {
-                                        currentSubstationBus->figureNextCheckTime();
-                                    }
                                 }
-                                else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod &&
-                                        currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                                else if( currentSubstationBus->getControlMethod() == CtiCCSubstationBus::IndividualFeederControlMethod )
                                 {
                                     if( !currentSubstationBus->getDisableFlag() )
                                     {
                                         currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
-                                    }
-
-                                    if( currentSubstationBus->getControlInterval() > 0 )
-                                    {
-                                        currentSubstationBus->figureNextCheckTime();
                                     }
                                 }
                             }
@@ -267,7 +256,7 @@ void CtiCapController::controlLoop()
                                 dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
-                        else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                        else//not recently controlled
                         {
                             try
                             {
@@ -275,21 +264,29 @@ void CtiCapController::controlLoop()
                                 {
                                     currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
                                 }
-                                else
-                                {//so we don't do this over and over we need to clear out
-                                    currentSubstationBus->clearOutNewPointReceivedFlags();
-                                }
-
-                                if( currentSubstationBus->getControlInterval() > 0 )
-                                {
-                                    currentSubstationBus->figureNextCheckTime();
-                                }
                             }
                             catch(...)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
+                        }
+
+                        try
+                        {
+                            if( currentSubstationBus->getControlInterval() == 0 )
+                            {//so we don't do this over and over we need to clear out
+                                currentSubstationBus->clearOutNewPointReceivedFlags();
+                            }
+                            else
+                            {
+                                currentSubstationBus->figureNextCheckTime();
+                            }
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
                 }
@@ -883,7 +880,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
 
                         if( currentCapBank->getStatusPointId() == pointID )
                         {
-                            if( currentCapBank->getControlStatus() != (ULONG)value )
+                            if( timestamp > currentCapBank->getLastStatusChangeTime() ||
+                                currentCapBank->getControlStatus() != (ULONG)value )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
@@ -899,7 +897,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
                         }
                         else if( currentCapBank->getOperationAnalogPointId() == pointID )
                         {
-                            if( currentCapBank->getCurrentDailyOperations() != (ULONG)value )
+                            if( timestamp > currentCapBank->getLastStatusChangeTime() ||
+                                currentCapBank->getCurrentDailyOperations() != (ULONG)value )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
@@ -928,11 +927,11 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
 ---------------------------------------------------------------------------*/
 void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString )
 {
-    if( _CC_DEBUG )
+    /*if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Porter return received." << endl;
-    }
+    }*/
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -982,6 +981,12 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
                             {
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                             }
+
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Porter Return caused a Cap Bank to go into Failed State!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
+                            }
+
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
                             currentFeeder->setRecentlyControlledFlag(FALSE);
                         }
@@ -1006,7 +1011,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
 void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional )
 {
     if( _CC_DEBUG )
-   {
+    {
         char tempchar[64] = "";
         RWCString outString = "Signal Message received. Point ID:";
         _ltoa(pointID,tempchar,10);
@@ -1018,7 +1023,7 @@ void CtiCapController::signalMsg( long pointID, unsigned tags, RWCString text, R
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - " << outString.data() << "  Text: "
                       << text << " Additional Info: " << additional << endl;
-   }
+    }
 
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
