@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/11/09 06:15:34 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/11/24 17:11:39 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.17  2004/11/24 17:11:39  cplender
+* SA305 Verification was not complete.
+*
 * Revision 1.16  2004/11/09 06:15:34  cplender
 * Improved the destructor if the verificationobjects are not empty..
 *
@@ -517,7 +520,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
     try
     {
         CtiProtocolSA3rdParty prot;
-        char codestr[13];  //  needs to be able to hold -2000000000
+        char codestr[256];  //  needs to be able to hold -2000000000
 
         prot.setSAData( OutMessage->Buffer.SASt );
         {
@@ -542,6 +545,16 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             OutMessage->VerificationSequence = VerificationSequenceGen();
         }
 
+        if( OutMessage->Buffer.SASt._code305 )
+        {
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
+            codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
+        }
         if( OutMessage->Buffer.SASt._code205 )
         {
             strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2004/11/17 23:42:51 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2004/11/24 17:13:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -772,6 +772,8 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
                     NewOutMessage->Buffer.SASt._bufferLen = prot305.buildMessage(CtiProtocolSA305::ModeHex, (char*)(NewOutMessage->Buffer.SASt._buffer));
                     NewOutMessage->OutLength = NewOutMessage->Buffer.SASt._bufferLen;
 
+                    strncpy(NewOutMessage->Buffer.SASt._code305, NewOutMessage->Buffer.SASt._buffer ,NewOutMessage->Buffer.SASt._bufferLen);
+                    NewOutMessage->Buffer.SASt._code305[NewOutMessage->Buffer.SASt._bufferLen + 1] = '\0';
                     strncpy(NewOutMessage->Request.CommandStr, parse.getCommandStr() ,COMMAND_STR_SIZE);
 
                     for(i = 0; i < NewOutMessage->OutLength; i++)
