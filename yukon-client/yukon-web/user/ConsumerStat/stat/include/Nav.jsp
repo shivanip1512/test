@@ -159,7 +159,7 @@
 %>
           <tr> 
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="new"><span class="NavText">FAQ</span></a></td>
+            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText">FAQ</span></a></td>
           </tr>
 <%	} else { %>
           <tr> 
