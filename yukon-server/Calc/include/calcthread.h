@@ -59,6 +59,7 @@ public:
     BOOL isACalcPointID(const long aPointID);
     BOOL isAPeriodicCalcPointID(const long aPointID);
     BOOL isAnOnUpdateCalcPointID(const long aPointID);
+    long numberOfLoadedCalcPoints() { return (_periodicPoints.entries() + _onUpdatePoints.entries()); };
 
     RWTPtrDeque<CtiMultiMsg>::size_type outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
