@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/07/27 16:55:32 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/10/25 16:22:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -800,13 +800,13 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtr
 
             switch(InMessage->Buffer.DSt.Message[0])
             {
-                case 0x42:
+                case MCT24X_Status_Closed:
                 {
                     Value  = CLOSED;
                     disc   = " SERVICE CONNECT ENABLED";
                     break;
                 }
-                case 0x41:
+                case MCT24X_Status_Open:
                 {
                     Value  = OPENED;
                     disc   = " SERVICE DISCONNECTED";
@@ -892,13 +892,13 @@ INT CtiDeviceMCT24X::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
 
         switch(InMessage->Buffer.DSt.Message[0])
         {
-            case 0x42:
+            case MCT24X_Status_Closed:
             {
                 Value = CLOSED;
                 rwtemp += " SERVICE CONNECT ENABLED";
                 break;
             }
-            case 0x41:
+            case MCT24X_Status_Open:
             {
                 Value = OPENED;
                 rwtemp += " SERVICE DISCONNECTED";
