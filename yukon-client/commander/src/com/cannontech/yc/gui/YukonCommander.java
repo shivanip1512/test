@@ -177,31 +177,6 @@ public void actionPerformed(ActionEvent event)
 		setRoute(getLocateRouteDialog().getRouteComboBox().getSelectedItem());
 	}
 	/////////////////////////////////////////////////////////////////////////
-	// ** YC Command Menu - advancedOptions  **//
-	else if( event.getSource() == getYCCommandMenu().advancedOptionsMenuItem )
-	{
-		advOptsPanel = null;
-		getAdvOptsPanel().showAdvancedOptions();
-	}
-	else if( event.getSource() == getAdvOptsPanel().getOkButton())
-	{
-		YCDefaults newDefaults = new YCDefaults(
-			(new Integer((String)getAdvOptsPanel().getCommandPriorityTextField().getText())).intValue(),
-			getAdvOptsPanel().getQueueCommandCheckBox().isSelected(),
-			getAdvOptsPanel().getShowMessageLogCheckBox().isSelected(),
-			getAdvOptsPanel().getConfirmCommandCheckBox().isSelected(),
-			getAdvOptsPanel().getCommandFileDirectoryTextField().getText().toString());
-
-		ycClass.setYCDefaults(newDefaults);
-		ycClass.getYCDefaults().writeDefaultsFile();
-
-		getCommandLogPanel().setVisible( ycClass.getYCDefaults().getShowMessageLog() );
-		
-		getAdvOptsPanel().setVisible(false);
-		getAdvOptsPanel().dispose();
-		advOptsPanel = null;
-	}
-	/////////////////////////////////////////////////////////////////////////
 	// ** YC File Menu - printMenu **//
 	else if( event.getSource() == getYCFileMenu().printMenuItem || 
 		event.getSource() == getClearPrintButtons().getPrintButton() )
@@ -273,7 +248,31 @@ public void actionPerformed(ActionEvent event)
 	// ** YC View Menu - showCommandLogMenu **//
 	//else if( event.getSource() == getYCViewMenu().showCommandLogButton )
 		//getCommandLogPanel().setVisible( getYCViewMenu().showCommandLogButton.isSelected() );
+	/////////////////////////////////////////////////////////////////////////
+	// ** YC Command Menu - advancedOptions  **//
+	else if( event.getSource() == getYCCommandMenu().advancedOptionsMenuItem )
+	{
+		advOptsPanel = null;
+		getAdvOptsPanel().showAdvancedOptions();
+	}
+	else if( event.getSource() == getAdvOptsPanel().getOkButton())
+	{
+		YCDefaults newDefaults = new YCDefaults(
+			(new Integer((String)getAdvOptsPanel().getCommandPriorityTextField().getText())).intValue(),
+			getAdvOptsPanel().getQueueCommandCheckBox().isSelected(),
+			getAdvOptsPanel().getShowMessageLogCheckBox().isSelected(),
+			getAdvOptsPanel().getConfirmCommandCheckBox().isSelected(),
+			getAdvOptsPanel().getCommandFileDirectoryTextField().getText().toString());
 
+		ycClass.setYCDefaults(newDefaults);
+		ycClass.getYCDefaults().writeDefaultsFile();
+
+		getCommandLogPanel().setVisible( ycClass.getYCDefaults().getShowMessageLog() );
+		
+		getAdvOptsPanel().setVisible(false);
+		getAdvOptsPanel().dispose();
+		advOptsPanel = null;
+	}
 	/////////////////////////////////////////////////////////////////////////
 	// ** YC File Menu - exitMenu **//
 	else if( event.getSource() == getYCFileMenu().exitMenuItem )
