@@ -1431,11 +1431,11 @@ public boolean isInputValid()
       return false;
    }
 */
-	if(is410 && getMeterNumberTextField().getText().length() < 7)
+	/*if(is410 && getMeterNumberTextField().getText().length() < 7)
 	{
 	   setErrorString("An MCT410 requires a meter number with seven digits");
 	   return false;
-	}
+	}*/
 
    return true;
 }
@@ -1592,11 +1592,12 @@ public void setValue(Object val)
 			getJComboBoxlVoltRate().addItem("30 minute");
 			getJComboBoxlVoltRate().addItem("1 hour");
 			
+			CtiUtilities.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
+			
 			is410 = true;
 		}
 		if(deviceType == PAOGroups.MCT410IL)
 		{
-			getChannel1CheckBox().setEnabled(false);
 			getChannel2CheckBox().setEnabled(false);
 			getChannel3CheckBox().setEnabled(false);
 			
