@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
@@ -17,6 +16,7 @@ import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
+import com.cannontech.util.ServletUtil;
 
 /**
  * <p>Title: </p>
@@ -32,16 +32,16 @@ public class ServletUtils {
 	// Attribute names to store objects in session or StarsYukonUser object
 	public static final String TRANSIENT_ATT_LEADING = "$$";
 	
-	public static final String ATT_ERROR_MESSAGE = "ERROR_MESSAGE";
-	public static final String ATT_CONFIRM_MESSAGE = "CONFIRM_MESSAGE";
+	public static final String ATT_ERROR_MESSAGE = ServletUtil.ATT_ERROR_MESSAGE;
+	public static final String ATT_CONFIRM_MESSAGE = ServletUtil.ATT_CONFIRM_MESSAGE;
 	public static final String ATT_PASSWORD_VERIFIED = "PASSWORD_VERIFIED";
-	public static final String ATT_REDIRECT = "REDIRECT";
-	public static final String ATT_REDIRECT2 = "REDIRECT2";
-	public static final String ATT_REFERRER = "REFERRER";
-	public static final String ATT_REFERRER2 = "REFERRER2";
+	public static final String ATT_REDIRECT = ServletUtil.ATT_REDIRECT;
+	public static final String ATT_REDIRECT2 = ServletUtil.ATT_REDIRECT2;
+	public static final String ATT_REFERRER = ServletUtil.ATT_REFERRER;
+	public static final String ATT_REFERRER2 = ServletUtil.ATT_REFERRER2;
 	public static final String ATT_OVER_PAGE_ACTION = "OVER_PAGE_ACTION";
 	
-	public static final String ATT_YUKON_USER = "YUKON_USER";
+	public static final String ATT_YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
 	public static final String ATT_ENERGY_COMPANY_SETTINGS = "ENERGY_COMPANY_SETTINGS";
 	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
