@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/30 17:35:31 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/01/26 21:29:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -197,6 +197,8 @@ public:
         PutConfig_Multiplier2,
         PutConfig_Multiplier3,
 
+        PutConfig_ARMC,
+
         // Control Commands
         Control_Shed,     //  for MCT Group Addressing
         Control_Restore,  //
@@ -207,8 +209,6 @@ public:
 
         Control_ARML,
         Control_ARMS,
-
-        Command_ARMC,
 
         Command_Loop,
 
