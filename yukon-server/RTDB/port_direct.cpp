@@ -196,6 +196,7 @@ INT CtiPortDirect::dcdTest() const
 INT CtiPortDirect::lowerRTS()
 {
     #if 1
+    _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
     return (EscapeCommFunction(_portHandle, CLRRTS) ? NORMAL : SYSTEM);
     #else
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
@@ -206,6 +207,7 @@ INT CtiPortDirect::lowerRTS()
 INT CtiPortDirect::raiseRTS()
 {
     #if 1
+    _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
     return (EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
     #else
     _dcb.fRtsControl =  RTS_CONTROL_ENABLE;
@@ -216,6 +218,7 @@ INT CtiPortDirect::raiseRTS()
 INT CtiPortDirect::lowerDTR()
 {
     #if 1
+    _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
     return (EscapeCommFunction(_portHandle, CLRDTR) ? NORMAL : SYSTEM);
     #else
     _dcb.fDtrControl =  DTR_CONTROL_DISABLE;
@@ -226,6 +229,7 @@ INT CtiPortDirect::lowerDTR()
 INT CtiPortDirect::raiseDTR()
 {
     #if 1
+    _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
     return (EscapeCommFunction(_portHandle, SETDTR) ? NORMAL : SYSTEM);
     #else
     _dcb.fDtrControl =  DTR_CONTROL_ENABLE;
