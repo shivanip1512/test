@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     9/11/2003 5:39:46 PM                         */
+/* Created on:     9/25/2003 5:23:27 PM                         */
 /*==============================================================*/
 
 
@@ -387,7 +387,7 @@ alter table ApplianceStorageHeat
 
 create table ApplianceWaterHeater  (
    ApplianceID          NUMBER                           not null,
-   NumberOfGallons      NUMBER                           not null,
+   NumberOfGallonsID    NUMBER,
    EnergySourceID       NUMBER                           not null,
    NumberOfElements     NUMBER                           not null
 )
@@ -1103,6 +1103,12 @@ alter table AccountSite
 /
 
 
+alter table ApplianceWaterHeater
+   add constraint FK_ApWtrHt_YkLsE foreign key (NumberOfGallonsID)
+      references YukonListEntry (EntryID)
+/
+
+
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
       references LMPROGRAM (DEVICEID)
@@ -1169,14 +1175,14 @@ alter table LMProgramWebPublishing
 /
 
 
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
       references YukonListEntry (EntryID)
 /
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac_ty foreign key (TypeID)
+alter table LMCustomerEventBase
+   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
       references YukonListEntry (EntryID)
 /
 
@@ -1187,8 +1193,8 @@ alter table LMThermostatSeasonEntry
 /
 
 
-alter table LMCustomerEventBase
-   add constraint FK_CsLsE_LCstE foreign key (EventTypeID)
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB_c foreign key (CurrentStateID)
       references YukonListEntry (EntryID)
 /
 
@@ -1205,14 +1211,14 @@ alter table LMThermostatManualEvent
 /
 
 
-alter table WorkOrderBase
-   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
+alter table ApplianceAirConditioner
+   add constraint FK_CsLsE_Ac foreign key (TonnageID)
       references YukonListEntry (EntryID)
 /
 
 
-alter table ApplianceAirConditioner
-   add constraint FK_CsLsE_Ac foreign key (TonnageID)
+alter table WorkOrderBase
+   add constraint FK_CsLsE_WkB foreign key (WorkTypeID)
       references YukonListEntry (EntryID)
 /
 
@@ -1283,14 +1289,14 @@ alter table ApplianceCategory
 /
 
 
-alter table InventoryBase
-   add constraint FK_INV_REF__YUK foreign key (CategoryID)
+alter table LMHardwareBase
+   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
       references YukonListEntry (EntryID)
 /
 
 
-alter table LMHardwareBase
-   add constraint FK_LMH_REF__YUK foreign key (LMHardwareTypeID)
+alter table InventoryBase
+   add constraint FK_INV_REF__YUK foreign key (CategoryID)
       references YukonListEntry (EntryID)
 /
 
