@@ -632,4 +632,45 @@ public final static boolean isVirtualDevice(int deviceType)
 	}
 }
 
+public final static boolean usesDeviceMeterGroup(int deviceType)
+{
+	switch(deviceType)
+	{
+		case MCT213:
+		case MCT310:
+		case MCT410_KWH_ONLY:
+		case MCT318:
+		case MCT360:
+		case MCT370:
+		case MCT240:
+		case MCT248:
+		case MCT250:
+		case MCT210:
+		case LMT_2:
+		case DCT_501:
+		case MCT310ID:
+		case MCT310IDL:
+		case MCT310IL:
+		case MCT310CT:
+		case MCT310IM:
+		case MCT318L:
+		case ALPHA_PPLUS:
+		case ALPHA_A1:
+		case LANDISGYRS4:
+		case DR_87:
+		case SIXNET:
+		case ION_7700:
+		case ION_7330:
+		case ION_8300:
+		case TRANSDATA_MARKV:
+		case DAVISWEATHER:
+		
+			return true;
+		
+		default:
+			return false;
+	}
+	
+}
+
 }

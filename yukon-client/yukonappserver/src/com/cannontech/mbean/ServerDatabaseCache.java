@@ -1499,8 +1499,13 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			//we should not have to return the DeviceMeterGroup since
 			// the liteObject that was edited/added was actually a Device
 			//retLBase = handleDeviceMeterGroupChange( dbType, id);
-
-			handleDeviceMeterGroupChange( dbType, id);
+			
+			//Verify that this a device that even cares about DeviceMeterGroups
+			int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType(objectType);
+			if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
+			{
+				handleDeviceMeterGroupChange( dbType, id);
+			}
 		}
 		else if( dbCategory.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAT_LOADMANAGEMENT) )
 		{
