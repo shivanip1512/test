@@ -75,8 +75,8 @@
 
 #define TAG_ATTRIB_CONTROL_AVAILABLE         0x10000000        // This status point can also be controlled
 #define TAG_ATTRIB_PSEUDO                    0x20000000        // Device/point is not real.
-#define TAG_ACKNOWLEDGED_ALARM               0x40000000        // Alarm State
-#define TAG_UNACKNOWLEDGED_ALARM             0x80000000        // Alarm State
+#define TAG_UNACKNOWLEDGED_ALARM             0x40000000        // Alarm State has not been acknowledged.
+#define TAG_ACTIVE_ALARM                     0x80000000        // Alarm State is active now.
 
 // Masks
 #define MASK_RESETTABLE_TAGS                 0x0003FC00        // Tags which are reset upon any setPoint operation
@@ -185,7 +185,7 @@
 #define OFFSET_QUADRANT4_TOTAL_KVARH                155
 #define OFFSET_QUADRANT4_LAST_INTERVAL_KVAR         156
 
-                                                     
+
 #define OFFSET_HIGHEST_CURRENT_OFFSET              160
 
 //  to be added to a point to yield the load profile equivalent
