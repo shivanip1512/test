@@ -216,7 +216,7 @@ public class ProgramSignUpAction implements ActionBase {
 			// Log activity
 			String logMsg = "Program Enrolled Before:" + ((progEnrBefore != null)? progEnrBefore : "(None)") +
 					"; Now:" + ((progEnrNow != null)? progEnrNow : "(Not Enrolled)");
-			ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 					"Program Enrollment", logMsg );
             
             if (user == null) {	// Probably from the sign up wizard?

@@ -315,7 +315,7 @@ public class ProgramOptOutAction implements ActionBase {
             
 			// Log activity
 			if (logMsg != null) {
-				ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 						"Program Opt Out", logMsg );
 			}
 			

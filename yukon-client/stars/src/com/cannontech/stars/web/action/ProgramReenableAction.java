@@ -131,7 +131,7 @@ public class ProgramReenableAction implements ActionBase {
 			resp.setDescription( desc );
 			
 			// Log activity
-			ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 					"Program Reenable", "" );
 			
             respOper.setStarsProgramReenableResponse( resp );

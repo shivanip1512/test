@@ -235,7 +235,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 							(starsOption.getHold()? "(HOLD)" : "") + ", " +
 							"Fan:" + starsOption.getFan().toString();
 				
-				ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 						"Thermostat Manual", logMsg);
 				
 				// The StarsThermostatManualEvent element of the response message only need to be set once

@@ -175,7 +175,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
             }
             
 			// Log activity
-			ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+			ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 					"Hardware Configuration", "Serial #:" + liteHw.getManufacturerSerialNumber() );
             
             StarsSuccess success = new StarsSuccess();
