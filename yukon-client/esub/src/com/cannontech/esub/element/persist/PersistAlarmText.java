@@ -7,7 +7,9 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.AlarmTextElement;
@@ -55,11 +57,19 @@ public class PersistAlarmText extends BasePersistElement {
 				
 				//TODO This could become very inefficient when a lot of points exist, be smarter
 				int[] pointIDs = LxSaveUtils.readIntArray(in,0);
-				LitePoint[] points = new LitePoint[pointIDs.length];
+				ArrayList pointsList = new ArrayList(pointIDs.length);
+				//
 				for(int i = 0; i < pointIDs.length; i++) {
-					points[i] = PointFuncs.getLitePoint(pointIDs[i]);
+					LitePoint lp = PointFuncs.getLitePoint(pointIDs[i]);
+					if(lp != null) {
+						pointsList.add(lp);
+					}
+					else {
+						CTILogger.info("PersistentAlarmText couldn't load point id: " + pointIDs[i]);
+					}
 				}
-				
+				LitePoint[] points = new LitePoint[pointsList.size()];
+				pointsList.toArray(points);
 				elem.setPoints(points);
 				elem.setLinkTo(LxSaveUtils.readString(in));
 				
