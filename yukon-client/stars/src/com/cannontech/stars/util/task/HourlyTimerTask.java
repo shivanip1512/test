@@ -3,13 +3,11 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.OptOutEventQueue;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -85,10 +83,17 @@ public class HourlyTimerTask extends StarsTimerTask {
 				if (liteAcctInfo == null) continue;
 				
 				try {
-					// Execute "opt out"/"reenable" command
-					StringTokenizer st = new StringTokenizer( dueEvents[j].getCommand(), "," );
-					while (st.hasMoreTokens())
-						ServerUtils.sendCommand( st.nextToken() );
+					// Send out "opt out"/"reenable" command
+					String[] commands = dueEvents[j].getCommand().split(",");
+					
+					com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+					synchronized (yc) {
+						yc.setRouteID( company.getDefaultRouteID() );
+						for (int k = 0; k < commands.length; k++) {
+							yc.setCommand( commands[k] );
+							yc.handleSerialNumber();
+						}
+					}
 					
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
 						StarsProgramReenable reEnable = new StarsProgramReenable();
@@ -110,7 +115,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
 						e.setAccountID( dueEvents[j].getAccountID() );
 		            	
-						String[] commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, company );
+						commands = ProgramReenableAction.getReenableCommands( liteAcctInfo, company );
 		            	StringBuffer cmd = new StringBuffer();
 		            	if (commands.length > 0) {
 		            		cmd.append( commands[0] );

@@ -187,8 +187,15 @@ public class ProgramOptOutAction implements ActionBase {
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
             	int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
 				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
-            	for (int i = 0; i < commands.length; i++)
-            		ServerUtils.sendCommand( commands[i] );
+			
+				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+				synchronized (yc) {
+					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					for (int i = 0; i < commands.length; i++) {
+						yc.setCommandFileName( commands[i] );
+						yc.handleSerialNumber();
+					}
+				}
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
             	event.setEnergyCompanyID( energyCompanyID );
@@ -213,17 +220,45 @@ public class ProgramOptOutAction implements ActionBase {
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) );
             }
             else if (optOut.getPeriod() == REPEAT_LAST) {
-            	// Repeat the last opt out command
-            	if (repeatLast( liteAcctInfo, energyCompany ))
-	            	resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent" );
-	            else
-	            	resp.setDescription( ERROR_MSG_LABEL + "There is no active " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event, command not sent" );
+				/* We will only resend the command if there is no opt out event in the event queue
+				 * (otherwise the command hasn't been sent out yet), and there is a reenable event
+				 * (the opt out event is still active)
+				 */
+				OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
+				OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+				OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
+				
+				if (e1 == null || e2 != null) {
+					int offHours = (int) ((e2.getStartDateTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+					String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
+					
+					com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+					synchronized (yc) {
+						yc.setRouteID( energyCompany.getDefaultRouteID() );
+						for (int i = 0; i < commands.length; i++) {
+							yc.setCommandFileName( commands[i] );
+							yc.handleSerialNumber();
+						}
+					}
+					
+					resp.setDescription( "The last " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " command has been resent" );
+				}
+				else {
+					resp.setDescription( ERROR_MSG_LABEL + "There is no active " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN) + " event, command not sent" );
+				}
             }
             else {
             	// Send opt out commands immediately, and store the reenable command in memory
 				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, optOut.getPeriod() * 24 );
-            	for (int i = 0; i < commands.length; i++)
-            		ServerUtils.sendCommand( commands[i] );
+				
+				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+				synchronized (yc) {
+					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					for (int i = 0; i < commands.length; i++) {
+						yc.setCommandFileName( commands[i] );
+						yc.handleSerialNumber();
+					}
+				}
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
             	event.setEnergyCompanyID( energyCompanyID );
@@ -372,8 +407,6 @@ public class ProgramOptOutAction implements ActionBase {
 	
 	private static String[] getOptOutCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, int offHours)
 	throws Exception {
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
-		
         ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
 		String[] commands = new String[ hwIDList.size() ];
 
@@ -385,28 +418,10 @@ public class ProgramOptOutAction implements ActionBase {
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
             
             commands[i] = "putconfig serial " + liteHw.getManufactureSerialNumber() +
-            			" service out temp offhours " + String.valueOf(offHours) + routeStr;
+            			" service out temp offhours " + String.valueOf(offHours);
         }
         
         return commands;
-	}
-	
-	private static boolean repeatLast(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) throws Exception {
-		/* We will only resend the command if there is no opt out event in the event queue
-		 * (otherwise the command hasn't been sent out yet), and there is a reenable event
-		 * (the opt out event is still active)
-		 */
-		OptOutEventQueue queue = energyCompany.getOptOutEventQueue();
-		OptOutEventQueue.OptOutEvent e1 = queue.findOptOutEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
-		OptOutEventQueue.OptOutEvent e2 = queue.findReenableEvent( liteAcctInfo.getCustomerAccount().getAccountID() );
-		if (e1 != null || e2 == null) return false;
-		
-		int offHours = (int) ((e2.getStartDateTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
-		String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
-    	for (int i = 0; i < commands.length; i++)
-    		ServerUtils.sendCommand( commands[i] );
-    		
-    	return true;
 	}
 	
 	private static StarsProgramOptOutResponse processOptOut(

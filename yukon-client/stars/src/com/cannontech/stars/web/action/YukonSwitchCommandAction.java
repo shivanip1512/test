@@ -11,7 +11,6 @@ import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.SendConfigCommandTask;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -208,11 +207,15 @@ public class YukonSwitchCommandAction implements ActionBase {
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
         java.util.Date now = new java.util.Date();
-
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 		
-        String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber() + routeStr;
-        ServerUtils.sendCommand( cmd );
+        String cmd = "putconfig service out serial " + liteHw.getManufactureSerialNumber();
+        
+		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		synchronized (yc) {
+			yc.setRouteID( energyCompany.getDefaultRouteID() );
+			yc.setCommand( cmd );
+			yc.handleSerialNumber();
+		}
 		
 		// Add "Termination" to hardware events
 		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -241,11 +244,15 @@ public class YukonSwitchCommandAction implements ActionBase {
         Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
         Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
         java.util.Date now = new java.util.Date();
-
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 		
-        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
-        ServerUtils.sendCommand( cmd );
+        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+        
+		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		synchronized (yc) {
+			yc.setRouteID( energyCompany.getDefaultRouteID() );
+			yc.setCommand( cmd );
+			yc.handleSerialNumber();
+		}
 		
 		// Add "Activation Completed" to hardware events
 		com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -279,7 +286,6 @@ public class YukonSwitchCommandAction implements ActionBase {
         
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration[] configs =
 				com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.getALLHardwareConfigs( invID );
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 		
         if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService) {
         	if (configs.length > 0) {
@@ -288,8 +294,14 @@ public class YukonSwitchCommandAction implements ActionBase {
         	}
 			else {
 				// Only send an in service command
-		        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber() + routeStr;
-		        ServerUtils.sendCommand( cmd );
+		        String cmd = "putconfig service in serial " + liteHw.getManufactureSerialNumber();
+		        
+		        com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+		        synchronized (yc) {
+		        	yc.setRouteID( energyCompany.getDefaultRouteID() );
+		        	yc.setCommand( cmd );
+		        	yc.handleSerialNumber();
+		        }
 			}
 			
 			// Add "Activation Completed" to hardware events
@@ -316,8 +328,14 @@ public class YukonSwitchCommandAction implements ActionBase {
 				if (configs[i].getAddressingGroupID().intValue() == 0) continue;
 				
 				String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
-	            String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'" + routeStr;
-	            ServerUtils.sendCommand( cmd );
+	            String cmd = "putconfig serial " + liteHw.getManufactureSerialNumber() + " template '" + groupName + "'";
+	            
+				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+				synchronized (yc) {
+					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					yc.setCommand( cmd );
+					yc.handleSerialNumber();
+				}
 			}
         }
 		

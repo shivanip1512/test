@@ -115,7 +115,6 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
     		
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID()) + " load 1";
 			boolean hasTwoWay = false;
 			
 			StarsUpdateThermostatManualOption starsOption = reqOper.getStarsUpdateThermostatManualOption();
@@ -189,9 +188,14 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					if (starsOption.getHold())
 						cmd.append(" hold");
 				}
-				cmd.append(" serial ").append(liteHw.getManufactureSerialNumber()).append(routeStr);
+				cmd.append(" serial ").append(liteHw.getManufactureSerialNumber());
 				
-				ServerUtils.sendCommand( cmd.toString() );
+				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+				synchronized (yc) {
+					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					yc.setCommandFileName( cmd.toString() );
+					yc.handleSerialNumber();
+				}
 				
 				// Add to the thermostat manual events
 				com.cannontech.database.data.stars.event.LMThermostatManualEvent event =

@@ -21,7 +21,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
@@ -106,8 +105,15 @@ public class ProgramReenableAction implements ActionBase {
 			StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 			
 			String[] commands = getReenableCommands( liteAcctInfo, energyCompany );
-        	for (int i = 0; i < commands.length; i++)
-        		ServerUtils.sendCommand( commands[i] );
+			
+			com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+			synchronized (yc) {
+				yc.setRouteID( energyCompany.getDefaultRouteID() );
+				for (int i = 0; i < commands.length; i++) {
+					yc.setCommandFileName( commands[i] );
+					yc.handleSerialNumber();
+				}
+			}
         	
         	// Send out reenable notification
         	SendOptOutNotificationAction.sendReenableNotification( energyCompany, liteAcctInfo, reqOper );
@@ -239,8 +245,6 @@ public class ProgramReenableAction implements ActionBase {
 	
 	public static String[] getReenableCommands(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 	throws Exception {
-		String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
-		
         ArrayList hwIDList = getHardwareIDs( liteAcctInfo );
 		String[] commands = new String[ hwIDList.size() ];
 
@@ -251,7 +255,7 @@ public class ProgramReenableAction implements ActionBase {
     		if (liteHw.getManufactureSerialNumber().trim().length() == 0)
     			throw new Exception( "The manufacturer serial # of the hardware cannot be empty" );
 
-            commands[i] = "putconfig service in temp serial " + liteHw.getManufactureSerialNumber() + routeStr;
+            commands[i] = "putconfig service in temp serial " + liteHw.getManufactureSerialNumber();
         }
         
         return commands;

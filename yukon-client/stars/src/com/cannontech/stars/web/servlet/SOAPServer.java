@@ -8,6 +8,7 @@ import javax.xml.messaging.ReqRespListener;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
@@ -30,6 +31,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.yc.gui.YC;
 
 /**
  * <p>Title: </p>
@@ -56,6 +58,9 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	new HourlyTimerTask(),
     	new RefreshTimerTask()
     };
+	
+	// YC object used for sending command to porter
+	private static com.cannontech.yc.gui.YC yc = null;
 	
     private PILConnectionServlet connToPIL = null;
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
@@ -99,6 +104,25 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     	return instance;
     }
     
+	public static YC getYC() {
+		if (yc == null) {
+			yc = new YC();
+			yc.addObserver( new java.util.Observer() {
+				public void update(java.util.Observable o, Object arg) {
+					if (arg instanceof String) {
+						CTILogger.info( (String)arg );
+					}
+					else {
+						CTILogger.info( ((YC)o).getResultText() );
+						((YC)o).clearResultText();
+					}
+				}
+			});
+		}
+		
+		return yc;
+	}
+    
     public com.cannontech.message.util.ClientConnection getClientConnection() {
 		return connToDispatch;
 	}
@@ -108,30 +132,13 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		return connToPIL.getConnection();
 	}
 	
-	void initDispatchConnection() 
-	{
-		String host = null;
-		int port;
-		try
-		{
-			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			host = bundle.getString("dispatch_machine");
-			port = (new Integer(bundle.getString("dispatch_port"))).intValue();
-		}
-		catch ( java.util.MissingResourceException mre )
-		{
-			mre.printStackTrace();
-			host = "127.0.0.1";
-			port = 1510;
-		}
-		catch ( NumberFormatException nfe )
-		{
-			nfe.printStackTrace();
-			port = 1510;
-		}
-	
+	void initDispatchConnection() {
+		CtiProperties properties = CtiProperties.getInstance();
+		String host = properties.getProperty(CtiProperties.KEY_DISPATCH_MACHINE, "127.0.0.1");
+		int port = Integer.parseInt( properties.getProperty(CtiProperties.KEY_DISPATCH_PORT, "1510") );
+		
 		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-	
+		
 		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 		reg.setAppName("Yukon STARS");
 		reg.setAppIsUnique(0);
@@ -142,16 +149,14 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 		connToDispatch.setPort(port);
 		connToDispatch.setAutoReconnect(true);
 		connToDispatch.setRegistrationMsg(reg);
-	
-		try
-		{
+		
+		try {
 			connToDispatch.connectWithoutWait();
 		}
-		catch ( Exception e )
-		{
+		catch ( Exception e ) {
 			e.printStackTrace();
 		}
-	
+		
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance().addDBChangeListener(this);	
 	}
     
@@ -160,17 +165,6 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 			/* Run the first time after the initial delay,
 			 * then run periodically at a fixed rate, e.g. at every midnight
 			 */
-/*			long initRunTime = System.currentTimeMillis() + timerTask.getInitialDelay();
-			long startTime = timerTask.getNextScheduledTime().getTime();
-			if (initRunTime < startTime) {
-				try {
-					StarsTimerTask initTask = (StarsTimerTask) timerTask.getClass().newInstance();
-    				timer.schedule( initTask, timerTask.getInitialDelay() );
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}*/
     		timer.scheduleAtFixedRate( timerTask, timerTask.getNextScheduledTime(), timerTask.getTimerPeriod() );
 		}
 		else if (timerTask.getTimerPeriod() == 0) {
@@ -202,10 +196,10 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
     			|| company.getUserID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
 	    		company.init();
     	}
-*/    	
+    	
     	connToPIL = (com.cannontech.servlet.PILConnectionServlet)
     			getServletContext().getAttribute(com.cannontech.servlet.PILConnectionServlet.SERVLET_CONTEXT_ID);
-    			
+*/    			
     	initDispatchConnection();
     	
     	for (int i = 0; i < timerTasks.length; i++)

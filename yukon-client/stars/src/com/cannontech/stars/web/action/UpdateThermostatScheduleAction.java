@@ -227,7 +227,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
 	    	
-			String routeStr = (energyCompany == null) ? "" : " select route id " + String.valueOf(energyCompany.getDefaultRouteID());
 			boolean hasTwoWay = false;
 			
 			StarsUpdateThermostatSchedule updateSched = reqOper.getStarsUpdateThermostatSchedule();
@@ -296,6 +295,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
 				
 				// Send out commands to program the thermostat
+				ArrayList cmdList = new ArrayList();
+				
 				for (int j = 0; j < updateSched.getStarsThermostatSeasonCount(); j++) {
 					StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(j);
 					
@@ -455,10 +456,18 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							.append(time2).append(",").append(temp2H).append(",").append(temp2C).append(", ")
 							.append(time3).append(",").append(temp3H).append(",").append(temp3C).append(", ")
 							.append(time4).append(",").append(temp4H).append(",").append(temp4C)
-							.append(" serial ").append(liteHw.getManufactureSerialNumber())
-							.append(routeStr);
+							.append(" serial ").append(liteHw.getManufactureSerialNumber());
 						
-						ServerUtils.sendCommand( cmd.toString() );
+						cmdList.add( cmd.toString() );
+					}
+				}
+				
+				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
+				synchronized (yc) {
+					yc.setRouteID( energyCompany.getDefaultRouteID() );
+					for (int j = 0; j < cmdList.size(); j++) {
+						yc.setCommandFileName( (String)cmdList.get(j) );
+						yc.handleSerialNumber();
 					}
 				}
 				
