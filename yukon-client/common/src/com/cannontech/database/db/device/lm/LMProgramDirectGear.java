@@ -111,6 +111,10 @@ public abstract class LMProgramDirectGear
 		{
 			return new com.cannontech.database.data.device.lm.SmartCycleGear();
 		}
+		else if (gearType.equalsIgnoreCase(CONTROL_TRUE_CYCLE))
+		{
+			return new com.cannontech.database.data.device.lm.TrueCycleGear();
+		}
 		else if (gearType.equalsIgnoreCase(CONTROL_TIME_REFRESH))
 		{
 			return new com.cannontech.database.data.device.lm.TimeRefreshGear();

@@ -5,15 +5,18 @@ package com.cannontech.database.data.device.lm;
  * Creation date: (2/11/2002 10:36:09 AM)
  * @author: 
  */
-public class RotationGear extends com.cannontech.database.db.device.lm.LMProgramDirectGear {
+public class RotationGear extends com.cannontech.database.db.device.lm.LMProgramDirectGear 
+{
+
 /**
- * TimerRefreshGear constructor comment.
+ * RotationGear constructor comment.
  */
 public RotationGear() 
 {
 	super();
 
-	initialize();
+	setControlMethod( CONTROL_ROTATION );
+	setCycleRefreshRate( new Integer(0) );
 }
 /**
  * Insert the method's description here.
@@ -49,15 +52,7 @@ public Integer getShedTime()
 {
 	return getMethodPeriod();
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/11/2002 10:37:20 AM)
- */
-private void initialize() 
-{
-	setControlMethod( CONTROL_ROTATION );
-	setCycleRefreshRate( new Integer(0) );
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/11/2002 10:40:08 AM)

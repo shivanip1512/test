@@ -12,9 +12,9 @@ public class SmartCycleGear extends com.cannontech.database.db.device.lm.LMProgr
 public SmartCycleGear() 
 {
 	super();
-
-	initialize();
+	setControlMethod( CONTROL_SMART_CYCLE );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/11/2002 10:40:08 AM)
@@ -51,14 +51,7 @@ public Integer getStartingPeriodCnt()
 {
 	return getMethodRateCount();
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/11/2002 10:37:20 AM)
- */
-private void initialize() 
-{
-	setControlMethod( CONTROL_SMART_CYCLE );
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (2/11/2002 10:40:08 AM)

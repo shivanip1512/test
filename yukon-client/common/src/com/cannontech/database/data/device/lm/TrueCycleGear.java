@@ -1,22 +1,19 @@
 package com.cannontech.database.data.device.lm;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/11/2002 10:36:09 AM)
  * @author: 
  */
-public class ThermostatSetbackGear extends com.cannontech.database.db.device.lm.LMThermostatGear 
+public class TrueCycleGear extends SmartCycleGear
 {
 	/**
 	 * TimerRefreshGear constructor comment.
 	 */
-	public ThermostatSetbackGear() 
+	public TrueCycleGear() 
 	{
 		super();
-	
-		setControlMethod( THERMOSTAT_SETBACK );
-		setGearID(super.getGearID());
+		setControlMethod( CONTROL_TRUE_CYCLE );
 	}
-
-
 
 }

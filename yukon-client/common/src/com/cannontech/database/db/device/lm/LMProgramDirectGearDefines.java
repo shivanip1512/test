@@ -17,6 +17,7 @@ public interface LMProgramDirectGearDefines
 	public static final String CONTROL_MASTER_CYCLE = "MasterCycle";
 	public static final String CONTROL_ROTATION = "Rotation";
 	public static final String CONTROL_LATCHING = "Latching";
+	public static final String CONTROL_TRUE_CYCLE = "TrueCycle";
 	public static final String THERMOSTAT_SETBACK = "ThermostatSetback";
 	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
 
@@ -25,6 +26,7 @@ public interface LMProgramDirectGearDefines
 	{
 		CONTROL_TIME_REFRESH,
 		CONTROL_SMART_CYCLE,
+		CONTROL_TRUE_CYCLE,
 		CONTROL_MASTER_CYCLE,
 		CONTROL_ROTATION,
 		CONTROL_LATCHING,

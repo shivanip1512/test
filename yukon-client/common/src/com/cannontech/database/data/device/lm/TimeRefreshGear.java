@@ -13,8 +13,10 @@ public TimeRefreshGear()
 {
 	super();
 
-	initialize();
+	setControlMethod( CONTROL_TIME_REFRESH );
+	setCycleRefreshRate( new Integer(0) );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/11/2002 10:40:08 AM)
@@ -48,15 +50,6 @@ public Integer getRefreshRate()
 public Integer getShedTime()
 {
 	return getMethodPeriod();
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/11/2002 10:37:20 AM)
- */
-private void initialize() 
-{
-	setControlMethod( CONTROL_TIME_REFRESH );
-	setCycleRefreshRate( new Integer(0) );
 }
 /**
  * Insert the method's description here.

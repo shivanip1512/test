@@ -372,6 +372,7 @@ private javax.swing.JComboBox getJComboBoxGearType() {
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_ROTATION ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_MASTER_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_SMART_CYCLE ) );
+			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_TRUE_CYCLE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.CONTROL_LATCHING ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_PRE_OPERATE ) );
 			ivjJComboBoxGearType.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.THERMOSTAT_SETBACK ) );
@@ -737,7 +738,8 @@ private void setGearType(java.lang.String newGearType)
 		//Rotation
 		getJScrollPane1().setViewportView(getIvjRotationGearPanel1());
 	}
-	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_SMART_CYCLE) )
+	else if( getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_SMART_CYCLE)
+				 || getGearType().equalsIgnoreCase(LMProgramDirectGear.CONTROL_TRUE_CYCLE) )
 	{
 		//SmartCycle
 		getJScrollPane1().setViewportView(getIvjSmartGearPanel1());
