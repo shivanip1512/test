@@ -601,12 +601,12 @@ void  CtiCommandParser::doParseControl(void)
         else if(!(token = CmdStr.match(re_rest)).isNull())       // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_CTL_RESTORE;
-            _snprintf(tbuf, sizeof(tbuf), "RESTORE SHED");
+            _snprintf(tbuf, sizeof(tbuf), "RESTORE");
         }
         else if(!(token = CmdStr.match(re_term)).isNull())       // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_CTL_TERMINATE;
-            _snprintf(tbuf, sizeof(tbuf), "TERMINATE CYCLE");
+            _snprintf(tbuf, sizeof(tbuf), "TERMINATE");
         }
         else if(!(CmdStr.match("shed")).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
