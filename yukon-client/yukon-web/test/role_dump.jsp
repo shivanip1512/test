@@ -1,3 +1,7 @@
+<%
+	// Dumps out all the roles and properties for the logged in user
+%>
+
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Iterator" %>
 
@@ -25,7 +29,12 @@
 			for(Iterator j = roleProps.iterator(); j.hasNext();) {
 						System.out.println("h2");
 				LiteYukonRoleProperty p = (LiteYukonRoleProperty) j.next();
-				out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + AuthFuncs.getRolePropertyValue(user, p.getRolePropertyID()) + "<br>");
+				if(AuthFuncs.checkRoleProperty(user, p.getRolePropertyID())) {
+					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + AuthFuncs.getRolePropertyValue(user, p.getRolePropertyID()) + "<br>");
+				}
+				else {
+					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspThis property is not attached to this user, it probably should be.  Check YukonGroupRole or YukonUserRole<br>");
+				}
 			}
 			out.println("<br>");
 		}
