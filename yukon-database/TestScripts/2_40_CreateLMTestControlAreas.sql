@@ -851,6 +851,9 @@ insert into yukonusergroup values(18,-3);
 insert into yukonusergroup values(19,-3);
 insert into yukonusergroup values(20,-3);
 
+/* adds loadmanagement roles to the web operators */
+insert into yukongrouprole values(-3,-122,'(none)');
+
 /* energycompanyid, name, routeid (routeid should be removed)*/
 insert into energycompany values(1, 'Acme Energy Corp',3);
 insert into energycompany values(2, 'Brooks Energy', 3);
