@@ -175,6 +175,7 @@ private javax.swing.JComboBox getJComboBoxSwitchManufacture() {
 			ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_ABB );
 			ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_COOPER );
 			ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_SIEMENS );
+         ivjJComboBoxSwitchManufacture.addItem( CapBank.SWITCHMAN_TRINETICS );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
