@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:54:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/28 18:25:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -346,6 +346,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg               *pReq,
                case RepeaterRouteType:
                case VersacomRouteType:
                case TapRouteType:
+               case WCTPRouteType:
                   {
                      CtiRouteXCU  *pXCU = (CtiRouteXCU*)Route;
 
