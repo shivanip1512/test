@@ -27,7 +27,7 @@ import org.exolab.castor.xml.validators.*;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateServiceRequestDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsUpdateServiceRequestDescriptor extends StarsSrvReqDescriptor {
 
 
       //--------------------------/
@@ -49,49 +49,14 @@ public class StarsUpdateServiceRequestDescriptor extends org.exolab.castor.xml.u
 
     public StarsUpdateServiceRequestDescriptor() {
         super();
+        setExtendsWithoutFlatten(new StarsSrvReqDescriptor());
         xmlName = "stars-UpdateServiceRequest";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
-        
-        //-- _starsServiceRequestList
-        desc = new XMLFieldDescriptorImpl(StarsServiceRequest.class, "_starsServiceRequestList", "stars-ServiceRequest", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsUpdateServiceRequest target = (StarsUpdateServiceRequest) object;
-                return target.getStarsServiceRequest();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsUpdateServiceRequest target = (StarsUpdateServiceRequest) object;
-                    target.addStarsServiceRequest( (StarsServiceRequest) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsServiceRequest();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsServiceRequestList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestDescriptor()
 
@@ -111,13 +76,15 @@ public class StarsUpdateServiceRequestDescriptor extends org.exolab.castor.xml.u
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSuccessDescriptor.java,v 1.54 2003/10/17 21:01:58 zyao Exp $
+ * $Id: StarsSuccessDescriptor.java,v 1.55 2003/10/28 16:26:58 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.54 $ $Date: 2003/10/17 21:01:58 $
+ * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:58 $
 **/
 public class StarsSuccessDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

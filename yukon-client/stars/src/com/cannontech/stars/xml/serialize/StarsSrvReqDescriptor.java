@@ -100,6 +100,48 @@ public class StarsSrvReqDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         
+        //-- _accountID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_accountID", "accountID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSrvReq target = (StarsSrvReq) object;
+                if(!target.hasAccountID())
+                    return null;
+                return new Integer(target.getAccountID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSrvReq target = (StarsSrvReq) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteAccountID();
+                        return;
+                    }
+                    target.setAccountID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _accountID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _orderNumber

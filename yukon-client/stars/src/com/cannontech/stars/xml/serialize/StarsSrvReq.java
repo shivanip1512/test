@@ -40,6 +40,13 @@ public abstract class StarsSrvReq implements java.io.Serializable {
     **/
     private boolean _has_orderID;
 
+    private int _accountID;
+
+    /**
+     * keeps track of state for field: _accountID
+    **/
+    private boolean _has_accountID;
+
     private java.lang.String _orderNumber;
 
     private ServiceType _serviceType;
@@ -76,10 +83,27 @@ public abstract class StarsSrvReq implements java.io.Serializable {
 
     /**
     **/
+    public void deleteAccountID()
+    {
+        this._has_accountID= false;
+    } //-- void deleteAccountID() 
+
+    /**
+    **/
     public void deleteOrderID()
     {
         this._has_orderID= false;
     } //-- void deleteOrderID() 
+
+    /**
+     * Returns the value of field 'accountID'.
+     * 
+     * @return the value of field 'accountID'.
+    **/
+    public int getAccountID()
+    {
+        return this._accountID;
+    } //-- int getAccountID() 
 
     /**
      * Returns the value of field 'actionTaken'.
@@ -193,6 +217,13 @@ public abstract class StarsSrvReq implements java.io.Serializable {
 
     /**
     **/
+    public boolean hasAccountID()
+    {
+        return this._has_accountID;
+    } //-- boolean hasAccountID() 
+
+    /**
+    **/
     public boolean hasOrderID()
     {
         return this._has_orderID;
@@ -226,6 +257,17 @@ public abstract class StarsSrvReq implements java.io.Serializable {
     **/
     public abstract void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+
+    /**
+     * Sets the value of field 'accountID'.
+     * 
+     * @param accountID the value of field 'accountID'.
+    **/
+    public void setAccountID(int accountID)
+    {
+        this._accountID = accountID;
+        this._has_accountID = true;
+    } //-- void setAccountID(int) 
 
     /**
      * Sets the value of field 'actionTaken'.

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardware.java,v 1.55 2003/10/28 16:26:51 zyao Exp $
+ * $Id: StarsDeleteServiceRequest.java,v 1.1 2003/10/28 16:26:50 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,25 +23,59 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:51 $
+ * @version $Revision: 1.1 $ $Date: 2003/10/28 16:26:50 $
 **/
-public class StarsLMHardware extends StarsLMHw 
-implements java.io.Serializable
-{
+public class StarsDeleteServiceRequest implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private int _orderID;
+
+    /**
+     * keeps track of state for field: _orderID
+    **/
+    private boolean _has_orderID;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsLMHardware() {
+    public StarsDeleteServiceRequest() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware()
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+    **/
+    public void deleteOrderID()
+    {
+        this._has_orderID= false;
+    } //-- void deleteOrderID() 
+
+    /**
+     * Returns the value of field 'orderID'.
+     * 
+     * @return the value of field 'orderID'.
+    **/
+    public int getOrderID()
+    {
+        return this._orderID;
+    } //-- int getOrderID() 
+
+    /**
+    **/
+    public boolean hasOrderID()
+    {
+        return this._has_orderID;
+    } //-- boolean hasOrderID() 
 
     /**
     **/
@@ -81,15 +115,26 @@ implements java.io.Serializable
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'orderID'.
+     * 
+     * @param orderID the value of field 'orderID'.
+    **/
+    public void setOrderID(int orderID)
+    {
+        this._orderID = orderID;
+        this._has_orderID = true;
+    } //-- void setOrderID(int) 
+
+    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsLMHardware) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMHardware.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest unmarshal(java.io.Reader) 
 
     /**
     **/

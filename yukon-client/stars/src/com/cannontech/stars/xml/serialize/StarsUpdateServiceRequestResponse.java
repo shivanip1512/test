@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMHardware.java,v 1.55 2003/10/28 16:26:51 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,25 +23,40 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:51 $
+ * @version $Revision$ $Date$
 **/
-public class StarsLMHardware extends StarsLMHw 
-implements java.io.Serializable
-{
+public class StarsUpdateServiceRequestResponse implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    private StarsServiceRequest _starsServiceRequest;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsLMHardware() {
+    public StarsUpdateServiceRequestResponse() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware()
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsServiceRequest'.
+     * 
+     * @return the value of field 'starsServiceRequest'.
+    **/
+    public StarsServiceRequest getStarsServiceRequest()
+    {
+        return this._starsServiceRequest;
+    } //-- StarsServiceRequest getStarsServiceRequest() 
 
     /**
     **/
@@ -81,15 +96,26 @@ implements java.io.Serializable
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsServiceRequest'.
+     * 
+     * @param starsServiceRequest the value of field
+     * 'starsServiceRequest'.
+    **/
+    public void setStarsServiceRequest(StarsServiceRequest starsServiceRequest)
+    {
+        this._starsServiceRequest = starsServiceRequest;
+    } //-- void setStarsServiceRequest(StarsServiceRequest) 
+
+    /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsLMHardware) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMHardware.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMHardware unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsUpdateServiceRequestResponse unmarshal(java.io.Reader) 
 
     /**
     **/

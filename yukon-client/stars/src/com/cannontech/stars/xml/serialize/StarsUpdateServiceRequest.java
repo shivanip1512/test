@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -27,14 +25,9 @@ import org.xml.sax.ContentHandler;
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsUpdateServiceRequest implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private java.util.Vector _starsServiceRequestList;
+public class StarsUpdateServiceRequest extends StarsSrvReq 
+implements java.io.Serializable
+{
 
 
       //----------------/
@@ -43,78 +36,12 @@ public class StarsUpdateServiceRequest implements java.io.Serializable {
 
     public StarsUpdateServiceRequest() {
         super();
-        _starsServiceRequestList = new Vector();
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateServiceRequest()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * 
-     * 
-     * @param vStarsServiceRequest
-    **/
-    public void addStarsServiceRequest(StarsServiceRequest vStarsServiceRequest)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsServiceRequestList.addElement(vStarsServiceRequest);
-    } //-- void addStarsServiceRequest(StarsServiceRequest) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsServiceRequest
-    **/
-    public void addStarsServiceRequest(int index, StarsServiceRequest vStarsServiceRequest)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsServiceRequestList.insertElementAt(vStarsServiceRequest, index);
-    } //-- void addStarsServiceRequest(int, StarsServiceRequest) 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsServiceRequest()
-    {
-        return _starsServiceRequestList.elements();
-    } //-- java.util.Enumeration enumerateStarsServiceRequest() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsServiceRequest getStarsServiceRequest(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsServiceRequestList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        
-        return (StarsServiceRequest) _starsServiceRequestList.elementAt(index);
-    } //-- StarsServiceRequest getStarsServiceRequest(int) 
-
-    /**
-    **/
-    public StarsServiceRequest[] getStarsServiceRequest()
-    {
-        int size = _starsServiceRequestList.size();
-        StarsServiceRequest[] mArray = new StarsServiceRequest[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsServiceRequest) _starsServiceRequestList.elementAt(index);
-        }
-        return mArray;
-    } //-- StarsServiceRequest[] getStarsServiceRequest() 
-
-    /**
-    **/
-    public int getStarsServiceRequestCount()
-    {
-        return _starsServiceRequestList.size();
-    } //-- int getStarsServiceRequestCount() 
 
     /**
     **/
@@ -152,55 +79,6 @@ public class StarsUpdateServiceRequest implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
-    public void removeAllStarsServiceRequest()
-    {
-        _starsServiceRequestList.removeAllElements();
-    } //-- void removeAllStarsServiceRequest() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsServiceRequest removeStarsServiceRequest(int index)
-    {
-        java.lang.Object obj = _starsServiceRequestList.elementAt(index);
-        _starsServiceRequestList.removeElementAt(index);
-        return (StarsServiceRequest) obj;
-    } //-- StarsServiceRequest removeStarsServiceRequest(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsServiceRequest
-    **/
-    public void setStarsServiceRequest(int index, StarsServiceRequest vStarsServiceRequest)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        //-- check bounds for index
-        if ((index < 0) || (index > _starsServiceRequestList.size())) {
-            throw new IndexOutOfBoundsException();
-        }
-        _starsServiceRequestList.setElementAt(vStarsServiceRequest, index);
-    } //-- void setStarsServiceRequest(int, StarsServiceRequest) 
-
-    /**
-     * 
-     * 
-     * @param starsServiceRequestArray
-    **/
-    public void setStarsServiceRequest(StarsServiceRequest[] starsServiceRequestArray)
-    {
-        //-- copy array
-        _starsServiceRequestList.removeAllElements();
-        for (int i = 0; i < starsServiceRequestArray.length; i++) {
-            _starsServiceRequestList.addElement(starsServiceRequestArray[i]);
-        }
-    } //-- void setStarsServiceRequest(StarsServiceRequest) 
 
     /**
      * 

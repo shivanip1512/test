@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsFailureDescriptor.java,v 1.55 2003/10/28 16:26:50 zyao Exp $
+ * $Id: StarsDeleteServiceRequestDescriptor.java,v 1.1 2003/10/28 16:26:59 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:50 $
+ * @version $Revision: 1.1 $ $Date: 2003/10/28 16:26:59 $
 **/
-public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsDeleteServiceRequestDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,39 +47,36 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
      //- Constructors -/
     //----------------/
 
-    public StarsFailureDescriptor() {
+    public StarsDeleteServiceRequestDescriptor() {
         super();
-        xmlName = "stars-Failure";
+        xmlName = "stars-DeleteServiceRequest";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- _statusCode
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_statusCode", "statusCode", NodeType.Attribute);
+        //-- _orderID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_orderID", "orderID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsFailure target = (StarsFailure) object;
-                if(!target.hasStatusCode())
+                StarsDeleteServiceRequest target = (StarsDeleteServiceRequest) object;
+                if(!target.hasOrderID())
                     return null;
-                return new Integer(target.getStatusCode());
+                return new Integer(target.getOrderID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsFailure target = (StarsFailure) object;
+                    StarsDeleteServiceRequest target = (StarsDeleteServiceRequest) object;
                     // if null, use delete method for optional primitives 
                     if (value == null) {
-                        target.deleteStatusCode();
+                        target.deleteOrderID();
                         return;
                     }
-                    target.setStatusCode( ((Integer)value).intValue());
+                    target.setOrderID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -92,7 +89,7 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
         desc.setHandler(handler);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _statusCode
+        //-- validation code for: _orderID
         fieldValidator = new FieldValidator();
         { //-- local scope
             IntegerValidator iv = new IntegerValidator();
@@ -102,45 +99,7 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
         
         //-- initialize element descriptors
         
-        //-- _description
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_description", "Description", NodeType.Element);
-        desc.setImmutable(true);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsFailure target = (StarsFailure) object;
-                return target.getDescription();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsFailure target = (StarsFailure) object;
-                    target.setDescription( (java.lang.String) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _description
-        fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsFailureDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsDeleteServiceRequestDescriptor()
 
 
       //-----------/
@@ -172,7 +131,7 @@ public class StarsFailureDescriptor extends org.exolab.castor.xml.util.XMLClassD
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsFailure.class;
+        return com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

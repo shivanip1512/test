@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.54 2003/10/17 21:01:53 zyao Exp $
+ * $Id: StarsOperation.java,v 1.55 2003/10/28 16:26:51 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.54 $ $Date: 2003/10/17 21:01:53 $
+ * @version $Revision: 1.55 $ $Date: 2003/10/28 16:26:51 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -115,6 +115,10 @@ public class StarsOperation implements java.io.Serializable {
     private StarsCreateServiceRequestResponse _starsCreateServiceRequestResponse;
 
     private StarsUpdateServiceRequest _starsUpdateServiceRequest;
+
+    private StarsUpdateServiceRequestResponse _starsUpdateServiceRequestResponse;
+
+    private StarsDeleteServiceRequest _starsDeleteServiceRequest;
 
     private StarsGetServiceRequestHistory _starsGetServiceRequestHistory;
 
@@ -305,6 +309,16 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsDeleteLMHardware;
     } //-- StarsDeleteLMHardware getStarsDeleteLMHardware() 
+
+    /**
+     * Returns the value of field 'starsDeleteServiceRequest'.
+     * 
+     * @return the value of field 'starsDeleteServiceRequest'.
+    **/
+    public StarsDeleteServiceRequest getStarsDeleteServiceRequest()
+    {
+        return this._starsDeleteServiceRequest;
+    } //-- StarsDeleteServiceRequest getStarsDeleteServiceRequest() 
 
     /**
      * Returns the value of field 'starsFailure'.
@@ -784,6 +798,18 @@ public class StarsOperation implements java.io.Serializable {
 
     /**
      * Returns the value of field
+     * 'starsUpdateServiceRequestResponse'.
+     * 
+     * @return the value of field
+     * 'starsUpdateServiceRequestResponse'.
+    **/
+    public StarsUpdateServiceRequestResponse getStarsUpdateServiceRequestResponse()
+    {
+        return this._starsUpdateServiceRequestResponse;
+    } //-- StarsUpdateServiceRequestResponse getStarsUpdateServiceRequestResponse() 
+
+    /**
+     * Returns the value of field
      * 'starsUpdateThermostatManualOption'.
      * 
      * @return the value of field
@@ -1017,6 +1043,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsDeleteLMHardware = starsDeleteLMHardware;
     } //-- void setStarsDeleteLMHardware(StarsDeleteLMHardware) 
+
+    /**
+     * Sets the value of field 'starsDeleteServiceRequest'.
+     * 
+     * @param starsDeleteServiceRequest the value of field
+     * 'starsDeleteServiceRequest'.
+    **/
+    public void setStarsDeleteServiceRequest(StarsDeleteServiceRequest starsDeleteServiceRequest)
+    {
+        this._starsDeleteServiceRequest = starsDeleteServiceRequest;
+    } //-- void setStarsDeleteServiceRequest(StarsDeleteServiceRequest) 
 
     /**
      * Sets the value of field 'starsFailure'.
@@ -1520,6 +1557,17 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsUpdateServiceRequest = starsUpdateServiceRequest;
     } //-- void setStarsUpdateServiceRequest(StarsUpdateServiceRequest) 
+
+    /**
+     * Sets the value of field 'starsUpdateServiceRequestResponse'.
+     * 
+     * @param starsUpdateServiceRequestResponse the value of field
+     * 'starsUpdateServiceRequestResponse'.
+    **/
+    public void setStarsUpdateServiceRequestResponse(StarsUpdateServiceRequestResponse starsUpdateServiceRequestResponse)
+    {
+        this._starsUpdateServiceRequestResponse = starsUpdateServiceRequestResponse;
+    } //-- void setStarsUpdateServiceRequestResponse(StarsUpdateServiceRequestResponse) 
 
     /**
      * Sets the value of field 'starsUpdateThermostatManualOption'.
