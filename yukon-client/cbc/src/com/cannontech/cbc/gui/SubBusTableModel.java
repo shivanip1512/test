@@ -17,6 +17,8 @@ import com.cannontech.cbc.messages.CBCSubAreaNames;
 import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
@@ -53,8 +55,12 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
   	public static final int TIME_STAMP_COLUMN  = 7;
   	public static final int DAILY_OPERATIONS_COLUMN  = 8;
 
-   public static final String DASH_LINE = "  ----";
-	
+  	public static final String DASH_LINE = "  ----";
+
+    //which LiteYukonUser owns this data
+    private LiteYukonUser ownerUser = null;
+
+    
 	//The column names based on their column index
 	private static final String[] COLUMN_NAMES =
 	{
@@ -108,11 +114,27 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 	};
 
 /**
- * ScheduleTableModel constructor comment.
+ * SubBusTableModel constructor comment.
  */
-public SubBusTableModel() {
-	super();
+public SubBusTableModel()
+{
+    //by default, use the master user account
+	this( ClientSession.getInstance().getUser() );
 }
+
+/**
+ * SubBusTableModel constructor comment.
+ */
+public SubBusTableModel( LiteYukonUser yukUser )
+{
+    super();
+    
+    if( yukUser == null )
+        throw new IllegalArgumentException("Do not use a NULL YukonUser for ownership");
+
+    ownerUser = yukUser;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/20/00 11:40:31 AM)
@@ -725,11 +747,17 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 	else if( in instanceof CBCSubstationBuses )
 	{
 		CBCSubstationBuses busesMsg = (CBCSubstationBuses)in;
-		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
+        
+        for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
 		{
-			CTILogger.info(new ModifiedDate(new Date().getTime()).toString()
-					+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
-					+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
+            CTILogger.info(new ModifiedDate(new Date().getTime()).toString()
+                    + " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
+                    + "/" + busesMsg.getSubBusAt(i).getCcArea() );
+
+            //if the user can not see this sub, let us remove it
+            if( !AuthFuncs.userHasAccessPAO( ownerUser, busesMsg.getSubBusAt(i).getCcId().intValue() ) )
+                busesMsg.removeSubBusAt( i );
+
         }
 		
 		
