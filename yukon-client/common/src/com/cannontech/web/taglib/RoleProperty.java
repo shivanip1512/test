@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspException;
 
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 /**
  * Writes out the value of a role property for the current user.
  * Creation date: (11/13/2001 4:30:35 PM)
@@ -12,7 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class RoleProperty extends javax.servlet.jsp.tagext.BodyTagSupport {
 
-	public int propertyid;	
+	public int propertyid;
+	public String format = null;
 	
 /**
  * TextTag constructor comment.
@@ -39,6 +41,17 @@ public int doStartTag() throws JspException {
 		LiteYukonUser user = (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 		if(user != null) {			
 			String text = AuthFuncs.getRolePropertyValue(user, propertyid, "Missing rolePropertyID:  " + Integer.toString(propertyid));
+			String fmat = getFormat();
+			if (fmat != null) {
+				if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_UPPER ))
+					text = text.toUpperCase();
+				else if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_LOWER ))
+					text = text.toLowerCase();
+				else if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_CAPITAL ))
+					text = ServletUtil.capitalize( text );
+				else if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_ALL_CAPITAL ))
+					text = ServletUtil.capitalizeAll( text );
+			}
 			pageContext.getOut().write(text);
 		}				 	
 	}
@@ -64,6 +77,22 @@ public int doStartTag() throws JspException {
 	 */
 	public void setPropertyid(int propertyid) {
 		this.propertyid = propertyid;
+	}
+
+	/**
+	 * Returns the format.
+	 * @return String
+	 */
+	public String getFormat() {
+		return format;
+	}
+
+	/**
+	 * Sets the format.
+	 * @param format The format to set
+	 */
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 }

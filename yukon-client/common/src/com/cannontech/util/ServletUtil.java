@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 /**
@@ -108,6 +109,13 @@ public class ServletUtil {
 		for( int i = 0; i < dateFormat.length; i++ )
 			dateFormat[i].setLenient(true);
 	}
+	
+	// Values of the "format" property of the <cti:getProperty> tag
+	public static final String FORMAT_UPPER = "upper";
+	public static final String FORMAT_LOWER = "lower";
+	public static final String FORMAT_CAPITAL = "capital";
+	public static final String FORMAT_ALL_CAPITAL = "all_capital";
+	
 /**
  * Creation date: (6/7/2001 3:09:18 PM)
  * @return java.lang.Object[][]
@@ -931,4 +939,33 @@ public static java.util.Date roundToMinute(java.util.Date toRound) {
 
 	return cal.getTime();
 }
+    
+    /**
+     * Convert a string into the capitalized format.
+     * @return String
+     * @param word String
+     */
+    public static String capitalize(String word) {
+    	return word.substring(0,1).toUpperCase().concat( word.substring(1).toLowerCase() );
+    }
+    
+    /**
+     * Capitalize every word in a phrase.
+     * @return String
+     * @param phrase String
+     */
+    public static String capitalizeAll(String phrase) {
+    	StringTokenizer st = new StringTokenizer( phrase, " ", true );
+    	StringBuffer sb = new StringBuffer();
+    	while (st.hasMoreTokens()) {
+    		String word = st.nextToken();
+    		if (word.equals(" "))
+    			sb.append( word );
+    		else
+    			sb.append( capitalize(word) );
+    	}
+    	
+    	return sb.toString();
+    }
+
 }
