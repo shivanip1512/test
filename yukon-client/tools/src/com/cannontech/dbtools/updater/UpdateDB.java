@@ -258,6 +258,7 @@ public class UpdateDB
 				java.io.RandomAccessFile fileReader = new java.io.RandomAccessFile(file, "r");
 				String token = "";
 				UpdateLine updLine = new UpdateLine();
+				boolean commentState = false;
 
 
 				while( fileReader.getFilePointer() < fileReader.length() )
@@ -266,8 +267,17 @@ public class UpdateDB
 
 					if( isValidString(token) )
 					{
-						if( token.startsWith(DBMSDefines.COMMENT_BEGIN) )
+						//are we handling a comment
+						if( commentState )
 						{
+							commentState = !token.endsWith(DBMSDefines.COMMENT_END);
+							handleComment( token, updLine );
+						}
+						else if( token.startsWith(DBMSDefines.COMMENT_BEGIN) )
+						{
+							//if we have a COMMENT_END, this comment is terminated
+							commentState = !token.endsWith(DBMSDefines.COMMENT_END);
+								
 							if( token.indexOf(DBMSDefines.META_TAG + DBMSDefines.META_INCLUDE) > 0 )
 							{
 								UpdateLine[] extraLines = handleIncludeMeta( token, file );
