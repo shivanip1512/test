@@ -22,5 +22,6 @@
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>
     <classpathentry kind="src" path="/commander"/>
+    <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
