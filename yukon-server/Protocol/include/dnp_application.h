@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/06/02 18:17:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,8 @@ protected:
     enum
     {
         ReqHeaderSize = 2,
-        RspHeaderSize = 4
+        RspHeaderSize = 4,
+        CommRetries   = 3
     };
 
 private:
@@ -101,7 +102,9 @@ private:
         Input,
         Complete,
         Failed
-    } _ioState;
+    } _ioState, _retryState;
+
+    int _comm_errors;
 
     vector< CtiDNPObjectBlock * > _outObjectBlocks;
     vector< CtiDNPObjectBlock * > _inObjectBlocks;

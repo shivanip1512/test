@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/04/25 22:40:54 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/06/02 18:17:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,15 +132,8 @@ void CtiDNPApplication::serializeReq( unsigned char *buf )
     src    = (unsigned char *)(&_appReq);
     srcLen = getLengthReq();
 
-    //  add on the addressing bytes that sit in front of the _appReq struct...
-    //    kind of a hack, but it has to be passed layer to layer
-    //    ACH:  make this a struct so it's less offensive
-    //  wait, why am i doing this?  they're being loaded up in both Porter and Scanner.  umduh?
-    src    -= 2 * (sizeof(short));
-    srcLen += 2 * (sizeof(short));
-
-    //  copy the packet (and addresses) into the buffer
-    memcpy(buf, src, srcLen );
+    //  copy the packet into the buffer
+    memcpy(buf, src, srcLen);
 
     //  maybe move someday... ?  see comment below in restoreInbound
     _hasOutput = false;
@@ -303,24 +296,15 @@ void CtiDNPApplication::resetLink( void )
 
 void CtiDNPApplication::restoreReq( unsigned char *buf, int len )
 {
-    unsigned char *src;
-    int srcLen;
-
-    //  move the restore point to the address vars that sit in front of the _appReq struct...
-    src    = (unsigned char *)(&_appReq);
-    src    -= 2 * (sizeof(short));
-
-    srcLen = len;
-
     //  copy the buffer into the packet
-    memcpy(src, buf, len);
+    memcpy(&_appReq, buf, len);
 
-    //  and compute the length
-    //    knock off the address byte length
-    srcLen  -= 2 * (sizeof(short));
-    _appReqBytesUsed = srcLen - ReqHeaderSize;
+    _appReqBytesUsed = len - ReqHeaderSize;
 
-    _ioState = Output;
+    _ioState    = Output;
+    _retryState = _ioState;
+
+    _comm_errors = 0;
 
     //  wipe out the state of the underlying layer - its data has just changed
     _transport.initForOutput((unsigned char *)&_appReq, getLengthReq(), _dstAddr, _srcAddr);
@@ -399,10 +383,19 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 
     if( _transport.errorCondition() )
     {
-        //  ACH:  retries...
-        _ioState = Failed;
-        retVal   = transportStatus;
+        if( ++_comm_errors < CommRetries )
+        {
+            _ioState = _retryState;
+        }
+        else
+        {
+            _ioState    = Failed;
+            _retryState = _ioState;
 
+            retVal   = transportStatus;
+        }
+
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -417,11 +410,14 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
                 if( isReplyExpected() )
                 {
                     _transport.initForInput((unsigned char *)&_appRsp);
-                    _ioState = Input;
+                    _ioState    = Input;
+                    //  leave _ioState on Output, so we re-output on error
+                    //  _retryState = _ioState;
                 }
                 else
                 {
-                    _ioState = Complete;
+                    _ioState    = Complete;
+                    _retryState = _ioState;
                 }
 
                 break;
@@ -432,12 +428,14 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
                 if( _transport.getInputSize() >= RspHeaderSize )
                 {
                     _appRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
-                    _ioState = Complete;
+                    _ioState    = Complete;
+                    _retryState = _ioState;
                 }
                 else
                 {
                     _appRspBytesUsed = 0;
-                    _ioState = Failed;
+                    _ioState    = Failed;
+                    _retryState = _ioState;
                 }
 
                 break;
@@ -448,7 +446,8 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                _ioState = Failed;
+                _ioState    = Failed;
+                _retryState = _ioState;
             }
         }
     }
