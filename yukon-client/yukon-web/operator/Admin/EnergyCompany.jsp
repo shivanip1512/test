@@ -27,27 +27,8 @@
 		return;
 	}
 	
-	String email = "";
-	String checkedStr = "";
 	StarsEnergyCompany ec = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
-	if (ec != null) {
-		StringTokenizer st = new StringTokenizer(ec.getEmail(), ",");
-		email = st.nextToken();
-		if (Boolean.valueOf(st.nextToken()).booleanValue())
-			checkedStr = "checked";
-	}
-	else {
-		ec = energyCompany;
-		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		String propVal = AuthFuncs.getRolePropValueGroup(liteEC.getResidentialCustomerGroup(),
-				com.cannontech.roles.consumer.ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL, "(none)");
-		if (ServerUtils.forceNotNone(propVal).length() > 0) {
-			email = propVal;
-			checkedStr = "checked";
-		}
-		else
-			email = ec.getEmail();
-	}
+	if (ec == null) ec = energyCompany;
 %>
 <html>
 <head>
@@ -146,9 +127,8 @@ function editAddress(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Email:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="Email" value="<%= email %>">
-                          <input type="checkbox" name="CustomizedEmail" value="true" <%= checkedStr %>>
-                          Use a link to your company's website</td>
+                          <input type="text" name="Email" value="<%= ec.getEmail() %>">
+                        </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell"> Company 
