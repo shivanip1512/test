@@ -5,6 +5,8 @@ package com.cannontech.tdc;
  * @author: 
  */
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.bookmark.BookMarkBase;
@@ -27,6 +29,8 @@ import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
 import com.cannontech.tdc.utils.DateTimeUserQuery;
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
+import com.cannontech.clientutils.parametersfile.ParametersFile;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -188,6 +192,31 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getJMenuItemHelpTopics()) 
 		connEtoC31(e);
 	// user code begin {2}
+	
+	if( e.getSource() == AlarmFileWatchDog.getInstance() )
+	{
+		//the Mute option could have changed, let use check
+		ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
+
+		boolean muted = Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue();
+//		boolean silenced = Boolean.valueOf(pf.getParameterValue("Silence", "false")).booleanValue();
+		
+		if( muted )
+			getAlarmToolBar().getJToolBarButtonMuteAlarms().setText("UnMute");
+		else
+			getAlarmToolBar().getJToolBarButtonMuteAlarms().setText("Mute");
+
+		//the Silence option could have changed, let use check
+//		if( silenced )
+//			getAlarmToolBar().getJToolBarButtonSilenceAlarms().setText("UnSilence");
+//		else
+//			getAlarmToolBar().getJToolBarButtonSilenceAlarms().setText("Silence");
+
+		
+		//fire this for any possible alarm change
+		executeAlarm_ActionPerformed( muted );
+	}
+	
 	// user code end
 }
 
@@ -351,6 +380,48 @@ public void alarmToolBar_JToolBarButtonRefreshAction_actionPerformed(java.util.E
 	return;
 }
 
+private void executeAlarm_ActionPerformed( boolean muted )
+{
+
+	if( muted )
+	{
+		getAlarmToolBar().getJToolBarButtonMuteAlarms().setText("UnMute");
+	}
+	else
+	{
+		getAlarmToolBar().getJToolBarButtonMuteAlarms().setText("Mute");
+	}
+
+
+	if( getMainPanel().isClientDisplay() )
+		getMainPanel().getCurrentSpecailChild().setAlarmMute( muted );
+	
+	//Always set the MainTableModel sound toggle flag	
+	getMainPanel().getTableDataModel().setAlarmMute( muted );
+
+	
+	getAlarmToolBar().getJToolBarButtonMuteAlarms().repaint();
+}
+
+
+
+/**
+ * Comment
+ */
+public void alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject newEvent) 
+{
+	try
+	{			
+		ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
+		pf.updateValues( 
+			new String[] {"Mute"}, 
+			new String[] { String.valueOf(
+				getAlarmToolBar().getJToolBarButtonMuteAlarms().getText().equalsIgnoreCase("Mute"))} );
+	}
+	catch( ParameterNotFoundException ex )
+	{}			
+}
+
 
 /**
  * Comment
@@ -358,28 +429,12 @@ public void alarmToolBar_JToolBarButtonRefreshAction_actionPerformed(java.util.E
 public void alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) 
 {
 
-	boolean soundToggle = true;
-	
-	if( getAlarmToolBar().getJToolBarButtonSilenceAlarms().getText().equals("Silence") )
-	{
-		getAlarmToolBar().getJToolBarButtonSilenceAlarms().setText("UnSilence");
-		soundToggle = false;
-	}
-	else
-	{
-		getAlarmToolBar().getJToolBarButtonSilenceAlarms().setText("Silence");
-		soundToggle = true;
-	}
-
-
 	if( getMainPanel().isClientDisplay() )
-		getMainPanel().getCurrentSpecailChild().setSound( soundToggle );
+		getMainPanel().getCurrentSpecailChild().silenceAlarms();
 	
 	//Always set the MainTableModel sound toggle flag	
-	getMainPanel().getTableDataModel().setSound( soundToggle );
+	getMainPanel().getTableDataModel().silenceAlarms();
 
-	
-	getAlarmToolBar().getJToolBarButtonSilenceAlarms().repaint();
 		
 	return;
 }
@@ -787,15 +842,15 @@ private void connEtoC26(java.util.EventObject arg1) {
 
 
 /**
- * connEtoC27:  (AlarmToolBar.alarmToolBar.JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject) --> TDCMainFrame.alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(Ljava.util.EventObject;)V)
+ * connEtoC27:  (AlarmToolBar.alarmToolBar.JToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject) --> TDCMainFrame.alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed(Ljava.util.EventObject;)V)
  * @param arg1 java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void connEtoC27(java.util.EventObject arg1) {
 	try {
-		// user code begin {1}
+		// user code begin {1}		
 		// user code end
-		this.alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed(arg1);
+		this.alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -2800,6 +2855,8 @@ private void initAppearance()
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
+	AlarmFileWatchDog.getInstance().addActionListener( this );
+
 	getJRadioButtonMenuItemAlarmEvents().addActionListener(
 		new com.cannontech.tdc.bookmark.SelectionHandler(this.getMainPanel()) );
 
@@ -3931,7 +3988,7 @@ public void JToolBarButtonRefreshAction_actionPerformed(java.util.EventObject ne
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
+public void JToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
 	if (newEvent.getSource() == getAlarmToolBar()) 
@@ -3940,6 +3997,15 @@ public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObj
 	// user code end
 }
 
+/**
+ * Method to handle events for the AlarmToolBarListener interface.
+ * @param newEvent java.util.EventObject
+ */
+public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) 
+{
+	if( newEvent.getSource() == getAlarmToolBar() )
+		alarmToolBar_JToolBarButtonSilenceAlarmsAction_actionPerformed( newEvent );
+}
 
 /**
  * 
@@ -4401,47 +4467,50 @@ private void writeParameters()
 {
 	try
 	{
-		java.io.FileWriter writer = new java.io.FileWriter( TDCDefines.OUTPUT_FILE_NAME );
-		java.io.File outPutFile = new java.io.File( TDCDefines.OUTPUT_FILE_NAME );
+		ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
 
-		// write the current display name
-		if( getMainPanel().getJComboCurrentDisplay().getSelectedItem() == null )
-			writer.write("\r\n");
-		else
-	 		writer.write( getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString() +"\r\n");
+		// get the current names for the params
+		final String[] paramNames =
+		{
+			"DisplayName",
+			"ViewType",
+			"FrameX",
+			"FrameY",
+			"FrameWidth",
+			"FrameHeight",
+			"FontName",
+			"FontSize",
+			"HGridLine",
+			"VGridLine",
+			"MessageLog",
+			"ToolBox",
+			"Mute"
+		};
 
-		// write the current display type
-		writer.write( getSelectedViewType() + "\r\n" );
+		// get the current values for the params
+		final String[] paramValues =
+		{
+			(getMainPanel().getJComboCurrentDisplay().getSelectedItem() == null
+			 				? "" : getMainPanel().getJComboCurrentDisplay().getSelectedItem().toString()),
 
-		// write the frames X coordinate
-		writer.write( String.valueOf( getX() ) + "\r\n" );
-			
-		// write the frames Y coordinate
-		writer.write( String.valueOf( getY() ) + "\r\n" );
-			
-		// write the frames width
-		writer.write( String.valueOf( getWidth() ) + "\r\n" );
+			getSelectedViewType(),
+			String.valueOf(getX()),
+			String.valueOf(getY()),
+			String.valueOf(getWidth()),
+			String.valueOf(getHeight()),
+			getMainPanel().getDisplayTable().getFont().getName(),
+			String.valueOf(getMainPanel().getDisplayTable().getFont().getSize()),
+			String.valueOf(getJCheckBoxMenuItemHGridLines().getState()),
+			String.valueOf(getJCheckBoxMenuItemVGridLines().getState()),
+			String.valueOf(getJCheckBoxMenuItemShowLog().getState()),
+			String.valueOf(getJCheckBoxMenuItemShowToolBar().getState()),
 
-		// write the frames height
-		writer.write( String.valueOf( getHeight() ) + "\r\n" );
+			String.valueOf( getAlarmToolBar().getJToolBarButtonMuteAlarms().getText().equalsIgnoreCase("UnMute") )
+		};
 
-		// current Font of the table
-		writer.write( getMainPanel().getDisplayTable().getFont().getName() + "\r\n" );
-		writer.write( getMainPanel().getDisplayTable().getFont().getSize() + "\r\n" );
-
-		// current grid line states
-		writer.write( getJCheckBoxMenuItemHGridLines().getState() + "\r\n" );
-		writer.write( getJCheckBoxMenuItemVGridLines().getState() + "\r\n" );
-
-		// current message box state
-		writer.write( getJCheckBoxMenuItemShowLog().getState() + "\r\n" );
-
-		// current toolbox state
-		writer.write( getJCheckBoxMenuItemShowToolBar().getState() + "\r\n" );
-			
-		writer.close();
+		pf.updateValues( paramNames, paramValues );
 	}
-	catch ( java.io.IOException e )
+	catch ( Exception e )
 	{
 		handleException( e );
 	}

@@ -33,7 +33,8 @@ import com.cannontech.tdc.utils.TDCDefines;
 
 public class Display2WayDataAdapter extends AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
-	private boolean playSound = true;
+	private boolean muted = false;
+	
 	private com.cannontech.tdc.alarms.gui.RowBlinker currentBlinkingAlarms = null;
 	
 
@@ -1663,10 +1664,24 @@ public boolean isCellEditable(int row, int column) {
  * @return boolean
  * @param ptID java.lang.String
  */
-public boolean isPlayingSound()
+public boolean isMuted() 
 {
-	return playSound;
+	return muted;
 }
+
+public void setMuted( boolean muted_ )
+{
+	muted = muted_;
+}
+
+public void silenceAlarms() 
+{
+	synchronized( getAlarmingRowVector() )
+	{
+		getAlarmingRowVector().setAllSilenced( true );
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/30/00 9:29:03 AM)
@@ -2421,9 +2436,9 @@ public void setRowUnAlarmed( Integer rowNumber )
  * Version: <version>
  * @param shouldPlay boolean
  */
-public void setSound(boolean shouldPlay) 
+public void setAlarmMute( boolean mute ) 
 {
-	playSound = shouldPlay;	
+	muted = mute;
 }
 
 private void killRowBlinker()

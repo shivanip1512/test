@@ -30,10 +30,17 @@ void JToolBarButtonRefreshAction_actionPerformed(java.util.EventObject newEvent)
  * 
  * @param newEvent java.util.EventObject
  */
-void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent);
+void JToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject newEvent);
 /**
  * 
  * @param newEvent java.util.EventObject
  */
 void JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent event);
+
+/**
+ * 
+ * @param newEvent java.util.EventObject
+ */
+void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent);
+
 }

@@ -18,7 +18,6 @@ public final class TDCDefines
 
 	public static String DBALIAS = "yukon";
 
-	public static final String OUTPUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
 	public static final String DISPLAY_OUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCDisplaySettings.DAT";
 
 	public static final java.awt.Image ICON_TDC = java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif");   

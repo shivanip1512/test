@@ -9,14 +9,19 @@ public class AlarmToolBar extends javax.swing.JToolBar implements java.awt.event
 {
 	private javax.swing.JButton ivjJToolBarButtonAckAll = null;
 	private javax.swing.JButton ivjJToolBarButtonClearViewableAlarms = null;
-	private javax.swing.JButton ivjJToolBarButtonSilenceAlarms = null;
+	
+	private javax.swing.JButton ivjJToolBarButtonMuteAlarms = null;
+	private javax.swing.JButton jButtonSilenceAlarms = null;
+	
 	protected transient com.cannontech.tdc.toolbar.AlarmToolBarListener fieldAlarmToolBarListenerEventMulticaster = null;
 	private javax.swing.JButton ivjJToolBarButtonClear = null;
 	private javax.swing.JButton ivjJToolBarButtonRefresh = null;
 	private javax.swing.JComponent[] currentComponents = null;
+
 	// All alarm buttons must be in here
 	private javax.swing.JComponent[] originalComponents = null;
 	public static final int ORIGINAL_COMPONENT_COUNT = 6;
+
 	// The height of all the JButtons
 	private final int JBUTTON_HEIGHT = getJToolBarButtonAckAll().getHeight();
 	private javax.swing.JLabel ivjJLabelViewDate = null;
@@ -54,12 +59,18 @@ public AlarmToolBar(int orientation) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
+
+	if (e.getSource() == getJToolBarButtonSilenceAlarms())
+	{
+		fireJToolBarButtonMuteSilenceAction_actionPerformed(new java.util.EventObject(this)); 
+	}
+	
 	// user code end
 	if (e.getSource() == getJToolBarButtonAckAll()) 
 		connEtoC1(e);
 	if (e.getSource() == getJToolBarButtonClearViewableAlarms()) 
 		connEtoC2(e);
-	if (e.getSource() == getJToolBarButtonSilenceAlarms()) 
+	if (e.getSource() == getJToolBarButtonMuteAlarms()) 
 		connEtoC3(e);
 	if (e.getSource() == getJToolBarButtonClear()) 
 		connEtoC4(e);
@@ -71,8 +82,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 	// make sure the event wasnt handled above first
 	if (e.getSource() != getJToolBarButtonAckAll() && e.getSource() != getJToolBarButtonClearViewableAlarms()
-		&& e.getSource() != getJToolBarButtonSilenceAlarms() && e.getSource() != getJToolBarButtonClear()
-		&& e.getSource() != getJToolBarButtonRefresh())
+		&& e.getSource() != getJToolBarButtonMuteAlarms() && e.getSource() != getJToolBarButtonClear()
+		&& e.getSource() != getJToolBarButtonRefresh() && e.getSource() != getJToolBarButtonSilenceAlarms() )
 	{
 		for( int i = 0; i < getCurrentComponents().length; i++ )
 		{
@@ -136,7 +147,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 
 
 /**
- * connEtoC3:  (JToolBarButtonSilenceAlarms.action.actionPerformed(java.awt.event.ActionEvent) --> AlarmToolBar.fireJToolBarButtonSilenceAlarmsAction_actionPerformed(Ljava.util.EventObject;)V)
+ * connEtoC3:  (JToolBarButtonMuteAlarms.action.actionPerformed(java.awt.event.ActionEvent) --> AlarmToolBar.fireJToolBarButtonMuteAlarmsAction_actionPerformed(Ljava.util.EventObject;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -144,7 +155,7 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireJToolBarButtonSilenceAlarmsAction_actionPerformed(new java.util.EventObject(this));
+		this.fireJToolBarButtonMuteAlarmsAction_actionPerformed(new java.util.EventObject(this));
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -310,13 +321,19 @@ protected void fireJToolBarButtonRefreshAction_actionPerformed(java.util.EventOb
  * Method to support listener events.
  * @param newEvent java.util.EventObject
  */
-protected void fireJToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
+protected void fireJToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
+	if (fieldAlarmToolBarListenerEventMulticaster == null) {
+		return;
+	};
+	fieldAlarmToolBarListenerEventMulticaster.JToolBarButtonMuteAlarmsAction_actionPerformed(newEvent);
+}
+
+protected void fireJToolBarButtonMuteSilenceAction_actionPerformed(java.util.EventObject newEvent) {
 	if (fieldAlarmToolBarListenerEventMulticaster == null) {
 		return;
 	};
 	fieldAlarmToolBarListenerEventMulticaster.JToolBarButtonSilenceAlarmsAction_actionPerformed(newEvent);
 }
-
 
 /**
  * 
@@ -597,31 +614,66 @@ private javax.swing.JButton getJToolBarButtonRefresh() {
 	return ivjJToolBarButtonRefresh;
 }
 
+ 
+  /**
+	* Return the JToolBarButtonSilenceAlarms property value.
+	* @return javax.swing.JButton
+	*/
+  public javax.swing.JButton getJToolBarButtonSilenceAlarms() {
+	  if (jButtonSilenceAlarms == null) {
+		  try {
+				jButtonSilenceAlarms = new javax.swing.JButton();
+				jButtonSilenceAlarms.setName("JToolBarButtonSilenceAlarms");
+				jButtonSilenceAlarms.setToolTipText("Turns off the audible for all current alarms");
+				jButtonSilenceAlarms.setMnemonic('S');
+				jButtonSilenceAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+				jButtonSilenceAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
+				jButtonSilenceAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
+				jButtonSilenceAlarms.setAutoscrolls(false);
+				jButtonSilenceAlarms.setText("Silence");
+				jButtonSilenceAlarms.setMaximumSize(new java.awt.Dimension(91, 23));
+				jButtonSilenceAlarms.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
+				jButtonSilenceAlarms.setIcon(null);
+				jButtonSilenceAlarms.setBorderPainted(true);
+				jButtonSilenceAlarms.setPreferredSize(new java.awt.Dimension(91, 23));
+				jButtonSilenceAlarms.setRolloverEnabled(false);
+				jButtonSilenceAlarms.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			  // user code begin {1}
+			  // user code end
+		  } catch (java.lang.Throwable ivjExc) {
+			  // user code begin {2}
+			  // user code end
+			  handleException(ivjExc);
+		  }
+	  }
+	  return jButtonSilenceAlarms;
+  }
+
 
 /**
- * Return the JToolBarButtonSilenceAlarms property value.
+ * Return the JToolBarButtonMuteAlarms property value.
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-public javax.swing.JButton getJToolBarButtonSilenceAlarms() {
-	if (ivjJToolBarButtonSilenceAlarms == null) {
+public javax.swing.JButton getJToolBarButtonMuteAlarms() {
+	if (ivjJToolBarButtonMuteAlarms == null) {
 		try {
-			ivjJToolBarButtonSilenceAlarms = new javax.swing.JButton();
-			ivjJToolBarButtonSilenceAlarms.setName("JToolBarButtonSilenceAlarms");
-			ivjJToolBarButtonSilenceAlarms.setToolTipText("Silence all alarm sounds");
-			ivjJToolBarButtonSilenceAlarms.setMnemonic('S');
-			ivjJToolBarButtonSilenceAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-			ivjJToolBarButtonSilenceAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			ivjJToolBarButtonSilenceAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
-			ivjJToolBarButtonSilenceAlarms.setAutoscrolls(false);
-			ivjJToolBarButtonSilenceAlarms.setText("Silence");
-			ivjJToolBarButtonSilenceAlarms.setMaximumSize(new java.awt.Dimension(91, 23));
-			ivjJToolBarButtonSilenceAlarms.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
-			ivjJToolBarButtonSilenceAlarms.setIcon(null);
-			ivjJToolBarButtonSilenceAlarms.setBorderPainted(true);
-			ivjJToolBarButtonSilenceAlarms.setPreferredSize(new java.awt.Dimension(91, 23));
-			ivjJToolBarButtonSilenceAlarms.setRolloverEnabled(false);
-			ivjJToolBarButtonSilenceAlarms.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			ivjJToolBarButtonMuteAlarms = new javax.swing.JButton();
+			ivjJToolBarButtonMuteAlarms.setName("JToolBarButtonMuteAlarms");
+			ivjJToolBarButtonMuteAlarms.setToolTipText("Turns off the audible for all current and future alarms");
+			ivjJToolBarButtonMuteAlarms.setMnemonic('M');
+			ivjJToolBarButtonMuteAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+			ivjJToolBarButtonMuteAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
+			ivjJToolBarButtonMuteAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
+			ivjJToolBarButtonMuteAlarms.setAutoscrolls(false);
+			ivjJToolBarButtonMuteAlarms.setText("Mute");
+			ivjJToolBarButtonMuteAlarms.setMaximumSize(new java.awt.Dimension(61, 23));
+			ivjJToolBarButtonMuteAlarms.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
+			ivjJToolBarButtonMuteAlarms.setIcon(null);
+			ivjJToolBarButtonMuteAlarms.setBorderPainted(true);
+			ivjJToolBarButtonMuteAlarms.setPreferredSize(new java.awt.Dimension(61, 23));
+			ivjJToolBarButtonMuteAlarms.setRolloverEnabled(false);
+			ivjJToolBarButtonMuteAlarms.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -630,7 +682,7 @@ public javax.swing.JButton getJToolBarButtonSilenceAlarms() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJToolBarButtonSilenceAlarms;
+	return ivjJToolBarButtonMuteAlarms;
 }
 
 
@@ -687,10 +739,12 @@ public void handleTDCChildButtonPress(java.awt.event.ActionEvent e, int index )
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
+	getJToolBarButtonSilenceAlarms().addActionListener(this);
+	
 	// user code end
 	getJToolBarButtonAckAll().addActionListener(this);
 	getJToolBarButtonClearViewableAlarms().addActionListener(this);
-	getJToolBarButtonSilenceAlarms().addActionListener(this);
+	getJToolBarButtonMuteAlarms().addActionListener(this);
 	getJToolBarButtonClear().addActionListener(this);
 	getJToolBarButtonRefresh().addActionListener(this);
 	getDateJComboBox().addActionListener(this);
@@ -699,11 +753,17 @@ private void initConnections() throws java.lang.Exception {
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
+private void initialize() 
+{
+	/**********************************************
+	 * 
+	 * ignore this method as the real INIT stuff is done in setCurrentComponents()
+	 * 
+	 *******************************/
+
+	try 
+	{
+
 		setName("AlarmToolBar");
 		setAutoscrolls(false);
 		setOpaque(true);
@@ -712,6 +772,7 @@ private void initialize() {
 		setOrientation(javax.swing.SwingConstants.HORIZONTAL);
 		addSeparator();
 		add(getJToolBarButtonSilenceAlarms(), getJToolBarButtonSilenceAlarms().getName());
+		add(getJToolBarButtonMuteAlarms(), getJToolBarButtonMuteAlarms().getName());
 		add(getJToolBarButtonRefresh(), getJToolBarButtonRefresh().getName());
 		addSeparator();
 		add(getJToolBarButtonClear(), getJToolBarButtonClear().getName());
@@ -721,15 +782,14 @@ private void initialize() {
 		add(getJLabelViewDate());
 		add(getDateJComboBox(), getDateJComboBox().getName());
 		initConnections();
-	} catch (java.lang.Throwable ivjExc) {
+	} catch (java.lang.Throwable ivjExc) 
+	{
 		handleException(ivjExc);
 	}
-	// user code begin {2}
+
 
 	currentComponents = new javax.swing.JComponent[ getOriginalComoponents().length ];
 	setOriginalButtons();
-
-	// user code end
 }
 
 /**
@@ -755,43 +815,6 @@ private boolean isOriginalComponentsSet()
 
 
 /**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		AlarmToolBar aAlarmToolBar;
-		aAlarmToolBar = new AlarmToolBar();
-		frame.setContentPane(aAlarmToolBar);
-		frame.setSize(aAlarmToolBar.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of javax.swing.JToolBar");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-
-
-/**
- * 
- * @param newListener com.cannontech.tdc.toolbar.AlarmToolBarListener
- */
-public void removeAlarmToolBarListener(com.cannontech.tdc.toolbar.AlarmToolBarListener newListener) {
-	fieldAlarmToolBarListenerEventMulticaster = com.cannontech.tdc.toolbar.AlarmToolBarListenerEventMulticaster.remove(fieldAlarmToolBarListenerEventMulticaster, newListener);
-	return;
-}
-
-
-/**
  * Insert the method's description here.
  * Creation date: (8/7/00 5:06:50 PM)
  * @param newCurrentButtons javax.swing.JButton[]
@@ -804,6 +827,7 @@ public void setCurrentComponents(javax.swing.JComponent[] newCurrentComponents )
 	//add the default buttons that are on every screen
 	addSeparator();
 	add(getJToolBarButtonSilenceAlarms(), getJToolBarButtonSilenceAlarms().getName());
+	add(getJToolBarButtonMuteAlarms(), getJToolBarButtonMuteAlarms().getName());
 	add(getJToolBarButtonRefresh(), getJToolBarButtonRefresh().getName());
 	addSeparator();		
 

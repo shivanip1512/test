@@ -18,7 +18,12 @@ public interface AlarmTableModel extends ICTITableRenderer
 	/* This method will meake the table model repaint itself for the choosen rowNumbers */
 	void forcePaintTableRowUpdated(int minLocation, int maxLocation);
 
-	boolean isPlayingSound();
+	boolean isMuted();
+	void  setMuted( boolean isMuted_ );
+
+	void silenceAlarms();
+
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (1/12/2001 1:04:48 PM)

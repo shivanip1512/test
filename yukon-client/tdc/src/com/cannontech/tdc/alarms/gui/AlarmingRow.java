@@ -14,7 +14,9 @@ public class AlarmingRow
 	private int rowNumber = -1;
 	private int alarmColor = -1;
 	private int originalColor = -1;
-	private boolean isVisible = false;
+	private boolean isSilenced = false;
+
+
 /**
  * AlarmingRow constructor comment.
  */
@@ -165,4 +167,21 @@ public void subtractOffset( int decrementation )
 {
 	rowNumber -= decrementation;
 }
+
+	/**
+	 * @return
+	 */
+	public boolean isSilenced()
+	{
+		return isSilenced;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setSilenced(boolean b)
+	{
+		isSilenced = b;
+	}
+
 }

@@ -175,7 +175,6 @@ private javax.swing.JTable getJTableServices() {
 			ivjJTableServices = new javax.swing.JTable();
 			ivjJTableServices.setName("JTableServices");
 			getJScrollPaneTable().setColumnHeaderView(ivjJTableServices.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableServices.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
@@ -469,9 +468,8 @@ public void setJButtons(javax.swing.JButton[] buttons)
 
 
 public void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgColor ) {}
-
-
-public void setSound(boolean soundToggle) {}
+public void setAlarmMute( boolean muteToggle ) {}
+public void silenceAlarms() {}
 
 
 public void setTableFont(java.awt.Font font ) 

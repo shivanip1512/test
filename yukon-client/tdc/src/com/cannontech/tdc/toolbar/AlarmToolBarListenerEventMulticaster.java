@@ -76,6 +76,14 @@ public void JToolBarButtonRefreshAction_actionPerformed(java.util.EventObject ne
  * 
  * @param newEvent java.util.EventObject
  */
+public void JToolBarButtonMuteAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
+	((com.cannontech.tdc.toolbar.AlarmToolBarListener)a).JToolBarButtonMuteAlarmsAction_actionPerformed(newEvent);
+	((com.cannontech.tdc.toolbar.AlarmToolBarListener)b).JToolBarButtonMuteAlarmsAction_actionPerformed(newEvent);
+}
+/**
+ * 
+ * @param newEvent java.util.EventObject
+ */
 public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject newEvent) {
 	((com.cannontech.tdc.toolbar.AlarmToolBarListener)a).JToolBarButtonSilenceAlarmsAction_actionPerformed(newEvent);
 	((com.cannontech.tdc.toolbar.AlarmToolBarListener)b).JToolBarButtonSilenceAlarmsAction_actionPerformed(newEvent);

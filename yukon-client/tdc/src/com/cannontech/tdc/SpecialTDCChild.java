@@ -138,7 +138,20 @@ void setJButtons(javax.swing.JButton[] buttons);
  * @param colors java.awt.Color 
  */
 void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgColor );
-void setSound(boolean soundToggle);
+
+
+/**
+ * Sets the display to use sound or not. 
+ *   muteToggle    = TRUE sound is completely turned off 
+ */
+void setAlarmMute( boolean muteToggle );
+
+/**
+ * TRUE sound is turned off only for current alarms (new alarms play sound)
+ */
+void silenceAlarms();
+
+
 
 /** 
  * Returns a boolean telling any callser that the ComboBox for this

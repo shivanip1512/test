@@ -490,15 +490,13 @@ public void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgCol
 	mainPanel.getScheduleTableModel().setBackGroundColor( bgColor );
 	mainPanel.getScheduleTableModel().setCellColors( foreGroundColors );
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2001 1:04:57 PM)
- * @param soundToggle boolean
- */
-public void setSound(boolean soundToggle) 
-{
-	// if we want the sound to be toggled, implement this method	
-}
+
+
+// if we want the sound to be toggled, implement this method	
+public void setAlarmMute( boolean muted ) {}
+public void silenceAlarms() {}
+
+
 /**
  * This method was created in VisualAge.
  * @param source Observable

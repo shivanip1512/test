@@ -77,6 +77,8 @@ public final class CtiUtilities
 
 	public static final String DEFAULT_MSG_SOURCE = temp;
 
+	public static final String OUTPUT_FILE_NAME = CtiUtilities.getConfigDirPath() + "TDCOut.DAT";
+
 	private static final class CTIPrintStackTraceExc extends Exception
 	{
 		public java.io.ByteArrayOutputStream byteStream = new java.io.ByteArrayOutputStream();

@@ -238,11 +238,11 @@ private Color[] getDBColors()
 private String getHeaderText() 
 {
 	return
-		(CommonUtils.formatString( parametersFile.getParameterValue("COLUMN0_NAME"), Logger.TIMESTAMP_LENGTH ) + " " +
-		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN1_NAME"), Logger.DEVICENAME_LENGTH ) + " " +
-		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN2_NAME"), Logger.POINTNAME_LENGTH ) + " " +
-		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN3_NAME"), Logger.DESCRIPTION_LENGTH ) + " " +
-		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN4_NAME"), Logger.ACTION_LENGTH ));
+		(CommonUtils.formatString( parametersFile.getParameterValue("COLUMN0_NAME", ""), Logger.TIMESTAMP_LENGTH ) + " " +
+		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN1_NAME", ""), Logger.DEVICENAME_LENGTH ) + " " +
+		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN2_NAME", ""), Logger.POINTNAME_LENGTH ) + " " +
+		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN3_NAME", ""), Logger.DESCRIPTION_LENGTH ) + " " +
+		CommonUtils.formatString( parametersFile.getParameterValue("COLUMN4_NAME", ""), Logger.ACTION_LENGTH ));
 	
 }
 /**
@@ -497,15 +497,15 @@ private void setLoggerParameters()
 	{
 		try
 		{
-			setPointReg( parametersFile.getParameterValue("REGISTRATION") );
-			com.cannontech.clientutils.CTILogger.info("	Registration : " + parametersFile.getParameterValue("REGISTRATION") );
+			setPointReg( parametersFile.getParameterValue("REGISTRATION", "ALL") );
+			com.cannontech.clientutils.CTILogger.info("	Registration : " + parametersFile.getParameterValue("REGISTRATION", "ALL") );
 			
-			colorEnabled = Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE") );
-			com.cannontech.clientutils.CTILogger.info("	Black/White  : " + parametersFile.getParameterValue("COLOR_TOGGLE") );
+			colorEnabled = Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE", "false") );
+			com.cannontech.clientutils.CTILogger.info("	Black/White  : " + parametersFile.getParameterValue("COLOR_TOGGLE", "false") );
 
-			int seconds = Integer.parseInt( parametersFile.getParameterValue("OUTPUT_SECONDS") ) + 			
-					(60 * Integer.parseInt( parametersFile.getParameterValue("OUTPUT_MINUTES") ) +
-					 3600 * Integer.parseInt( parametersFile.getParameterValue("OUTPUT_HOURS") ) );
+			int seconds = Integer.parseInt( parametersFile.getParameterValue("OUTPUT_SECONDS", "0") ) + 			
+					(60 * Integer.parseInt( parametersFile.getParameterValue("OUTPUT_MINUTES", "0") ) +
+					 3600 * Integer.parseInt( parametersFile.getParameterValue("OUTPUT_HOURS", "0") ) );
 
 			if( seconds > 0 )
 			{				
@@ -519,7 +519,7 @@ private void setLoggerParameters()
 
 			headerText = getHeaderText();
 
-			titleText = new String( parametersFile.getParameterValue("PRINT_TITLE") );			
+			titleText = new String( parametersFile.getParameterValue("PRINT_TITLE", "") );			
 		}
 		catch( Exception t )  // catch all, no real biggy
 		{

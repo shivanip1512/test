@@ -30,7 +30,9 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	private int feederRowSelected = -1;
 	
 	private RowBlinker currenBlinkingAlarms = null;
-	private boolean playingSound = true;
+	
+	private boolean muted = false;
+	
 	private boolean showingAlarms = true;
 	
 	private String fontName = "dialog";
@@ -474,10 +476,19 @@ private boolean isObjectCapBank(Object obj)
  * Creation date: (2/1/2001 1:02:05 PM)
  * @return boolean
  */
-public boolean isPlayingSound() 
+public boolean isMuted() 
 {
-	return playingSound;
+	return muted;
 }
+
+public void silenceAlarms() 
+{
+	synchronized( getAlarmingRowVector() )
+	{
+		getAlarmingRowVector().setAllSilenced( true );
+	}
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/30/00 9:29:03 AM)
@@ -668,14 +679,8 @@ private void setCurrentRowBGColors( int rowNumber, int color )
 public void setFeederRowSelected(int newFeederRowSelected) {
 	feederRowSelected = newFeederRowSelected;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2001 1:02:05 PM)
- * @param newPlayingSound boolean
- */
-public void setPlayingSound(boolean newPlayingSound) {
-	playingSound = newPlayingSound;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (3/29/00 2:23:38 PM)
@@ -889,4 +894,11 @@ public void toggleAlarms( boolean toggle )
 	}
 
 }
+
+
+public void setMuted( boolean muted_ )
+{
+	muted = muted_;
+}
+
 }

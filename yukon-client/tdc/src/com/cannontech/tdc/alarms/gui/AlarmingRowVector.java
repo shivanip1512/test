@@ -203,6 +203,18 @@ public synchronized void removeElement( Integer rowNum )
 		}
 	}	
 }
+
+
+/**
+ * Tells all the elements to be silent or not
+ * @return void
+ */
+public synchronized void setAllSilenced( boolean value_ )
+{
+	for( int i = 0; i < getAlarmingRows().size(); i++ )
+		((AlarmingRow)getAlarmingRows().get(i)).setSilenced( value_ );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 11:55:14 AM)

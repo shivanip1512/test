@@ -1341,10 +1341,21 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
  * Creation date: (2/1/2001 12:59:02 PM)
  * @param soundToggle boolean
  */
-public void setCapBankTableModelSound(boolean soundToggle) 
+public void setCapBankTableModelSound( boolean muted  ) 
 {
-	getCapBankTableModel().setPlayingSound( soundToggle );
+	getCapBankTableModel().setMuted( muted );
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (2/1/2001 12:59:02 PM)
+ * @param soundToggle boolean
+ */
+public void silenceAlarms() 
+{
+	getCapBankTableModel().silenceAlarms();
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/22/00 2:26:19 PM)

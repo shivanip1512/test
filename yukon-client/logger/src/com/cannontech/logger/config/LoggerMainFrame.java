@@ -1327,12 +1327,12 @@ private void retrieveParameters()
 	{
 		try
 		{
-			getJTextFieldTimeHours().setText( parametersFile.getParameterValue("OUTPUT_HOURS") );
-			getJTextFieldTimeMinutes().setText( parametersFile.getParameterValue("OUTPUT_MINUTES") );
-			getJTextFieldTimeSeconds().setText( parametersFile.getParameterValue("OUTPUT_SECONDS") );
-			getJComboBoxRegistration().setSelectedItem( parametersFile.getParameterValue("REGISTRATION") );
-			getJCheckBoxDisable().setSelected( !Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE") ) );
-			getJTextFieldTitle().setText( parametersFile.getParameterValue("PRINT_TITLE") );
+			getJTextFieldTimeHours().setText( parametersFile.getParameterValue("OUTPUT_HOURS", "0") );
+			getJTextFieldTimeMinutes().setText( parametersFile.getParameterValue("OUTPUT_MINUTES", "0") );
+			getJTextFieldTimeSeconds().setText( parametersFile.getParameterValue("OUTPUT_SECONDS", "0") );
+			getJComboBoxRegistration().setSelectedItem( parametersFile.getParameterValue("REGISTRATION", "ALL") );
+			getJCheckBoxDisable().setSelected( !Boolean.getBoolean( parametersFile.getParameterValue("COLOR_TOGGLE", "false") ) );
+			getJTextFieldTitle().setText( parametersFile.getParameterValue("PRINT_TITLE", "") );
 
 
 			int backIndex = (PARAMETER_LIST.length - 1) - (Logger.COLUMN_LENGTHS.length * 2 - 1);
@@ -1344,9 +1344,9 @@ private void retrieveParameters()
 				Object[] cells = 
 				{
 					String.valueOf( j ), // column number
-					parametersFile.getParameterValue( PARAMETER_LIST[ backIndex ] ), // column name
+					parametersFile.getParameterValue( PARAMETER_LIST[ backIndex ], "0"), // column name
 					String.valueOf( Logger.COLUMN_LENGTHS[j-1] ), // column length
-					parametersFile.getParameterValue( PARAMETER_LIST[ backIndex + Logger.COLUMN_LENGTHS.length ] ) // column description
+					parametersFile.getParameterValue( PARAMETER_LIST[ backIndex + Logger.COLUMN_LENGTHS.length ], "0" ) // column description
 				};
 				
 				backIndex++;
@@ -1370,27 +1370,17 @@ private void writeParameters()
 
 	if( getJTableColumn().isEditing() )
 		getJTableColumn().getCellEditor().stopCellEditing();
+	
+	String[] paramValues = new String[ PARAMETER_LIST.length ];
+	
+	paramValues[0] = getJComboBoxRegistration().getSelectedItem().toString();
+	paramValues[1] = String.valueOf( !getJCheckBoxDisable().isSelected() );
+	paramValues[2] = getJTextFieldTimeHours().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeHours().getText();
+	paramValues[3] = getJTextFieldTimeMinutes().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeMinutes().getText();
+	paramValues[4] = getJTextFieldTimeSeconds().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeSeconds().getText();
+	paramValues[5] = getJTextFieldTitle().getText();  //PRINT_TITLE
+
 		
-	// store the registration type
-	parametersFile.addNewParameter( "REGISTRATION", getJComboBoxRegistration().getSelectedItem().toString() );
-
-	// store the color check box value
-	parametersFile.addNewParameter( "COLOR_TOGGLE", String.valueOf( !getJCheckBoxDisable().isSelected() ) );
-
-	// store the print title
-	parametersFile.addNewParameter( "PRINT_TITLE", getJTextFieldTitle().getText() );
-
-	
-	// store the auto-output times parameter
-	parametersFile.addNewParameter( "OUTPUT_HOURS",
-		getJTextFieldTimeHours().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeHours().getText() );
-	
-	parametersFile.addNewParameter( "OUTPUT_MINUTES", 
-		getJTextFieldTimeMinutes().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeMinutes().getText() );
-	
-	parametersFile.addNewParameter( "OUTPUT_SECONDS", 
-		getJTextFieldTimeSeconds().getText().equalsIgnoreCase("") ? "0" : getJTextFieldTimeSeconds().getText() );
-
 	Object[] colNames = getTableModel().getColumnData(1);
 	Object[] colDescription = getTableModel().getColumnData(3);
 
@@ -1398,15 +1388,15 @@ private void writeParameters()
 	int colInfoIndex = (PARAMETER_LIST.length - 1) - (Logger.COLUMN_LENGTHS.length * 2 - 1);
 	// write the column names
 	for( int i = 0; i < Logger.COLUMN_LENGTHS.length; i++ )
-		parametersFile.addNewParameter( PARAMETER_LIST[colInfoIndex++], colNames[i].toString() );
+		paramValues[colInfoIndex++] = colNames[i].toString();
 
 	// write the column descriptions
 	for( int i = 0; i < Logger.COLUMN_LENGTHS.length; i++ )
-		parametersFile.addNewParameter( PARAMETER_LIST[colInfoIndex++], colDescription[i].toString() );
+		paramValues[colInfoIndex++] = colDescription[i].toString();
 	
 		
-	// write all the parameters to the parameters file here
-	parametersFile.writeNewParameters();
+	//update the non dynamic params
+	parametersFile.updateValues( PARAMETER_LIST, paramValues );
 
 	return;
 }

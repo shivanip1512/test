@@ -421,15 +421,16 @@ private boolean isObjectFeeder(Object obj)
 {
 	return( obj instanceof Feeder );
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2001 1:02:05 PM)
- * @return boolean
- */
-public boolean isPlayingSound() 
+
+public boolean isMuted() 
 {
 	return false;
 }
+
+public void setMuted( boolean b ){}
+public void silenceAlarms() {}
+
+
 /**
  * This method add a Blank row to the table
  */

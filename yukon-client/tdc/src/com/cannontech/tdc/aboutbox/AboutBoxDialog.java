@@ -7,6 +7,7 @@ package com.cannontech.tdc.aboutbox;
  */
 import java.util.Vector;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tdc.SpecialTDCChild;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
@@ -360,7 +361,7 @@ private void setTDCInfo()
 	getListData().addElement("DB Alias   : " + TDCDefines.DBALIAS);
 	getListData().addElement("Max Rows   : " + TDCDefines.MAX_ROWS);
 	getListData().addElement("Sound File : " + TDCDefines.ALARM_SOUND_FILE);
-	getListData().addElement("Temp File  : " + TDCDefines.OUTPUT_FILE_NAME);
+	getListData().addElement("Temp File  : " + CtiUtilities.OUTPUT_FILE_NAME);
 	getListData().addElement(" ");
 	getListData().addElement("Client Views");
 	getListData().addElement("------------");

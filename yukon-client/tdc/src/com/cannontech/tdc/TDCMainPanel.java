@@ -13,9 +13,11 @@ import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.tdc.calendar.CalendarDialog;
@@ -1952,7 +1954,8 @@ private void initClientDisplays()
 			
 			getCurrentSpecailChild().setInitialTitle();
 			getJLabelDisplayName().setText( getCurrentSpecailChild().getJComboLabel() );
-			getCurrentSpecailChild().setSound( getTableDataModel().isPlayingSound() );
+
+			getCurrentSpecailChild().setAlarmMute( getTableDataModel().isMuted() );
 			
 
 			// add the new ActionListener to our combo box
@@ -2239,33 +2242,44 @@ private void initializeParameters()
 	TDCMainFrame parentFrame = 
 			((TDCMainFrame)com.cannontech.common.util.CtiUtilities.getParentFrame( this ));
 			
-	ParametersData parameters = null;
 	java.awt.Font newFont = null;
+	ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
 
-	parameters = new ParametersData();
-
-	if( parameters.parametersExist() )
+	try
 	{
-		parentFrame.setBounds( parameters.getFrameX(),
-							   parameters.getFrameY() ,
-							   parameters.getFrameWidth(),
-							   parameters.getFrameHeight() );
+		parentFrame.setBounds( 
+							Integer.parseInt(pf.getParameterValue("FrameX", "150")),
+							Integer.parseInt(pf.getParameterValue("FrameY", "200")),
+							Integer.parseInt(pf.getParameterValue("FrameWidth", "650")),
+							Integer.parseInt(pf.getParameterValue("FrameHeight", "400")) );
 		
-		newFont = new java.awt.Font( parameters.getFonName(),
+		newFont = new java.awt.Font( pf.getParameterValue("FontName", "Arial"),
 									 java.awt.Font.PLAIN,
-									 parameters.getFontSize() );
+									 Integer.parseInt(pf.getParameterValue("FontSize", "14")) );
 
-		parentFrame.getJCheckBoxMenuItemHGridLines().setState( parameters.getHGridLine() );
-		parentFrame.getJCheckBoxMenuItemVGridLines().setState( parameters.getVGridLine() );
-		parentFrame.getJCheckBoxMenuItemShowLog().setState( parameters.getMessageLog() );
-		parentFrame.getJCheckBoxMenuItemShowToolBar().setState( parameters.getToolBox() );	
-
-		setStartUpDisplay( parameters, parentFrame );		
+		parentFrame.getJCheckBoxMenuItemHGridLines().setState(
+				Boolean.valueOf(pf.getParameterValue("HGridLine", "false")).booleanValue() );
 		
-		TDCMainFrame.messageLog.addMessage("Parameters file found and parsed successfully", MessageBoxFrame.INFORMATION_MSG );
+		parentFrame.getJCheckBoxMenuItemVGridLines().setState(
+				Boolean.valueOf(pf.getParameterValue("VGridLine", "false")).booleanValue() );
+				
+		parentFrame.getJCheckBoxMenuItemShowLog().setState(
+				Boolean.valueOf(pf.getParameterValue("MessageLog", "false")).booleanValue() );
+		
+		parentFrame.getJCheckBoxMenuItemShowToolBar().setState(
+				Boolean.valueOf(pf.getParameterValue("ToolBox", "true")).booleanValue() );
+
+
+		//should we Mute the alarms?
+		if( Boolean.valueOf(pf.getParameterValue("Mute", "false")).booleanValue() )
+			parentFrame.alarmToolBar_JToolBarButtonMuteAlarmsAction_actionPerformed( null );
+
+		setStartUpDisplay( pf, parentFrame );		
+		//TDCMainFrame.messageLog.addMessage("Parameters file found and parsed successfully", MessageBoxFrame.INFORMATION_MSG );
 	}
-	else // init file not found
+	catch( Exception e ) 
 	{
+		// init file not found
 		if( parentFrame.startingDisplayName != null )
 		{
 			if( parentFrame.startingViewType != null )
@@ -2281,18 +2295,19 @@ private void initializeParameters()
 				getJComboCurrentDisplay().setSelectedIndex(0); // just set the DisplayCombo to the first display				
 				setUpTable();
 			}
-			catch( Exception e )
+			catch( Exception ex )
 			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				com.cannontech.clientutils.CTILogger.error( ex.getMessage(), ex );
 				com.cannontech.clientutils.CTILogger.info("*****************************************************");
 				com.cannontech.clientutils.CTILogger.info("*** Most likely cause is an invalid database.  ******");
 				com.cannontech.clientutils.CTILogger.info("*****************************************************");
 			}
 		}
 
-		TDCMainFrame.messageLog.addMessage("Parameters file " + TDCDefines.OUTPUT_FILE_NAME + " not found or corrupt", MessageBoxFrame.INFORMATION_MSG );
+		TDCMainFrame.messageLog.addMessage("Parameters file " + CtiUtilities.OUTPUT_FILE_NAME + " not found or corrupt", MessageBoxFrame.INFORMATION_MSG );
 	}
 		
+
 	if( newFont != null )
 		setTableFont( newFont );
 	
@@ -3461,7 +3476,7 @@ private void setRowFocus(int rowNumber)
  * Version: <version>
  * @param parameters com.cannontech.tdc.ParametersData
  */
-private void setStartUpDisplay( ParametersData parameters, TDCMainFrame parentFrame ) 
+private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame ) 
 {
 	if( getJComboCurrentDisplay().getItemCount() > 0 )
 	{
@@ -3477,8 +3492,11 @@ private void setStartUpDisplay( ParametersData parameters, TDCMainFrame parentFr
 		}
 		else
 		{
-			parentFrame.setSelectedViewType( parameters.getDisplayType() );
-			getJComboCurrentDisplay().setSelectedItem( parameters.getDisplayName() );
+			parentFrame.setSelectedViewType( 
+					pf.getParameterValue("ViewType", Display.DISPLAY_TYPES[0]) );
+
+			getJComboCurrentDisplay().setSelectedItem(
+					pf.getParameterValue("DisplayName", "") );
 		}
 
 		// manually fire the event

@@ -5,11 +5,7 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (9/19/00 10:13:05 AM)
  * @author: 
  */
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
@@ -26,12 +22,10 @@ import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.IControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
-import com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel;
 import com.cannontech.loadcontrol.displays.*;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
-import com.cannontech.loadcontrol.popup.CurtailPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
 import com.cannontech.tdc.observe.ObservableJPopupMenu;
@@ -1445,15 +1439,16 @@ public void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgCol
 {
 	//DO NOTHING
 }
+
 /**
  * Insert the method's description here.
- * Creation date: (2/1/2001 1:04:57 PM)
+ * Creation date: (2/1/2001 12:55:52 PM)
  * @param soundToggle boolean
  */
-public void setSound(boolean soundToggle) 
-{
-	// if we want the sound to be toggled, implement this method	
-}
+public void setAlarmMute( boolean muted ) {}
+public void silenceAlarms() {}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (4/5/00 4:29:59 PM)

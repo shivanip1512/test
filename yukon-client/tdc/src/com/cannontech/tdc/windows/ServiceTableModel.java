@@ -4,11 +4,8 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.Vector;
 
-import javax.jms.IllegalStateException;
-import javax.sound.midi.SysexMessage;
 import javax.swing.table.AbstractTableModel;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 
 
 /**
@@ -322,14 +319,17 @@ System.out.println("PROP CHNG = " + destState+", " + serviceName+", " + src );
 		
 		return " ";
 	}
-	/**
-	 * Returns the rows.
-	 * @return Vector
-	 */
-	public boolean isPlayingSound()
+
+	public boolean isMuted()
 	{
 		return false;
 	}
+
+	public void setMuted( boolean muted_ ) {}
+	public void silenceAlarms() {}
+
+
+		
 	public boolean isRowSelectedBlank(int rowNumber)
 	{
 		return false;

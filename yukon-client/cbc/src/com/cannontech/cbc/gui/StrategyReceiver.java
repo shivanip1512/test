@@ -445,10 +445,16 @@ public void setRowColors(java.awt.Color[] foreGroundColors, java.awt.Color bgCol
  * Creation date: (2/1/2001 12:55:52 PM)
  * @param soundToggle boolean
  */
-public void setSound(boolean soundToggle)
+public void setAlarmMute( boolean muted )
 {
-	((ReceiverMainPanel)getMainJPanel()).setCapBankTableModelSound( soundToggle );
+	((ReceiverMainPanel)getMainJPanel()).setCapBankTableModelSound( muted );
 }
+
+public void silenceAlarms() 
+{
+	((ReceiverMainPanel)getMainJPanel()).silenceAlarms();
+}
+
 /**
  * This method was created in VisualAge.
  * @param source Observable

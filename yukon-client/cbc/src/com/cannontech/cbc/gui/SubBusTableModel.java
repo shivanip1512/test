@@ -467,15 +467,16 @@ private String getPowerFactorText( double value, boolean compute )
 public boolean isCellEditable(int row, int column) {
 	return false;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/1/2001 1:02:05 PM)
- * @return boolean
- */
-public boolean isPlayingSound() 
+
+public boolean isMuted() 
 {
 	return false;
 }
+
+public void setMuted( boolean b ){}
+public void silenceAlarms() {}
+
+
 /**
  * This method add a Blank row to the table
  */

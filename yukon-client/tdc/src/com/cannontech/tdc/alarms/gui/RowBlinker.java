@@ -17,8 +17,6 @@ public class RowBlinker implements Runnable
 	private AlarmTableModel model = null;
 	private Thread runningThread = null;
 
-
-
 	/**
 	 * Insert the type's description here.
 	 * Creation date: (7/28/00 5:28:12 PM)
@@ -158,7 +156,8 @@ private synchronized void processAlarmColors()
 	{
 		if( alarmedRows.elementAt(i).isBlinking() )
 		{
-			if( model.isPlayingSound() )
+			//we cant be muted and the alarm can not be silenced
+			if( !model.isMuted() && !alarmedRows.elementAt(i).isSilenced() )
 				getAlarmSound().play();
 			
 			int loc = alarmedRows.elementAt(i).getRowNumber();
@@ -173,6 +172,11 @@ private synchronized void processAlarmColors()
 				maxLoc = loc;
 			else if( loc < minLoc )
 				minLoc = loc;
+
+
+			//for now, always set the silenced flag with every iteration!!
+			//alarmedRows.setAllSilenced( model.isSilenced() );				
+
 
 			getModel().setBGRowColor( loc, alarmedRows.elementAt( i ).getAlarmColor() );
 		}								
