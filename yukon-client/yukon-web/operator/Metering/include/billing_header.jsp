@@ -4,6 +4,7 @@
 <%@ page import="com.cannontech.roles.operator.CommercialMeteringRole"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.billing.mainprograms.BillingFileDefaults" %>
+<%@ page import="com.cannontech.database.db.device.DeviceMeterGroup" %>
 <%@ page import="com.cannontech.billing.FileFormatTypes"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
@@ -21,23 +22,17 @@
 
 	try
 	{
-		liteYukonUser = (LiteYukonUser) session.getAttribute("YUKON_USER");
+		liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 		liteYukonUserID = liteYukonUser.getLiteID();		
 	}
 	catch (IllegalStateException ise)
 	{
 	}
-
-	// GET A LIST OF VALID METERS? OR GROUPS? FOR EACH OPERATOR?
-    Class[] types = { Integer.class,String.class };    
-//	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "some sql statement", types );    
+	com.cannontech.billing.mainprograms.BillingBean billingBean = 
+			(com.cannontech.billing.mainprograms.BillingBean) session.getAttribute(ServletUtil.ATT_BILLING_BEAN);
+	if(billingBean == null)
+	{
+		session.setAttribute(ServletUtil.ATT_BILLING_BEAN, new com.cannontech.billing.mainprograms.BillingBean());
+		billingBean = (com.cannontech.billing.mainprograms.BillingBean)session.getAttribute(ServletUtil.ATT_BILLING_BEAN);
+	}
 %>
-
-<jsp:useBean id="billingBean" class="com.cannontech.billing.mainprograms.BillingBean" scope="session">
-	<%-- this body is executed only if the bean is created --%>
-<jsp:setProperty name="billingBean" property="endDateStr" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
-<jsp:setProperty name="billingBean" property="demandDaysPrev" value="30"/>
-<jsp:setProperty name="billingBean" property="energyDaysPrev" value="7"/>
-<jsp:setProperty name="billingBean" property="fileFormat" value="1"/>
-    <%-- intialize bean properties --%>
-</jsp:useBean>

@@ -5,15 +5,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../../JavaScript/Calendar1-82.js"></SCRIPT>
+<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 </head>
 
 <SCRIPT LANGUAGE = "JavaScript">
 function jumpPage()
 {
 	update();
-	document.generate.action="/servlet/BillingServlet?";	
+	document.generate.action="<%=request.getContextPath()%>/servlet/BillingServlet?";	
 	document.generate.method="post";
 	location.href ="/Billing.jsp";	
 }
@@ -75,14 +74,14 @@ function updateDemandDate()
 					<div align="center"><br><span class="TitleHeader">BILLING</span></div>
 
 					<form name = "MForm">
-<jsp:setProperty name="billingBean" property="fileFormat" param="format"/>
-<jsp:setProperty name="billingBean" property="billGroupType" param="gType"/>
-<jsp:setProperty name="billingBean" property="billGroup" param="grp"/>
-<jsp:setProperty name="billingBean" property="appendToFile" param="append"/>
-<jsp:setProperty name="billingBean" property="removeMult" param="mult"/>
-<jsp:setProperty name="billingBean" property="demandDaysPrev" param="dDays"/>
-<jsp:setProperty name="billingBean" property="energyDaysPrev" param="eDays"/>
-<jsp:setProperty name="billingBean" property="endDateStr" param="end"/>
+<jsp:setProperty name="BILLING_BEAN" property="fileFormat" param="format"/>
+<jsp:setProperty name="BILLING_BEAN" property="billGroupType" param="gType"/>
+<jsp:setProperty name="BILLING_BEAN" property="billGroup" param="grp"/>
+<jsp:setProperty name="BILLING_BEAN" property="appendToFile" param="append"/>
+<jsp:setProperty name="BILLING_BEAN" property="removeMult" param="mult"/>
+<jsp:setProperty name="BILLING_BEAN" property="demandDaysPrev" param="dDays"/>
+<jsp:setProperty name="BILLING_BEAN" property="energyDaysPrev" param="eDays"/>
+<jsp:setProperty name="BILLING_BEAN" property="endDateStr" param="end"/>
 							
 						<table width="65%" border="0" cellspacing="0" cellpadding="4" height="209" align = "center">
 							<tr> 
@@ -113,12 +112,12 @@ function updateDemandDate()
 													<tr> 
 														<td width="50%" align = "right">Billing End Date:</td>
 														<td width="50%">
-															<input type="text" name="end" value="<%=datePart.format(billingBean.getEndDate())%>" size = "10" onChange="update()">
-																<a href="javascript:show_calendar('MForm.end')"
-																	onMouseOver="window.status='End Date Calendar';return true;"
-																	onMouseOut="window.status='';return true;">
-																	<img src="../../Images/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0">
-																</a> 
+														    <input id="cal" type="text" name="end" value="<%= datePart.format(billingBean.getEndDate()) %>" size="8" onChange="update()">
+											                  <A HREF="javascript:openCalendar(document.getElementById('MForm').cal, 74, 0)"
+											                    onMouseOver="window.status='End Date Calendar';return true;"
+											                    onMouseOut="window.status='';return true;">
+											                    <IMG SRC="<%=request.getContextPath()%>/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
+											                  </A>
 														</td>
 													</tr>
 												</table>
@@ -126,7 +125,7 @@ function updateDemandDate()
 													<tr> 
 														<td width="50%" align = "right">Demand Days Previous:</td>
 														<td width="50%"> 
-															<input type="text" name="dDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "5" onChange="update()">
+															<input type="text" name="dDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "8" onChange="update()">
 														</td>
 <!--														<td id="DEMANDSTART" width="30%" align="left"><%=datePart.format(billingBean.getDemandStartDate())%></td>-->
 													</tr>
@@ -135,7 +134,7 @@ function updateDemandDate()
 													<tr> 
 								 						<td width = "50%" align = "right">Energy Days Previous:</td>
 														<td width = "50%"> 
-															<input type="text" name="eDays" value="<%=billingBean.getEnergyDaysPrev()%>" size = "5">
+															<input type="text" name="eDays" value="<%=billingBean.getEnergyDaysPrev()%>" size = "8">
 														</td>
 													</tr>
 												</table>
@@ -182,7 +181,7 @@ function updateDemandDate()
 																	<td width="50%"> 
 																		<select name = "gType" onchange="update()">
 																			<% /* Fill in the possible file format types*/
-																			int [] groupTypes = BillingFileDefaults.getValidBillGroupTypeIDs();
+																			int [] groupTypes = DeviceMeterGroup.getValidBillGroupTypeIDs();
 																			
 																			int selectedGrpType = billingBean.getBillGroupType();
 																																					
