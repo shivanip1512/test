@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -464,15 +465,16 @@ private javax.swing.JTree getJTreeRoles() {
  * Returns the correct Role for the specified object
  * 
  */
-private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, IYukonRoleContainer rc_ )
+private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, IYukonRoleContainer rc_, Hashtable ridMap_ )
 {
-	String strVal = getJTablePropertyModel().getPropertyChange( prop_ ); 
+	String strVal = getJTablePropertyModel().getPropertyChange( prop_ );
+	Integer roleEntryID = (Integer) ridMap_.get( new Integer(prop_.getRolePropertyID()) ); 
 	IDefinedYukonRole defRole = null;
 	
 	if( rc_ instanceof YukonUser )
 	{
 		defRole = new YukonUserRole( 
-						null,
+						roleEntryID,
 						rc_.getID(),
 						new Integer(role_.getRoleID()),
 						new Integer(prop_.getRolePropertyID()),
@@ -482,7 +484,7 @@ private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, 
 	else if( rc_ instanceof YukonGroup )
 	{
 		defRole = new YukonGroupRole( 
-						null,
+						roleEntryID,
 						rc_.getID(),
 						new Integer(role_.getRoleID()),
 						new Integer(prop_.getRolePropertyID()),
@@ -509,10 +511,24 @@ private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, 
 public Object getValue(Object obj) 
 {
 	IYukonRoleContainer roleContainer = null;
+	Hashtable roleEntryIDMap = new Hashtable();
 
 	if( obj instanceof IYukonRoleContainer )
 	{
 		roleContainer = (IYukonRoleContainer)obj;
+		
+		// Create map: RolePropertyID -> GroupRoleID or UserRoleID
+		for (int i = 0; i < roleContainer.getYukonRoles().size(); i++) {
+			if (roleContainer.getYukonRoles().get(i) instanceof YukonGroupRole) {
+				YukonGroupRole groupRole = (YukonGroupRole) roleContainer.getYukonRoles().get(i);
+				roleEntryIDMap.put( groupRole.getRolePropertyID(), groupRole.getGroupRoleID() );
+			}
+			else if (roleContainer.getYukonRoles().get(i) instanceof YukonUserRole) {
+				YukonUserRole userRole = (YukonUserRole) roleContainer.getYukonRoles().get(i);
+				roleEntryIDMap.put( userRole.getRolePropertyID(), userRole.getUserRoleID() );
+			}
+		}
+		
 		roleContainer.getYukonRoles().removeAllElements();
 	}
 
@@ -539,7 +555,7 @@ public Object getValue(Object obj)
 			for( int j = 0; j < props.length; j++ )
 			{
 				//modifies o role vector
-				createRoleEntry( role, props[j], roleContainer );
+				createRoleEntry( role, props[j], roleContainer, roleEntryIDMap );
 			}
 
 
