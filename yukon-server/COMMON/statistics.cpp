@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2004/05/19 14:49:45 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/09/08 19:55:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ using namespace std;
 #include "statistics.h"
 
 CtiStatistics::CtiStatistics(long id) :
-    _restoreworked(false),
+    _restoreworked(0),
     _dirty(false),
     _pid(id)
 {
@@ -489,12 +489,12 @@ RWDBStatus::ErrorCode CtiStatistics::Restore()
 
             dbstat = rdr.status();
 
-            _restoreworked = true;
+            _restoreworked++;
             _dirty = false;
         }
     }
 
-    if(!_restoreworked)
+    if( _restoreworked < FinalCounterSlot )
     {
         Insert(conn);
     }
@@ -536,9 +536,8 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn)
         if( stat.errorCode() != RWDBStatus::ok )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << stat.errorCode() << endl;
-
-            break;
+            dout << "Statistics Insert Error Code = " << stat.errorCode() << endl;
+            dout << ins.asString() << endl;
         }
     }
 
@@ -582,7 +581,8 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
         if( stat.errorCode() != RWDBStatus::ok )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << stat.errorCode() << endl;
+            dout << "Statistics Updater Error Code = " << stat.errorCode() << endl;
+            dout << updater.asString() << endl;
         }
 
         updater.clear();
@@ -601,7 +601,8 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
         if( stat.errorCode() != RWDBStatus::ok )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << stat.errorCode() << endl;
+            dout << "Statistics Updater (2) Error Code = " << stat.errorCode() << endl;
+            dout << updater.asString() << endl;
         }
     }
 

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:28 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/09/08 19:55:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ private:
 
     mutable CtiMutex _statMux;
 
-    bool _restoreworked;
+    int  _restoreworked;
     bool _updateOnNextCompletion;     // If set, the next completion causes an update
     bool _dirty;
 
