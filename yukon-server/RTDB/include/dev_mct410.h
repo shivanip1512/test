@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/14 01:07:05 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/22 15:43:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 
 
 #include "dev_mct.h"
+#include <map>
 
 class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT
 {
@@ -36,16 +37,16 @@ protected:
         MCT410_AlarmsPos         = 0x15,
         MCT410_AlarmsLen         =    2,
 
-        MCT410_DemandIntervalPos = 0x1a,
-        MCT410_DemandIntervalLen =    1,
-
-        MCT410_LPIntervalPos     = 0x1b,
-        MCT410_LPIntervalLen     =    1,
+        MCT410_IntervalsPos  = 0x1a,
+        MCT410_IntervalsLen  =    4,
 
         MCT410_RTCPos            = 0x40,
         MCT410_RTCLen            =    4,
         MCT410_LastTSyncPos      = 0x44,
         MCT410_LastTSyncLen      =    4,
+
+        MCT410_FuncWriteIntervalsPos = 0x03,
+        MCT410_FuncWriteIntervalsLen =    4,
 
         MCT410_FuncReadOutagePos = 0x10,
         MCT410_FuncReadOutageLen =   13,
@@ -77,18 +78,57 @@ protected:
         MCT4XX_CommandReset          = 0x8A,
     };
 
+    enum
+    {
+        MCT4XX_LPChannels       =  4,
+        MCT4XX_LPVoltageChannel =  4,
+        MCT4XX_LPRecentBlocks   = 16
+    };
+
 private:
 
    static DLCCommandSet _commandStore;
+   bool _intervalsSent;
 
-   RWTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
+   enum ErrorClasses
+   {
+       EC_MeterReading    = 0x0001,
+       EC_DemandReading   = 0x0002,
+       EC_TOUDemand       = 0x0004,
+       EC_TOUFrozenDemand = 0x0008,
+       EC_LoadProfile     = 0x0010
+   };
 
-   unsigned long _llpInterestTime, _llpInterestOffset, _llpInterestChannel;
+   enum ValueType
+   {
+       ValueType_Voltage,
+       ValueType_KW,
+       ValueType_Accumulator,
+       ValueType_Raw
+   };
 
+   typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;
+   static  QualityMap _errorQualities;
+   static  QualityMap initErrorQualities( void );
+
+   struct LPInfo
+   {
+       unsigned long archived_reading;
+       unsigned long current_request;
+       unsigned long current_schedule;
+   } _lp_info[MCT4XX_LPChannels];
+
+   struct LLPInterest
+   {
+       unsigned long time;
+       int offset;
+       int channel;
+   } _llpInterest;
 
 public:
 
    typedef CtiDeviceMCT Inherited;
+   typedef pair<unsigned long, PointQuality_t> data_pair;
 
    CtiDeviceMCT410( );
    CtiDeviceMCT410( const CtiDeviceMCT410 &aRef );
@@ -96,15 +136,16 @@ public:
 
    CtiDeviceMCT410 &operator=( const CtiDeviceMCT410 &aRef );
 
-   static bool initCommandStore( );
+   static DLCCommandSet initCommandStore( );
    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+
+   void sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
 
    virtual ULONG calcNextLPScanTime( void );
    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-   unsigned long  getDataValue  ( unsigned char *buf, int len );
-   PointQuality_t getDataQuality( unsigned char *buf, int len );
+   data_pair getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
 
    virtual INT executeGetValueLoadProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
 

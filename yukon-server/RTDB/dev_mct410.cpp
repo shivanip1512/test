@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/10/12 20:14:17 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/10/22 15:43:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,14 +26,27 @@
 #include "numstr.h"
 #include "porter.h"
 #include "utility.h"
+#include <string>
 
-set< CtiDLCCommandStore > CtiDeviceMCT410::_commandStore;
+using namespace std;
+
+CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
+CtiDeviceMCT410::QualityMap    CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
-    _llpInterestTime(0),
-    _llpInterestOffset(0),
-    _llpInterestChannel(0)
+    _intervalsSent(false)
 {
+    _llpInterest.time    = 0;
+    _llpInterest.channel = 0;
+    _llpInterest.offset  = 0;
+
+    for( int i = 0; i < MCT4XX_LPChannels; i++ )
+    {
+        //  initialize them to 0
+        _lp_info[i].archived_reading = 0;
+        _lp_info[i].current_request  = 0;
+        _lp_info[i].current_schedule = 0;
+    }
 }
 
 CtiDeviceMCT410::CtiDeviceMCT410( const CtiDeviceMCT410 &aRef )
@@ -54,151 +67,190 @@ CtiDeviceMCT410 &CtiDeviceMCT410::operator=( const CtiDeviceMCT410 &aRef )
 }
 
 
-bool CtiDeviceMCT410::initCommandStore( )
+CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 {
-    bool failed = false;
-
     CtiDLCCommandStore cs;
+    DLCCommandSet s;
 
     cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair( (int)MCT410_FuncReadMReadPos,
                              (int)MCT410_FuncReadMReadLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair( (int)MCT410_FuncReadMReadPos,
                              (int)MCT410_FuncReadMReadLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd      = CtiProtocolEmetcon::Scan_Integrity;
     cs._io       = IO_FCT_READ;
     cs._funcLen  = make_pair( (int)MCT410_FuncReadDemandPos,
                               (int)MCT410_FuncReadDemandLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
+
+    cs._cmd      = CtiProtocolEmetcon::Scan_LoadProfile;
+    cs._io       = IO_FCT_READ;
+    cs._funcLen  = make_pair(0, 0);
+    s.insert( cs );
 
     cs._cmd      = CtiProtocolEmetcon::GetValue_Demand;
     cs._io       = IO_FCT_READ;
     cs._funcLen  = make_pair( (int)MCT410_FuncReadDemandPos,
                               (int)MCT410_FuncReadDemandLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd      = CtiProtocolEmetcon::GetValue_PeakDemand;
     cs._io       = IO_FCT_READ;
     cs._funcLen  = make_pair( (int)MCT410_FuncReadPeakDemandPos,
                               (int)MCT410_FuncReadPeakDemandLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd      = CtiProtocolEmetcon::GetValue_Voltage;
     cs._io       = IO_FCT_READ;
     cs._funcLen  = make_pair( (int)MCT410_FuncReadVoltagePos,
                               (int)MCT410_FuncReadVoltageLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd      = CtiProtocolEmetcon::GetValue_Outage;
     cs._io       = IO_FCT_READ;
     cs._funcLen  = make_pair( (int)MCT410_FuncReadOutagePos,
                               (int)MCT410_FuncReadOutageLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_Internal;
     cs._io      = IO_READ;
     cs._funcLen = make_pair( (int)MCT410_StatusLen,
                              (int)MCT410_StatusPos );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair( (int)MCT410_FuncReadLPStatusPos,
                              (int)MCT410_FuncReadLPStatusLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
     cs._io      = IO_WRITE;
     cs._funcLen = make_pair( 0, 0 );  //  filled in later
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutConfig_TSync;
     cs._io      = IO_FCT_WRITE;
     cs._funcLen = make_pair( (int)MCT410_FuncWriteTSyncPos,
                              (int)MCT410_FuncWriteTSyncLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_TSync;
     cs._io      = IO_READ;
     cs._funcLen = make_pair( (int)MCT410_LastTSyncPos,
                              (int)MCT410_LastTSyncLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Time;
     cs._io      = IO_READ;
     cs._funcLen = make_pair( (int)MCT410_RTCPos,
                              (int)MCT410_RTCLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_DemandInterval;
-    cs._io      = IO_WRITE;
-    cs._funcLen = make_pair( (int)MCT410_DemandIntervalPos,
-                             (int)MCT410_DemandIntervalLen );
-    _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Intervals;
+    cs._io      = IO_FCT_WRITE;
+    cs._funcLen = make_pair((int)MCT410_FuncWriteIntervalsPos,
+                            (int)MCT410_FuncWriteIntervalsLen);
+    s.insert(cs);
 
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_DemandInterval;
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_Intervals;
     cs._io      = IO_READ;
-    cs._funcLen = make_pair((int)MCT410_DemandIntervalPos,
-                            (int)MCT410_DemandIntervalLen);
-    _commandStore.insert( cs );
-
-    cs._cmd     = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;
-    cs._io      = IO_WRITE;
-    cs._funcLen = make_pair((int)MCT_Function_LPInt, 0);
-    _commandStore.insert( cs );
-
-    cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
-    cs._io      = IO_READ;
-    cs._funcLen = make_pair((int)MCT410_LPIntervalPos,
-                            (int)MCT410_LPIntervalLen);
-    _commandStore.insert( cs );
+    cs._funcLen = make_pair((int)MCT410_IntervalsPos,
+                            (int)MCT410_IntervalsLen);
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::GetValue_PFCount;
     cs._io      = IO_READ;
     cs._funcLen = make_pair( (int)MCT410_PowerfailCountPos,
                              (int)MCT410_PowerfailCountLen );
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutValue_ResetPFCount;
     cs._io      = IO_WRITE;
     cs._funcLen = make_pair((int)MCT4XX_CommandPowerfailReset, 0);
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_Reset;
     cs._io      = IO_WRITE;
     cs._funcLen = make_pair((int)MCT4XX_CommandReset, 0);
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeOne;
     cs._io      = IO_WRITE;
     cs._funcLen = make_pair((int)MCT4XX_FreezeOne, 0);
-    _commandStore.insert( cs );
+    s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::PutStatus_FreezeTwo;
     cs._io      = IO_WRITE;
     cs._funcLen = make_pair((int)MCT4XX_FreezeTwo, 0);
-    _commandStore.insert( cs );
+    s.insert(cs);
 
-    return failed;
+    return s;
 }
+
+
+CtiDeviceMCT410::QualityMap CtiDeviceMCT410::initErrorQualities( void )
+{
+    QualityMap m;
+
+    //  Meter Communications Problem
+    m.insert(make_pair(0xFFFFFFFF, make_pair(InvalidQuality, 0)));
+    m.insert(make_pair(0xFFFFFFFE, make_pair(InvalidQuality, EC_MeterReading  |
+                                                             EC_DemandReading |
+                                                             EC_LoadProfile)));
+
+    //  No Data Yet Available
+    m.insert(make_pair(0xFFFFFFFD, make_pair(InvalidQuality, EC_TOUFrozenDemand)));
+    m.insert(make_pair(0xFFFFFFFC, make_pair(InvalidQuality, EC_MeterReading    |
+                                                             EC_DemandReading   |
+                                                             EC_TOUDemand       |
+                                                             EC_TOUFrozenDemand |
+                                                             EC_LoadProfile)));
+
+    //  Data not available for interval
+    m.insert(make_pair(0xFFFFFFFB, make_pair(InvalidQuality, 0)));
+    m.insert(make_pair(0xFFFFFFFA, make_pair(InvalidQuality, EC_LoadProfile)));
+
+    //  Device Filler
+    m.insert(make_pair(0xFFFFFFF9, make_pair(DeviceFillerQuality, 0)));
+    m.insert(make_pair(0xFFFFFFF8, make_pair(DeviceFillerQuality, EC_LoadProfile)));
+
+    //  Power failure occurred during interval
+    m.insert(make_pair(0xFFFFFFF7, make_pair(PowerfailQuality, 0)));
+    m.insert(make_pair(0xFFFFFFF6, make_pair(PowerfailQuality, EC_LoadProfile)));
+
+    //  Power restored in this interval
+    m.insert(make_pair(0xFFFFFFF5, make_pair(PartialIntervalQuality, 0)));
+    m.insert(make_pair(0xFFFFFFF4, make_pair(PartialIntervalQuality, EC_LoadProfile)));
+
+    //  Overflow
+    m.insert(make_pair(0xFFFFFFE1, make_pair(OverflowQuality, EC_TOUFrozenDemand)));
+    m.insert(make_pair(0xFFFFFFE0, make_pair(OverflowQuality, EC_DemandReading   |
+                                                              EC_TOUDemand       |
+                                                              EC_TOUFrozenDemand |
+                                                              EC_LoadProfile)));
+
+    return m;
+}
+
 
 
 bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
     bool found = false;
-
+    /*
     if( _commandStore.empty( ) )  // Must initialize!
     {
         CtiDeviceMCT410::initCommandStore( );
     }
-
+    */
     DLCCommandSet::iterator itr = _commandStore.find( CtiDLCCommandStore( cmd ) );
 
     if( itr != _commandStore.end( ) )
@@ -219,84 +271,162 @@ bool CtiDeviceMCT410::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 }
 
 
-//  eventually make this like the 318 - we need to add voltage LP as well
 ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
 {
-    RWTime Now, blockStart, plannedLPTime, panicLPTime;
-    unsigned long nextTime, midnightOffset;
-    int lpBlockSize, lpDemandRate, lpMaxBlocks;
+    RWTime        Now;
+    unsigned long next_time, planned_time;
+    int           demand_rate, block_size;
 
-    //  if we're not collecting load profile, don't scan
-    if( !getLoadProfile().isChannelValid(0) )
-        return (_nextLPScanTime = YUKONEOT);
+    next_time = YUKONEOT;
 
-    if( !_lpIntervalSent )
+    demand_rate = getLoadProfile().getLoadProfileDemandRate();
+    block_size  = demand_rate * 6;
+    next_time   = YUKONEOT;
+
+    if( !_intervalsSent )
     {
         //  send load profile interval on the next 5 minute boundary
-        nextTime = Now.seconds() + 300;
-        if( nextTime % 300 )
-        {
-            nextTime -= nextTime % 300;
-        }
+        next_time  = (Now.seconds() - MCT_LPWindow) + 300;
+
+        next_time -= next_time % 300;
     }
     else
     {
-        //  the only way for this to have happened is if they haven't been initialized yet...
-        //    both were set to Now() at the constructor
-        if( _lastLPRequestAttempt == _lastLPRequestBlockStart )
+        for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-            //  so we haven't talked to it yet
-            _lastLPRequestAttempt = Now;
-            _lastLPRequestBlockStart = (unsigned long)86400;
-        }
+            CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType);
 
-        //  we read 6 intervals at a time
-        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
-        lpBlockSize  = lpDemandRate * 6;
+            //  if we're not collecting load profile, or there's no point defined, don't scan
+            if( !getLoadProfile().isChannelValid(i) || pPoint == NULL )
+            {
+                _lp_info[i].current_schedule = YUKONEOT;
 
-        //  make sure we only request one day's data
-        if( lpDemandRate > 900 )
-            lpMaxBlocks = (86400 / lpDemandRate) / 6;
-        else
-            lpMaxBlocks = 16;
+                continue;
+            }
 
+            //  uninitialized - get the readings from the DB
+            if( !_lp_info[i].archived_reading )
+            {
+                //  so we haven't talked to it yet
+                _lp_info[i].archived_reading = 86400;
+                _lp_info[i].current_request  = 86400;
 
-        blockStart   = getLastLPTime();
+                {
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                    RWDBConnection conn = getConnection();
 
-        //  figure out seconds from midnight
-        midnightOffset  = blockStart.hour() * 3600;
-        midnightOffset += blockStart.minute() * 60;
-        midnightOffset += blockStart.second();
+                    RWCString sql       = "select max(timestamp) as maxtimestamp from rawpointhistory where pointid=" + CtiNumStr(pPoint->getPointID());
+                    RWDBResult results  = conn.executeSql( sql );
+                    RWDBTable  resTable = results.table();
 
-        //  make sure we're actually at the beginning of a block
-        blockStart -= midnightOffset % lpBlockSize;
+                    if(!results.isValid())
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
+                        dout << sql << endl << endl;
+                    }
 
-        //  we can only request in blocks, so we plan to request LP data
-        //    after one block (6 intervals) has passed
-        plannedLPTime  = blockStart + lpBlockSize;
-        //  also make sure we allow time for it to move out of the memory we're requesting
-        plannedLPTime += LPBlockEvacuationTime;
+                    RWDBReader rdr = resTable.reader();
 
-        //  if we're still on schedule for our normal request
-        //    (and we haven't already made our request for this block)
-        if( _lastLPRequestAttempt < plannedLPTime &&
-            _lastLPRequestBlockStart < blockStart )
-        {
-            nextTime = plannedLPTime.seconds();
-        }
-        //  we're overdue
-        else
-        {
-            unsigned int overdueLPRetryRate = getLPRetryRate(lpDemandRate);
+                    if(rdr() && rdr.isValid())
+                    {
+                        RWTime tmp;
 
-            nextTime  = (Now.seconds() - LPBlockEvacuationTime) + overdueLPRetryRate;
-            nextTime -= (Now.seconds() - LPBlockEvacuationTime) % overdueLPRetryRate;
+                        rdr >> tmp;
 
-            nextTime += LPBlockEvacuationTime;
+                        if( tmp.seconds() != 0 )  //  make sure it's not zero - causes problems with time zones
+                        {
+                            _lp_info[i].archived_reading = tmp.seconds();
+                        }
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+
+            //  basically, we plan to request again after a whole block has been recorded...
+            //    then we add on a little bit to make sure the MCT is out of the memory
+            planned_time  = _lp_info[i].archived_reading + block_size;
+            planned_time -= planned_time % block_size;  //  make double sure we're block-aligned
+            planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
+
+            /*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "planned_time = " << planned_time << endl;
+                dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
+                dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
+            }
+            */
+
+            //  if we're still on schedule for our normal request - and we haven't already made the request
+            if( (_lp_info[i].current_schedule != planned_time) &&
+                (planned_time > (Now.seconds() - MCT_LPWindow)) )
+            {
+                _lp_info[i].current_schedule = planned_time;
+            }
+            //  we're overdue
+            else
+            {
+                unsigned int overdue_rate = getLPRetryRate(demand_rate);
+
+                _lp_info[i].current_schedule  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
+                _lp_info[i].current_schedule -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
+
+                _lp_info[i].current_schedule += LPBlockEvacuationTime;
+            }
+
+            if( next_time > _lp_info[i].current_schedule )
+            {
+                next_time = _lp_info[i].current_schedule;
+            }
+
+            /*
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "planned_time = " << planned_time << endl;
+                dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
+                dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
+                dout << "next_time = " << next_time << endl;
+            }
+            */
         }
     }
 
-    return (_nextLPScanTime = nextTime);
+#if 0
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
+    }
+#endif
+
+    return (_nextLPScanTime = next_time);
+}
+
+
+void CtiDeviceMCT410::sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+{
+    // Load all the other stuff that is needed
+    OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
+    OutMessage->Port      = getPortID();
+    OutMessage->Remote    = getAddress();
+    // 082002 CGP // OutMessage->RouteID   = getRouteID();
+    OutMessage->TimeOut   = 2;
+    OutMessage->Sequence  = CtiProtocolEmetcon::PutConfig_Intervals;     // Helps us figure it out later!
+    OutMessage->Retry     = 2;
+
+    // Tell the porter side to complete the assembly of the message.
+    OutMessage->Request.BuildIt = TRUE;
+    strncpy(OutMessage->Request.CommandStr, "putconfig emetcon intervals", COMMAND_STR_SIZE );
+
+    outList.insert(OutMessage);
+    OutMessage = NULL;
 }
 
 
@@ -304,82 +434,79 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
 {
     int nRet = NoError;
 
-    int           lpDemandRate;
-    unsigned int  lpBlockAddress;
-    unsigned long lpBlocksToCollect,
-                  lpMaxBlocks,
-                  lpBlockSize,
-                  lpMidnightOffset;
-    RWTime        lpBlockStartTime;
-    RWTime        Now;
-    RWCString     lpDescriptorString;
+    RWTime         Now;
+    unsigned int   demand_rate, block_size;
+    int            channel, block;
+    string         descriptor;
+    OUTMESS       *tmpOutMess;
 
-    lpBlockStartTime = getLastLPTime();
-    lpDemandRate     = getLoadProfile().getLoadProfileDemandRate();
+    demand_rate = getLoadProfile().getLoadProfileDemandRate();
+    block_size  = demand_rate * 6;
 
-    //  we can read 6 intervals at a time
-    lpBlockSize = lpDemandRate * 6;
-
-    if( !_lpIntervalSent )
+    if( !_intervalsSent )
     {
-        sendLPInterval( OutMessage, outList );
+        sendIntervals(OutMessage, outList);
+
+        _intervalsSent = true;
     }
     else
     {
-        if( useScanFlags() )
+        for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
-            //  make sure we only request one day's data
-            if( lpDemandRate > 900 )
-                lpMaxBlocks = (86400 / lpDemandRate) / 6;
-            else
-                lpMaxBlocks = 16;
-
-            lpBlocksToCollect = (Now.seconds() - lpBlockStartTime.seconds()) / lpBlockSize;
-
-            //  make sure we only ask for what remains in memory
-            if( lpBlocksToCollect > (lpMaxBlocks - 1) )
+            if( useScanFlags() )
             {
-                //  start with everything but the current block
-                lpBlockStartTime = Now.seconds() - (lpBlockSize * (lpMaxBlocks - 1));
-            }
-
-            //  figure out seconds from midnight UTC
-            lpMidnightOffset  = lpBlockStartTime.seconds() % 86400;
-
-            //  make sure our reported "start time" is at the beginning of a block
-            lpBlockStartTime -= lpMidnightOffset % lpBlockSize;
-            lpMidnightOffset -= lpMidnightOffset % lpBlockSize;
-
-            if( getNextLPScanTime() <= Now )
-            {
-                _lastLPRequestBlockStart = lpBlockStartTime;
-                _lastLPRequestAttempt    = Now;
-
-                //  adjust for wraparound
-                lpBlockAddress = lpMidnightOffset % (lpBlockSize * lpMaxBlocks);
-
-                lpBlockAddress /= lpBlockSize;
-
-                lpDescriptorString = RWCString(" block ") + CtiNumStr(lpBlockAddress+1);
-
-                strncat( OutMessage->Request.CommandStr,
-                         lpDescriptorString.data(),
-                         sizeof(OutMessage->Request.CommandStr) - strlen(OutMessage->Request.CommandStr));
+                if( _lp_info[i].current_schedule <= Now )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "\"" << OutMessage->Request.CommandStr << "\"" << endl;
+                    tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
+
+                    _lp_info[i].current_request  = _lp_info[i].archived_reading;
+
+                    //  make sure we only ask for what the function reads can access
+                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(MCT4XX_LPRecentBlocks * block_size) )
+                    {
+                        //  go back as far as we can
+                        _lp_info[i].current_request  = Now.seconds();
+                        _lp_info[i].current_request -= MCT4XX_LPRecentBlocks * block_size;
+                    }
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Now.seconds() = " << Now.seconds() << endl;
+                        dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
+                        dout << "MCT4XX_LPRecentBlocks * block_size = " << MCT4XX_LPRecentBlocks * block_size << endl;
+                        dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
+                    }
+
+                    //  make sure we're aligned (note - rwEpoch is an even multiple of 86400, so no worries)
+                    _lp_info[i].current_request -= _lp_info[i].current_request % block_size;
+
+                    //  which block to grab?
+                    channel = i + 1;
+                    block   = (Now.seconds() - _lp_info[i].current_request) / block_size;
+
+                    descriptor = " channel " + CtiNumStr(channel) + " block " + CtiNumStr(block);
+
+                    strncat( tmpOutMess->Request.CommandStr,
+                             descriptor.data(),
+                             sizeof(tmpOutMess->Request.CommandStr) - strlen(tmpOutMess->Request.CommandStr));
+
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS  );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                    }
+
+                    outList.insert(tmpOutMess);
                 }
-
-                outList.insert(OutMessage);
-                OutMessage = NULL;
-            }
-            else
-            {
+                else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "LP scan too early." << endl;
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
             }
         }
@@ -398,22 +525,29 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
 bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
     bool retVal = false;
-    int lpBlockAddress;
+    int  address, block, channel;
 
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
+        dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
     }
 
-    if( lpBlockAddress = parse.getiValue("scan_loadprofile_block", 0) )
+    block   = parse.getiValue("scan_loadprofile_block",   0);
+    channel = parse.getiValue("scan_loadprofile_channel", 0);
+
+    if( block && channel && block <= MCT4XX_LPRecentBlocks && channel <= MCT4XX_LPChannels )
     {
-        lpBlockAddress--;  //  adjust to be a zero-based offset
+        channel--;
+        block--;    //  adjust to be a zero-based offset
 
-        lpBlockAddress += 0x50;
+        address  = 0x50 + (0x10 * channel);
+        address += block;
 
-        OutMessage->Buffer.BSt.Function = lpBlockAddress;
-        OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and a status byte to boot
+        OutMessage->Buffer.BSt.Function = address;
+        OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and the table pointer
         OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
 
         retVal = true;
@@ -422,8 +556,7 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
+            dout << RWTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
         }
 
         retVal = false;
@@ -540,85 +673,75 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-PointQuality_t CtiDeviceMCT410::getDataQuality( unsigned char *buf, int len )
+pair<unsigned long, PointQuality_t> CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
 {
-    PointQuality_t retval;
-
-    unsigned long errorcode = 0xffffffff;
+    PointQuality_t quality   = NormalQuality;
+    unsigned long  value     = 0,
+                   errorcode = 0xffffffff;
+    unsigned char  demandbits;
+    pair<unsigned long, PointQuality_t> retval;
 
     for( int i = 0; i < len; i++ )
     {
+        //  we're pulling the bytes in MSB-wise
         errorcode <<= 8;
-        errorcode  |= buf[i];
+        value     <<= 8;
+
+        if( vt == ValueType_KW && !i )
+        {
+            //  save these for use later
+            demandbits  = buf[i] & 0xc0;
+
+            //  if we fill in the demand bits in the error code, we can run it through
+            //    the same switch statement as anything else
+            errorcode  |= buf[i] | 0xc0;
+            value      |= buf[i] & 0x3f;
+        }
+        else if( vt == ValueType_Voltage && !i )
+        {
+            errorcode  |= buf[i] | 0x80;
+            value      |= buf[i] & 0x7f;
+        }
+        else
+        {
+            errorcode  |= buf[i];
+            value      |= buf[i];
+        }
     }
 
     //  i s'pose this could be a set sometime, eh?
-    switch( errorcode )
+    QualityMap::iterator q_itr = _errorQualities.find(errorcode);
+
+    if( q_itr != _errorQualities.end() )
     {
-        case 0xFFFFFFFF:  //  Meter Communications Problem
-        case 0xFFFFFFFE:  //  --
-        case 0xFFFFFFFD:  //  No Data Yet Available
-        case 0xFFFFFFFC:  //  --
-        case 0xFFFFFFFB:  //  Data not available for interval
-        case 0xFFFFFFFA:  //  --
-        {
-            retval = InvalidQuality;
-            break;
-        }
-        case 0xFFFFFFF9:  //  Device Filler
-        case 0xFFFFFFF8:  //  --
-        {
-            retval = DeviceFillerQuality;
-            break;
-        }
-        case 0xFFFFFFF7:  //  Power failure occurred during interval
-        case 0xFFFFFFF6:  //  --
-        {
-            retval = PowerfailQuality;
-            break;
-        }
-        case 0xFFFFFFF5:  //  Power restored in this interval
-        case 0xFFFFFFF4:  //  --
-        {
-            retval = PartialIntervalQuality;
-            break;
-        }
-        case 0xFFFFFFE1:  //  Overflow
-        case 0xFFFFFFE0:  //  --
-        {
-            retval = OverflowQuality;
-            break;
-        }
-        default:
-        case 0x00:
-        {
-            retval = NormalQuality;
-            break;
-        }
-    }
-
-    return retval;
-}
-
-
-unsigned long CtiDeviceMCT410::getDataValue( unsigned char *buf, int len )
-{
-    unsigned long val = 0;
-
-    if( getDataQuality(buf, len) == NormalQuality )
-    {
-        for( int i = 0; i < len; i++ )
-        {
-            val <<= 8;
-            val  |= buf[i];
-        }
+        quality = q_itr->second.first;
+        value   = 0;
     }
     else
     {
-        val = 0;
+        //  only take the demand bits into account if everything else is cool
+        switch( demandbits )
+        {
+            //  time was adjusted in this interval
+            case 0xc0:  quality = PartialIntervalQuality;    break;
+            //  power was restored in this interval
+            case 0x80:  quality = PartialIntervalQuality;    break;
+            //  power failed in this interval
+            case 0x40:  quality = PowerfailQuality;          break;
+        }
+
+        if( vt == ValueType_Voltage &&
+            value > 0x7fff )
+        {
+            value = 0;
+            quality = AbnormalQuality;
+        }
     }
 
-    return val;
+    retval.first  = value;
+    retval.second = quality;
+
+    return retval;
 }
 
 
@@ -677,9 +800,9 @@ INT CtiDeviceMCT410::executeGetValueLoadProfile( CtiRequestMsg              *pRe
         request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
 
         //  this is the number of seconds from the current pointer
-        relative_time = request_time - _llpInterestTime;
+        relative_time = request_time - _llpInterest.time;
 
-        if( (request_channel == _llpInterestChannel)  &&  //  correct channel
+        if( (request_channel == _llpInterest.channel) &&  //  correct channel
             (relative_time < (8 * block_len))         &&  //  within 8 blocks
             !(relative_time % block_len) )                //  aligned
         {
@@ -687,7 +810,7 @@ INT CtiDeviceMCT410::executeGetValueLoadProfile( CtiRequestMsg              *pRe
             function  = 0x40;
             function += relative_time / block_len;
 
-            _llpInterestOffset = relative_time;
+            _llpInterest.offset = relative_time;
         }
         else
         {
@@ -699,9 +822,9 @@ INT CtiDeviceMCT410::executeGetValueLoadProfile( CtiRequestMsg              *pRe
 
             if( interest_om )
             {
-                _llpInterestTime    = request_time;
-                _llpInterestOffset  = 0;
-                _llpInterestChannel = request_channel;
+                _llpInterest.time    = request_time;
+                _llpInterest.offset  = 0;
+                _llpInterest.channel = request_channel;
 
                 interest_om->Sequence = CtiProtocolEmetcon::PutConfig_LoadProfileInterest;
 
@@ -797,27 +920,20 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
 
-        pulses  = getDataValue  (DSt->Message, 3);
-        quality = getDataQuality(DSt->Message, 3);
+        data_pair dp = getData(DSt->Message, 3, ValueType_Accumulator);
 
         // handle accumulator data here
         if( pPoint != NULL)
         {
             // 24 bit pulse value
-            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM( pulses );
+            Value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(dp.first);
+            quality = dp.second;
             RWTime pointTime;
-
-            if( quality == NormalQuality )
-            {
-                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            }
-            else
-            {
-                resultString = getName() + " / " + pPoint->getName() + " = (invalid data)";
-            }
 
             if( quality != InvalidQuality )
             {
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
 
                 if(pData != NULL)
@@ -830,12 +946,14 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
             }
             else
             {
-                ReturnMsg->setResultString("Invalid quality");
+                resultString = getName() + " / " + pPoint->getName() + " = (invalid data)";
+
+                ReturnMsg->setResultString(resultString);
             }
         }
         else
         {
-            resultString = getName() + " / KYZ 1 = " + CtiNumStr(pulses) + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / KYZ 1 = " + CtiNumStr(dp.first) + "  --  POINT UNDEFINED IN DB";
             ReturnMsg->setResultString(resultString);
         }
 
@@ -849,6 +967,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     int             status = NORMAL;
+    data_pair       dp;
     double          Value;
     PointQuality_t  quality;
     RWCString resultString;
@@ -865,8 +984,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-
-    resetScanPending();
+    resetScanPending();  //  needed for dev_single...  sets this in initiateIntegrityScan
+    setMCTScanPending(ScanRateIntegrity, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -882,11 +1001,11 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        Value   = getDataValue  (DSt->Message, 2);
-        quality = getDataQuality(DSt->Message, 2);
+        dp = getData(DSt->Message, 2, ValueType_KW);
 
         //  turn raw pulses into a demand reading
-        Value *= DOUBLE(3600 / getDemandInterval());
+        Value   = dp.first * double(3600 / getDemandInterval());
+        quality = dp.second;
 
         // look for first defined DEMAND accumulator
         pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
@@ -916,8 +1035,10 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             ReturnMsg->setResultString(resultString);
         }
 
-        Value   = getDataValue  (DSt->Message + 2, 2);
-        quality = getDataQuality(DSt->Message + 2, 2);
+        dp = getData(DSt->Message + 2, 2, ValueType_Voltage);
+
+        Value   = dp.first;
+        quality = dp.second;
 
         pPoint = getDevicePointOffsetTypeEqual( MCT4XX_VoltageOffset, DemandAccumulatorPointType );
 
@@ -949,8 +1070,10 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
         }
 
-        Value   = getDataValue  (DSt->Message + 4, 2);
-        quality = getDataQuality(DSt->Message + 4, 2);
+        dp = getData(DSt->Message + 4, 2, ValueType_Raw);
+
+        Value   = dp.first;
+        quality = dp.second;
 
         pPoint = getDevicePointOffsetTypeEqual( MCT_PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType );
 
@@ -992,6 +1115,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
     double          Value;
     unsigned long   timeOfPeak;
     PointQuality_t  quality;
+    data_pair       dp;
     RWCString resultString;
     RWTime tmpTime;
 
@@ -1024,8 +1148,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        Value   = getDataValue  (DSt->Message, 2);
-        quality = getDataQuality(DSt->Message, 2);
+        dp = getData(DSt->Message, 2, ValueType_KW);
+
+        Value   = dp.first;
+        quality = dp.second;
 
         timeOfPeak = DSt->Message[2] << 24 |
                      DSt->Message[3] << 16 |
@@ -1065,8 +1191,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             ReturnMsg->setResultString(resultString);
         }
 
-        Value   = getDataValue  (DSt->Message + 6, 3);
-        quality = getDataQuality(DSt->Message + 6, 3);
+        dp = getData(DSt->Message + 6, 3, ValueType_Accumulator);
+
+        Value   = dp.first;
+        quality = dp.second;
 
         pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
 
@@ -1110,6 +1238,7 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
     PointQuality_t quality;
+    data_pair      dp;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1133,8 +1262,9 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        maxVolts = getDataValue  (DSt->Message, 2);
-        quality  = getDataQuality(DSt->Message, 2);
+        dp = getData(DSt->Message, 2, ValueType_Voltage);
+        maxVolts = dp.first;
+        quality  = dp.second;
 
         tmpTime = DSt->Message[2] << 24 |
                   DSt->Message[3] << 16 |
@@ -1143,8 +1273,9 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         maxTime = RWTime(tmpTime + rwEpoch);
 
-        minVolts = getDataValue  (DSt->Message + 6, 2);
-        quality  = getDataQuality(DSt->Message + 6, 2);
+        dp = getData(DSt->Message + 6, 2, ValueType_Voltage);
+        minVolts = dp.first;
+        quality  = dp.second;
 
         tmpTime = DSt->Message[8]  << 24 |
                   DSt->Message[9]  << 16 |
@@ -1289,6 +1420,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
     int       interval_len, block_len, function, channel,
               badData;
     double    Value;
+    data_pair dp;
     unsigned long timeStamp, pulses, decode_time;
     PointQuality_t quality;
 
@@ -1314,8 +1446,8 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
         interval_len = getLoadProfile().getLoadProfileDemandRate();
         block_len    = interval_len * 6;
 
-        channel      = _llpInterestChannel;
-        decode_time  = _llpInterestTime + _llpInterestOffset;
+        channel      = _llpInterest.channel;
+        decode_time  = _llpInterest.time + _llpInterest.offset;
 
         pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
 
@@ -1326,42 +1458,38 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             //  but we want interval *ending* times, so add on one more interval
             timeStamp += interval_len;
 
-            pulses  = getDataValue  (DSt->Message + (i * 2) + 1, 2);
-            quality = getDataQuality(DSt->Message + (i * 2) + 1, 2);
+            dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Voltage);
+            pulses  = dp.first;
+            quality = dp.second;
 
-            if( quality == NormalQuality )
+            Value = pulses;
+
+            if( channel != MCT4XX_LPVoltageChannel )
             {
-                Value = pulses * (3600 / interval_len);
+                Value *= 3600 / interval_len;
             }
 
             if( pPoint != NULL )
             {
-                Value = pPoint->computeValueForUOM( Value );
-
-                if( quality == NormalQuality )
-                {
-                    valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                }
-                else
-                {
-                    valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = (invalid data)";
-                }
-
                 if( quality != InvalidQuality )
                 {
+                    Value = pPoint->computeValueForUOM( Value );
+
+                    valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
                                                        Value,
                                                        quality,
                                                        DemandAccumulatorPointType,
                                                        valReport);
 
-                    pData->setTime( timeStamp );
+                    pData->setTime(timeStamp);
 
-                    ReturnMsg->insert( pData );
+                    ReturnMsg->insert(pData);
                 }
                 else
                 {
-                    resultString += valReport + "\n";
+                    resultString += getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = (invalid data)\n";
                 }
             }
             else
@@ -1393,17 +1521,18 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    RWCString valReport;
-    int       intervalOffset,
-              lpDemandRate;
-    bool      badData = false;
-    double    Value;
-    unsigned long timeStamp, pulses;
-    PointQuality_t pointQuality;
+    string         val_report;
+    int            channel, block, interval_len;
+    double         value;
+    unsigned long  timestamp, pulses;
+    data_pair      dp;
+    PointQuality_t quality;
 
-    CtiPointNumeric *pPoint    = NULL;
-    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData     = NULL;
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    CtiPointNumeric *point   = 0;
+    CtiReturnMsg    *ret_msg = 0;  // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pdata   = 0;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1418,7 +1547,7 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
@@ -1426,75 +1555,101 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             return MEMORY;
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ret_msg->setUserMessageId(InMessage->Return.UserID);
 
-
-        lpDemandRate = getLoadProfile().getLoadProfileDemandRate();
-
-        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( 1 + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
-
-        if( pPoint != NULL )
+        if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
+            (block   = parse.getiValue("scan_loadprofile_block",   0)) )
         {
-            for( intervalOffset = 0; intervalOffset < 6; intervalOffset++ )
-            {
-                //  error code in the top 5 bits - parsed by checkLoadProfileQuality
-                pulses   = DSt->Message[intervalOffset*2 + 1];
-                pulses <<= 8;
-                pulses  |= DSt->Message[intervalOffset*2 + 2];
+            interval_len = getLoadProfile().getLoadProfileDemandRate();
 
-                if( badData )  //  load survey was halted - the rest of the data is bad
+            point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + OFFSET_LOADPROFILE_OFFSET, DemandAccumulatorPointType );
+
+            if( point )
+            {
+                //  this is where the block started...
+                timestamp  = TimeNow.seconds();
+                timestamp -= interval_len * 6 * block;
+                timestamp -= timestamp % (interval_len * 6);
+
+                if( timestamp == _lp_info[channel - 1].current_request )
                 {
-                    pointQuality = DeviceFillerQuality;
-                    Value = 0.0;
-                }
-                else if( !checkLoadProfileQuality( pulses, pointQuality, badData ) )
-                {
-                    //  if no fatal problems with the quality,
-                    //    adjust for the demand interval
-                    Value = pulses * (3600 / lpDemandRate);
-                    //    and the UOM
-                    Value = pPoint->computeValueForUOM( Value );
+                    for( int offset = 5; offset >= 0; offset-- )
+                    {
+                        if( channel == MCT4XX_LPVoltageChannel )
+                        {
+                            dp = getData(DSt->Message + offset*2 + 1, 2, ValueType_Voltage);
+
+                            value   = dp.first;
+                            quality = dp.second;
+                        }
+                        else
+                        {
+                            dp = getData(DSt->Message + offset*2 + 1, 2, ValueType_KW);
+
+                            //  adjust for the demand interval
+                            value   = dp.first * 3600 / interval_len;
+                            quality = dp.second;
+                        }
+
+                        //  compute for the UOM
+                        value = point->computeValueForUOM( value );
+
+                        pdata = CTIDBG_new CtiPointDataMsg(point->getPointID(),
+                                                           value,
+                                                           quality,
+                                                           DemandAccumulatorPointType,
+                                                           "",
+                                                           TAG_POINT_LOAD_PROFILE_DATA );
+
+                        if( pdata )
+                        {
+                            //  the data goes from latest to earliest...  it's kind of backwards
+                            pdata->setTime(timestamp + interval_len * (6 - offset));
+
+                            ret_msg->insert(pdata);
+                        }
+                    }
+
+                    //  insert a point data message for TDC and the like
+                    //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
+                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(value,
+                                                                                          ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
+                    pdata = CTIDBG_new CtiPointDataMsg(point->getPointID(),
+                                                       value,
+                                                       quality,
+                                                       DemandAccumulatorPointType,
+                                                       val_report.data() );
+                    pdata->setTime(timestamp + interval_len * 6);
+                    setLastLPTime (timestamp + interval_len * 6);
+                    ret_msg->insert( pdata );
+
+                    _lp_info[channel - 1].archived_reading = timestamp + interval_len * 6;
                 }
                 else
                 {
-                    Value = 0.0;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << RWTime(timestamp) << "; current_request=" << RWTime(_lp_info[channel - 1].current_request) << endl;
+                        dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+                    }
                 }
-
-                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                            Value,
-                                            pointQuality,
-                                            DemandAccumulatorPointType,
-                                            "",
-                                            TAG_POINT_LOAD_PROFILE_DATA );
-
-                //  this is where the block started...
-                timeStamp  = _lastLPRequestBlockStart.seconds() + (lpDemandRate * intervalOffset);
-                //  but we want interval *ending* times, so add on one more interval
-                timeStamp += lpDemandRate;
-                pData->setTime( timeStamp );
-
-                ReturnMsg->insert( pData );
             }
-
-            //  insert a point data message for TDC and the like
-            //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
-            valReport = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                  ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                        Value,
-                                        pointQuality,
-                                        DemandAccumulatorPointType,
-                                        valReport );
-            pData->setTime( timeStamp );
-            setLastLPTime( timeStamp );
-            ReturnMsg->insert( pData );
+            else
+            {
+                ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
+            }
         }
         else
         {
-            ReturnMsg->setResultString("No load profile point defined for '" + getName() + "'");
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ret_msg, vgList, retList );
     }
 
     return status;
