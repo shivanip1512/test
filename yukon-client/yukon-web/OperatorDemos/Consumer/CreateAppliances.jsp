@@ -71,7 +71,7 @@
                     <td width="200"> 
                       <select name="Category">
 <%
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
 	for (int i = 0; i < appCatList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = appCatList.getStarsSelectionListEntry(i);

@@ -1,4 +1,23 @@
 <%@ include file="StarsHeader.jsp" %>
+<%
+	String referrer = request.getParameter("REFERRER");
+	
+	String progNoStr = request.getParameter("prog");
+	int progNo = Integer.parseInt( progNoStr );
+	
+	StarsLMProgram program = programs.getStarsLMProgram( progNo );
+	
+	StarsApplianceCategory category = null;
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory appCat = categories.getStarsApplianceCategory(i);
+		if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
+			category = appCat;
+			break;
+		}
+	}
+	
+	ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
+%>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -88,8 +107,9 @@
                   <tr> 
                     <td width="107" height="92"> 
                       
-                    <div align="center"><img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
-                        <br>
+                    <div align="center">
+						<img src="../<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
+                        <span class="TableCell"><%= program.getProgramName() %></span><br>
                       </div>
                     </td>
                     <td width="343" valign="top" height="92"> 

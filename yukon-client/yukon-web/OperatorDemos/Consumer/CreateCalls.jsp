@@ -124,7 +124,7 @@ function getCurrentDateFormatted() {
                           <td width="50%"> 
                             <select name="CallType">
 <%
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
 	for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(i);

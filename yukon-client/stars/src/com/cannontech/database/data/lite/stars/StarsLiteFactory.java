@@ -396,26 +396,28 @@ public class StarsLiteFactory {
 	public static StarsLMControlHistory createStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
         
-        int startIndex = 0;
-        if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
-        	startIndex = liteCtrlHist.getCurrentDayStartIndex();
-        else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
-        	startIndex = liteCtrlHist.getCurrentWeekStartIndex();
-        else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
-        	startIndex = liteCtrlHist.getCurrentMonthStartIndex();
-        else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
-        	startIndex = liteCtrlHist.getCurrentYearStartIndex();
-        
-        for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
-        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
-        	
-            ControlHistory hist = new ControlHistory();
-            hist.setControlType( lmCtrlHist.getControlType() );
-            hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
-            starsCtrlHist.addControlHistory( hist );
+        if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
+	        int startIndex = 0;
+	        if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentDayStartIndex();
+	        else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentWeekStartIndex();
+	        else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentMonthStartIndex();
+	        else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
+	        	startIndex = liteCtrlHist.getCurrentYearStartIndex();
+	        
+	        for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
+	        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+	        	
+	            ControlHistory hist = new ControlHistory();
+	            hist.setControlType( lmCtrlHist.getControlType() );
+	            hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
+	            hist.setControlDuration( (int) lmCtrlHist.getControlDuration() );
+	            starsCtrlHist.addControlHistory( hist );
+	        }
         }
-
+        
         if (getSummary) {
             ControlSummary summary = new ControlSummary();
             int dailyTime = 0;

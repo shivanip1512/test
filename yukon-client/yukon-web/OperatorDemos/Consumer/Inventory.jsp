@@ -32,6 +32,13 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
+<script language="JavaScript">
+function sendCommand(cmd) {
+	var form = document.ctrlForm;
+	form.action.value = cmd;
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -89,7 +96,7 @@
                 <td width="300" valign="top" bgcolor="#FFFFFF"> 
                   <table width="300" border="0" cellspacing="0" cellpadding="0">
                     <tr> 
-                      <form name="form3" method="get" action="">
+                      <form name="form1" method="get" action="">
                         <td valign="top"><span class="MainHeader"><b>DEVICE</b></span> 
                           <hr>
                           <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
@@ -148,7 +155,7 @@
                               <td width="200"> 
                                 <select name="Status">
                               <%
-	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_DEVICESTATUS );
 	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
@@ -169,12 +176,14 @@
                                 <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell"><%= hardware.getNotes() %></textarea>
                               </td>
                             </tr>
+<!--
                             <tr>
                               <td width="100" class="TableCell">&nbsp;</td>
                               <td width="200">
                                 <input type="button" name="Submit5" value="Config">
                               </td>
                             </tr>
+-->
                           </table>
                         </td>
                       </form>
@@ -182,19 +191,26 @@
                   </table><br>
                   <table width="305" border="0" cellspacing="0" cellpadding="0" height="114">
                     <tr> 
-                      <form name="form3" method="get" action="">
+                      <form name="ctrlForm" method="POST" action="/servlet/SOAPClient">
+					    <input type="hidden" name="action" value="">
+						<input type="hidden" name="REDIRECT" value="<%= request.getRequestURL().toString() %>">
+						<input type="hidden" name="REFERRER" value="<%= request.getRequestURL().toString() %>">
+						<input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
                         <td valign="top" align = "center"> 
                           <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
                             <tr>
                               <td>
                                 <table width="150" border="0" cellpadding = "3" cellspacing = "0" height="39" align = "center">
                                   <tr> 
-                                    <td width="35%" align = "center"> 
-                                      <input type="button" name="Submit4" value="In Service">
+                                    <td width="35%" align = "center">
+                                      <input type="button" name="EnableService" value="In Service" onclick="sendCommand(this.name)">
                                     </td>
                                     <td width="35%" align = "center"> 
-                                      <input type="button" name="Submit3" value="Out of Service">
+                                      <input type="button" name="DisableService" value="Out of Service" onclick="sendCommand(this.name)">
                                     </td>
+									<td width="30%" align = "center">
+									  <input type="button" name="Config" value="Config" onclick="sendCommand(this.name)">
+									</td>
                                   </tr>
                                 </table>
                               </td>
@@ -286,7 +302,7 @@
                               </tr>
 <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
-	for (int i = 0; i < hwHist.getStarsLMHardwareEventCount(); i++) {
+	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0; i--) {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
 							  <tr valign="top"> 

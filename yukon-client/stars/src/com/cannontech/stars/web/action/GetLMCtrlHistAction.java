@@ -67,48 +67,6 @@ public class GetLMCtrlHistAction implements ActionBase {
         return null;
     }
 
-    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
-        try {
-            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-            
-            StarsFailure failure = operation.getStarsFailure();
-            if (failure != null) return failure.getStatusCode();
-
-			StarsGetLMControlHistoryResponse response = operation.getStarsGetLMControlHistoryResponse();
-            if (response == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            
-            StarsLMControlHistory ctrlHist = response.getStarsLMControlHistory();
-            if (ctrlHist == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-			
-			// Update today's control history
-			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			StarsUser user = (StarsUser) session.getAttribute("USER");
-			StarsCustAccountInformation accountInfo = null;
-			
-			if (operator != null)
-				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
-			else
-				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
-				
-            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-            StarsGetLMControlHistory getCtrlHist = reqOper.getStarsGetLMControlHistory();
-            
-			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-			for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-				StarsLMProgram program = programs.getStarsLMProgram(i);
-				if (program.getGroupID() == getCtrlHist.getGroupID())
-					program.setStarsLMControlHistory( ctrlHist );
-			}
-            
-            return 0;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
-    }
-
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
@@ -146,5 +104,51 @@ public class GetLMCtrlHistAction implements ActionBase {
         }
 
         return null;
+    }
+
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
+        try {
+            StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
+            
+            StarsFailure failure = operation.getStarsFailure();
+            if (failure != null) return failure.getStatusCode();
+
+			StarsGetLMControlHistoryResponse response = operation.getStarsGetLMControlHistoryResponse();
+            if (response == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+            
+            StarsLMControlHistory ctrlHist = response.getStarsLMControlHistory();
+            if (ctrlHist == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+			
+			// Update control history
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			StarsUser user = (StarsUser) session.getAttribute("USER");
+			StarsCustAccountInformation accountInfo = null;
+			
+			if (operator != null)
+				accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+			else
+				accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+				
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+            StarsGetLMControlHistory getCtrlHist = reqOper.getStarsGetLMControlHistory();
+            
+			StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
+			for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+				StarsLMProgram program = programs.getStarsLMProgram(i);
+				if (program.getGroupID() == getCtrlHist.getGroupID()) {
+					if (ctrlHist.getControlHistoryCount() > 0)
+						program.getStarsLMControlHistory().setControlHistory( ctrlHist.getControlHistory() );
+					if (ctrlHist.getControlSummary() != null)
+						program.getStarsLMControlHistory().setControlSummary( ctrlHist.getControlSummary() );
+				}
+			}
+            
+            return 0;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
     }
 }

@@ -132,36 +132,15 @@ function changeProgram(radioBtn, index) {
 <%
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
-		StarsAppliance appliance = null;
 		StarsLMProgram program = null;
 		String programStatus = "Not Enrolled";
 		
-		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
-			StarsAppliance app = appliances.getStarsAppliance(j);
-			if (app.getApplianceCategoryID() == category.getApplianceCategoryID()) {
-				appliance = app;
-				
-				for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
-					StarsLMProgram prog = programs.getStarsLMProgram(k);
-					if (prog.getProgramID() == appliance.getLmProgramID()) {
-						program = prog;
-						StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
-						programStatus = "Out of Service";
-						
-						for (int l = progHist.getLMProgramEventCount() - 1; l >= 0 ; l--) {
-							LMProgramEvent event = progHist.getLMProgramEvent(l);
-							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
-								programStatus = "In Service";
-								break;
-							}
-							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )) {
-								programStatus = "Out of Service";
-								break;
-							}
-						}
-						break;
-					}
-				}
+		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+			StarsLMProgram prog = programs.getStarsLMProgram(j);
+			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
+				program = prog;
+				StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
+				programStatus = program.getStatus();
 				break;
 			}
 		}

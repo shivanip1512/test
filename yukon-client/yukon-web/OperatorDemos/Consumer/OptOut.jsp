@@ -85,7 +85,7 @@ function confirmSubmit(form) { //v1.0
                       </p>
                     </div>
 				  <form name="form1" method="post" action="OptForm.jsp" onsubmit = "return confirmSubmit(this)">
-				  	<input type="hidden" name="action" value="DisableService">
+				  	<input type="hidden" name="action" value="OptOutProgram">
 					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
 					<input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -123,7 +123,7 @@ function confirmSubmit(form) { //v1.0
 	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
 	if (progHist == null) {
 		progHist = ServletUtils.createProgramHistory( programs );
-		operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
+		operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_PROGRAM_HISTORY", progHist );
 	}
 	
 	for (int i = progHist.length - 1; i >= 0; i--) {
@@ -153,7 +153,7 @@ function confirmSubmit(form) { //v1.0
                 <tr> 
                   <td align="center">
 				  <form method="POST" action="/servlet/SOAPClient">
-				    <input type="hidden" name="action" value="EnableService"> 
+				    <input type="hidden" name="action" value="ReenableProgram"> 
 					<input type="hidden" name="REDIRECT" value="/OperatorDemos/Consumer/Programs.jsp">
 					<input type="hidden" name="REFERRER" value="/OperatorDemos/Consumer/OptOut.jsp">
                     <input type="submit" name="Re-enable" value="Re-enable">

@@ -52,7 +52,7 @@
             <td  class = "Main" width="233" align = "right"> 
               <select name="SearchBy">
 <%
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCtrlHistPeriod.java,v 1.15 2002/11/20 20:48:46 zyao Exp $
+ * $Id: StarsCtrlHistPeriod.java,v 1.16 2002/11/20 22:57:24 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.*;
 /**
  * 
  * 
- * @version $Revision: 1.15 $ $Date: 2002/11/20 20:48:46 $
+ * @version $Revision: 1.16 $ $Date: 2002/11/20 22:57:24 $
 **/
 public class StarsCtrlHistPeriod implements java.io.Serializable {
 
@@ -88,6 +88,16 @@ public class StarsCtrlHistPeriod implements java.io.Serializable {
     **/
     public static final StarsCtrlHistPeriod ALL = new StarsCtrlHistPeriod(ALL_TYPE, "All");
 
+    /**
+     * The None type
+    **/
+    public static final int NONE_TYPE = 6;
+
+    /**
+     * The instance of the None type
+    **/
+    public static final StarsCtrlHistPeriod NONE = new StarsCtrlHistPeriod(NONE_TYPE, "None");
+
     private static java.util.Hashtable _memberTable = init();
 
     private int type = -1;
@@ -138,6 +148,7 @@ public class StarsCtrlHistPeriod implements java.io.Serializable {
         members.put("PastSeason", PASTSEASON);
         members.put("PastYear", PASTYEAR);
         members.put("All", ALL);
+        members.put("None", NONE);
         return members;
     } //-- java.util.Hashtable init() 
 

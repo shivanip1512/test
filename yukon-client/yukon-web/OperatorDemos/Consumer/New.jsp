@@ -382,7 +382,7 @@ function checkPassword(form) {
                         <td width="210"> 
                           <select name="Substation">
 <%
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList substationList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
 	for (int i = 0; i < substationList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = substationList.getStarsSelectionListEntry(i);

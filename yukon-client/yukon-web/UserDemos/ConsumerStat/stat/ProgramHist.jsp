@@ -4,6 +4,14 @@
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<script language="JavaScript">
+function setRedirect(form, progNo) {
+	if (form.Period.value == 'None')
+		form.REDIRECT.value = '/UserDemos/ConsumerStat/stat/Summary.jsp?prog=' + progNo;
+	else
+		form.REDIRECT.value = '/UserDemos/ConsumerStat/stat/ContHist.jsp?prog=' + progNo;
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -116,16 +124,28 @@
                   </td>
                   <td width="302" valign="top"> 
                     <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
-                      <%
-		StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
-		if (ctrlHistToday.getControlHistoryCount() == 0) {
-%>
                       <tr> 
                         <td width="61" class="TableCell"> 
                           <div align="left">Start</div>
                         </td>
                         <td width="61" class="TableCell">Stop</td>
-                        <td width="10" class="TableCell">Duration</td>
+                        <td width="60" class="TableCell">Duration</td>
+                      </tr>
+                      <%
+		StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+		if (ctrlHistToday.getControlHistoryCount() == 0) {
+%>
+                      <tr> 
+                        <td width="61" class="TableCell">No Control</td>
+                        <td width="61" class="TableCell"></td>
+                        <td width="60" class="TableCell">----</td>
+                      </tr>
+                      <tr> 
+                        <td width="61" class="TableCell"></td>
+                        <td width="61" class="TableCell">
+                          <div align="right">Total:</div>
+                        </td>
+                        <td width="60" class="TableCell">----</td>
                       </tr>
                       <%
 		}
@@ -136,10 +156,11 @@
 				
 				int durationSec = hist.getControlDuration();
 				totalSec += durationSec;
+				Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                       <tr> 
                         <td width="61" class="TableCell"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
-                        <td width="61" class="TableCell">&nbsp;</td>
+                        <td width="61" class="TableCell"><%= histDateFormat.format(stopTime) %></td>
                         <td width="60" class="TableCell"><%= ServletUtils.getDurationString(durationSec) %></td>
                       </tr>
                       <%
@@ -163,11 +184,10 @@
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 %>
                   <td width="180"> 
-                    <form method="POST" action="/servlet/SOAPClient">
+                    <form method="POST" action="/servlet/SOAPClient" onsubmit="setRedirect(this, <%= i %>)">
                       <input type="hidden" name="action" value="GetLMCtrlHist">
                       <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-                      <input type="hidden" name="prog" value="<%= i %>">
-                      <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ContHist.jsp">
+                      <input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
                       <input type="hidden" name="REFERRER" value="ProgramHist.jsp">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
@@ -175,8 +195,8 @@
                             <select name="Period">
                               <option value="PastWeek">Past Week</option>
                               <option value="PastMonth">Past Month </option>
-                              <option value="All">Summary</option>
 							  <option value="All">All</option>
+                              <option value="None">Summary</option>
                             </select>
                           </td>
                         </tr>

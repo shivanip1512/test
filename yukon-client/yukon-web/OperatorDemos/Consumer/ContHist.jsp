@@ -100,7 +100,7 @@
 <%
 	int totalSec = 0;
 	
-	for (int i = 0; i < ctrlHist.getControlHistoryCount(); i++) {
+	for (int i = ctrlHist.getControlHistoryCount() - 1; i >= 0 ; i--) {
 		ControlHistory hist = ctrlHist.getControlHistory(i);
 		
 		int durationSec = hist.getControlDuration();

@@ -94,7 +94,7 @@ function MM_popupMsg(msg) { //v1.0
                 <p class="Main">Please complete the following form to opt out 
                   of your program:</p>
                   <form method="post" action="/servlet/SOAPClient">
-					<input type="hidden" name="action" value="DisableService">
+					<input type="hidden" name="action" value="OptOutProgram">
 					<input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
 					<input type="hidden" name="REDIRECT" value="/UserDemos/ConsumerStat/stat/Enrollment.jsp">
 					<input type="hidden" name="REFERRER" value="/UserDemos/ConsumerStat/stat/OptOut.jsp">

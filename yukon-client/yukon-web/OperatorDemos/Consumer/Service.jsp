@@ -92,7 +92,7 @@
                           <td width="210"> 
                             <select name="ServiceType">
                               <%
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
 	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
 	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
