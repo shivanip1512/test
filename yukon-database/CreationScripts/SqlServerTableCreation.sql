@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     7/29/2002 11:31:31 AM                        */
+/* Created on:     8/6/2002 2:49:40 PM                          */
 /*==============================================================*/
 
 
@@ -1592,13 +1592,14 @@ PEAKSTARTTIME        numeric              not null,
 PEAKSTOPTIME         numeric              not null,
 CurrentVarLoadPointID numeric              not null,
 CurrentWattLoadPointID numeric              not null,
-BANDWIDTH            numeric              not null,
+UpperBandwidth       float                not null,
 CONTROLINTERVAL      numeric              not null,
 MINRESPONSETIME      numeric              not null,
 MINCONFIRMPERCENT    numeric              not null,
 FAILUREPERCENT       numeric              not null,
 DAYSOFWEEK           char(8)              not null,
 MapLocationID        numeric              not null,
+LowerBandwidth       float                not null,
 ControlUnits         varchar(20)          not null,
 constraint SYS_C0013476 primary key  (SubstationBusID)
 )
@@ -1681,6 +1682,7 @@ insert into columntype values (9, 'PointValue');
 insert into columntype values (10, 'PointQuality');
 insert into columntype values (11, 'PointTimeStamp');
 insert into columntype values (12, 'UofM');
+insert into columntype values (13, 'Tags');
 
 /*==============================================================*/
 /* Table : CTIDatabase                                          */
@@ -1748,10 +1750,11 @@ create table CapControlFeeder (
 FeederID             numeric              not null,
 PeakSetPoint         float                not null,
 OffPeakSetPoint      float                not null,
-Bandwidth            numeric              not null,
+UpperBandwidth       float                not null,
 CurrentVarLoadPointID numeric              not null,
 CurrentWattLoadPointID numeric              not null,
 MapLocationID        numeric              not null,
+LowerBandwidth       float                not null,
 constraint PK_CAPCONTROLFEEDER primary key  (FeederID)
 )
 go
@@ -3821,37 +3824,37 @@ constraint PK_STATE primary key  (STATEGROUPID, RAWSTATE)
 go
 
 
-INSERT INTO State VALUES ( -1, 0, 'AnalogText', 0, 6 );
-INSERT INTO State VALUES ( -2, 0, 'AccumulatorText', 0, 6 );
-INSERT INTO State VALUES ( -3, 0, 'CalculatedText', 0, 6 );
-INSERT INTO State VALUES ( 0, 0, 'SystemText', 0, 6 );
-INSERT INTO State VALUES ( 1, -1, 'Any', 2, 6 );
-INSERT INTO State VALUES ( 1, 0, 'Open', 0, 6 );
-INSERT INTO State VALUES ( 1, 1, 'Closed', 1, 6 );
-INSERT INTO State VALUES ( 2, -1, 'Any', 2, 6 );
-INSERT INTO State VALUES ( 2, 0, 'Open', 0, 6 );
-INSERT INTO State VALUES ( 2, 1, 'Closed', 1, 6 );
-INSERT INTO State VALUES ( 2, 2, 'Unknown', 2, 6 );
-INSERT INTO State VALUES ( 3, -1, 'Any', 2, 6 );
-INSERT INTO State VALUES ( 3, 0, 'Open', 0, 6 );
-INSERT INTO State VALUES ( 3, 1, 'Close', 1, 6 );
-INSERT INTO State VALUES ( 3, 2, 'OpenQuestionable', 2, 6 );
-INSERT INTO State VALUES ( 3, 3, 'CloseQuestionable', 3, 6 );
-INSERT INTO State VALUES ( 3, 4, 'OpenFail', 4, 6 );
-INSERT INTO State VALUES ( 3, 5, 'CloseFail', 5, 6 );
-INSERT INTO State VALUES ( 3, 6, 'OpenPending', 7, 6 );
-INSERT INTO State VALUES ( 3, 7, 'ClosePending', 8, 6 );
-INSERT INTO State VALUES(-5, 0, 'Events', 2, 6);
-INSERT INTO State VALUES(-5, 1, 'Priority 1', 1, 6);
-INSERT INTO State VALUES(-5, 2, 'Priority 2', 4, 6);
-INSERT INTO State VALUES(-5, 3, 'Priority 3', 0, 6);
-INSERT INTO State VALUES(-5, 4, 'Priority 4', 7, 6);
-INSERT INTO State VALUES(-5, 5, 'Priority 5', 8, 6);
-INSERT INTO State VALUES(-5, 6, 'Priority 6', 5, 6);
-INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6);
-INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6);
-INSERT INTO State VALUES(-5, 9, 'Priority 9', 6, 6);
-INSERT INTO State VALUES(-5, 10, 'Priority 10', 9, 6);
+INSERT INTO State VALUES ( -1, 0, 'AnalogText', 0, 6 , 0);
+INSERT INTO State VALUES ( -2, 0, 'AccumulatorText', 0, 6 , 0);
+INSERT INTO State VALUES ( -3, 0, 'CalculatedText', 0, 6 , 0);
+INSERT INTO State VALUES ( 0, 0, 'SystemText', 0, 6 , 0);
+INSERT INTO State VALUES ( 1, -1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES ( 1, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES ( 1, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES ( 2, -1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES ( 2, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES ( 2, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES ( 2, 2, 'Unknown', 2, 6 , 0);
+INSERT INTO State VALUES ( 3, -1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES ( 3, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES ( 3, 1, 'Close', 1, 6 , 0);
+INSERT INTO State VALUES ( 3, 2, 'OpenQuestionable', 2, 6 , 0);
+INSERT INTO State VALUES ( 3, 3, 'CloseQuestionable', 3, 6 , 0);
+INSERT INTO State VALUES ( 3, 4, 'OpenFail', 4, 6 , 0);
+INSERT INTO State VALUES ( 3, 5, 'CloseFail', 5, 6 , 0);
+INSERT INTO State VALUES ( 3, 6, 'OpenPending', 7, 6 , 0);
+INSERT INTO State VALUES ( 3, 7, 'ClosePending', 8, 6 , 0);
+INSERT INTO State VALUES(-5, 0, 'Events', 2, 6, 0);
+INSERT INTO State VALUES(-5, 1, 'Priority 1', 1, 6, 0);
+INSERT INTO State VALUES(-5, 2, 'Priority 2', 4, 6, 0);
+INSERT INTO State VALUES(-5, 3, 'Priority 3', 0, 6, 0);
+INSERT INTO State VALUES(-5, 4, 'Priority 4', 7, 6, 0);
+INSERT INTO State VALUES(-5, 5, 'Priority 5', 8, 6, 0);
+INSERT INTO State VALUES(-5, 6, 'Priority 6', 5, 6, 0);
+INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6, 0);
+INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
+INSERT INTO State VALUES(-5, 9, 'Priority 9', 6, 6, 0);
+INSERT INTO State VALUES(-5, 10, 'Priority 10', 9, 6, 0);
 
 /*==============================================================*/
 /* Index: Indx_StateRaw                                         */
@@ -3916,12 +3919,13 @@ go
 create table StateImage (
 ImageID              numeric              not null,
 StateImage           image                null,
+ImageName            varchar(80)          null,
 constraint PK_STATEIMAGE primary key  (ImageID)
 )
 go
 
 
-insert into StateImage values( 0, null );
+insert into StateImage values( 0, null, '(none)' );
 
 /*==============================================================*/
 /* Table : TEMPLATE                                             */
@@ -3963,14 +3967,14 @@ insert into templatecolumns values( 1, 'Tags', 13, 6, 80 );
 insert into templatecolumns values( 2, 'Device Name', 5, 1, 85 );
 insert into templatecolumns values( 2, 'Value', 9, 2, 85 );
 insert into templatecolumns values( 2, 'Quality', 10, 3, 80 );
-insert into templatecolumns values( 2, 'Time', 11, 4 135 );
-insert into templatecolumns values( 2, 'Tags', 13, 5 80 );
+insert into templatecolumns values( 2, 'Time', 11, 4, 135 );
+insert into templatecolumns values( 2, 'Tags', 13, 5, 80 );
 
 insert into templatecolumns values( 3, 'Point Name', 2, 1, 85 );
 insert into templatecolumns values( 3, 'Value', 9, 2, 85 );
 insert into templatecolumns values( 3, 'Quality', 10, 3, 80 );
-insert into templatecolumns values( 3, 'Time', 11, 4 135 );
-insert into templatecolumns values( 3, 'Tags', 13, 5 80 );
+insert into templatecolumns values( 3, 'Time', 11, 4, 135 );
+insert into templatecolumns values( 3, 'Tags', 13, 5, 80 );
 
 
 /*==============================================================*/
