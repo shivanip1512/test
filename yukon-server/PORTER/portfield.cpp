@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.111 $
-* DATE         :  $Date: 2004/06/28 20:16:11 $
+* REVISION     :  $Revision: 1.112 $
+* DATE         :  $Date: 2004/06/29 14:31:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1311,7 +1311,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         break;
@@ -2979,7 +2979,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -3135,11 +3135,6 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist<
             {
             case TYPE_TAPTERM:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
                     // Since an EOT was done on this port by this device, all devices on this port need to logon the next loop.
                     // Sweep the port and tag them so.
                     DeviceManager.apply( ApplyTapNeedsLogon, (void*)(aPortRecord->getPortID()) );
