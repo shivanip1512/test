@@ -1,6 +1,16 @@
 package com.cannontech.dbeditor.editor.user;
 
 import com.cannontech.database.model.ModelFactory;
+import java.util.Vector;
+import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.database.model.LiteBaseTreeModel;
 
 /**
  * Insert the type's description here.
@@ -15,11 +25,35 @@ public class YukonUserOwnershipPanel extends com.cannontech.common.gui.util.Data
 		new Integer(ModelFactory.LMGROUPEXPRESSCOM),
 		new Integer(ModelFactory.LMGROUPSA305),
 		new Integer(ModelFactory.LMGROUPVERSACOM),
-		new Integer(ModelFactory.LMPROGRAM)
+		new Integer(ModelFactory.LMPROGRAM),
 	};
 	
+	private LiteBaseTreeModel[] assignedModels = null;
+	private LiteBaseTreeModel[] availableModels = null;
 	
 	private com.cannontech.common.gui.util.AddRemoveJTreePanel ivjOwnershipTreePanel = null;
+	
+	protected transient com.cannontech.common.gui.util.AddRemoveJTablePanelListener fieldAddRemoveJTablePanelListenerEventMulticaster = null;
+	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+	
+	class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.MouseListener {
+		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == getOwnershipTreePanel().getAssignedSortBy()) 
+				fireModelChange();
+			if (e.getSource() == getOwnershipTreePanel().getAvailableSortBy()) 
+				fireModelChange();
+			if (e.getSource() == getOwnershipTreePanel().getAddButton())
+				treeItemAdd();
+			if (e.getSource() == getOwnershipTreePanel().getRemoveButton())
+				treeItemRemove();
+		}
+		
+		public void mouseClicked(java.awt.event.MouseEvent e) {};
+		public void mouseEntered(java.awt.event.MouseEvent e) {};
+		public void mouseExited(java.awt.event.MouseEvent e) {};
+		public void mousePressed(java.awt.event.MouseEvent e) {};
+		public void mouseReleased(java.awt.event.MouseEvent e) {};
+	}
 /**
  * YukonUserOwnershipPanel constructor comment.
  */
@@ -78,8 +112,25 @@ private com.cannontech.common.gui.util.AddRemoveJTreePanel getOwnershipTreePanel
  * @return java.lang.Object
  * @param o java.lang.Object
  */
-public Object getValue(Object o) {
-	return o;
+public Object getValue(Object o) 
+{
+	YukonUser login = (YukonUser)o;
+	
+	NativeIntVector ownedIDs = new NativeIntVector(10);
+	
+	LiteBaseTreeModel[] models = getOwnershipTreePanel().getTreeModels();
+	
+	for(int j = 0; j < models.length; j++)
+	{
+		for(int m = 0; m < models[j].getChildCount(models[j].getRoot()); m++)
+		{
+			LiteYukonPAObject liteObj = (LiteYukonPAObject)models[j].getChild(models[j].getRoot(), m);
+			ownedIDs.add(liteObj.getLiteID());
+		}
+	}
+	
+	login.setUserOwnedPAOs(ownedIDs);
+	return login;
 }
 /**
  * Called whenever the part throws an exception.
@@ -90,6 +141,16 @@ private void handleException(java.lang.Throwable exception) {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
 	// exception.printStackTrace(System.out);
+}
+
+private void initConnections() throws java.lang.Exception 
+{
+	// user code begin {1}
+	getOwnershipTreePanel().getAssignedSortBy().addActionListener(ivjEventHandler);
+	getOwnershipTreePanel().getAvailableSortBy().addActionListener(ivjEventHandler);
+	getOwnershipTreePanel().getAddButton().addActionListener(ivjEventHandler);
+	getOwnershipTreePanel().getRemoveButton().addActionListener(ivjEventHandler);
+	// user code end
 }
 /**
  * Initialize the class.
@@ -110,6 +171,7 @@ private void initialize() {
 		constraintsOwnershipTreePanel.weighty = 1.0;
 		constraintsOwnershipTreePanel.insets = new java.awt.Insets(4, 4, 4, 4);
 		add(getOwnershipTreePanel(), constraintsOwnershipTreePanel);
+		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -147,10 +209,68 @@ public static void main(java.lang.String[] args) {
  */
 public void setValue(Object o) 
 {
-	runForTheTrees();
+	YukonUser login = (YukonUser)o;
+	
+	//need the actual objects for the Trees
+	runForTheTrees(login.getUserOwnedPAOs());
 }
 
-public void runForTheTrees()
+public void runForTheTrees(NativeIntVector ownedIDs)
+{
+	assignedModels = getOwnershipTreePanel().getAssignedTreeModels();
+	availableModels = getOwnershipTreePanel().getAvailableTreeModels();
+
+	for(int f = 0; f < assignedModels.length; f++)
+	{
+		for(int g = 0; g < assignedModels[f].getChildCount(assignedModels[f].getRoot()); g++)
+		{
+			DBTreeNode theNode = (DBTreeNode)assignedModels[f].getChild(assignedModels[g].getRoot(), g);
+			LiteYukonPAObject flea = (LiteYukonPAObject)theNode.getUserObject();
+			assignedModels[g].removeTreeObject(flea);
+		}
+	}
+
+	for(int y = 0; y < ownedIDs.size(); y++)
+	{
+		LiteYukonPAObject temp = PAOFuncs.getLiteYukonPAO(ownedIDs.elementAt(y));
+		switch(temp.getType())
+		{
+			case PAOGroups.LM_CONTROL_AREA:
+				availableModels[0].removeTreeObject(temp);
+				assignedModels[0].insertTreeObject(temp);
+				break;
+			case PAOGroups.LM_GROUP_EXPRESSCOMM:
+				availableModels[1].removeTreeObject(temp);
+				assignedModels[1].insertTreeObject(temp);
+				break;
+			case PAOGroups.LM_GROUP_SA305:
+				availableModels[2].removeTreeObject(temp);
+				assignedModels[2].insertTreeObject(temp);
+				break;
+			case PAOGroups.LM_GROUP_VERSACOM:
+				availableModels[3].removeTreeObject(temp);
+				assignedModels[3].insertTreeObject(temp);
+				break;
+			case PAOGroups.LM_DIRECT_PROGRAM:
+				availableModels[4].removeTreeObject(temp);
+				assignedModels[4].insertTreeObject(temp);
+				break;
+		}
+	}
+}
+
+public void fireModelChange()
+{
+	getOwnershipTreePanel().setAvailableTreeModels(availableModels);
+	getOwnershipTreePanel().setAssignedTreeModels(assignedModels);
+}
+
+public void treeItemAdd()
+{
+	
+}
+
+public void treeItemRemove()
 {
 	
 }

@@ -11,6 +11,7 @@ import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.YukonGroupRoleDefs;
+import com.cannontech.common.util.NativeIntVector;
 
 /*** 
  * @author alauinger
@@ -20,8 +21,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	private com.cannontech.database.db.user.YukonUser yukonUser;
 	private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
 	private Vector yukonUserRoles;  //type = com.cannontech.database.db.user.YukonUserRole
-
-	
+	private NativeIntVector yukonUserOwnedPAOs; //type = com.cannontech.database.db.user.UserPAOwner
 	
 	/**
 	 * adds any default group roles for a new user
@@ -31,12 +31,9 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	{
 		super();
 
-
 		YukonGroup group = new YukonGroup( new Integer(YukonGroupRoleDefs.GRP_YUKON) );
 		getYukonGroups().add( group );
 	}
-	
-	
 	
 	public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection( conn );
@@ -48,7 +45,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		}
 		
 	}
-
 
 	public Integer getID()
 	{
@@ -108,12 +104,14 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
 		}
 
-		
 		for (int i = 0; i < getYukonUserRoles().size(); i++) 
 		{
 			((DBPersistent)getYukonUserRoles().get(i)).add();
 		}
 		
+		//add the UserPAOwner info to the db
+		UserPaoOwner ownedByUser = new UserPaoOwner();
+		ownedByUser.addForUser(getUserID(), getUserOwnedPAOs());
 	}
 
 	/**
@@ -135,7 +133,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	{
 		getYukonUser().retrieve();
 		
-
 		//add the role groups this user belongs to
 		YukonGroup[] groups = YukonGroup.getYukonGroups( 
 						getUserID().intValue(), getDbConnection() );
@@ -144,8 +141,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		for( int i = 0; i < groups.length; i++ )
 			getYukonGroups().add( groups[i] );
 
-
-		
 		//add the roles this user has
 		YukonUserRole[] roles = YukonUserRole.getYukonUserRoles( 
 						getUserID().intValue(), getDbConnection() );
@@ -153,6 +148,9 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		getYukonUserRoles().clear();
  		for( int i = 0; i < roles.length; i++ )
  			getYukonUserRoles().add( roles[i] );
+ 			
+ 		//add the objects this user owns
+		setUserOwnedPAOs(UserPaoOwner.getUserOwnedPaos(getUserID().intValue(), getDbConnection()));
 	}
 
 	/**
@@ -176,14 +174,17 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
 		}
 				
-
-		
 		//first delete the current userRoles
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );		
 		for (int i = 0; i < getYukonUserRoles().size(); i++) 
 		{
 			((DBPersistent)getYukonUserRoles().get(i)).add();
 		}
+		
+		delete( UserPaoOwner.TABLE_NAME, "UserID", getYukonUser().getUserID());
+		UserPaoOwner ownedByUser = new UserPaoOwner();
+		ownedByUser.addForUser( getYukonUser().getUserID(), getUserOwnedPAOs());
+		
 	}
 	
 	public static void deleteOperatorLogin(Integer userID) {
@@ -241,6 +242,11 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 */
 	public void setYukonGroups(Vector yukonGroups) {
 		this.yukonGroups = yukonGroups;
+	}
+	
+	public void setUserOwnedPAOs(NativeIntVector yukonPAOs) 
+	{
+		yukonUserOwnedPAOs = yukonPAOs;
 	}
 
 	/**
@@ -306,6 +312,14 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			yukonUserRoles = new Vector(10);
 
 		return yukonUserRoles;
+	}
+	
+	public NativeIntVector getUserOwnedPAOs()
+	{
+		if( yukonUserOwnedPAOs == null )
+			yukonUserOwnedPAOs = new NativeIntVector(10);
+		
+		return yukonUserOwnedPAOs;
 	}
 
 }

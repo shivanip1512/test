@@ -1,6 +1,8 @@
 package com.cannontech.database.db.user;
 
 import com.cannontech.database.db.device.Device;
+import java.util.ArrayList;
+import com.cannontech.common.util.NativeIntVector;
 
 /**
  * This table maps users to PAObjects. The mapping shows that a user has access
@@ -37,6 +39,15 @@ public void add() throws java.sql.SQLException
 	Object addValues[] = { getUserID(), getPaoID() };
 
 	add( TABLE_NAME, addValues );
+}
+
+public void addForUser(Integer userID, NativeIntVector paoIDs) throws java.sql.SQLException 
+{
+	for(int x = 0; x < paoIDs.size(); x++)
+	{
+		Object addValues[] = { userID, new Integer(paoIDs.elementAt(x)) };
+		add( TABLE_NAME, addValues );
+	}
 }
 /**
  * delete method comment.
@@ -100,4 +111,50 @@ public void update() throws java.sql.SQLException
     {
         this.userID = userID;
     }
+    
+	public static synchronized NativeIntVector getUserOwnedPaos( int userID_, java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+	
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		NativeIntVector theIDs = new NativeIntVector(10);
+		
+		try 
+		{		
+			pstmt = conn.prepareStatement(
+				"select PaoID " +
+				"from " + TABLE_NAME + " " +
+				"where UserID = ?" );
+		    	
+			pstmt.setInt( 1, userID_ );
+			 
+			rset = pstmt.executeQuery();
+				
+			//get the first returned result
+			while( rset.next() )
+			{
+				theIDs.add( rset.getInt("PaoID") );
+			}
+		    
+		}
+		catch (java.sql.SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				if ( pstmt != null) pstmt.close();
+			}
+			catch (java.sql.SQLException e2) 
+			{
+				e2.printStackTrace();
+			}
+		}
+		
+		return theIDs;
+	}
 }

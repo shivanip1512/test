@@ -455,4 +455,9 @@ public synchronized void update()
 {
 	runUpdate();
 }
+
+public void setShowPoints(boolean revealPts)
+{
+	showPoints = revealPts;
+}
 }

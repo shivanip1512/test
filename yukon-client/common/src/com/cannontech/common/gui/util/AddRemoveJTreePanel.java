@@ -7,6 +7,13 @@ import com.cannontech.database.model.ModelFactory;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.database.data.lite.LiteBase;
+import java.util.Vector;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.DeviceTreeModel;
+import javax.swing.JComboBox;
+
 /**
  * Insert the type's description here.
  * Creation date: (9/1/2004 9:28:52 AM)
@@ -20,12 +27,11 @@ public class AddRemoveJTreePanel extends javax.swing.JPanel implements java.awt.
 	private javax.swing.JLabel ivjJLabelAvailable = null;
 	private javax.swing.JScrollPane ivjJScrollPaneAssigned = null;
 	private javax.swing.JScrollPane ivjJScrollPaneAvailable = null;
-	public static final int MODE_TRANSFER = 0;
-	public static final int MODE_COPY = 1;
-	
-	private int mode = MODE_TRANSFER;
+
 	protected transient com.cannontech.common.gui.util.AddRemoveJTablePanelListener fieldAddRemoveJTablePanelListenerEventMulticaster = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
+	
+	private boolean showPoints = false;
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -37,6 +43,7 @@ class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.M
 				connEtoC3(e);
 			if (e.getSource() == AddRemoveJTreePanel.this.getJButtonRemove()) 
 				connEtoC4(e);
+
 		};
 		public void mouseClicked(java.awt.event.MouseEvent e) {
 			if (e.getSource() == AddRemoveJTreePanel.this.getJScrollPaneAssigned()) 
@@ -466,14 +473,6 @@ private javax.swing.JScrollPane getJScrollPaneAvailable() {
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (9/1/2004 9:28:52 AM)
- * @return int
- */
-public int getMode() {
-	return mode;
-}
-/**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
  */
@@ -494,6 +493,7 @@ private void initConnections() throws java.lang.Exception {
 	getJButtonAdd().addActionListener(ivjEventHandler);
 	getJButtonRemove().addActionListener(ivjEventHandler);
 	getJScrollPaneAssigned().addMouseListener(ivjEventHandler);
+	getAssignedTree().getSortByComboBox().addActionListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -576,9 +576,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 		}
 	}
 }
-/**
- * Comment
- */
+
 public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	Object[] transfers = getAssignedTree().getSelectedObjects();
@@ -620,28 +618,17 @@ public static void main(java.lang.String[] args) {
 	}
 }
 
-/**
- * This method was created in VisualAge.
- * @param list javax.swing.JList
- */
-protected void removeSelection()
-{}
-/**
- * 
- * @param listData java.lang.Object[]
- */
-public void setJListData(java.lang.Object[] listData) 
+//this assumes that the vector contains lite objects
+public void pruneTheTrees(Vector assignedObjects) 
 {
-	//getJListAvailable().setListData(listData);
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (9/1/2004 9:28:52 AM)
- * @param newMode int
- */
-public void setMode(int newMode) {
-	mode = newMode;
+	if(assignedObjects != null)
+	{
+		for(int j = 0; j < assignedObjects.size(); j++)
+		{
+			LiteBase ownedLite = (LiteBase)assignedObjects.elementAt(j);
+			getAvailableTree().treeObjectDelete(ownedLite);
+		}
+	}
 }
 
 public void setTreeModels(Integer[] models)
@@ -652,18 +639,69 @@ public void setTreeModels(Integer[] models)
 	{
 		newModels[i] = ModelFactory.create( models[i].intValue() );
 		newModels[i].setAsksAllowsChildren(false);
+		if(newModels[i] instanceof DeviceTreeModel)
+			((DeviceTreeModel)newModels[i]).setShowPoints(showPoints);
 	}
 	
 	getAssignedTree().setTreeModels(newModels);
 	getAvailableTree().setTreeModels(newModels);
 }
-/**
- * This method was created in VisualAge.
- */
-protected void transferSelection()
-{		
-	/*copySelection();
 
-	removeSelection();*/
+public void setTreeModels(LiteBaseTreeModel[] models)
+{
+	getAssignedTree().setTreeModels(models);
+	getAvailableTree().setTreeModels(models);
 }
+
+public LiteBaseTreeModel[] getAssignedTreeModels()
+{
+	return getAssignedTree().getTreeModels();
+}
+
+public LiteBaseTreeModel[] getAvailableTreeModels()
+{
+	return getAvailableTree().getTreeModels();
+}
+
+public void setAssignedTreeModels(LiteBaseTreeModel[] models)
+{
+	getAssignedTree().setTreeModels(models);
+}
+
+public void setAvailableTreeModels(LiteBaseTreeModel[] models)
+{
+	getAvailableTree().setTreeModels(models);
+}
+
+public LiteBaseTreeModel[] getTreeModels()
+{
+	return getAssignedTree().getTreeModels();
+}
+
+public void setShowPoints(boolean reveal)
+{
+	showPoints = reveal;
+}
+
+//these are for ease of eventhandling in a containing panel
+public JComboBox getAssignedSortBy()
+{
+	return getAssignedTree().getSortByComboBox();
+}
+
+public JComboBox getAvailableSortBy()
+{
+	return getAvailableTree().getSortByComboBox();
+}
+
+public javax.swing.JButton getAddButton()
+{
+	return getJButtonAdd();
+}
+
+public javax.swing.JButton getRemoveButton()
+{
+	return getJButtonRemove();
+}
+
 }
