@@ -6,6 +6,8 @@ package com.cannontech.graph;
  * @author: 
  */
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.WindowEvent;
 import java.util.Date;
 
@@ -14,6 +16,7 @@ import javax.swing.JOptionPane;
 import org.jfree.chart.JFreeChart;
 
 import com.cannontech.analysis.tablemodel.StatisticModel;
+import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
@@ -2054,6 +2057,14 @@ public static void main(String[] args)
             javax.swing.UIManager.getSystemLookAndFeelClassName());
 
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();
+		  SplashWindow splash = new SplashWindow(
+		  		mainFrame,
+			  "ctismall.gif",
+			  "Loading " + System.getProperty("cti.app.name") + "...",
+			  new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+        
+        
+        
         mainFrame.setIconImage(
             java.awt.Toolkit.getDefaultToolkit().getImage("GraphIcon.gif"));
             	

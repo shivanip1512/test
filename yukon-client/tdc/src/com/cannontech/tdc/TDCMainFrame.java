@@ -5,6 +5,7 @@ package com.cannontech.tdc;
  * @author: 
  */
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
+import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.AlarmFileWatchDog;
@@ -2912,14 +2913,6 @@ private void initConnections() throws java.lang.Exception {
 public void initialize() {
 	try {
 		// user code begin {1}
-
-		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(
-			this,
-			"ctismall.gif",
-			"Loading " + System.getProperty("cti.app.name") + "...",
-			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
-
-
 		initAccelerators();
 		getExternalResources();
 		
@@ -4077,11 +4070,18 @@ public static void main(final java.lang.String[] args)
 	try
 	{
 		System.setProperty("cti.app.name", "TDC");
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		
+		SplashWindow splash = new SplashWindow(
+			null,
+			"ctismall.gif",
+			"Loading " + System.getProperty("cti.app.name") + "...",
+			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+		
 		
 		com.cannontech.clientutils.CTILogger.getStandardLog().info("Syntax for optional parameters is as follows:");
 		com.cannontech.clientutils.CTILogger.getStandardLog().info("   TDCMainFrame view=<value> display=<value>");
 
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       
 		ClientSession session = ClientSession.getInstance(); 
 
@@ -4122,6 +4122,9 @@ public static void main(final java.lang.String[] args)
 			aTDCFrame = overSeer.createTDCMainFrame();
 		}		
 		
+		splash.setVisible( false );
+		splash.dispose();
+
 		aTDCFrame.visibilityInitialization();
 	}
 	catch (Throwable exception)

@@ -21,6 +21,7 @@ import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.util.MessageEvent;
@@ -2069,6 +2070,12 @@ public static void main(String[] args) {
 
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 		f.setDefaultCloseOperation( f.DO_NOTHING_ON_CLOSE );
+		SplashWindow splash = new SplashWindow(
+			f,
+			"ctismall.gif",
+			"Loading " + System.getProperty("cti.app.name") + "...",
+			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
+		
 
 		
 		//Set the width and height 85% of max
@@ -2095,13 +2102,6 @@ public static void main(String[] args) {
 	  	JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
 		System.exit(-1);				
 	  }
-			  
-
-		com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(
-			f,
-			"ctismall.gif",
-			"Loading " + System.getProperty("cti.app.name") + "...",
-			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 
 
       /* Cache loads as needed, do not load it all here!! --RWN */

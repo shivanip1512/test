@@ -14,6 +14,7 @@ import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.JTextPanePrintable;
+import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
@@ -1414,6 +1415,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			System.setProperty("cti.app.name", "Commander");
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
+			SplashWindow splash = new SplashWindow(
+					null, "ctismall.gif", "Loading resources...",
+					new java.awt.Font("dialog", 0, 14), java.awt.Color.black,
+					java.awt.Color.black, 1 );
+
 	
 			ClientSession session = ClientSession.getInstance(); 
 			if(!session.establishSession(null)) {
@@ -1429,7 +1435,6 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			YukonCommander ycClient;
 			ycClient = new YukonCommander();
 			
-			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow( ycClient, "ctismall.gif", "Loading resources...", new java.awt.Font("dialog", 0, 14), java.awt.Color.black, java.awt.Color.black, 1 );
 			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("CommanderIcon.gif"));
 						
 			ycClient.setTitle(YC_TITLE);
@@ -1467,8 +1472,11 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			//  only works with small gui interfaces.
 			java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 			ycClient.setLocation((int)(d.width * .07),(int)(d.height * .07));
+
+
+			splash.setVisible( false );
+			splash.dispose();			
 			ycClient.show();
-					
 		}
 		catch (Throwable exception)
 		{
