@@ -1,5 +1,5 @@
 <!-- JavaScript needed for jump menu--->
-<%@ include file="Functions.js" %>
+<%@ include file="js/cbc_funcs.js" %>
 <%@ include file="cbc_header.jsp" %>
 
 
@@ -37,7 +37,7 @@
                 
                   
                 <td width="58" valign="middle"> 
-                  <div align="center"><span><a href="../Operations.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Home</font></a></span></div>
+                  <div align="center"><span><a href="../operator/Operations.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Home</font></a></span></div>
                   </td>
                   
                 <td width="57" valign="middle"> 
@@ -127,7 +127,7 @@
 	                  %>         
                       
                       <tr valign="top"> 
-                        <td width="110" class="TableCell"><a href= "Feeders.jsp?subRowID=<%= i %>" >
+                        <td width="110" class="TableCell"><a href= "feeders.jsp?subRowID=<%= i %>" >
                           <div name = "subPopup" align = "left" cursor:default;" >
                              <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>
@@ -148,8 +148,8 @@
                         <td width="66" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
                         <td width="72" class="TableCell"> 
                           <select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
-                            <option value="AllSubs.jsp">Sub kVar</option>
-                            <option value="AllSubs.jsp">Feeder kVar</option>
+                            <option value="subs.jsp">Sub kVar</option>
+                            <option value="subs.jsp">Feeder kVar</option>
                             <option value="temp\<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
                           </select>
                           
