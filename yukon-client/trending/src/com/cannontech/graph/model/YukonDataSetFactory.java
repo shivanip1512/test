@@ -22,14 +22,8 @@ import org.jfree.data.XYSeriesCollection;
 /**
  * A quick and dirty implementation.
  */
-public class YukonDataSetFactory 
+public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 {
-    private static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
-    private static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
-
-	private static Character [] axisChars = new Character[]{new Character('L'), new Character('R')};
-    private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
-    private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
 	private static int options = 0x0000;
 	
 	public static AbstractDataset [] createDataset(TrendSerie [] trendSeries, int options_, int type_ )
@@ -125,15 +119,8 @@ public class YukonDataSetFactory
 				{
 					if( serie.getDataItemArray() != null)
 					{
-				 		long[] timeStamp = new long[serie.getDataItemArray().length];
-				 		double[] values = new double[serie.getDataItemArray().length];
-						for (int x = 0; x < serie.getDataItemArray().length; x++)
-						{
-							TimeSeriesDataItem dp = serie.getDataItemArray(x);						
-							timeStamp[x] = dp.getPeriod().getStart().getTime();
-							values[x] = dp.getValue().doubleValue();
-						}
-						
+				 		long[] timeStamp = serie.getPeriodsArray();
+				 		double[] values = serie.getValuesArray();
 				 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
 				 		{
 					 		Long d = new Long(timeStamp[j]);
@@ -281,9 +268,6 @@ public class YukonDataSetFactory
 			for (int i = 0; i < keyArray.length; i++)
 				categories[i] = ( i / categoryCount ) * 100;
 	
-			// Create the dataset of values for each point.
-			Double[][] datasetValues = new Double[count][];
-	
 			//This index holder is needed parrallel to i.
 			//When there is a null tSeries[i].getDataItemArray(), we have to ignore the i values interval 
 			//of the tree.get(keyArray[j]).  AKA...the i value can't be incremented, But because i is the 
@@ -296,7 +280,9 @@ public class YukonDataSetFactory
 				{
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
-						datasetValues[allIndex] = new Double[keyArray.length];
+						XYSeries xySeries = new XYSeries(tSeries[i].getLabel());
+
+						Double value = null;
 						Double prevValue = null;				
 						if( tSeries[i].getDataItemArray() != null)
 						{
@@ -308,22 +294,23 @@ public class YukonDataSetFactory
 									if( prevValue == null)
 									{
 										prevValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
-										datasetValues[allIndex][j]= null;
 									}
 									else
 									{
 										Double currentValue = values[notNullValuesIndex];	//dp.getValue().doubleValue();
 										if( currentValue != null && prevValue != null)
 										{
-											datasetValues[allIndex][j] = new Double(currentValue.doubleValue() - prevValue.doubleValue());
+											value = new Double(currentValue.doubleValue() - prevValue.doubleValue());
 											prevValue = currentValue;
 										}
 									}
 								}						
 								else
 								{
-									datasetValues[allIndex][j] = values[notNullValuesIndex];
+									value = values[notNullValuesIndex];
 								}
+//								if( value != null || !(primaryDset==datasetIndex && primaryIndex==allIndex))
+									xySeries.add(categories[j], value);
 							}
 							notNullValuesIndex++;
 							allIndex++;
@@ -340,26 +327,14 @@ public class YukonDataSetFactory
 		
 							for (int j = 0; j < keyArray.length; j++)
 							{
-								datasetValues[allIndex][j]= null;
+//								if(!(primaryDset==datasetIndex && primaryIndex==allIndex))								
+									xySeries.add(categories[j],null);
 							}
 							allIndex++;
 						}
+						dataset[datasetIndex].addSeries(xySeries);
 					}
 				}
-			}
-			//Create a collection of series as the dataset.
-//			com.jrefinery.data.XYSeriesCollection collection = new com.jrefinery.data.XYSeriesCollection();
-			for ( int i = 0; i < datasetValues.length; i++)
-			{
-				XYSeries xySeries = new XYSeries(tSeries[i].getLabel() + updateSeriesNames(tSeries[i]));
-				for (int j = 0; j < datasetValues[i].length; j++)
-				{
-					if( datasetValues[i][j] != null)
-						xySeries.add(categories[j], datasetValues[i][j].doubleValue());
-				}
-//				xySeries.setName(xySeries.getName() + updateSeriesNames(serie));
-				dataset[datasetIndex].addSeries(xySeries);
-//				collection.addSeries(xySeries);			
 			}
 		}
 
@@ -367,7 +342,6 @@ public class YukonDataSetFactory
 		sortValuesDescending(dataset, primaryDset, primaryIndex);
 
 		return dataset;
-//		return collection;
 	}
 
 	/**
@@ -527,12 +501,10 @@ public class YukonDataSetFactory
 			int notNullValuesIndex = 0;
 
 			DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
-			java.util.Vector categoryVector = new java.util.Vector();
-			for (int j = 0; j < keyArray.length; j++)
-			{
-				Long ts = keyArray[j];
-				categoryVector.add(CATEGORY_FORMAT.format(new java.util.Date(ts.longValue())));
-			}
+			double[] categories = new double[keyArray.length];
+			double categoryCount = keyArray.length -1;// scale is from 0 start point not 1
+			for (int i = 0; i < keyArray.length; i++)
+				categories[i] = ( i / categoryCount ) * 100;
 
 			for (int i = 0; i < tSeries.length; i++)
 			{
@@ -573,7 +545,7 @@ public class YukonDataSetFactory
 									value = values[notNullValuesIndex];
 								}
 								
-								tempDataset.addValue(value, serieKey, categoryVector.get(j).toString());
+								tempDataset.addValue(value, serieKey, new Integer(new Double(categories[j]).intValue()));
 							}
 							notNullValuesIndex++;
 						}
@@ -591,7 +563,7 @@ public class YukonDataSetFactory
 								tempDataset.addValue(value, serieKey, "");
 							for (int j = 0; j < keyArray.length; j++)
 							{
-								tempDataset.addValue(value, serieKey, categoryVector.get(j).toString());
+								tempDataset.addValue(value, serieKey, new Integer(new Double(categories[j]).intValue()));
 							}
 						}
 					}
@@ -619,8 +591,6 @@ public class YukonDataSetFactory
 		{
 			for(int i = 0; i < 2; i++)
 			{
-//				com.jrefinery.data.DefaultCategoryDataset dSet = dataSet[i];
-				
 				// Sort the values according to their value readings (descending)
 				for (int j = 0; j < dSet[i].getRowCount(); j++)
 				{
@@ -631,14 +601,23 @@ public class YukonDataSetFactory
 						for (int y = 0; y < x; y++)
 						{
 							Double currentVal = (Double)dSet[i].getValue(j, y);
-							Double nextVal = (Double)dSet[i].getValue(j, y+1);
-							if( currentVal != null && nextVal != null)
+							if( currentVal != null)
 							{
-								if( currentVal.doubleValue() < nextVal.doubleValue())
+								int tempy = y+1;
+								Double nextVal = (Double)dSet[i].getValue(j, y+1);
+								while(nextVal == null && tempy < x )
 								{
-									//swap the values
-									dSet[i].setValue(currentVal, rowKey, dSet[i].getColumnKey(y+1));
-									dSet[i].setValue(nextVal, rowKey , dSet[i].getColumnKey(y));
+									tempy++;
+									nextVal = (Double)dSet[i].getValue(j, tempy);
+								}
+								if( nextVal!= null)
+								{
+									if( currentVal.doubleValue() < nextVal.doubleValue())
+									{
+										//swap the values
+										dSet[i].setValue(currentVal, rowKey, dSet[i].getColumnKey(tempy));
+										dSet[i].setValue(nextVal, rowKey , dSet[i].getColumnKey(y));
+									}
 								}
 							}
 						}
@@ -657,30 +636,41 @@ public class YukonDataSetFactory
 				{
 					for( int y = 0; y < x; y++)
 					{
-						double currentVal = dSet[primaryDset].getValue(primaryIndex, y).doubleValue();
-						double nextVal = dSet[primaryDset].getValue(primaryIndex, y+1).doubleValue();
-						if( currentVal < nextVal)
+						Double currentVal = (Double)dSet[primaryDset].getValue(primaryIndex, y);
+						if( currentVal != null)
 						{
-							dSet[primaryDset].setValue(currentVal, rowKey, dSet[primaryDset].getColumnKey(y+1));
-							dSet[primaryDset].setValue(nextVal, rowKey, dSet[primaryDset].getColumnKey(y));
-
-							//need to do all other series here.
-							for(int a = 0; a < 2; a++)
+							int tempy = y+1;
+							Double nextVal = (Double)dSet[primaryDset].getValue(primaryIndex, y+1);
+							while(nextVal == null && tempy < x )
 							{
-								for(int b = 0; b < dSet[a].getRowCount(); b++)
+								tempy++;
+								nextVal = (Double)dSet[primaryDset].getValue(primaryIndex, tempy);
+							}
+							if( nextVal!= null)
+							{
+								if( currentVal.doubleValue() < nextVal.doubleValue())	//sort values descending
 								{
-									if( !(a==primaryDset && b == primaryIndex))	//not primary dSet/serie
+									dSet[primaryDset].setValue(currentVal.doubleValue(), rowKey, dSet[primaryDset].getColumnKey(tempy));
+									dSet[primaryDset].setValue(nextVal.doubleValue(), rowKey, dSet[primaryDset].getColumnKey(y));
+		
+									//need to do all other series here.
+									for(int a = 0; a < 2; a++)
 									{
-										Comparable rowKey2 = dSet[a].getRowKey(b);
-										currentVal = dSet[a].getValue(b, y).doubleValue();
-										nextVal = dSet[a].getValue(b, y+1).doubleValue();
-										
-										dSet[a].setValue(currentVal, rowKey2, dSet[a].getColumnKey(y+1));
-										dSet[a].setValue(nextVal, rowKey2, dSet[a].getColumnKey(y));
+										for(int b = 0; b < dSet[a].getRowCount(); b++)
+										{
+											if( !(a==primaryDset && b == primaryIndex))	//not primary dSet/serie
+											{
+												currentVal = (Double)dSet[a].getValue(b, y);
+												nextVal = (Double)dSet[a].getValue(b, tempy);
+	
+												Comparable rowKey2 = dSet[a].getRowKey(b);
+												dSet[a].setValue(currentVal, rowKey2, dSet[a].getColumnKey(tempy));
+												dSet[a].setValue(nextVal, rowKey2, dSet[a].getColumnKey(y));
+											}
+										}
 									}
 								}
-							}
-							
+							}							
 						}
 					}
 				}
@@ -706,13 +696,25 @@ public class YukonDataSetFactory
 						{
 							for (int y = 0; y < x; y++)
 							{
-								double currentVal = dSet[i].getSeries(j).getDataItem(y).getY().doubleValue();
-								double nextVal = dSet[i].getSeries(j).getDataItem(y+1).getY().doubleValue();
-								if( currentVal < nextVal)
+								Double currentVal = (Double)dSet[i].getSeries(j).getDataItem(y).getY();
+								if( currentVal != null)
 								{
-									//swap the values
-									dSet[i].getSeries(j).getDataItem(y+1).setY(new Double(currentVal));
-									dSet[i].getSeries(j).getDataItem(y).setY(new Double(nextVal));
+									int tempy = y+1;
+									Double nextVal = (Double)dSet[i].getSeries(j).getDataItem(y+1).getY();
+									while(nextVal == null && tempy < x )
+									{
+										tempy++;
+										nextVal = (Double)dSet[i].getSeries(j).getDataItem(tempy).getY();
+									}
+									if( nextVal!= null)
+									{
+										if( currentVal.doubleValue() < nextVal.doubleValue())
+										{
+											//swap the values
+											dSet[i].getSeries(j).getDataItem(tempy).setY(currentVal);
+											dSet[i].getSeries(j).getDataItem(y).setY(nextVal);
+										}
+									}
 								}
 							}
 						}
@@ -731,33 +733,63 @@ public class YukonDataSetFactory
 				{
 					for( int y = 0; y < x; y++)
 					{
-						double currentVal = dSet[primaryDset].getSeries(primaryIndex).getDataItem(y).getY().doubleValue();
-						double nextVal = dSet[primaryDset].getSeries(primaryIndex).getDataItem(y+1).getY().doubleValue();
-						if( currentVal < nextVal)
+						Double currentVal_ = (Double)dSet[primaryDset].getSeries(primaryIndex).getDataItem(y).getY();
+						if( currentVal_ != null)
 						{
-							dSet[primaryDset].getSeries(primaryIndex).getDataItem(y+1).setY(new Double(currentVal));
-							dSet[primaryDset].getSeries(primaryIndex).getDataItem(y).setY(new Double(nextVal));
-
-							//SORT ALL OTHER SERIES BASE ON PRIMARY
-							for(int a = 0; a < 2; a++)
+							int tempy = y+1;
+							Double nextVal_ = (Double)dSet[primaryDset].getSeries(primaryIndex).getDataItem(y+1).getY();
+							while(nextVal_ == null && tempy < x )
 							{
-								for(int b = 0; b < dSet[a].getSeriesCount(); b++)
+								tempy++;
+								nextVal_ = (Double)dSet[primaryDset].getSeries(primaryIndex).getDataItem(tempy).getY();
+							}
+							if( nextVal_!= null)
+							{
+								if( currentVal_.doubleValue() < nextVal_.doubleValue())
 								{
-									if( !(a==primaryDset && b == primaryIndex))	//not primary dSet/serie
+									dSet[primaryDset].getSeries(primaryIndex).getDataItem(tempy).setY((Double)currentVal_);
+									dSet[primaryDset].getSeries(primaryIndex).getDataItem(y).setY((Double)nextVal_);
+	
+									//SORT ALL OTHER SERIES BASE ON PRIMARY
+									for(int a = 0; a < 2; a++)
 									{
-										currentVal = dSet[a].getSeries(b).getDataItem(y).getY().doubleValue();
-										nextVal = dSet[a].getSeries(b).getDataItem(y+1).getY().doubleValue();
-										
-										dSet[a].getSeries(b).getDataItem(y+1).setY(new Double(currentVal));
-										dSet[a].getSeries(b).getDataItem(y).setY(new Double(nextVal));
+										for(int b = 0; b < dSet[a].getSeriesCount(); b++)
+										{
+											if( !(a==primaryDset && b==primaryIndex))	//not primary dSet/serie
+											{
+												if( dSet[a].getSeries(b).getItemCount() > 0 && dSet[a].getSeries(b).getItemCount() > tempy)
+												{
+													currentVal_ = (Double)dSet[a].getSeries(b).getDataItem(y).getY();
+													nextVal_ = (Double)dSet[a].getSeries(b).getDataItem(tempy).getY();
+													
+													dSet[a].getSeries(b).getDataItem(tempy).setY((Double)currentVal_);
+													dSet[a].getSeries(b).getDataItem(y).setY((Double)nextVal_);
+												}
+											}
+										}
 									}
 								}
 							}
-							
 						}
 					}
 				}
 			}
 		}
+		//Remove all null values, line graphs will not print continuous with null data.
+		for(int a = 0; a < 2; a++)
+		{
+			for(int b = 0; b < dSet[a].getSeriesCount(); b++)
+			{
+				for (int c = 0; c < dSet[a].getSeries(b).getItemCount()-1; c++)
+				{
+					if(dSet[a].getSeries(b).getDataItem(c).getY() == null)
+					{
+						dSet[a].getSeries(b).delete(c, c);
+						c--;
+					}
+				}
+			}
+		}
+
 	}
 }
