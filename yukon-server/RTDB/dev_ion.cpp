@@ -147,11 +147,20 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 }
 
                 case ScanRateIntegrity:
-                default:
                 {
                     _ion.setCommand(CtiProtocolION::Command_IntegrityScan);
 
                     found = true;
+
+                    break;
+                }
+
+                default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
 
                     break;
                 }
@@ -679,7 +688,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     }
 
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                     "getstatus eventlog no_timesync",
+                                                                     "getstatus eventlog",
                                                                      InMessage->Return.UserID,
                                                                      InMessage->Return.TrxID,
                                                                      InMessage->Return.RouteID,
@@ -698,21 +707,37 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 }
                 else
                 {
-                    CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
-                                                                     "putconfig timesync",
-                                                                     InMessage->Return.UserID,
-                                                                     InMessage->Return.TrxID,
-                                                                     InMessage->Return.RouteID,
-                                                                     InMessage->Return.MacroOffset,
-                                                                     InMessage->Return.Attempt);
+                    CtiRequestMsg *newReq;
+
+                    newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                      "putconfig timesync",
+                                                      InMessage->Return.UserID,
+                                                      InMessage->Return.TrxID,
+                                                      InMessage->Return.RouteID,
+                                                      InMessage->Return.MacroOffset,
+                                                      InMessage->Return.Attempt);
 
                     newReq->setMessagePriority(15);
 
                     newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
-                    CtiCommandParser parse(newReq->CommandString());
+                    CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
-                    CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+                    delete newReq;
+
+                    newReq = CTIDBG_new CtiRequestMsg(getID(),
+                                                      "scan general",
+                                                      InMessage->Return.UserID,
+                                                      InMessage->Return.TrxID,
+                                                      InMessage->Return.RouteID,
+                                                      InMessage->Return.MacroOffset,
+                                                      InMessage->Return.Attempt);
+
+                    newReq->setMessagePriority(15);
+
+                    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                    CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
                     delete newReq;
                 }
