@@ -5,14 +5,17 @@ package com.cannontech.yc.gui;
  * Creation date: (2/25/2002 3:24:43 PM)
  * @author: 
  */
+import java.io.IOException;
 import java.util.Observable;
+
+import javax.servlet.http.HttpSessionBindingEvent;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiProperties;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
-import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -24,45 +27,85 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.MessageEvent;
 
-public class YC extends Observable implements Runnable
+public class YC extends Observable implements com.cannontech.message.util.MessageListener, javax.servlet.http.HttpSessionBindingListener
 {
+	/** HashSet of userMessageIds for this instance */
+	private java.util.Set requestMessageIDs = new java.util.HashSet();
+	
 	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
 	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
 	public final String DEFAULT_FILENAME = "default";	//serial number file name
 	public final String COLLECTION_GROUP_FILENAME = "CollectionGroup";	//serial number file name
 	public final String CICUSTOMER_FILENAME = "CICustomer";	//serial number file name
 
-	private String commandFileName = "commandFile";	//current command file, init only to NOT have null value
-	private String commandFileExt = ".txt";	//the extension used for command files.
+	/** Porter Return messages displayable text */
+	private String resultText = "";
+	/** Current comand file, init only to avoid having null values.*/ 
+	private String commandFileName = "commandFile";
+	/** Command file extension. */
+	private String commandFileExt = ".txt";
 	
-	private String command;	//holds the current Command to execute
-	private String serialNumber;	// currently selected serial number (from tree or box)
+	/** Current command string to execute */
+	private String command = "";
+	
+	/** deviceID(opt1) or serialNumber(opt2) will be used to send command to.
+	/** Selected deviceID */
+	private int deviceID = -1; 
+	/** Selected serial Number */
+	private String serialNumber;
+	/** Selected tree item object*/
 	private Object treeItem = null;
-	private int routeID = -1;		//when serial number used, the current routeID
-	private int    modelType = 0;
+	/** selected routeid, used for serialNumber commands or for some loop commands*/
+	private int routeID = -1;
+	/** Selected tree model type. Refer to com.cannontech.database.model.* for valid models. */
+	private int modelType = 0;
 	
-	private boolean DIRECTLY_SEND_COMMAND = false;	//allows a shortcut send method, changes with CGPCheckBox.
-
-	private volatile int currentUserMessageID = 1;
+	/** Valid send command modes */ 
+	public static int DEFAULT_MODE = 0;	//send commands with YC addt's (loop, queue, route..)
+	public static int CGP_MODE = 1;	//send commands as they are, no parsing done on them
+	private int commandMode = DEFAULT_MODE;
+	
+	/** Store last Porter request message, for use when need to send it again (loop) */
+	public Request porterRequest = null;
+	
+	/** Singleton incrementor for messageIDs to send to porter connection */
+	private static volatile long currentUserMessageID = 1;
+	
+	/** flag indicating more commands to send out (mainly loop commands)*/
 	public volatile int sendMore = 0;
 
-	public  static Request porterRequest = null;
-
+	/** All LiteYukonPaobject of type route */
 	public Object[] allRoutes = null;
 
-	private int loopType = 0;
+	/** Valid loop command types */
 	public static int NOLOOP = 0;	//loop not parsed
 	public static int LOOP = 1;	//loop alone parsed
 	public static int LOOPNUM = 2;//loop for some num of times
 	public static int LOOPLOCATE = 3;//loop locate parsed
 	public static int LOOPLOCATE_ROUTE = 4;//loop locate route parsed
+	private int loopType = NOLOOP;
 	
-	private Thread inThread;
-	private ClientConnection connToPorter = null;
+	/** A singleton instance for a connection to Pil */
+	private static ClientConnection connToPorter = null;
+	
+	/** KeysAndValues for readable command/actual command string*/
 	private KeysAndValuesFile keysAndValuesFile = null;
 
+	/** Default YC properties*/
 	private YCDefaults ycDefaults = null;
+	
+	/** Fields used in the MessageReceived(..) method to track last printed data */
+	/** dateTime formating string */
+	private java.text.SimpleDateFormat displayFormat = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
+	/** Keep track of the last userMessageID from the MessageEvents */
+	private long prevUserID = -1;
+	/**TODO - fix this!!*/
+	/**Flag indicating first display type data (for headings)*/
+	private boolean firstTime = true;
+	
 	
 	public class OutputMessage{
 		public static final int DISPLAY_MESSAGE = 0;	//YC defined text
@@ -101,22 +144,30 @@ public class YC extends Observable implements Runnable
 	/**
 	 * YC constructor comment.
 	 */
-	public YC() 
+	public YC()
 	{
-		super();
-		ycDefaults = new YCDefaults();
-		getConnToPorter();
-		//Start this Runnable Thread.
-		inThread = new Thread(this);
-		inThread.start();
+		this(false);	//don't load defaults from file (mainly for web servlet)
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/25/2002 5:03:35 PM)
+	 * YC constructor.
+	 * If loadDefaultsFromFile_ is true, use the saved properties file for class defualts. 
+	 * Gets a connection to porter and adds a message listener to this.
+	 * @param boolean loadDefaultsFromFile_
+	 */
+	public YC(boolean loadDefaultsFromFile_) 
+	{
+		super();
+		ycDefaults = new YCDefaults(loadDefaultsFromFile_);
+		getConnToPorter();
+		getConnToPorter().addMessageListener(this);
+	}
+	
+	/**
+	 * Execute the command, based on commandMode, selected object type, and YC properties.
 	 */
 	public void executeCommand()
 	{
-		if ( !isDirectSend())	//going to skip the check since user knows what's going on.
+		if ( getCommandMode() == DEFAULT_MODE)	//Need to do all checks and setup for DEFAULT_MODE
 		{
 			String subCommand = null;
 	
@@ -137,14 +188,14 @@ public class YC extends Observable implements Runnable
 		//---------------------------------------------------------------------------------------
 		try
 		{
-			if ( isDirectSend() )
+			if ( getCommandMode() == CGP_MODE )
 			{
 				porterRequest = new Request( 0, getCommand(), currentUserMessageID );
 				porterRequest.setPriority(getCommandPriority());
 				writeNewRequestToPorter( porterRequest );
 			}
 				
-			else if( getTreeItem() != null )
+			else if( getTreeItem() != null )	//must setup the request to send
 			{
 				// Stops the requests from continuing (a.k.a. kills the "loop" command).
 				sendMore = 0;
@@ -152,15 +203,16 @@ public class YC extends Observable implements Runnable
 				// Device item selected (including other models)
 				if( getTreeItem() instanceof LiteYukonPAObject )
 				{
-					LiteYukonPAObject lpao = (LiteYukonPAObject) getTreeItem();
-					handleDevice ( lpao.getYukonID(), lpao.getType() );
+					LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
+					setDeviceID(liteYukonPao.getYukonID());
+					handleDevice();
 				}
 				// Meter number item in tree selected.
 				else if( getTreeItem() instanceof LiteDeviceMeterNumber )
 				{
 					LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
-					LiteYukonPAObject litePao = DeviceFuncs.getLiteDevice(ldmn.getLiteID());
-					handleDevice (ldmn.getDeviceID(), litePao.getType());
+					setDeviceID(ldmn.getLiteID());
+					handleDevice();
 				}		
 				// Serial Number item in tree selected.
 				else if ( getModelType() == ModelFactory.EDITABLELCRSERIAL)
@@ -173,8 +225,8 @@ public class YC extends Observable implements Runnable
 					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
 					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 					{
-						LiteYukonPAObject lpao = DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
-						handleDevice ( lpao.getYukonID(), lpao.getType() );
+						setDeviceID(deviceMeterGroupIds[i].intValue());
+						handleDevice ();
 					}
 				}
 				// Collectiongroup is selected.
@@ -183,8 +235,8 @@ public class YC extends Observable implements Runnable
 					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
 					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 					{
-						LiteYukonPAObject lpao = DeviceFuncs.getLiteDevice(deviceMeterGroupIds [i].intValue());
-						handleDevice ( lpao.getYukonID(), lpao.getType() );
+						setDeviceID(deviceMeterGroupIds [i].intValue());
+						handleDevice();
 					}
 				}
 				else
@@ -207,6 +259,8 @@ public class YC extends Observable implements Runnable
 	 */
 	public Object[] getAllRoutes()
 	{
+		if( allRoutes == null)
+			allRoutes = com.cannontech.database.cache.functions.PAOFuncs.getAllLiteRoutes();
 		return allRoutes;
 	}
 	/**
@@ -229,83 +283,116 @@ public class YC extends Observable implements Runnable
 		return commandFileName;
 	}
 	
+	/**
+	 * Return the YCDefaults commandFileDirectory
+	 * Directory of the command files.
+	 * @return String commandFileDirectory.
+	 */
 	public String getCommandFileDirectory()
 	{
 		return getYCDefaults().getCommandFileDirectory();
 	}
+	/**
+	 * Returns the commandFileDirectory for custom command files.
+	 * Directory of the custom command files. 
+	 * @return String customCommandFileDirectory
+	 */
 	public String getCustomCommandFileDirectory()
 	{
 		return getYCDefaults().getCommandFileDirectory()+"Custom\\";
 	}
 	
+	/**
+	 * Retturns the YCDefaults commandPriority (values 1-14)
+	 * @return int commandPriority 
+	 */
 	public int getCommandPriority()
 	{
 		return getYCDefaults().getCommandPriority();
 	}
+	
+	/**
+	 * Returns the singleton instance of this Porter connection
+	 * @return
+	 */
+	public static synchronized ClientConnection getConnToPorter() {
+		if(connToPorter == null)
+		{
+			connToPorter = new ClientConnection();
+			connect();
+		}
+		else
+		{
+			CTILogger.info("Connection to Porter instance already exists.");
+		}
+		return connToPorter;
+	}	
 
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 2:02:30 PM)
+	 * Creates a singleton connection to porter if it does not exist.
+	 * Messages from porter are set to not queue, so we don't overload memory with web calls.
 	 * @return com.cannontech.message.porter.ClientConnection
 	 */
-	public ClientConnection getConnToPorter()
+	public static void connect()
 	{
-		if( connToPorter == null )
+		String host = "127.0.0.1";
+		int port = 1510;
+		try
 		{
-			String host = "127.0.0.1";
-			int port = 1510;
-			try
-			{
-				host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_MACHINE, 
-	                  "127.0.0.1");
-	            
-				port = (new Integer( CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_PORT, 
-	                  "1510"))).intValue();
-			}
-			catch( Exception e)
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-	
-			connToPorter = new ClientConnection();
-			connToPorter.setHost(host);
-			connToPorter.setPort(port);
-			connToPorter.setAutoReconnect(true);
-			
-			try 
-			{
-				connToPorter.connectWithoutWait();
-			}
-			catch( Exception e ) 
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
+			host = CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_MACHINE, 
+                  "127.0.0.1");
+            
+			port = (new Integer( CtiProperties.getInstance().getProperty(CtiProperties.KEY_PORTER_PORT, 
+                  "1510"))).intValue();
 		}
-	
-		return connToPorter;	
+		catch( Exception e)
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+
+		connToPorter = new ClientConnection();
+		connToPorter.setQueueMessages(false);	//don't keep messages, toss once read.
+		connToPorter.setHost(host);
+		connToPorter.setPort(port);
+		connToPorter.setAutoReconnect(true);
+		
+		try 
+		{
+			connToPorter.connectWithoutWait();
+		}
+		catch( Exception e ) 
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+		CTILogger.info(" ************ CONNECTION TO PORTER ESTABLISHED ********************");
+		return;	
 	}	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/27/2002 4:42:57 PM)
-	 * @return int
+	 * Returns the loop command type
+  	 * Valid loop types are:
+	 * NOLOOP=0				- loop not parsed
+	 * LOOP=1				- loop alone parsed
+	 * LOOPNUM=2			- loop for some num of times
+	 * LOOPLOCATE=3			- loop locate parsed
+	 * LOOPLOCATE_ROUTE=4	- loop locate route parsed
+	 * @return int loopType
 	 */
 	public int getLoopType()
 	{
 		return loopType;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 2:13:06 PM)
-	 * @return int
+	 * Return the model type.
+	 * Refer to com.cannontech.database.model.* for valid models.
+	 * @return int modelType
 	 */
 	public int getModelType()
 	{
 		return modelType;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (1/31/2002 2:57:37 PM)
-	 * @return java.lang.String
+	 * Returns the "queue" command string if queuing is turned on.
+	 * @return java.lang.String 
 	 */
 	public String getQueueCommandString()
 	{
@@ -315,51 +402,56 @@ public class YC extends Observable implements Runnable
 			return " noqueue";
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 1:53:53 PM)
-	 * @return int
+	 * Return the routeID
+	 * TODO - RouteID is only useful for loop commands or 
+	 *  those applied to serialNumber.
+	 * @return int routeID
 	 */
 	public int getRouteID()
 	{
 		return routeID;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 4:16:48 PM)
-	 * @return String
+	 * Return the serialNumber
+	 * @return String serialNumber
 	 */
 	public String getSerialNumber()
 	{
 		return serialNumber;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 2:19:40 PM)
-	 * @return java.lang.Object
+	 * Return the treeItem.
+	 * The current selected tree object
+	 * @return java.lang.Object treeItem
 	 */
 	public Object getTreeItem()
 	{
 		return treeItem;
 	}
+	
+	/**
+	 * Return the default properties.
+	 * @return com.cannontech.yc.gui.YCDefaults ycDefaults
+	 */
 	public YCDefaults getYCDefaults()
 	{
 		if( ycDefaults == null)
 			ycDefaults = new YCDefaults();
 		return ycDefaults;
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Gets the device ID of the object, and selected serial number (which should "never" happen)
+	 * Gets the device ID(opt1) of the object, or selected serial number(opt2) if deviceID is <0
 	 * Checks for the command string "loop" to exist.
 	 * Creates the message.Request to send to porter.
 	 * Saves the message.Request if "loop" was found in the string so the Request can be resubmitted.
 	 * Write's the Request to the porter connection.
-	 * Creation date: (9/16/2001 5:32:40 PM)
 	 */
-	public void handleDevice(int deviceID, int type)
+	public void handleDevice()
 	{
-			
-		if( deviceID < 0 )	//no device selected
+		LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(getDeviceID());
+
+		if( getDeviceID() < 0 )	//no device selected
 		{
 			if ( getSerialNumber() == null)	// NO serial Number Selected
 			{
@@ -371,15 +463,15 @@ public class YC extends Observable implements Runnable
 		setLoopType( parseLoopCommand() );
 		String command = getCommand();
 	
-		if ( DeviceTypesFuncs.isMCT(type) || DeviceTypesFuncs.isRepeater(type))
+		if ( DeviceTypesFuncs.isMCT(liteYukonPao.getType()) || DeviceTypesFuncs.isRepeater(liteYukonPao.getType()))
 		{
 			if( command.indexOf("noqueue") < 0)
 				setCommand( command + getQueueCommandString());
 		}
 	
-		porterRequest = new Request( deviceID, getCommand(), currentUserMessageID );
+		porterRequest = new Request( getDeviceID(), getCommand(), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
-	
+		
 		if (getLoopType() == LOOPLOCATE)
 	 	{
 			if( getAllRoutes() != null && getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
@@ -404,13 +496,11 @@ public class YC extends Observable implements Runnable
 		writeNewRequestToPorter(porterRequest);
 	}
 	/**
-	 * Insert the method's description here.
 	 * Looks for the string "serial" in the command.
 	 * If the string is not found, tack it on to the string along with the currentSelectedSerialNumber.
 	 * Create a message.Request to send to porter.
 	 * Set the route selected for the message.Request.
 	 * Write Request to the connection to porter.
-	 * Creation date: (9/16/2001 5:32:40 PM)
 	 */
 	public void handleSerialNumber()
 	{
@@ -419,7 +509,7 @@ public class YC extends Observable implements Runnable
 		int index = getCommand().indexOf("serial");
 		
 		if( index < 0 )	// serial not in command string = -1
-			setCommand( getCommand() + " serial " + getTreeItem() );
+			setCommand( getCommand() + " serial " + serialNumber );
 		//else	// Do nothing, assume the command is correct
 	
 		setLoopType( parseLoopCommand() );
@@ -448,31 +538,34 @@ public class YC extends Observable implements Runnable
 	
 		writeNewRequestToPorter( porterRequest );
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 12:21:26 PM)
-	 * @return boolean
+	 * Returns the send command mode.
+	 * Valid values are:
+	 * DEFAULT_MODE = 0;	//send commands with YC addt's (loop, queue, route..)
+	 * CGP_MODE = 1;	//send commands as they are, no parsing done on them
+	 * @return int commandMode
 	 */
-	public boolean isDirectSend() 
+	public int getCommandMode() 
 	{
-		return DIRECTLY_SEND_COMMAND;
+		return commandMode;
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 11:58:03 AM)
-	 * @param logString java.lang.String
+	 * Notifies the observers of new logging data.
+	 * @param logString_ java.lang.String
 	 */
-	public void logCommand(String logString)
+	public void logCommand(String logString_)
 	{
-		YukonCommander.getCommandLogPanel().addLogElement(logString);
+		setChanged();
+		this.notifyObservers(logString_);
 	}
+	
 	/**
-	 * Insert the method's description here.
 	 * Search for the string "loop" in the command.
 	 * If loop is found, search for any value in the command (following "loop").
 	 * Set sendMore to the number found after loop (which tells how many times loop wishes to perform).
 	 * Return boolean: True if "loop" found, False if not found.
-	 * Creation date: (9/12/2001 3:07:17 PM)
 	 */
 	public int parseLoopCommand()
 	{
@@ -536,55 +629,58 @@ public class YC extends Observable implements Runnable
 		}
 		return NOLOOP;
 	}
+	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/27/2002 3:38:15 PM)
-	 * @param allRoutesVector java.util.Vector
+	 * Sets allRoutes with allRoutesArray Object[]
+	 * @param allRoutesVector_ java.util.Vector
 	 */
-	public void setAllRoutes(Object[] allRoutesArray) 
+	public void setAllRoutes(Object[] allRoutesArray_) 
 	{
-		allRoutes = new Object[allRoutesArray.length];
-		for ( int i = 0; i < allRoutesArray.length; i++)
+		allRoutes = new Object[allRoutesArray_.length];
+		for ( int i = 0; i < allRoutesArray_.length; i++)
 		{
-			allRoutes[i] = allRoutesArray[i];
+			allRoutes[i] = allRoutesArray_[i];
 		}
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/11/2001 12:07:43 PM)
-	 * @param newCommand java.lang.String
+	 * Set the commmand string
+	 * @param command_ java.lang.String
 	 */
-	public void setCommand(String newCommand)
+	public void setCommand(String command_)
 	{
-		command = newCommand;
+		command = command_;
 	}
 
-	public void setCommandFileName(Object item)
+	/**
+	 * Set the commandFileName based on the item instance.
+	 * @param item_ Object
+	 */
+	public void setCommandFileName(Object item_)
 	{
 		String className = DEFAULT_FILENAME;
 	
-		if( item instanceof DeviceBase)	//		ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+		if( item_ instanceof DeviceBase)					//ModelFactory.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
 		{
-			className = ((DeviceBase)item).getPAOType();
+			className = ((DeviceBase)item_).getPAOType();
 		}
-		else if( item instanceof CICustomerBase)	//		ModelFactory.CICUSTOMER
+		else if( item_ instanceof CICustomerBase)		//ModelFactory.CICUSTOMER
 		{
 			className = CICUSTOMER_FILENAME;
 		}
-		else if(item instanceof DeviceMeterGroupBase)//		ModelFactory.DEVICE_METERNUMBER,		
+		else if(item_ instanceof DeviceMeterGroupBase)	//ModelFactory.DEVICE_METERNUMBER,		
 		{
-			int devID = ((DeviceMeterGroupBase)item).getDeviceMeterGroup().getDeviceID().intValue();
-			LiteYukonPAObject litePao = DeviceFuncs.getLiteDevice(devID);
+			int devID = ((DeviceMeterGroupBase)item_).getDeviceMeterGroup().getDeviceID().intValue();
+			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO(devID);
 			className = PAOGroups.getPAOTypeString(litePao.getType());
 		}
-		else if (item instanceof String)	//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
+		else if (item_ instanceof String)				//ModelFactory.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
 		{
-			className = (String) item;
+			className = (String) item_;
 		}
 		else 
 		{
-			CTILogger.debug("FILENAME: undefined. Item instance of " + item.getClass());
-			CTILogger.debug(" THIS IS REALLY A BAD CATCH ALL HUH");
+			//*TODO - This is a really bad catch all...revise!*/
+			CTILogger.debug("FILENAME: undefined. Item instance of " + item_.getClass());
 		}
 		commandFileName = className + getCommandFileExt();
 		CTILogger.info(" COMMAND FILE: " + getCommandFileDirectory()+ commandFileName);
@@ -592,109 +688,104 @@ public class YC extends Observable implements Runnable
 	}
 			
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 2:02:49 PM)
-	 * @param connection com.cannontech.message.porter.ClientConnection
+	 * Set the connToPorter
+	 * @param connection_ com.cannontech.message.porter.ClientConnection
 	 */
-	public void setConnToPorter(ClientConnection connection)
+	public void setConnToPorter(ClientConnection connection_)
 	{
-		connToPorter = connection;
+		connToPorter = connection_;
+	}
+	
+	/**
+	 * Set the commandMode
+	 * Valid values are:
+	 * DEFAULT_MODE = 0;	//send commands with YC addt's (loop, queue, route..)
+	 * CGP_MODE = 1;	//send commands as they are, no parsing done on them
+	 * @param int mode_
+	 */
+	public void setCommandMode(int mode_) 
+	{
+		commandMode = mode_;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 12:20:08 PM)
-	 * @param directlySend boolean
+	 * Set the loopType
+ 	 * Valid loop types are:
+	 * NOLOOP=0				- loop not parsed
+	 * LOOP=1				- loop alone parsed
+	 * LOOPNUM=2			- loop for some num of times
+	 * LOOPLOCATE=3			- loop locate parsed
+	 * LOOPLOCATE_ROUTE=4	- loop locate route parsed
+	 * @param loopType_ int
 	 */
-	public void setDirectSend(boolean directlySend) 
+	public void setLoopType(int loopType_) 
 	{
-		DIRECTLY_SEND_COMMAND = directlySend;
+		loopType = loopType_;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/27/2002 4:42:38 PM)
-	 * @param newLoopType int
+	 * Set the modelType
+	 * Refer to com.cannontech.database.model.* for valid models. 
+	 * @param modelType_ int
 	 */
-	public void setLoopType(int newLoopType) 
+	public void setModelType(int modelType_)
 	{
-		loopType = newLoopType;
+		modelType = modelType_;	
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 2:12:46 PM)
-	 * @param typeSelected int
-	 */
-	public void setModelType(int typeSelected)
-	{
-		modelType = typeSelected;	
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 1:48:11 PM)
-	 * @param newRoute java.lang.Object
-	 */
-	public void setRouteID(Object newRoute) 
-	{
-		if( newRoute instanceof LiteYukonPAObject)
-			setRouteID(((LiteYukonPAObject)newRoute).getYukonID());
-	}
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/26/2002 1:48:11 PM)
-	 * @param routeID_ int
+	 * Set the routeID
+	 * @param routeID_ int 
 	 */
 	public void setRouteID(int routeID_) 
 	{
 		routeID = routeID_;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 4:17:54 PM)
-	 * @param newSerialNumber java.lang.String
+	 * Set the serialNumber
+	 * The serialNumber for the LCR commands
+	 * @param serialNumber_ java.lang.String
 	 */
-	public void setSerialNumber(String newSerialNumber)
+	public void setSerialNumber(String serialNumber_)
 	{
-		if( newSerialNumber == null)
+		if( serialNumber_ == null)
 			serialNumber = null;
 		else 
-			serialNumber = newSerialNumber.trim();
+			serialNumber = serialNumber_.trim();
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 2:21:41 PM)
-	 * @param selectedTreeItem java.lang.Object
+	 * Set the selected treeItem object
+	 * @param treeItem_ java.lang.Object
 	 */
-	public void setTreeItem(Object newTreeItem)
+	public void setTreeItem(Object treeItem_)
 	{
-		treeItem = newTreeItem;
+		treeItem = treeItem_;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (5/21/2002 4:16:33 PM)
-	 * @param newDefaults com.cannontech.yc.gui.YCDefaults
+	 * Set the YCDefualts.
+	 * The default properties for YC setup.
+	 * @param defaults_ com.cannontech.yc.gui.YCDefaults
 	 */
-	public void setYCDefaults(YCDefaults newDefaults)
+	public void setYCDefaults(YCDefaults defaults_)
 	{
-		ycDefaults = newDefaults;
+		ycDefaults = defaults_;
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (9/10/2001 3:15:58 PM)
+	 * Reset the sendMore counter to -1.
+	 * Stops multiple command processing done by YC.
 	 */
 	public void stop()
 	{
-		currentUserMessageID++;
-		sendMore = -1;		//Cancels multiple command processing done by YC
+		generateMessageID();
+		sendMore = -1;
 	}
 	/**
-	 * This method attempts to substitute a command for the typed in command
-	 * based on the type of device/point selected.
-	 * Applicable when the user may actually type in the command KEY value instead of the actual VALUE.
+	 * Assumes command may be a "user-friendly" string instead of a porter accepted command string.
+	 * Attempt to substitute a porter accepted command for a "user-friendly" command
+	 * (Ex.  User type "Read My Meter" instead of "getvalue kwh").
 	 */
-	public String substituteCommand(String command)
+	public String substituteCommand(String command_)
 	{
 		if( getKeysAndValues() != null)
 		{
-			String lowerCommand = command.toLowerCase().trim();
+			String lowerCommand = command_.toLowerCase().trim();
 		
 			//try to match the command to a key in cpf
 			for (int i = 0; i < getKeysAndValues().getKeys().length; i++)
@@ -714,29 +805,42 @@ public class YC extends Observable implements Runnable
 			}
 		}
 	
-		return command; //default, return whatever they typed in on the command line
+		return command_; //default, return whatever they typed in on the command line, didn't match with anything
 	}
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (10/15/2001 3:52:17 PM)
+	 * Write Request message to porter.
 	 * @param request com.cannontech.message.porter.message.Request
 	 */
-	public void writeNewRequestToPorter(Request request)
+	public void writeNewRequestToPorter(Request request_)
 	{
 		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");					
 		long timer = (System.currentTimeMillis());
-			
+
+		String log = "";
+		if( request_.getDeviceID() > 0)
+			log = " Device \'" + PAOFuncs.getYukonPAOName(request_.getDeviceID()) + "\'";
+		else
+			log = " Serial # \'" + serialNumber + "\'";
+
 		logCommand("[" + format.format(new java.util.Date(timer)) 
-			+ "] - {"+ currentUserMessageID + "} Command Sent to Device \'"+ getTreeItem() + "\'  -  \'" + getCommand() + "\'");
-		if( getConnToPorter() != null )
+			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + getCommand() + "\'");
+		if( connToPorter != null )
 		{
-			if( getConnToPorter().isValid())
+			if( connToPorter.isValid())
 			{
-				getConnToPorter().write( request );
-				currentUserMessageID++;
+				connToPorter.write( request_ );
+				requestMessageIDs.add(new Long(currentUserMessageID));
+				generateMessageID();
 			}
 			else
 			{
+				String logOutput= "\n["+ displayFormat.format(new java.util.Date()) + "]- Command request not sent.\n" + 
+					"Connection to porter is not established.\n";
+				OutputMessage message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, logOutput);
+				setChanged();
+				this.notifyObservers(message);
+				setResultText( getResultText() + message.getText());
+			
 				CTILogger.info("REQUEST NOT SENT: CONNECTION TO PORTER IS NOT VALID");
 			}
 		}
@@ -766,195 +870,296 @@ public class YC extends Observable implements Runnable
 
 	/**
 	 * Returns the keysAndValues.
+	 * key=UserFriendlyCommandName value=PorterCommandString
 	 * @return com.cannontech.common.util.KeysAndValues
 	 */
 	public KeysAndValues getKeysAndValues()
 	{
-		return getKeysAndValuesFile().getKeysAndValues();
+		if( getKeysAndValuesFile() != null)
+			return getKeysAndValuesFile().getKeysAndValues();
+		return null;
 	}
-	
-	public int getCurrentUserMessageID()
+	/**
+	 * A unique count id of Request messages sent to Porter.
+	 * @return int currentUserMessageID
+	 */
+	public long getCurrentUserMessageID()
 	{
 		return currentUserMessageID;
 	}
 	/**
-	 * @return
+	 * Command files extension.
+	 * @return String commandFileExt
 	 */
 	public String getCommandFileExt()
 	{
 		return commandFileExt;
 	}
+
 	/**
-	 * Run simply waits for Return messages to appear on our connection and
-	 * This should be done without using a separate thread but its not.  rev 2 baby
-	 * adds them to the output pane.
+	 * Replaces the run() method and allows us to remove the Runnable interface
+	 *  by using the MessageListener available to us.
+	 * Verifies the messages are of Return type and then uses these messages to create
+	 *  readable display/debug messages, OutputMessage.
 	 */
-	public void run()
+	/* (non-Javadoc)
+	 * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
+	 */
+	public void messageReceived(MessageEvent e)
 	{
-		try
+		if(e.getMessage() instanceof Return)
 		{
-			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");
-			long prevUserID = -1;
-			String displayOutput = "";
-			String debugOutput = "";
-			String routeName = null;
-			boolean firstTime = true;
-			for (;;)
+			Return returnMsg = (Return) e.getMessage();
+			
+			synchronized(this)
 			{
-				java.awt.Color textColor = getYCDefaults().getDisplayTextColor();
-				Object in;
-				debugOutput = "";
-				displayOutput = "";
-				if (getConnToPorter() != null && getConnToPorter().isValid())
+				if( !requestMessageIDs.contains( new Long(returnMsg.getUserMessageID())))
+					return;
+				/*else
 				{
-					if ((in = getConnToPorter().read()) != null)
+					/**TODO Should the ids be removed after being processed ?
+					//Remove the messageID from the set of this ids.
+					requestMessageIDs.remove( new Long(returnMsg.getUserMessageID()));
+				}*/
+			
+				java.awt.Color textColor = getYCDefaults().getDisplayTextColor();
+				String debugOutput = "";
+				String displayOutput = "";
+
+				/**inner class object used to contain displayable Return message data.*/
+				OutputMessage message;
+				/** When new (one that is different from the previous) userMessageID occurs, print datetime, command, etc info*/ 
+				if( prevUserID != returnMsg.getUserMessageID())
+				{
+					//textColor = java.awt.Color.black;
+					debugOutput = "\n["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} Return from \'" + returnMsg.getCommandString() + "\'\n";
+					message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
+					setChanged();
+					this.notifyObservers(message);
+					setResultText( getResultText() + message.getText());
+					debugOutput = "";
+					prevUserID = returnMsg.getUserMessageID();
+
+					/**TODO - better implement getting the header on the display screen*/				
+					if( firstTime && getLoopType() != YC.NOLOOP)
 					{
-						if (in instanceof com.cannontech.message.porter.message.Return)
+						displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
+						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, true);
+						setChanged();
+						this.notifyObservers(message);
+						setResultText( getResultText() + message.getText());
+						displayOutput = "";
+						firstTime = false;
+					}
+				}
+				
+				/** Add all PointData.getStr() objects to the output */
+				for (int i = 0; i < returnMsg.getVector().size(); i++)
+				{
+					Object o = returnMsg.getVector().elementAt(i);
+					if (o instanceof com.cannontech.message.dispatch.message.PointData)
+					{
+						com.cannontech.message.dispatch.message.PointData pd = (com.cannontech.message.dispatch.message.PointData) o;
+						if ( pd.getStr().length() > 0 )
 						{
-							com.cannontech.message.porter.message.Return ret = (com.cannontech.message.porter.message.Return) in;
-							OutputMessage message;
-							if( prevUserID != ret.getUserMessageID())
+							int tabCount = (60 - displayOutput.length())/ 24;
+							for (int x = 0; x <= tabCount; x++)
 							{
-//								textColor = java.awt.Color.black;
-								debugOutput = "\n["+ format.format(ret.getTimeStamp()) + "]-{" + ret.getUserMessageID() +"} Return from \'" + ret.getCommandString() + "\'\n";
-								message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput);
-								setChanged();
-								this.notifyObservers(message);
-								debugOutput = "";
-								prevUserID = ret.getUserMessageID();
-							
-								if( firstTime && getLoopType() != YC.NOLOOP)
-								{
-									displayOutput = "\n\nROUTE\t\t\tVALID\t\tERROR";
-									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, true);
-									setChanged();
-									this.notifyObservers(message);
-									displayOutput = "";
-									firstTime = false;
-								}
+								displayOutput += "\t";
 							}
-														
-							for (int i = 0; i < ret.getVector().size(); i++)
-							{
-								Object o = ret.getVector().elementAt(i);
-								if (o instanceof com.cannontech.message.dispatch.message.PointData)
-								{
-									com.cannontech.message.dispatch.message.PointData pd = (com.cannontech.message.dispatch.message.PointData) o;
-									if ( pd.getStr().length() > 0 )
-									{
-										int tabCount = (60 - displayOutput.length())/ 24;
-										for (int x = 0; x <= tabCount; x++)
-										{
-											displayOutput += "\t";
-										}
-										debugOutput += pd.getStr() + "\n";
-									}
-								}
-							}
-
-							if (ret.getRouteOffset() > 0)
-							{
-								routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getRouteOffset());																				
-							}
-
-							if( ret.getExpectMore() == 0)
-							{
-								if( routeName == null)
-								{
-									routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(ret.getDeviceID());
-								}
-
-								displayOutput = "\n" + routeName;
-								int tabCount = (60 - displayOutput.length())/ 24;
-								for (int i = 0; i <= tabCount; i++)
-								{
-									displayOutput += "\t";
-								}
-
-								if( ret.getStatus() != 0)
-								{
-									textColor = getYCDefaults().getInvalidTextColor();
-									if( ret.getExpectMore() == 0)
-										displayOutput += "N\t\t" + ret.getStatus();
-								}
-								else	//status == 0 == successfull
-								{
-									textColor = getYCDefaults().getValidTextColor();
-									if( ret.getExpectMore() == 0)
-										displayOutput += "Y\t\t---";
-								}
-		
-								if( getLoopType() != YC.NOLOOP)
-								{
-									message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, ret.getStatus());
-									setChanged();
-									this.notifyObservers(message);									
-								}
-							}
-							if(ret.getResultString().length() > 0)
-							{
-								debugOutput += ret.getResultString() + "\n";
-							}
-							
-							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, ret.getStatus());
-							setChanged();
-							this.notifyObservers(message);
-							synchronized ( YukonCommander.class )
-							{
-								if( ret.getExpectMore() == 0)	//Only send next message when ret expects nothing more
-								{
-									routeName = null;									
-									//Break out of this outer loop.
-									doneSendMore:
-									if( sendMore == 0)
-									{
-										// command finished
-									}
-									else if ( sendMore > 0)
-									{
-										sendMore--;	//decrement the number of messages to send
-										if (getLoopType() == YC.LOOPLOCATE)
-										{
-											if( getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
-											{
-												LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
-												while( rt.getType() == PAOGroups.ROUTE_MACRO
-													&& sendMore > 0)
-												{
-													sendMore--;
-													rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
-												}
-												// Have to check again because last one may be route_ macro
-												if(rt.getType() == PAOGroups.ROUTE_MACRO)
-													break doneSendMore;
-
-												getPorterRequest().setRouteID(rt.getYukonID());
-											}
-										}
-										getConnToPorter().write( getPorterRequest());	//do the saved loop request
-									}
-									else
-									{
-										debugOutput = "Command cancelled\n";
-										textColor = getYCDefaults().getInvalidTextColor();
-										message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, ret.getStatus());
-										setChanged();
-										this.notifyObservers(message);
-									}
-								}
-							}
+							debugOutput += pd.getStr() + "\n";
 						}
 					}
 				}
-				else
+
+				if( returnMsg.getExpectMore() == 0)
 				{
-					Thread.sleep(1000);
+					String routeName = null;
+					if (returnMsg.getRouteOffset() > 0)
+						routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(returnMsg.getRouteOffset());																				
+					
+					if( routeName == null)
+						routeName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(returnMsg.getDeviceID());
+
+					displayOutput = "\n" + routeName;
+					int tabCount = (60 - displayOutput.length())/ 24;
+					for (int i = 0; i <= tabCount; i++)
+					{
+						displayOutput += "\t";
+					}
+
+					if( returnMsg.getStatus() != 0)
+					{
+						textColor = getYCDefaults().getInvalidTextColor();
+						if( returnMsg.getExpectMore() == 0)
+							displayOutput += "N\t\t" + returnMsg.getStatus();
+					}
+					else	//status == 0 == successfull
+					{
+						textColor = getYCDefaults().getValidTextColor();
+						if( returnMsg.getExpectMore() == 0)
+							displayOutput += "Y\t\t---";
+					}
+
+					if( getLoopType() != YC.NOLOOP)
+					{
+						message = new OutputMessage(OutputMessage.DISPLAY_MESSAGE, displayOutput, returnMsg.getStatus());
+						setChanged();
+						this.notifyObservers(message);
+						setResultText( getResultText() + message.getText());									
+					}
+				}
+				if(returnMsg.getResultString().length() > 0)
+				{
+					debugOutput += returnMsg.getResultString() + "\n";
+				}
+				
+				message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, returnMsg.getStatus());
+				setChanged();
+				this.notifyObservers(message);
+				setResultText( getResultText() + message.getText());
+				synchronized ( YukonCommander.class )
+				{
+					if( returnMsg.getExpectMore() == 0)	//Only send next message when ret expects nothing more
+					{
+						//Break out of this outer loop.
+						doneSendMore:
+						if( sendMore == 0)
+						{
+							// command finished
+						}
+						else if ( sendMore > 0)
+						{
+							sendMore--;	//decrement the number of messages to send
+							if (getLoopType() == YC.LOOPLOCATE)
+							{
+								if( getAllRoutes()[sendMore] instanceof LiteYukonPAObject)
+								{
+									LiteYukonPAObject rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+									while( rt.getType() == PAOGroups.ROUTE_MACRO
+										&& sendMore > 0)
+									{
+										sendMore--;
+										rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
+									}
+									// Have to check again because last one may be route_ macro
+									if(rt.getType() == PAOGroups.ROUTE_MACRO)
+										break doneSendMore;
+
+									getPorterRequest().setRouteID(rt.getYukonID());
+								}
+							}
+							getConnToPorter().write( getPorterRequest());	//do the saved loop request
+						}
+						else
+						{
+							debugOutput = "Command cancelled\n";
+							textColor = getYCDefaults().getInvalidTextColor();
+							message = new OutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, returnMsg.getStatus());
+							setChanged();
+							this.notifyObservers(message);
+							setResultText( getResultText() + message.getText());
+						}
+					}
 				}
 			}
 		}
-		catch (InterruptedException e)
+	}
+
+		
+	/**
+	 * Returns result string from Return porter messages.
+	 * @return String resultText
+	 */
+	public String getResultText()
+	{
+		return resultText;
+	}
+
+	/**
+	 * Sets the resultText
+	 * @param string String
+	 */
+	public void setResultText(String string)
+	{
+		resultText = string;
+	}
+	public void clearResultText()
+	{
+		resultText = "";
+	}
+
+	/**
+	 * Write resultText to out.
+	 * @param out OutputStream
+	 * @throws java.io.IOException
+	 */
+	public void encodeResults(java.io.OutputStream out) throws java.io.IOException 
+	{
+		do
 		{
+			StringBuffer buf = new StringBuffer("<table><tr><td>"+getResultText()+"</td></tr></table>");
+			
+			out.write(buf.toString().getBytes());	
+		}
+		while (false);
+		System.out.println(" EXITTING ENCODERESULTS");
+	}
+
+	/**
+	 * DeviceId of the current selected device, if exists.
+ 	 * @return int deviceID
+	 */
+	public int getDeviceID()
+	{
+		return deviceID;
+	}
+
+	/**
+	 * Sets the deviceID
+	 * @param deviceID_ int
+	 */
+	public void setDeviceID(int deviceID_)
+	{
+		deviceID = deviceID_;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.HttpSessionBindingEvent)
+	 */
+	public void valueBound(HttpSessionBindingEvent arg0)
+	{
+		// TODO Auto-generated method stub
+		System.out.println("***** Value Bound " + arg0.getValue().toString() + "*****");	
+		
+	}
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http.HttpSessionBindingEvent)
+	 */
+	public void valueUnbound(HttpSessionBindingEvent arg0)
+	{
+		// TODO Is removing the messageListener enough?
+		System.out.println("***** Value UNBound " + arg0.getValue().toString() + "*****");
+		getConnToPorter().removeMessageListener(this);
+		try
+		{
+			getConnToPorter().disconnect();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * generate a unique mesageid, don't let it be negative
+	 * @return long currentMessageID
+	 */
+	private synchronized long generateMessageID() {
+		if(++currentUserMessageID == Integer.MAX_VALUE) {
+			currentUserMessageID = 1;
+		}
+		return currentUserMessageID;
 	}
 }
