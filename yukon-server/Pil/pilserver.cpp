@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2003/10/24 21:02:32 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2003/11/07 20:19:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -968,8 +968,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             for(int j = tempOutList.entries(); j > 0; j--)
             {
-                _porterOMQueue.putQueue(tempOutList.get());
-                // outList.insert( tempOutList.get() );
+                // _porterOMQueue.putQueue(tempOutList.get());
+                outList.insert( tempOutList.get() );
             }
 
             if(status != NORMAL)
@@ -1020,21 +1020,6 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Submitting " << outList.entries() << " CtiOutMessage objects to porter" << endl;
-        }
-    }
-
-    for( i = outList.entries() ; i > 0; i-- )
-    {
-        OutMessage = outList.get();
-        _porterOMQueue.putQueue(OutMessage);
-        OutMessage = 0;
-    }
-
-    if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Submitting " << retList.entries() << " CtiReturnMsg objects to client" << endl;
         }
     }
@@ -1059,6 +1044,21 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             delete pcRet;
         }
+    }
+
+    if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Submitting " << outList.entries() << " CtiOutMessage objects to porter" << endl;
+        }
+    }
+
+    for( i = outList.entries() ; i > 0; i-- )
+    {
+        OutMessage = outList.get();
+        _porterOMQueue.putQueue(OutMessage);
+        OutMessage = 0;
     }
 
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
