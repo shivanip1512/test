@@ -2349,6 +2349,8 @@ public static void main(String[] args) {
 	try
 	{
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+      System.setProperty("cti.app.name", "DBEditor");
+
 		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 
 		//Set the width and height 85% of max

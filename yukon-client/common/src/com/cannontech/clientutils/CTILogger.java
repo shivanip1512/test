@@ -38,15 +38,18 @@ public class CTILogger
 
       logger.addAppender( new ConsoleAppender(layout, ConsoleAppender.SYSTEM_OUT) );
       
-      String fileName = null;
+      String writeToFile = null;
       try
       {  
-         fileName = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
-            com.cannontech.common.util.CtiProperties.KEY_CLIENT_LOG_FILE, null);
+         writeToFile = com.cannontech.common.util.CtiProperties.getInstance().getProperty(
+            com.cannontech.common.util.CtiProperties.KEY_CLIENT_LOG_FILE, "false" );
 
-         //we must have a valid file name
-         if( new java.io.File(fileName).isAbsolute() )
-            logger.addAppender(new FileAppender(layout, fileName, false)); //create a new file everytime
+         if( Boolean.valueOf(writeToFile).booleanValue() )
+            logger.addAppender(new FileAppender(
+                  layout, 
+                  com.cannontech.common.util.CtiUtilities.getLogDirPath() +
+                  com.cannontech.common.util.CtiUtilities.getApplicationName() + ".log",
+                  false)); //create a new file everytime
       }
       catch( Exception e )
       {}

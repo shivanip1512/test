@@ -577,6 +577,14 @@ public final static String getLogDirPath()
 	return USER_DIR + "../log/";
 }
 
+/**
+ * This method will return the java.awt.Frame associated with a component
+ * If no parent frame is found null will be returned
+ */
+public final static String getApplicationName()
+{
+   return System.getProperty("cti.app.name");
+}
 
 /**
  * This method will return the java.awt.Frame associated with a component

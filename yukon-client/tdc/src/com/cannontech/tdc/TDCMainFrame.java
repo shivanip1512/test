@@ -3491,8 +3491,11 @@ public static void main(java.lang.String[] args)
 {
 	try
 	{
+      System.setProperty("cti.app.name", "TDC");//must go first!
+
 		com.cannontech.clientutils.CTILogger.info("Syntax for optional parameters is as follows:");
 		com.cannontech.clientutils.CTILogger.info("   TDCMainFrame view=<value> display=<value>");
+      
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
