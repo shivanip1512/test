@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/11/15 14:08:00 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/01/10 16:16:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -545,8 +545,11 @@ VOID RouterThread (VOID *TPNumber)
 
         if(pInfo == NULL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "This might needs fixin' " << __FILE__ << " " << __LINE__ << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "This might needs fixin' " << __FILE__ << " " << __LINE__ << endl;
+            }
+
             Type = RemoteRecord->getType();
             RemoteRecord->setType(TYPE_REMOTE);
             RemoteInitialize (NULL, RemoteRecord, (void*)&PortRecord);
