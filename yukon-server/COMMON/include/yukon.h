@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/12/11 21:49:46 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/01/15 20:40:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -384,9 +384,10 @@ typedef enum
     ChangeAlarmCategoryDb,                 // AlarmCategory changed
     ChangeCustomerContactDb,
     ChangeGraphDb,
-    ChangeHolidaySchedule,
-    ChangeEnergyCompany,
-    ChangeStateImageDb
+    ChangeHolidayScheduleDb,
+    ChangeEnergyCompanyDb,
+    ChangeStateImageDb,
+    ChangeYukonUserDb
 
 } CtiDBChanged_t;
 
