@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/12/21 21:17:40 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/12/23 15:27:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2306,6 +2306,7 @@ INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool set)
         return(status);
 
     /* Load all the other stuff that is needed */
+    OverrideOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
     OutMessage->DeviceID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
