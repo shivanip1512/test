@@ -28,9 +28,13 @@ java.util.Date timerStop = null;
 //temp code
 timerStart = new java.util.Date();
 //temp code
-	String sqlString = "SELECT POINTID,POINTNAME,POINTTYPE,PAOBJECTID, " +
-		"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > 0 ORDER BY PAObjectID, POINTOFFSET";
+//	String sqlString = "SELECT POINTID,POINTNAME,POINTTYPE,PAOBJECTID, " +
+//		"POINTOFFSET,STATEGROUPID FROM POINT WHERE POINTID > 0 ORDER BY PAObjectID, POINTOFFSET";
 
+	String sqlString = "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, FORMULA"+
+						" FROM ( POINT P LEFT OUTER JOIN POINTUNIT PU "+
+						" ON P.POINTID = PU.POINTID )  LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "+
+						" WHERE P.POINTID > 0 ORDER BY PAObjectID, POINTOFFSET ";
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
 	java.sql.ResultSet rset = null;
@@ -50,7 +54,14 @@ timerStart = new java.util.Date();
 			int pointOffset = rset.getInt(5);
 			int stateGroupID = rset.getInt(6);
 			long tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH;
+			String formula = rset.getString(7);
 			
+			if( formula != null )
+			{
+				if( formula.trim().equalsIgnoreCase("usage"))
+					tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE;
+			}
+									
 			com.cannontech.database.data.lite.LitePoint lp =
 				new com.cannontech.database.data.lite.LitePoint( pointID, pointName, com.cannontech.database.data.point.PointTypes.getType(pointType),
 																						paobjectID, pointOffset, stateGroupID, tags );
@@ -86,11 +97,13 @@ timerStart = new java.util.Date();
 
 	// we've only defaulted the point tags to GRAPH in our constructor (mainly because status points have no unitmeasure)
 	// now we must load the points that have unitmeasures tag values
-	loadPointTags();
+//	loadPointTags();
 
 }
 
-
+//  removed this function, load time was awful.  Fixed (bettered, rather) by using a query outer join
+// in the PointLoader.
+/*
 private synchronized void loadPointTags()
 {
 	if( allPoints == null )
@@ -115,10 +128,11 @@ private synchronized void loadPointTags()
 	java.sql.ResultSet rset = null;
 	try
 	{
+		System.out.println(" START TAG LOADER QUERY");
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
 		stmt = conn.createStatement();
 		rset = stmt.executeQuery(sqlString);
-
+		System.out.println(" END TAG LOADER QUERY");
 		//All points NOT in the unitmeasure table have been defaulted to GRAPH tag in the allPoints loader.
 		while (rset.next())
 		{
@@ -172,4 +186,5 @@ private synchronized void loadPointTags()
 
 	}
 }
+*/
 }
