@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import java.util.GregorianCalendar;
+
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -8,6 +10,7 @@ import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.notification.GroupNotification;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
@@ -207,7 +210,17 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 		 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
 		 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setName( ((LiteEnergyCompany)liteObject).getName());
 		 		break;
-	/* TODO: add LiteTypes.TAG? */	 		
+	/* TODO: add LiteTypes.TAG? */
+			case LiteTypes.RAWPOINTHISTORY:
+				returnObject = new RawPointHistory();
+				((RawPointHistory)returnObject).setChangeID(new Integer(((LiteRawPointHistory)liteObject).getLiteID()));
+				((RawPointHistory)returnObject).setPointID(new Integer(((LiteRawPointHistory)liteObject).getPointID()));
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTimeInMillis( ((LiteRawPointHistory)liteObject).getTimeStamp());
+				((RawPointHistory)returnObject).setTimeStamp(cal);
+				((RawPointHistory)returnObject).setValue(new Double(((LiteRawPointHistory)liteObject).getValue()));
+				((RawPointHistory)returnObject).setQuality(new Integer(((LiteRawPointHistory)liteObject).getQuality()));					 		
+				break;
 			default:
 				returnObject = null;
 				break;
@@ -422,6 +435,15 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((Command)val).getCommand(),
 			((Command)val).getCategory());
    }
+	else if ( val instanceof RawPointHistory)
+	{
+		returnLite = new LiteRawPointHistory(
+			((RawPointHistory)val).getChangeID().intValue(),
+			((RawPointHistory)val).getPointID().intValue(),
+			((RawPointHistory)val).getTimeStamp().getTimeInMillis(),
+			((RawPointHistory)val).getQuality().intValue(),
+			((RawPointHistory)val).getValue().doubleValue());	
+   	}
 		
 	return returnLite;
 }
