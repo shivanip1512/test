@@ -53,6 +53,7 @@
           <td  valign="top" width="101"> 
           	<%--"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the InvNo--%>
             <% String redirect = request.getRequestURI()+ "?InvNo=" + invNo;%>
+            <% String referrer = request.getRequestURI()+ "?InvNo=" + invNo;%>
             <% String pageName = "CommandInv.jsp?InvNo=" + invNo;%>
             <%@ include file="include/Nav.jsp" %>
           </td>
