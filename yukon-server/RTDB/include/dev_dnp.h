@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:11 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/10/12 01:13:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,14 +23,26 @@
 #include "prot_dnp.h"
 #include "tbl_dv_dnp.h"
 
+#include <map>
+
 class IM_EX_DEVDB CtiDeviceDNP : public CtiDeviceRemote
 {
+private:
+
+    struct dnp_accumulator_pointdata
+    {
+        unsigned long point_value;
+        unsigned long point_time;
+    };
+
+    typedef map< long, dnp_accumulator_pointdata > dnp_accumulator_pointdata_map;
+
+    dnp_accumulator_pointdata_map _lastIntervalAccumulatorData;
+
 protected:
 
     CtiProtocolDNP    _dnp;
     CtiTableDeviceDNP _dnpAddress;
-
-private:
 
 public:
 
