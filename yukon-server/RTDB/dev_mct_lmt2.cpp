@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/06/27 21:09:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,15 +59,20 @@ bool CtiDeviceMCT_LMT2::initCommandStore()
    cs._funcLen = make_pair( 0,0 );
    _commandStore.insert( cs );
 
+   cs._cmd     = CtiProtocolEmetcon::PutStatus_ResetOverride;
+   cs._io      = IO_WRITE;
+   cs._funcLen = make_pair( (int)MCT_LMT2_ResetOverrideFunc, 0 );
+   _commandStore.insert( cs );
+
    cs._cmd     = CtiProtocolEmetcon::GetStatus_LoadProfile;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_LMT2_LPStatusAddr,
+   cs._funcLen = make_pair( (int)MCT_LMT2_LPStatusPos,
                             (int)MCT_LMT2_LPStatusLen );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::GetConfig_LoadProfileInterval;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_LMT2_LPIntervalAddr,
+   cs._funcLen = make_pair( (int)MCT_LMT2_LPIntervalPos,
                             (int)MCT_LMT2_LPIntervalLen );
    _commandStore.insert( cs );
 
@@ -342,6 +347,12 @@ INT CtiDeviceMCT_LMT2::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSl
             break;
         }
 
+        case (CtiProtocolEmetcon::GetStatus_Internal):
+        {
+            status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         case (CtiProtocolEmetcon::GetStatus_LoadProfile):
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
@@ -485,6 +496,70 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow,
 
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+INT CtiDeviceMCT_LMT2::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+{
+    INT status = NORMAL;
+
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg      *pData = NULL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
+
+    ULONG pulseCount = 0;
+    RWCString resultString;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        resultString  = getName() + " / Internal Status:\n";
+
+        if( geneBuf[4] )        resultString += "  Remote Override in effect\n";
+
+        if( geneBuf[2] )        resultString += "  Waiting for Time Sync\n";
+        else                    resultString += "  In Time Sync\n";
+
+        if( geneBuf[5] )        resultString += "  Load Survey Active\n";
+        else                    resultString += "  Load Survey Halted\n";
+
+        if( geneBuf[6] & 0x01 ) resultString += "  Reading Overflow\n";
+        if( geneBuf[6] & 0x02 ) resultString += "  Long Power Fail\n";
+        if( geneBuf[6] & 0x04 ) resultString += "  Short PF/Reset\n";
+        if( geneBuf[6] & 0x08 ) resultString += "  Tamper latched\n";
+        if( geneBuf[6] & 0x10 ) resultString += "  Self Test Error\n";
+
+        if( geneBuf[7] & 0x01 ) resultString += "  NovRam Fault\n";
+        if( geneBuf[7] & 0x02 ) resultString += "  \n";
+        if( geneBuf[7] & 0x04 ) resultString += "  Bad opcode\n";
+        if( geneBuf[7] & 0x08 ) resultString += "  Power Fail Detected By Hardware\n";
+        if( geneBuf[7] & 0x10 ) resultString += "  Deadman/Watchdog Reset\n";
+        if( geneBuf[7] & 0x20 ) resultString += "  Software Interrupt (malfunction)\n";
+        if( geneBuf[7] & 0x40 ) resultString += "  NM1 Interrupt (malfunction)\n";
+        if( geneBuf[7] & 0x80 ) resultString += "  \n";
+
+        if( geneBuf[8] & 0x40 ) resultString += "  Cold Load Flag\n";
+        if( geneBuf[8] & 0x80 ) resultString += "  Frequency Fault\n";
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
 
     return status;
 }

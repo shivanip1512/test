@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/05/19 16:33:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/06/27 21:09:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,11 +27,13 @@ protected:
 
     enum
     {
-        MCT_LMT2_LPStatusAddr   = 0x95,
-        MCT_LMT2_LPStatusLen    =    5,
+        MCT_LMT2_LPStatusPos   = 0x95,
+        MCT_LMT2_LPStatusLen   =    5,
 
-        MCT_LMT2_LPIntervalAddr = 0x97,
-        MCT_LMT2_LPIntervalLen  =    1
+        MCT_LMT2_LPIntervalPos = 0x97,
+        MCT_LMT2_LPIntervalLen =    1,
+
+        MCT_LMT2_ResetOverrideFunc = 0x57
     };
 
 private:
@@ -63,6 +65,7 @@ public:
     INT decodeDemandScan(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT decodeGetValueDefault(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 
     INT decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 };
