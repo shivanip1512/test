@@ -11,10 +11,11 @@ public class EnergyCompany extends com.cannontech.database.db.DBPersistent
 	private String name = null;
 	private Integer routeID = null;
 	private Integer webConfigID = new Integer(CtiUtilities.NONE_ID);
+	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ID);
 
 	public static final String[] SETTER_COLUMNS = 
 	{ 
-		"Name", "RouteID", "WebConfigID"
+		"Name", "RouteID", "WebConfigID", "PrimaryContactID"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "EnergyCompanyID" };
@@ -42,7 +43,8 @@ public void add() throws java.sql.SQLException
 		getEnergyCompanyID(),
 		getName(),
 		getRouteID(),
-		getWebConfigID()
+		getWebConfigID(),
+		getPrimaryContactID()
 	};
 
 	//if any of the values are null, return
@@ -147,7 +149,8 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 			CONSTRAINT_COLUMNS[0] + ", " +
 			SETTER_COLUMNS[0] + ", " +
 			SETTER_COLUMNS[1] + ", " +
-			SETTER_COLUMNS[2] +
+			SETTER_COLUMNS[2] + ", " +
+			SETTER_COLUMNS[3] +
 			" FROM " + TABLE_NAME;
 
 	try
@@ -168,6 +171,7 @@ public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
 				ex.setName( rset.getString(SETTER_COLUMNS[0]) );
 				ex.setRouteID( new Integer(rset.getInt(SETTER_COLUMNS[1])) );
 				ex.setWebConfigID( new Integer(rset.getInt(SETTER_COLUMNS[2])) );
+				ex.setPrimaryContactID( new Integer(rset.getInt(SETTER_COLUMNS[3])) );
 
 				list.add( ex );
 			}
@@ -290,6 +294,7 @@ public void retrieve() throws java.sql.SQLException
 		setName( (String) results[0] );
 		setRouteID( (Integer)results[1] );
 		setWebConfigID( (Integer)results[2] );
+		setPrimaryContactID( (Integer)results[3] );
 	}
 	else
 		throw new RuntimeException("Incorrect number of columns in result");
@@ -336,7 +341,8 @@ public void update() throws java.sql.SQLException
 		getEnergyCompanyID(),
 		getName(),
 		getRouteID(),
-		getWebConfigID()
+		getWebConfigID(),
+		getPrimaryContactID()
 	};
 
 	//if any of the values are null, return
@@ -364,6 +370,22 @@ public void update() throws java.sql.SQLException
 	 */
 	public void setWebConfigID(Integer webConfigID) {
 		this.webConfigID = webConfigID;
+	}
+
+	/**
+	 * Returns the primaryContactID.
+	 * @return Integer
+	 */
+	public Integer getPrimaryContactID() {
+		return primaryContactID;
+	}
+
+	/**
+	 * Sets the primaryContactID.
+	 * @param primaryContactID The primaryContactID to set
+	 */
+	public void setPrimaryContactID(Integer primaryContactID) {
+		this.primaryContactID = primaryContactID;
 	}
 
 }
