@@ -28,6 +28,16 @@ public class DatabaseModel extends ReportModelBase
 	public DatabaseModel()
 	{
 		this("CARRIER", ReportTypes.CARRIER_DATA);
+	}
+
+	/**
+	 * Constructor.
+	 * @param paoClass_ = YukonPaobject.paoClass
+	 */
+	public DatabaseModel(int reportType_)
+	{
+		super();
+		setReportType(reportType_);
 	}	
 	/**
 	 * Constructor.

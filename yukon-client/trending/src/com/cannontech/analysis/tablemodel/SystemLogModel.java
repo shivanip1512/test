@@ -67,6 +67,15 @@ public class SystemLogModel extends ReportModelBase
 	}
 	/**
 	 * Constructor class
+	 * @param logType_ SYSTEMLOG.pointID
+	 */
+	public SystemLogModel(int reportType_)
+	{
+		super();
+		this.setReportType(reportType_);
+	}	
+	/**
+	 * Constructor class
 	 * @param startTime_ SYSTEMLOG.dateTime
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 * @param pointID_ SYSTEM.pointID
@@ -226,8 +235,10 @@ public class SystemLogModel extends ReportModelBase
 			{
 				case ReportTypes.SYSTEM_LOG_DATA:
 					logType = null;
+					break;
 				case ReportTypes.LM_CONTROL_LOG_DATA:
 					logType = new Integer(SystemLog.TYPE_LOADMANAGEMENT);
+					break;
 				default:
 					return logType;
 			}	

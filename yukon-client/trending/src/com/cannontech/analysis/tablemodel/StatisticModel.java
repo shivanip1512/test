@@ -48,6 +48,12 @@ public class StatisticModel extends ReportModelBase
 	{
 		this(statType_, ReportTypes.CARRIER_COMM_DATA);//default type		
 	}
+	
+	public StatisticModel(int reportType_)
+	{
+		this("Daily", reportType_);//default type		
+	}
+	
 	/**
 	 * Constructor class
 	 * @param category_ YukonPaobject.category
