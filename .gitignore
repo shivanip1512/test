@@ -30,6 +30,7 @@ yukon-client/palm/bin
 yukon-client/report/bin
 yukon-client/servlet/.cvsignore
 yukon-client/servlet/bin
+yukon-client/stars/bin
 yukon-client/tdc/.cvsignore
 yukon-client/tdc/bin
 yukon-client/tools/.cvsignore
