@@ -2897,6 +2897,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 					cusList.setListID( list.getListID() );
 					cusList.setListName( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS );
 					cusList.setStarsSelectionListEntry( list.getStarsSelectionListEntry() );
+					list = cusList;
 					
 					Hashtable starsCustSelLists = getStarsCustSelectionLists();
 					synchronized (starsCustSelLists) { starsCustSelLists.put(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS, cusList); }
