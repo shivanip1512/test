@@ -15,6 +15,7 @@ public class DeviceSeries5RTU extends DBPersistent
    private Integer deviceID = null;
    private Integer tickTime = new Integer(0);
    private Integer transmitOffset = new Integer(0);
+	private String saveHistory = "N";
    private Integer powerValueHighLimit = new Integer(0);
 	private Integer powerValueLowLimit = new Integer(0);
 	private Double powerValueMultiplier = new Double(0);
@@ -25,7 +26,7 @@ public class DeviceSeries5RTU extends DBPersistent
 		
    public static final String SETTER_COLUMNS[] = 
    { 
-      "TickTime", "TransmitOffset", "PowerValueHighLimit",
+      "TickTime", "TransmitOffset", "SaveHistory", "PowerValueHighLimit",
       "PowerValueLowLimit", "PowerValueMultiplier",
 		"PowerValueOffset", "StartCode", "StopCode"
    };
@@ -50,7 +51,7 @@ public class DeviceSeries5RTU extends DBPersistent
    {
       Object[] addValues =
       { 
-      	getDeviceID(), getTickTime(), getTransmitOffset(), 
+      	getDeviceID(), getTickTime(), getTransmitOffset(), getSaveHistory(), 
          getPowerValueHighLimit(), getPowerValueLowLimit(),
          getPowerValueMultiplier(), getPowerValueOffset(),
          getStartCode(), getStopCode()
@@ -80,12 +81,13 @@ public class DeviceSeries5RTU extends DBPersistent
       {
          setTickTime( (Integer) results[0] );
          setTransmitOffset( (Integer) results[1] );
-         setPowerValueHighLimit( (Integer) results[2] );
-			setPowerValueLowLimit( (Integer) results[3] );
-			setPowerValueMultiplier( (Double) results[4] );
-			setPowerValueOffset( (Double) results[5] );
-			setStartCode( (Integer) results[6] );
-			setStopCode( (Integer) results[7] );
+			setSaveHistory( (String) results[2] );			
+         setPowerValueHighLimit( (Integer) results[3] );
+			setPowerValueLowLimit( (Integer) results[4] );
+			setPowerValueMultiplier( (Double) results[5] );
+			setPowerValueOffset( (Double) results[6] );
+			setStartCode( (Integer) results[7] );
+			setStopCode( (Integer) results[8] );
       }
       else
          throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -99,7 +101,7 @@ public class DeviceSeries5RTU extends DBPersistent
    {
 		Object[] setValues =
 		{ 
-			getTickTime(), getTransmitOffset(), 
+			getTickTime(), getTransmitOffset(), getSaveHistory(),
 			getPowerValueHighLimit(), getPowerValueLowLimit(),
 			getPowerValueMultiplier(), getPowerValueOffset(),
 			getStartCode(), getStopCode()
@@ -255,6 +257,22 @@ public class DeviceSeries5RTU extends DBPersistent
 	public void setTransmitOffset(Integer integer)
 	{
 		transmitOffset = integer;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getSaveHistory()
+	{
+		return saveHistory;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setSaveHistory(String string)
+	{
+		saveHistory = string;
 	}
 
 }
