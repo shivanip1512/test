@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/30 17:40:21 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/10/12 20:14:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -229,7 +229,6 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if(pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/06/01 15:15:23 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/10/12 20:14:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -282,8 +282,6 @@ INT CtiDeviceMCT210::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
 
         if(pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
-
             resultStr = getName() + " / " + pPoint->getName() + " / " + discStr;
 
             /*

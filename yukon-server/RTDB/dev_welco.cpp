@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2004/05/20 22:39:24 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2004/10/12 20:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,7 +186,6 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
             for(; ++itr_pt ;)
             {
                 CtiPoint *PointRecord = itr_pt.value();
-                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( PointRecord->getMux() );
 
                 switch(PointRecord->getType())
                 {
@@ -1472,7 +1471,6 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
             for(; ++itr_pt ;)
             {
                 PointRecord = itr_pt.value();
-                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( PointRecord->getMux() );
 
                 switch(PointRecord->getType())
                 {

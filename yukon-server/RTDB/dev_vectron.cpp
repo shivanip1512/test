@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:36:01 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/12 20:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1781,8 +1781,6 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                     {
                         double Value;
                         RWCString valReport;
-
-                        RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pNumericPoint->getMux() );
 
                         Value = ((CtiPointNumeric*)pNumericPoint)->computeValueForUOM((DOUBLE)PValue);
                         valReport = getName() + " / " + pNumericPoint->getName() + " = " + CtiNumStr((int)Value);

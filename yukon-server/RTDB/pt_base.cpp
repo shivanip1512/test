@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/12 20:14:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,8 +95,6 @@ CtiTablePointAlarming& CtiPointBase::getAlarming(bool refresh)
 {
     try
     {
-        LockGuard guard(monitor());
-
         if(_alarming == NULL)
         {
             _alarming = CTIDBG_new CtiTablePointAlarming( getPointID() );
@@ -196,8 +194,6 @@ CtiPointBase& CtiPointBase::operator=(const CtiPointBase& aRef)
     {
         Inherited::operator=(aRef);
         {
-            LockGuard guard(monitor());
-
             getPointBase()     = aRef.getPointBase();
             _dynamic           = aRef.replicateDynamicData();
         }
@@ -221,8 +217,6 @@ void CtiPointBase::DecodeDatabaseReader(RWDBReader &rdr)
 
 void CtiPointBase::DecodeAlarmingDatabaseReader(RWDBReader &rdr)
 {
-    LockGuard guard(monitor());
-
     if(_alarming == NULL)
     {
         _alarming = CTIDBG_new CtiTablePointAlarming( getPointID() );

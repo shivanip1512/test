@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_calc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/12 20:14:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,6 @@ public:
       Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
       #if 0 // 062800
-      LockGuard guard(monitor());
       if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
       rdr["updatefrequency"] >> UpdateFrequency;
@@ -110,8 +109,6 @@ public:
    {
       INT iTemp;
       RWDBNullIndicator isNull;
-
-      LockGuard guard(monitor());
 
       rdr["itemorder"] >> isNull;
       rdr["itemorder"] >> iTemp;
@@ -137,8 +134,6 @@ public:
    virtual void DumpData()
    {
       Inherited::DumpData();       // get the base class handled
-
-      LockGuard guard(monitor());
       cout << " Update Frequency                         : " << UpdateFrequency << endl;
    }
 

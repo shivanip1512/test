@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/10/12 20:14:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2392,7 +2392,6 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
 
             if( pPoint != NULL)
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
                 RWTime pointTime;
 
                 Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);

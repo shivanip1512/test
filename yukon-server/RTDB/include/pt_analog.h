@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:16 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/12 20:14:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,6 @@ public:
       if(this != &aRef)
       {
          Inherited::operator=(aRef);
-         LockGuard guard(monitor());
          _pointAnalog      = aRef.getPointAnalog();
       }
 
@@ -73,7 +72,6 @@ public:
    virtual void DumpData()
    {
       Inherited::DumpData();       // get the base class handled
-      LockGuard guard(monitor());
       _pointAnalog.dump();
    }
 

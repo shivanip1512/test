@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:16 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/12 20:14:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@ void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt);
 /*----------------------------------------------------------------------------------------*
  * CtiPointBase is the base class for all point objects in the YUKON system.
  *----------------------------------------------------------------------------------------*/
-class IM_EX_PNTDB CtiPointBase : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_PNTDB CtiPointBase : public CtiMemDBObject
 {
 public:
 
@@ -144,8 +144,6 @@ public:
    bool isNumeric() const;
    bool isStatus() const;
    bool hasAlarming() const;
-
-   MutexType& getMux()  { return mutex();}
 };
 
 typedef CtiPointBase CtiPoint;

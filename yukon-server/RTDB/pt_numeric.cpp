@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/08/25 13:31:59 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/10/12 20:14:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,8 +86,6 @@ void CtiPointNumeric::DecodeLimitsDatabaseReader(RWDBReader &rdr)
 {
    INT iTemp;
    RWDBNullIndicator isNull;
-
-   LockGuard guard(monitor());
 
    rdr["limitnumber"] >> isNull; // Used for verification of existance.
    rdr["limitnumber"] >> iTemp;
@@ -241,7 +239,6 @@ void CtiPointNumeric::DumpData()
 
    _pointUnits.dump();
 
-   LockGuard guard(monitor());
    for(int i = 0; i <  MAX_POINTLIMITS; i++)
    {
       if(_limitValid[i])
@@ -348,7 +345,6 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 
 void CtiPointNumeric::invalidateLimits()
 {
-   LockGuard guard(monitor());
    for(int i = 0; i <  MAX_POINTLIMITS; i++)
    {
        set_limitValid(i,FALSE);

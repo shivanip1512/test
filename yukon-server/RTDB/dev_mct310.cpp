@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2004/07/27 16:55:33 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2004/10/12 20:14:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -839,7 +839,6 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -917,7 +916,6 @@ INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
 
             if( pPoint != NULL)
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
                 RWTime pointTime;
 
                 Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -1387,8 +1385,6 @@ INT CtiDeviceMCT310::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNo
 
         if(pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
-
             resultStr = getName() + " / " + pPoint->getName() + resultStr;
 
             //  Send this value to requestor via retList.

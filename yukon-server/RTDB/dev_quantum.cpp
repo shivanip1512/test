@@ -1962,8 +1962,6 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                     double Value;
                                     RWCString resultString;
 
-                                    RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pNumericPoint->getMux() );
-
                                     Value = ((CtiPointNumeric*)pNumericPoint)->computeValueForUOM((DOUBLE)processedScanData->programmedRegisters[i]);
 
                                     resultString = getName() + " / " + pNumericPoint->getName() + " = " + CtiNumStr((int)Value);
@@ -2156,8 +2154,6 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
                 if( pNumericPoint[i] != NULL )
                 {
                     double Value;
-
-                    RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pNumericPoint[i]->getMux() );
 
                     Value = ((CtiPointNumeric*)pNumericPoint[i])->computeValueForUOM((DOUBLE)tmpPulseData[i] * (DOUBLE)(60 / lpCfg.intervalLength));
 

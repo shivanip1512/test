@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/11/17 15:21:38 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/10/12 20:14:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -399,7 +399,6 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         for(; ++itr_pt ;)
                         {
                             PointRecord = itr_pt.value();
-                            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( PointRecord->getMux() );
 
                             switch(PointRecord->getType())
                             {

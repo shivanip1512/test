@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/10/12 20:14:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -893,7 +893,6 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -924,7 +923,6 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -958,7 +956,6 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -1045,7 +1042,6 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -1076,7 +1072,6 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
@@ -1162,8 +1157,6 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         if( pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
-
             maxVolts = ((CtiPointNumeric*)pPoint)->computeValueForUOM(maxVolts);
             minVolts = ((CtiPointNumeric*)pPoint)->computeValueForUOM(minVolts);
         }

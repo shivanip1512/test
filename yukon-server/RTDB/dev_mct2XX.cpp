@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/07/12 19:30:37 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/10/12 20:14:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -272,7 +272,6 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         if(pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM((DOUBLE)mread);
@@ -359,7 +358,6 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         if(pPoint != NULL)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard pGuard( pPoint->getMux() );
             RWTime pointTime;
 
             Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);

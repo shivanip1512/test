@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2004/09/30 21:37:21 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2004/10/12 20:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2161,8 +2161,6 @@ RWTime CtiDeviceSingle::peekDispatchTime() const
 
             if(pPoint != NULL)
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard ptguard(pPoint->getMux());
-
                 pd.setPointID( pPoint->getPointID() );
                 RWDBStatus dbstat = pd.Restore();
 

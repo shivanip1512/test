@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_pseudostatus.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/12 20:14:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@ public:
    {
       if(this != &aRef)
       {
-         LockGuard guard(monitor());
          Inherited::operator=(aRef);
 
          _pointStatus   = aRef.getPointStatus();
@@ -68,15 +67,12 @@ public:
       Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
 
       if(getDebugLevel() & 0x0800) cout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-      LockGuard guard(monitor());
       _pointStatus.DecodeDatabaseReader(rdr);
    }
 
    virtual void DumpData()
    {
       Inherited::DumpData();       // get the base class handled
-      LockGuard guard(monitor());
       _pointStatus.dump();
    }
 };
