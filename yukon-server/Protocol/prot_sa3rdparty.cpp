@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/11/08 14:40:39 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/11/18 23:38:28 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.16  2004/11/18 23:38:28  mfisher
+* Debuglevel'd out some (but not all) debug printouts
+*
 * Revision 1.15  2004/11/08 14:40:39  cplender
 * 305 Protocol should send controls on RTCs now.
 *
@@ -482,31 +485,40 @@ INT CtiProtocolSA3rdParty::loadControl()
     case SA105:
     case SA205:
         {
+            retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress, _sTime, _cTime);
+
+            if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress, _sTime, _cTime);
                 dout << RWTime() << " control105_205() complete" << endl;
             }
+
             break;
         }
     case GOLAY:
         {
+            retCode = controlGolay(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._function, _sa._transmitterAddress);
+
+            if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = controlGolay(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._function, _sa._transmitterAddress);
                 dout << RWTime() << " controlGolay() complete" << endl;
             }
+
             break;
         }
     case SADIG:
         {
+            retCode = controlSADigital(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._transmitterAddress,
+                                       gConfigParms.getValueAsInt("SADIGITIAL_MARK_INDEX",3),
+                                       gConfigParms.getValueAsInt("SADIGITIAL_SPARE_INDEX",10));
+
+            if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = controlSADigital(_sa._buffer, &_sa._bufferLen, _sa._codeSimple, _sa._transmitterAddress,
-                                           gConfigParms.getValueAsInt("SADIGITIAL_MARK_INDEX",3),
-                                           gConfigParms.getValueAsInt("SADIGITIAL_SPARE_INDEX",10));
                 dout << RWTime() << " controlSADigital() complete" << endl;
             }
+
             break;
         }
     }
@@ -1194,15 +1206,24 @@ void CtiProtocolSA3rdParty::processResult(INT retCode)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "retcode " << retCode << " buflen: " << _sa._bufferLen << endl;
+
+        if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
+        {
+            dout << "retcode " << retCode << " buflen: " << _sa._bufferLen << endl;
+        }
 
         if((retCode != PROTSA_SUCCESS) && (retCode !=PROTSA_SUCCESS_MODIFIED_PARAM)  )
         {
             retCode = lastSAError(_errorBuf, &_errorLen);
-            dout << " errorbuf: " << _errorBuf << " len: " << _errorLen << endl;
+
+            if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
+            {
+                dout << " errorbuf: " << _errorBuf << " len: " << _errorLen << endl;
+            }
+
             _errorLen = MAX_SAERR_MSG_SIZE;
         }
-        else
+        else if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
         {
             for(i = 0; i<_sa._bufferLen; i++)
                 dout << CtiNumStr(_sa._buffer[i]).hex().zpad(2) << " ";
