@@ -19,7 +19,7 @@ public class AuthFuncs {
 	
 	/**
 	 * Attempts to locate user with the given username and password.
-	 * Returns null if there is no match.
+	 * Returns null if there is no match or the user is not enabled.
 	 * @param username
 	 * @param password
 	 * @return LiteYukonUser
@@ -31,8 +31,9 @@ public class AuthFuncs {
 			Iterator i = cache.getAllYukonUsers().iterator();
 			while(i.hasNext()) {
 				LiteYukonUser u = (LiteYukonUser) i.next();
-				if(u.getUsername().equals(username) &&
-				   u.getPassword().equals(password) ) {
+				if( CtiUtilities.isEnabled(u.getStatus()) &&
+					u.getUsername().equals(username) &&
+				    u.getPassword().equals(password) ) {
 				   	return u;  //success!
 				   }
 			}			

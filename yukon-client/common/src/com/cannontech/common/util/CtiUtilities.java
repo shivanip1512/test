@@ -34,6 +34,9 @@ public final class CtiUtilities
 	public static final String TRUE_STRING = "true";
 	public static final String FALSE_STRING = "false";
 	
+	public static final String ENABLED_STRING = "enabled";
+	public static final String DISABLED_STRING = "disabled";
+	
 	private static java.util.GregorianCalendar gc1990 = null;
 	
 	//a universal formatter for numbers
@@ -819,6 +822,15 @@ public final static boolean isTrue(java.lang.Character c) {
 */
 public final static boolean isTrue(String s) {
 	return (TRUE_STRING.equalsIgnoreCase(s));
+}
+
+/**
+ * Returns true of the given string represents true
+ * @param enableStr
+ * @return boolean
+ */
+public static final boolean isEnabled(String enableStr) {
+	return (ENABLED_STRING.equalsIgnoreCase(enableStr));
 }
 
 /**
