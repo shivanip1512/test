@@ -3,7 +3,7 @@ package com.cannontech.esub.util;
 import java.io.File;
 
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.editor.element.StaticText;
+//import com.cannontech.esub.editor.element.StaticText;
 import com.loox.jloox.LxComponent;
 
 /**
@@ -11,7 +11,7 @@ import com.loox.jloox.LxComponent;
  */
 public class ConvertElement1 {
 
-	public static void main(String[] args) throws Exception {
+/*	public static void main(String[] args) throws Exception {
 
 		visitFile(new File(args[0]));		
 	System.exit(0);
@@ -173,5 +173,5 @@ public class ConvertElement1 {
 				newComp.setSize(oldComp.getSize());			
 			}
 	}
-	
+	*/
 }
