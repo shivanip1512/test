@@ -36,17 +36,9 @@ RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
 
     virtual ~CtiLMGroupRipple();
     
-    ULONG getRouteId() const;
     ULONG getShedTime() const;
-    const RWCString& getControlValue() const;
-    const RWCString& getRestoreValue() const;
 
-    CtiLMGroupRipple& setRouteId(ULONG rteid);
     CtiLMGroupRipple& setShedTime(ULONG shed);
-    CtiLMGroupRipple& setControlValue(const RWCString& control);
-    CtiLMGroupRipple& setRestoreValue(const RWCString& restore);
-
-    void restoreRippleSpecificDatabaseEntries(RWDBReader& rdr);
 
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const;
@@ -69,10 +61,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
 
 private:
 
-    ULONG _routeid;
     ULONG _shedtime;
-    RWCString _controlvalue;
-    RWCString _restorevalue;
 
     BOOL _refreshsent;
 
