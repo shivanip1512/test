@@ -59,7 +59,10 @@ public class YukonGroup extends DBPersistent implements com.cannontech.database.
 		
 		for (int i = 0; i < getYukonGroupRoles().size(); i++) 
 		{
-			((DBPersistent)getYukonGroupRoles().get(i)).add();
+			com.cannontech.database.db.user.YukonGroupRole groupRole =
+					(com.cannontech.database.db.user.YukonGroupRole) getYukonGroupRoles().get(i);
+			groupRole.setGroupID( getYukonGroup().getGroupID() );
+			groupRole.add();
 		}
 		
 	}
