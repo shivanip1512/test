@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/19 21:06:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/03 18:32:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -390,6 +390,9 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         init_id += CtiNumStr( sched.getHolidayScheduleID() );
 
         interp->evaluate(init_id, true);
+
+        // init default pil request priority        
+        interp->evaluate("set MessagePriority 7");
 
         {        
             CtiLockGuard< CtiLogger > guard(dout);
