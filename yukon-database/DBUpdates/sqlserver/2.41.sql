@@ -133,6 +133,10 @@ alter table EnergyCompany
       references YukonUser (UserID);
 go
 
+/* @error ignore */
+insert into HolidaySchedule values( 0, 'Empty Holiday Schedule' );
+go
+
 alter table LMProgram add HolidayScheduleID numeric;
 go
 update LMProgram set HolidayScheduleID = 0;

@@ -94,6 +94,9 @@ alter table EnergyCompany
    add constraint FK_EngCmp_YkUs foreign key (UserID)
       references YukonUser (UserID);
 
+/* @error ignore */
+insert into HolidaySchedule values( 0, 'Empty Holiday Schedule' );
+
 alter table LMProgram ADD HolidayScheduleID NUMBER;
 update LMProgram SET HolidayScheduleID=0;
 alter TABLE LMProgram MODIFY HolidayScheduleID NOT NULL;
