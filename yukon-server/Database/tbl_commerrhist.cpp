@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/15 14:07:51 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/12/11 21:48:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,6 @@ CtiTableCommErrorHistory& CtiTableCommErrorHistory::setErrorNumber( const LONG e
 
 const RWCString& CtiTableCommErrorHistory::getCommand() const
 {
-
     return _command;
 }
 
@@ -156,20 +155,17 @@ CtiTableCommErrorHistory& CtiTableCommErrorHistory::setCommand( const RWCString 
 
 const RWCString& CtiTableCommErrorHistory::getOutMessage() const
 {
-
     return _outMessage;
 }
 
 CtiTableCommErrorHistory& CtiTableCommErrorHistory::setOutMessage( const RWCString &str )
 {
-
     _outMessage = str;
     return *this;
 }
 
 const RWCString& CtiTableCommErrorHistory::getInMessage() const
 {
-
     return _inMessage;
 }
 
@@ -291,6 +287,10 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
     {
         _inMessage.resize(MAX_INMESS_LENGTH - 1);
     }
+
+    if(getCommand().isNull()) setCommand("none");
+    if(getOutMessage().isNull()) setOutMessage("none");
+    if(getInMessage().isNull()) setInMessage("none");
 
     inserter <<
     getCommErrorID() <<
