@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.customer.wpsc.WPSCMain
 Class-Path: ./ 
- common.jar rwav.jar log4j-1.2.4.jar
+ common.jar yukonappclient.jar yukonappserver.jar j2ee.jar rwav.jar log4j-1.2.4.jar
