@@ -1776,17 +1776,17 @@ public boolean isInputValid()
 	String rateFamily = getJTextFieldRateFamily().getText();
 	String rateMember = getJTextFieldRateMember().getText();
 	String rateHierarchy = getJTextFieldRateHierarchy().getText();
-	if(rateFamily.compareTo("") == 0)
+	if(rateFamily.compareTo("") == 0 && getJCheckBoxRateUsage().isSelected())
 	{
 		setErrorString("Please fill in a value for the rate family field.");
 		return false;
 	}
-	if(rateMember.compareTo("") == 0)
+	if(rateMember.compareTo("") == 0 && getJCheckBoxRateUsage().isSelected())
 	{
 		setErrorString("Please fill in a value for the rate member field.");  
 		return false;
 	}
-	if(rateHierarchy.compareTo("") == 0)
+	if(rateHierarchy.compareTo("") == 0 && getJCheckBoxRateUsage().isSelected())
 	{
 		setErrorString("Please fill in a value for the rate hierarchy field");
 		return false;
