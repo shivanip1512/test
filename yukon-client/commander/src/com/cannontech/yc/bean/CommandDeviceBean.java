@@ -29,10 +29,9 @@ public class CommandDeviceBean
     private boolean changed = false;
     
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-//	private static final int DEFAULT_PAGE_SIZE = 20;
 
 	private int page = 1;
-//	private int pageSize = DEFAULT_PAGE_SIZE;
+	private int pageSize = 25;
 
     public static final int SORT_ORDER_ASCENDING = 0;
     public static final int SORT_ORDER_DESCENDING = 1;
@@ -357,16 +356,10 @@ public class CommandDeviceBean
     {
         organizeDeviceList();
         String html = new String();
-        
-//	  	java.util.List allDevices =	commandDeviceBean.getDeviceList();
-
-//		String uri = req.getRequestURI();
-//		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
-	    int displaySize = 10;
-	    int endIndex = (getPage() * displaySize);
-	    int startIndex = endIndex - displaySize;
-	    int maxPageNo = (int)Math.ceil(getDeviceList().size() * 1.0 / displaySize);
+	    int endIndex = (getPage() * getPageSize());
+	    int startIndex = endIndex - getPageSize();
+	    int maxPageNo = (int)Math.ceil(getDeviceList().size() * 1.0 / getPageSize());
 	    if( endIndex > getDeviceList().size())
 	    	endIndex = getDeviceList().size();
 
@@ -684,5 +677,21 @@ public class CommandDeviceBean
     {
         this.page = page;
     }
+	/**
+	 * @return
+	 */
+	public int getPageSize()
+	{
+		return pageSize;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPageSize(int i)
+	{
+		pageSize = i;
+	}
+
 }
 
