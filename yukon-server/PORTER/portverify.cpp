@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/22 19:02:35 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/12 20:13:43 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,18 @@ CtiPorterVerification::~CtiPorterVerification()
 
 void CtiPorterVerification::run( void )
 {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " PortVerificationThread TID: " << CurrentTID () << endl;
+    }
+
     verificationThread();
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " PortVerificationThread TID: " << CurrentTID() << " shutting down" << endl;
+    }
+
 }
 
 
@@ -242,82 +253,81 @@ void CtiPorterVerification::verificationThread( void )
 
 void CtiPorterVerification::processWorkQueue(bool purge)
 {
+    if( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
 
+        RWDBStatus dbstat = conn.beginTransaction("DynamicVerification");
+
+        while( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
         {
-            RWDBStatus dbstat = conn.beginTransaction("DynamicVerification");
+            CtiVerificationBase::CodeStatus status;
+            CtiVerificationWork *work = _work_queue.top();
 
-            while( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
+            _work_queue.pop();
+
+            status = work->processResult(/* pass in any previous entry with a matching om->VerificationSequence */);
+
             {
-                CtiVerificationBase::CodeStatus status;
-                CtiVerificationWork *work = _work_queue.top();
-
-                _work_queue.pop();
-
-                status = work->processResult(/* pass in any previous entry with a matching om->VerificationSequence */);
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                writeWorkRecord(*work, conn, dbstat);
-
-                if( status == CtiVerificationBase::CodeStatus_Retry )
-                {
-                    CtiOutMessage *om = work->getRetryOM();
-
-                    PortManager.writeQueue(om->Port, om->EventCode, sizeof(*om), static_cast<void *>(om), om->Priority);
-
-                    //  possible addition to enhance retry logic  ----
-                    //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
-                                                     //    we would need to make sure not to delete the work object in this case
-                }
-
-                //  hmm...  i could hash on code instead of receiver...  that would be suave
-
-                //  remove the expectations that weren't received  (maybe change this to a global list based on expiration)
-                vector< long > expectations = work->getExpectations();
-                vector< long >::iterator e_itr;
-
-                for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
-                {
-                    receiver_itr r_itr = _receiver_work.find(*e_itr);
-
-                    if( r_itr != _receiver_work.end() )
-                    {
-                        pending_vector &p_v = r_itr->second;
-
-                        //  iterate through all entries, looking for a pointer match
-                        for( pending_itr itr = p_v.begin(); itr != p_v.end(); itr++ )
-                        {
-                            if( *itr == work )
-                            {
-                                p_v.erase(itr);
-
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
-                }
-
-                //else
-                //{
-                delete work;
-                //}
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** Expires at " << to_simple_string(work->getExpiration()) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            conn.commitTransaction("DynamicVerification");
+            writeWorkRecord(*work, conn, dbstat);
+
+            if( status == CtiVerificationBase::CodeStatus_Retry )
+            {
+                CtiOutMessage *om = work->getRetryOM();
+
+                PortManager.writeQueue(om->Port, om->EventCode, sizeof(*om), static_cast<void *>(om), om->Priority);
+
+                //  possible addition to enhance retry logic  ----
+                //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
+                                                 //    we would need to make sure not to delete the work object in this case
+            }
+
+            //  hmm...  i could hash on code instead of receiver...  that would be suave
+
+            //  remove the expectations that weren't received  (maybe change this to a global list based on expiration)
+            vector< long > expectations = work->getExpectations();
+            vector< long >::iterator e_itr;
+
+            for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
+            {
+                receiver_itr r_itr = _receiver_work.find(*e_itr);
+
+                if( r_itr != _receiver_work.end() )
+                {
+                    pending_vector &p_v = r_itr->second;
+
+                    //  iterate through all entries, looking for a pointer match
+                    for( pending_itr itr = p_v.begin(); itr != p_v.end(); itr++ )
+                    {
+                        if( *itr == work )
+                        {
+                            p_v.erase(itr);
+
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+
+            //else
+            //{
+            delete work;
+            //}
         }
+
+        conn.commitTransaction("DynamicVerification");
     }
 }
 
