@@ -241,6 +241,17 @@ public java.util.Date getEnergyStartDate()
 	
 	return energyStartDate;
 }
+
+public java.util.Date getEarliestStartDate()
+{
+	java.util.Date compareDate1 = getDemandStartDate();
+	java.util.Date compareDate2 = getEnergyStartDate();
+	if( compareDate1.before(compareDate2))
+		return compareDate1;
+	else
+		return compareDate2;
+}
+
 public int getFormatID ()
 {
 	if( formatID < 0)
