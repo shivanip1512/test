@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.cache.PointChangeCache;
-import com.cannontech.esub.util.UpdateUtil;
 
 /**
  * AlarmTextStyleServlet chooses between two svg styles given a list of point ids 

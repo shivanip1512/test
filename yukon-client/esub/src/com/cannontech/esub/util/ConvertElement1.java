@@ -1,11 +1,5 @@
 package com.cannontech.esub.util;
 
-import java.io.File;
-
-import com.cannontech.esub.editor.Drawing;
-//import com.cannontech.esub.editor.element.StaticText;
-import com.loox.jloox.LxComponent;
-
 /**
  * @author aaron
  */

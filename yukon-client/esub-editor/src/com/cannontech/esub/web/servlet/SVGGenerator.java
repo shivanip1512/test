@@ -10,10 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.esub.EsubConstants;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.util.DrawingUpdater;
