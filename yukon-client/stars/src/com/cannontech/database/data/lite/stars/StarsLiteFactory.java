@@ -207,13 +207,6 @@ public class StarsLiteFactory {
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 		liteHw.setRouteID( hw.getLMHardwareBase().getRouteID().intValue() );
 		liteHw.setConfigurationID( hw.getLMHardwareBase().getConfigurationID().intValue() );
-		
-		if (liteHw.getConfigurationID() > 0) {
-			LMConfigurationBase config = LMConfigurationBase.getLMConfiguration( liteHw.getConfigurationID(), liteHw.getLmHardwareTypeID() );
-			LiteLMConfiguration liteCfg = new LiteLMConfiguration();
-			setLiteLMConfiguration( liteCfg, config );
-			liteHw.setLMConfiguration( liteCfg );
-		}
 	}
 	
 	public static void setLiteLMConfiguration(LiteLMConfiguration liteCfg, com.cannontech.database.data.stars.hardware.LMConfigurationBase cfg) {
@@ -269,6 +262,13 @@ public class StarsLiteFactory {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			if (liteHw.isThermostat())
 				liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
+			
+			if (liteHw.getConfigurationID() > 0) {
+				LMConfigurationBase config = LMConfigurationBase.getLMConfiguration( liteHw.getConfigurationID(), liteHw.getLmHardwareTypeID() );
+				LiteLMConfiguration liteCfg = new LiteLMConfiguration();
+				setLiteLMConfiguration( liteCfg, config );
+				liteHw.setLMConfiguration( liteCfg );
+			}
 		}
 		
 		liteInv.setExtended( true );

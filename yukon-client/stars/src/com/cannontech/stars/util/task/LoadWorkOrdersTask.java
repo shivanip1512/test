@@ -8,9 +8,8 @@ package com.cannontech.stars.util.task;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.stars.*;
-import com.cannontech.stars.util.WebClientException;
 
 /**
  * @author yao
@@ -18,12 +17,8 @@ import com.cannontech.stars.util.WebClientException;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LoadWorkOrdersTask implements TimeConsumingTask {
+public class LoadWorkOrdersTask extends TimeConsumingTask {
 
-	int status = STATUS_NOT_INIT;
-	boolean isCanceled = false;
-	String errorMsg = null;
-	
 	LiteStarsEnergyCompany energyCompany = null;
 	
 	int numOrderTotal = 0;
@@ -32,45 +27,18 @@ public class LoadWorkOrdersTask implements TimeConsumingTask {
 	public LoadWorkOrdersTask(LiteStarsEnergyCompany energyCompany) {
 		this.energyCompany = energyCompany;
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getStatus()
-	 */
-	public int getStatus() {
-		return status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#setStatus(int)
-	 */
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#cancel()
-	 */
-	public void cancel() {
-		if (status == STATUS_RUNNING) {
-			isCanceled = true;
-			status = STATUS_CANCELING;
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
 	public String getProgressMsg() {
-		if (numOrderTotal > 0)
-			return numOrderLoaded + " of " + numOrderTotal + " work orders loaded";
+		if (status == STATUS_RUNNING) {
+			if (numOrderTotal > 0)
+				return numOrderLoaded + " of " + numOrderTotal + " work orders loaded";
+			else
+				return "Preparing for loading the work orders...";
+		}
 		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getErrorMsg()
-	 */
-	public String getErrorMsg() {
-		return errorMsg;
 	}
 
 	/* (non-Javadoc)
@@ -85,17 +53,29 @@ public class LoadWorkOrdersTask implements TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
+		String sql = "SELECT OrderID, OrderNumber, WorkTypeID, CurrentStateID, ServiceCompanyID," +
+			" DateReported, OrderedBy, Description, DateScheduled, DateCompleted, ActionTaken, AccountID" +
+			" FROM WorkOrderBase wo, ECToWorkOrderMapping map" +
+			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+			" AND map.WorkOrderID = wo.OrderID";
+		
+		java.sql.Connection conn = null;
+		java.sql.Statement stmt = null;
+		
 		try {
-			String sql = "SELECT WorkOrderID FROM ECToWorkOrderMapping WHERE EnergyCompanyID=" + energyCompany.getEnergyCompanyID();
-			SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-			stmt.execute();
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			if (conn == null) {
+				CTILogger.error( getClass() + ": failed to get database connection" );
+				return;
+			}
 			
-			numOrderTotal = stmt.getRowCount();
+			stmt = conn.createStatement();
+			java.sql.ResultSet rset = stmt.executeQuery( sql );
+			numOrderTotal = rset.getMetaData().getColumnCount();
 			
-			for (int numOrderLoaded = 0; numOrderLoaded < numOrderTotal; numOrderLoaded++) {
-				int orderID = ((java.math.BigDecimal) stmt.getRow(numOrderLoaded)[0]).intValue();
-				if (energyCompany.getWorkOrderBase(orderID, true) == null)
-					throw new WebClientException( "Failed to load work order with id=" + orderID );
+			while (rset.next()) {
+				loadWorkOrder(rset);
+				numOrderLoaded++;
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -103,20 +83,46 @@ public class LoadWorkOrdersTask implements TimeConsumingTask {
 				}
 			}
 			
-			energyCompany.setWorkOrdersLoaded( true );
 			status = STATUS_FINISHED;
-			
 			CTILogger.info( "All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 			status = STATUS_ERROR;
-			
-			if (e instanceof WebClientException)
-				errorMsg = e.getMessage();
-			else
-				errorMsg = "Failed to load work orders";
+			errorMsg = "Failed to load work orders";
 		}
+		finally {
+			try {
+				if (stmt != null) stmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (java.sql.SQLException e) {
+				CTILogger.error( e.getMessage(), e );
+			}
+		}
+	}
+	
+	private void loadWorkOrder(java.sql.ResultSet rset) throws java.sql.SQLException {
+		int orderID = rset.getInt( "OrderID" );
+		
+		if (energyCompany.getWorkOrderBase( orderID, false ) != null)
+			return;	// work order already loaded
+		
+		LiteWorkOrderBase liteOrder = new LiteWorkOrderBase();
+		liteOrder.setOrderID( orderID );
+		liteOrder.setOrderNumber( rset.getString("OrderNumber") );
+		liteOrder.setWorkTypeID( rset.getInt("WorkTypeID") );
+		liteOrder.setCurrentStateID( rset.getInt("CurrentStateID") );
+		liteOrder.setServiceCompanyID( rset.getInt("ServiceCompanyID") );
+		liteOrder.setDateReported( rset.getTimestamp("DateReported").getTime() );
+		liteOrder.setOrderedBy( rset.getString("OrderedBy") );
+		liteOrder.setDescription( rset.getString("Description") );
+		liteOrder.setDateScheduled( rset.getTimestamp("DateScheduled").getTime() );
+		liteOrder.setDateCompleted( rset.getTimestamp("DateCompleted").getTime() );
+		liteOrder.setActionTaken( rset.getString("ActionTaken") );
+		liteOrder.setAccountID( rset.getInt("AccountID") );
+		
+		energyCompany.addWorkOrderBase( liteOrder );
 	}
 
 }

@@ -217,45 +217,20 @@ public class DeleteLMHardwareAction implements ActionBase {
 				
 				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 						Transaction.createTransaction( Transaction.INSERT, event ).execute();
-    			
-				LiteInventoryBase liteInvNew = null;
 				
-				if (liteInv instanceof LiteStarsLMHardware) {
+				if (liteInv instanceof LiteStarsLMHardware)
 					com.cannontech.database.data.stars.hardware.LMHardwareBase.clearLMHardware( liteInv.getInventoryID() );
-					
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					StarsLiteFactory.setLMHardwareBase( hardware, (LiteStarsLMHardware)liteInv );
-					
-					com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
-					invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
-					invDB.setRemoveDate( removeDate );
-					invDB.setDeviceLabel( "" );
-					Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
-					
-					liteInvNew = new LiteStarsLMHardware();
-					StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInvNew, hardware );
-				}
-				else {
-					com.cannontech.database.data.stars.event.LMHardwareEvent.deleteAllLMHardwareEvents(
-							new Integer(liteInv.getInventoryID()) );
-					
-					com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-							new com.cannontech.database.db.stars.hardware.InventoryBase();
-					StarsLiteFactory.setInventoryBase( invDB, liteInv );
-					invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
-					invDB.setRemoveDate( removeDate );
-					invDB.setDeviceLabel( "" );
-					
-					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
-					
-					liteInvNew = new LiteInventoryBase();
-					StarsLiteFactory.setLiteInventoryBase( liteInvNew, invDB );
-				}
 				
-				energyCompany.deleteInventory( liteInv.getInventoryID() );
-				energyCompany.addInventory( liteInvNew );
+				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
+						new com.cannontech.database.db.stars.hardware.InventoryBase();
+				StarsLiteFactory.setInventoryBase( invDB, liteInv );
+				
+				invDB.setAccountID( new Integer(CtiUtilities.NONE_ID) );
+				invDB.setRemoveDate( removeDate );
+				invDB.setDeviceLabel( "" );
+				Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+				
+				energyCompany.reloadInventory( liteInv.getInventoryID() );
 			}
     		
 			if (liteAcctInfo != null) {
