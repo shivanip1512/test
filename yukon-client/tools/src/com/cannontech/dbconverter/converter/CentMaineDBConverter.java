@@ -19,6 +19,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
@@ -866,7 +867,8 @@ public boolean processMCTFile()
 			}
 			
 			// construct demand accumulator point
-			com.cannontech.database.data.point.AccumulatorPoint accumPoint =(com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT);
+			AccumulatorPoint accumPoint =
+				(AccumulatorPoint)PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
 			if(devID.substring((devID.length())-2,devID.length()).equalsIgnoreCase("KQ")){
 				accumPoint.getPoint().setPointName("KQ");
 				accumPoint.getPointUnit().setUomID( new Integer( 7 ) );
@@ -874,12 +876,9 @@ public boolean processMCTFile()
 				accumPoint.getPoint().setPointName("KW");
 				accumPoint.getPointUnit().setUomID( new Integer( 0 ) );
 			}
-			accumPoint.getPoint().setPointType("Demand");
 			
 			// default state group ID
-			accumPoint.getPoint().setPointID(new Integer(DEMAND_POINT_ID));
-			accumPoint.getPointUnit().setPointID(new Integer(DEMAND_POINT_ID));
-			accumPoint.getPointAccumulator().setPointID(new Integer(DEMAND_POINT_ID));
+			accumPoint.setPointID(new Integer(DEMAND_POINT_ID));
 			DEMAND_POINT_ID++;
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
 			accumPoint.getPoint().setPaoID( deviceID );
@@ -902,7 +901,8 @@ public boolean processMCTFile()
 			accumPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 			
 			// contruct pulse accumulator point
-			com.cannontech.database.data.point.AccumulatorPoint pulseAccumPoint = (com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
+			AccumulatorPoint pulseAccumPoint = 
+				(AccumulatorPoint)PointFactory.createPoint(PointTypes.PULSE_ACCUMULATOR_POINT);
 			if(devID.substring((devID.length())-2,devID.length()).equalsIgnoreCase("KQ")){
 				pulseAccumPoint.getPoint().setPointName("KQh");
 				pulseAccumPoint.getPointUnit().setUomID( new Integer( 7 ) );
@@ -910,10 +910,8 @@ public boolean processMCTFile()
 				pulseAccumPoint.getPoint().setPointName("KWh");
 				pulseAccumPoint.getPointUnit().setUomID( new Integer( 0 ) );
 			}
-			pulseAccumPoint.getPoint().setPointType("Dial Read");
-			pulseAccumPoint.getPoint().setPointID(new Integer(DEMAND_POINT_ID));
-			pulseAccumPoint.getPointUnit().setPointID(new Integer(DEMAND_POINT_ID));
-			pulseAccumPoint.getPointAccumulator().setPointID(new Integer(DEMAND_POINT_ID));
+
+			pulseAccumPoint.setPointID(new Integer(DEMAND_POINT_ID));
 			DEMAND_POINT_ID++;
 			pulseAccumPoint.getPoint().setStateGroupID( new Integer(-2) );
 			pulseAccumPoint.getPoint().setPaoID( deviceID );
