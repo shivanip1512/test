@@ -224,6 +224,7 @@ void CtiCapController::controlLoop()
     
                     try
                     {
+                        currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
                         if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
                         {
                             if( currentSubstationBus->getRecentlyControlledFlag() )

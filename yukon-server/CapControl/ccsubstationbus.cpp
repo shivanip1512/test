@@ -1923,17 +1923,26 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
 ---------------------------------------------------------------------------*/
 DOUBLE CtiCCSubstationBus::figureCurrentSetPoint(const RWDBDateTime& currentDateTime)
 {
-    unsigned nowInSeconds = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
-    if( isPeakDay() && getPeakStartTime() <= nowInSeconds && nowInSeconds <= getPeakStopTime() )
+    return (isPeakTime(currentDateTime)?_peaksetpoint:_offpeaksetpoint);
+}
+
+/*---------------------------------------------------------------------------
+    isPeakTime
+
+    Returns a boolean if it is peak time it also sets the peak time flag.
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::isPeakTime(const RWDBDateTime& currentDateTime)
+{
+    unsigned secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+    if( isPeakDay() && getPeakStartTime() <= secondsFromBeginningOfDay && secondsFromBeginningOfDay <= getPeakStopTime() )
     {
         setPeakTimeFlag(TRUE);
-        return _peaksetpoint;
     }
     else
     {
         setPeakTimeFlag(FALSE);
-        return _offpeaksetpoint;
     }
+    return _peaktimeflag;
 }
 
 /*---------------------------------------------------------------------------

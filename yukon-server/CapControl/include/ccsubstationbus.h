@@ -143,6 +143,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges);
     DOUBLE figureCurrentSetPoint(const RWDBDateTime& currentDateTime);
     BOOL isPeakDay();
+    BOOL isPeakTime(const RWDBDateTime& currentDateTime);
     void clearOutNewPointReceivedFlags();
     CtiCCSubstationBus& checkForAndProvideNeededControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
     void regularSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
