@@ -318,6 +318,7 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMGroupTable["currenthoursannually"]
                                  << dynamicLMGroupTable["lastcontrolsent"]
                                  << dynamicLMGroupTable["timestamp"]
+                                 << dynamicLMGroupTable["lmprogramid"]
                                  << dynamicLMGroupTable["controlstarttime"]
                                  << dynamicLMGroupTable["controlcompletetime"]
                                  << pointTable["pointid"]
@@ -337,6 +338,7 @@ void CtiLMControlAreaStore::reset()
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupPointTable["deviceid"]) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(lmGroupRippleTable["deviceid"]) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
+                                        lmGroupMacroExpanderView["deviceid"].leftOuterJoin(dynamicLMGroupTable["lmprogramid"]) &&
                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                         selector.orderBy( lmGroupMacroExpanderView["deviceid"] );
