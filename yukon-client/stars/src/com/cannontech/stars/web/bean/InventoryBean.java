@@ -139,6 +139,7 @@ public class InventoryBean {
 	private int serviceCompany = CtiUtilities.NONE_ID;
 	private int location = INV_LOCATION_WAREHOUSE;
 	private int addressingGroup = CtiUtilities.NONE_ID;
+	private int deviceStatus = CtiUtilities.NONE_ID;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
@@ -247,6 +248,14 @@ public class InventoryBean {
 				}
 				
 				if (groupID == getAddressingGroup())
+					sortedInvs.add( liteInv );
+			}
+		}
+		else if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS) {
+			for (int i = 0; i < hardwares.size(); i++) {
+				LiteInventoryBase liteInv = (LiteInventoryBase) hardwares.get(i);
+				
+				if (liteInv.getDeviceStatus() == getDeviceStatus())
 					sortedInvs.add( liteInv );
 			}
 		}
@@ -651,6 +660,20 @@ public class InventoryBean {
 	 */
 	public void setReferer(String string) {
 		referer = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getDeviceStatus() {
+		return deviceStatus;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setDeviceStatus(int i) {
+		deviceStatus = i;
 	}
 
 }
