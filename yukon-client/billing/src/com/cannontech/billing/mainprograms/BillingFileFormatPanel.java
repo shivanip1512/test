@@ -40,6 +40,24 @@ public class BillingFileFormatPanel extends javax.swing.JPanel implements java.a
 	private javax.swing.JSeparator ivjSeparator = null;
 	private javax.swing.JComboBox ivjBillingGroupTypeComboBox = null;
 	private javax.swing.JLabel ivjBillingGroupTypeLabel = null;
+
+	private String[] billingTypeString = 
+	{ 
+		"COLLECTION GROUP",
+		"ALTERNATE GROUP",
+		"BILLING GROUP"
+	};
+
+	private String[] billingTypeColumn= 
+	{ 
+		"COLLECTIONGROUP",
+		"TESTCOLLECTIONGROUP",
+		"BILLINGGROUP"
+	};
+	
+	
+	
+	
 	//private boolean. billingCommandLineInput = false;
 /**
  * BillingFile constructor comment.
@@ -134,7 +152,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if ( event.getSource() == getBillingGroupTypeComboBox())
 	{
-		getBillingDefaults().setBillGroupColumn(getBillingGroupTypeComboBox().getSelectedItem().toString());
+		getBillingDefaults().setBillGroupColumn(billingTypeColumn[getBillingGroupTypeComboBox().getSelectedIndex()]);
 		getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
 	}
 }
@@ -328,10 +346,15 @@ private javax.swing.JComboBox getBillingGroupTypeComboBox() {
 			ivjBillingGroupTypeComboBox = new javax.swing.JComboBox();
 			ivjBillingGroupTypeComboBox.setName("BillingGroupTypeComboBox");
 			// user code begin {1}
-			ivjBillingGroupTypeComboBox.addItem(new String("COLLECTIONGROUP"));
-			ivjBillingGroupTypeComboBox.addItem(new String("TESTCOLLECTIONGROUP"));
-			ivjBillingGroupTypeComboBox.addItem(new String("BILLINGGROUP"));
-			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupColumn().toString());
+			
+			for (int i = 0; i < billingTypeString.length; i++)
+			{
+				ivjBillingGroupTypeComboBox.addItem(billingTypeString[i]);
+				if( billingTypeColumn[i].equalsIgnoreCase(getBillingDefaults().getBillGroupColumn().toString()) )
+				{
+					ivjBillingGroupTypeComboBox.setSelectedItem(billingTypeString[i]);
+				}
+			}
 			ivjBillingGroupTypeComboBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
