@@ -68,6 +68,62 @@ void main(int argc, char **argv)
         exit(-1);
     }
 
+#if 1
+
+    dout.start();                       // fire up the logger thread
+    dout.setOutputPath("c:\\temp\\");
+    dout.setOutputFile("piltest");
+    dout.setToStdOut(true);
+    dout.setWriteInterval(0);
+
+
+    CtiConnection * _vgConnection = new CtiConnection( VANGOGHNEXUS, argv[1] );
+    _vgConnection->WriteConnQue( new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
+
+    CtiConnection * _pilConnection = new CtiConnection( PORTERINTERFACENEXUS, argv[1] );
+    _pilConnection->WriteConnQue( new CtiRegistrationMsg(argv[2], rwThreadId(), TRUE) );
+    _pilConnection->WriteConnQue( new CtiRequestMsg( atoi(argv[3]), RWCString(argv[4])) );
+
+    CtiMessage *pMsg;
+    int count = 0;
+
+    while( 0 != (pMsg = _pilConnection->ReadConnQue(30000)) )
+    {
+        if(pMsg->isA() == MSG_PCRETURN)
+        {
+            CtiReturnMsg *pRet = (CtiReturnMsg*)pMsg;
+
+            if(pRet->ExpectMore())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Got a message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                count++;
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Expect More Count = " << count << endl;
+            }
+        }
+    }
+
+
+    _vgConnection->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15) );
+    _pilConnection->WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15) );
+    Sleep(5000);
+
+    _vgConnection->ShutdownConnection();
+    _pilConnection->ShutdownConnection();
+
+    Sleep(5000);
+
+#else
+
     try
     {
         RWWinSockInfo info;
@@ -119,6 +175,7 @@ void main(int argc, char **argv)
         cout << "Tester Exception: ";
         cout << msg.why() << endl;
     }
+#endif
 
     exit(0);
 
