@@ -139,6 +139,25 @@ public class InventoryBase extends DBPersistent {
 
         return new Integer( nextInventoryID );
     }
+    
+	public static int[] searchByAccountID(int accountID, int energyCompanyID, java.sql.Connection conn)
+	throws java.sql.SQLException {
+		String sql = "SELECT inv.InventoryID FROM " + TABLE_NAME + " inv, ECToInventoryMapping map " +
+				"WHERE AccountID = " + accountID + " AND inv.InventoryID >= 0 " +
+				"AND inv.InventoryID = map.InventoryID AND map.EnergyCompanyID = " + energyCompanyID;
+		java.sql.Statement stmt = conn.createStatement();
+		java.sql.ResultSet rset = stmt.executeQuery( sql );
+    	
+		java.util.ArrayList invIDList = new java.util.ArrayList();
+		while (rset.next())
+			invIDList.add( new Integer(rset.getInt(1)) );
+    	
+		int[] invIDs = new int[ invIDList.size() ];
+		for (int i = 0; i < invIDList.size(); i++)
+			invIDs[i] = ((Integer) invIDList.get(i)).intValue();
+		
+		return invIDs;
+	}
 
     public Integer getInventoryID() {
         return inventoryID;
