@@ -44,7 +44,9 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-		throw new Error("not implemented yet");
+		delete( "YukonUserGroup", "UserID", getYukonUser().getUserID() );
+		delete( "YukonUserRole", "UserID", getYukonUser().getUserID() );
+		getYukonUser().delete();
 	}
 
 	/**
