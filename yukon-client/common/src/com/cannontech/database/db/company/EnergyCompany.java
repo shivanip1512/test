@@ -315,7 +315,6 @@ public void update() throws java.sql.SQLException
 {
 	Object[] setValues = 
 	{
-		getEnergyCompanyID(),
 		getName(),
 		getPrimaryContactID(),
 		getUserID()
