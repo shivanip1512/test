@@ -3,6 +3,8 @@ package com.cannontech.esub.editor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -68,6 +70,9 @@ public class Editor extends JPanel {
 	// Place to keep track of a new element being created
 	ElementPlacer elementPlacer;
 
+	// All the actions for this editor
+	EditorActions editorActions;
+	
 	// Handles clicks on the LxView	
 	private final MouseListener viewMouseListener = new MouseAdapter() {
 		public void mousePressed(MouseEvent evt) {
@@ -89,7 +94,14 @@ public class Editor extends JPanel {
 			}
 		}		
 	};
-
+	
+	/* Get a notification when something is selected */
+	private final ItemListener itemListener = new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			synchActionsWithSelection();
+		}
+	};
+	
 	/**
 	 * Creates a new editor
 	 */
@@ -216,12 +228,13 @@ public class Editor extends JPanel {
 				return super.addEdit(e);
 			}			
 		};
-		
+				
 		final LxGraph lxGraph = getDrawing().getLxGraph();
 		final LxView lxView = getDrawing().getLxView();
 		
 		lxGraph.addUndoableEditListener(undoManager);
-
+		lxGraph.addItemListener(itemListener);
+		
 		final JPanel viewPanel = new JPanel();
 		viewPanel.setLayout(new FlowLayout());		
 		viewPanel.add(lxView);
@@ -229,7 +242,7 @@ public class Editor extends JPanel {
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(viewPanel);
 		
-		EditorActions editorActions = new EditorActions(this);
+		editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
 		EditorKeys editorKeys = new EditorKeys(editorActions);
@@ -256,6 +269,7 @@ public class Editor extends JPanel {
 				}
 			}
 		});
+		synchActionsWithSelection();
 		startUpdating();		
 	}
 
@@ -353,7 +367,7 @@ public class Editor extends JPanel {
 		frame.getContentPane().add(editor);
 		frame.setSize(defaultSize);
 		frame.setTitle("Untitled");		
-		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.png"));
+		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
         frame.setIconImage(icon.getImage());
 
 		frame.pack();
@@ -559,6 +573,50 @@ public class Editor extends JPanel {
 	private void stopUpdating() {
 		drawingUpdateTimer.cancel();
 	}		
+	
+	void synchActionsWithSelection() {
+		boolean cutNPaste = true;
+		boolean align = true;
+		boolean anySelected = false;
+			
+		Object comps[] = getDrawing().getLxGraph().getSelectedObjects();
+		if(comps.length == 0) {
+			cutNPaste = false;						
+		}
+		else {
+			anySelected = true;			
+			for(int i = 0; i < comps.length; i++) {
+				if(comps[i] instanceof DrawingElement) {
+					DrawingElement elem = (DrawingElement) comps[i];
+					if(!elem.isCopyable()) {
+						cutNPaste = false;					
+					}
+				}
+			}
+		}		
+		
+		if(comps.length < 2) {
+			align = false;
+		}
+		
+		editorActions.getAction(EditorActions.CUT_ELEMENT).setEnabled(cutNPaste);
+		editorActions.getAction(EditorActions.COPY_ELEMENT).setEnabled(cutNPaste);
+		editorActions.getAction(EditorActions.PASTE_ELEMENT).setEnabled(cutNPaste);
+		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_LEFT).setEnabled(align);
+		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_RIGHT).setEnabled(align);
+		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_TOP).setEnabled(align);
+		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_BOTTOM).setEnabled(align);
+		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_HORIZONTAL).setEnabled(align);
+		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_VERTICAL).setEnabled(align);
+		editorActions.getAction(EditorActions.DELETE_ELEMENT).setEnabled(anySelected);	
+		editorActions.getAction(EditorActions.TO_FRONT_LAYER).setEnabled(anySelected);
+		editorActions.getAction(EditorActions.TO_BACK_LAYER).setEnabled(anySelected);
+		
+
+		editorActions.getAction(EditorActions.UNDO_OPERATION).setEnabled(getUndoManager().canUndo());
+		editorActions.getAction(EditorActions.REDO_OPERATION).setEnabled(getUndoManager().canRedo());				
+	}
+	
 	/**
 	 * @return
 	 */

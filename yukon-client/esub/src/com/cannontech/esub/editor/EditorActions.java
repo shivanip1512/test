@@ -9,6 +9,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -448,6 +449,7 @@ class EditorActions {
 		public void processAction(ActionEvent e) {
 			try {			
 				editor.getUndoManager().undo();
+				editor.synchActionsWithSelection();
 			}
 			catch(CannotUndoException cue) {
 				CTILogger.debug("Cannot undo");
@@ -465,6 +467,7 @@ class EditorActions {
 		public void processAction(ActionEvent e) {
 			try {
 				editor.getUndoManager().redo();
+				editor.synchActionsWithSelection();
 			}
 			catch(CannotRedoException cre) {
 				CTILogger.debug("Cannot redo");
@@ -908,6 +911,14 @@ class EditorActions {
 	LxAbstractAction getAction(String actionName) {
 		return (LxAbstractAction) actionMap.get(actionName);
 	}
+	
+	LxAbstractAction[] getAllActions() {
+		Set s = actionMap.entrySet();
+		LxAbstractAction allActions[] = new LxAbstractAction[s.size()];
+		s.toArray(allActions);
+		return allActions;
+	}
+	
 	/**
 	 * Creation date: (1/2/2002 3:26:05 PM)
 	 * @return com.cannontech.esub.editor.Editor
@@ -922,4 +933,6 @@ class EditorActions {
 	void setEditor(Editor newEditor) {
 		editor = newEditor;
 	}
+	
+	
 }
