@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/09/20 14:43:30 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/10/08 20:38:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -820,8 +820,8 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
     _controlCompleteTime    = _stopDateTime;
     _activeRestore          = RWCString(LMAR_LOGTIMER);
     _defaultActiveRestore   = RWCString(LMAR_TIMED_RESTORE);        // Assume this is a timed in control since it had a stop time in the log???
-    _prevLogTime            = RWTime();
-    _prevStopReportTime     = RWTime();
+    _prevLogTime            = _stopDateTime < now ? _stopDateTime : now;
+    _prevStopReportTime     = _stopDateTime < now ? _stopDateTime : now;
 
     // dump();
 
