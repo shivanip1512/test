@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/08/19 13:49:49 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/04/12 21:09:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1565,9 +1565,106 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-
         if(VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").data() ))
             removeLastVStruct();
+    }
+
+    if( parse.isKeyValid("lcrmode") )
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if( parse.getsValue("lcrmode").compareTo("v") == 0 )
+        {
+           config[0] = 0x01;
+
+           if(VersacomConfigCommand(VCT_LCRMode, config))
+              removeLastVStruct();
+        }
+        else if( parse.getsValue("lcrmode").compareTo("e") == 0 )
+        {
+           config[0] = 0x00;
+
+           if(VersacomConfigCommand(VCT_LCRMode, config))
+              removeLastVStruct();
+        }
+        else
+        {
+           {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("lcrmode") << "\" for \"putconfig lcrmode\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           }
+        }
+    }
+
+    if( parse.isKeyValid("eclp") )
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        if( parse.getsValue("eclp").contains("en") )
+        {
+           config[0] = 0x01;
+
+           if(VersacomConfigCommand(VCT_EmetconColdLoad, config))
+              removeLastVStruct();
+        }
+        else if( parse.getsValue("eclp").contains("dis") )
+        {
+           config[0] = 0x00;
+
+           if(VersacomConfigCommand(VCT_EmetconColdLoad, config))
+              removeLastVStruct();
+        }
+        else
+        {
+           {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("eclp") << "\" for \"putconfig eclp\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           }
+        }
+    }
+
+    if( parse.isKeyValid("gold") )
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        iNum = parse.getiValue("gold");
+
+        if( iNum > 0 && iNum <= 4 )
+        {
+           config[0] = iNum - 1;
+
+           if(VersacomConfigCommand(VCT_EmetconGoldAddress, config))
+              removeLastVStruct();
+        }
+        else
+        {
+           {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("gold") << "\" for \"putconfig gold\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           }
+        }
+    }
+
+    if( parse.isKeyValid("silver") )
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+
+        iNum = parse.getiValue("silver");
+
+        if( iNum > 0 && iNum <= 60 )
+        {
+           config[0] = iNum - 1;
+
+           if(VersacomConfigCommand(VCT_EmetconSilverAddress, config))
+              removeLastVStruct();
+        }
+        else
+        {
+           {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("silver") << "\" for \"putconfig silver\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           }
+        }
     }
 
     if( parse.isKeyValid("vcassign") && isConfigFullAddressValid(sn) && (uid || aux || sec || cls || div) )

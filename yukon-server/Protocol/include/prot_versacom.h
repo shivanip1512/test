@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/26 20:33:26 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/04/12 21:08:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,7 +107,12 @@ typedef enum
    VCT_SCAFrequencies,
    VCT_FMScanEnable,
    VCT_LUFOutResponse,
-   VCT_RequiredAddressLevel
+   VCT_RequiredAddressLevel,
+   VCT_LCRMode,
+   VCT_SerialNumberAddress,
+   VCT_EmetconGoldAddress,
+   VCT_EmetconSilverAddress,
+   VCT_EmetconColdLoad
 
 } VersacomConfigurationType_t;
 
