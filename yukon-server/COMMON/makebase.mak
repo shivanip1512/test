@@ -55,7 +55,6 @@ mutex.obj \
 numstr.obj \
 observe.obj \
 pexec.obj \
-portsup.obj \
 psup.obj \
 queue.obj \
 queues.obj \
@@ -72,6 +71,7 @@ words.obj \
 xfer.obj \
 
 
+# portsup.obj \
 # queent.obj \
 # drpint.obj \
 # perform.obj \
