@@ -155,14 +155,14 @@ void CtiCCClientListener::_listen()
             if( msg.errorNumber() == 10004 )
             {    
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiLMClientListener thread interupted" << endl;
+                dout << "CtiCCClientListener thread interupted" << endl;
                 break;
             }
             else
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "CtiLMClientListener hickup: " << msg.errorNumber() << endl;
+                    dout << "CtiCCClientListener hickup: " << msg.errorNumber() << endl;
                 }
                 delete _listener;
                 _listener = new RWSocketListener( RWInetAddr( (int) _port )  );
@@ -172,7 +172,7 @@ void CtiCCClientListener::_listen()
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiLMClientListener hickup (RWxmsg&): " << msg.why() << endl;
+                dout << "CtiCCClientListener hickup (RWxmsg&): " << msg.why() << endl;
             }
         }
         catch(...)

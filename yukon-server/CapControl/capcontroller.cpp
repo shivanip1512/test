@@ -100,7 +100,7 @@ void CtiCapController::start()
 ---------------------------------------------------------------------------*/
 void CtiCapController::stop()
 {
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Shutting down controller thread..." << endl;
@@ -110,7 +110,7 @@ void CtiCapController::stop()
     {
         _substationBusThread.terminate();
 
-        if( _CC_DEBUG )
+        //if( _CC_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Forced to terminate." << endl;
@@ -119,7 +119,7 @@ void CtiCapController::stop()
     {
         _substationBusThread.join();
 
-        if( _CC_DEBUG )
+        //if( _CC_DEBUG )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Controller thread shutdown" << endl;
@@ -569,7 +569,7 @@ void CtiCapController::checkPIL()
 void CtiCapController::registerForPoints(CtiCCSubstationBusStore* store)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Registering for point changes." << endl;
@@ -623,6 +623,12 @@ void CtiCapController::registerForPoints(CtiCCSubstationBusStore* store)
         }
     }
 
+    /*for(UINT x=0;x<regMsg->getCount();x++)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        LONG pid = regMsg->operator [](x);
+        dout << RWTime() << " - Registered for Point Id: " << pid << endl;
+    }*/
     getDispatchConnection()->WriteConnQue(regMsg);
     regMsg = NULL;
 }
@@ -652,7 +658,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                       dbChange->getDatabase() == ChangePointDb ||
                       (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ) )
                 {
-                    if( _CC_DEBUG )
+                    //if( _CC_DEBUG )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Relavant database change.  Setting reload flag." << endl;
@@ -772,7 +778,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
 void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, RWTime& timestamp )
 {
     if( _CC_DEBUG )
-   {
+    {
         char tempchar[80];
         RWCString outString = "Point data message received from Dispatch. ID:";
         _ltoa(pointID,tempchar,10);
@@ -789,7 +795,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned tags, 
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - " << outString.data() << endl;
-   }
+    }
 
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();

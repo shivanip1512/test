@@ -58,7 +58,7 @@ CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _p
 ---------------------------------------------------------------------------*/
 CtiCCClientConnection::~CtiCCClientConnection()
 {
-    if( _CC_DEBUG )
+    //if( _CC_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Client Connection Closing." << endl;
