@@ -4036,6 +4036,8 @@ insert into YukonListEntry values( 1, 1, 0, 'Email', 1 );
 insert into YukonListEntry values( 2, 1, 0, 'Phone Number', 2 );
 insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
+insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
+insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
 
 
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
