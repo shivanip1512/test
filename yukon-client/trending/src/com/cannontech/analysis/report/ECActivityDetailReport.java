@@ -2,6 +2,7 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -26,7 +27,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.tablemodel.ActivityModel;
+import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 
 /**
  * Created on Dec 15, 2003
@@ -34,22 +35,22 @@ import com.cannontech.analysis.tablemodel.ActivityModel;
  * Groups data by Date.  Orders asc/desc based on tableModel definition.  
  * @author snebben
  */
-public class EnergyCompanyActivityLogReport extends YukonReportBase
+public class ECActivityDetailReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 */
-	public EnergyCompanyActivityLogReport()
+	public ECActivityDetailReport()
 	{
-		this(new ActivityModel());
+		this(new ActivityDetailModel());
 	}
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public EnergyCompanyActivityLogReport(ActivityModel model_)
+	public ECActivityDetailReport(ActivityDetailModel model_)
 	{
 		super();
 		setModel(model_);
@@ -61,9 +62,9 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	 * @param stopTime_ - stopTime in millis for data query
 	 * 
 	 */
-	public EnergyCompanyActivityLogReport(long startTime_, long stopTime_)
+	public ECActivityDetailReport(long startTime_, long stopTime_)
 	{
-		this(new ActivityModel(startTime_, stopTime_ ));
+		this(new ActivityDetailModel(startTime_, stopTime_ ));
 		
 	}
 	/**
@@ -78,7 +79,9 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
-		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA);
+		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.EC_ACTIVITY_DETAIL_DATA);
+		((ActivityDetailModel)report.getModel()).setProgramInfoOnly(true);
+		((ActivityDetailModel)report.getModel()).setECIDs(new Integer(1010));
 		
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -87,7 +90,9 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);
 		long stop = cal.getTimeInMillis();
-		cal.add(java.util.Calendar.DATE, -90);
+//		cal.add(java.util.Calendar.DATE, -30);
+		cal.set(java.util.Calendar.DATE, 1);
+		cal.set(java.util.Calendar.MONTH, 0);
 		long start = cal.getTimeInMillis();
 
 		report.getModel().setStartTime(start);
@@ -124,23 +129,29 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		super.getExpressions();
 
 		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName(ActivityModel.CONTACT_STRING + " Hidden");
-		hideItem.setProperty("field", ActivityModel.CONTACT_STRING);
-		hideItem.setProperty("element", ActivityModel.CONTACT_STRING+" Element");
+		hideItem.setName(ActivityDetailModel.DATE_TIME_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityDetailModel.DATE_TIME_STRING);
+		hideItem.setProperty("element", ActivityDetailModel.DATE_TIME_STRING+" Element");
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
-		hideItem.setName(ActivityModel.ACCOUNT_NUMBER_STRING + " Hidden");
-		hideItem.setProperty("field", ActivityModel.ACCOUNT_NUMBER_STRING);
-		hideItem.setProperty("element", ActivityModel.ACCOUNT_NUMBER_STRING+" Element");
+		hideItem.setName(ActivityDetailModel.CONTACT_STRING+ " Hidden");
+		hideItem.setProperty("field", ActivityDetailModel.CONTACT_STRING);
+		hideItem.setProperty("element", ActivityDetailModel.CONTACT_STRING +" Element");
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
-		hideItem.setName(ActivityModel.USERNAME_STRING + " Hidden");
-		hideItem.setProperty("field", ActivityModel.USERNAME_STRING);
-		hideItem.setProperty("element", ActivityModel.USERNAME_STRING+" Element");
+		hideItem.setName(ActivityDetailModel.USERNAME_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityDetailModel.USERNAME_STRING);
+		hideItem.setProperty("element", ActivityDetailModel.USERNAME_STRING+" Element");
 		expressions.add(hideItem);
-				
+		
+		hideItem = new ItemHideFunction();
+		hideItem.setName(ActivityDetailModel.ACCOUNT_NUMBER_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityDetailModel.ACCOUNT_NUMBER_STRING);
+		hideItem.setProperty("element", ActivityDetailModel.ACCOUNT_NUMBER_STRING+" Element");
+		expressions.add(hideItem);
+
 //		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		return expressions;
 	}
@@ -152,43 +163,31 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	private Group createECGroup()
 	{
 		final Group ecGroup = new Group();
-		ecGroup.setName(ActivityModel.ENERGY_COMPANY_STRING +" Group");
-		ecGroup.addField(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
+		ecGroup.setName(ActivityDetailModel.ENERGY_COMPANY_STRING +" Group");
+		ecGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
 
 		final GroupHeader header = new GroupHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
+		
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName(ActivityModel.ENERGY_COMPANY_COLUMN + " Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getPositionX(), getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getPositionY()));
-		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getWidth(), getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getHeight()));
+		tfactory.setName(ActivityDetailModel.ENERGY_COMPANY_STRING + " Group Element");
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getPositionX(), getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getPositionY()));
+		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getWidth(), getModel().getColumnProperties(ActivityDetailModel.ENERGY_COMPANY_COLUMN).getHeight()));
 		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		tfactory.setNullString("<null>");
-		tfactory.setFieldname(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
-	  	header.addElement(tfactory.createElement());
+		tfactory.setFieldname(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
+		header.addElement(tfactory.createElement());
 		
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
-
-		//Add all columns (excluding Date) to the table model.
-		for (int i = 1; i < getModel().getColumnNames().length; i++)
-		{
-			LabelElementFactory factory = new LabelElementFactory();
-			factory.setName(getModel().getColumnName(i)+" Group Element");
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-			factory.setText(getModel().getColumnNames()[i]);
-			header.addElement(factory.createElement());
-		}
+		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 20f), new java.awt.geom.Line2D.Float(0, 20, 100, 20)));
 		
 		ecGroup.setHeader(header);
-
+		
 		final GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
 		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+//		ecGroup.setFooter(footer);
 		
 		return ecGroup;
 	}
@@ -198,21 +197,53 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	 * Create a Group for LMControlLogData.Date column.  
 	 * @return
 	 */
-	private Group createContactGroup()
+	private Group createTimestampGroup()
 	{
-		final Group contGroup = new Group();
-		contGroup.setName(ActivityModel.CONTACT_STRING +" Group");
-		contGroup.addField(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
-		contGroup.addField(getModel().getColumnName(ActivityModel.CONTACT_COLUMN));
+		int colIndex = ActivityDetailModel.DATE_COLUMN;
+		
+		final Group tsGroup = new Group();
+		tsGroup.setName(ActivityDetailModel.DATE_TIME_STRING +" Group");
+		tsGroup.addField(getModel().getColumnName(ActivityDetailModel.ENERGY_COMPANY_COLUMN));
+		tsGroup.addField(getModel().getColumnName(colIndex));
 
 		final GroupHeader header = new GroupHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
-		contGroup.setHeader(header);
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
+		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28)));
+		
+		header.addElement(StaticShapeElementFactory.createLineShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28)));
+		
+		final DateFieldElementFactory dfactory = new DateFieldElementFactory();
+		dfactory.setName(ActivityDetailModel.DATE_TIME_STRING + " Group Element");
+		dfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(colIndex).getPositionX(), 10));
+		dfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(colIndex).getWidth(), getModel().getColumnProperties(colIndex).getHeight()));
+		dfactory.setHorizontalAlignment(ElementAlignment.LEFT);
+		dfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
+		dfactory.setNullString("<null>");
+		dfactory.setFieldname(getModel().getColumnName(colIndex));
+		dfactory.setFormatString(getModel().getColumnProperties(colIndex).getValueFormat());
+		dfactory.setBold(new Boolean(true));
+		header.addElement(dfactory.createElement());
+		
+		//Add all columns (excluding Date) to the table model.
+		for (int i = ActivityDetailModel.CONTACT_COLUMN; i < ActivityDetailModel.DESCRIPTION_COLUMN; i++)
+		{
+			LabelElementFactory factory = new LabelElementFactory();
+			factory.setName(getModel().getColumnName(i)+" Group Element");
+			factory.setHorizontalAlignment(ElementAlignment.LEFT);
+			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 10));
+			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
+			factory.setText(getModel().getColumnNames()[i]);
+			header.addElement(factory.createElement());
+		}
+		
+		tsGroup.setHeader(header);
+				
 		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
-		contGroup.setFooter(footer);
+		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+		tsGroup.setFooter(footer);
 
-		return contGroup;
+		return tsGroup;
 	}
 	/**
 	 * Create a GroupList and all Group(s) to it.
@@ -223,7 +254,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		final GroupList list = new GroupList();
 		//Add a Grouping for Date column.
 		list.add(createECGroup());
-		list.add(createContactGroup());
+		list.add(createTimestampGroup());
 		return list;
 	}
 
@@ -235,7 +266,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	protected ItemBand createItemBand()
 	{
 		final ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
+		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
 		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 	
 		if( showBackgroundColor )
@@ -251,7 +282,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
 		//Start at 1, we don't want to include the Date column, Date is our group by column.
-		for (int i = 1; i < getModel().getColumnNames().length; i++)
+		for (int i = ActivityDetailModel.TIME_COLUMN; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = new TextFieldElementFactory();
 
@@ -270,10 +301,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 				factory.setName(getModel().getColumnNames()[i]+ " Element");
 				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
 				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				if( i == ActivityModel.ACTION_COUNT_COLUMN )
-					factory.setHorizontalAlignment(ElementAlignment.RIGHT);
-				else 
-					factory.setHorizontalAlignment(ElementAlignment.LEFT);
+				factory.setHorizontalAlignment(ElementAlignment.LEFT);
 				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 				factory.setNullString("<null>");
 				factory.setFieldname(getModel().getColumnNames()[i]);
@@ -282,5 +310,15 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		}
 
 		return items;
+	}
+	
+	/**
+	 * @return
+	 */
+	public PageFormat getPageFormat()
+	{
+		super.getPageFormat();
+		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
+		return pageFormat;
 	}
 }
