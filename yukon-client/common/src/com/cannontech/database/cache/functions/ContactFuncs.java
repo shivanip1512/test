@@ -5,7 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -32,7 +35,7 @@ public final class ContactFuncs
 	 */
 	public static LiteContact getContact( int contactID_ ) 
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
 			List cstCnts = cache.getAllContacts();
@@ -76,7 +79,7 @@ public final class ContactFuncs
 			return null;
 
 		ArrayList notifs = new ArrayList( 16 );
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
 			List cstCnts = cache.getAllContacts();
@@ -103,7 +106,7 @@ public final class ContactFuncs
 			return null;
 
 		ArrayList notifs = new ArrayList( 16 );
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
 			List cstCnts = cache.getAllContacts();
@@ -130,7 +133,7 @@ public final class ContactFuncs
 			return null;
 
 
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
 			List cstCnts = cache.getAllContacts();
@@ -186,9 +189,8 @@ public final class ContactFuncs
 	 */
 	public static List getAllContactNotifications() 
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = 
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
 		ArrayList cntNotifs = null;
 		
 		synchronized( cache )		
@@ -214,8 +216,7 @@ public final class ContactFuncs
 	 */
 	public static LiteCICustomer getOwnerCICustomer( int addtlContactID_ ) 
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = 
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized(cache)	 
 		{
@@ -244,8 +245,7 @@ public final class ContactFuncs
 	 */
 	public static LiteCICustomer getPrimaryContactCICustomer( int primaryContactID_ ) 
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache = 
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized(cache)	 
 		{
@@ -270,14 +270,51 @@ public final class ContactFuncs
 	 */
 	public static LiteCICustomer getCICustomer (int contactID_)
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
 		LiteCICustomer liteCICust = getPrimaryContactCICustomer(contactID_);
 		if( liteCICust == null)
 			liteCICust = getOwnerCICustomer(contactID_);
 			
 		return liteCICust;
+	}
+	
+	/**
+	 * Returns the LiteCustomer for contact ID
+	 * @param contactID int
+	 * @return LiteCustomer
+	 */
+	public static LiteCustomer getCustomer(int contactID) {
+		LiteCICustomer liteCICust = getCICustomer( contactID );
+		if (liteCICust != null) return liteCICust;
+		
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized (cache) {
+			List customers = cache.getAllCustomers();
+			for (int i = 0; i < customers.size(); i++) {
+				LiteCustomer liteCustomer = (LiteCustomer) customers.get(i);
+				if (liteCustomer.getPrimaryContactID() == contactID)
+					return liteCustomer;
+			}
+		}
+		
+		try {
+			com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+					"SELECT CustomerID FROM Customer WHERE PrimaryContactID=" + contactID,
+					CtiUtilities.getDatabaseAlias() );
+			stmt.execute();
+			
+			if (stmt.getRowCount() != 1)
+				throw new Exception( "Cannot determine the residential customer with PrimaryContactID=" + contactID );
+			
+			return cache.getCustomer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() );
+		}
+		catch (Exception e) {
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		
+		return null;
 	}
 	
 	public static LiteYukonUser getYukonUser(int contactID_) 
