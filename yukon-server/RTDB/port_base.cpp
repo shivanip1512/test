@@ -1,6 +1,6 @@
 #include <iostream>
-#include <iomanip>
 using namespace std;
+
 
 #include "port_base.h"
 #include "prot_emetcon.h"
@@ -249,7 +249,6 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
             CleanQueue( _portQueue, (void*)OutMessage, findLPRequestEntries, cleanupOutMessages );
         }
     }
-
 
     if(verifyPortIsRunnable( hQuit ) == NORMAL)
     {
@@ -964,6 +963,19 @@ ULONG CtiPort::queueCount() const
 
     return QueEntries;
 }
+
+INT CtiPort::applyPortQueue(void *ptr, void (*myFunc)(void*, void*))
+{
+    INT qEnt = 0;
+
+    if(_portQueue)
+    {
+        qEnt = ApplyQueue(_portQueue, ptr, myFunc);
+    }
+
+    return qEnt;
+}
+
 
 INT CtiPort::searchPortQueue(void *ptr, BOOL (*myFunc)(void*, void*))
 {

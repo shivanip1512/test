@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/05/15 22:36:40 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/07/21 22:04:30 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -200,6 +200,7 @@ public:
 
     ULONG queueCount() const;
 
+    INT applyPortQueue(void *ptr, void (*myFunc)(void*, void*));
     INT searchPortQueue(void *ptr, BOOL (*myFunc)(void*, void*));
     INT searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*));
 
