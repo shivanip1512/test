@@ -201,7 +201,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             {
                 if( gConfigParms.getValueAsString("DUKE_ISSG").compareTo("true", RWCString::ignoreCase) == 0 )
                 {
-                    if( offset == 20 )
+                    if( offset == 20 || offset == 21 )
                     {
                         pReq->setCommandString(pReq->CommandString() + " duke_issg_start");
 
