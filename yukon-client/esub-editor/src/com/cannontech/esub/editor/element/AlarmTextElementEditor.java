@@ -21,6 +21,11 @@ public class AlarmTextElementEditor
 		alarmIndicatorPanel	
 	};
 	
+	public AlarmTextElementEditor() {
+		super();
+		checkValidity();
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.common.editor.PropertyPanel#getInputPanels()
 	 */

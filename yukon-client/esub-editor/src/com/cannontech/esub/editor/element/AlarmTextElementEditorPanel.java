@@ -712,4 +712,11 @@ public void setValue(Object o) {
 public void valueChanged(javax.swing.event.TreeSelectionEvent e) {
 	fireInputUpdate();
 }
+	/* (non-Javadoc)
+	 * @see com.cannontech.common.gui.util.DataInputPanel#isInputValid()
+	 */
+	public boolean isInputValid() {
+		return (getPointSelectionPanel().getSelectedPoint() != null);
+	}
+
 }
