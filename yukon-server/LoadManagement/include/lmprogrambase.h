@@ -32,9 +32,9 @@ class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
 {
 
 public:
-
+#ifdef _DEBUG_MEMORY    
     static LONG numberOfReferences;
-
+#endif
     CtiLMProgramBase();
     CtiLMProgramBase(RWDBReader& rdr);
     CtiLMProgramBase(const CtiLMProgramBase& lmprog);
@@ -54,7 +54,6 @@ public:
     const RWCString& getControlType() const;
     LONG getConstraintID() const;
     const RWCString& getConstraintName() const;
-    const RWCString& getAvailableSeasons() const;
     const RWCString& getAvailableWeekDays() const;
     LONG getMaxHoursDaily() const;
     LONG getMaxHoursMonthly() const;
@@ -88,7 +87,6 @@ public:
     CtiLMProgramBase& setControlType(const RWCString& conttype);
     CtiLMProgramBase& setConstraintID(LONG constraintid);
     CtiLMProgramBase& setConstraintName(const RWCString& constraintname);
-    CtiLMProgramBase& setAvailableSeasons(const RWCString& availseasons);
     CtiLMProgramBase& setAvailableWeekDays(const RWCString& availweekdays);
     CtiLMProgramBase& setMaxHoursDaily(LONG daily);
     CtiLMProgramBase& setMaxHoursMonthly(LONG monthly);
@@ -126,6 +124,7 @@ public:
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
     virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay);
+    virtual CtiLMProgramControlWindow* getNextControlWindow(LONG secondsFromBeginningOfDay);
     
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -175,7 +174,6 @@ private:
     RWCString _controltype;
     LONG _constraintid;
     RWCString _constraintname;
-    RWCString _availableseasons;
     RWCString _availableweekdays;
     LONG _maxhoursdaily;
     LONG _maxhoursmonthly;

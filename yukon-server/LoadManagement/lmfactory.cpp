@@ -19,6 +19,7 @@
 #include "lmgroupsa305.h"
 #include "lmgroupsadigital.h"
 #include "lmgroupgolay.h"
+#include "lmgroupmacro.h"
 
 CtiLMGroupBase* CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
 {
@@ -76,7 +77,7 @@ CtiLMGroupBase* CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
 	lm_group = new CtiLMGroupGolay(rdr);
 	break;
     case TYPE_MACRO:
-	// LM doesn't deal with macro groups directly
+	lm_group = new CtiLMGroupMacro(rdr);
 	break;
     default:
     {

@@ -28,36 +28,45 @@
 
 extern ULONG _LM_DEBUG;
 
+#ifdef _DEBUG_MEMORY    
 LONG CtiLMProgramBase::numberOfReferences = 0;
+#endif
+
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase()
 {
-    /*numberOfReferences++;
+#ifdef _DEBUG_MEMORY    
+    numberOfReferences++;
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Default Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
-    }*/
+    }
+#endif    
 }
 
 CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr)
 {
-    /*numberOfReferences++;
+#ifdef _DEBUG_MEMORY        
+    numberOfReferences++;
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Restore Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
-    }*/
+    }
+#endif    
     restore(rdr);
 }
 
 CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 {
-    /*numberOfReferences++;
+#ifdef _DEBUG_MEMORY        
+    numberOfReferences++;
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Copy Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
-    }*/
+    }
+#endif    
     operator=(lmprog);
 }
 
@@ -66,13 +75,14 @@ CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::~CtiLMProgramBase()
 {
-
     _lmprogramcontrolwindows.clearAndDestroy();
-    /*numberOfReferences--;
+#ifdef _DEBUG_MEMORY            
+    numberOfReferences--;
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Destructor, Number of CtiLMProgramBase decreased to: " << numberOfReferences << endl;
-    }*/
+    }
+#endif    
 }
 
 /*---------------------------------------------------------------------------
@@ -203,16 +213,6 @@ LONG CtiLMProgramBase::getConstraintID() const
 const RWCString& CtiLMProgramBase::getConstraintName() const
 {
     return _constraintname;
-}
-
-/*---------------------------------------------------------------------------
-    getAvailableSeasons
-
-    Returns the available seasons of the program
----------------------------------------------------------------------------*/
-const RWCString& CtiLMProgramBase::getAvailableSeasons() const
-{
-    return _availableseasons;
 }
 
 /*---------------------------------------------------------------------------
@@ -551,17 +551,6 @@ CtiLMProgramBase& CtiLMProgramBase::setConstraintName(const RWCString& constrain
 }
 
 /*---------------------------------------------------------------------------
-    setAvailableSeasons
-
-    Sets the available seasons of the program
----------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setAvailableSeasons(const RWCString& availseasons)
-{
-    _availableseasons = availseasons;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
     setAvailableWeekDays
 
     Sets the available week days of the program
@@ -795,10 +784,9 @@ BOOL CtiLMProgramBase::isAvailableToday()
 
     now.extract(&start_tm);
 
-    long currentSeason = CtiSeasonManager::getInstance().getCurrentSeason(RWDate(), getSeasonScheduleId());
     if( _availableweekdays(start_tm.tm_wday) == 'N' ||
         ( _availableweekdays(7) == 'N' && CtiHolidayManager::getInstance().isHoliday(getHolidayScheduleId()) ) ||
-        _availableseasons(currentSeason) == 'N' )
+	CtiSeasonManager::getInstance().isInSeason(RWDate(), getSeasonScheduleId()) )
     {
         returnBool = FALSE;
     }
@@ -887,7 +875,6 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     >> _stoporder
     >> _defaultpriority
     >> _controltype
-    >> _availableseasons
     >> _availableweekdays
     >> _maxhoursdaily
     >> _maxhoursmonthly
@@ -930,7 +917,6 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
     << _stoporder
     << _defaultpriority
     << _controltype
-    << _availableseasons
     << _availableweekdays
     << _maxhoursdaily
     << _maxhoursmonthly
@@ -972,7 +958,6 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _stoporder = right._stoporder;
         _defaultpriority = right._defaultpriority;
         _controltype = right._controltype;
-        _availableseasons = right._availableseasons;
         _availableweekdays = right._availableweekdays;
         _maxhoursdaily = right._maxhoursdaily;
         _maxhoursmonthly = right._maxhoursmonthly;
@@ -1158,7 +1143,6 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     rdr["controltype"] >> _controltype;
     rdr["constraintid"] >> _constraintid;
     rdr["constraintname"] >> _constraintname;
-    rdr["availableseasons"] >> _availableseasons;
     rdr["availableweekdays"] >> _availableweekdays;
     rdr["maxhoursdaily"] >> _maxhoursdaily;
     rdr["maxhoursmonthly"] >> _maxhoursmonthly;
@@ -1225,9 +1209,49 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
 	    return currentControlWindow;
 	}
     }
-    return NULL;
+    return 0;
 }
 
+/*----------------------------------------------------------------------------
+  getNextControlWindow
+
+  Returns the next control window, or 0 if there isn't one.
+  Note that if there is only 1 control window, that window is always returned
+----------------------------------------------------------------------------*/  
+CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFromBeginningOfDay)
+{
+    if(_lmprogramcontrolwindows.entries() == 0)
+    {
+	return 0;
+    }
+    if(_lmprogramcontrolwindows.entries() == 1)
+    {  //only 1 control window, it must always be the next one
+	return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[0];
+    }
+    CtiLMProgramControlWindow* cw = getControlWindow(secondsFromBeginningOfDay);
+    if(cw != 0)
+    {  // we are in a control window now, return the next one
+	return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[cw->getWindowNumber()+1 % _lmprogramcontrolwindows.entries()];
+    }
+    else
+    {
+	//not in a control window now, figure which is the next one
+	for(LONG i=0;i<_lmprogramcontrolwindows.entries();i++)
+	{
+	    cw = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
+	    if(cw->getAvailableStartTime() > secondsFromBeginningOfDay)
+	    {
+		return cw;
+	    }	       
+	}
+	if(cw == 0)
+	{ //all the control windows were earlier today, return the first one for tomorrow
+	    return (CtiLMProgramControlWindow*) _lmprogramcontrolwindows[0];
+	}
+    }
+    return 0;
+}
+      
 
 // Static Members
 const RWCString CtiLMProgramBase::AutomaticType = "Automatic";

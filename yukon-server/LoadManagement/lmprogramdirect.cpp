@@ -49,7 +49,6 @@ CtiLMProgramDirect::CtiLMProgramDirect() :
     _startedrampingout(RWDBDateTime(1990,1,1,0,0,0,0))
 
 {
-
 }
 
 CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr) :
@@ -69,9 +68,8 @@ CtiLMProgramDirect::CtiLMProgramDirect(const CtiLMProgramDirect& directprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::~CtiLMProgramDirect()
 {
-
     _lmprogramdirectgears.clearAndDestroy();
-    _lmprogramdirectgroups.clearAndDestroy();
+//    _lmprogramdirectgroups.clearAndDestroy();
 }
 
 /*----------------------------------------------------------------------------
@@ -119,7 +117,6 @@ const string& CtiLMProgramDirect::getMessageFooter() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirect::getCurrentGearNumber() const
 {
-
     return _currentgearnumber;
 }
 
@@ -131,7 +128,6 @@ LONG CtiLMProgramDirect::getCurrentGearNumber() const
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramDirect::getLastGroupControlled() const
 {
-
     return _lastgroupcontrolled;
 }
 
@@ -159,7 +155,6 @@ LONG CtiLMProgramDirect::getDailyOps()
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramDirect::getDirectStartTime() const
 {
-
     return _directstarttime;
 }
 
@@ -170,7 +165,6 @@ const RWDBDateTime& CtiLMProgramDirect::getDirectStartTime() const
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMProgramDirect::getDirectStopTime() const
 {
-
     return _directstoptime;
 }
 
@@ -201,7 +195,7 @@ const RWDBDateTime& CtiLMProgramDirect::getStartedRampingOutTime() const
 ----------------------------------------------------------------------------*/
 bool CtiLMProgramDirect::getIsRampingIn() const
 {
-    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
+    for(int i = 0; i > _lmprogramdirectgroups.entries(); i++)
     {
 	if(((CtiLMGroupBase*)_lmprogramdirectgroups[i])->getIsRampingIn())
 	{
@@ -235,7 +229,6 @@ bool CtiLMProgramDirect::getIsRampingOut() const
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramDirect::getLMProgramDirectGears()
 {
-
     return _lmprogramdirectgears;
 }
 
@@ -246,7 +239,6 @@ RWOrdered& CtiLMProgramDirect::getLMProgramDirectGears()
 ---------------------------------------------------------------------------*/
 RWOrdered& CtiLMProgramDirect::getLMProgramDirectGroups()
 {
-
     return _lmprogramdirectgroups;
 }
 
@@ -524,9 +516,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     if( getProgramState() == CtiLMProgramBase::ActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
-                        for(LONG j=0;j<_lmprogramdirectgroups.entries();j++)
+			for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
                         {
-                            CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[j];
+                            CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
                             if( currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActiveState )
                             {
                                 setProgramState(CtiLMProgramBase::ActiveState);
@@ -559,10 +551,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             dout << RWTime() << " - True Cycling all groups, LM Program: " << getPAOName() << endl;
                         }
                     }
-
-                    for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+		    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
                     {
-                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)  _lmprogramdirectgroups[i];
                         if( !currentLMGroup->getDisableFlag() &&
                             !currentLMGroup->getControlInhibit() )
                         {
@@ -689,9 +680,10 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             currentLMGroup->setLastControlSent(RWDBDateTime());
                             currentLMGroup->setControlStartTime(RWDBDateTime());
                             currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
-                            for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+
+	    		    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
                             {
-                                CtiLMGroupBase* currentLMGroup2 = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                                CtiLMGroupBase* currentLMGroup2 = _lmprogramdirectgroups[i];
                                 if( currentGearObject->getPercentReduction() > 0.0 )
                                 {
                                     expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup2->getKWCapacity();
@@ -774,9 +766,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Controlling latch groups, LM Program: " << getPAOName() << endl;
                     }
-                    for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+    		    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
                     {
-                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
                         if( !currentLMGroup->getDisableFlag() &&
                             !currentLMGroup->getControlInhibit() )
                         {
@@ -830,9 +822,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
                     }
-                    for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+    		    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)		    
                     {
-                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
                         if( !currentLMGroup->getDisableFlag() &&
                             !currentLMGroup->getControlInhibit() )
                         {
@@ -914,7 +906,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
 {
     DOUBLE expectedLoadReduced = 0.0;
 
-    if( _lmprogramdirectgears.entries() > 0 && _lmprogramdirectgroups.entries() > 0 )
+    if( _lmprogramdirectgears.entries() > 0 && _lmprogramdirectgroups.entries())
     {
         CtiLMProgramDirectGear* currentGearObject = NULL;
         if( _currentgearnumber < _lmprogramdirectgears.entries() )
@@ -944,9 +936,9 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
 			CtiLockGuard<CtiLogger> logger_guard(dout);
 			dout << RWTime() << " - Controlling all time refresh groups, LM Program: " << getPAOName() << endl;
 		    }
-		    for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+      		    for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)		    
 		    {
-			CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+			CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
 			if( !currentLMGroup->getDisableFlag() &&
 			    !currentLMGroup->getControlInhibit() )
 			{
@@ -1018,7 +1010,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Smart Cycling all groups, LM Program: " << getPAOName() << endl;
                 }
-                for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+		for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)		    
                 {
                     CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
                     if( !currentLMGroup->getDisableFlag() &&
@@ -1851,54 +1843,6 @@ CtiLMGroupBase* CtiLMProgramDirect::findGroupToTake(CtiLMProgramDirectGear* curr
     return returnGroup;
 }
 
-/*----------------------------------------------------------------------------
-  findNextGroupToTake
-
-  ----------------------------------------------------------------------------*/
-CtiLMGroupBase* CtiLMProgramDirect::findNextGroupToTake()
-{
-    CtiLMGroupBase* returnGroup = NULL;
-    CtiLMProgramDirectGear* currentGearObject = getCurrentGearObject();
-    
-    if( !currentGearObject->getGroupSelectionMethod().compareTo(CtiLMProgramDirectGear::LastControlledSelectionMethod,RWCString::ignoreCase) )
-    {
-        bool found = false;
-        for(int i=0;i<_lmprogramdirectgroups.entries() && !found;i++)
-        {
-            CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
-            if( getLastGroupControlled() == currentLMGroup->getPAOId() )
-            {
-		int j=0;
-		while(j < _lmprogramdirectgroups.entries())
-		{   // starting with the last group controlled, go through them in order and find the next group
-		    // ready to go
-		    currentLMGroup = (CtiLMGroupBase*) _lmprogramdirectgroups[(i+j+1)%_lmprogramdirectgroups.entries()];
-             
-		    if( (getManualControlReceivedFlag() || doesGroupHaveAmpleControlTime(currentLMGroup,1) ) &&
-			!currentLMGroup->getDisableFlag() &&
-			!currentLMGroup->getControlInhibit() &&
-			( currentLMGroup->getGroupControlState() == CtiLMGroupBase::InactiveState ||
-			  !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ) )
-		    {
-			found = true;
-			returnGroup = currentLMGroup;
-			returnGroup->setGroupControlState(CtiLMGroupBase::ActivePendingState);
-			break;
-		    }
-
-		    j++;
-		}
-            }
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " **Checkpoint** " << "Only last controlled group selection method support now" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
-    
-    return returnGroup;
-}
 /*---------------------------------------------------------------------------
     hasGearChanged
 
@@ -4061,7 +4005,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                        currentLMGroup->setIsRampingOut(true);
                        RWDBDateTime now = RWDBDateTime(RWTime(secondsFrom1901));
 //NOTE: is this correct for the control complete time for the group?  does depend on type?
-                       currentLMGroup->setControlCompleteTime( RWDBDateTime(RWTime(now.seconds() + floor( 100.0 / (double)currentGearObject->getRampOutPercent()) * currentGearObject->getRampOutInterval() + 1.0)));
+                       currentLMGroup->setControlCompleteTime( RWDBDateTime(RWTime(now.seconds() + (unsigned long) floor( 100.0 / (double)currentGearObject->getRampOutPercent()) * currentGearObject->getRampOutInterval() + 1.0)));
                        setStartedRampingOutTime(now);
                        is_ramping_out = true;
 
@@ -4277,6 +4221,14 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(ULONG secondsFrom1901)
     CtiLMProgramDirectGear* lm_gear = getCurrentGearObject();
     long ramp_out_interval = lm_gear->getRampOutInterval();
     long ramp_out_percent = lm_gear->getRampOutPercent();
+
+    if(ramp_out_interval == 0 || ramp_out_percent == 0)
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " << "LMProgram: " << getPAOName() << " Gear: " << getCurrentGearObject()->getGearName() << " has a stop type of 'Ramp Out', but is has 0 for a ramp out interval or ramp out percent.  Please change this to something reasonable.  Cowardly doing nothing."  << __FILE__ << "(" << __LINE__ << ")" << endl;
+	return false;
+    }
+
     int cur_interval = (secondsFrom1901 - getStartedRampingOutTime().seconds()) / getCurrentGearObject()->getRampOutInterval()+1;
     int should_be_ramped_out = min((int) floor((((double)ramp_out_percent/100.0 * (double)cur_interval) * (double)num_groups) + 0.5), (int) num_groups);
     int num_ramped_out = 0;
@@ -4499,7 +4451,8 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
-    if( getProgramState() == CtiLMProgramBase::ManualActiveState ||
+    if( getDisableFlag() ||
+	getProgramState() == CtiLMProgramBase::ManualActiveState ||
 	getProgramState() == CtiLMProgramBase::ScheduledState )
     {
 	// don't do any timed control while this program is manually active
@@ -4564,7 +4517,6 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 	    return FALSE;
 	}
     }
-	
     else if( getProgramState() == CtiLMProgramBase::TimedActiveState )
     {
 	
@@ -4581,6 +4533,9 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
 		CtiLockGuard<CtiLogger> dout_guard(dout);
 		dout << RWTime() << " - " <<  text << endl;
 	    }
+
+    		setProgramState(CtiLMProgramBase::InactiveState);
+		setManualControlReceivedFlag(FALSE);
 	    }
 	    else if(!getIsRampingOut())
 	    {
@@ -4874,20 +4829,33 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
 	_dailyops = right._dailyops;
 	_notifytime = right._notifytime;
 	_startedrampingout = right._startedrampingout;
+
+
+         for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)
+         {
+	        _lmprogramdirectgears.insert(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
+//             _lmprogramdirectgears.insert(right._lmprogramdirectgears[i]);
+         }
+
+	// Don't make a new copy of the groups!
+         for(LONG j=0;j<right._lmprogramdirectgroups.entries();j++)
+         {
+             _lmprogramdirectgroups.insert(right._lmprogramdirectgroups[j]);
+         }
 	
-        _lmprogramdirectgears.clearAndDestroy();
-        for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)
-        {
-            _lmprogramdirectgears.insert(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
-        }
+//        _lmprogramdirectgears.clearAndDestroy();
+//         for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)
+//         {
+//             _lmprogramdirectgears.insert(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
+//         }
 
-        _lmprogramdirectgroups.clearAndDestroy();
-        for(LONG j=0;j<right._lmprogramdirectgroups.entries();j++)
-        {
-            _lmprogramdirectgroups.insert(((CtiLMGroupBase*)right._lmprogramdirectgroups[j])->replicate());
-        }
+// //        _lmprogramdirectgroups.clearAndDestroy();
+//         for(LONG j=0;j<right._lmprogramdirectgroups.entries();j++)
+//         {
+//             _lmprogramdirectgroups.insert(((CtiLMGroupBase*)right._lmprogramdirectgroups[j])->replicate());
+//         }
+//     }
     }
-
     return *this;
 }
 
@@ -5240,7 +5208,7 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 			
 	    for(int i = 0; i < min(num_groups_to_take, (num_groups-total_groups_taken)); i++) //if there is an odd number of groups, can't always take 2
 	    {
-		CtiLMGroupBase* lm_group = findNextGroupToTake();
+		CtiLMGroupBase* lm_group = findGroupToTake(getCurrentGearObject());//findNextGroupToTake();
 		if(lm_group != NULL)
 		{
 		    lm_group->setNextControlTime(ctrl_time);

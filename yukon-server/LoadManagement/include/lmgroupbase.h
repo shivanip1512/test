@@ -30,7 +30,10 @@ class CtiLMGroupBase : public CtiMemDBObject, public RWCollectable
 {
 
 public:
-
+#ifdef _DEBUG_MEMORY    
+    static LONG numberOfReferences;
+#endif    
+    
     CtiLMGroupBase();
     CtiLMGroupBase(RWDBReader& rdr);
     CtiLMGroupBase(const CtiLMGroupBase& groupbase);
@@ -66,7 +69,6 @@ public:
     LONG getHoursMonthlyPointId() const;
     LONG getHoursSeasonalPointId() const;
     LONG getHoursAnnuallyPointId() const;
-    LONG getLMProgramId() const;
     LONG getControlStatusPointId() const;
     const RWCString& getLastControlString() const;
 
@@ -91,6 +93,7 @@ public:
     CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
     CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
     CtiLMGroupBase& setNextControlTime(const RWDBDateTime& controltime);
+    void setInternalState(unsigned state);
     
     CtiLMGroupBase& setIsRampingIn(bool in);
     CtiLMGroupBase& setIsRampingOut(bool out);
@@ -100,10 +103,9 @@ public:
     CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
     CtiLMGroupBase& setHoursSeasonalPointId(LONG seasonalid);
     CtiLMGroupBase& setHoursAnnuallyPointId(LONG annuallyid);
-    CtiLMGroupBase& setLMProgramId(LONG progid);
     CtiLMGroupBase& setControlStatusPointId(LONG cntid);
     CtiLMGroupBase& setLastControlString(const RWCString& controlstr);
-
+    
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
@@ -147,6 +149,7 @@ public:
     static int InactivePendingState;
     static int ActivePendingState;
 
+    BOOL _insertDynamicDataFlag;
 protected:
 
     void restore(RWDBReader& rdr);
@@ -184,10 +187,9 @@ private:
     LONG _hoursannuallypointid;
 
     //don't stream
-    LONG _lmprogramid;
     LONG _controlstatuspointid;
     RWCString _lastcontrolstring;
-    BOOL _insertDynamicDataFlag;
+
 };
 #endif
 

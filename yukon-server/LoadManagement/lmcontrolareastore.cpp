@@ -61,6 +61,12 @@ extern ULONG _LM_DEBUG;
 
 struct id_hash{LONG operator()(LONG x) const { return x; } };
 
+void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program, void* d)
+{
+    delete lm_program;
+}
+
+/*
 template <class T>
 struct fun_less : binary_function<T, T, bool> {
   bool operator() (const T& t1, const T& t2) const
@@ -68,7 +74,8 @@ struct fun_less : binary_function<T, T, bool> {
 	    return *t1 < *t2;
 	}
 };
-    
+*/
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
@@ -313,8 +320,16 @@ void CtiLMControlAreaStore::reset()
                     {
                         dumpAllDynamicData();
                         saveAnyProjectionData();
-                        saveAnyControlStringData();
+                        saveAnyControlStringData(); 
                         _controlAreas->clearAndDestroy();
+			//the line above doesn't delete groups, do that now
+                        for(map<long,CtiLMGroupBase*>::iterator iter = _all_group_map.begin();
+		            iter != _all_group_map.end();
+			    iter++)
+			{
+			    delete iter->second;
+			}
+			_all_group_map.clear();	
                         wasAlreadyRunning = true;
                     }
 
@@ -350,15 +365,366 @@ void CtiLMControlAreaStore::reset()
                             controlPointHashMap.insert( tempPointId, tempPointId );
                         }
                     }
+
+		    RWTimer allGroupTimer;
+		    allGroupTimer.start();
+		    
+		    /* First load all the groups, and put them into a map by group id */
+		    map< long, CtiLMGroupBase* > all_assigned_group_map; //remember which groups we have assigned
+		    map< long, vector<CtiLMGroupBase*> > all_program_group_map;
+		    
+		{
+		    RWDBTable paObjectTable = db.table("yukonpaobject");
+		    RWDBTable deviceTable = db.table("device");
+		    RWDBTable lmGroupTable = db.table("lmgroup");
+
+
+		    RWDBSelector selector = db.selector();
+		    selector << rwdbName("groupid", paObjectTable["paobjectid"])
+			     << paObjectTable["category"]
+			     << paObjectTable["paoclass"]
+			     << paObjectTable["paoname"]
+			     << paObjectTable["type"]
+			     << paObjectTable["description"]
+			     << paObjectTable["disableflag"]
+			     << deviceTable["alarminhibit"]
+			     << deviceTable["controlinhibit"]
+			     << lmGroupTable["kwcapacity"];
+		    selector.from(paObjectTable);
+		    selector.from(deviceTable);
+		    selector.from(lmGroupTable);
+
+		    selector.where( paObjectTable["paobjectid"] == lmGroupTable["deviceid"] &&
+				    paObjectTable["paobjectid"] == deviceTable["deviceid"] );
+		
+			
+		    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+		    {
+			CtiLockGuard<CtiLogger> logger_guard(dout);
+			dout << RWTime() << " - " << selector.asString().data() << endl;
+		    }
+
+		    CtiLMGroupFactory lm_group_factory;
+		    RWDBReader rdr = selector.reader(conn);
+		    while(rdr())
+		    {
+			string category;
+			string type;
+			rdr["category"] >> category;
+			rdr["type"] >> type;
+			CtiLMGroupBase* lm_group = lm_group_factory.createLMGroup(rdr);
+			_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+			attachControlStringData(lm_group);
+		    }
+
+		} //end main group loading
+
+		/* Attach any points necessary to groups */
+	    {
+		_point_group_map.clear();
+		RWDBTable pointTable = db.table("point");
+		RWDBTable lmGroupTable = db.table("lmgroup");
+
+		RWDBSelector selector = db.selector();
+		selector << pointTable["paobjectid"]
+			 << pointTable["pointid"]
+			 << pointTable["pointoffset"]
+			 << pointTable["pointtype"];
+
+		selector.from(pointTable);
+		selector.from(lmGroupTable);
+		    
+		selector.where( pointTable["paobjectid"] == lmGroupTable["deviceid"] );
+		    
+		if( _LM_DEBUG & LM_DEBUG_DATABASE )
+		{
+		    CtiLockGuard<CtiLogger> logger_guard(dout);
+		    dout << RWTime() << " - " << selector.asString().data() << endl;
+		}
+
+		RWDBReader rdr = selector.reader(conn);
+
+		while( rdr() )
+		{
+		    long group_id;
+		    int point_id;
+		    string point_type;
+		    int point_offset;
+
+		    rdr["paobjectid"] >> group_id;
+		    rdr["pointid"] >> point_id;
+		    rdr["pointtype"] >> point_type;
+		    rdr["pointoffset"] >> point_offset;
+
+		    map< long, CtiLMGroupBase* >::iterator iter = _all_group_map.find(group_id);
+		    CtiLMGroupBase* lm_group = iter->second;
+
+		    switch(resolvePointType(point_type.data()))
+		    {
+		    case AnalogPointType:
+			switch(point_offset)
+			{
+			case DAILYCONTROLHISTOFFSET:
+			    lm_group->setHoursDailyPointId(point_id);
+			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    break;
+			case MONTHLYCONTROLHISTOFFSET:
+			    lm_group->setHoursMonthlyPointId(point_id);
+			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    break;
+			case SEASONALCONTROLHISTOFFSET:
+			    lm_group->setHoursSeasonalPointId(point_id);
+			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    break;
+			case ANNUALCONTROLHISTOFFSET:
+			    lm_group->setHoursAnnuallyPointId(point_id);
+			    _point_group_map.insert(make_pair(point_id,lm_group));
+			    break;
+			default:
+			{
+			    CtiLockGuard<CtiLogger> dout_guard(dout);
+			    dout << RWTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
+				 << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
+			}
+			break;
+			}
+			break;
+		    case StatusPointType:
+			if(point_offset == 0)
+			{
+			    long control_status_point_id;
+			    if(controlPointHashMap.findValue(point_id, control_status_point_id))
+			    {
+				lm_group->setControlStatusPointId(control_status_point_id);
+				_point_group_map.insert(make_pair(point_id,lm_group));
+			    }
+			}
+			break;
+		    default:
+		    {
+			CtiLockGuard<CtiLogger> dout_guard(dout);
+			dout << RWTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.data()) << __FILE__ << "(" << __LINE__ << ")" << endl;
+		    }
+		    }
+		}
+	    }
+
+		/* Load dynamic group information */
+	    {
+		RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
+		RWDBSelector selector = db.selector();
+		selector << rwdbName("groupid", dynamicLMGroupTable["deviceid"])
+			 << dynamicLMGroupTable["groupcontrolstate"]
+			 << dynamicLMGroupTable["currenthoursdaily"]
+			 << dynamicLMGroupTable["currenthoursmonthly"]
+			 << dynamicLMGroupTable["currenthoursseasonal"]
+			 << dynamicLMGroupTable["currenthoursannually"]
+			 << dynamicLMGroupTable["lastcontrolsent"]
+			 << dynamicLMGroupTable["timestamp"]
+			 << dynamicLMGroupTable["controlstarttime"]
+			 << dynamicLMGroupTable["controlcompletetime"]
+			 << dynamicLMGroupTable["nextcontroltime"]
+			 << dynamicLMGroupTable["internalstate"];
+		selector.from(dynamicLMGroupTable);
+
+		RWDBReader rdr = selector.reader(conn);
+		while(rdr())
+		{
+		    long group_id;
+		    long group_control_state;
+		    long cur_hours_daily;
+		    long cur_hours_monthly;
+		    long cur_hours_seasonal;
+		    long cur_hours_annually;
+		    RWDBDateTime last_control_sent;
+		    RWDBDateTime timestamp;
+		    RWDBDateTime control_start_time;
+		    RWDBDateTime control_complete_time;
+		    RWDBDateTime next_control_time;
+		    long internal_state;
+
+		    rdr["groupid"] >> group_id;
+		    rdr["currenthoursdaily"] >> cur_hours_daily;
+		    rdr["currenthoursmonthly"] >> cur_hours_monthly;
+		    rdr["currenthoursseasonal"] >> cur_hours_seasonal;
+		    rdr["currenthoursannually"] >> cur_hours_annually;
+		    rdr["lastcontrolsent"] >> last_control_sent;
+		    rdr["timestamp"] >> timestamp;
+		    rdr["controlstarttime"] >> control_start_time;
+		    rdr["controlcompletetime"] >> control_complete_time;
+		    rdr["nextcontroltime"] >> next_control_time;
+		    rdr["internalstate"] >> internal_state;
+		    
+		    CtiLMGroupBase* lm_group = _all_group_map.find(group_id)->second;
+		    lm_group->setCurrentHoursDaily(cur_hours_daily);
+		    lm_group->setCurrentHoursMonthly(cur_hours_monthly);
+		    lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
+		    lm_group->setCurrentHoursAnnually(cur_hours_annually);
+		    lm_group->setLastControlSent(last_control_sent);
+		    //timestamp?
+		    lm_group->setControlStartTime(control_start_time);
+		    lm_group->setControlCompleteTime(control_complete_time);
+		    lm_group->setNextControlTime(next_control_time);
+		    lm_group->setInternalState(internal_state);
+		    lm_group->setDirty(false);
+		    lm_group->_insertDynamicDataFlag = FALSE;
+		}
+	    }
+		/* Now lets load up info about macro groups */
+		map< long, vector<long> > group_macro_map;  //ownerid, <childid>
+	    {
+		RWDBTable genericMacroTable = db.table("genericmacro");
+		RWDBTable lmGroupTable = db.table("lmgroup");
+
+		RWDBSelector selector = db.selector();
+		selector << genericMacroTable["ownerid"]
+			 << genericMacroTable["childid"];
+
+		selector.from(genericMacroTable);
+		selector.from(lmGroupTable);
+
+		selector.where(genericMacroTable["ownerid"] == lmGroupTable["deviceid"]);
+		selector.orderBy(genericMacroTable["ownerid"]);
+		selector.orderBy(genericMacroTable["childorder"]);
+
+		if( _LM_DEBUG & LM_DEBUG_DATABASE )
+		{
+		    CtiLockGuard<CtiLogger> logger_guard(dout);
+		    dout << RWTime() << " - " << selector.asString().data() << endl;
+		}
+
+		RWDBReader rdr = selector.reader(conn);
+   	        map<long, vector<long> >::iterator iter;
+		while(rdr())
+		{
+		    long owner_id;
+		    long child_id;
+
+		    rdr["ownerid"] >> owner_id;
+		    rdr["childid"] >> child_id;
+
+		    iter = group_macro_map.find(owner_id);
+		    if(iter == group_macro_map.end())
+		    {
+			vector<long> child_vec;
+			child_vec.push_back(child_id);
+			group_macro_map.insert(make_pair(owner_id, child_vec));
+		    }
+		    else
+		    {
+			iter->second.push_back(child_id);
+		    }
+		}
+	    }
+		      
+	    /* now lets load info about how groups attach to programs */
+	    {
+		RWDBTable lmProgramDirectGroupTable = db.table("lmprogramdirectgroup");
+
+		RWDBSelector selector = db.selector();
+		selector << rwdbName("programid", lmProgramDirectGroupTable["deviceid"])
+			 << rwdbName("groupid", lmProgramDirectGroupTable["lmgroupdeviceid"]);
+
+		selector.from(lmProgramDirectGroupTable);
+		selector.orderBy(lmProgramDirectGroupTable["deviceid"]);
+
+		if( _LM_DEBUG & LM_DEBUG_DATABASE )
+		{
+		    CtiLockGuard<CtiLogger> logger_guard(dout);
+		    dout << RWTime() << " - " << selector.asString().data() << endl;
+		}
+
+		RWDBReader rdr = selector.reader(conn);
+		map<long, vector<CtiLMGroupBase*> >::iterator cur_iter;
+		long cur_program = -1;
+		while(rdr())
+		{
+		    long program_id;
+		    long group_id;
+		    rdr["programid"] >> program_id;
+		    rdr["groupid"] >> group_id;
+
+		    cur_iter = all_program_group_map.find(program_id);
+		    if(cur_iter == all_program_group_map.end())
+		    {
+			vector<CtiLMGroupBase*> group_vec;
+			CtiLMGroupBase* lm_group = _all_group_map.find(group_id)->second;
+
+			map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+			if(macro_iter != group_macro_map.end())
+			{ //must be a macro group
+			    vector<long> macro_vec = macro_iter->second;
+			    for(vector<long>::iterator iter = macro_vec.begin();
+				iter != macro_vec.end();
+				iter++)
+			    { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+				CtiLMGroupBase* child_group = _all_group_map.find(*iter)->second;
+				group_vec.push_back(child_group);
+				child_group->setGroupOrder(group_vec.size());
+				all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+			    }
+			}
+			else
+			{ //not a macro group, assign it to the program
+			    group_vec.push_back(lm_group);
+			    lm_group->setGroupOrder(group_vec.size());
+			    all_program_group_map.insert(make_pair(program_id, group_vec));
+       			    all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+			}
+		    }
+		    else
+		    {
+			CtiLMGroupBase* lm_group = _all_group_map.find(group_id)->second;
+			
+			map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+			if(macro_iter != group_macro_map.end())
+			{ //must be a macro group
+			    vector<long> macro_vec = macro_iter->second;
+			    for(vector<long>::iterator iter = macro_vec.begin();
+				iter != macro_vec.end();
+				iter++)
+			    { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+				CtiLMGroupBase* child_group = _all_group_map.find(*iter)->second;
+				cur_iter->second.push_back(child_group);
+				child_group->setGroupOrder(cur_iter->second.size());
+				all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+			    }
+			}
+			else
+			{
+			    cur_iter->second.push_back(lm_group);
+    			    lm_group->setGroupOrder(cur_iter->second.size());
+     			    all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+			}
+
+		    }
+		}
+	    }		        
+	    
+	    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+	    {
+		CtiLockGuard<CtiLogger> logger_guard(dout);
+		dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
+		dout << "Loaded a total of " << _all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
+		dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
+		allGroupTimer.reset();
+	    }
+
+
+		 
+		    
+#ifdef _THIS_DOESNT_WORK_ON_ORACLE
 		    
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
 
                     RWOrdered allGroupList;
-		    multimap< long, CtiLMGroupBase* > all_program_group_map;
-		    map< long, CtiLMGroupBase* > all_group_map;
+		    multimap< long, CtiLMGroupBase* > all_program_group_map_bung;
+		    map< long, CtiLMGroupBase* > _all_group_map;
 		    
                     RWTimer allGroupTimer;
                     allGroupTimer.start();
+
+
                     {//loading direct groups start
 						
 			//On the first pass we will run into all the macro groups attached
@@ -474,14 +840,14 @@ void CtiLMControlAreaStore::reset()
 				
 				attachControlStringData(lm_group);
 				allGroupList.insert(lm_group);
-				all_program_group_map.insert(make_pair(programid, lm_group));
-				all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+				all_program_group_map_bung.insert(make_pair(programid, lm_group));
+				_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
 			    }
 			}
 			if( _LM_DEBUG & LM_DEBUG_DATABASE )
 			{
 			    CtiLockGuard<CtiLogger> dout_guard(dout);
-			    dout << RWTime() << " - Found " << macrogroup_map.size() << " macrogroups, and " << all_program_group_map.size() << " LMGroups so far." << endl;
+			    dout << RWTime() << " - Found " << macrogroup_map.size() << " macrogroups, and " << all_program_group_map_bung.size() << " LMGroups so far." << endl;
 			}
 		    }
 
@@ -585,15 +951,15 @@ void CtiLMControlAreaStore::reset()
 			
 			    attachControlStringData(lm_group);
 			    allGroupList.insert(lm_group);
-			    all_program_group_map.insert(make_pair(macrogroup_info.first, lm_group));
-			    all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+			    all_program_group_map_bung.insert(make_pair(macrogroup_info.first, lm_group));
+			    _all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
 			}
 		    }
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
 		{
 		    CtiLockGuard<CtiLogger> dout_guard(dout);
-		    dout << RWTime() << " - Loaded a total of " << all_program_group_map.size() << " LMGroups" << endl;
+		    dout << RWTime() << " - Loaded a total of " << all_program_group_map_bung.size() << " LMGroups" << endl;
 		}
 	    
 		}// end second group pass - make sure to fix up group ordering after groups are linked with programs below.
@@ -634,8 +1000,8 @@ void CtiLMControlAreaStore::reset()
 			rdr["pointtype"] >> point_type;
 			rdr["pointoffset"] >> point_offset;
 
-                        map< long, CtiLMGroupBase* >::iterator iter = all_group_map.find(group_id);
-			if(iter == all_group_map.end())
+                        map< long, CtiLMGroupBase* >::iterator iter = _all_group_map.find(group_id);
+			if(iter == _all_group_map.end())
 			{  //Group may not be attached and so not loaded, ok
 			    continue;
 			}
@@ -691,6 +1057,7 @@ void CtiLMControlAreaStore::reset()
 			}
 		    }
 		}
+#endif		
 #ifdef _OLD_			
                         RWDBTable lmGroupMacroExpanderView = db.table("lmgroupmacroexpander_view");
                         RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
@@ -929,14 +1296,10 @@ void CtiLMControlAreaStore::reset()
                                 }
                             }
                         }
-#endif			
                     }//loading direct groups end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
-                        allGroupTimer.reset();
-                    }
+#endif			
+
+
 
                     RWTValHashMap<LONG,CtiLMProgramBase*,id_hash,equal_to<LONG> > directProgramHashMap;
 
@@ -946,6 +1309,7 @@ void CtiLMControlAreaStore::reset()
                     RWTimer dirProgsTimer;
                     dirProgsTimer.start();
                     {//loading direct programs start
+			RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                         RWDBTable lmProgramDirectTable = db.table("lmprogramdirect");
                         RWDBTable dynamicLMProgramDirectTable = db.table("dynamiclmprogramdirect");
                         RWDBTable pointTable = db.table("point");
@@ -961,7 +1325,6 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["controltype"]
 				 << lmProgramTable["constraintid"]
 				 << lmProgramTable["constraintname"]
-                                 << lmProgramTable["availableseasons"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
                                  << lmProgramTable["maxhoursmonthly"]
@@ -1029,28 +1392,15 @@ void CtiLMControlAreaStore::reset()
                             {
                                 currentLMProgramDirect = new CtiLMProgramDirect(rdr);
                                 RWOrdered& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
+				
                                 //Inserting this program's groups
-				multimap< long, CtiLMGroupBase* >::iterator iter;
-				multimap< long, CtiLMGroupBase* >::iterator last_elem;
-
-				iter = all_program_group_map.find(tempProgramId);
-				if(iter != all_program_group_map.end())
+				vector<CtiLMGroupBase*> group_vec = all_program_group_map.find(tempProgramId)->second;
+				for(vector<CtiLMGroupBase*>::iterator iter = group_vec.begin();
+				    iter != group_vec.end();
+				    iter++)
 				{
-				    last_elem = all_program_group_map.upper_bound(tempProgramId);
-				    vector< CtiLMGroupBase* > sorted_groups;
-				    for( ; iter != last_elem; ++iter)
-				    {
-					sorted_groups.push_back(iter->second);
-//n					directGroups.insert(iter->second);
-//					total_groups_assigned++;
-				    }
-				    sort(sorted_groups.begin(), sorted_groups.end(), fun_less< CtiLMGroupBase* >());
-				    for(vector< CtiLMGroupBase* >::iterator vec_iter = sorted_groups.begin();
-					vec_iter != sorted_groups.end(); vec_iter++)
-				    {
-					directGroups.insert(*vec_iter);
-					total_groups_assigned++;
-				    }
+				    directGroups.insert(*iter);
+				    total_groups_assigned++;
 				}
 
                                 //Inserting this direct program into hash map
@@ -1075,13 +1425,25 @@ void CtiLMControlAreaStore::reset()
                             }
                         }
 
-			//Did we assign all the groups we loaded?
-			if(total_groups_assigned != all_program_group_map.size())
+			/* delete any groups that were not assigned to programs */
+/*			for(map<long,CtiLMGroupBase*>::iterator iter = all_assigned_group_map.begin();
+			    iter != all_assigned_group_map.end();
+			    iter++)
+			{
+			    _all_group_map.erase(iter->first);
+			}
+			if( _LM_DEBUG & LM_DEBUG_DATABASE )
 			{
 			    CtiLockGuard<CtiLogger> dout_guard(dout);
-			    dout << RWTime() << " **Checkpoint** " <<  " Loaded " << all_program_group_map.size() << " LMGroups, but assigned " << total_groups_assigned << " LMGroups to LMPrograms, DANGER WILL ROBINSON" << __FILE__ << "(" << __LINE__ << ")" << endl;
+			    dout << _all_group_map.size() << " lm groups were not assigned to programs, deleting them now." << endl;
 			}
-			
+			for(map<long,CtiLMGroupBase*>::iterator del_iter = _all_group_map.begin();
+			    del_iter != _all_group_map.end();
+			    del_iter++)
+			{
+			    delete del_iter->second;
+			}
+*/
                     }//loading direct programs end
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
@@ -1231,6 +1593,7 @@ void CtiLMControlAreaStore::reset()
                     RWTimer curtailProgsTimer;
                     curtailProgsTimer.start();
                     {//loading curtailment programs start
+			RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                         RWDBTable lmProgramCurtailmentTable = db.table("lmprogramcurtailment");
                         RWDBTable pointTable = db.table("point");
 
@@ -1243,9 +1606,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
-                     << lmProgramTable["constraintid"]
-                     << lmProgramTable["constraintname"]
-                                 << lmProgramTable["availableseasons"]
+				 << lmProgramTable["constraintid"]
+				 << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
                                  << lmProgramTable["maxhoursmonthly"]
@@ -1253,8 +1615,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
-                     << lmProgramTable["maxdailyops"]
-                     << lmProgramTable["maxactivatetime"]
+				 << lmProgramTable["maxdailyops"]
+				 << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << lmProgramCurtailmentTable["minnotifytime"]
@@ -1396,6 +1758,7 @@ void CtiLMControlAreaStore::reset()
                     RWTimer eeProgsTimer;
                     eeProgsTimer.start();
                     {//loading energy exchange programs start
+			RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                         RWDBTable lmProgramEnergyExchangeTable = db.table("lmprogramenergyexchange");
                         RWDBTable pointTable = db.table("point");
 
@@ -1408,9 +1771,8 @@ void CtiLMControlAreaStore::reset()
                                  << yukonPAObjectTable["description"]
                                  << yukonPAObjectTable["disableflag"]
                                  << lmProgramTable["controltype"]
-                     << lmProgramTable["constraintid"]
-                     << lmProgramTable["constraintname"]
-                                 << lmProgramTable["availableseasons"]
+				 << lmProgramTable["constraintid"]
+				 << lmProgramTable["constraintname"]
                                  << lmProgramTable["availableweekdays"]
                                  << lmProgramTable["maxhoursdaily"]
                                  << lmProgramTable["maxhoursmonthly"]
@@ -1418,8 +1780,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramTable["maxhoursannually"]
                                  << lmProgramTable["minactivatetime"]
                                  << lmProgramTable["minrestarttime"]
-                     << lmProgramTable["maxdailyops"]
-                     << lmProgramTable["maxactivatetime"]
+				 << lmProgramTable["maxdailyops"]
+				 << lmProgramTable["maxactivatetime"]
                                  << lmProgramTable["holidayscheduleid"]
                                  << lmProgramTable["seasonscheduleid"]
                                  << lmProgramEnergyExchangeTable["minnotifytime"]
@@ -1785,6 +2147,7 @@ void CtiLMControlAreaStore::reset()
                     RWTimer caTimer;
                     caTimer.start();
                     {//loading control areas start
+			RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                         RWDBTable lmControlAreaTable = db.table("lmcontrolarea");
                         RWDBTable lmControlAreaProgramTable = db.table("lmcontrolareaprogram");
                         RWDBTable dynamicLMControlAreaTable = db.table("dynamiclmcontrolarea");
@@ -1927,11 +2290,20 @@ void CtiLMControlAreaStore::reset()
                                 }
                             }
                         }
+
+			//clean up all the remaining, unassigned programs
+			//(most of the should have been attached to control areas and removed from these maps alreadY)
+			directProgramHashMap.apply(lmprogram_delete, 0);
+			curtailmentProgramHashMap.apply(lmprogram_delete, 0);
+			energyExchangeProgramHashMap.apply(lmprogram_delete, 0);
+			
+			
                     }//loading control areas end
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << "DB Load Timer for Control Areas is: " << caTimer.elapsedTime() << endl;
+			dout << "directprghashmap size: " << directProgramHashMap.entries() << endl;
                         caTimer.reset();
                     }
 
@@ -2055,6 +2427,7 @@ void CtiLMControlAreaStore::reset()
     {
         _reregisterforpoints = true;
         _lastdbreloadtime.now();
+	
         if( !wasAlreadyRunning )
         {
             dumpAllDynamicData();

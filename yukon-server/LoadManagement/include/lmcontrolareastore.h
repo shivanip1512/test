@@ -136,6 +136,7 @@ private:
 
     RWOrdered* _controlAreas;
     map< long, CtiLMGroupBase* > _point_group_map;
+    map< long, CtiLMGroupBase* > _all_group_map;
     
     RWThread _resetthr;
 

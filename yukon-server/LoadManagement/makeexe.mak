@@ -64,6 +64,7 @@ lmfactory.obj \
 lmgroupbase.obj \
 lmgroupemetcon.obj \
 lmgroupexpresscom.obj \
+lmgroupmacro.obj \
 lmgroupmct.obj \
 lmgrouppoint.obj \
 lmgroupripple.obj \
@@ -93,7 +94,7 @@ loadmanagement.exe:     $(BASEOBJS) Makefile
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)
-              $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
+              $(RWCPPINVOKE) $(CFLAGS) -D_DEBUG_MEMORY $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

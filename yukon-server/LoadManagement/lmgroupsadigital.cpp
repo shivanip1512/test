@@ -215,7 +215,7 @@ CtiLMGroupBase* CtiLMGroupSADigital::replicate() const
 void CtiLMGroupSADigital::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
-    
+#ifdef _THISNEEDSTOBEADDEDBACK_    
     RWDBNullIndicator isNull;
     rdr["sasimplenominaltimeout"] >> isNull;
     if(!isNull)
@@ -227,5 +227,6 @@ void CtiLMGroupSADigital::restore(RWDBReader& rdr)
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " **Checkpoint** " << " SADigital LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
+#endif    
 }
 

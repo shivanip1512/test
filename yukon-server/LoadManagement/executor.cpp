@@ -421,7 +421,7 @@ void CtiLMCommandExecutor::DisableProgram()
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
-                    currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
+//                    currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState); NOTE: DO WE NEED STOPPING STATE?
                     currentLMProgramBase->setManualControlReceivedFlag(TRUE);
                     {
                         char tempchar[80];

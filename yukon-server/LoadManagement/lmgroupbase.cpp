@@ -26,23 +26,48 @@
 #define GROUP_RAMPING_OUT 0x00000002
 
 extern ULONG _LM_DEBUG;
-
+#ifdef _DEBUG_MEMORY    
+LONG CtiLMGroupBase::numberOfReferences = 0;
+#endif
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMGroupBase::CtiLMGroupBase() : _next_control_time(1990,1,1,0,0,0,0)
+CtiLMGroupBase::CtiLMGroupBase()
+    : _next_control_time(1990,1,1,0,0,0,0), _insertDynamicDataFlag(TRUE)
 {
+#ifdef _DEBUG_MEMORY    
+        numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Copy Constructor, Number of CtiLMGroupBase increased to: " << numberOfReferences << endl;
+    }
+#endif   
     resetInternalState();
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
+    : _next_control_time(1990,1,1,0,0,0,0), _insertDynamicDataFlag(TRUE)
 {
+#ifdef _DEBUG_MEMORY    
+        numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Copy Constructor, Number of CtiLMGroupBaes increased to: " << numberOfReferences << endl;
+    }
+#endif    
     resetInternalState();
     restore(rdr);
 }
 
 CtiLMGroupBase::CtiLMGroupBase(const CtiLMGroupBase& groupbase)
 {
+#ifdef _DEBUG_MEMORY    
+    numberOfReferences++;
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Copy Constructor, Number of CtiLMGroupBaseincreased to: " << numberOfReferences << endl;
+    }
+#endif    
     operator=(groupbase);
 }
 
@@ -51,6 +76,13 @@ CtiLMGroupBase::CtiLMGroupBase(const CtiLMGroupBase& groupbase)
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase::~CtiLMGroupBase()
 {
+#ifdef _DEBUG_MEMORY    
+    numberOfReferences--;
+{
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << "Destructor, Number of CtiLMGroupBase decreased to: " << numberOfReferences << endl;
+}
+#endif
 }
 
 /*---------------------------------------------------------------------------
@@ -342,17 +374,6 @@ LONG CtiLMGroupBase::getHoursAnnuallyPointId() const
 {
 
     return _hoursannuallypointid;
-}
-
-/*---------------------------------------------------------------------------
-    getLMProgramId
-
-    Returns the pao id of the program that this group is in
----------------------------------------------------------------------------*/
-LONG CtiLMGroupBase::getLMProgramId() const
-{
-
-    return _lmprogramid;
 }
 
 /*---------------------------------------------------------------------------
@@ -653,6 +674,11 @@ CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const RWDBDateTime& controlti
     return *this;
 }
 
+void CtiLMGroupBase::setInternalState(unsigned state)
+{
+    _internalState = state;
+}
+
 /*---------------------------------------------------------------------------
     setHoursDailyPointId
 
@@ -702,18 +728,6 @@ CtiLMGroupBase& CtiLMGroupBase::setHoursAnnuallyPointId(LONG annuallyid)
 }
 
 /*---------------------------------------------------------------------------
-    setLMProgramId
-
-    Sets the pao id of the program that this group is in
----------------------------------------------------------------------------*/
-CtiLMGroupBase& CtiLMGroupBase::setLMProgramId(LONG progid)
-{
-
-    _lmprogramid = progid;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
     setControlStatusPointId
 
     Sets the point id of the pseudo control point for this group
@@ -735,7 +749,6 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlString(const RWCString& controlstr
     _lastcontrolstring = controlstr;
     return *this;
 }
-
 
 /*-------------------------------------------------------------------------
     createLatchingRequestMsg
@@ -909,7 +922,6 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _hoursmonthlypointid = right._hoursmonthlypointid;
         _hoursseasonalpointid = right._hoursseasonalpointid;
         _hoursannuallypointid = right._hoursannuallypointid;
-        _lmprogramid = right._lmprogramid;
         _controlstatuspointid = right._controlstatuspointid;
         _lastcontrolstring = right._lastcontrolstring;
 	_internalState = right._internalState;
@@ -1049,6 +1061,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     }
     */
 //    rdr["programid"] >> _lmprogramid;
+#ifdef _SHOULD_WE_LOAD_THIS_HERE_    
     rdr["groupcontrolstate"] >> isNull;
     if( !isNull )
     {
@@ -1068,6 +1081,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
 	setDirty(false);
     }
     else
+#endif	
     {
         setGroupControlState(InactiveState);
         setCurrentHoursDaily(0);
@@ -1170,8 +1184,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
 			<< dynamicLMGroupTable["internalstate"].assign( _internalState );
 		
 
-                updater.where(dynamicLMGroupTable["deviceid"]==getPAOId()&&
-                              dynamicLMGroupTable["lmprogramid"]==getLMProgramId());
+                updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -1199,7 +1212,6 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
 			 << getCurrentHoursAnnually()
 			 << getLastControlSent()
 			 << currentDateTime
-			 << getLMProgramId()
 			 << getControlStartTime()
 			 << getControlCompleteTime()
 			 << getNextControlTime()

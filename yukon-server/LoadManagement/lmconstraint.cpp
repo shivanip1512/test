@@ -72,8 +72,12 @@ bool CtiLMConstraintChecker::checkSeason(const CtiLMProgramDirect& lm_program,
 					 ULONG proposed_stop_from_1901,
 					 vector<string>* results)
 {    
+    if(lm_program.getSeasonScheduleId() <= 0)
+    {
+	return true;
+    }
+
     CtiSeasonManager& seasonMgr = CtiSeasonManager::getInstance();
-    const RWCString& availableSeasons = lm_program.getAvailableSeasons();
 
     RWTime startTime(proposed_start_from_1901);
     RWTime stopTime(proposed_stop_from_1901);
@@ -83,10 +87,12 @@ bool CtiLMConstraintChecker::checkSeason(const CtiLMProgramDirect& lm_program,
 
     while(startDate++ <= stopDate)
     {
-	long season = CtiSeasonManager::getInstance().getCurrentSeason(startDate, lm_program.getSeasonScheduleId());
-	if(availableSeasons[(size_t)season] != 'Y' && availableSeasons[(size_t)season] != 'y')
+	if(!CtiSeasonManager::getInstance().isInSeason(startDate, lm_program.getSeasonScheduleId()))
 	{
-	    string result = "The program is not allowed to run in season " + CtiNumStr(season);
+	    string result = "The program is not allowed to run outside of its' prescribed season schedule. ";
+	    result += startDate.asString();
+	    result += " is not in a season in schedule id: ";
+	    result += lm_program.getSeasonScheduleId();
 	    results->push_back(result);
 	    return false;
 	}
@@ -329,19 +335,17 @@ bool CtiLMConstraintChecker::checkMaxActivateTime(const CtiLMProgramDirect& lm_p
 bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results)
 {
     CtiLMProgramBase& lm_base = (CtiLMProgramBase&) lm_program;
-    if(lm_base.getLMProgramControlWindows().entries() == 0)
+    if(lm_base.getLMProgramControlWindows().entries() == 0 ||
+	lm_program.getControlType() == CtiLMProgramBase::TimedType)
     {  // No control windows so don't consider control windows
 	return true;
     }
-    
-    RWDBDateTime prop_start = RWDBDateTime(RWTime(proposed_start_from_1901));
-    RWDBDateTime prop_stop = RWDBDateTime(RWTime(proposed_stop_from_1901));
 
-    prop_start.hour();
-    
-    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow((prop_start.hour() * 3600) + (prop_start.minute() * 60) + prop_start.second());
-    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow((prop_stop.hour() * 3600) + (prop_stop.minute() * 60) + prop_stop.second());
+    RWTime today(RWDate());
 
+    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow(proposed_start_from_1901 - today.seconds());
+    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow(proposed_stop_from_1901 - today.seconds());
+      
     if(start_ctrl_window != 0 && stop_ctrl_window != 0)
     {
 	if(start_ctrl_window->getWindowNumber() == stop_ctrl_window->getWindowNumber())
@@ -364,23 +368,25 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
     if(start_ctrl_window != 0 && stop_ctrl_window == 0)
     {
 	string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
-	result += RWDBDateTime(proposed_stop_from_1901).rwtime().asString();
+	result += RWDBDateTime(RWTime(proposed_stop_from_1901)).asString();
 	result += " is outside the control window that runs from ";
-	result += RWDBDateTime(start_ctrl_window->getAvailableStartTime()).rwtime().asString();
+	result += RWDBDateTime(RWTime(start_ctrl_window->getAvailableStartTime())).asString();
 	result += " to ";
-	result += RWDBDateTime(start_ctrl_window->getAvailableStopTime()).rwtime().asString();	
+	result += RWDBDateTime(RWTime(start_ctrl_window->getAvailableStopTime())).asString();
 	results->push_back(result);
+	return false;
     }
 
     if(start_ctrl_window == 0 && stop_ctrl_window != 0)
     {
 	string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
-	result += RWDBDateTime(proposed_start_from_1901).rwtime().asString();
+	result += RWDBDateTime(RWTime(proposed_start_from_1901)).asString();
 	result += " is outside the control window that runs from ";
-	result += RWDBDateTime(stop_ctrl_window->getAvailableStartTime()).rwtime().asString();
+	result += RWDBDateTime(RWTime(stop_ctrl_window->getAvailableStartTime())).asString();
 	result += " to ";
-	result += RWDBDateTime(stop_ctrl_window->getAvailableStopTime()).rwtime().asString();	
+	result += RWDBDateTime(RWTime(stop_ctrl_window->getAvailableStopTime())).asString();
 	results->push_back(result);
+	return false;
     }
 
     {

@@ -267,7 +267,8 @@ CtiLMGroupBase* CtiLMGroupRipple::replicate() const
 void CtiLMGroupRipple::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
-
+#ifdef _THISNEEDSTOBEADDEDBACK_
+    //NOTE: !
     RWDBNullIndicator isNull;
     rdr["rippleshedtime"] >> isNull;
     if( !isNull )
@@ -279,7 +280,7 @@ void CtiLMGroupRipple::restore(RWDBReader& rdr)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
+#endif
     _refreshsent = FALSE;
 }
 

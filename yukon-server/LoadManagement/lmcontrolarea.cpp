@@ -20,6 +20,7 @@
 #include "lmid.h"
 #include "lmprogrambase.h"
 #include "lmprogramdirect.h"
+#include "lmprogramcontrolwindow.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "logger.h"
@@ -1698,6 +1699,56 @@ void CtiLMControlArea::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
     }
 }
 
+/*----------------------------------------------------------------------------
+  updateTimedPrograms
+
+  Updates the start/stop time of all the timed programs in this control
+  area
+----------------------------------------------------------------------------*/  
+void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
+{
+    for(int i = 0; i < _lmprograms.entries(); i++)
+    {
+	CtiLMProgramBase* lm_program = (CtiLMProgramBase*) _lmprograms[i];
+	if( lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT &&
+ 	    lm_program->getControlType() == CtiLMProgramBase::TimedType )
+	{
+	    CtiLMProgramDirect* lm_direct = (CtiLMProgramDirect*) lm_program;
+
+	    RWDate today;
+	    RWDBDateTime start(today);
+	    RWDBDateTime stop(today);
+	    
+	    CtiLMProgramControlWindow* cw = lm_program->getControlWindow(secondsFromBeginningOfDay);
+	    if(cw == 0)
+	    {
+		cw = lm_program->getNextControlWindow(secondsFromBeginningOfDay);
+	    }
+	    
+	    if(cw != 0)
+	    { 
+		start.addSeconds(cw->getAvailableStartTime());
+		stop.addSeconds(cw->getAvailableStopTime());
+
+		//control window could be from earlier in the day, add a day to it to indicate
+		//tomorrow
+		if( cw->getAvailableStopTime() < secondsFromBeginningOfDay)
+		{
+		    start.addDays(1);
+		    stop.addDays(1);
+		}
+	    }
+
+	    if(lm_direct->getDirectStartTime() != start ||
+	       lm_direct->getDirectStopTime() != stop)
+	    {		
+		lm_direct->setDirectStartTime(start);
+		lm_direct->setDirectStopTime(stop);
+		setUpdatedFlag(TRUE);
+	    }
+	}
+    }
+}
 
 /*---------------------------------------------------------------------------
     dumpDynamicData

@@ -105,7 +105,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     void handleTimeBasedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     void handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
- 
+    void updateTimedPrograms(LONG secondsFromBeginningOfDay);
+    
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 

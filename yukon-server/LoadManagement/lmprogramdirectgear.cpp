@@ -713,8 +713,6 @@ CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
 {
-
-
     rdr["deviceid"] >> _paoid;//will be paobjectid
     rdr["gearname"] >> _gearname;
     rdr["gearnumber"] >> _gearnumber;
