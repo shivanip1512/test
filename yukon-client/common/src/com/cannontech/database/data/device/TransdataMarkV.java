@@ -1,6 +1,8 @@
 package com.cannontech.database.data.device;
 
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
 
 
 /**
@@ -40,7 +42,24 @@ public void setDeviceID(Integer deviceID) {
 public static synchronized SmartMultiDBPersistent createPoints( Integer paoID )
 {
 	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
-	int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(4);
+	int[] ids = com.cannontech.database.db.point.Point.getNextPointIDs(2);
+
+	//add all ther point to the smart object
+	smartDB.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"Total kWh",
+			paoID,
+			new Integer(ids[0]),
+			PointTypes.PT_OFFSET_TOTAL_KWH,
+			com.cannontech.database.data.point.PointUnits.UOMID_KWH) );
+	
+	smartDB.addDBPersistent( 
+		PointFactory.createAnalogPoint(
+			"Total kVArh",
+			paoID,
+			new Integer(ids[1]),
+			2,
+			com.cannontech.database.data.point.PointUnits.UOMID_KVARH) );
 		
 	
 	return smartDB;	
