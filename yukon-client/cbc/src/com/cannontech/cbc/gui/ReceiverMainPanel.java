@@ -921,8 +921,8 @@ public javax.swing.JTable getSubBusTable()
 			{
 				if( e.getClickCount() == 2 )
 				{
-					int vc = getFeederTable().getColumnModel().getColumnIndexAtX( e.getX() );
-					int mc = getFeederTable().convertColumnIndexToModel( vc );
+					int vc = getSubBusTable().getColumnModel().getColumnIndexAtX( e.getX() );
+					int mc = getSubBusTable().convertColumnIndexToModel( vc );
 
 					java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame( getSubBusTable() );
 					java.awt.Cursor original = null;

@@ -344,22 +344,29 @@ public Object getValueAt(int row, int col)
 					: sub.getMaxDailyOperation().toString()) );
 		
 		case CURRENT_VAR_LOAD_COLUMN:
-			return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-						sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
-			
+      {
+         
+			return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+               sub.getCurrentVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+      }
+      	
 		case ESTIMATED_VARS_COLUMN:
-			return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-						sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
-
+      {
+			return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+					sub.getEstimatedVarLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+      }
+      
 		case POWER_FACTOR_COLUMN:
       {
          return getPowerFactorText(sub);
       }
 			
 		case WATTS_COLUMN:
-         return com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-                  sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() );
-			
+      {
+         return new Double( com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
+                  sub.getCurrentWattLoadPointValue().doubleValue(), sub.getDecimalPlaces().intValue() ) );
+      }
+      	
 		case TIME_STAMP_COLUMN:
 			if( sub.getLastCurrentVarPointUpdateTime().getTime() <= 
 					com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
