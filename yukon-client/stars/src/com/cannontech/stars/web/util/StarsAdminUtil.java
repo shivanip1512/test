@@ -947,7 +947,9 @@ public class StarsAdminUtil {
 					
 					for (int j = 0; j < newList.getYukonListEntries().size(); j++) {
 						YukonListEntry newEntry = (YukonListEntry) newList.getYukonListEntries().get(j);
-						if (newEntry.getYukonDefID() == oldEntry.getYukonDefID() && newEntry.getEntryText().equalsIgnoreCase(oldEntry.getEntryText())) {
+						if (newEntry.getYukonDefID() == oldEntry.getYukonDefID()
+							&& newEntry.getEntryText().trim().equalsIgnoreCase(oldEntry.getEntryText().trim()))
+						{
 							newEntryID = newEntry.getEntryID();
 							break;
 						}
