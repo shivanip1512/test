@@ -316,10 +316,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			if (i <= 2)
 				continue;
 
-			//		System.out.println("line "+i+":  "+line[i]);
-			//		while(ts.hasMoreTokens()){
-			//			System.out.println("line "+i+":  "+ts.nextToken().trim());
-			//		}
+			
 			CTILogger.info(
 				"PORT (Local Serial Port) line: " + lines.get(i).toString());
 			String portNum = ts.nextToken().trim();
@@ -739,7 +736,6 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			getIMessageFrame().addOutput(
 				" Macro Routes failed addition to the database");
 		return success;
-
 	}
 
 	public boolean processMCTFile() {
@@ -1030,7 +1026,6 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 		} catch (NumberFormatException ex) {
 			return new Integer(0);
 		}
-
 	}
 
 	/**
@@ -1112,15 +1107,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	private boolean writeToSQLDatabase(MultiDBPersistent multi) {
 		//write all the collected data to the SQL database
 		try {
-			multi =
-				(MultiDBPersistent) com
-					.cannontech
-					.database
-					.Transaction
-					.createTransaction(
-						com.cannontech.database.Transaction.INSERT,
-						multi)
-					.execute();
+			multi =(MultiDBPersistent) com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.INSERT,multi).execute();
 
 			return true;
 		} catch (com.cannontech.database.TransactionException t) {
@@ -1128,5 +1115,4 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			return false;
 		}
 	}
-
 }
