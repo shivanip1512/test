@@ -264,7 +264,11 @@ public class GraphBean implements GraphDefines
 	 */
 	public void setPage(int newPage)
 	{
-		page = newPage;
+		if( page != newPage)
+		{
+			getGraph().setUpdateTrend(true);
+			page = newPage;
+		}
 	}
 	/**
 	 * Method getNumDays.
@@ -316,18 +320,12 @@ public class GraphBean implements GraphDefines
 	}
 	/**
 	 * Method encode.
+	 * This method will encode the graph in the outputStream.
 	 * @param out java.io.OutputStream
 	 * @throws IOException
 	 */
 	public void encode(java.io.OutputStream out) throws IOException
 	{
-		if( getFormat().equalsIgnoreCase("gif") )								
-			getGraph().encodeGif(out);
-		else if( getFormat().equalsIgnoreCase("png") )
-			getGraph().encodePng(out);
-		else if( getFormat().equalsIgnoreCase("jpg") )
-			;//getGraph().encodeJPG(out);
-		else if( getFormat().equalsIgnoreCase("svg") )
-			getGraph().encodeSVG(out);
+		getGraph().encodePng(out);
 	}
 }
