@@ -3,10 +3,11 @@
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
-	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
-	<%-- intialize bean properties --%>
 </jsp:useBean>
+
+<%-- intialize bean properties --%>
+<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
+<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="inventoryBean" property="sortBy" param="SortBy"/>
@@ -252,11 +253,11 @@ function showAll(form) {
                         <td class='HeaderCell' width='49%'>Location</td>
                       </tr>
                       <tr> 
-                        <td class='TableCell' width='17%'><a href='InventoryDetail.jsp'>500000000</a></td>
+                        <td class='TableCell' width='17%'><a href='InventoryDetail.jsp?InvId=7'>500000000</a></td>
                         <td class='TableCell' width='17%'>LCR-5000</td>
                         <td class='TableCell' width='17%'>08/24/2003</td>
-                        <td class='TableCell' width='49%'>Acct #12345 (8301 Golden 
-                          Valley Rd, Suite 300...)</td>
+                        <td class='TableCell' width='49%'><a href='' onclick='selectAccount(7); return false;'>Acct 
+                          # 12345</a> (8301 Golden Valley Rd, Suite 300...)</td>
                       </tr>
                     </table>
                   </td>
@@ -265,7 +266,20 @@ function showAll(form) {
                   <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
                     | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
                 </tr>
-              </table>-->
+              </table>
+			  <form name='cusForm' method='post' action='/servlet/SOAPClient'>
+                <input type='hidden' name='action' value='GetCustAccount'>
+                <input type='hidden' name='AccountID' value=''>
+                <input type='hidden' name='REDIRECT' value='/operator/Consumer/Update.jsp'>
+                <input type='hidden' name='REFERRER' value='/operator/Hardware/Inventory.jsp'>
+			  </form>
+<script language='JavaScript'>
+function selectAccount(accountID) {
+  var form = document.cusForm;
+  form.AccountID.value = accountID;
+  form.submit();
+}
+</script>-->
               <p>&nbsp; </p>
             </div>
           </td>
