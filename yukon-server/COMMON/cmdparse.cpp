@@ -3364,7 +3364,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" system +((off)|(heat)|(cool)|(emheat))")).isNull())
+        if(!(temp = CmdStr.match(" system +((auto)|(off)|(heat)|(cool)|(emheat))")).isNull())
         {
             if(temp.contains(" off"))
             {
@@ -3381,6 +3381,10 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
             else if(temp.contains(" emheat"))
             {
                 _cmd["xcsysstate"] = CtiParseValue( 0x10 );
+            }
+            else if(temp.contains(" auto"))
+            {
+                _cmd["xcsysstate"] = CtiParseValue( 0x80 );     // Only valid for EPRO stats!
             }
         }
 
