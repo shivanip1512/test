@@ -52,8 +52,9 @@ public class WorkOrder extends YukonReportBase
 	{
 		super();
 		setModel(woModel_);
-		setShowReportFooter(false);
-		setShowReportHeader(false);
+		// Show the report header and footer if there is no specific work order
+		setShowReportFooter(woModel_.getOrderID() == null);
+		setShowReportHeader(woModel_.getOrderID() == null);
 	}
 
 	/**
@@ -83,6 +84,7 @@ public class WorkOrder extends YukonReportBase
 		WorkOrderModel woModel = new WorkOrderModel();
 		woModel.setStartTime(start);
 		woModel.setStopTime(stop);
+		woModel.setECIDs(new Integer(0));
 //		woModel.setAccountID(new Integer(1));
 //		woModel.setSearchColumn(WorkOrderModel.SEARCH_COL_DATE_CLOSED);
 		workOrder.setModel( woModel );
@@ -262,7 +264,7 @@ public class WorkOrder extends YukonReportBase
 		final PageHeader header = new PageHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 14));
-		header.setDisplayOnFirstPage(true);
+		header.setDisplayOnFirstPage(false);
 		header.setDisplayOnLastPage(false);
 
 		TextFieldElementFactory factory = new TextFieldElementFactory();
