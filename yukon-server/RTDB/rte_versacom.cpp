@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/21 15:39:22 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/26 17:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,104 +104,125 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
      */
     if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
     {
-        // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-        OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
-
-        OutMessage->EventCode |= VERSACOM;
-
-        if(OutMessage->EventCode & AWORD)      // This may have come from a emetcon group device...
+        if(!Device->isInhibited())
         {
-            /* I am a Duke Power type command */
-            switch(parse.getCommand())
+            // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
+            OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
+
+            OutMessage->EventCode |= VERSACOM;
+
+            if(OutMessage->EventCode & AWORD)      // This may have come from a emetcon group device...
             {
-            case ControlRequest:
+                /* I am a Duke Power type command */
+                switch(parse.getCommand())
                 {
-                    OutMessage->EventCode |= ENCODED;
-                    /*
-                     *  Get us aligned with the transmitter of choice.
-                     */
-
-                    OutMessage->DeviceID             = Device->getID();      // This is the TCU information
-                    OutMessage->Port                 = Device->getPortID();
-                    OutMessage->Remote               = Device->getAddress();
-
-
-                    // This is the CCU address, which is fixed at 1 for Duke
-                    OutMessage->Buffer.ASt.Remote             = 1;                    // This is the CCU 710 info (default for Duke only)
-                    OutMessage->Buffer.ASt.DlcRoute.Stages    = 0;                    // This is the CCU 710 info (default for Duke only)
-                    OutMessage->Buffer.ASt.DlcRoute.RepFixed  = 31;                   // This is the CCU 710 info (default for Duke only)
-                    OutMessage->Buffer.ASt.DlcRoute.RepVar    = 7;                    // This is the CCU 710 info (default for Duke only)
-
-                    OutMessage->Buffer.ASt.DlcRoute.Amp       = Versacom.getAmp();
-                    OutMessage->Buffer.ASt.DlcRoute.Feeder    = Versacom.getBus();
-
-                    /* build preamble message */
-                    memset(&ABuf, 0, ABUFSIZE * sizeof(BYTE));
-                    APreamble (ABuf, OutMessage->Buffer.ASt);
-                    A_Word(ABuf + 3, OutMessage->Buffer.ASt, TRUE);  // Duke needs/wants double a word
-
-                    /*
-                     *  I now have the ABuf I need to stuff in a versacom word.
-                     *  AWord is safely in the ABuf, blank the VSt!
-                     */
-                    memset(&OutMessage->Buffer.VSt, 0, sizeof(VSTRUCT));
-
-                    OutMessage->Buffer.VSt.DlcRoute.Amp      = Versacom.getAmp();
-                    OutMessage->Buffer.VSt.DlcRoute.Feeder   = Versacom.getBus();
-                    OutMessage->Buffer.VSt.DlcRoute.RepFixed = 31;
-                    OutMessage->Buffer.VSt.DlcRoute.RepVar   = 7;
-
-                    // Addressing is always fully defined and elements are omitted only if zero in the nibble builder
-                    OutMessage->Buffer.VSt.UtilityID         = Versacom.getUtilityID();
-                    OutMessage->Buffer.VSt.Section           = Versacom.getSection();
-                    OutMessage->Buffer.VSt.Class             = Versacom.getClass();
-                    OutMessage->Buffer.VSt.Division          = Versacom.getDivision();
-                    OutMessage->Buffer.VSt.Address           = 0L;
-
-                    OutMessage->Buffer.VSt.CommandType       = EXDATA;           // Extended VDATA CONTROL
-#if 0
-                    if(parse.getFlags() & CMD_FLAG_TESTMODE)
+                case ControlRequest:
                     {
-                        OutMessage->Buffer.VSt.CommandType   = VDATA;            // VDATA CONTROL
-                    }
-#endif
+                        OutMessage->EventCode |= ENCODED;
+                        /*
+                         *  Get us aligned with the transmitter of choice.
+                         */
 
-                    OutMessage->Buffer.VSt.VData.DataType    = 0;
-                    OutMessage->Buffer.VSt.VData.DataLength  = 7;
+                        OutMessage->DeviceID             = Device->getID();      // This is the TCU information
+                        OutMessage->Port                 = Device->getPortID();
+                        OutMessage->Remote               = Device->getAddress();
 
-                    // Copy in the AWord from the buffer!
-                    memcpy(OutMessage->Buffer.VSt.VData.Data, ABuf, OutMessage->Buffer.VSt.VData.DataLength);
 
-                    /*
-                     * Use this method to manipulate the Versacom protocol
-                     * OutMessage comes back fully ready to go out the port!
-                     */
-                    status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+                        // This is the CCU address, which is fixed at 1 for Duke
+                        OutMessage->Buffer.ASt.Remote             = 1;                    // This is the CCU 710 info (default for Duke only)
+                        OutMessage->Buffer.ASt.DlcRoute.Stages    = 0;                    // This is the CCU 710 info (default for Duke only)
+                        OutMessage->Buffer.ASt.DlcRoute.RepFixed  = 31;                   // This is the CCU 710 info (default for Duke only)
+                        OutMessage->Buffer.ASt.DlcRoute.RepVar    = 7;                    // This is the CCU 710 info (default for Duke only)
 
-                    resultString = "AWord control sent via versacom on route: " + getName();
+                        OutMessage->Buffer.ASt.DlcRoute.Amp       = Versacom.getAmp();
+                        OutMessage->Buffer.ASt.DlcRoute.Feeder    = Versacom.getBus();
 
-                    break;
-                }
-            default:
-                {
-                    {
-                        resultString = "Unsupported command on AWord/Versacom route: " + getName();
+                        /* build preamble message */
+                        memset(&ABuf, 0, ABUFSIZE * sizeof(BYTE));
+                        APreamble (ABuf, OutMessage->Buffer.ASt);
+                        A_Word(ABuf + 3, OutMessage->Buffer.ASt, TRUE);  // Duke needs/wants double a word
+
+                        /*
+                         *  I now have the ABuf I need to stuff in a versacom word.
+                         *  AWord is safely in the ABuf, blank the VSt!
+                         */
+                        memset(&OutMessage->Buffer.VSt, 0, sizeof(VSTRUCT));
+
+                        OutMessage->Buffer.VSt.DlcRoute.Amp      = Versacom.getAmp();
+                        OutMessage->Buffer.VSt.DlcRoute.Feeder   = Versacom.getBus();
+                        OutMessage->Buffer.VSt.DlcRoute.RepFixed = 31;
+                        OutMessage->Buffer.VSt.DlcRoute.RepVar   = 7;
+
+                        // Addressing is always fully defined and elements are omitted only if zero in the nibble builder
+                        OutMessage->Buffer.VSt.UtilityID         = Versacom.getUtilityID();
+                        OutMessage->Buffer.VSt.Section           = Versacom.getSection();
+                        OutMessage->Buffer.VSt.Class             = Versacom.getClass();
+                        OutMessage->Buffer.VSt.Division          = Versacom.getDivision();
+                        OutMessage->Buffer.VSt.Address           = 0L;
+
+                        OutMessage->Buffer.VSt.CommandType       = EXDATA;           // Extended VDATA CONTROL
+    #if 0
+                        if(parse.getFlags() & CMD_FLAG_TESTMODE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << resultString << endl;
+                            OutMessage->Buffer.VSt.CommandType   = VDATA;            // VDATA CONTROL
                         }
+    #endif
+
+                        OutMessage->Buffer.VSt.VData.DataType    = 0;
+                        OutMessage->Buffer.VSt.VData.DataLength  = 7;
+
+                        // Copy in the AWord from the buffer!
+                        memcpy(OutMessage->Buffer.VSt.VData.Data, ABuf, OutMessage->Buffer.VSt.VData.DataLength);
+
+                        /*
+                         * Use this method to manipulate the Versacom protocol
+                         * OutMessage comes back fully ready to go out the port!
+                         */
+                        status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+
+                        resultString = "AWord control sent via versacom on route: " + getName();
+
+                        break;
                     }
-                    break;
+                default:
+                    {
+                        {
+                            resultString = "Unsupported command on AWord/Versacom route: " + getName();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << resultString << endl;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                resultString = "Versacom routes do not support non-AWord commands (yet) Rte: " + getName();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << resultString << endl;
                 }
             }
         }
         else
         {
-            resultString = "Versacom routes do not support non-AWord commands (yet) Rte: " + getName();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << resultString << endl;
-            }
+            status = DEVICEINHIBITED;
+
+            CtiReturnMsg* pRet = new CtiReturnMsg(Device->getID(),
+                                                  RWCString(OutMessage->Request.CommandStr),
+                                                  Device->getName() + RWCString(": ") + FormatError(status),
+                                                  status,
+                                                  OutMessage->Request.RouteID,
+                                                  OutMessage->Request.MacroOffset,
+                                                  OutMessage->Request.Attempt,
+                                                  OutMessage->Request.TrxID,
+                                                  OutMessage->Request.UserID,
+                                                  OutMessage->Request.SOE,
+                                                  RWOrdered());
+
+            retList.insert( pRet );
         }
     }
     else

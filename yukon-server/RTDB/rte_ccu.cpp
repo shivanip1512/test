@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/05 17:42:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/26 17:49:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,20 +54,41 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
 
     if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
     {
-        // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-        OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
+        if(!Device->isInhibited())
+        {
+            // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
+            OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
 
-        if(OutMessage->EventCode & VERSACOM)
-        {
-            status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
-        }
-        else if(OutMessage->EventCode & AWORD || OutMessage->EventCode & BWORD)
-        {
-            status = assembleDLCRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            if(OutMessage->EventCode & VERSACOM)
+            {
+                status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(OutMessage->EventCode & AWORD || OutMessage->EventCode & BWORD)
+            {
+                status = assembleDLCRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else
+            {
+                cout << "Finish some code here " << __FILE__ << " (" << __LINE__ << ")"  << endl;
+            }
         }
         else
         {
-            cout << "Finish some code here " << __FILE__ << " (" << __LINE__ << ")"  << endl;
+            status = DEVICEINHIBITED;
+
+            CtiReturnMsg* pRet = new CtiReturnMsg(Device->getID(),
+                                                  RWCString(OutMessage->Request.CommandStr),
+                                                  Device->getName() + RWCString(": ") + FormatError(status),
+                                                  status,
+                                                  OutMessage->Request.RouteID,
+                                                  OutMessage->Request.MacroOffset,
+                                                  OutMessage->Request.Attempt,
+                                                  OutMessage->Request.TrxID,
+                                                  OutMessage->Request.UserID,
+                                                  OutMessage->Request.SOE,
+                                                  RWOrdered());
+
+            retList.insert( pRet );
         }
     }
     else
