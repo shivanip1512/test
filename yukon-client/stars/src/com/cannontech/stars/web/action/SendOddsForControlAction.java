@@ -113,34 +113,33 @@ public class SendOddsForControlAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( energyCompanyID );
             
 			ArrayList appCatList = energyCompany.getAllApplianceCategories();
-			synchronized (appCatList) {
-				StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
-				for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
-					StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
-					boolean enrProgFound = false;
-            		
-					for (int j = 0; j < appCatList.size(); j++) {
-						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
-						for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-							LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
-							if (liteProg.getProgramID() == enrProg.getProgramID()) {
-								com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
-										new com.cannontech.database.db.stars.LMProgramWebPublishing();
-								pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
-								pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
-								pubProg.setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
-								pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
-								Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
-			        			
-								liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
-								enrProgFound = true;
-            					
-								break;
-							}
+			StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
+			
+			for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
+				StarsEnrLMProgram enrProg = sendCtrlOdds.getStarsEnrLMProgram(i);
+				boolean enrProgFound = false;
+        		
+				for (int j = 0; j < appCatList.size(); j++) {
+					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
+					for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
+						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
+						if (liteProg.getProgramID() == enrProg.getProgramID()) {
+							com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
+									new com.cannontech.database.db.stars.LMProgramWebPublishing();
+							pubProg.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
+							pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
+							pubProg.setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+							pubProg.setChanceOfControlID( new Integer(liteProg.getChanceOfControlID()) );
+							Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
+		        			
+							liteProg.setChanceOfControlID( enrProg.getChanceOfControl().getEntryID() );
+							enrProgFound = true;
+        					
+							break;
 						}
-            			
-						if (enrProgFound) break;
 					}
+        			
+					if (enrProgFound) break;
 				}
             	
 				// Create a new thread to get through all the accounts and send out emails

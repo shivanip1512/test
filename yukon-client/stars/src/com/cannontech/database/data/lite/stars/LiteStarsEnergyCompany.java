@@ -547,19 +547,31 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		return AuthFuncs.getGroup( operDftGroupID );
 	}
-    
-	public synchronized ArrayList getAllPrograms() {
+	
+	/**
+	 * Get programs published by this energy company only
+	 */
+	public synchronized ArrayList getPrograms() {
 		if (pubPrograms == null)
-			getAllApplianceCategories();
-		
-		ArrayList pubProgs = new ArrayList( pubPrograms );
+			getApplianceCategories();
+		return pubPrograms;
+	}
+    
+    /**
+     * Get all published programs including those inherited from the parent company
+     */
+	public synchronized ArrayList getAllPrograms() {
+		ArrayList pubProgs = new ArrayList( getPrograms() );
 		if (getParent() != null)
-			pubProgs.addAll( 0, getParent().getAllPrograms() );
+			pubProgs.addAll( 0, getParent().getPrograms() );
 		
 		return pubProgs;
 	}
-    
-	public synchronized ArrayList getAllApplianceCategories() {
+	
+	/**
+	 * Get appliance categories created in this energy company only
+	 */
+	public synchronized ArrayList getApplianceCategories() {
 		if (appCategories == null) {
 			appCategories = new ArrayList();
 			pubPrograms = new ArrayList();
@@ -586,12 +598,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
 		}
 		
-		ArrayList appCats = new ArrayList( appCategories );
-		if (getParent() != null) {
-			// Inherite appliance categories and programs from the parent company
-			// May need to add a role property to control this in the future
-			appCats.addAll( 0, getParent().getAllApplianceCategories() );
-		}
+		return appCategories;
+	}
+    
+    /**
+     * Get all appliance categories including those inherited from the parent company
+     * (may need to add a role property to control this in the future).
+     */
+	public synchronized ArrayList getAllApplianceCategories() {
+		ArrayList appCats = new ArrayList( getApplianceCategories() );
+		if (getParent() != null)
+			appCats.addAll( 0, getParent().getApplianceCategories() );
     	
 		return appCats;
 	}
@@ -1350,12 +1367,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
 		ArrayList appCats = getAllApplianceCategories();
-		synchronized (appCats) {
-			for (int i = 0; i < appCats.size(); i++) {
-				LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
-				if (appCat.getApplianceCategoryID() == applianceCategoryID)
-					return appCat;
-			}
+		for (int i = 0; i < appCats.size(); i++) {
+			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
+			if (appCat.getApplianceCategoryID() == applianceCategoryID)
+				return appCat;
 		}
 		
 		return null;
@@ -1363,13 +1378,13 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public void addApplianceCategory(LiteApplianceCategory appCat) {
 		appCat.setDirectOwner( this );
-		ArrayList appCats = getAllApplianceCategories();
+		ArrayList appCats = getApplianceCategories();
 		synchronized (appCats) { appCats.add( appCat ); }
 	}
 	
 	public LiteApplianceCategory deleteApplianceCategory(int applianceCategoryID) {
-		ArrayList appCats = getAllApplianceCategories();
-		ArrayList programs = getAllPrograms();
+		ArrayList appCats = getApplianceCategories();
+		ArrayList programs = getPrograms();
 		
 		synchronized (appCats) {
 			synchronized (programs) {
@@ -1504,27 +1519,25 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteLMProgramWebPublishing getProgram(int programID) {
 		ArrayList programs = getAllPrograms();
-		synchronized (programs) {
-			for (int i = 0; i < programs.size(); i++) {
-				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
-				if (liteProg.getProgramID() == programID)
-					return liteProg;
-			}
+		for (int i = 0; i < programs.size(); i++) {
+			LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
+			if (liteProg.getProgramID() == programID)
+				return liteProg;
 		}
 		
 		return null;
 	}
 	
 	public void addProgram(LiteLMProgramWebPublishing liteProg, LiteApplianceCategory liteAppCat) {
-		ArrayList programs = getAllPrograms();
+		ArrayList programs = getPrograms();
 		synchronized (programs) { programs.add(liteProg); }
 		
 		liteAppCat.getPublishedPrograms().add( liteProg );
 	}
 	
 	public LiteLMProgramWebPublishing deleteProgram(int programID) {
-		ArrayList programs = getAllPrograms();
-		ArrayList appCats = getAllApplianceCategories();
+		ArrayList programs = getPrograms();
+		ArrayList appCats = getApplianceCategories();
 		
 		synchronized (programs) {
 			synchronized (appCats) {

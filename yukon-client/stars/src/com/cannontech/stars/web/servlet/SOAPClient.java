@@ -301,8 +301,8 @@ public class SOAPClient extends HttpServlet {
 				
 				session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 				session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
-				int lastSlashPos = destURL.lastIndexOf('/');
-				destURL = errorURL = destURL.substring(0, lastSlashPos) + "/Message.jsp";
+				destURL = errorURL = req.getContextPath() +
+						(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 			}
 		}
 		else if (action.equalsIgnoreCase("SearchCustAccount")) {

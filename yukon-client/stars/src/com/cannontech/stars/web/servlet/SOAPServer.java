@@ -458,7 +458,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 						handleRouteChange( msg, energyCompany );
 				}
 				else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
-					ArrayList programs = energyCompany.getAllPrograms();
+					ArrayList programs = new ArrayList( energyCompany.getPrograms() );
 					for (int j = 0; j < programs.size(); j++) {
 						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
 						if (liteProg.getDeviceID() == msg.getId()) {
@@ -468,7 +468,7 @@ public class SOAPServer extends JAXMServlet implements ReqRespListener, com.cann
 					}
 				}
 				else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
-					ArrayList programs = energyCompany.getAllPrograms();
+					ArrayList programs = new ArrayList( energyCompany.getPrograms() );
 					StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
 					
 					for (int j = 0; j < programs.size(); j++) {

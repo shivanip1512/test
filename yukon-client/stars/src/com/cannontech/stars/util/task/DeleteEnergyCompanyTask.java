@@ -6,6 +6,8 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.util.ArrayList;
+
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
@@ -261,8 +263,9 @@ public class DeleteEnergyCompanyTask implements TimeConsumingTask {
 				// Delete all appliance categories
 				currentAction = "Deleting appliance categories";
 				
-				for (int i = 0; i < energyCompany.getAllApplianceCategories().size(); i++) {
-					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) energyCompany.getAllApplianceCategories().get(i);
+				ArrayList appCats = energyCompany.getAllApplianceCategories();
+				for (int i = 0; i < appCats.size(); i++) {
+					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(i);
 					
 					// No need to delete inherited appliance categoreis
 					if (liteAppCat.getDirectOwner() != energyCompany) continue;

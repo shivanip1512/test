@@ -983,7 +983,7 @@ public class StarsAdmin extends HttpServlet {
 		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
         
 		try {
-			ArrayList liteAppCats = new ArrayList( energyCompany.getAllApplianceCategories() );
+			ArrayList liteAppCats = energyCompany.getAllApplianceCategories();
 			
 			int appCatID = Integer.parseInt( req.getParameter("AppCatID") );
 			boolean deleteAll = (appCatID == -1);
