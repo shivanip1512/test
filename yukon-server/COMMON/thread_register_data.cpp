@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/09/29 20:26:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/06 16:56:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -41,6 +41,9 @@ CtiThreadRegData::CtiThreadRegData( int id,
    _shutdown_args = args1;
    _alternate = ptr2;
    _alt_args = args2;
+
+   if(( !_id ) || ( _name == "default" ))
+      setReported(  false );
 }
 
 //===========================================================================================================

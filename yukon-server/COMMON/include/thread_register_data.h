@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/09/29 20:26:37 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/10/06 16:56:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ public:
    {
       None,          //report missing thread and remove from list
       Restart,       //call fooptr and remove thread from list
+      LogOut,
       KillApp        //call all fooptrs and remove thread from list
    };                
 
