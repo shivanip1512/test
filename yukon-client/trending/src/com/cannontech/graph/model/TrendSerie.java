@@ -4,29 +4,33 @@ import java.awt.Color;
 
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesDataItem;
-//
-//import org.exolab.castor.jdo.Database;
+
+import com.cannontech.database.db.graph.GraphDataSeries;
+
 /**
- * Insert the type's description here.
- * Creation date: (6/18/2002 2:30:08 PM)
- * @author: 
+ * @author snebben
+ *
+ * TrendSerie is a container for information about a data object that may be trended.
+ * TrendModel uses TrendSerie(s) as the infromation of a data object to actually draw.
  */
 public class TrendSerie
 {
-	private TimeSeriesDataItem[] dataPairArray = null;
+	//Contains values of org.jfree.data.time.TimeSeriesDataItem values.
+	//TimeSeriesDataItem has a value and timestamp item.
+	private TimeSeriesDataItem[] dataItemArray = null;
 
 	private Integer pointId;
 	private String label = null;
-	private Color color = null;
+	private Color color = Color.blue;
 	private String deviceName = null;
-	private Double multiplier = null;	//This is different then the point multiplier, this is a GDS
+	private Double multiplier = new Double(1.0);	//This is different then the point multiplier, this is a GDS
 	private Character axis = new Character('L');
-	public int typeMask = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_TYPE;
+	public int typeMask = GraphDataSeries.BASIC_GRAPH_TYPE;
 	
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
-	private TimeSeriesDataItem minimumTSDataPair = null;
-	private TimeSeriesDataItem maximumTSDataPair = null;
+	private TimeSeriesDataItem minimumTSDataItem = null;
+	private TimeSeriesDataItem maximumTSDataItem = null;
 
 	// Load factor values computed for each point in the model, stored in an array that
 	//  is in accordance to the order of the pointIds.
@@ -36,7 +40,9 @@ public class TrendSerie
 	// Number of decimal places each point has (from pointUnit table)
 	private int decimalPlaces = 3;
 
+	//contains dataItemArray.value(s).  (Readings)
 	private double[] valuesArray = null;
+	//contains dataItemArray.period(s). (Timestamps in millis).
 	private long[] periodsArray = null;
 	
 	/**
@@ -46,60 +52,98 @@ public class TrendSerie
 	{
 		super();
 	}
+	
+	/**
+	 * @return
+	 */
 	public double getAreaOfSet()
 	{
 		if( areaOfSet == 0)
 		{
-			for (int i = 0; i < getDataPairArray().length; i++)
+			for (int i = 0; i < getDataItemArray().length; i++)
 			{
-				areaOfSet += getDataPairArray(i).getValue().doubleValue();
+				areaOfSet += getDataItemArray(i).getValue().doubleValue();
 			}
 		}
 		return areaOfSet;
 	}
+
+	/**
+	 * Returns the axis value.
+	 * @return java.lang.Character
+	 */
 	public Character getAxis()
 	{
 		return axis;
 	}
+
+	/**
+	 * Returns the color value.
+	 * @return java.awt.Color
+	 */
 	public Color getColor()
 	{
 		return color;
 	}
 
-	public TimeSeriesDataItem[] getDataPairArray()
+	/**
+	 * Returns the dataItemArray value.
+	 * @return org.jfree.data.time.TimeSeriesDataItem[]
+	 */
+	public TimeSeriesDataItem[] getDataItemArray()
 	{
-		return dataPairArray;
+		return dataItemArray;
 	}
 
-	public TimeSeriesDataItem getDataPairArray(int serie)
+	/**
+	 * Returns the dataItemArray[item] value.
+	 * @return org.jfree.data.time.TimeSeriesDataItem
+	 */
+	public TimeSeriesDataItem getDataItemArray(int item)
 	{
-//		if( getMultiplier() != null)
 		if( getUseMultiplier())
 		{
-			RegularTimePeriod tp = dataPairArray[serie].getPeriod();
-			Number val = new Double(dataPairArray[serie].getValue().doubleValue() * getMultiplier().doubleValue());
+			RegularTimePeriod tp = dataItemArray[item].getPeriod();
+			Number val = new Double(dataItemArray[item].getValue().doubleValue() * getMultiplier().doubleValue());
 			TimeSeriesDataItem multDP = new TimeSeriesDataItem(tp, val);
 			return (multDP);
 		}
-		return dataPairArray[serie];
+		return dataItemArray[item];
 	}
 	
+	/**
+	 * Returns the decimalPlaces value.
+	 * @return int
+	 */
 	public int getDecimalPlaces()
 	{
 		return decimalPlaces;
 	}
+
+	/**
+	 * Returns the deviceName value.
+	 * @return java.lang.String
+	 */
 	public String getDeviceName()
 	{
 		return deviceName;
 	}
+	/**
+	 * Returns the label value.
+	 * @return java.lang.String
+	 */
 	public String getLabel()
 	{
 		return label;
 	}
-	
+	/**
+	 * Returns the load factor value.
+	 * Load factor computed by totalAreaOfSet / maxArea.  -1 when no data.
+	 * @return double
+	 */
 	public double getLoadFactor()
 	{
-		if(getDataPairArray() != null)
+		if(getDataItemArray() != null)
 		{
 			if (getMaxArea() != 0.0 )
 				return getAreaOfSet() / getMaxArea();
@@ -108,180 +152,249 @@ public class TrendSerie
 		return -1;
 	}
 	
+	/**
+	 * Returns the maxArea value.
+	 * Multiplies the maximumValue by the dataItemArray length.
+	 * Area value at the maximumValue curve.
+	 * @return double
+	 */
 	public double getMaxArea()
 	{
 		if( maxArea == 0)
 		{
 			if( getMaximumValue() != null)
-				maxArea = getMaximumValue().doubleValue() * getDataPairArray().length;
+				maxArea = getMaximumValue().doubleValue() * getDataItemArray().length;
 		}
 		return maxArea;
 	}
-
-	public TimeSeriesDataItem getMaximumTSDataPair()
+	/**
+	 * Returns the maximumTSDataItem value.
+	 * Searches through the entire dataItemArray for the MAX value and respective timeStamp.
+	 * @return org.jfree.data.time.TimeSeriesDataItem
+	 */
+	public TimeSeriesDataItem getMaximumTSDataItem()
 	{
-		if( maximumTSDataPair == null)
+		if( maximumTSDataItem == null)
 		{
 			double max = Double.MIN_VALUE;
-			if( getDataPairArray() != null)
+			if( getDataItemArray() != null)
 			{
-				for (int i = 0; i < getDataPairArray().length; i++)
+				for (int i = 0; i < getDataItemArray().length; i++)
 				{
-					if( getDataPairArray(i).getValue().doubleValue() > max)
+					if( getDataItemArray(i).getValue().doubleValue() > max)
 					{
-						max = getDataPairArray(i).getValue().doubleValue();
-						maximumTSDataPair = getDataPairArray(i);
+						max = getDataItemArray(i).getValue().doubleValue();
+						maximumTSDataItem = getDataItemArray(i);
 					}
 				}
 			}
 		}
-		return maximumTSDataPair;
+		return maximumTSDataItem;
 	}
-	public TimeSeriesDataItem getMinimumTSDataPair()
+	/**
+	 * Returns the minimumTSDataItem value.
+	 * Searches through the entire dataItemArray for the MIN value and respective timeStamp.
+	 * @return org.jfree.data.time.TimeSeriesDataItem
+	 */
+	public TimeSeriesDataItem getMinimumTSDataItem()
 	{
-		if( minimumTSDataPair == null)
+		if( minimumTSDataItem == null)
 		{
 			double min = Double.MAX_VALUE;
-			if( getDataPairArray() != null )
+			if( getDataItemArray() != null )
 			{
-				for (int i = 0; i < getDataPairArray().length; i++)
+				for (int i = 0; i < getDataItemArray().length; i++)
 				{
-					if( getDataPairArray(i).getValue().doubleValue() < min)
+					if( getDataItemArray(i).getValue().doubleValue() < min)
 					{
-						min = getDataPairArray(i).getValue().doubleValue();					
-						minimumTSDataPair = getDataPairArray(i);
+						min = getDataItemArray(i).getValue().doubleValue();					
+						minimumTSDataItem = getDataItemArray(i);
 					}
 				}
 			}
 		}
-		return minimumTSDataPair;
+		return minimumTSDataItem;
 	}
 
+	/**
+	 * Returns the value from maximumTSDataItem.
+	 * @return java.lang.Double
+	 */
 	public Double getMaximumValue()
 	{
-		if( getMaximumTSDataPair() != null)
-			return (Double)getMaximumTSDataPair().getValue();
+		if( getMaximumTSDataItem() != null)
+			return (Double)getMaximumTSDataItem().getValue();
 		else 
 			return null;
 	}
-	/*
-	public long getMaximumTimestamp()
-	{
-		return getMaximumTSDataPair().getPeriod().getStart();
-	}
-	*/
+	/**
+	 * Returns the value from minimumTSDataItem.
+	 * @return java.lang.Double
+	 */
 	public Double getMinimumValue()
 	{
-		if( getMinimumTSDataPair() != null)
-			return (Double)getMinimumTSDataPair().getValue();
+		if( getMinimumTSDataItem() != null)
+			return (Double)getMinimumTSDataItem().getValue();
 		else
 			return null;
 	}
-	/*
-	public long getMinimumTimestamp()
-	{
-		return getMinimumTSDataPair().getPeriod().getStart();
-	}
-	*/
+
+	/**
+	 * Returns the multiplier value.
+	 * @return java.lang.Double
+	 */
 	public Double getMultiplier()
 	{
 		return multiplier;
 	}
+
+	/**
+	 * Returns the useMultiplier boolean.
+	 * @return boolean
+	 */
 	public boolean getUseMultiplier()
 	{
 		return useMultiplier;
 	}
+	/**
+	 * Returns the pointIDvalue.
+	 * @return java.lang.Integer
+	 */
 	public Integer getPointId()
 	{
 		return pointId;
 	}
-/*	
-	public String getType()
-	{
-		return type;
-	}*/
+
+	/**
+	 * Returns the typeMask value.
+	 * @return int
+	 */
 	public int getTypeMask()
 	{
 		return typeMask;
 	}
+	/**
+	 * Returns the valuesArray value.
+	 * An array of only TimeSeriesDataItem.value(s) is created from dataItemArray.
+	 * @return double[]
+	 */
 	public double[] getValuesArray()
 	{
 		if( valuesArray == null)
 		{
-			if( getDataPairArray() == null)
+			if( getDataItemArray() == null)
 				return null;
-			valuesArray = new double[getDataPairArray().length];
-			for (int i = 0; i < getDataPairArray().length; i++)
+			valuesArray = new double[getDataItemArray().length];
+			for (int i = 0; i < getDataItemArray().length; i++)
 			{
-				valuesArray[i] = getDataPairArray(i).getValue().doubleValue();
+				valuesArray[i] = getDataItemArray(i).getValue().doubleValue();
 			}
 		}
 		return valuesArray;
 	}
-	
+	/**
+	 * Returns the periodsArray value.
+	 * An array of only TimeSeriesDataItem.period(s) is created from dataItemArray.
+	 * @return long[]
+	 */	
 	public long[] getPeriodsArray()
 	{
 		long resolution = TrendProperties.getResolutionInMillis();
 		if( periodsArray == null)
 		{
-			if( getDataPairArray() == null)
+			if( getDataItemArray() == null)
 				return null;
 			java.util.Date now = new java.util.Date();
 
-			periodsArray = new long[getDataPairArray().length];
-			for (int i = 0; i < getDataPairArray().length; i++)
+			periodsArray = new long[getDataItemArray().length];
+			for (int i = 0; i < getDataItemArray().length; i++)
 			{
-				long time = getDataPairArray(i).getPeriod().getStart().getTime();
+				//Apply the resolution to sync timeperiods.
+				long time = getDataItemArray(i).getPeriod().getStart().getTime();
 				long round = time % resolution;
 				time = time - round;
 				periodsArray[i] = time;
-//				periodsArray[i] = getDataPairArray(i).getPeriod().getStart().getTime();
 			}
 		}
 		return periodsArray;
 	}	
-	
+	/**
+	 * Sets the axis value.
+	 * Valid options are 'L'[eft] 'R'[ight].
+	 * @param newAxis java.lang.Character
+	 */
 	protected void setAxis(Character newAxis)
 	{
 		axis = newAxis;
 	}
+	/**
+	 * Sets the color value.
+	 * @param newColor java.awt.Color
+	 */
 	protected void setColor(Color newColor)
 	{
 		color = newColor;
 	}
-	protected void setDataPairArray(TimeSeriesDataItem[] newDataPairArray)
+	/**
+	 * Sets the dataItemArray value.
+	 * @param newDataItemArray org.jfree.data.time.TimeSeriesDataItem []
+	 */
+	protected void setDataItemArray(TimeSeriesDataItem[] newDataItemArray)
 	{
-		dataPairArray = newDataPairArray;
+		dataItemArray = newDataItemArray;
 	}
+	/**
+	 * Sets the decimalPlaces value.
+	 * @param newDecimalPlaces int
+	 */
 	protected void setDecimalPlaces(int newDecimalPlaces)
 	{
 		decimalPlaces = newDecimalPlaces;
 	}
+	/**
+	 * Sets the deviceName value
+	 * @param newDeviceName java.lang.String
+	 */
 	protected void setDeviceName(String newDeviceName)
 	{
 		deviceName = newDeviceName;
 	}
+	/**
+	 * Sets the label value
+	 * @param newLabel java.lang.String
+	 */
 	protected void setLabel(String newLabel)
 	{
 		label = newLabel;
 	}
+	/**
+	 * Sets the multiplier value.
+	 * @param newMultiplier java.lang.Double
+	 */
 	protected void setMultiplier(Double newMultiplier)
 	{
 		multiplier = newMultiplier;
 	}
+	/**
+	 * Sets the useMultipier value
+	 * @param selected boolean
+	 */
 	public void setUseMultiplier(boolean selected)
 	{
 		useMultiplier = selected;
 	}	
+	/**
+	 * Sets the pointID value.
+	 * @param newPointId java.lang.Integer
+	 */
 	protected void setPointId(Integer newPointId)
 	{
 		pointId = newPointId;
 	}
-	/*
-	protected void setType(String newType)
-	{
-		type = newType;
-	}*/
+	/**
+	 * Sets the typeMask value
+	 * @param newTypeMask int
+	 */
 	protected void setTypeMask(int newTypeMask)
 	{
 		typeMask = newTypeMask;
