@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/24 22:35:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/24 22:37:12 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,7 +409,7 @@ LONG CtiDeviceLMI::deviceQueueCommunicationTime() const
 
     long millis;
 
-    millis = (percode * _lmi.numCodes()) + fudge;
+    millis = (percode * _lmi.getNumCodes()) + fudge;
 
     return millis;
 }
