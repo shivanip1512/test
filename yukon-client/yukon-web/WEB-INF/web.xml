@@ -188,6 +188,7 @@
     <servlet-name>ControlServlet</servlet-name>
     <servlet-class>
     com.cannontech.esub.web.servlet.ControlServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   <!-- end esub specific servlets -->
   
