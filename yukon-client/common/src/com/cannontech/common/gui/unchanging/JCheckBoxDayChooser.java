@@ -594,6 +594,17 @@ public void removeActionListener(java.awt.event.ActionListener newListener) {
 	aActionListener = java.awt.AWTEventMulticaster.remove(aActionListener, newListener);
 	return;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (2/14/2001 3:23:45 PM)
+ * @return boolean
+ */
+public boolean isHolidaySelected() 
+{
+   return getJCheckBoxHoliday().isSelected();
+}
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
