@@ -6,13 +6,18 @@ goto done
 
 :usage
 echo:
-echo Only ONE of coll or logfile can(should) be used.  If both set, then logfile wins!
+echo Note: Only one of coll or logfile can(should) be used.  If both set, then logfile wins!
+echo		-log:<the path and log filename to parse for "Revision H" text>
+echo		-coll:<the collectionGroup to send "getconfig model" command to>
+echo		-retry:<the number of times to retry missed meters, iff coll is used>
+echo		-report:<the path and filename to write result data to>
 echo:
-echo Usage:	RevisionHFinder.bat [logfile=xxx.xxx | coll="xxx" [retry=#] ] reportfile=xxx.xxx
+echo Usage:	RevisionHFinder.bat [log:xxx.xxx OR coll:"xxx" [retry:#] ] report:xxx.xxx
 echo:
-echo Ex1:  RevisionHFinder.bat logfile=C:/yukon/server/log/macs01.log reportfile=c:/yukon/server/export/revHdata.txt
+echo Ex1:  RevisionHFinder.bat log:C:/yukon/server/log/macs01.log report:c:/yukon/server/export/revHdata.txt
 echo		- parses log file for "Revision H" return messages, writes results to reportfile
-echo Ex2:  RevisionHFinder.bat coll="Cycle 1" retry=2 reportfile=C:/yukon/server/export/revHData.txt
+echo:
+echo Ex2:  RevisionHFinder.bat coll:"Cycle 1" retry:2 report:C:/yukon/server/export/revHData.txt
 echo		- sends "getconfig model" command for all meters in Cycle 1, write results to reportfile
 echo:
 :done
