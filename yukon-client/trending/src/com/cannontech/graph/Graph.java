@@ -28,7 +28,7 @@ public class Graph implements GraphDefines, com.jrefinery.chart.event.ChartChang
 {
 	private java.lang.String DB_ALIAS = "yukon";
 	private java.lang.String databaseAlias = DB_ALIAS;	//defaults set to yukon! 5/24/01
-	
+	private long lastUpdateTime = 0;
 	private int viewType = TrendModelType.LINE_VIEW;
 
 	// This is the type of data series the graph will load
@@ -366,6 +366,12 @@ public java.lang.String getTitle() {
 
 public boolean isUpdateTrend()
 {
+	long now = (new java.util.Date()).getTime();
+	if( (lastUpdateTime + getMinIntervalRate()) <= now)
+	{
+		updateTrend = true;
+		lastUpdateTime = now;
+	}
 	return updateTrend;
 }
 
