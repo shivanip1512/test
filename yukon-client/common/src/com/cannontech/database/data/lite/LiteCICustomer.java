@@ -141,8 +141,8 @@ public class LiteCICustomer extends LiteCustomer
 			
 			setMainAddressID( ((java.math.BigDecimal) objs[0]).intValue() ); 			
 			setCompanyName( objs[1].toString() );	
-			setDemandLevel( Double.valueOf(objs[4].toString()).doubleValue() );
-			setCurtailAmount( Double.valueOf(objs[5].toString()).doubleValue() );
+			setDemandLevel( Double.valueOf(objs[2].toString()).doubleValue() );
+			setCurtailAmount( Double.valueOf(objs[3].toString()).doubleValue() );
 		}
 		catch( Exception e )
 		{
