@@ -3,7 +3,7 @@ package com.cannontech.stars.util.task;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.web.servlet.SOAPServer;
+import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao
@@ -31,17 +31,12 @@ public class SendConfigCommandTask implements Runnable {
 	public void run() {
 		CTILogger.info( "*** Start SendConfigCommand task ***" );
         
+		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
+		
         int routeID = liteHw.getRouteID();
         if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
-		
-		String cmd = "putconfig service in serial " + liteHw.getManufacturerSerialNumber();
         
-		com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-		synchronized (yc) {
-			yc.setRouteID( routeID );
-			yc.setCommand( cmd );
-			yc.handleSerialNumber();
-		}
+		ServerUtils.sendSerialCommand( cmd, routeID );
         
         try {
 	        Thread.sleep( COMMAND_INTERVAL * 1000 );
@@ -56,11 +51,7 @@ public class SendConfigCommandTask implements Runnable {
 			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( configs[i].getAddressingGroupID().intValue() );
             cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber() + " template '" + groupName + "'";
             
-            synchronized (yc) {
-				yc.setRouteID( routeID );
-				yc.setCommand( cmd );
-				yc.handleSerialNumber();
-            }
+            ServerUtils.sendSerialCommand( cmd, routeID );
 		}
 		
 		CTILogger.info( "*** End SendConfigCommand task ***" );

@@ -342,14 +342,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					}
 				}
 				
-				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-				synchronized (yc) {
-					yc.setRouteID( energyCompany.getDefaultRouteID() );
-					for (int j = 0; j < cmdList.size(); j++) {
-						yc.setCommand( (String)cmdList.get(j) );
-						yc.handleSerialNumber();
-					}
-				}
+				int routeID = liteHw.getRouteID();
+				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
+				
+				for (int j = 0; j < cmdList.size(); j++)
+					ServerUtils.sendSerialCommand( (String)cmdList.get(j), routeID );
 				
 				// Add "programming" to the hardware events
 				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();

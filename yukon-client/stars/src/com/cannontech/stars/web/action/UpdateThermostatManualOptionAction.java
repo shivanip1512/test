@@ -184,12 +184,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				int routeID = liteHw.getRouteID();
 				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 				
-				com.cannontech.yc.gui.YC yc = SOAPServer.getYC();
-				synchronized (yc) {
-					yc.setRouteID( routeID );
-					yc.setCommand( cmd.toString() );
-					yc.handleSerialNumber();
-				}
+				ServerUtils.sendSerialCommand( cmd.toString(), routeID );
 				
 				// Add to the thermostat manual events
 				com.cannontech.database.data.stars.event.LMThermostatManualEvent event =
