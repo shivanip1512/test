@@ -19,6 +19,7 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphBean implements GraphDataFormats, GraphDefines
 {
+	private java.text.SimpleDateFormat beanDateFormat = dateFormat;
 	private Graph graphClass = null;
 	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 //	private String directory = null;
@@ -53,6 +54,7 @@ public class GraphBean implements GraphDataFormats, GraphDefines
 	private int viewType = com.cannontech.graph.model.TrendModelType.LINE_VIEW;
 	private int options = 0x000;
 	private String format = "png";
+	
 /**
  * This method needs to be implemented for the abstract class JCValueListener.
  *  JCValueListener is the DatePopupComboBox's listener.  This particular method is
@@ -681,7 +683,7 @@ public void setStartStr(String newStartStr)
 	startStr = newStartStr;
 	try
 	{
-		setStart( dateFormat.parse(startStr));
+		setStart( getBeanDateFormat().parse(startStr));
 	}
 	catch (java.text.ParseException e)
 	{
@@ -741,6 +743,15 @@ public static void main(String[] args)
 {
 	System.setProperty("cti.app.name", "Trending");
 	GraphBean gb = new GraphBean();
+}
+
+public void setBeanDateFormat(String dateFormatString)
+{
+	beanDateFormat = new java.text.SimpleDateFormat(dateFormatString);
+}
+public java.text.SimpleDateFormat getBeanDateFormat()
+{
+	return beanDateFormat;
 }
 /**
  * Insert the method's description here.

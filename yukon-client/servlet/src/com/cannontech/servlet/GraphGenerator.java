@@ -81,6 +81,11 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			param = req.getParameter("format");
 			if( param != null)
 				localBean.setFormat(param);
+
+			param = req.getParameter("dtFormat");
+			if( param != null)
+				localBean.setBeanDateFormat(param);
+
 		}
 		
 		localBean.updateCurrentPane();
