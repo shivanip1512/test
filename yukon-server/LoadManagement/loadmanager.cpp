@@ -198,8 +198,9 @@ void CtiLoadManager::controlLoop()
     while(TRUE)
     {
         // first service incoming messages, but let the main loop execute even if there are a lot of incoming messages
-        int num_msgs = 0; 
-        while( (msg = _main_queue.getQueue(500)) != NULL && num_msgs++ < 25) // is 25 a good number? future cparm?
+        int num_msgs = 0;
+
+        while( (msg = _main_queue.getQueue(500)) != NULL )
         {
             CtiLMExecutor* executor = executorFactory.createExecutor(msg);
             try
