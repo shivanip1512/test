@@ -1,7 +1,5 @@
 package com.cannontech.macs.schedule.wizard;
 
-import java.awt.Rectangle;
-
 import com.cannontech.clientutils.CTILogger;
 
 /**
@@ -212,6 +210,10 @@ private javax.swing.JButton getJButtonCheckScript() {
 			ivjJButtonCheckScript.setMnemonic('c');
 			ivjJButtonCheckScript.setText("Check..");
 			// user code begin {1}
+			
+			//dont show since not implemented
+			ivjJButtonCheckScript.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -234,6 +236,9 @@ private javax.swing.JComboBox getJComboBoxTemplate() {
 			// user code begin {1}
 
 			ivjJComboBoxTemplate.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
+			
+			//dont show since not implemented
+			ivjJComboBoxTemplate.setVisible( false );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -279,6 +284,10 @@ private javax.swing.JLabel getJLabelTemplate() {
 			ivjJLabelTemplate.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelTemplate.setText("Template:");
 			// user code begin {1}
+			
+			//dont show since not implemented
+			ivjJLabelTemplate.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
