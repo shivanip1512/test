@@ -30,6 +30,20 @@ INCLPATHS+= \
 ;$(RW)
 
 
+DNPOBJS=\
+dnp_application.obj \
+dnp_transport.obj \
+dnp_datalink.obj \
+dnp_objects.obj \
+dnp_object_analoginput.obj \
+dnp_object_analogoutput.obj \
+dnp_object_binaryinput.obj \
+dnp_object_binaryoutput.obj \
+dnp_object_class.obj \
+dnp_object_counter.obj \
+dnp_object_time.obj \
+
+
 OBJS=\
 prot_emetcon.obj \
 prot_versacom.obj \
@@ -37,10 +51,7 @@ prot_711.obj \
 prot_fpcbc.obj \
 prot_sixnet.obj \
 prot_dnp.obj \
-dnp_objects.obj \
-dnp_application.obj \
-dnp_transport.obj \
-dnp_datalink.obj \
+$(DNPOBJS) \
 dll_prot.obj \
 
 
@@ -125,7 +136,25 @@ dnp_datalink.obj:	logger.h thread.h mutex.h dlldefs.h guard.h porter.h \
 		dsm2.h dsm2err.h devicetypes.h queues.h types.h \
 		dnp_datalink.h xfer.h dialup.h yukon.h dllbase.h os2_2w32.h \
 		cticalls.h
-dnp_objects.obj:	dnp_objects.h
+dnp_objects.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
+		dnp_objects.h dnp_object_analoginput.h \
+		dnp_object_analogoutput.h dnp_object_binaryinput.h \
+		dnp_object_binaryoutput.h dnp_object_class.h \
+		dnp_object_counter.h dnp_object_time.h
+dnp_object_analoginput.obj:	dnp_object_analoginput.h dnp_objects.h \
+		logger.h thread.h mutex.h dlldefs.h guard.h
+dnp_object_analogoutput.obj:	dnp_object_analogoutput.h dnp_objects.h \
+		logger.h thread.h mutex.h dlldefs.h guard.h
+dnp_object_binaryinput.obj:	dnp_object_binaryinput.h dnp_objects.h \
+		logger.h thread.h mutex.h dlldefs.h guard.h
+dnp_object_binaryoutput.obj:	dnp_object_binaryoutput.h dnp_objects.h \
+		logger.h thread.h mutex.h dlldefs.h guard.h
+dnp_object_class.obj:	dnp_object_class.h dnp_objects.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h
+dnp_object_counter.obj:	dnp_object_counter.h dnp_objects.h logger.h \
+		thread.h mutex.h dlldefs.h guard.h
+dnp_object_time.obj:	dnp_object_time.h dnp_objects.h logger.h thread.h \
+		mutex.h dlldefs.h guard.h
 dnp_transport.obj:	logger.h thread.h mutex.h dlldefs.h guard.h \
 		prot_dnp.h pointtypes.h dnp_application.h message.h \
 		collectable.h dnp_objects.h dnp_transport.h dnp_datalink.h \
@@ -151,7 +180,8 @@ prot_dnp.obj:	logger.h thread.h mutex.h dlldefs.h guard.h utility.h \
 		dsm2.h porter.h dsm2err.h devicetypes.h queues.h types.h \
 		prot_dnp.h pointtypes.h dnp_application.h message.h \
 		collectable.h dnp_objects.h dnp_transport.h dnp_datalink.h \
-		xfer.h dialup.h yukon.h dllbase.h os2_2w32.h cticalls.h
+		xfer.h dialup.h yukon.h dllbase.h os2_2w32.h cticalls.h \
+		dnp_object_class.h
 prot_emetcon.obj:	cmdparse.h dlldefs.h parsevalue.h devicetypes.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h porter.h dsm2err.h queues.h prot_emetcon.h yukon.h \
