@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/02/10 23:23:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/02/25 21:38:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,6 +75,7 @@ IM_EX_CTIBASE bool          gDNPVerbose = false;
 IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
 IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
+IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
 IM_EX_CTIBASE short         gSimulatePorts = 0;
 IM_EX_CTIBASE set<long>     gSimulatedPortList;
 
@@ -216,6 +217,22 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         gDNPInternalRetries = 2;
         if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << endl;
+    }
+
+    //  this is the MCT 400 SPID
+    if(!(str = gConfigParms.getValueAsString("YUKON_MCT400SERIESSPID")).isNull())
+    {
+        gMCT400SeriesSPID = strtoul(str.data(), 0, 16) & 0xff;
+
+        if( !gMCT400SeriesSPID )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - YUKON_MCT400SERIESSPID was read as 0, setting to 0xff **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            gMCT400SeriesSPID = 0xff;
+        }
     }
 
     if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).isNull() )

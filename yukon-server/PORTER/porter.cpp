@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2005/02/20 04:00:06 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2005/02/25 21:38:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -533,8 +533,8 @@ void applyDeviceLoadReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void
             if(sub > 0)
             {
                 yep = true;
-            printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
-        }
+                printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
+            }
         }
 
         if(yep)
@@ -638,9 +638,9 @@ void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
             if(sub > 0)
             {
                 yep = true;
-            printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
+                printStr += CtiNumStr(i).spad(2) + ", " + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
+            }
         }
-    }
     }
 
     if(yep)
@@ -1734,7 +1734,6 @@ void LoadPorterGlobals(void)
         }
     }
 
-    /* Check if we need to start the TCP/IP Interface */
     if(!(Temp = gConfigParms.getValueAsString("PORTER_CCU_DELAY_FILE")).isNull())
     {
         gDelayDatFile = Temp;
@@ -1765,11 +1764,12 @@ void LoadPorterGlobals(void)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
         dout << "Loading porter globals: " << endl;
-        dout << "PORTER_RELOAD_RATE    " << PorterRefreshRate << endl;
-        dout << "PIL_QUEUE_SIZE        " << PILMaxQueueSize << endl;
+        dout << "PORTER_RELOAD_RATE      " << PorterRefreshRate << endl;
+        dout << "PIL_QUEUE_SIZE          " << PILMaxQueueSize << endl;
         dout << "PORTER_EXTRATIMEOUT     " << ExtraTimeOut << endl;
         dout << "PORTER_MAXOCTS          " << MaxOcts << endl;
         dout << "PORTER_PORTER_TCPIP     " << StartTCPIP << endl;
+        dout << "PORTER_MCT400SERIESSPID " << (int)gMCT400SeriesSPID << endl;
     }
 }
 

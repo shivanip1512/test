@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/11/18 23:37:20 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/02/25 21:38:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,7 @@ IM_EX_CTIBASE extern bool           gDNPVerbose;
 IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
 IM_EX_CTIBASE extern int            gDefaultCommFailCount;
 IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;
+IM_EX_CTIBASE extern unsigned char  gMCT400SeriesSPID;
 IM_EX_CTIBASE extern short          gSimulatePorts;
 IM_EX_CTIBASE extern set<long>      gSimulatedPortList;
 
