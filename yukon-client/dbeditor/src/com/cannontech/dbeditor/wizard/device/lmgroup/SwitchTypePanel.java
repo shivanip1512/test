@@ -13,7 +13,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 
 	private static final String[] switchList = 
 	{
-			"ExpressCom",
+			"LCR 5000       (EXPRESSCOM)",
+			"T-STAT         (EXPRESSCOM)",
 			"LCR 5000       (VERSACOM)",
 			"LCR 4000       (VERSACOM)",
 			"LCR 3000       (VERSACOM)",
@@ -28,6 +29,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	// switchList
 	private static final int[] valueList = 
 	{
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,			
