@@ -29,6 +29,16 @@ function validate(form) {
 		alert("Work Order # cannot be empty");
 		return false;
 	}
+<%
+	if (liteOrder.getCurrentStateID() != statusCompleted && liteOrder.getCurrentStateID() != statusCancelled) {
+%>
+	if (form.CurrentState.value == "<%= statusCancelled %>") {
+		if (!confirm("Are you sure you want to cancel this service order?"))
+			return false;
+	}
+<%
+	}
+%>
 	return true;
 }
 
@@ -80,8 +90,6 @@ function closeOrder(form) {
 }
 
 function cancelOrder(form) {
-	if (!confirm("Are you sure you want to cancel this service order?"))
-		return;
 	form.CurrentState.value = "<%= statusCancelled %>";
 	resetOrder(form);
 	showDateDiv(form, "DateCancelled");
@@ -307,7 +315,7 @@ function init() {
                               </tr>
                             </table>
                             <div id="DivDateScheduled" style="display:none"> 
-                              <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                              <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                 <tr> 
                                   <td width="30%" align="right" class="TableCell">Date 
                                     Scheduled:</td>
@@ -320,7 +328,7 @@ function init() {
                               </table>
                             </div>
                             <div id="DivDateCompleted" style="display:none"> 
-                              <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                              <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                 <tr> 
                                   <td width="30%" align="right" class="TableCell">Date 
                                     Completed:</td>
@@ -333,7 +341,7 @@ function init() {
                               </table>
                             </div>
                             <div id="DivDateCancelled" style="display:none"> 
-                              <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                              <table width="100%" border="0" cellspacing="0" cellpadding="1">
                                 <tr> 
                                   <td width="30%" align="right" class="TableCell">Date 
                                     Cancelled:</td>
