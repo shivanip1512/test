@@ -95,8 +95,7 @@ public class LiteLMConstraint extends LiteBase
 
 		  setConstraintID( new Integer(s.getRow(0)[0].toString()).intValue() );
 		  setConstraintName( s.getRow(0)[1].toString() );
-		  setLMConstraintType( new Integer(s.getRow(0)[2].toString()));
-	   }
+		}
 	   catch( Exception e )
 	   {
 		  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
