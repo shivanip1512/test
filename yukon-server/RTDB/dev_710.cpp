@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/25 19:10:55 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/08/28 14:52:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     INT status = NORMAL;
     CtiCommandParser newParse("loop");
 
-    if( getDebugLevel() & 0x01 )
+    if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -64,6 +64,12 @@ INT CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     pReq->setCommandString("loop");
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
+
+    if(OutMessage)
+    {
+        delete OutMessage;
+        OutMessage = 0;
+    }
 
     return status;
 }
@@ -180,7 +186,6 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
                outList.insert( OutMTemp );
             }
          }
-
          break;
       }
    case ControlRequest:
@@ -209,7 +214,6 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
          break;
       }
    }
-
 
    return nRet;
 }
