@@ -1,3 +1,2 @@
-@include /custom/RTU-BASE.txt
 1 Comm Loopback = loop
 5 Comm Loopbacks = loop 5
