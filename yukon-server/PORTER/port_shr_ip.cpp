@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/01 22:16:03 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/29 17:11:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ void CtiPortShareIP::inThread()
 
                     //  Send an error message back to the SCADA system...
                     Buffer[0] = 0x7d;
-                    Buffer[1] = 31;  //  means "No reply"
+                    Buffer[1] = CtiPortShare::PSHR_ERROR_NOREPLY;
 
                     //  if we got no reply, it should be safe to write to the _scadaNexus - outThread won't wake up unless we get a
                     //    reply, and he's the only other thread that can write
@@ -400,7 +400,7 @@ void CtiPortShareIP::outThread()
                 if(InMessage.EventCode & ~ENCODED)
                 {
                     // first byte of non-DLC section of message
-                    //for ACS set byte 11 to 7d (error) and set byte 12 to event code
+                    // for ACS set byte 11 to 7d (error) and set byte 12 to event code
                     InMessage.IDLCStat[11] = 0x7d;
                     InMessage.IDLCStat[12] = ProcessEventCode(InMessage.EventCode & ~ENCODED);
                     InMessage.InLength = 2;
