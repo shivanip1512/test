@@ -134,7 +134,6 @@ private:
 
     enum
     {
-        CommRetries   = 3,
         PacketRetries = 3
     };
 

@@ -632,9 +632,9 @@ int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
-                        //  try sending the packet again - we were NACK'd or something
+                        //  we were NACK'd, so fail to the upper levels - maybe regenerating the packet will help
                         ++_packetErrorCount;
-                        _ioState = Output;
+                        _ioState = Failed;
                     }
                 }
 
