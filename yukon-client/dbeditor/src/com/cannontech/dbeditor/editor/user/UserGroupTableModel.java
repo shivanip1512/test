@@ -28,7 +28,7 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	private static final Color[] CELL_COLORS =
 	{
 		//selected row
-		Color.BLUE,
+		Color.BLACK,
 
 		//non selected row
 		Color.BLACK		
