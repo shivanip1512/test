@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/09/30 15:00:29 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/10/02 19:28:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,14 +36,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 CtiConnection::~CtiConnection()
 {
-#if 0
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " ~CtiConnection() H:P " << _host << ":" << _port << endl;
-    }
-#endif
-
     cleanConnection();
 }
 
@@ -131,6 +123,11 @@ CtiMessage* CtiConnection::ReadConnQue(UINT Timeout)
             Msg->setConnectionHandle((void*)this);
         }
     }
+    else if(Timeout)
+    {
+        Sleep(250);     // This prevents a crazy tight loop!
+    }
+
     return Msg;
 }
 
@@ -604,11 +601,7 @@ INT CtiConnection::ConnectPortal()
                 }
                 else
                 {
-                    if(Ex != NULL)
-                    {
-                        delete Ex;
-                    }
-
+                    cleanExchange();
                     Ex = new CtiExchange(psck);
 
                     if(!Ex->In().bad() && !Ex->Out().bad())
@@ -637,13 +630,7 @@ INT CtiConnection::ConnectPortal()
         {
             // dout << "ALERT ALERT ALERT " << __FILE__ << " (" << __LINE__ << ")" << endl;
             nRet = ManageSocketError( msg );
-
-            if(Ex != NULL)
-            {
-                delete Ex;
-                Ex       = NULL;
-                _valid   = FALSE;
-            }
+            cleanExchange();
         }
     }
 
@@ -681,13 +668,7 @@ void CtiConnection::ShutdownConnection()
             // This flag tells InThread not to wait for a reconnection....
             _dontReconnect = TRUE;
 
-            if( Ex != NULL)
-            {
-                _valid   = FALSE;
-
-                delete Ex;
-                Ex       = NULL;
-            }
+            cleanExchange();
 
             // Should check the cancellation once per second.
             if( outthread_.join(100) == RW_THR_TIMEOUT )
@@ -721,7 +702,6 @@ void CtiConnection::ShutdownConnection()
                 }
             }
 
-            try {
             if(getDebugLevel() & 0x00001000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -733,12 +713,6 @@ void CtiConnection::ShutdownConnection()
                 {
                     dout << RWTime() << " ShutdownConnection() " << who() << endl;
                 }
-            }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -753,18 +727,13 @@ void CtiConnection::ShutdownConnection()
 void CtiConnection::ResetConnection()
 {
 
-    if( Ex != NULL)
+    if(getDebugLevel() & 0x00001000)
     {
-        if(getDebugLevel() & 0x00001000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** InThread is ressetting the connection **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        delete Ex;
-        Ex       = NULL;
-        _valid   = FALSE;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** InThread is ressetting the connection **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+
+    cleanExchange();
 }
 
 INT CtiConnection::verifyConnection()
@@ -889,8 +858,9 @@ void CtiConnection::forceTermination()
     _bQuit         = TRUE;
     _dontReconnect = TRUE;
     _valid         = FALSE;
-
     _noLongerViable = TRUE;
+
+    cleanExchange();
 
     return;
 }
@@ -1086,8 +1056,6 @@ _host("127.0.0.1")
     _serverConnection = TRUE;
 }
 
-CtiConnection::~CtiConnection();
-
 void CtiConnection::doConnect( const INT &Port, const RWCString &Host, InQ_t *inQ)
 {
     if(!_connectCalled)
@@ -1172,4 +1140,14 @@ UINT CtiConnection::valid() const
 {
     return
     _valid;
+}
+
+void CtiConnection::cleanExchange()
+{
+    if(Ex != NULL)
+    {
+        delete Ex;
+        Ex = NULL;
+        _valid = FALSE;
+    }
 }
