@@ -1334,7 +1334,14 @@ public synchronized LiteBase handleDBChangeMessage(com.cannontech.message.dispat
 	{
 		allEnergyCompanies = null;
 		allUserEnergyCompanies = null;
-	}	
+	}
+	else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
+	{
+		if ( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) ) {
+			allContacts = null;
+		}
+		retLBase = null;
+	}
 	else  //let it all go!!
 		releaseAllCache();
 
