@@ -4,11 +4,19 @@ import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.esub.element.StaticImage;
+import com.cannontech.esub.util.Util;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)
@@ -236,7 +244,33 @@ public class StaticImageEditorPanel extends DataInputPanel {
 						d.setVisible(false);
 					}
 				};
-
+				
+				yPanel.addDataInputPanelListener( new DataInputPanelListener() {
+					public void inputUpdate(PropertyPanelEvent event) {
+						try {
+							Transaction t = Transaction.createTransaction(Transaction.INSERT, (DBPersistent) event.getDataChanged());
+							DBPersistent img = t.execute();
+							if(img instanceof CTIDbChange) {
+								com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
+									com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
+											(com.cannontech.database.db.CTIDbChange)img, DBChangeMsg.CHANGE_TYPE_ADD);
+											
+  
+								for( int i = 0; i < dbChange.length; i++ )
+								{
+									//handle the DBChangeMsg locally
+									com.cannontech.database.data.lite.LiteBase lBase = 
+										com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+									Util.getConnToDispatch().write(dbChange[i]);
+								}
+							}
+						}
+						catch(com.cannontech.database.TransactionException te) {
+							CTILogger.error("Couldn't insert image", te);
+						}
+					}
+				});
+				
 				d.setModal(true);
 				d.getContentPane().add(yPanel);
 				d.setSize(650, 500);
@@ -245,11 +279,13 @@ public class StaticImageEditorPanel extends DataInputPanel {
 
 				d.show();
 				
-				if( yPanel.getReturnResult() == YukonImagePanel.OK_OPTION ) {
+				if( yPanel.getReturnResult() == YukonImagePanel.OK_OPTION ) {		
 					LiteYukonImage img = yPanel.getSelectedLiteImage();
-					staticImage.setYukonImage(img);
-					getImageNameLabel().setText(img.getImageName());
-					getImageNameLabel().setIcon(new javax.swing.ImageIcon(img.getImageValue()));
+					if(img != null) {
+						staticImage.setYukonImage(img);
+						getImageNameLabel().setText(img.getImageName());
+						getImageNameLabel().setIcon(new javax.swing.ImageIcon(img.getImageValue()));
+					}
 				}		
 			}
 		});
