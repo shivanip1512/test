@@ -16,6 +16,7 @@ using namespace std;
 static RWCString gCompileBase;
 static INT gMajorRevision = -1;
 static INT gMinorRevision = -1;
+static INT gBuildRevision = -1;
 static bool gDoCheckouts = false;
 
 class CtiPVCS
@@ -324,7 +325,7 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
             }
             else
             {
-               gMajorRevision = -1;
+               gMajorRevision = -1;                                                 // This should allow build to be incremented.
             }
 
             //cout << "MajorRevision " << dinfo._majorRevision << endl;
@@ -352,7 +353,7 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
             }
             else
             {
-               gMinorRevision = -1;
+               gMinorRevision = -1;                                                 // This should allow build to be incremented.
             }
 
             //cout << "MinorRevision " << dinfo._minorRevision << endl;
@@ -366,19 +367,35 @@ void ProcessCID(CtiDirBuild &db, RWCString &cidfile)
                dinfo._buildNumber = atoi(tstr.data()) + 1;
             }
 
-            if(gMinorRevision >= 0 || gMajorRevision >= 0)   // Need to reset this then.
+            if(gBuildRevision >= 0 && dinfo._buildNumber != gBuildRevision)         // If specified and different.
+            {
+               // We need to generate a new buildnumber define!
+               sprintf(oldnum, "%d", dinfo._buildNumber - 1);
+
+               dinfo._buildNumber = gBuildRevision;
+               sprintf(newnum, "%d", dinfo._buildNumber);
+
+               origstr.replace(oldnum,newnum);
+
+               cout << __LINE__ << " " << gBuildRevision << endl;
+            }
+            else if(gMinorRevision >= 0 || gMajorRevision >= 0)   // Need to reset this then.
             {
                // We need to generate a new buildnumber define!
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
 
                dinfo._buildNumber = 0;
                sprintf(newnum, "%d", dinfo._buildNumber);
+
+               cout << __LINE__ << endl;
             }
             else
             {
                // We need to generate a new buildnumber define!
                sprintf(oldnum, "%d", dinfo._buildNumber - 1);
                sprintf(newnum, "%d", dinfo._buildNumber);
+
+               cout << __LINE__ << endl;
             }
 
             origstr.replace(oldnum,newnum);
@@ -542,6 +559,13 @@ int main(int argc, char **argv)
    {
       gDoCheckouts = true;
       gMinorRevision = atoi(temp);
+      //cout << "Minor Revision " << gMinorRevision << endl;
+   }
+
+   if(GetEnvironmentVariable("YUKON_BUILD_REVISION", temp, 128) > 0)
+   {
+      gDoCheckouts = true;
+      gBuildRevision = atoi(temp);
       //cout << "Minor Revision " << gMinorRevision << endl;
    }
 

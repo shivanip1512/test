@@ -23,15 +23,18 @@ void usage()
     cout << "  Output from (cvs rlog projfile > projfile.log)?" << endl << endl;
     cout << "                    -B report BRANCHES only" << endl;
     cout << "                    -T report TAGS only" << endl;
-    cout << "increment type                " << endl;
-    cout << "                    -M (Major Rev)" << endl;
-    cout << "                    -m (Minor Rev)" << endl;
-    cout << "                    -b (Build Rev)" << endl << endl;
+    cout << "increment type or revision base number  " << endl;
+    cout << "                    -M[:MajorBaseNum]  (Major Rev)" << endl;
+    cout << "                    -m[:MinorBaseNum]  (Minor Rev)" << endl;
+    cout << "                    -b                 (Build Rev)" << endl << endl;
     cout << "output type (program exit code)" << endl;
     cout << "                    -R (Major Rev)" << endl;
     cout << "                    -r (Minor Rev)" << endl;
     cout << "                    -v (Build Rev)" << endl << endl;
-    cout << endl << "e.g.  cvs rlog -r yukon-server\\Makefile > c:\\temp\\tags.log & nextrev -l c:\\temp\\tags.log -M -b" << endl;
+    cout << endl;
+    cout << "                    -V Verbose Mode" << endl << endl;
+    cout << endl << "e.g.  cvs rlog -r yukon-server\\Makefile > c:\\temp\\tags.log & nextrev -l c:\\temp\\tags.log  -M:2 -m:34 -b -V" << endl;
+    cout << "  - Would return the next buildrevision on the 2.34 build branch." << endl << endl;
 }
 
 int main(int argc, char **argv)
@@ -40,9 +43,9 @@ int main(int argc, char **argv)
     INT i;
     INT flag = 0;
 
-    INT majorRevisionVal = 0;
-    INT minorRevisionVal = 0;
-    INT buildRevisionVal = 0;
+    INT majorRevisionVal = -1;
+    INT minorRevisionVal = -1;
+    INT buildRevisionVal = -1;
 
     bool verbose = false;
     bool incrementMajor = false;
@@ -60,6 +63,23 @@ int main(int argc, char **argv)
 
     RWCString tstr;
     RWCString filename;
+    INT gMajorRevision = -1;
+    INT gMinorRevision = -1;
+
+
+    if(GetEnvironmentVariable("YUKON_MAJOR_REVISION", temp, 128) > 0)
+    {
+       gMajorRevision   = atoi(temp);
+       majorRevisionVal = gMajorRevision;
+    }
+
+    if(GetEnvironmentVariable("YUKON_MINOR_REVISION", temp, 128) > 0)
+    {
+       gMinorRevision   = atoi(temp);
+       minorRevisionVal = gMinorRevision;
+    }
+
+
 
     for(i = 1; i < argc; i++)
     {
@@ -85,12 +105,28 @@ int main(int argc, char **argv)
                 }
             case 'M':
                 {
-                    incrementMajor = true;
+                    if(argv[i][2] != ':')
+                    {
+                        incrementMajor = true;
+                    }
+                    else
+                    {
+                        gMajorRevision   = atoi((char*)(&argv[i][3]));
+                        majorRevisionVal = gMajorRevision;
+                    }
                     break;
                 }
             case 'm':
                 {
-                    incrementMinor = true;
+                    if(argv[i][2] != ':')
+                    {
+                        incrementMinor = true;
+                    }
+                    else
+                    {
+                        gMinorRevision   = atoi((char*)(&argv[i][3]));
+                        minorRevisionVal = gMinorRevision;
+                    }
                     break;
                 }
             case 'b':
@@ -180,23 +216,55 @@ int main(int argc, char **argv)
                         minorRevision = minorRevision.strip(RWCString::both, '_');
                         buildRevision = buildRevision.strip(RWCString::both, '_');
 
-                        if( majorRevisionVal < atoi(majorRevision.data()) )
+                        if(gMajorRevision > 0)
                         {
-                            majorRevisionVal = atoi(majorRevision.data());
-                            minorRevisionVal = atoi(minorRevision.data());
-                            buildRevisionVal = atoi(buildRevision.data());
+                            if(gMinorRevision > 0)
+                            {
+                                // Looking for the largest build with these major and minor revisions.
+                                if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                    minorRevisionVal == atoi(minorRevision.data()) &&
+                                    buildRevisionVal < atoi(buildRevision.data()) )
+                                {
+                                    buildRevisionVal = atoi(buildRevision.data());
+                                }
+                            }
+                            else
+                            {
+                                // Looking for the largest build with this major revision.
+                                if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                    minorRevisionVal < atoi(minorRevision.data()) )
+                                {
+                                    minorRevisionVal = atoi(minorRevision.data());
+                                    buildRevisionVal = atoi(buildRevision.data());
+                                }
+                                else if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                         minorRevisionVal == atoi(minorRevision.data()) &&
+                                         buildRevisionVal < atoi(buildRevision.data()) )
+                                {
+                                    buildRevisionVal = atoi(buildRevision.data());
+                                }
+                            }
                         }
-                        else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                 minorRevisionVal < atoi(minorRevision.data()) )
+                        else
                         {
-                            minorRevisionVal = atoi(minorRevision.data());
-                            buildRevisionVal = atoi(buildRevision.data());
-                        }
-                        else if( majorRevisionVal == atoi(majorRevision.data()) &&
-                                 minorRevisionVal == atoi(minorRevision.data()) &&
-                                 buildRevisionVal < atoi(buildRevision.data()) )
-                        {
-                            buildRevisionVal = atoi(buildRevision.data());
+                            if( majorRevisionVal < atoi(majorRevision.data()) )
+                            {
+                                majorRevisionVal = atoi(majorRevision.data());
+                                minorRevisionVal = atoi(minorRevision.data());
+                                buildRevisionVal = atoi(buildRevision.data());
+                            }
+                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                     minorRevisionVal < atoi(minorRevision.data()) )
+                            {
+                                minorRevisionVal = atoi(minorRevision.data());
+                                buildRevisionVal = atoi(buildRevision.data());
+                            }
+                            else if( majorRevisionVal == atoi(majorRevision.data()) &&
+                                     minorRevisionVal == atoi(minorRevision.data()) &&
+                                     buildRevisionVal < atoi(buildRevision.data()) )
+                            {
+                                buildRevisionVal = atoi(buildRevision.data());
+                            }
                         }
                     }
                 }
@@ -251,7 +319,6 @@ int main(int argc, char **argv)
     if(verbose)
     {
         cout << endl;
-        cout << endl << "NEXT REVISION " << majorRevisionVal << "." << minorRevisionVal << "." << buildRevisionVal << endl;
         cout << "MAJORREVISION:   " << majorRevisionVal << endl;
         cout << "MINORREVISION:   " << minorRevisionVal << endl;
         cout << "BUILDLEVEL:      " << buildRevisionVal << endl;
