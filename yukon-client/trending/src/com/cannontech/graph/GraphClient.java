@@ -1540,14 +1540,14 @@ private javax.swing.JTabbedPane getTabbedPane() {
 			ivjTabbedPane.insertTab("Tabular", null, getTabularTabScrollPane(), null, 1);
 			ivjTabbedPane.insertTab("Summary", null, getSummaryTabScrollPane(), null, 2);
 			// user code begin {1}
-			/*
+			
 			if( getTrendProperties().getViewType() == TrendModelType.TABULAR_VIEW)
 				ivjTabbedPane.setSelectedIndex(1);
 			else if( getTrendProperties().getViewType() == TrendModelType.SUMMARY_VIEW)
 				ivjTabbedPane.setSelectedIndex(2);
 			else
 				ivjTabbedPane.setSelectedIndex(0);
-*/				
+				
 			ivjTabbedPane.addChangeListener(this);			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2398,6 +2398,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 					showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
 				}
 				getGraph().update();
+				getFreeChartPanel().setChart(getFreeChart());
 			}
 				
 			else if( getTabbedPane().getSelectedComponent() == getTabularTabScrollPane())
