@@ -696,8 +696,6 @@ pair< bool, INT > CtiPort::checkCommStatus(CtiDevice *Device, INT trace)
             }
         }
 
-        setPortForDevice(Device);
-
         rpair = make_pair( true, status );
 
         if(Device)
@@ -705,6 +703,8 @@ pair< bool, INT > CtiPort::checkCommStatus(CtiDevice *Device, INT trace)
             Device->setLogOnNeeded(TRUE); // Make sure this guy forgets about it.  He must reconnect himself.
         }
     }
+
+    setPortForDevice(Device);
 
     return rpair;
 }
@@ -799,24 +799,22 @@ bool CtiPort::setPortForDevice(CtiDevice* Device)
     {
         if(Device->getType() == TYPE_TAPTERM)
         {
-            #if 0
+            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port is about to communicate with a TAP device. " << Device->getName() << endl;
             }
-            #endif
 
             setLine(1200, 7, EVENPARITY, ONESTOPBIT);
             enableXONXOFF();
         }
         else
         {
-            #if 0
+            if(DebugLevel & DEBUGLEVEL_LUDICROUS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port is about to communicate with a NON - TAP device. " << Device->getName() << endl;
             }
-            #endif
 
             if(Device->getBaudRate() && Device->getBaudRate() != getBaudRate())
             {
