@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2002/08/27 19:37:22 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2002/08/28 16:21:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -474,62 +474,65 @@ void RemoteReset(CtiDeviceBase *&Device, CtiPortSPtr Port)
         {
             CtiTransmitterInfo *pInfo = (CtiTransmitterInfo *)Device->getTrxInfo();
 
-            if(Port->getProtocol() == IDLC)
+            if(pInfo)
             {
-                if(Device->getAddress() != RTUGLOBAL && Device->getAddress() != CCUGLOBAL)
+                if(Port->getProtocol() == IDLC)
                 {
-                    switch(Device->getType())
+                    if(Device->getAddress() != RTUGLOBAL && Device->getAddress() != CCUGLOBAL)
                     {
-                    case TYPE_CCU711:
+                        switch(Device->getType())
                         {
-                            if(!(Port->isDialup()))
+                        case TYPE_CCU711:
                             {
-                                j = 0;
-                                while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
+                                if(!(Port->isDialup()))
+                                {
+                                    j = 0;
+                                    while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
+                                }
+
+                                if(!eRet)
+                                {
+                                    if(ResetAll711s)
+                                    {
+                                        /* Reset the whole thing */
+                                        IDLCFunction (Device, 0, DEST_BASE, COLD);
+                                    }
+                                    else
+                                    {
+                                        /* Download the delay sets */
+                                        IDLCSetDelaySets (Device);
+
+                                        /* flush the queue's */
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
+                                        }
+                                        IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
+
+                                        /* Check if we need to load the routes */
+                                        if(LoadRoutes)
+                                        {
+                                            LoadRemoteRoutes(Device);
+                                        }
+                                    }
+                                }
                             }
 
-                            if(!eRet)
-                            {
-                                if(ResetAll711s)
-                                {
-                                    /* Reset the whole thing */
-                                    IDLCFunction (Device, 0, DEST_BASE, COLD);
-                                }
-                                else
-                                {
-                                    /* Download the delay sets */
-                                    IDLCSetDelaySets (Device);
+                            break;
 
-                                    /* flush the queue's */
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
-                                    }
-                                    IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
-
-                                    /* Check if we need to load the routes */
-                                    if(LoadRoutes)
-                                    {
-                                        LoadRemoteRoutes(Device);
-                                    }
-                                }
-                            }
+                        case TYPE_LCU415:
+                        case TYPE_LCU415LG:
+                        case TYPE_LCU415ER:
+                        case TYPE_LCUT3026:
+                        case TYPE_TCU5000:
+                        case TYPE_TCU5500:
+                        default:
+                            break;
                         }
-
-                        break;
-
-                    case TYPE_LCU415:
-                    case TYPE_LCU415LG:
-                    case TYPE_LCU415ER:
-                    case TYPE_LCUT3026:
-                    case TYPE_TCU5000:
-                    case TYPE_TCU5500:
-                    default:
-                        break;
                     }
                 }
+                pInfo->ClearStatus(NEEDSRESET);
             }
-            pInfo->ClearStatus(NEEDSRESET);
         }
     }
     return;
@@ -2421,6 +2424,7 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Error Writing to Return Nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr << endl;
                     }
                     status = SOCKWRITE;
                 }

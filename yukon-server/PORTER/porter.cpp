@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/08/19 20:03:41 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/08/28 16:21:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -680,9 +680,22 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         dout << RWTime() << " Trace is now off for all messages" << endl;
     }
 
+    RWTime nowTime;
+    RWTime nextTime = nowTime + 30;
+    ULONG omc;
     /* Startup is done so main process becomes input thread */
     for(;!PorterQuit;)
     {
+        omc = OutMessageCount();
+        nowTime = nowTime.now();
+
+        if(omc > 10 && nowTime > nextTime)
+        {
+            nextTime = nowTime - (nowTime.seconds() % 30) + 30;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Porter's OM Count = " << omc << endl;
+        }
+
         if(RunningInConsole == FALSE)
         {
             CTISleep (1000L);
@@ -693,258 +706,250 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             time(&timeStart);
 #endif
 
-            while(
-                 (PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))    &&
-                 (inRecord.Event.KeyEvent.bKeyDown != TRUE)           &&
-                 (inRecord.EventType != KEY_EVENT))
+            if(PeekConsoleInput(hStdIn, &inRecord, 1L, &Count))     // There is something ther if we succeed.
             {
-#ifdef HARDLOCK
-                /* HARDLOCK check once every 5 minutes */
-                time (&timeStop);
-                if(difftime(timeStop, timeStart) >= 300)
+                if(inRecord.EventType != KEY_EVENT)
                 {
-                    if(HL_AVAIL () != STATUS_OK)
+#ifdef HARDLOCK
+                    /* HARDLOCK check once every 5 minutes */
+                    time (&timeStop);
+                    if(difftime(timeStop, timeStart) >= 300)
                     {
-                        fprintf(stdout, "Required Hardlock Not Detected.\n");
-                        Result = HL_LOGOUT ();
-                        CTIExit (EXIT_PROCESS, -1);
+                        if(HL_AVAIL () != STATUS_OK)
+                        {
+                            fprintf(stdout, "Required Hardlock Not Detected.\n");
+                            Result = HL_LOGOUT ();
+                            CTIExit (EXIT_PROCESS, -1);
+                        }
+                        time (&timeStart);
                     }
-                    time (&timeStart);
-                }
 #endif
 
-                if(Count != 0)
+                    ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);     // Read out the offending input.
+                }
+                else    // These are to only kind we care about!
                 {
                     ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
-                }
 
-                CTISleep(250L);      // Keep this from a tight loop
-            }
-
-            if(Count != 0)
-            {
-                ReadConsoleInput(hStdIn, &inRecord, 1L, &Count);
-            }
-
-            if( inRecord.EventType != KEY_EVENT || ( inRecord.EventType == KEY_EVENT && inRecord.Event.KeyEvent.bKeyDown == FALSE ))
-            {
-                CTISleep(250L);      // Keep this from a tight loop
-                continue;
-            }
-
-            if((inRecord.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
-            {
-                Char = tolower(inRecord.Event.KeyEvent.uChar.AsciiChar);
-            }
-            else
-            {
-                Char = 0;
-            }
-
-            memset(&inRecord, 0, sizeof(inRecord));
-
-            switch(Char)
-            {
-            case 0x68:              // alt - h
-            case 0x3f:              // alt - ?
-                /* Print some instructions */
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-                    dout << endl;
-                    dout << "Port Control for NT" << endl << endl;
-                    dout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
-                    dout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
-                    dout << "Alt - E     Trace error communications only" << endl;
-                    dout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
-                    dout << "             PORTER_TRACE_PORT    " << endl;
-                    dout << "             PORTER_TRACE_REMOTE  " << endl;
-                    dout << "Alt - H     This help screen" << endl;
-                    dout << "Alt - L     Toggle printer logging" << endl;
-                    dout << "Alt - Q     Display port queue counts / stats" << endl;
-                    dout << "Alt - S     Issue a system wide timesync" << endl;
-                    dout << "Alt - T     Trace all communications" << endl;
-                    dout << endl;
-
-                    break;
-                }
-            case 0x74:              // alt-t
-                {
-                    TraceFlag = !TraceFlag;
-                    if(TraceFlag)
+                    if( inRecord.Event.KeyEvent.bKeyDown != FALSE )
                     {
-                        if(TraceErrorsOnly)
+                        if((inRecord.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Trace is Now On for Errors Only" << endl;
+                            Char = tolower(inRecord.Event.KeyEvent.uChar.AsciiChar);
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Trace is Now On for All Messages" << endl;
+                            Char = 0;
                         }
-                    }
-                    else
-                    {
+
+                        switch(Char)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Trace is Now Off for All Messages" << endl;
+                        case 0x68:              // alt - h
+                        case 0x3f:              // alt - ?
+                            /* Print some instructions */
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+                                dout << endl;
+                                dout << "Port Control for NT" << endl << endl;
+                                dout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
+                                dout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
+                                dout << "Alt - E     Trace error communications only" << endl;
+                                dout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
+                                dout << "             PORTER_TRACE_PORT    " << endl;
+                                dout << "             PORTER_TRACE_REMOTE  " << endl;
+                                dout << "Alt - H     This help screen" << endl;
+                                dout << "Alt - L     Toggle printer logging" << endl;
+                                dout << "Alt - P     Purge all port queues. (Careful)" << endl;
+                                dout << "Alt - Q     Display port queue counts / stats" << endl;
+                                dout << "Alt - R     Download all CCU Default Routes" << endl;
+                                dout << "Alt - S     Issue a system wide timesync" << endl;
+                                dout << "Alt - T     Trace all communications" << endl;
+                                dout << endl;
+
+                                break;
+                            }
+                        case 0x74:              // alt-t
+                            {
+                                TraceFlag = !TraceFlag;
+                                if(TraceFlag)
+                                {
+                                    if(TraceErrorsOnly)
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Trace is Now On for Errors Only" << endl;
+                                    }
+                                    else
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Trace is Now On for All Messages" << endl;
+                                    }
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Trace is Now Off for All Messages" << endl;
+                                    }
+                                }
+
+                                break;
+                            }
+                        case 0x65:              // alt-e
+                            {
+                                RWMutexLock::LockGuard  guard(coutMux);
+                                TraceErrorsOnly = !TraceErrorsOnly;
+                                if(TraceErrorsOnly)
+                                {
+                                    TraceFlag = TRUE;
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Trace is Now On for Errors Only" << endl;
+                                }
+                                else if(TraceFlag)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Trace is Now On for All Messages" << endl;
+                                }
+                                else
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Trace is Now Off for All Messages" << endl;
+                                    }
+                                }
+
+                                break;
+
+                            }
+                        case 0x72:              // alt-r
+                            {
+                                {
+                                    RWMutexLock::LockGuard  guard(coutMux);
+                                    fprintf(stdout, "\nDownloading Routes to All CCU-711's\n");
+                                }
+                                PortManager.apply( applyLoadAllRoutes, NULL );
+                                break;
+                            }
+                        case 0x64:              // alt-d
+                            {
+                                RWMutexLock::LockGuard  guard(coutMux);
+                                Double = !Double;
+                                if(Double)
+                                    fprintf(stdout, "\nCommands Will be Sent Double\n");
+                                else
+                                    fprintf(stdout, "\nCommands Will Not be Sent Double\n");
+
+                                break;
+                            }
+                        case 0x66:              // alt-f trace filter.
+                            {
+                                if(TracePort || TraceRemote)
+                                {
+                                    fprintf(stdout, "Trace filter is now off\n");
+                                    TracePort = 0;
+                                    TraceRemote = 0;
+                                }
+                                else
+                                {
+                                    if(!(CTIScanEnv ("PORTER_TRACE_PORT", &Environment)))
+                                    {
+                                        TracePort = atoi (Environment);
+                                        fprintf(stdout, "Filtering Traces for Port %ld\n", TracePort);
+                                    }
+                                    else if(!(CTIScanEnv ("PORTER_TRACE_REMOTE",  &Environment)))
+                                    {
+                                        TraceRemote = atoi (Environment);
+                                        fprintf(stdout, "Filtering Traces for Remote %ld\n", TraceRemote);
+                                    }
+                                    else
+                                    {
+                                        fprintf(stdout, "Neither PORTER_TRACE_PORT nor PORTER_TRACE_REMOTE defined in the environment\n");
+                                    }
+                                }
+                                break;
+                            }
+                        case 0x6d:              // alt-m trace filter.
+                            {
+            #ifndef DEBUG_MEMORY
+                                fprintf(stdout, "Module not compiled for Memory Dumps\n");
+            #else
+                                fprintf(stderr, "Memory Dump ------- \n");
+                                fprintf(stderr, "  Start Memory Deltas ------- \n");
+                                _dump_allocated_delta(10);
+                                fprintf(stderr, "  Stop  Memory Deltas ------- \n\n");
+                                fprintf(stderr, "  Start Allocated Memory  ------- \n");
+                                _dump_allocated(10);
+                                fprintf(stderr, "  Stop  Allocated Memory  ------- \n\n");
+                                fprintf(stderr, "  Start Heap Check  ------- \n");
+                                _heap_check();
+                                fprintf(stderr, "  Stop  Heap Check  ------- \n");
+                                fprintf(stderr, "Memory Dump ------- \n");
+            #endif
+
+                                break;
+                            }
+
+                        case 0x6c:              // alt-l
+                            {
+                                RWMutexLock::LockGuard  guard(coutMux);
+                                PrintLogEvent = !PrintLogEvent;
+                                if(PrintLogEvent)
+                                    fprintf(stdout, "\nCommunications Events Will be Logged\n");
+                                else
+                                    fprintf(stdout, "\nCommunications Events Will Not be Logged\n");
+
+                                break;
+
+                            }
+                        case 0x63:              // alt-c
+                            {
+                                RWMutexLock::LockGuard  guard(coutMux);
+                                /* Issue a cold start to each CCU */
+                                fprintf(stdout, "\nIssuing Cold Starts to All CCU-711's\n");
+                                PortManager.apply( applyColdStart, NULL);
+
+                                break;
+                            }
+                        case 0x73:              // alt-s
+                            {
+                                RWMutexLock::LockGuard  guard(coutMux);
+                                /* Force a time sync */
+                                fprintf(stdout, "\nForcing Sytem Wide Time Sync\n");
+
+                                //CTIPostEventSem (TimeSyncSem);
+                                SetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
+
+                                break;
+                            }
+                        case 0x70:              // alt-p
+                            {
+                                /* DUMP the queues */
+                                PortManager.apply( applyPortQueuePurge, NULL );
+                                break;
+                            }
+                        case 0x71:              // alt-q
+                            {
+                                PortManager.apply( applyPortQueueReport, NULL );
+
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << endl << RWTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
+                                }
+                                break;
+                            }
+                        default:
+                            if(Char != 0)
+                            {
+                                fprintf(stdout, " No ALT 0x%04X, 0x%04X, 0x%02X 0x%08X\n",inRecord.Event.KeyEvent.wVirtualScanCode,inRecord.Event.KeyEvent.wVirtualKeyCode, Char, inRecord.Event.KeyEvent.dwControlKeyState);
+                            }
+                            break;
                         }
                     }
-
-                    break;
                 }
-            case 0x65:              // alt-e
-                {
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    TraceErrorsOnly = !TraceErrorsOnly;
-                    if(TraceErrorsOnly)
-                    {
-                        TraceFlag = TRUE;
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Trace is Now On for Errors Only" << endl;
-                    }
-                    else if(TraceFlag)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Trace is Now On for All Messages" << endl;
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Trace is Now Off for All Messages" << endl;
-                        }
-                    }
-
-                    break;
-
-                }
-            case 0x72:              // alt-r
-                {
-                    {
-                        RWMutexLock::LockGuard  guard(coutMux);
-                        fprintf(stdout, "\nDownloading Routes to All CCU-711's\n");
-                    }
-                    PortManager.apply( applyLoadAllRoutes, NULL );
-                    break;
-                }
-            case 0x64:              // alt-d
-                {
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    Double = !Double;
-                    if(Double)
-                        fprintf(stdout, "\nCommands Will be Sent Double\n");
-                    else
-                        fprintf(stdout, "\nCommands Will Not be Sent Double\n");
-
-                    break;
-                }
-            case 0x66:              // alt-f trace filter.
-                {
-                    if(TracePort || TraceRemote)
-                    {
-                        fprintf(stdout, "Trace filter is now off\n");
-                        TracePort = 0;
-                        TraceRemote = 0;
-                    }
-                    else
-                    {
-                        if(!(CTIScanEnv ("PORTER_TRACE_PORT", &Environment)))
-                        {
-                            TracePort = atoi (Environment);
-                            fprintf(stdout, "Filtering Traces for Port %ld\n", TracePort);
-                        }
-                        else if(!(CTIScanEnv ("PORTER_TRACE_REMOTE",  &Environment)))
-                        {
-                            TraceRemote = atoi (Environment);
-                            fprintf(stdout, "Filtering Traces for Remote %ld\n", TraceRemote);
-                        }
-                        else
-                        {
-                            fprintf(stdout, "Neither PORTER_TRACE_PORT nor PORTER_TRACE_REMOTE defined in the environment\n");
-                        }
-                    }
-                    break;
-                }
-            case 0x6d:              // alt-m trace filter.
-                {
-#ifndef DEBUG_MEMORY
-                    fprintf(stdout, "Module not compiled for Memory Dumps\n");
-#else
-                    fprintf(stderr, "Memory Dump ------- \n");
-                    fprintf(stderr, "  Start Memory Deltas ------- \n");
-                    _dump_allocated_delta(10);
-                    fprintf(stderr, "  Stop  Memory Deltas ------- \n\n");
-                    fprintf(stderr, "  Start Allocated Memory  ------- \n");
-                    _dump_allocated(10);
-                    fprintf(stderr, "  Stop  Allocated Memory  ------- \n\n");
-                    fprintf(stderr, "  Start Heap Check  ------- \n");
-                    _heap_check();
-                    fprintf(stderr, "  Stop  Heap Check  ------- \n");
-                    fprintf(stderr, "Memory Dump ------- \n");
-#endif
-
-                    break;
-                }
-
-            case 0x6c:              // alt-l
-                {
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    PrintLogEvent = !PrintLogEvent;
-                    if(PrintLogEvent)
-                        fprintf(stdout, "\nCommunications Events Will be Logged\n");
-                    else
-                        fprintf(stdout, "\nCommunications Events Will Not be Logged\n");
-
-                    break;
-
-                }
-            case 0x63:              // alt-c
-                {
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    /* Issue a cold start to each CCU */
-                    fprintf(stdout, "\nIssuing Cold Starts to All CCU-711's\n");
-                    PortManager.apply( applyColdStart, NULL);
-
-                    break;
-                }
-            case 0x73:              // alt-s
-                {
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    /* Force a time sync */
-                    fprintf(stdout, "\nForcing Sytem Wide Time Sync\n");
-
-                    //CTIPostEventSem (TimeSyncSem);
-                    SetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
-
-                    break;
-                }
-            case 0x70:              // alt-p
-                {
-                    /* DUMP the queues */
-                    PortManager.apply( applyPortQueuePurge, NULL );
-                    break;
-                }
-            case 0x71:              // alt-q
-                {
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    PortManager.apply( applyPortQueueReport, NULL );
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << endl << RWTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
-                    }
-                    break;
-                }
-            default:
-                if(Char != 0)
-                {
-                    fprintf(stdout, " No ALT 0x%04X, 0x%04X, 0x%02X 0x%08X\n",inRecord.Event.KeyEvent.wVirtualScanCode,inRecord.Event.KeyEvent.wVirtualKeyCode, Char, inRecord.Event.KeyEvent.dwControlKeyState);
-                }
-                break;
             }
         }
+
+        CTISleep(250);
     }
 
     PorterCleanUp(0);
