@@ -106,7 +106,7 @@ function decline_form()
         <input type=hidden name="rev" value=<%= revision.getRevisionNumber() %>>
         <input type=hidden name="offerdate" value=<%= datePart.format(offer.getOfferDate()) %>>
         <input type=hidden name="expiredatetime" value=<%= java.net.URLEncoder.encode( timePart.format(revision.getOfferExpirationDateTime()) + " " + datePart.format(revision.getOfferExpirationDateTime()) ) %>>
-        <%= checker.getError("formaterror") %> 
+        <font size = "1"><%= checker.getError("formaterror") %></font>
         <table width="650" border="0" cellspacing="0" cellpadding="5" valign="top">
           <tr> 
             <td width="50%" valign="top"> 
@@ -267,9 +267,9 @@ function decline_form()
                   </form>
                   <p class="Main" align="center"><br>
                     If you have questions or problems, call 1-800-555-1212.</p>
-                  <p>&nbsp;</p>
+                 <div align = "center"><a href = "user_ee.jsp" class = "Link1">Back</a></div>
           </p>
-                    <p>&nbsp;</p>
+               
                     </center>
 
 

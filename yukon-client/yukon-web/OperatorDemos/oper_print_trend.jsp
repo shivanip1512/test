@@ -34,4 +34,5 @@
 
 <%
              }
-          %><a href="<%= referrer %>"><img src="BackButton.gif" border="0"></a> 
+          %>
+<a href="<%= referrer %>"><font color="#000000" face="Arial, Helvetica, sans-serif" size="2">Back</font></a> 

@@ -1,11 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
-<%
-	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute("SERVICE_HISTORY");
-	if (getServHistResp == null) {
-		response.sendRedirect("/servlet/SOAPClient?action=GetServiceHistory"); return;
-	}
-%>
-
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -61,35 +53,54 @@
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-              <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="InfoSearchBar.jsp" %><br>
+              
+            <div align="center">
+              <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
+              <%@ include file="InfoSearchBar.jsp" %>
+              <br>
+              <span class="Main">Click on an Order # to view the complete order 
+              history.</span>
               </div>
               
-            <table width="500" border="1" cellspacing="0" cellpadding="3" align="center">
+            <table width="615" border="1" cellspacing="0" cellpadding="3" align="center" height="229">
               <tr> 
-                <td width="50" class="HeaderCell">Order # </td>
-                <td width="55" class="HeaderCell">Date/Time</td>
-                <td width="51" class="HeaderCell">Type</td>
-                <td width="49" class="HeaderCell">Status</td>
-                <td width="55" class="HeaderCell">By Who</td>
-                <td width="164" class="HeaderCell">Desription</td>
+                <td width="53" class="HeaderCell">Order # </td>
+                <td width="65" class="HeaderCell">Date/Time</td>
+                <td width="49" class="HeaderCell">Type</td>
+                <td width="52" class="HeaderCell">Status</td>
+                <td width="42" class="HeaderCell">By Who</td>
+                <td width="74" class="HeaderCell">Assigned</td>
+                <td width="222" class="HeaderCell">Desription</td>
               </tr>
-<%
-	for (int i = 0; i < getServHistResp.getStarsServiceRequestHistoryCount(); i++) {
-		StarsServiceRequestHistory servHist = getServHistResp.getStarsServiceRequestHistory(i);
-%>
               <tr valign="top"> 
-                <td width="50" class="TableCell"><a href="SOHistory.jsp" class="Link1"><%= servHist.getOrderNumber() %></a></td>
-                <td width="55" class="TableCell"><%= histDateFormat.format(servHist.getDateAssigned()) %></td>
-                <td width="51" class="TableCell"><%= servHist.getServiceType().getContent() %></td>
-                <td width="49" class="TableCell"><%= servHist.getCurrentState().getContent() %></td>
-                <td width="55" class="TableCell">&nbsp;</td>
-				<td width="164"> 
-				  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"><%= servHist.getDescription() %></textarea>
-				</td>
+                <td width="53" class="TableCell"><a href="SOHistory.jsp" class="Link1">12345</a> 
+                </td>
+                <br>
+                <td width="65" class="TableCell">04/02/02 12:32</td>
+                <td width="49" class="TableCell">Service Call</td>
+                <td width="52" class="TableCell">Complete</td>
+                <td width="42" class="TableCell">eah</td>
+                <td width="74" class="TableCell">XYZ Company</td>
+                <form name="form4" method="" action="SOHistory.jsp">
+                  <td width="222"> 
+                    <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                  </td>
+                </form>
               </tr>
-<%
-	}
-%>
+              <tr valign="top"> 
+                <td width="53" class="TableCell"><a href="SOHistory.jsp" class="Link1">67890</a><br>
+                </td>
+                <td width="65" class="TableCell">03/14/02 14:46 </td>
+                <td width="49" class="TableCell">Install</td>
+                <td width="52" class="TableCell">Complete</td>
+                <td width="42" class="TableCell">rst</td>
+                <td width="74" class="TableCell">&nbsp; </td>
+                <form name="form4" method="" action="SOHistory.jsp">
+                  <td width="222"> 
+                    <textarea name="textarea3" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                  </td>
+                </form>
+              </tr>
             </table>
               <p>&nbsp;</p>
                 </td>

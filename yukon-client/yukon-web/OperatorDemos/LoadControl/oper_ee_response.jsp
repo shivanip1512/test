@@ -113,7 +113,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+               <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -172,9 +172,10 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center">
+            <div align="center"> 
               <p class="Main"><br>
-                <b> <%= customer.getYukonName() %> - CUSTOMER SUMMARY</b><br>
+                <b> <cti:text key="energyexchangeheading.text"/> - CUSTOMER SUMMARY<br>
+                <%= customer.getYukonName() %></b><br>
               </p>
             </div>
             <table width="600" border="0" cellspacing="0"
@@ -318,7 +319,7 @@
                 <b><span class="MainHeader">TOTAL: <%= totalCommitted %> kW</span></b> 
               </center>
         </p>
-            <p align="center" class="MainHeader"> <a href="<%= referrer %>" class="Link1"><b>Back</b></a> 
+            <p align="center" class="MainHeader"> <a href="<%= referrer %>" class="Link1"><b>Back to Customer List</b></a> 
               <br>
               <br>
           </td>

@@ -27,7 +27,7 @@ function confirm_form(f) {
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -95,37 +95,37 @@ function confirm_form(f) {
  
         <input type=hidden name="submitted" value="true">
         <input type=hidden name="programname">
-        <b>NEW <cti:text key="energyexchange.text"/> OFFER</b></p>
+        <b><cti:text key="energyexchangeheading.text"/> - NEW OFFER</b></p>
        
         <table
     width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="8%" class="Main"> 
-              <p align=RIGHT>Program:
-            </td>
-            <td width="14%" class="Main"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue="<%= checker.get(\"program\") %>"/></td>
-            <td width="13%" class="Main"> 
-              <p align=RIGHT>Notify Date:
-            </td>
-            <td width="15%" class="Main"><struts:text property="notifydate" size="10" pattern="@date"/><%= checker.getError("notifydate") %></td>
-            <td width="14%" class="Main"> 
-              <p align=RIGHT>Notify Time:&nbsp;
-            </td>
-            <td width="15%" class="Main"><struts:text property="notifytime" size="10" pattern="@time"/><%= checker.getError("notifytime") %></td>
+                      <td width="21%" class="MainHeader" valign = "top"> 
+                        <p align=RIGHT><b>Program:</b> 
+                      </td>
+                      <td width="12%" class="MainHeader" valign = "top"><cti:select name="program" selectValues="<%= programIds %>" selectNames="<%= programNames %>" selectedValue="<%= checker.get(\"program\") %>"/></td>
+                      <td width="21%" class="MainHeader" valign = "top"> 
+                        <p align=RIGHT><b>Notify Date:</b> 
+                      </td>
+                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/><span class = "TableCell"><%= checker.getError("notifydate") %></span></td>
+                      <td width="21%" class="MainHeader" valign = "top"> 
+                        <p align=RIGHT><b>Notify Time:</b>&nbsp; 
+                      </td>
+                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/><span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
           </tr>
           <tr> 
-            <td width="7%" class="Main"> 
-              <p align=RIGHT>Date:
-            </td>
-            <td width="14%" class="Main"><struts:text property="date" size="10" pattern="@date"/><%= checker.getError("date") %></td>
-            <td width="13%" class="Main"> 
-              <p align=RIGHT>Expire Date:
-            </td>
-            <td width="15%" class="Main"><struts:text property="expiredate" size="10" pattern="@date"/><%= checker.getError("expiredate") %></td>
-            <td width="14%" class="Main"> 
-              <p align=RIGHT>Expire Time:&nbsp;
-            </td>
-            <td width="15%" class="Main"><struts:text property="expiretime" size="10" pattern="@time"/><%= checker.getError("expiretime") %></td>
+                      <td width="21%" class="MainHeader" valign = "top"> 
+                        <p align=RIGHT><b>Date:</b> 
+                      </td>
+                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="date" size="10" pattern="@date"/><span class = "TableCell"><%= checker.getError("date") %></span></td>
+                      <td width="21%" class="MainHeader" valign = "top"> 
+                        <p align=RIGHT><b>Expire Date:</b> 
+                      </td>
+                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiredate" size="10" pattern="@date"/><span class = "TableCell"><%= checker.getError("expiredate") %></span></td>
+                      <td width="21%" class="MainHeader" valign = "top"> 
+                        <p align=RIGHT><b>Expire Time:</b>&nbsp; 
+                      </td>
+                      <td width="12%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/><span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
           </tr>
         </table>
         <p><%= checker.getError("formaterror") %></p>

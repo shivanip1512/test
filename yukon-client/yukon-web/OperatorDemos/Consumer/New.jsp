@@ -62,335 +62,346 @@
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
            <% String header = "NEW SIGNUP"; %><%@ include file="SearchBar.jsp" %>
             
-			<form name="form1" method="POST" action="/servlet/SOAPClient">
-			<input type="hidden" name="action" value="NewCustAccount">
             <table width="600" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 
-                <td width="300" valign="top"><span class="MainHeader"><b>CUSTOMER 
-                  CONTACT</b></span> 
-                  <hr>
-                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Account #:</div>
-                      </td>
-                      <td width="210" valign="top"> 
-                        <table width="191" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td width="95"> 
-                              <input type="text" name="AcctNo" maxlength="40" size="14">
-                            </td>
-                            <td valign="top" class="TableCell" width="95" align="center">&nbsp;&nbsp;Commercial: 
-                              <input type="checkbox" name="Commercial" value="checkbox">
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Company: </div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="Company" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Last Name:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="LastName" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">First Name:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="FirstName" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Home #:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="HomePhone" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Work #:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="WorkPhone" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Notes:</div>
-                      </td>
-                      <td width="210"> 
-                        <textarea name="AcctNotes" rows="2 wrap="soft" cols="22"></textarea>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Last Name (2):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="LastName2" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">First Name (2):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="FirstName2" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Home # (2):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="HomePhone2" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Work # (2):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="WorkPhone2" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Last Name (3):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="LastName3" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">First Name (3):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="FirstName3" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Home # (3):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="HomePhone3" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Work # (3):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="WorkPhone3" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Last Name (4):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="LastName4" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">First Name (4):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="FirstName4" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Home # (4):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="HomePhone4" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Work # (4):</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="WorkPhone4" maxlength="14" size="14">
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-                <td width="300" valign="top"><span class="MainHeader"><b>SERVICE 
-                  ADDRESS </b></span> 
-                  <hr>
-                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Address 1:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="SAddr1" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Address 2:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="SAddr2" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">City:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="SCity" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">State:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="SState" maxlength="2" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Zip:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="SZip" maxlength="12" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Map #:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="PropNo" maxlength="12" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Notes:</div>
-                      </td>
-                      <td width="210"> 
-                        <textarea name="PropNotes" rows="2 wrap="soft" cols="22"></textarea>
-                      </td>
-                    </tr>
-                  </table>
-                  <br>
-                  <span class="MainHeader"><b>BILLING ADDRESS</b></span> 
-                  <hr>
-                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                    <tr> 
-                      <td width="90" class="TableCell">&nbsp;</td>
-                      <td width="210"> 
-                        <input type="submit" name="Same" value="Same as Above" onClick="copyAddress(this.form)">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Address 1:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="BAddr1" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Address 2:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="BAddr2" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">City:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="BCity" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">State:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="BState" maxlength="2" size="14">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Zip:</div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="BZip" maxlength="12" size="14">
-                      </td>
-                    </tr>
-                  </table>
-                  <br>
-                  <span class="MainHeader"><b>SERVICE INFORMATION</b></span> 
-                  <hr>
-                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Substation Name: </div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="Substation" maxlength="30" size="24">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Feeder: </div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="Feeder" maxlength="20" size="20">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Pole: </div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="Pole" maxlength="20" size="20">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Transformer Size: </div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="TranSize" maxlength="20" size="20">
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td width="90" class="TableCell"> 
-                        <div align="right">Service Voltage: </div>
-                      </td>
-                      <td width="210"> 
-                        <input type="text" name="ServVolt" maxlength="20" size="20">
-                      </td>
-                    </tr>
-                  </table>
-                </td>
+                <form name="form6" method="get" action="Contacts.jsp">
+                  <td width="300" valign="top"><span class="MainHeader"><b>CUSTOMER 
+                    CONTACT</b></span> 
+                    <hr>
+                    <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Account #:</div>
+                        </td>
+                        <td width="210" valign="top"> 
+                          <table width="191" border="0" cellspacing="0" cellpadding="0">
+                            <tr> 
+                              <td width="95"> 
+                                <input type="text" name="textfield242" maxlength="40" size="14">
+                              </td>
+                              <td valign="top" class="TableCell" width="95" align="center">&nbsp;&nbsp;Commercial: 
+                                <input type="checkbox" name="checkbox" value="checkbox">
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Company: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Last Name:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield3" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">First Name:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Home #:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield24" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Work #:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield25" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Notes:</div>
+                        </td>
+                        <td width="210"> 
+                          <textarea name="notes" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Last Name (2):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield3" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">First Name (2):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Home # (2):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield24" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Work # (2):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield25" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Last Name (3):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield3" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">First Name (3):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Home # (3):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield24" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Work # (3):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield25" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Last Name (4):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield3" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">First Name (4):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Home # (4):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield24" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Work # (4):</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield25" maxlength="14" size="14">
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </form>
+                <form name="form7" method="post" action="">
+                  <td width="300" valign="top"><span class="MainHeader"><b>SERVICE 
+                    ADDRESS </b>&nbsp;&nbsp;</span> 
+                    <hr>
+                    <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Address 1:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield4" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Address 2:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield5" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">City:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield6" maxlength="30" size="24">
+                        </td>
+                      </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">County:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield6" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">State:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield223" maxlength="2" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Zip:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield224" maxlength="12" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Map #:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2242" maxlength="12" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Notes:</div>
+                        </td>
+                        <td width="210"> 
+                          <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
+                    <span class="MainHeader"><b>BILLING ADDRESS</b></span> 
+                    <hr>
+                    <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                      <tr> 
+                        <td width="90" class="TableCell">&nbsp;</td>
+                        <td width="210"> 
+                          <input type="submit" name="Same" value="Same as Above">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Address 1:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield7" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Address 2:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield8" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">City:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield9" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">State:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2232" maxlength="2" size="14">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Zip:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2243" maxlength="12" size="14">
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
+                    <span class="MainHeader"><b>SERVICE INFORMATION</b></span> 
+                    <hr>
+                    <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Substation Name: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield10" maxlength="30" size="24">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Feeder: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield232" maxlength="20" size="20">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Pole: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2422" maxlength="20" size="20">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Transformer Size: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield2522" maxlength="20" size="20">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Service Voltage: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield24222" maxlength="20" size="20">
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
+                  </td>
+                </form>
               </tr>
             </table>
             <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -399,6 +410,7 @@
                   <hr>
                   <table width="610" border="1" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                     <tr valign="top"> 
+                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -427,6 +439,8 @@
                             </tr>
                           </table>
                         </td>
+                      </form>
+                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -463,6 +477,8 @@
                             </tr>
                           </table>
                         </td>
+                      </form>
+                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -491,6 +507,8 @@
                             </tr>
                           </table>
                         </td>
+                      </form>
+                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -502,6 +520,8 @@
                             </tr>
                           </table>
                         </td>
+                      </form>
+                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -512,6 +532,8 @@
                             </tr>
                           </table>
                         </td>
+                      </form>
+                      <form name="form6" method="get" action="">
                         <td> 
                           <table width="95" border="0" cellspacing="0" cellpadding="0">
                             <tr> 
@@ -522,6 +544,7 @@
                             </tr>
                           </table>
                         </td>
+                      </form>
                     </tr>
                   </table>
                 </td>
@@ -529,19 +552,22 @@
             </table>
             <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
               <tr> 
+                <form name="form3" method="get" action="New.jsp">
                   <td width="191"> 
                     <div align="right"> 
                       <input type="submit" name="Save" value="Save">
                     </div>
                   </td>
+                </form>
+                <form name="form4" method="" action="">
                   <td width="189"> 
                     <div align="left"> 
-                      <input type="button" name="Cancel" value="Cancel" onclick="location='../Operations.jsp'">
+                      <input type="reset" name="Cancel" value="Cancel">
                     </div>
                   </td>
+                </form>
               </tr>
             </table>
-			</form>
             <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

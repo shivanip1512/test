@@ -6,11 +6,8 @@
 <%
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
-	if (accountInfo == null) {
-		response.sendRedirect("/login.jsp");
-		return;
-	}
+	StarsCustomerAccountInformation accountInfo = (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+	if (accountInfo == null) response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp");
 	
 	StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
     StreetAddress propAddr = account.getStreetAddress();

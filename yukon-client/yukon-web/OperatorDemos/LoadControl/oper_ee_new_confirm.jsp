@@ -27,7 +27,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -89,7 +89,7 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr> 
       <td width="650" valign="top"><br>
-        <p align="center" class="Main"><b><cti:text key="energyexchange.text"/> OFFER CONFIRMATION</b></p>
+        <p align="center" class="Main"><b><cti:text key="energyexchangeheading.text"/> - OFFER CONFIRMATION</b></p>
                   <p align="center" class="Main">The total target amount is <%= totAmountStr %> 
                     kW. Please confirm the offer information below.</p>
         <div align="center">

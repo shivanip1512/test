@@ -214,7 +214,7 @@
               </tr>
               <tr> 
                 <td width="253" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
-                  Control</td>
+                  Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -260,7 +260,7 @@
   <tr> 
                 <td width="650" class="Main"> 
                   <div align="center"><b><br>
-                    DIRECT CONTROL</b><br>
+                    DIRECT CONTROL - START PROGRAM</b><br>
                     <br>
                   </div>
                   <table width="225" border="1" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
@@ -300,15 +300,16 @@
                 <td width="59%"> <span class="TableCell"><struts:text property="STARTTIME" size="10" pattern="@time"/> 
                   </span></td>
               </tr>
-              <tr> <cti:errormsg colSpan="2"> <%= checker.getError("STARTTIME") %> 
+              <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STARTTIME") %></span>
                 </cti:errormsg> </tr>
             </table>
           </td>
           
         </tr>
       </table>
-    <p>&nbsp;</p>
-      <table width="225" border="1" cellspacing="0" cellpadding="5" align="center">
+                 
+                  <br>
+                  <table width="225" border="1" cellspacing="0" cellpadding="5" align="center">
         <tr> 
           <td width="100%" bgcolor="#ffffff"> 
             <p><span class="TableCell">&nbsp;<b>Stop:</b></span></p>
@@ -321,7 +322,7 @@
                 <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                   </span></td>
               </tr>
-              <tr> <cti:errormsg colSpan="2"> <%= checker.getError("STOPTIME") %> 
+              <tr> <cti:errormsg colSpan="3"><span class = "TableCell"> <%= checker.getError("STOPTIME") %></span>
                 </cti:errormsg> </tr>
             </table>
           </td>

@@ -75,7 +75,7 @@ function MM_popupMsg(msg) { //v1.0
                   <td width="187" valign="top"> 
                     <div align="center"><b><span class="Main">PROGRAMS - OPT OUT</span></b></div>
                   </td>
-                  <td valign="top" width="205">&nbsp; </td>
+                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %></td>
                 </tr>
               </table>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
@@ -151,23 +151,7 @@ function MM_popupMsg(msg) { //v1.0
                       </table>
                       <br>
                     </form>
-                    <p align="center" class="MainHeader"><b>Temporary Opt Out 
-                      History </b> 
-                    <table width="200" border="1" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td class="HeaderCell">Date</td>
-                        <td class="HeaderCell">Duration</td>
-                      </tr>
-                      <tr> 
-                        <td class="TableCell">12/15/00</td>
-                        <td class="TableCell">3 Days</td>
-                      </tr>
-                      <tr> 
-                        <td class="TableCell">07/17/01</td>
-                        <td class="TableCell">1 Day</td>
-                      </tr>
-                    </table>
-                   
+                    <p align="center" class="MainHeader">&nbsp;
                   </td>
                   <form method="get" action="ProgramDetails.jsp">
                   </form>

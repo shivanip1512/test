@@ -28,7 +28,7 @@
     //Decide which content should appear
     if (pending != null)
 	{
-		out.println("<CENTER><FONT FACE=\"Arial, Helvetica\" COLOR=red>A new ERS Notification has been sent, please wait...</CENTER><BR>");
+		out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">A new Notification has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 	}
     else
     if( progParam != null )

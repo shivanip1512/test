@@ -10,7 +10,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="java.util.Iterator" %>
-<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
+<%@ taglib uri="jruntags" prefix="jrun" %>
 <%
    String pending = request.getParameter("pending");
    
@@ -110,7 +110,7 @@
               </tr>
               <tr> 
                 <td width="253" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
-                  Control</td>
+                  Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 

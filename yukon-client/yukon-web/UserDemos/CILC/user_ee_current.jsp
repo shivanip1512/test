@@ -56,9 +56,9 @@
                     <%
 	if (pending != null) {
 		if (pending.equalsIgnoreCase("confirm"))
-			out.println("<CENTER><FONT FACE=\"Arial, Helvetica\" COLOR=red>The confirmation of the offer has been sent, please wait...</FONT></CENTER><BR>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">The confirmation of the offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 		else if (pending.equalsIgnoreCase("decline"))
-			out.println("<CENTER><FONT FACE=\"Arial, Helvetica\" COLOR=red>The declination of the offer has been sent, please wait...</FONT></CENTER><BR>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">The declination of the offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 	}
 	else {
 		if (numNewOffers > 0)

@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -100,22 +99,22 @@ document.location = "Update.jsp";
                           </td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox" value="checkbox">
                           </td>
-                          <td width="58%">General</td>
+                          <td width="65%">General</td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox2" value="checkbox">
                           </td>
-                          <td width="58%">Contacts</td>
+                          <td width="65%">Contacts</td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox3" value="checkbox">
                           </td>
-                          <td width="58%">Call Tracking</td>
+                          <td width="65%">Call Tracking</td>
                         </tr>
                       </table>
                     </td>
@@ -126,22 +125,22 @@ document.location = "Update.jsp";
                           </td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox4" value="checkbox">
                           </td>
-                          <td width="58%">Control History</td>
+                          <td width="65%">Control History</td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox5" value="checkbox">
                           </td>
-                          <td width="58%">Enrollment</td>
+                          <td width="65%">Enrollment</td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox6" value="checkbox">
                           </td>
-                          <td width="58%">Opt Out</td>
+                          <td width="65%">Opt Out</td>
                         </tr>
                       </table>
                     </td>
@@ -154,16 +153,16 @@ document.location = "Update.jsp";
                           </td>
                         </tr>
                         <tr> 
-                          <td align="right" width="42%"> 
+                          <td align="right" width="35%"> 
                             <input type="checkbox" name="checkbox7" value="checkbox" >
                           </td>
-                          <td width="58%">Interval Data</td>
+                          <td width="65%">Interval Data</td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%" height="19"> 
+                          <td align = "right" width="35%" height="19"> 
                             <input type="checkbox" name="checkbox8" value="checkbox">
                           </td>
-                          <td width="58%" height="19">Usage</td>
+                          <td width="65%" height="19">Usage</td>
                         </tr>
                       </table>
                     </td>
@@ -174,16 +173,16 @@ document.location = "Update.jsp";
                           </td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox9" value="checkbox">
                           </td>
-                          <td width="58%">Service Request</td>
+                          <td width="65%">Service Request</td>
                         </tr>
                         <tr> 
-                          <td align = "right" width="42%"> 
+                          <td align = "right" width="35%"> 
                             <input type="checkbox" name="checkbox10" value="checkbox">
                           </td>
-                          <td width="58%">Service History</td>
+                          <td width="65%">Service History</td>
                         </tr>
                       </table>
                     </td>
@@ -192,20 +191,20 @@ document.location = "Update.jsp";
                     <td width="50%"> 
                       <table width="99%" border="0" class = "TableCell">
                         <tr> 
-                          <td align="right" width="42%"> 
+                          <td align="right" width="35%"> 
                             <input type="checkbox" name="checkbox72" value="checkbox" >
                           </td>
-                          <td width="58%"><i><b>Appliances</b></i></td>
+                          <td width="65%"><i><b>Appliances</b></i></td>
                         </tr>
                       </table>
                     </td>
                     <td width="50%"> 
                       <table width="99%" border="0" class = "TableCell">
                         <tr> 
-                          <td align="right" width="42%"> 
+                          <td align="right" width="35%"> 
                             <input type="checkbox" name="checkbox722" value="checkbox" >
                           </td>
-                          <td width="58%"><i><b>Hardware</b></i></td>
+                          <td width="65%"><i><b>Hardware</b></i></td>
                         </tr>
                       </table>
                     </td>

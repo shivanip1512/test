@@ -55,7 +55,7 @@
                   <td width="202"> 
                     <table width="200" border="0" cellspacing="0" cellpadding="3">
                       <tr> 
-                        <td height="99"><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
+                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
                           <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                           <!--<%= account.getCompany() %><br> -->
                           <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
@@ -67,7 +67,7 @@
                   <td width="187" valign="top"> 
                     <div align="center"><b><span class="Main">PROGRAM - ENROLLMENT</span></b></div>
                   </td>
-                  <td valign="top" width="205"> 
+                  <td valign="top" width="205" align = "right"> <%@ include file="Notice.jsp" %>
                 
                   </td>
                 </tr>

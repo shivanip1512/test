@@ -72,7 +72,7 @@
 
 		if (valid)
 		{
-			response.sendRedirect( "/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
+			response.sendRedirect( "/scripts/jrun.dll/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
 								   "&STARTAT=" + checker.get("STARTAT") + "&STOPAT=" + checker.get("STOPAT") + "&URL=" + request.getParameter("URL") );
 			checker.clear();
 		}
@@ -141,7 +141,7 @@
               </tr>
               <tr> 
                 <td width="253" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
-                  Control</td>
+                  Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -186,7 +186,7 @@
               <tr> 
                 <td width="650" class="Main"> 
                   <p align="center"><b><br>
-                    STOP SCHEDULE</b> 
+                    DIRECT CONTROL - STOP SCHEDULE</b> 
                   <p align="center"> 
                   <center>
                     <table width="225" border="1" cellspacing="0" cellpadding="5">
@@ -207,7 +207,7 @@
                               <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                                 </span></td>
                             </tr>
-                            <tr> <cti:errormsg colSpan="2"> <%= checker.getError("STOPTIME") %> 
+                            <tr> <cti:errormsg colSpan="3"><span class = "TableCell"> <%= checker.getError("STOPTIME") %></span> 
                               </cti:errormsg> </tr>
                           </table>
                         </td>

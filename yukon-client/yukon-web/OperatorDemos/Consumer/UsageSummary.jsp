@@ -73,10 +73,8 @@ function Today() {
           </form>
           <td width="1" bgcolor="#000000"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center"><% String header = "METERING - USAGE"; %><%@ include file="InfoSearchBar.jsp" %><br>
-              <br>
-              
-            </div>
+            <div align="center"><% String header = "METERING - USAGE"; %><%@ include file="InfoSearchBar.jsp" %>
+              <hr></div>
             <table width="610" border="0" cellspacing="0" cellpadding="2" align="center">
               <tr> 
                 <td width="18"> </td>

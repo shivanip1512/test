@@ -56,7 +56,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="253" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
 				<td width="235" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle"> 
                   <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -122,7 +122,7 @@
     <tr>
       <td width="635">
         <p align="center" class="Main"><br>
-                    <b>CUSTOMER PROFILE</b></p>
+                    <b>NOTIFICATION - CUSTOMER PROFILE</b></p>
         <p align="center" class="Main"><%= cust.getCustomerName() %><br clear="ALL">
           <%= cust.getCustomerAddress().getLocationAddress1() %><br clear="ALL">
           <%= cust.getCustomerAddress().getLocationAddress2() %><br clear="ALL">
@@ -135,6 +135,12 @@
 <%
     }
 %>
+<p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p align="center" class="MainHeader">&nbsp; 
+            <p align="center" class="MainHeader">&nbsp;
+            <p align="center" class="MainHeader"><a href="<%= referrer %>" class="Link1"><b>Back</b></a>
+            <p>&nbsp;</p>
 		  
 		  </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>

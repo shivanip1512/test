@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -55,7 +54,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "ADMINISTRATION - Change Password"; %>
+              <% String header = "ADMINISTRATION - CHANGE PASSWORD"; %>
               <%@ include file="InfoSearchBar.jsp" %>
               <br>
              

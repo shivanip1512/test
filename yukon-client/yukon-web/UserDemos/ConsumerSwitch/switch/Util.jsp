@@ -69,7 +69,7 @@
                   <td width="187" valign="top"> 
                     <div align="center"><b><span class="Main">QUESTIONS - UTILITY</span></b></div>
                   </td>
-                  <td valign="top" width="205"> 
+                  <td valign="top" width="205" align = "right"> <%@ include file="Notice.jsp" %>
                 
                   </td>
                 </tr>
@@ -89,7 +89,7 @@
               <br>
               Ph: 1-800-555-5432<br>
               Fax: 1-800-555-5431<br>
-              Email: info@xyzutility.com<br>
+              <a href="mailto: info@xyzutility.com" class = "Link1">Email: info@xyzutility.com</a><br>
               <br>
             </div>
 			

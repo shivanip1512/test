@@ -24,7 +24,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -83,7 +83,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" class="Main"> 
             <div align="center"><br>
-              <b>PROGRAM SUMMARY<br>
+              <b>NOTIFICATION - PROGRAMS<br>
               </b><br>
             </div>
             <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">

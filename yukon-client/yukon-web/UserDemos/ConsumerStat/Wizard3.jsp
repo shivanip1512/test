@@ -165,7 +165,7 @@ function getTopCoordinate() {
                       <table width="100%" border="0" height="80">
                         <tr> 
                           <td align = "center" width="15%"> 
-                            <p><b><img id = "0" src="Setback.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 1, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                            <p><b><img id = "0" src="SetBack.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 1, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
                               click on icon for a description</font></p>
                           </td>
                           <td width="85%"> 

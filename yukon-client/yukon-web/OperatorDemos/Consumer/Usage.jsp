@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -56,12 +55,12 @@
           </form>
           <td width="1" bgcolor="#000000"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center"><% String header = "METERING - USAGE"; %><%@ include file="InfoSearchBar.jsp" %><br>
-             </div>
+            <div align="center"><% String header = "METERING - USAGE"; %><%@ include file="InfoSearchBar.jsp" %>
+              <hr></div>
             <table width="610" border="0" cellspacing="0" cellpadding="2" align="center">
               <tr> 
                 <td width="0"> </td>
-                <td width="273" valign="top"> <form name = "MForm"> 
+                <form name = "MForm"><td width="273" valign="top">  
                   <table width="280" border="2" cellspacing="0" cellpadding="3">
                     <tr bgcolor="#CCCCCC"> 
                       <td width="99"> <font face="Arial, Helvetica, sans-serif" size="1">Start 
@@ -87,8 +86,8 @@
                           </center>
                         </td>
                       </tr>
-                  </table></form>
-                </td>
+                  </table>
+                </td></form>
                 <td width="347"> 
                   <table width="338" valign="top" cellpadding="0" cellspacing="0">
                     <tr>
@@ -110,7 +109,8 @@
                 </td>
                 </tr>
             </table>
-            <p align="center"><img src="TOU.gif"></p>
+            <div align="center"><img src="TOU.gif">
+            </div>
           </td>
         <td width="1" bgcolor="#000000"></td>
     </tr>

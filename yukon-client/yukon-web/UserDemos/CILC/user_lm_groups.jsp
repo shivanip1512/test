@@ -134,7 +134,7 @@
                       <td height="23" class="TableCell" width="75">42 Hr</td>
                     </tr>
                   </table>
-                  <p align="center" class="Main"><a href="user_lm_programs.jsp">Back to Rooftop 
+                  <p align="center" class="TableCell"><a href="user_lm_programs.jsp" class="Link1">Back to Rooftop 
                     Air</a> </p><br>
                 </div>
                 </div>

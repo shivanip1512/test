@@ -18,7 +18,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -77,7 +77,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p align="center" class="Main"><br>
-              <b>NOTIFICATION HISTORY</b> </p>
+              <b>NOTIFICATION - HISTORY</b> </p>
             <p align="center" class="Main">Click on a program name to view the program details.</p>
       <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
           <tr> 

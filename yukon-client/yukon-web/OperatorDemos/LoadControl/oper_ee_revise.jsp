@@ -109,7 +109,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+               <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -178,42 +178,42 @@
         <input type=hidden name="offer" value="<%= offerID %>">
         <input type=hidden name="rev" value="<%= revisionNumber %>">
         <input type=hidden name="date" value="<%= eeDateFormat.format(offer.getOfferDate()) %>">
-                    <b>REVISE <cti:text key="energyexchange.text"/> OFFER</b><br>
+                    <b> <cti:text key="energyexchangeheading.text"/> - REVISE OFFER </b><br>
                     <br>
                   </div>
       <table
     width="600" border="0" cellspacing="0" cellpadding="5" align="center">
           <tr> 
-            <td width="8%" class="MainHeader"> 
+            <td width="8%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Program: </b>
                       </td>
-            <td width="14%" class="MainHeader"><%= program.getYukonName() %></td>
-            <td width="13%" class="MainHeader"> 
+            <td width="14%" class="MainHeader" valign = "top"><%= program.getYukonName() %></td>
+            <td width="13%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Notify Date: </b> 
                       </td>
-            <td width="15%" class="MainHeader"><struts:text property="notifydate" size="10" pattern="@date"/> 
-              <%= checker.getError("notifydate") %></td>
-            <td width="14%" class="MainHeader"> 
+            <td width="15%" class="MainHeader" valign = "top"><struts:text property="notifydate" size="10" pattern="@date"/> 
+              <span class = "TableCell"><%= checker.getError("notifydate") %></span></td>
+            <td width="14%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Notify Time: </b> 
                       </td>
-            <td width="15%" class="MainHeader"><struts:text property="notifytime" size="10" pattern="@time"/> 
-              <%= checker.getError("notifytime") %></td>
+            <td width="15%" class="MainHeader" valign = "top"><struts:text property="notifytime" size="10" pattern="@time"/> 
+              <span class = "TableCell"><%= checker.getError("notifytime") %></span></td>
           </tr>
           <tr> 
-            <td width="7%" class="MainHeader"> 
+            <td width="7%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Date: </b> 
                       </td>
-            <td width="14%" class="MainHeader"><%= datePart.format(offer.getOfferDate()) %></td>
-            <td width="13%" class="MainHeader"> 
+            <td width="14%" class="MainHeader" valign = "top"><span class = "TableCell"><%= datePart.format(offer.getOfferDate()) %></span></td>
+            <td width="13%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Expire Date: </b> 
                       </td>
             <td width="15%" class="MainHeader"><struts:text property="expiredate" size="10" pattern="@date"/> 
-              <%= checker.getError("expiredate") %></td>
-            <td width="14%" class="MainHeader"> 
+              <span class = "TableCell"><%= checker.getError("expiredate") %></span></td>
+            <td width="14%" class="MainHeader" valign = "top"> 
                         <p align=RIGHT><b>Expire Time: </b> 
                       </td>
-            <td width="15%" class="MainHeader"><struts:text property="expiretime" size="10" pattern="@time"/> 
-              <%= checker.getError("expiretime") %></td>
+            <td width="15%" class="MainHeader" valign = "top"><struts:text property="expiretime" size="10" pattern="@time"/> 
+              <span class = "TableCell"><%= checker.getError("expiretime") %></span></td>
           </tr>
         </table>
         <table width="640" border="0" cellspacing="0" cellpadding="5" align="center">

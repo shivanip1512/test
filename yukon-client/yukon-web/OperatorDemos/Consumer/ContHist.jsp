@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <%
 	String appNoStr = request.getParameter("AppNo");
 	int appNo = -1;
@@ -12,18 +11,6 @@
 	if (appNoStr != null)
 		backURL += "?AppNo=" + appNoStr;
 	
-	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
-	
-	StarsLMProgram program = null;
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-			program = starsProg;
-			break;
-		}
-	}
-	
-	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) operator.getAttribute("LM_CONTROL_HISTORY");
 %>
 <html>
 <head>
@@ -73,10 +60,26 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-            <% String pageName = "ContHist1.jsp"; %>
-            <%@ include file="Nav.jsp" %>
-          </td>
+          <td  valign="top" width="101">
+		  <% String pageName = "ContHist1.jsp"; %>
+          <%@ include file="Nav.jsp" %>
+<%
+	// Header files have already been included in Nav.jsp
+	StarsAppliance appliance = appliances.getStarsAppliance(appNo);
+	
+	StarsLMProgram program = null;
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
+		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+			program = starsProg;
+			break;
+		}
+	}
+	
+	StarsOperation operation = (StarsOperation) session.getAttribute("RESPONSE_OPERATION");
+	StarsLMControlHistory ctrlHist = operation.getStarsLMControlHistory();
+%>
+		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "PROGRAMS - CONTROL HISTORY"; %><%@ include file="InfoSearchBar.jsp" %><br>
@@ -89,19 +92,20 @@
                   <table width="450" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr> 
                       <td width="107" valign="top"> 
-                        <div align="center"> <img src="<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
+                        <div align="center">
+						  <img src="<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
                           <span class="TableCell"><%= program.getProgramName() %></span><br>
                         </div>
 						<br>
                       </td>
                       <td width="343" valign="top"> 
-                        <table width="325" border="0" cellspacing="0" cellpadding="3">
+                        <table width="325" border="1" cellspacing="0" cellpadding="3">
                           <tr> 
-                            <td class="HeaderCell"> 
+                            <td class="HeaderCell" width="187"> 
                               <div align="center">Begin Date/Time</div>
                             </td>
-                            <td class="HeaderCell"> 
-                              <div align="left">Duration</div>
+                            <td class="HeaderCell" width="120"> 
+                              <div align="center">Duration</div>
                             </td>
                           </tr>
 <%
@@ -114,10 +118,10 @@
 		totalSec += durationSec;
 %>
                           <tr> 
-                            <td class="TableCell"> 
-                              <div align="center"><%= histDateFormat.format(hist.getStartDateTime()) %></div>
+                            <td class="TableCell" width="187"> 
+                              <div align="right"><%= histDateFormat.format(hist.getStartDateTime()) %></div>
                             </td>
-                            <td class="TableCell"> 
+                            <td class="TableCell" width="120"> 
                               <div align="left"><%= CommonUtils.getDurationString(durationSec) %></div>
                             </td>
                           </tr>
@@ -125,10 +129,10 @@
 	}
 %>
                           <tr> 
-                            <td class="Main"> 
+                            <td class="TableCell" width="187"> 
                               <div align="right">Total:</div>
                             </td>
-                            <td class="Main"> 
+                            <td class="TableCell" width="120"> 
                               <div align="left"><%= CommonUtils.getDurationString(totalSec) %></div>
                             </td>
                           </tr>

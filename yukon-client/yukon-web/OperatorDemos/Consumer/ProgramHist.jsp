@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -90,7 +89,8 @@
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="162"> 
-                    <div align="center"> <img src="<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
+                    <div align="center">
+					  <img src="<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>
@@ -166,7 +166,7 @@
                     </table>
                   </td>
                   <td width="332"> 
-					<form method="POST" action="/servlet/SOAPClient">
+					<form method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
 					<input type="hidden" name="action" value="GetLMCtrlHist">
 					<%-- Group ID is used for finding control history --%>
 					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">

@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -53,9 +52,7 @@
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="InfoSearchBar.jsp" %><br>
-             
-              </div>
+            <div align="center"><% String header = "WORK ORDERS - SERVICE HISTORY"; %><%@ include file="InfoSearchBar.jsp" %></div>
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 
                 <td width="300" valign="top" bgcolor="#FFFFFF"> 

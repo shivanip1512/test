@@ -68,10 +68,8 @@
                   <td width="187" valign="top"> 
                     <div align="center"><b><span class="Main">PROGRAMS - ADD/CHANGE</span></b></div>
                   </td>
-                  <td valign="top" width="205">
-                    <form name="form2" method="post" action="../../../login.jsp">
-                      <div align="right"> </div>
-                    </form>
+                  <td valign="top" width="205" align = "right">
+                   <%@ include file="Notice.jsp" %>
                   </td>
                 </tr>
               </table>

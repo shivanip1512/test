@@ -143,7 +143,7 @@ document.all.action.value = x
                       <table width="100%" border="0" height="80">
                       <tr> 
                         <td align = "center" width="15%"> 
-                          <p><b><img id = "0" src="AC.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 0, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                          <p><b><img id = "0" src="AC.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 0, 350, 90, text)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
                             click on icon for a description</font></p>
                         </td>
                         <td width="85%"> 
@@ -179,7 +179,7 @@ document.all.action.value = x
                     <td width="44%" height="103"> 
                       <table width="100%" border="0" height="40">
                       <tr> 
-                        <td align = "center" width="15%"><img id = "3" src="Electric.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 3, 350, 60)"><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                        <td align = "center" width="15%"><img id = "3" src="Electric.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 3, 350, 60, text)"><font face="Arial, Helvetica, sans-serif" size="1"><br>
                           click on icon for a description</font></td>
                         <td width="85%"> 
                           <table class = "TableCell" width="102%" border="0" height="74">
@@ -198,7 +198,7 @@ document.all.action.value = x
                     <td width="56%"> 
                       <table width="100%" border="0" height="82">
                       <tr> 
-                        <td align = "center" width="15%"><img id = "1" src="WaterHeater.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 1, 350, 150)" ><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                        <td align = "center" width="15%"><img id = "1" src="WaterHeater.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 1, 350, 150, text)" ><font face="Arial, Helvetica, sans-serif" size="1"><br>
                           click on icon for a description</font></td>
                         <td width="85%"> 
                           <table width="102%" border="0" height="74">
@@ -239,7 +239,7 @@ document.all.action.value = x
                     <td width="44%" height="77" > 
                       <table width="100%" border="0" height="40">
                       <tr> 
-                        <td align = "center" width="15%"><img id="4" src="Pool.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 4, 350, 45)"><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                        <td align = "center" width="15%"><img id="4" src="Pool.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 4, 350, 45, text)"><font face="Arial, Helvetica, sans-serif" size="1"><br>
                           click on icon for a description</font></td>
                         <td width="85%"> 
                           <table class = "TableCell" width="102%" border="0" height="74">
@@ -259,7 +259,7 @@ document.all.action.value = x
                       <table width="100%" border="0" height="80">
                         <tr> 
                           <td align = "center" width="15%"> 
-                            <p><b><img id = "0" src="DualFuel.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 2, 350, 90)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                            <p><b><img id = "0" src="DualFuel.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 2, 350, 120, text)"></b><font face="Arial, Helvetica, sans-serif" size="1"><br>
                               click on icon for a description</font></p>
                           </td>
                           <td width="85%"> 
@@ -295,7 +295,7 @@ document.all.action.value = x
                     <td width="44%" height="79" > 
                       <table width="100%" border="0">
                       <tr> 
-                        <td align = "center" width="15%"><img id="5" src="HotTub.gif" width="60" height="59" onclick ="toolTipAppear(event, 'tool', 5, 350, 45)"><font face="Arial, Helvetica, sans-serif" size="1"><br>
+                        <td align = "center" width="15%"><img id="5" src="HotTub.gif" width="60" height="59" onclick ="toolTipAppear(event, 'tool', 5, 350, 45, text)"><font face="Arial, Helvetica, sans-serif" size="1"><br>
                           click on icon for a description</font></td>
                         <td width="85%"> 
                           <table class = "TableCell" width="102%" border="0" height="74">

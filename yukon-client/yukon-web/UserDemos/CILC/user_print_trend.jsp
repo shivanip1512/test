@@ -36,4 +36,4 @@
 
 <%
              }
-          %><a href="<%= referrer %>"><img src="BackButton.gif" border="0"></a> 
+          %><a href="<%= referrer %>" class = "Link1"><span class = "Main">Back</span></a> 

@@ -133,7 +133,7 @@
             </table>
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
-		  <FORM name="switchform" METHOD="POST" ACTION="/servlet/SwitchCommand" onSubmit="return validForm(this)">
+		  <FORM name="switchform" METHOD="POST" ACTION="/scripts/jrun.dll/servlet/SwitchCommand" onSubmit="return validForm(this)">
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p><br>
             <center>

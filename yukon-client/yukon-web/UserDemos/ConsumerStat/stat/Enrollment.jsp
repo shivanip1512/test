@@ -68,7 +68,7 @@
                   <td width="187" valign="top"> 
                     <div align="center"><b><span class="Main">PROGRAMS - ENROLLMENT</span></b></div>
                   </td>
-                  <td valign="top" width="205">
+                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %>
                   
                   </td>
                 </tr>

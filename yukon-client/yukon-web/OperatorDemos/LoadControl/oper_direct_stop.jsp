@@ -163,7 +163,7 @@
               </tr>
               <tr> 
                 <td width="253" height="28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
-                  Control</td>
+                  Response</td>
 				<td width="235" valign="middle">&nbsp;</td>  
                 <td width="58" valign="middle"> 
                   <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -208,7 +208,7 @@
   <tr> 
                 <td width="650" class="Main"> 
                   <div align="center"><b><br>
-                    DIRECT CONTROL</b><br>
+                    DIRECT CONTROL - STOP PROGRAM</b><br>
                     <br>
                   </div>
                   <table width="225" border="1" cellspacing="0" cellpadding="5" align="center">
@@ -230,7 +230,7 @@
                 <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                   </span></td>
               </tr>
-              <tr> <cti:errormsg colSpan="3"> <%= checker.getError("STOPTIME") %> 
+              <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
                 </cti:errormsg> </tr>
             </table>
           </td>

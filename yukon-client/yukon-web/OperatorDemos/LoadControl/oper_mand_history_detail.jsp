@@ -42,7 +42,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -102,7 +102,7 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <p class="Main"><br>
-                <b>CURTAILMENT HISTORY - <%= programs[i].getProgramName() %> </b><br>
+                <b>NOTIFICATION - PROGRAM HISTORY FOR:<br> <%= programs[i].getProgramName() %> </b><br>
               </p>
             </div>
             <div align="center">
@@ -153,8 +153,11 @@
 	}
 %>
               </table>
+              <br>
             </div>
-            <p align="center">&nbsp; 
+            <p align="center" class="MainHeader"> <a href="<%= referrer %>" class="Link1"><b>Back 
+              to History</b></a> <br>
+              <br> 
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
     </tr>

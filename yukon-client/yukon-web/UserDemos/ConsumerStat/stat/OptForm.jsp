@@ -51,7 +51,7 @@ function MM_popupMsg(msg) { //v1.0
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-            <% String pageName = "OptOut.jsp"; %>
+            <% String pageName = "OptForm.jsp"; %>
             <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
@@ -68,7 +68,7 @@ function MM_popupMsg(msg) { //v1.0
                         <tr> 
                         <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
                           <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <%= account.getCompany() %><br>
+                          <!--<%= account.getCompany() %><br> -->
                           <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
                           <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
                           <%= primContact.getHomePhone() %></span></td>
@@ -78,7 +78,7 @@ function MM_popupMsg(msg) { //v1.0
                     <td width="187" valign="top"> 
                       <div align="center"><b><span class="Main">OPT OUT</span></b></div>
                     </td>
-                    <td valign="top" width="205"> 
+                    <td valign="top" width="205" align = "right"> <%@ include file="Notice.jsp" %>
                      
                     </td>
                   </tr>
@@ -92,12 +92,11 @@ function MM_popupMsg(msg) { //v1.0
                 </table>
                 <p class="Main">Please complete the following form to opt out 
                   of your program:</p>
-                  <hr>
-				            <form method="post" action="OptOut.jsp">
+                  <form method="post" action="OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 
-                        <p>Reason for opting out of your program:</p>
+                        <p>* Reason for opting out of your program:</p>
                       </td>
                     </tr>
                     <tr> 
@@ -143,8 +142,11 @@ function MM_popupMsg(msg) { //v1.0
                     <input type="submit" name="Submit" value="Submit">
                     <input type="submit" name="Input" value="Cancel">
                 </form>
-				  <br>
-                </div>
+				  
+                <p><span class="TableCell">* This field must be completed.</span></p>
+                <p><br>
+                </p>
+              </div>
                 </div>
 			
           </td>

@@ -27,7 +27,7 @@ function confirm_form(f) {
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -88,12 +88,13 @@ function confirm_form(f) {
 <table width="657" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr>       
     <td width="650" class="Main" valign="top"> 
-      <p align="center"><b><br>
-<%= checker.getError("duplicate_error") %>CREATE NOTIFICATION</b></p>
+      <div align="center"><b><br>
+                    <%= checker.getError("duplicate_error") %> NOTIFICATION - 
+                    NEW </b></div>
         <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"> 
         <input type=hidden name="submitted" value="true">
         <input type=hidden name="programname">     
-        <table width="350" border="1" cellspacing="0" cellpadding="4" align="center">
+        <table width="350" border="1" cellspacing="0" cellpadding="4" align="center" class = "TableCell">
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">&nbsp;Program:</div>
@@ -108,7 +109,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="notifydate" size="10" pattern="@date"/> 
             </td>
           </tr>
-          <tr> <cti:errormsg colSpan="2"> <%= checker.getError("notifydate") %> 
+          <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifydate") %></center>
             </cti:errormsg> </tr>
           <tr> 
             <td width="150" class="TableCell"> 
@@ -117,7 +118,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="notifytime" size="10" pattern="@time"/> 
             </td>
           </tr>
-          <tr> <cti:errormsg colSpan="2"> <%= checker.getError("notifytime") %> 
+          <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifytime") %></center> 
             </cti:errormsg> </tr>
           <tr> 
             <td width="150" class="TableCell"> 
@@ -126,7 +127,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="curtaildate" size="10" pattern="@date"/> 
             </td>
           </tr>
-          <tr> <cti:errormsg colSpan="2"> <%= checker.getError("curtaildate") %> 
+          <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("curtaildate") %></center> 
             </cti:errormsg> </tr>
           <tr> 
             <td width="150" class="TableCell"> 
@@ -135,7 +136,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="curtailtime" size="10" pattern="@time"/> 
             </td>
           </tr>
-          <tr> <cti:errormsg colSpan="2"> <%= checker.getError("curtailtime") %> 
+          <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("curtailtime") %></center>
             </cti:errormsg> </tr>
           <tr> 
             <td width="150" class="TableCell"> 
@@ -144,7 +145,7 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="duration" size="10" pattern="@int"/> 
             </td>
           </tr>
-          <tr> <cti:errormsg colSpan="2"> <%= checker.getError("duration") %> </cti:errormsg> 
+          <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("duration") %></center></cti:errormsg> 
           </tr>
         </table>
         <br>

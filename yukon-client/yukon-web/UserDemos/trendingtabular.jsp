@@ -4,7 +4,6 @@
 
     java.text.SimpleDateFormat shortDateFormat = new java.text.SimpleDateFormat("M/d");      
 %>
-
 <br>
 <center>
 <%

@@ -19,7 +19,7 @@
               </tr>
               <tr> 
                 <td width="253" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
-                  Control</td>
+                  Response </td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -81,10 +81,11 @@
   <tr> 
     <td width="650" valign="top"> 
       <p align="center" class="Main"><br>
-<b>CURRENT SUMMARY</b></p>
+<b>NOTIFICATION - CURRENT</b></p>
 <p align="center" class="Main">Click on a program name to view the program details.</p>
-      <p align="center"><b class="MainHeader">Today's ERS Notification Summary - <%= datePart.format(today) %></b> 
-      <center>
+                  <p align="center"><b class="MainHeader">Today's Notification 
+                    Summary - <%= datePart.format(today) %></b> 
+                  <center>
         <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
           <tr> 
             <td width="25%" class="HeaderCell">Program</td>
@@ -125,8 +126,8 @@
         </table>
       </center>
       <p>&nbsp; 
-                  <p align="center"><b class="MainHeader">Tomorrow's ERs Notification Summary 
-                    - <%= datePart.format(tomorrow) %></b> 
+                  <p align="center"><b class="MainHeader">Tomorrow's Notification 
+                    Summary - <%= datePart.format(tomorrow) %></b> 
                   <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
         <tr> 
           <td width="25%" class="HeaderCell">Program</td>

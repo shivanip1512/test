@@ -24,14 +24,14 @@ function MM_popupMsg(msg) { //v1.0
               <tr> 
                 <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
               </tr>
-              <tr>
-			    <td width="265" height="28">&nbsp;</td> 
-                <td width="253" valign="middle">&nbsp;</td>
-                <td width="58" valign="middle">&nbsp;</td>
-                <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
-                    Off</a>&nbsp;</span></div>
-                </td>
+              <tr> 
+                  <td width="265" height="28">&nbsp;</td>
+				  <td width="253" valign="middle">&nbsp;</td>
+                  <td width="58" valign="middle">&nbsp;</td>
+                  <td width="57" valign="middle"> 
+                    <div align="left"><span class="Main"><a href="../../../login.jsp" class="Link3">Log 
+                      Off</a>&nbsp;</span></div>
+                  </td>
               </tr>
             </table>
           </td>
@@ -51,7 +51,7 @@ function MM_popupMsg(msg) { //v1.0
         </tr>
         <tr> 
           <td  valign="top" width="101"> 
-		  <% String pageName = "Features.jsp"; %>
+		  <% String pageName = "ChangeForm.jsp"; %>
           <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
@@ -68,7 +68,7 @@ function MM_popupMsg(msg) { //v1.0
                         <tr> 
                         <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
                           <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <%= account.getCompany() %><br>
+                          <!--<%= account.getCompany() %><br> -->
                           <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
                           <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
                           <%= primContact.getHomePhone() %></span></td>
@@ -79,8 +79,8 @@ function MM_popupMsg(msg) { //v1.0
                       <div align="center"><b><span class="Main"> CHANGE PROGRAM 
                         </span></b></div>
                     </td>
-                    <td valign="top" width="205"> 
-                    
+                    <td valign="top" width="205" align = "right"> <%@ include file="Notice.jsp" %>
+                      
                     </td>
                   </tr>
                 </table>
@@ -93,12 +93,12 @@ function MM_popupMsg(msg) { //v1.0
                 </table>
                 <p class="Main">Please complete the following form to change your 
                   program:</p>
-                  <hr>
+                  
 				            <form method="post" action="Enrollment.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                     <tr> 
                       <td class="TableCell"> 
-                        <p>Reason for changing your program:</p>
+                        <p>* Reason for changing your program:</p>
                       </td>
                     </tr>
                     <tr> 
@@ -145,8 +145,11 @@ function MM_popupMsg(msg) { //v1.0
                     <input type="button" name="Input" value="Cancel">
                 </form>
 				 	
-                    <br>
-                </div>
+                    
+                <p><span class="TableCell">* This field must be completed.</span></p>
+                <p><br>
+                </p>
+              </div>
                 </div>
 			
           </td>

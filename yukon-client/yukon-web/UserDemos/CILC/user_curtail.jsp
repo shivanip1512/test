@@ -147,7 +147,7 @@
             <center>
                           <span class="Main"> <br>
                           Per your contract with <cti:text key="curtailment.provider"/>, 
-                          a notofication event is scheduled<br>
+                          a notification event is scheduled<br>
                           from <%= startDateTimeStr %> to <%= stopDateTimeStr %>.</span> 
                           <p> 
                 <%			

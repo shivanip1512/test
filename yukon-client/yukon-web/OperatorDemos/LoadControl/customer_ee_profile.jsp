@@ -119,7 +119,7 @@
 <table width="640" border="0" cellspacing="0" cellpadding="0" align="left">
     <tr>
       <td width="635">
-        <p align="center" class="Main"><br><b>CUSTOMER PROFILE</b> 
+        <p align="center" class="Main"><br><b><cti:text key="energyexchangeheading.text"/> - CUSTOMER PROFILE</b> 
         </p>
         <p align="center" class="Main"><%= cust.getCustomerName() %><br clear="ALL">
           <%= cust.getCustomerAddress().getLocationAddress1() %><br clear="ALL">
@@ -130,9 +130,16 @@
     </tr>
   </table>
   
-<%
+            <%
     }
 %>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p align="center" class="MainHeader">&nbsp; 
+            <p align="center" class="MainHeader"><a href="<%= referrer %>" class="Link1"><b>Back 
+              to Program Summary</b></a> 
+            <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
     </tr>

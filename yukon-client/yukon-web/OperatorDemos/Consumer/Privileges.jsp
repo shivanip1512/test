@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -55,7 +54,7 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "ADMINISTRATION - Customer Privileges"; %><%@ include file="InfoSearchBar.jsp" %> 
+            <div align="center"><% String header = "ADMINISTRATION - CUSTOMER PRIVILEGES"; %><%@ include file="InfoSearchBar.jsp" %> 
             
               <p align="center" class="MainHeader">Select which of the following functionality this 
                 customer will have access to:</p>
@@ -91,6 +90,30 @@
                     </div>
                   </td>
                   <td width="317" class="TableCell">Touch tone phone</td>
+                </tr>
+                <tr> 
+                  <td width="171" class="TableCell"> 
+                    <div align="right"> 
+                      <input type="checkbox" name="checkbox" value="checkbox">
+                    </div>
+                  </td>
+                  <td width="317" class="TableCell">Opt out of programs permanently</td>
+                </tr>
+                <tr> 
+                  <td width="171" class="TableCell"> 
+                    <div align="right"> 
+                      <input type="checkbox" name="checkbox2" value="checkbox">
+                    </div>
+                  </td>
+                  <td width="317" class="TableCell">Opt out of all programs temporarily</td>
+                </tr>
+                <tr> 
+                  <td width="171" class="TableCell"> 
+                    <div align="right"> 
+                      <input type="checkbox" name="checkbox3" value="checkbox">
+                    </div>
+                  </td>
+                  <td width="317" class="TableCell">E-mail notification of control</td>
                 </tr>
               </table>
               <p></p>

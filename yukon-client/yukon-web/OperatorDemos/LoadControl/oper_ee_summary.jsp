@@ -18,7 +18,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+               <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -80,7 +80,7 @@
   <tr> 
                 <td width="650" class="Main"valign="top"> 
                   <p align="center"><b><br>
-                    CURRENT SUMMARY</b> <br>
+                    <cti:text key="energyexchangeheading.text"/> - CURRENT SUMMARY</b> <br>
                     <br>
                   <p align="center">Click on an Offer ID to view the offer summary.</p>
       <p align="center"><span class="MainHeader"><b>Today's <cti:text key="energyexchange.text"/> Summary - <%= datePart.format(com.cannontech.util.ServletUtil.getToday()) %></b></span> 

@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -65,7 +64,7 @@ function copyAddress(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><% String header = "ACCOUNT - GENERAL"; %><%@ include file="InfoSearchBar.jsp" %>
             </div>
-			<form method="POST" action="/servlet/SOAPClient">
+			<form method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
 			<input type="hidden" name="action" value="UpdateCustAccount">
             <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
               <tr> 
@@ -128,6 +127,14 @@ function copyAddress(form) {
                         </td>
                         <td width="210"> 
                           <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>">
+                        </td>
+                      </tr>
+					   <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">e-mail Address:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="WorkPhone" maxlength="14" size="14" value="">
                         </td>
                       </tr>
                       <tr> 
@@ -216,6 +223,14 @@ function copyAddress(form) {
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCity" maxlength="30" size="24" value="<%= propAddr.getCity() %>">
+                        </td>
+                      </tr>
+					  <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">County:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="textfield6" maxlength="30" size="24">
                         </td>
                       </tr>
                       <tr> 
@@ -315,7 +330,7 @@ function copyAddress(form) {
                   </td>
                   <td width="194"> 
                     <div align="left"> 
-                      <input type="reset" name="Cancel2" value="Cancel">
+                      <input type="button" name="Cancel2" value="Cancel" onclick="document.URL='/OperatorDemos/Operations.jsp'">
                     </div>
                   </td>
               </tr>

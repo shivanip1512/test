@@ -68,7 +68,7 @@
                     <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
                       HISTORY </span></b></div>
                   </td>
-                  <td valign="top" width="205"> 
+                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %> 
                    
                   </td>
                 </tr>

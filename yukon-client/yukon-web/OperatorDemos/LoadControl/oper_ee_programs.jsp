@@ -24,7 +24,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -85,7 +85,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p align="center" class="Main"><b><br>
-              PROGRAM SUMMARY</b></p>
+              <cti:text key="energyexchangeheading.text"/> - PROGRAMS</b></p>
         <table width="600" border="0" cellspacing="0" cellpadding="0" align="center">
           <%
                for( int i = 0; i < programs.length; i += 2 )
@@ -140,7 +140,8 @@
             </td>
           </tr>
         </table>
-      <p>&nbsp;</p>
+            <p align="center" class="MainHeader"> <br>
+              <br>
             </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
     </tr>

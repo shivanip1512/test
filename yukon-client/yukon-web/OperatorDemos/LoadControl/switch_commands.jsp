@@ -86,7 +86,8 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Control</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
+                  Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -129,7 +130,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
 <table width="600" border="0" cellspacing="0" cellpadding="0">
-<FORM name="ddmessage" METHOD="POST" ACTION="/servlet/SwitchCommand" onSubmit="return validForm(this)">
+<FORM name="ddmessage" METHOD="POST" ACTION="/scripts/jrun.dll/servlet/SwitchCommand" onSubmit="return validForm(this)">
     <tr> 
       <td width="650" class="Main">
         <center>
@@ -137,38 +138,40 @@
             <tr> 
                           <td width="50%" valign="TOP"> 
             <div align="center"><br>
-              <span class="Main"><b>DIRECT CONTROL - INDIVIDUAL SWITCH COMMANDS</b></span><br>
-              <br>
+              <span class="Main"><b>DIRECT CONTROL - INDIVIDUAL SWITCH COMMANDS</b></span><br><br>
+                            <span class = "Main">Enter or select a switch serial number:</span><br>
             </div>
-            <table width="345" border="0" cellspacing="0" cellpadding="0" align="center">
-              <tr>
-	<td width="100%">
-	<table border="0" width="100%" cellspacing="0" cellpadding="0">
-        <tr>
-                        <td width="100%" align="center"> 
-                          <p class="Main" align="center">Enter or select a switch 
-                            serial number:<br>
-                            <input type="text" name="serialNumberField" size="9" maxlength="9">
-                            &nbsp;&nbsp; 
-                            <select name="selectbox" onChange="changecontent(this)">
-                              <option> </option>
-                              <option>200142943</option>
-                              <option>200191492</option>
-                              <option>200186204</option>
-                              <option>200115906</option>
-                            </select>
-                            <br>
-                          </p>
-                          </td>
-        </tr>
-        <tr>
-        </tr>
-      </table>
-    
-    </td>
-  </tr>
-</table>
-<script language="JavaScript">
+                          <table width="345" border="0" align = "center" height="72">
+                            <tr>
+                              <td>
+                                <table width="100%" border="1" cellspacing = "0" cellpadding = "3" height="66" >
+                                  <tr> 
+                                    <td width="9%" height="15"> 
+                                      <input type="radio" name="radiobutton" value="radiobutton" checked>
+                                    </td>
+                                    <td width="91%" height="15"> 
+                                      <input type="text" name="serialNumberField2" size="9" maxlength="9">
+                                    </td>
+                                  </tr>
+                                  <tr> 
+                                    <td width="9%"> 
+                                      <input type="radio" name="radiobutton" value="radiobutton">
+                                    </td>
+                                    <td width="91%"> 
+                                      <select name="select" onChange="changecontent(this)" size = "1">
+                                        <option></option>
+                                        <option selected>200142943 - Name of Switch</option>
+                                        <option>200191492</option>
+                                        <option>200186204</option>
+                                        <option>200115906</option>
+                                      </select>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <script language="JavaScript">
 
 /*
 Drop down messages script
@@ -203,288 +206,278 @@ document.ddmessage.serialNumberField.value=thecontents[document.ddmessage.select
                             <p align="center"><span class="Main">Select one of 
                               the following functions: </span> 
                             <div align="center">
-                  <table width="345" border="1" cellspacing="0"
-        cellpadding="0">
-                    <tr> 
-                      <td width="100%"> 
-                        <table width="100%" border="1" cellspacing="0" cellpadding="3">
-                          <tr> 
-                            <td width="12%" valign="TOP" class="TableCell"> &nbsp; 
-                                          <input type="radio" value="SHED Time" name="function" checked >
-                            </td>
-                            <td width="31%" valign="TOP" class="TableCell"> &nbsp;SHED 
-                              Time:</td>
-                            <td width="57%" valign="TOP" class="TableCell"> 
-                              <table width="182" border="0" cellspacing="0" cellpadding="2">
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Time: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                    <select name="time">
-                                      <option SELECTED>1 min 
-                                      <option>1 sec 
-                                      <option>5 min 
-                                      <option>10 min 
-                                      <option>20 min 
-                                      <option>30 min 
-                                      <option>1 hr 
-                                      <option>4 hr 
-                                      <option>8 hr 
-                                    </select>
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Relay #: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                    <select name="shedRelayNumber">
-                                      <option SELECTED>1 
-                                      <option>2 
-                                      <option>3 
-                                    </select>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="12%" valign="TOP" class="TableCell"> &nbsp; 
-                              <input type="radio" value="Restore" name="function">
-                            </td>
-                            <td width="31%" valign="TOP" class="TableCell"> &nbsp;Restore:</td>
-                            <td width="57%" valign="TOP" class="TableCell"> 
-                              <table width="182" border="0" cellspacing="0" cellpadding="2">
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Relay #: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                    <select name="restoreRelayNumber">
-                                      <option SELECTED>1 
-                                      <option>2 
-                                      <option>3 
-                                    </select>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="12%" valign="TOP" class="TableCell"> &nbsp; 
-                              <input type="radio" value="Cycle Rate" name="function">
-                            </td>
-                            <td width="31%" valign="TOP" class="TableCell"> &nbsp;Cycle 
-                              Rate:</td>
-                            <td width="57%" valign="TOP" class="TableCell"> 
-                              <table width="182" border="0" cellspacing="0" cellpadding="2">
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Percent: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                    <!-- <input name="percent" type="text" value="50" size="4"> -->
-                                    <select name="percent">                            
-                                        <option>5
-                                        <option>10
-                                        <option>15
-                                        <option>20
-                                        <option>25
-                                        <option>30
-                                        <option>33
-                                        <option>35
-                                        <option>40
-                                        <option>45
-                                        <option selected>50
-                                        <option>55
-                                        <option>60
-                                        <option>65
-                                        <option>66
-                                        <option>70
-                                        <option>75
-                                        <option>80
-                                        <option>85
-                                        <option>90
-                                        <option>95
-                                        <option>100
-                                    </select>
-
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Period (min): 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                   <!-- <input name="period" type="text" value="30" size="4"> -->
-                                    <select name="period">
-                                        <option>5
-                                        <option>10
-                                        <option>15
-                                        <option>20
-                                        <option>25
-                                        <option selected>30
-                                        <option>35
-                                        <option>40
-                                        <option>45
-                                        <option>50
-                                        <option>55
-                                        <option>60
-                                    </select>
-
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;# of Periods: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                            <!--        <input name="periodCount" type="text" value="8" size="4"> -->
-                                    <select name="periodCount">
-                                    <option>1
-                                    <option>2
-                                    <option>3
-                                    <option>4
-                                    <option>5
-                                    <option>6
-                                    <option>7
-                                    <option selected>8
-                                    <option>9
-                                    <option>10
-                                    <option>11
-                                    <option>12
-                                    <option>13
-                                    <option>14
-                                    <option>15
-                                    <option>16
-                                    <option>17
-                                    <option>18
-                                    <option>19
-                                    <option>20
-                                    <option>21
-                                    <option>22
-                                    <option>23
-                                    <option>24
-                                    <option>25
-                                    <option>26
-                                    <option>27
-                                    <option>28
-                                    <option>29
-                                    <option>30
-                                    <option>31
-                                    <option>32
-                                    <option>33
-                                    <option>34
-                                    <option>35
-                                    <option>36
-                                    <option>37
-                                    <option>38
-                                    <option>39
-                                    <option>40
-                                    <option>41
-                                    <option>42
-                                    <option>43
-                                    <option>44
-                                    <option>45
-                                    <option>46
-                                    <option>47
-                                    <option>48
-                                    <option>49
-                                    <option>50
-                                    <option>51
-                                    <option>52
-                                    <option>53
-                                    <option>54
-                                    <option>55
-                                    <option>56
-                                    <option>57
-                                    <option>58
-                                    <option>59
-                                    <option>60
-                                    <option>61
-                                    <option>62
-                                    <option>63
-                               </select>
-                                  </td>
-                                </tr>
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Relay #: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                    <select name="startRelayNumber">
-                                      <option SELECTED>1 
-                                      <option>2 
-                                      <option>3 
-                                    </select>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="12%" valign="TOP" class="TableCell"> &nbsp; 
-                              <input type="radio" value="radio" name="function" 
+                            <table width="345" border="1" cellspacing="0" class = "TableCell" cellpadding = "3"
+       >
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="SHED Time" name="function" checked >
+                                </td>
+                                <td width="38%">&nbsp;SHED Time:</td>
+                                <td width="55%"> 
+                                  <table width="182" border="0" cellspacing="0" cellpadding="2">
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Time: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <select name="time">
+                                          <option SELECTED>1 min 
+                                          <option>1 sec 
+                                          <option>5 min 
+                                          <option>10 min 
+                                          <option>20 min 
+                                          <option>30 min 
+                                          <option>1 hr 
+                                          <option>4 hr 
+                                          <option>8 hr 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Relay #: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <select name="shedRelayNumber">
+                                          <option SELECTED>1 
+                                          <option>2 
+                                          <option>3 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="Restore" name="function">
+                                </td>
+                                <td width="38%">&nbsp;Restore:</td>
+                                <td width="55%"> 
+                                  <table width="182" border="0" cellspacing="0" cellpadding="2">
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Relay #: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <select name="restoreRelayNumber">
+                                          <option SELECTED>1 
+                                          <option>2 
+                                          <option>3 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="Cycle Rate" name="function">
+                                </td>
+                                <td width="38%">&nbsp;Cycle Rate:</td>
+                                <td width="55%"> 
+                                  <table width="182" border="0" cellspacing="0" cellpadding="2">
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Percent: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <!-- <input name="percent" type="text" value="50" size="4"> -->
+                                        <select name="percent">
+                                          <option>5 
+                                          <option>10 
+                                          <option>15 
+                                          <option>20 
+                                          <option>25 
+                                          <option>30 
+                                          <option>33 
+                                          <option>35 
+                                          <option>40 
+                                          <option>45 
+                                          <option selected>50 
+                                          <option>55 
+                                          <option>60 
+                                          <option>65 
+                                          <option>66 
+                                          <option>70 
+                                          <option>75 
+                                          <option>80 
+                                          <option>85 
+                                          <option>90 
+                                          <option>95 
+                                          <option>100 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Period (min): 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <!-- <input name="period" type="text" value="30" size="4"> -->
+                                        <select name="period">
+                                          <option>5 
+                                          <option>10 
+                                          <option>15 
+                                          <option>20 
+                                          <option>25 
+                                          <option selected>30 
+                                          <option>35 
+                                          <option>40 
+                                          <option>45 
+                                          <option>50 
+                                          <option>55 
+                                          <option>60 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;# of Periods: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <!--        <input name="periodCount" type="text" value="8" size="4"> -->
+                                        <select name="periodCount">
+                                          <option>1 
+                                          <option>2 
+                                          <option>3 
+                                          <option>4 
+                                          <option>5 
+                                          <option>6 
+                                          <option>7 
+                                          <option selected>8 
+                                          <option>9 
+                                          <option>10 
+                                          <option>11 
+                                          <option>12 
+                                          <option>13 
+                                          <option>14 
+                                          <option>15 
+                                          <option>16 
+                                          <option>17 
+                                          <option>18 
+                                          <option>19 
+                                          <option>20 
+                                          <option>21 
+                                          <option>22 
+                                          <option>23 
+                                          <option>24 
+                                          <option>25 
+                                          <option>26 
+                                          <option>27 
+                                          <option>28 
+                                          <option>29 
+                                          <option>30 
+                                          <option>31 
+                                          <option>32 
+                                          <option>33 
+                                          <option>34 
+                                          <option>35 
+                                          <option>36 
+                                          <option>37 
+                                          <option>38 
+                                          <option>39 
+                                          <option>40 
+                                          <option>41 
+                                          <option>42 
+                                          <option>43 
+                                          <option>44 
+                                          <option>45 
+                                          <option>46 
+                                          <option>47 
+                                          <option>48 
+                                          <option>49 
+                                          <option>50 
+                                          <option>51 
+                                          <option>52 
+                                          <option>53 
+                                          <option>54 
+                                          <option>55 
+                                          <option>56 
+                                          <option>57 
+                                          <option>58 
+                                          <option>59 
+                                          <option>60 
+                                          <option>61 
+                                          <option>62 
+                                          <option>63 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Relay #: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <select name="startRelayNumber">
+                                          <option SELECTED>1 
+                                          <option>2 
+                                          <option>3 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="radio" name="function" 
                 >
-                            </td>
-                            <td width="31%" valign="TOP" class="TableCell"> &nbsp;Stop 
-                              Cycle:</td>
-                            <td width="57%" valign="TOP" class="TableCell"> 
-                              <table width="182" border="0" cellspacing="0" cellpadding="2">
-                                <tr> 
-                                  <td width="87" class="TableCell"> 
-                                    <p align=RIGHT>&nbsp;Relay #: 
-                                  </td>
-                                  <td width="87" class="TableCell"> 
-                                    <select name="stopRelayNumber">
-                                      <option SELECTED>1 
-                                      <option>2 
-                                      <option>3 
-                                    </select>
-                                  </td>
+                                </td>
+                                <td width="38%">Stop Cycle:</td>
+                                <td width="55%"> 
+                                  <table width="182" border="0" cellspacing="0" cellpadding="2">
+                                    <tr> 
+                                      <td width="87" class="TableCell"> 
+                                        <p align=RIGHT>&nbsp;Relay #: 
+                                      </td>
+                                      <td width="87" class="TableCell"> 
+                                        <select name="stopRelayNumber">
+                                          <option SELECTED>1 
+                                          <option>2 
+                                          <option>3 
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td colspan = "3"></td>
                                 </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                        <table width="100%" border="1" cellspacing="0" cellpadding="3">
-                          <tr> 
-                            <td width="12%" class="TableCell"> &nbsp; 
-                              <input type="radio" value="Service Enable"
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="Service Enable"
                 name="function">
-                            </td>
-                            <td width="88%" valign="TOP" class="TableCell"> &nbsp;Service 
-                              Enable</td>
-                          </tr>
-                          <tr> 
-                            <td width="12%" class="TableCell"> &nbsp; 
-                              <input type="radio" value="Service Disable"
+                                </td>
+                                <td colspan = "2">&nbsp;Service Enable</td>
+                                
+                              </tr>
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="Service Disable"
                 name="function">
-                            </td>
-                            <td width="88%" valign="TOP" class="TableCell"> &nbsp;Service 
-                              Disable</td>
-                          </tr>
-                          <tr> 
-                            <td width="12%" class="TableCell"> &nbsp; 
-                              <input type="radio" value="Cap Control Open"
+                                </td>
+                                <td colspan = "2">&nbsp;Service Disable</td>
+                                
+                              </tr>
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="Cap Control Open"
                 name="function">
-                            </td>
-                            <td width="88%" valign="TOP" class="TableCell"> &nbsp;Cap 
-                              Control Open</td>
-                          </tr>
-                          <tr> 
-                            <td width="12%" class="TableCell"> &nbsp; 
-                              <input type="radio" value="Cap Control Closed"
+                                </td>
+                                <td colspan="2">&nbsp;Cap Control Open</td>
+                                
+                              </tr>
+                              <tr> 
+                                <td width="7%"> 
+                                  <input type="radio" value="Cap Control Closed"
                 name="function" >
-                            </td>
-                            <td width="88%" valign="TOP" class="TableCell"> &nbsp;Cap 
-                              Control Closed</td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
+                                </td>
+                                <td colspan = "2">&nbsp;Cap Control Closed</td>
+                                
+                              </tr>
+                            </table>
                   <br>
                   <table width="200" border="0" cellspacing="0" cellpadding="0">
                     <tr>

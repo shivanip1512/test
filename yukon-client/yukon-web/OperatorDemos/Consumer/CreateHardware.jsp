@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -54,8 +53,6 @@
             <div class = "Main" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-              <br>
-             
               <form name = "MForm" onload >
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 

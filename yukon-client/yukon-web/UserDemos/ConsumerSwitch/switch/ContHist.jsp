@@ -73,7 +73,8 @@
 		}
 	}
 	
-	StarsLMControlHistory ctrlHist = (StarsLMControlHistory) session.getAttribute("LM_CONTROL_HISTORY");
+	StarsOperation operation = (StarsOperation) session.getAttribute("RESPONSE_OPERATION");
+	StarsLMControlHistory ctrlHist = operation.getStarsLMControlHistory();
 %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
@@ -97,7 +98,7 @@
                     <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
                       HISTORY </span></b></div>
                   </td>
-                  <td valign="top" width="205"> 
+                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %> 
                     
                   </td>
                 </tr>
@@ -118,7 +119,7 @@
                     <tr> 
                       <td width="107" valign="top"> 
                         <div align="center">
-						  <img src="../<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
+						  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
                           <span class="TableCell"><%= program.getProgramName() %></span><br>
                         </div>
                       </td>

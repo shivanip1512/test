@@ -1,4 +1,7 @@
-<%@ include file="StarsHeader.jsp" %>
+<%
+	String programStatus = "In Service";     
+		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -61,21 +64,23 @@ function MM_popupMsg(msg) { //v1.0
         </tr>
         <tr> 
           <td  valign="top" width="101">
-		  <% String pageName = "OptOut.jsp"; %>
+		  <% String pageName = "OptForm.jsp"; %>
           <%@ include file="Nav.jsp" %>
 		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
       		  <% String header = "OPT OUT"; %>
-              <%@ include file="SearchBar.jsp" %> <br>
-               <span class="Main">Please complete the following form 
-              to opt out of your program:</span> 
-              <hr width = "90%">
+              <%@ include file="InfoSearchBar.jsp" %> 
+          
+            <p><span class="Main">Please complete the following form to opt out 
+              of the program:</span> </p>
+            <hr width = "90%">
           
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                   <tr> 
                     <td class="TableCell"> 
-                      <p>Reason for opting out of your program:</p>
+                      
+                  <p>Reason for opting out of the program:</p>
                     </td>
                   </tr>
                   <tr> 
@@ -96,8 +101,9 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                   <tr> 
-                    <td class="TableCell"> Would you be interested in other programs. 
-                      If so, which ones:</td>
+                    
+                <td class="TableCell"> Would the customer be interested in other 
+                  programs. If so, which ones:</td>
                   </tr>
                   <tr> 
                     <td> 
@@ -117,14 +123,11 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
+                <form method="post" action="OptOut.jsp">
               <p align="center"> 
-			  <form method="post" action="/servlet/SOAPClient">
-			  	<input type="hidden" name="action" value="<%= request.getParameter("action") %>">
-				<input type="hidden" name="OptOutPeriod" value="<%= request.getParameter("OptOutPeriod") %>">
                 <input type="submit" name="Submit" value="Submit">
-                <input type="button" name="Cancel" value="Cancel" onclick="location='OptOut.jsp'">
-              </form>
-			  <p>&nbsp;</p>
+                <input type="Submit" name="Input" value="Cancel">
+              <p>&nbsp;</p></form>
           </td>
         <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
     </tr>

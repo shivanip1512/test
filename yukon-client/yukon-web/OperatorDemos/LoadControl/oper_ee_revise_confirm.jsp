@@ -27,7 +27,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="253" height="28" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+               <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
 				<td width="58" valign="middle"> 
                   <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -89,7 +89,8 @@
     <tr> 
                 <td width="650" valign="top"> 
                   <p align="center" class="Main"><b><br>
-                    REVISE OFFER <%= offerIdStr %> - <%= revNumStr %> CONFIRMATION<br>
+                    <cti:text key="energyexchangeheading.text"/> - REVISE OFFER 
+                    <%= offerIdStr %> - <%= revNumStr %> <br>
                     </b></p>
                     
                   <p align="center" class="Main">The total target amount is <%= totAmountStr %> 

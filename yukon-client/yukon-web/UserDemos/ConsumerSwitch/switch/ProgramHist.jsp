@@ -68,7 +68,7 @@
                     <div align="center"><b><span class="Main">PROGRAMS - CONTROL 
                       SUMMARY </span></b></div>
                   </td>
-                  <td valign="top" width="205"> 
+                  <td valign="top" width="205" align = "right"><%@ include file="Notice.jsp" %> 
                
                   </td>
                 </tr>
@@ -80,7 +80,7 @@
                   </td>
                 </tr>
               </table>
-              <table width="200" border="1" cellspacing="0" cellpadding="3" align="center">
+              <table width="215" border="1" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td height="58" bgcolor="#CCCCCC"> 
                     <p align="center" class="TableCell3">Today's odds for control?<br>
@@ -95,7 +95,7 @@
 
 	// End hiding script from old browsers -->
 </script>
-                      <b>08:00 AM</b></p>
+                      08:00 AM</p>
                     
                   </td>
                 </tr>
@@ -135,7 +135,7 @@
                 <tr bgcolor="#FFFFFF"> 
                   <td width="162"> 
                     <div align="center">
-					  <img src="../<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
+					  <img src="../<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
 					  <span class="TableCell"><%= program.getProgramName() %></span>
 					</div>
                   </td>

@@ -53,18 +53,14 @@
             <table width="100" border="0" cellspacing="0" cellpadding="6">
               <tr> 
                 <td> 
-                  
                   <table width="85" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr> 
                       <form method="post" action="login.jsp">
                         <td align="center"> 
                           <p> 
-                              <p><span class = "Main"> <a href = "login.jsp" class = "Link3">Log In</a></span>
-                            
-                            <br>
+                          <p><span class = "Main"> <a href = "login.jsp" class = "Link3">Log 
+                            In</a></span> <br>
                             &nbsp; </p>
-                          
-                           
                         </td>
                       </form>
                     </tr>
@@ -72,178 +68,159 @@
                       <form method="post" action="Wizard1.jsp">
                         <td align="center"> 
                           <p> 
-                             <p><span class = "Main"><a href = "Wizard1.jsp" class = "Link3">Sign Up</a></span>
-                           
-                            <br>
+                          <p><span class = "Main"><a href = "Wizard1.jsp" class = "Link3">Sign 
+                            Up</a></span> <br>
                             &nbsp; </p>
-                    
-                           
                         </td>
                       </form>
                     </tr>
                   </table>
                 </td>
               </tr>
-              <tr> 
-                <td> 
-                  <div align="center"><b class="TableCell2">The following symbols 
-                    represent:</b></div>
-                </td>
-              </tr>
-              <tr> 
-                <td> 
-                  <div align="center"><span class="TableCell2">Savings</span><br>
-                    <img src="$$.gif" width="30" height="30"> </div>
-                </td>
-              </tr>
-              <tr> 
-                <td> 
-                  <div align="center"><span class="TableCell2">Percent of control</span><br>
-                    <img src="Third.gif" width="30" height="30"></div>
-                </td>
-              </tr>
             </table>
           </td>
           <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>
-          <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><br>
-              <b><span class="Main">PROGRAMS<br><br>
-              </span> </b>
-              <table width="100%" border="0" cellpadding="3">
+          <td width="657" valign="top" bgcolor="#FFFFFF"> <br>
+            <div align="center">
+              <table width="95%" border="1" class = "TableCell" align = "center" height="28" cellspacing = "0" cellpadding = "4">
+                <tr> 
+                  <td width="21%"><b>The following symbols represent:</b></td>
+                  <td width="7%"><img src="../$Sm.gif" width="40" height="39"></td>
+                  <td width="21%">Savings: More dollar signs means more savings!</td>
+                  <td width="5%"><img src="../Tree1Sm.gif" width="40" height="39"></td>
+                  <td width="27%">Environment: More trees means better for the 
+                    environment.</td>
+                  <td width="7%"><img src="../HalfSm.gif" width="40" height="39"></td>
+                  <td width="12%">Percent of Control</td>
+                </tr>
+              </table>
+              <br>
+              <b><span class="Main">PROGRAMS<br>
+              <br>
+              </span></b>
+              <table width="100%" border="0" cellpadding="3" >
                 <tr> 
                   <td valign="top"> 
-                    <table width="280" border="0" cellspacing="0" cellpadding="0">
+                    <table width="280" border="0" height="125">
                       <tr> 
-                        <td width="107"> 
-                          <table width="80" border="0" cellspacing="0" cellpadding="5">
+                        <td height="43" rowspan = "2" valign = "top" > 
+                          <table width="75%" border="0" >
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="AC.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../ACSm.gif"></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="$$$.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../$$$Sm.gif" ></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="Half.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../HalfSm.gif"></td>
+                            </tr>
+                            <tr> 
+                              <td><img src="../Tree3Sm.gif"></td>
                             </tr>
                           </table>
                         </td>
-                        <td width="280" valign="top"0> 
-                          <p class="TableCell"><b>Cycle AC - Medium</b></p>
-                          <p class="TableCell">When controlled, your air conditioning 
-                            compressor will be interrupted for 15 minutes out 
-                            of every half hour. Your furnace fan will keep running. 
-                            You may notice a slight increase in your indoor air 
-                            temperature.</p>
-                        </td>
+                        <td class = "TableCell"><b>Cycle AC - Medium</b></td>
+                      </tr>
+                      <tr> 
+                        <td class = "TableCell" valign = "top">When controlled, 
+                          your air conditioning compressor will be interrupted 
+                          for 15 minutes out of every half hour. Your furnace 
+                          fan will keep running. You may notice a slight increase 
+                          in your indoor air temperature.</td>
                       </tr>
                     </table>
                     <hr>
-                    <table width="280" border="0" cellspacing="0" cellpadding="0">
+                    <table width="280" border="0" height="150">
                       <tr> 
-                        <td width="107" height="92"> 
-                          <table width="80" border="0" cellspacing="0" cellpadding="5">
+                        <td height="38" rowspan = "2" valign = "top"> 
+                          <table width="75%" border="0">
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="AC.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../ACSm.gif"></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="$$.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../$$Sm.gif" ></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="Third.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../ThirdSm.gif"></td>
+                            </tr>
+                            <tr> 
+                              <td><img src="../Tree2Sm.gif"></td>
                             </tr>
                           </table>
                         </td>
-                        <td width="280" valign="top" height="92"> 
-                          <p class="TableCell"><b>Cycle AC - Light</b></p>
-                          <p class="TableCell">When controlled, your air conditioning 
-                            compressor will be interrupted for ten minutes out 
-                            of every half hour. Your furnace fan will keep running. 
-                            You may notice a slight increase in your indoor air 
-                            temperature.</p>
-                        </td>
+                        <td class = "TableCell"><b>Cycle AC - Light</b></td>
+                      </tr>
+                      <tr> 
+                        <td class = "TableCell" valign = "top">When controlled, 
+                          your air conditioning compressor will be interrupted 
+                          for ten minutes out of every half hour. Your furnace 
+                          fan will keep running. You may notice a slight increase 
+                          in your indoor air temperature.</td>
                       </tr>
                     </table>
+                    
                   </td>
                   <td valign="top"> 
-                    <table width="280" border="0" cellspacing="0" cellpadding="0">
+                    <table width="280" border="0" height="174">
                       <tr> 
-                        <td width="107"> 
-                          <table width="80" border="0" cellspacing="0" cellpadding="5">
+                        <td height="44" rowspan = "2" valign = "top"> 
+                          <table width="75%" border="0">
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="Setback.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../SetbackSm.gif"></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="$$$.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../$$$Sm.gif" ></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="Half.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../HalfSm.gif"></td>
+                            </tr>
+                            <tr> 
+                              <td><img src="../Tree3Sm.gif"></td>
                             </tr>
                           </table>
                         </td>
-                        <td width="280" valign="top"> 
-                          <p class="TableCell"><b>Setback - 4&deg;</b></p>
-                          <p class="TableCell">When controlled, your air conditioning 
-                            compressor will be set back four degrees. Your furnace 
-                            fan will keep running. You may notice a slight increase 
-                            in your indoor air temperature.</p>
-                        </td>
+                        <td class = "TableCell"><b>Setback - 4&deg</b></td>
+                      </tr>
+                      <tr> 
+                        <td class = "TableCell" valign = "top">When controlled, 
+                          your air conditioning compressor will be set back four 
+                          degrees. Your furnace fan will keep running. You may 
+                          notice a slight increase in your indoor air temperature.</td>
                       </tr>
                     </table>
                     <hr>
-                    <table width="280" border="0" cellspacing="0" cellpadding="0">
+                    <table width="280" border="0" height="150">
                       <tr> 
-                        <td width="107"> 
-                          <table width="80" border="0" cellspacing="0" cellpadding="5">
+                        <td height="36" rowspan = "2" valign = "top"> 
+                          <table width="75%" border="0">
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="Setback.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../SetbackSm.gif"></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="$$.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../$Sm.gif" ></td>
                             </tr>
                             <tr> 
-                              <td> 
-                                <div align="center"><img src="Quarter.gif" width="60" height="59"></div>
-                              </td>
+                              <td><img src="../QuarterSm.gif"></td>
+                            </tr>
+                            <tr> 
+                              <td><img src="../Tree1Sm.gif"></td>
                             </tr>
                           </table>
                         </td>
-                        <td width="280" valign="top"> 
-                          <p class="TableCell"><b>Setback - 2&deg;</b></p>
-                          <p class="TableCell">When controlled, your air conditioning 
-                            compressor will be set back two degrees. Your furnace 
-                            fan will keep running. You may notice a slight increase 
-                            in your indoor air temperature.</p>
-                        </td>
+                        <td class = "TableCell"><b>Setback - 2&deg</b></td>
+                      </tr>
+                      <tr> 
+                        <td class = "TableCell" valign = "top">When controlled, 
+                          your air conditioning compressor will be set back two 
+                          degrees. Your furnace fan will keep running. You may 
+                          notice a slight increase in your indoor air temperature.</td>
                       </tr>
                     </table>
+                    
                   </td>
                 </tr>
               </table>
-             
-             
-            </div>
+              <b><span class="Main"> </span> </b> </div>
             
           </td>
           <td width="1" bgcolor="#000000"><img src="switch/VerticalRule.gif" width="1"></td>

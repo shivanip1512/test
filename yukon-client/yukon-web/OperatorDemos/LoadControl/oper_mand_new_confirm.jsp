@@ -27,7 +27,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28"class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28"class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -98,7 +98,8 @@
         <input type=hidden name="starttime" value="<%= curtailTimeStr %>">
         <input type=hidden name="duration" value="<%= checker.get("duration") %>">
         <input type=hidden name="comments" value="<%= checker.get("comments") %>">
-        <b>CONFIRM NOTIFICATION</b><br><br>
+                    <b> NOTIFICATION - NEW</b><br>
+                    <br>
 </div>
       <table width="250" border="1" cellspacing="0" cellpadding="4" align="center">
           <tr> 

@@ -18,7 +18,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310"><span class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></span></td>
+               <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -79,7 +79,7 @@
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <p align="center" class="Main"><b><br>
-              OFFER HISTORY</b></p>
+              <cti:text key="energyexchangeheading.text"/> - HISTORY</b></p>
             <p align="center" class="Main">Click on an Offer ID to view 
               the offer summary.</p>
               <table width="600" border="1" cellspacing="0" bgcolor="white" cellpadding="2" align="center">

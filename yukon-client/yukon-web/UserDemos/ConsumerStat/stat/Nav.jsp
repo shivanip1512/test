@@ -6,11 +6,8 @@
 <%
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	StarsCustAccountInfo accountInfo = (StarsCustAccountInfo) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
-	if (accountInfo == null) {
-		response.sendRedirect("/login.jsp");
-		return;
-	}
+	StarsCustomerAccountInformation accountInfo = (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
+	if (accountInfo == null) response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp");
 	
 	StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
     StreetAddress propAddr = account.getStreetAddress();
@@ -28,12 +25,13 @@
 	String linkMap[][] = {{"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", "Control Summary"},
 						  {"Programs.jsp", "Add/Change"},
-						  {"Thermostat.jsp", "Thermostat"},
+						  {"Thermostat.jsp", "Manual"},
 						  {"Util.jsp", "Utility"},
 						  {"Installer.jsp", "Installer"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp","Enrollment"},
 						  {"OptOut.jsp","Opt Out"},
+						  {"WeekdayS.jsp", "Schedule"}
 						 };
 						   
 	Hashtable links = new Hashtable();
@@ -57,8 +55,14 @@
     <td> 
       <div align="left"><span class="NavHeader">Programs</span><br>
         <%= links.get("ProgramHist.jsp") %><br>
-		<%= links.get("Enrollment.jsp") %><br>
-		<%= links.get("OptOut.jsp") %><br>
+        <%= links.get("Enrollment.jsp") %><br>
+        <%= links.get("OptOut.jsp") %></div>
+    </td>
+  </tr>
+  <tr>
+    <td height="65">
+<div align="left"><span class="NavHeader">Thermostat</span><br>
+        <%= links.get("WeekdayS.jsp") %><br>
         <%= links.get("Thermostat.jsp") %></div>
     </td>
   </tr>

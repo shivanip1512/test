@@ -1,20 +1,7 @@
-<%@ include file="StarsHeader.jsp" %>
 <%
-	StarsLMHardwareHistory hwHist = null;
-	if (inventories.getStarsLMHardwareCount() > 0) {
-		StarsLMHardware hw = inventories.getStarsLMHardware(0);
-		hwHist = hw.getStarsLMHardwareHistory();
-	}
-	
-	String programStatus = "Not Enrolled";
-	//programStatus = (String) session.getAttribute("PROGRAM_STATUS");
-	if (hwHist.getLMHardwareEventCount() > 0) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
-		if (event.getEventAction().equals("Activation Completed"))
-			programStatus = "In Service";
-		else
-			programStatus = "Out of Service";
-	}
+	String programStatus = "In Service";
+	if (session.getAttribute("PROGRAM_STATUS") != null)
+		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
 %>
 <html>
 <head>
@@ -23,6 +10,71 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <script language="JavaScript">
 <!--
+var text = ["<b>CYCLE AC<br> Light, Medium</b> - When controlled, your air conditioning compressor will be interrupted for 10 minutes out of every half hour if you sign up for the light program and interrupted for 15 minutes out of every half hour if you sign up for the medium program.",
+			"<b>WATER HEATER<br>4Hr, 8Hr</b> - When controlled, power to your water heater’s heating elements is turned off for up to 4 hours or 8 hours depending on the program you choose. The hot water in the tank will still be available for you to use.<br><br>  <b>ETS</b> - Your Electric Thermal Storage water heater’s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The hot water stored in the tank will supply your hot water needs.",
+			"<b>DUAL FUEL <br> Limited 4hr, Unlimited</b> - When controlled, electric power to your home’s heating system will be switched off, and your non-electric heat source will provide for your home’s heating needs. Control is limited to four hours consecutively when signed up for the limited program. While usually limited to a few hours, control could be for an extended period if signed up for the unlimited program.",
+			"<b>ETS</b><br>Your Electric Thermal Storage heating system’s heating elements are interrupted on a daily 12-hour on, 12-hour off cycle. The heat stored will supply your home needs.",
+			"<b>POOL PUMP</b><br>When controlled, power to your pool pump is interrupted. Interruptions usually last for 4 hours or less.",
+			"<b>HOT TUB</b><br>When controlled, power to your hot tub’s water heating elements are interrupted. Interruptions usually last for four hours or less." ];
+
+function toolTipAppear(event, divId, index, w, h) {
+
+	var coordx = getLeftCoordinate();
+	var coordy = getTopCoordinate();
+	var source;
+	if (window.event)
+      source = window.event.srcElement;
+    else
+      source = event.target;
+	
+	source.onmouseout = closeToolTip;
+	
+	
+	var element = document.getElementById(divId);
+	element.innerHTML = text[index]; 
+	element.style.width = w;
+	element.style.height = h;
+	element.style.left = coordx + 'px';
+	element.style.top = coordy + 'px';
+	element.style.visibility = 'visible';
+	
+	
+	
+function closeToolTip() {
+	var element = document.getElementById(divId);
+	element.style.visibility = 'hidden';
+}
+	
+	
+	
+	
+	
+	function getLeftCoordinate() {
+	var x;
+	if (window.event) {
+		x = window.event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft;
+	}
+	else {
+		x = event.clientX + window.scrollX;
+	}
+	return x;
+}
+
+function getTopCoordinate() {
+	var y;
+	if (window.event) {
+		y = window.event.clientY + document.documentElement.scrollTop + document.body.scrollTop + 20;
+	}
+	else {
+		y = event.clientY + window.scrollY + 20;
+	}
+	return y;
+}
+}
+
+
+
+
 function doReenable(form) {
 	form.action.value = "EnableService";
 	form.submit();
@@ -36,6 +88,7 @@ function MM_popupMsg(msg) { //v1.0
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
+<div id = "tool" class = "tooltip"></div>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -92,17 +145,22 @@ function MM_popupMsg(msg) { //v1.0
                 like to be enrolled in. </span><br>
                 <br>
               </div>
-              <table border="1" cellspacing="0" cellpadding="3">
-                <tr> 
-                  <td width="143" class="HeaderCell"> 
+              <table border="1" cellspacing="0" cellpadding="3" width="366" height="321">
+                <tr>
+                  <td width="83" class="HeaderCell" align = "center">Description</td>
+                  <td width="132" class="HeaderCell"> 
                     <div align="center">Program Enrollment</div>
                   </td>
-                  <td width="132" class="HeaderCell"> 
+                  <td width="125" class="HeaderCell"> 
                     <div align="center">Status</div>
                   </td>
                 </tr>
-                <tr> 
-                  <td width="143"> 
+                <tr>
+                  <td width="83" align = "center"><img id = "0" src="AC.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 0, 350, 90)"> 
+                    <br>
+                    <span class = "TableCell">Click 
+                    Above</span></td>
+                  <td width="132" align = "center"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
@@ -130,12 +188,15 @@ function MM_popupMsg(msg) { //v1.0
                       </tr>
                     </table>
                   </td>
-                  <td width="132" valign="top" class="TableCell"> 
+                  <td width="125" valign="top" class="TableCell"> 
                     <div align="center"><%= programStatus %></div>
                   </td>
                 </tr>
-                <tr> 
-                  <td width="143"> 
+                <tr>
+                  <td width="83" align = "center"><img src="WaterHeater.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 1, 350, 150)" ><br>
+                    <span class = "TableCell">Click 
+                    Above</span></td>
+                  <td width="132"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
@@ -171,12 +232,15 @@ function MM_popupMsg(msg) { //v1.0
                       </tr>
                     </table>
                   </td>
-                  <td width="132" valign="top" class="TableCell"> 
+                  <td width="125" valign="top" class="TableCell"> 
                     <div align="center"><%= programStatus %></div>
                   </td>
                 </tr>
-                <tr> 
-                  <td width="143"> 
+                <tr>
+                  <td width="83" align = "center"><img src="DualFuel.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 2, 350, 120)"><br>
+                    <span class = "TableCell">Click 
+                    Above</span></td>
+                  <td width="132"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
@@ -204,12 +268,15 @@ function MM_popupMsg(msg) { //v1.0
                       </tr>
                     </table>
                   </td>
-                  <td width="132" valign="top" class="TableCell"> 
+                  <td width="125" valign="top" class="TableCell"> 
                     <div align="center">Not Enrolled</div>
                   </td>
                 </tr>
-                <tr> 
-                  <td width="143"> 
+                <tr>
+                  <td width="83" align = "center"><img src="Electric.gif" width="60" height="59"  onclick = "toolTipAppear(event, 'tool', 3, 350, 60)"><br>
+                    <span class = "TableCell">Click 
+                    Above</span></td>
+                  <td width="132"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
@@ -219,12 +286,15 @@ function MM_popupMsg(msg) { //v1.0
                       </tr>
                     </table>
                   </td>
-                  <td width="132" valign="top" class="TableCell"> 
+                  <td width="125" valign="top" class="TableCell"> 
                     <div align="center">Not Enrolled</div>
                   </td>
                 </tr>
-                <tr> 
-                  <td width="143"> 
+                <tr>
+                  <td width="83" align = "center"><img src="HotTub.gif" width="60" height="59" onclick ="toolTipAppear(event, 'tool', 5, 350, 45)"><br>
+                    <span class = "TableCell">Click 
+                    Above</span></td>
+                  <td width="132"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
@@ -234,12 +304,15 @@ function MM_popupMsg(msg) { //v1.0
                       </tr>
                     </table>
                   </td>
-                  <td width="132" valign="top" class="TableCell"> 
+                  <td width="125" valign="top" class="TableCell"> 
                     <div align="center">Not Enrolled</div>
                   </td>
                 </tr>
-                <tr> 
-                  <td width="143"> 
+                <tr>
+                  <td width="83" align = "center"><img src="Pool.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 4, 350, 45)"><br>
+                    <span class = "TableCell">Click 
+                    Above</span></td>
+                  <td width="132"> 
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
@@ -249,7 +322,7 @@ function MM_popupMsg(msg) { //v1.0
                       </tr>
                     </table>
                   </td>
-                  <td width="132" valign="top" class="TableCell"> 
+                  <td width="125" valign="top" class="TableCell"> 
                     <div align="center">Not Enrolled</div>
                   </td>
                 </tr>
@@ -270,22 +343,37 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <p align="center" class="MainHeader"><b>Temporary Opt Out History 
-                  </b> 
-                <table width="200" border="1" cellspacing="0" align="center" cellpadding="3">
+                <p align="center" class="MainHeader"><b>Program History </b> 
+                <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
-                    <td class="HeaderCell">Date</td>
-                    <td class="HeaderCell">Duration</td>
+                    <td class="HeaderCell" width="100" >Date</td>
+                    <td class="HeaderCell" width="100" >Type - Duration</td>
+                    <td class="HeaderCell" width="100" >Program</td>
                   </tr>
                   <tr> 
-                    <td class="TableCell">12/15/00</td>
-                    <td class="TableCell">3 Days</td>
+                    <td class="TableCell" width="100" >07/15/02</td>
+                    <td class="TableCell" width="100" >Temp Opt Out - 3 Days</td>
+                    <td class="TableCell" width="100" >Cycle AC<br>
+                      Water Heater </td>
                   </tr>
                   <tr> 
-                    <td class="TableCell">07/17/01</td>
-                    <td class="TableCell">1 Day</td>
+                    <td class="TableCell" width="100" >12/25/01</td>
+                    <td class="TableCell" width="100" >Temp Opt Out - 1 Day</td>
+                    <td class="TableCell" width="100" >Cycle AC<br>
+                      Water Heater </td>
                   </tr>
-                </table><br>
+                  <tr> 
+                    <td class="TableCell" width="100" >08/20/01</td>
+                    <td class="TableCell" width="100" >Signup</td>
+                    <td class="TableCell" width="100" >Cycle AC</td>
+                  </tr>
+                  <tr> 
+                    <td class="TableCell" width="100" >02/12/01</td>
+                    <td class="TableCell" width="100" >Signup</td>
+                    <td class="TableCell" width="100" >Water Heater</td>
+                  </tr>
+                </table>
+                <br>
               </form>
              
              </div>

@@ -10,6 +10,10 @@ a.Link3:active {color: #99FFFF}
 a.Link3:visited {color: #99FFFF}
 a.Link3:link {color: #99FFFF}
 a.Link3:hover {color: #99FFFF}
+a.Link4:active {color: #666999}
+a.Link4:visited {color: #666999}
+a.Link4:link {color: #666999}
+a.Link4:hover {color: #666999}
 .Header {  font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #FFFFFF}
 .HeaderCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; color: #000000; background-color: #CCCCCC}
 .TableCell {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #000000; background-color: #FFFFFF}
@@ -23,3 +27,5 @@ a.Link3:hover {color: #99FFFF}
 .Background {  background-color: #666699}
 .tooltip { position:absolute; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; color: #FFFFFF; background-color: #666699; border: 3px #666699 outset; visibility: hidden; clip:  rect(   ); padding-top: 3px; padding-right: 3px; padding-bottom: 3px; padding-left: 3px}
 .TableCell3 {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; background-color: #CCCCCC}
+.tempText1 {  font-family: Arial, Helvetica, sans-serif; font-size: 36px; color: #003366; height: 50px; width: 65px}
+.tempText2 {  font-family: Arial, Helvetica, sans-serif; font-size: 35px; font-style: normal; color: #FF0000}

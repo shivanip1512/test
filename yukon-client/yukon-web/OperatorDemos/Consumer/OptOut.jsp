@@ -1,10 +1,6 @@
-<%@ include file="StarsHeader.jsp" %>
 <%
-	StarsLMHardwareHistory hwHist = null;
-	if (inventories.getStarsLMHardwareCount() > 0) {
-		StarsLMHardware hw = inventories.getStarsLMHardware(0);
-		hwHist = hw.getStarsLMHardwareHistory();
-	}
+	String programStatus = "In Service";     
+		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
 %>
 <html>
 <head>
@@ -13,9 +9,13 @@
 <link rel="stylesheet" href="../demostyle.css" type="text/css">
 <script language="JavaScript">
 <!--
-function confirmSubmit(form) { //v1.0
-  if (form.OptOutPeriod.value == 0) return false;
-  return confirm('Are you sure you would like to temporarily opt out of all programs?');
+function doReenable(form) {
+	form.action.value = "EnableService";
+	form.submit();
+}
+
+function MM_popupMsg(msg) { //v1.0
+  return confirm(msg);
 }
 //-->
 </script>
@@ -84,8 +84,6 @@ function confirmSubmit(form) { //v1.0
                       <p class="HeaderCell">Temporarily opt out of all programs 
                       </p>
                     </div>
-				  <form name="form1" method="post" action="OptForm.jsp" onsubmit = "return confirmSubmit(this)">
-				  	<input type="hidden" name="action" value="DisableService">
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="180" align="center"> 
@@ -97,71 +95,56 @@ function confirmSubmit(form) { //v1.0
                             <option value="7">One Week</option>
                             <option value="14">Two Weeks</option>
                           </select>
-                        </td>
+                        </td> <form name="form1" method="post" action="OptForm.jsp" onsubmit = " return MM_popupMsg('Are you sure you would like to temporarily opt out of all programs?')">
                         <td width="180" align="center"> 
                          
                             <input type="submit" name="Submit" value="Submit">
                           
-                        </td>
+                        </td></form>
                       </tr>
                     </table>
-				  </form>
                   </td>
                 </tr>
               </table>
               <br>
-              <p align="center" class="MainHeader"><b>Temporary Opt Out History 
-                </b> 
-              <table width="200" border="1" cellspacing="0" align="center" cellpadding="3">
+              <p align="center" class="MainHeader"><b>Program History </b> 
+              <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
-                  <td class="HeaderCell">Date</td>
-                  <td class="HeaderCell">Duration</td>
+                  <td class="HeaderCell" width="100" >Date</td>
+                  <td class="HeaderCell" width="100" >Type - Duration</td>
+                  <td class="HeaderCell" width="100" >Program</td>
                 </tr>
-<%
-	boolean optOut = false;
-	Calendar startCal = Calendar.getInstance();
-	Calendar stopCal = Calendar.getInstance();
-	
-	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
-		if (event.getEventAction().equals("Future Activation") || event.getEventAction().equals("Activation Completed")) {
-			optOut = true;
-			stopCal.setTime( event.getEventDateTime() );
-		}
-		else if (event.getEventAction().equals("Temporary Termination") && optOut) {
-			optOut = false;
-			startCal.setTime( event.getEventDateTime() );
-			int duration = stopCal.get(Calendar.DATE) - startCal.get(Calendar.DATE);
-			
-			String durStr = String.valueOf(duration);
-			if (duration > 1)
-				durStr += " Days";
-			else
-				durStr += " Day";
-%>
                 <tr> 
-                  <td class="TableCell"><%= dateFormat.format(event.getEventDateTime()) %></td>
-                  <td class="TableCell"><%= durStr %></td>
+                  <td class="TableCell" width="100" >07/15/02</td>
+                  <td class="TableCell" width="100" >Temp Opt Out - 3 Days</td>
+                  <td class="TableCell" width="100" >Cycle AC<br>
+                    Water Heater </td>
                 </tr>
-<%
-		}
-		else {
-			optOut = false;
-		}
-	}
-%>
+                <tr> 
+                  <td class="TableCell" width="100" >12/25/01</td>
+                  <td class="TableCell" width="100" >Temp Opt Out - 1 Day</td>
+                  <td class="TableCell" width="100" >Cycle AC<br>
+                    Water Heater </td>
+                </tr>
+                <tr> 
+                  <td class="TableCell" width="100" >08/20/01</td>
+                  <td class="TableCell" width="100" >Signup</td>
+                  <td class="TableCell" width="100" >Cycle AC</td>
+                </tr>
+                <tr>
+                  <td class="TableCell" width="100" >02/12/01</td>
+                  <td class="TableCell" width="100" >Signup</td>
+                  <td class="TableCell" width="100" >Water Heater</td>
+                </tr>
               </table>
-              <br>
+              <br><form>
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
-                  <td align="center">
-				  <form method="POST" action="/servlet/SOAPClient">
-				    <input type="hidden" name="action" value="EnableService"> 
-                    <input type="submit" name="Re-enable" value="Re-enable">
-				  </form>
+                  <td align="center"> 
+                    <input type="submit" name="Re-enable" value="Re-enable" onClick="doReenable(this.form)">
                   </td>
                 </tr>
-              </table>
+              </table></form>
               <br>
             </div>
             <p>&nbsp;</p>

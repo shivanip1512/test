@@ -52,8 +52,9 @@
             </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center">
-              <% String header = "INSTALLATION LIST"; %><%@ include file="SearchBar.jsp" %>
+            <div align="center"> 
+              <% String header = "INSTALLATION LIST"; %>
+              <%@ include file="SearchBar.jsp" %>
               <p><span class="Main">Display</span>:&nbsp; 
                 <select name="select">
                   <option>All</option>
@@ -62,37 +63,52 @@
                 </select>
                 &nbsp; 
                 <input type="submit" name="Submit" value="Submit">
-              </p>
+                <br>
+                <br>
+                <span class="Main">Click on an Install Order # to view the install 
+                order details.</span> 
               <form method="post" action="InstallDetail.jsp">
-                <table border="1" cellspacing="0" cellpadding="3" >
+                <table border="1" cellspacing="0" cellpadding="3" width="626" height="186" >
                   <tr> 
-                    <td  class="HeaderCell" >Work Order # </td>
-                    <td  class="HeaderCell" >Date</td>
-                    <td  class="HeaderCell" >Assigned</td>
-                    <td  class="HeaderCell" >Description</td>
+                    <td  class="HeaderCell" width="79" >Install Order # </td>
+                    <td  class="HeaderCell" width="55" >Date/Time</td>
+                    <td  class="HeaderCell" width="49" >Type</td>
+                    <td  class="HeaderCell" width="49" >Status</td>
+                    <td  class="HeaderCell" width="44"  >By Who</td>
+                    <td  class="HeaderCell" width="60"  >Assigned</td>
+                    <td  class="HeaderCell" width="232"  >Description</td>
                   </tr>
                   <tr bgcolor="#FFFFFF"> 
-                    <td  class="TableCell" ><a href="InstallDetail.jsp" class="Link1">12345</a></td>
-                    <td  class="TableCell" >05/06/02</td>
-                    <td  class="TableCell" >Yes</td>
-                    <td  class="TableCell" > 
-                      <textarea name="textarea" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                    <td  class="TableCell" width="79"  ><a href="InstallDetail.jsp" class="Link1">12345</a></td>
+                    <td  class="TableCell" width="55"  >05/06/02</td>
+                    <td  class="TableCell" width="49"  >Install</td>
+                    <td  class="TableCell" width="49"  >Complete</td>
+                    <td  class="TableCell" width="44"  >eah</td>
+                    <td  class="TableCell" width="60"  >XYZ Company</td>
+                    <td  class="TableCell" width="232"  > 
+                      <textarea name="textarea" rows="2" wrap="soft" cols="30" class = "TableCell"></textarea>
                     </td>
                   </tr>
                   <tr bgcolor="#FFFFFF"> 
-                    <td  class="TableCell" ><a href="InstallDetail.jsp" class="Link1">67890</a></td>
-                    <td  class="TableCell" >05/07/02</td>
-                    <td  class="TableCell" >No</td>
-                    <td  class="TableCell" > 
-                      <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                    <td  class="TableCell" width="79"  ><a href="InstallDetail.jsp" class="Link1">67890</a></td>
+                    <td  class="TableCell" width="55"  >05/07/02</td>
+                    <td  class="TableCell" width="49"  >Install</td>
+                    <td  class="TableCell" width="49"  >Complete</td>
+                    <td  class="TableCell" width="44"  >eah</td>
+                    <td  class="TableCell" width="60"  >&nbsp;</td>
+                    <td  class="TableCell" width="232" > 
+                      <textarea name="textarea2" rows="2" wrap="soft" cols="30" class = "TableCell"></textarea>
                     </td>
                   </tr>
                   <tr bgcolor="#FFFFFF"> 
-                    <td  class="TableCell" ><a href="InstallDetail.jsp" class="Link1">12345</a></td>
-                    <td  class="TableCell" >05/07/02</td>
-                    <td  class="TableCell" >No</td>
-                    <td  class="TableCell" > 
-                      <textarea name="textarea3" rows="3" wrap="soft" cols="28" class = "TableCell"></textarea>
+                    <td  class="TableCell" width="79" ><a href="InstallDetail.jsp" class="Link1">12345</a></td>
+                    <td  class="TableCell" width="55" >05/07/02</td>
+                    <td  class="TableCell" width="49" >Install</td>
+                    <td  class="TableCell" width="49" >Complete</td>
+                    <td  class="TableCell" width="44" >rst</td>
+                    <td  class="TableCell" width="60" >XYZ Company</td>
+                    <td  class="TableCell" width="232" > 
+                      <textarea name="textarea3" rows="2" wrap="soft" cols="30" class = "TableCell"></textarea>
                     </td>
                   </tr>
                 </table>

@@ -5,7 +5,7 @@
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
-<form method="POST" action="/servlet/SOAPClient">
+<form method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
 <input type="hidden" name="action" value="SearchCustAccount">
   <table width="100%" border="0" cellpadding = "5" height="69">
     <tr> 

@@ -29,7 +29,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Notification</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -93,8 +93,8 @@
 <table width="657" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="650"valign="top" class="Main">
-      <p align="center"><br>
-<b><%= program.getYukonName() %></b><br><b>NOTIFICATION</b></p>
+      <p align="center"><br><b>NOTIFICATION - PROGRAM DETAILS FOR:</b><br>
+<b><%= program.getYukonName() %></b></p>
       <p align="center">Click on a company name to view the customer profile. 
       </p>
       <table width="600" border="1" cellspacing="0" cellpadding="2" align="center">
@@ -192,7 +192,9 @@
                     }
                  %>
                     </p>
-      <p align="center" class="Main">&nbsp; </p>
+                    <p align="center" class="MainHeader"> <a href="oper_mand.jsp?tab=Current" class="Link1">Back 
+                      to Current Summary</a> <br>
+              <br>
     </td>
   </tr>
 </table>    

@@ -1,4 +1,3 @@
-<%@ include file="StarsHeader.jsp" %>
 <%
 	String appNoStr = request.getParameter("AppNo");
 	int appNo = -1;
@@ -7,30 +6,6 @@
 			appNo = Integer.parseInt(appNoStr);
 		}
 		catch (NumberFormatException e) {}
-		
-	StarsAppliance appliance = null;
-	StarsLMHardware hardware = null;
-	
-	if (appNo >= 0) {
-		appliance = appliances.getStarsAppliance(appNo);
-		
-		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-			StarsLMHardware hw = inventories.getStarsLMHardware(i);
-			if (hw.getInventoryID() == appliance.getInventoryID()) {
-				hardware = hw;
-				break;
-			}
-		}
-	}
-	
-	StarsLMProgram program = null;
-	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
-		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
-		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
-			program = starsProg;
-			break;
-		}
-	}
 %>
 
 <html>
@@ -82,13 +57,39 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-            <% String pageName = "Appliance.jsp?AppNo=" + appNoStr; %>
-            <%@ include file="Nav.jsp" %>
-          </td>
+          <td  valign="top" width="101">
+		  <% String pageName = "Appliance.jsp?AppNo=" + appNoStr; %>
+          <%@ include file="Nav.jsp" %>
+<%	
+	// Header files have already been included in Nav.jsp
+	StarsAppliance appliance = null;
+	StarsLMHardware hardware = null;
+	
+	if (appNo >= 0) {
+		appliance = appliances.getStarsAppliance(appNo);
+		
+		for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+			StarsLMHardware hw = inventories.getStarsLMHardware(i);
+			if (hw.getInventoryID() == appliance.getInventoryID()) {
+				hardware = hw;
+				break;
+			}
+		}
+	}
+	
+	StarsLMProgram program = null;
+	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
+		StarsLMProgram starsProg = (StarsLMProgram) programs.getStarsLMProgram(i);
+		if (starsProg.getProgramID() == appliance.getLmProgramID()) {
+			program = starsProg;
+			break;
+		}
+	}
+%>
+		  </td>
           <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "APPLIANCES - " + Mappings.getApplianceName(appliance.getApplianceCategory()); %> <%@ include file="InfoSearchBar.jsp" %>
+            <div align="center"><% String header = "APPLIANCES"; %> <%@ include file="InfoSearchBar.jsp" %>
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr>
 				<form name="form6" method="get" action=""> 
@@ -99,10 +100,7 @@
                             <div align="right">Description: </div>
                           </td>
                           <td width="200"> 
-                            <select name="Category">
-                              <option <% if (appliance.getApplianceCategory().equalsIgnoreCase( com.cannontech.database.db.starsappliance.ApplianceCategory.CATEGORY_AC )) { %>selected<% } %>>Air Conditioner</option>
-                              <option <% if (appliance.getApplianceCategory().equalsIgnoreCase( com.cannontech.database.db.starsappliance.ApplianceCategory.CATEGORY_WH )) { %>selected<% } %>>Water Heater</option>
-                            </select>
+                            <input type="text" name="textfield5322" maxlength="40" size="30" value="<%= appliance.getStarsApplianceCategory().getDescription() %>">
                           </td>
                         </tr>
                         <tr> 
@@ -156,7 +154,7 @@
 <%
 	if (program != null) {
 %>
-				    <form name="form7" method="POST" action="/servlet/SOAPClient">
+				    <form name="form7" method="POST" action="/scripts/jrun.dll/servlet/SOAPClient">
 					  <input type="hidden" name="action" value="GetLMCtrlHist">
 					  <%-- Group ID is used for finding control history --%>
 					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
@@ -178,7 +176,8 @@
                         </tr>
                         <tr valign="top"> 
                           <td width="109" bgcolor="#FFFFFF"> 
-                            <div align="center"> <img src="<%= Mappings.getApplianceImage(appliance.getApplianceCategory()) %>" width="60" height="59"><br>
+                            <div align="center">
+							  <img src="<%= Mappings.getApplianceImage(appliance.getStarsApplianceCategory().getCategory()) %>" width="60" height="59"><br>
 							  <span class="TableCell"><%= program.getProgramName() %></span>
 							</div>
                           </td>
@@ -212,8 +211,7 @@
                           </td>
                           </tr>
                       </table>
-                      <p>&nbsp;</p>
-					</form>
+                     </form>
 <%
 	}
 	else {
@@ -227,20 +225,20 @@
               </table>
               <table width="250" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                 <tr>
-                  <td width="186" align = "right">
+                  <td width="33%" align = "right"> 
                     <input type="submit" name="Submit2" value="Submit">
                   </td>
                   <form name="form1" method="get" action="Appliances.jsp">
-                    <td width="186"> 
+                    <td width="33%" align = "center"> 
                       <div>
                         <input type="reset" name="Cancel" value="Cancel">
                       </div>
                     </td>
                   </form>
                   <form name="form1" method="get" action="">
-                    <td width="194"> 
-                      <div align="right"> 
-                        <input type="submit" name="Submit" value="Delete">
+                    <td width="33%"> 
+                      <div align="left"> 
+                        <input type="button" name="Submit" value="Delete" onclick = "Javascript:confirm('Are you sure you would like to delete this appliance?');">
                       </div>
                     </td>
                   </form>

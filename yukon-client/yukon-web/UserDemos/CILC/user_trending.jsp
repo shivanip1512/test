@@ -152,24 +152,39 @@ function jumpPage(form)
                     </table>
                   </td>
                   <td width="340"> 
-                    <table width="338" valign="top" cellpadding="0" cellspacing="0">
-                      <tr> 
-                        <td width="89" valign="top"> 
-                          <div align="center"><a href="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self"><img src="GraphButton.gif" border="0"></a></div>
-                        </td>
-                        <td width="83" valign="top"> 
-                          <div align="center"><a href="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self"><img src="TabularButton.gif" border="0"></a></div>
-                        </td>
-                        <td width="89" valign="top"> 
-                          <div align="center"><a href="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=summary&page=1&model=" + modelType %>" target="_self"><img src="SummaryButton.gif" border="0"></a></div>
-                        </td>
-                        <td width="75" valign="top"> 
-                          <div align="center"><a href="user_print_trend.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&page=1&model=" + modelType %>" target="_self"><img src="FullButton.gif" border="0"></a></div>
-                        </td>
-                      </tr>
-                      <tr width="340"> </tr>
-                    </table>
-                    <table width="340" border="0" cellspacing="0" cellpadding="3">
+                    <table width="337" valign="top" cellpadding="0" cellspacing="0">
+                    <tr> 
+                      <td width="82" valign="top"> 
+                        <form method="Get" action="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self">
+                          <div align="center"> 
+                            <input type="submit" name="tab" value="Graph">
+                          </div>
+                        </form>
+                      </td>
+                        <td width="51" valign="top"> 
+                          <form method="Get" action="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self">
+                            <div align="left">
+                              <input type="submit" name="tab" value="Tab">
+                            </div>
+                          </form>
+                      </td>
+                        <td width="99" valign="top"> 
+                          <form method="Get" action="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=summary&page=1&model=" + modelType %>" target="_self">
+                            <div align="left">
+                              <input type="submit" name="tab" value="Summary">
+                            </div>
+                          </form>
+                      </td>
+                        <td width="103" valign="top"> 
+                          <form method="Get" action="/UserDemos/CILC/user_print_trend.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&page=1&model=" + modelType %>" target="_self">
+                            <div align="left">
+                              <input type="submit" name="print" value="Print View">
+                            </div>
+                          </form>
+						</td>
+                    </tr>
+                    <tr width="340"> </tr>
+                  </table><table width="340" border="0" cellspacing="0" cellpadding="3">
                       <tr> 
                         <td align="right"> 
                           <script language = "JavaScript">

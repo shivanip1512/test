@@ -1,41 +1,54 @@
+<%
+	String programStatus = "In Service";     
+		programStatus = (String) session.getAttribute("PROGRAM_STATUS");
+%>
 <html>
 <head>
-<title>Consumer Energy Services</title>
+<title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../demostyle.css" type="text/css">
+<link rel="stylesheet" href="../demostyle.css" type="text/css">
 <script language="JavaScript">
 <!--
+function doReenable(form) {
+	form.action.value = "EnableService";
+	form.submit();
+}
+
 function MM_popupMsg(msg) { //v1.0
-  alert(msg);
+  return confirm(msg);
 }
 //-->
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0">  
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../Mom.jpg">&nbsp;</td>
-          <td valign="top" height="102"> 
+          <td width="102" height="102" background="ConsumerImage.jpg">&nbsp;</td>
+          <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../Header.gif">&nbsp;</td>
+                <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-				  <td width="265" height="28">&nbsp;</td>
-                  <td width="253" valign="middle">&nbsp;</td>
-                  <td width="58" valign="middle">&nbsp;</td>
+                  <td width="265" height = "28" class="Header3" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
+                    Account Information&nbsp;&nbsp;</td>
+                  
+                <td width="253" valign="middle">&nbsp;</td>
+                  <td width="58" valign="middle"> 
+                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                  </td>
                   <td width="57" valign="middle"> 
-                    
-                  <div align="left"></div>
+                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                      Off</a>&nbsp;</span></div>
                   </td>
               </tr>
             </table>
           </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+		  <td width="1" height="102" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
           </tr>
       </table>
     </td>
@@ -50,119 +63,78 @@ function MM_popupMsg(msg) { //v1.0
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101"> 
-		  <% String pageName = "Features.jsp"; %>
+          <td  valign="top" width="101">
+		  <% String pageName = "ChangeForm.jsp"; %>
           <%@ include file="Nav.jsp" %>
-          </td>
-          <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
-
-		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
-              <div align="center"> 
-                <br>
-                
-              <div align="center"> 
-                <table width="600" border="0" cellspacing="0">
+		  </td>
+          <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
+          <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
+      		  <% String header = "CHANGE PROGRAM"; %>
+              <%@ include file="InfoSearchBar.jsp" %> 
+          
+            <p><span class="Main">Please complete the following form to change 
+              the program:</span> </p>
+            <hr width = "90%">
+          
+                <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
                   <tr> 
-                    <td width="202"> 
-                      <table width="200" border="0" cellspacing="0" cellpadding="3">
-                        <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <%= account.getCompany() %><br>
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td width="187" valign="top"> 
-                      <div align="center"><b><span class="Main"> CHANGE PROGRAM 
-                        </span></b></div>
-                    </td>
-                    <td valign="top" width="205"> 
-                      <form name="form2" method="post" action="../../../login.jsp">
-                        <div align="right"> 
-                          <input type="submit" name="Log Off" value="Log Off">
-                        </div>
-                      </form>
+                    <td class="TableCell"> 
+                      
+                  <p>Reason for changing the program:</p>
                     </td>
                   </tr>
-                </table>
-                <table width="600" border="0" cellpadding="0" cellspacing="0">
                   <tr> 
                     <td> 
-                      <hr>
+                      <div align="left"> 
+                        <input type="text" name="textfield4" size="80">
+                      </div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td class="TableCell"> Satisfaction with the program:</td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="left"> 
+                        <input type="text" name="textfield42" size="80">
+                      </div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    
+                <td class="TableCell"> Would the customer be interested in other 
+                  programs. If so, which ones:</td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="left"> 
+                        <input type="text" name="textfield43" size="80">
+                      </div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td class="TableCell"> Comments:</td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="left"> 
+                        <input type="text" name="textfield44" size="80">
+                      </div>
                     </td>
                   </tr>
                 </table>
-                <p class="Main">Please complete the following form to change your 
-                  program:</p>
-                  <hr>
-				            <form method="post" action="Enrollment.jsp">
-                  <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
-                    <tr> 
-                      <td class="TableCell"> 
-                        <p>Reason for changing your program:</p>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <div align="left"> 
-                          <input type="text" name="textfield4" size="80">
-                        </div>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td class="TableCell"> Satisfaction with the program:</td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <div align="left"> 
-                          <input type="text" name="textfield42" size="80">
-                        </div>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td class="TableCell"> Would you be interested in other 
-                        programs. If so, which ones:</td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <div align="left"> 
-                          <input type="text" name="textfield43" size="80">
-                        </div>
-                      </td>
-                    </tr>
-                    <tr> 
-                      <td class="TableCell"> Comments:</td>
-                    </tr>
-                    <tr> 
-                      <td> 
-                        <div align="left"> 
-                          <input type="text" name="textfield44" size="80">
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                  <p align="center"> 
-                    <input type="submit" name="Submit" value="Submit" >
-                    <input type="button" name="Input" value="Cancel">
-                </form>
-				 	
-                    <br>
-                </div>
-                </div>
-			
+                <form method="post" action="Programs.jsp">
+              <p align="center"> 
+                <input type="submit" name="Submit" value="Submit">
+                <input type="Submit" name="Input" value="Cancel">
+              <p>&nbsp;</p></form>
           </td>
-
-		  
-        <td width="1" bgcolor="#000000"><img src="../VerticalRule.gif" width="1"></td>
+        <td width="1" bgcolor="#000000"><img src="VerticalRule.gif" width="1"></td>
     </tr>
       </table>
-	  
     </td>
 	</tr>
-</table>
-<div align="center"></div>
+</table>  
+<br>
 </body>
 </html>

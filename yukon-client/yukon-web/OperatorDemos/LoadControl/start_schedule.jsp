@@ -103,7 +103,7 @@
 
 		if (valid)
 		{
-			response.sendRedirect( "/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
+			response.sendRedirect( "/scripts/jrun.dll/servlet/ScheduleController?ID=" + scheduleID + "&ACTION=" + request.getParameter("ACTION") +
 								   "&STARTAT=" + checker.get("STARTAT") + "&STOPAT=" + checker.get("STOPAT") + "&URL=" + request.getParameter("URL") );
 			checker.clear();
 		}
@@ -174,7 +174,8 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Control</td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load 
+                  Response</td>
                 <td width="235" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle"> 
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
@@ -219,7 +220,7 @@
               <tr> 
                 <td width="650" class="Main"> 
                   <p align="center"><b><br>
-                    START SCHEDULE</b> 
+                    DIRECT CONTROL - START SCHEDULE</b> 
                   <p align="center"> 
                   <center>
                     <table width="225" border="1" cellspacing="0" cellpadding="5">
@@ -241,15 +242,15 @@
                               <td width="59%"> <span class="TableCell"><struts:text property="STARTTIME" size="10" pattern="@time"/> 
                                 </span></td>
                             </tr>
-                            <tr> <cti:errormsg colSpan="2"> <%= checker.getError("STARTTIME") %> 
+                            <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STARTTIME") %></span>
                               </cti:errormsg> </tr>
                           </table>
                         </td>
                       </tr>
                     </table>
-                    <p>&nbsp;</p>
+                    
+                    <br>
                   </center>
-                  <p> 
                   <center>
                     <table width="225" border="1" cellspacing="0" cellpadding="5">
                       <tr> 
@@ -264,7 +265,7 @@
                               <td width="59%"> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
                                 </span></td>
                             </tr>
-                            <tr> <cti:errormsg colSpan="2"> <%= checker.getError("STOPTIME") %> 
+                            <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
                               </cti:errormsg> </tr>
                           </table>
                         </td>

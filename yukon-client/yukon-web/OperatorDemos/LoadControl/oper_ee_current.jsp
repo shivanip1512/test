@@ -49,11 +49,11 @@
     if (pending != null)
 	{
 		if (pending.equalsIgnoreCase("new"))
-			out.println("<CENTER><FONT FACE=\"Arial, Helvetica\" COLOR=red>A new offer has been sent, please wait...</CENTER><BR>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">A new offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 		else if (pending.equalsIgnoreCase("revise"))
-			out.println("<CENTER><FONT FACE=\"Arial, Helvetica\" COLOR=red>A revised offer has been sent, please wait...</CENTER><BR>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">A revised offer has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 		else if (pending.equalsIgnoreCase("close"))
-			out.println("<CENTER><FONT FACE=\"Arial, Helvetica\" COLOR=red>A close offer request has been sent, please wait...</CENTER><BR>");
+			out.println("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><table width=\"500\" border=\"1\" cellpadding = \"10\" cellspacing = \"0\" height=\"150\" align = \"center\"><tr><td width=\"100%\"><CENTER><FONT FACE=\"Arial, Helvetica, sans-serif\">A close offer request has been sent, please wait...</FONT></CENTER></td></tr></table><br>");
 	}
     else
 	//Decide which content should appear

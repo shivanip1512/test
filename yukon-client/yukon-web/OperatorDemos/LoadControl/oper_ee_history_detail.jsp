@@ -45,7 +45,7 @@ System.out.println("revisionNumber: " + revisionNumber);
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235"  height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -107,7 +107,8 @@ System.out.println("revisionNumber: " + revisionNumber);
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
               <p class="Main"><b><br>
-                OFFER HISTORY <%= offerId %> - <%= revisionNumber %> </b></p>
+                <cti:text key="energyexchangeheading.text"/> - HISTORY DETAIL <BR>
+                OFFER <%= offerId %> - <%= revisionNumber %> </b></p>
             </div>
             <p align="center" class="Main">Click on a customer name to view the 
               customer's offer summary.</p>

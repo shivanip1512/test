@@ -229,7 +229,7 @@
             </td>
           </tr>
         </table>
-        <p><a href="user_ee.jsp">Back</a></p>
+        <p><a href="user_ee.jsp" class="Link1">Back</a></p>
                     <p>&nbsp;</p>
       </center>
   </td>

@@ -65,7 +65,7 @@
                 <td colspan="4" height="74" background="../Header.gif">&nbsp;</td>
               </tr>
               <tr> 
-                <td width="310" class="Header3">&nbsp;&nbsp;&nbsp;<cti:text key="energyexchange.text"/></td>
+                <td width="310" height = "28" class="Header3">&nbsp;&nbsp;&nbsp;Load Response</td>
                 <td width="235" height = "28" valign="middle">&nbsp;</td>
                 
                   <td width="58" valign="middle"> 
@@ -130,8 +130,8 @@
                 <tr> 
                   <td width="650" class="Main"> 
                     <br>
-<p align="center"><b><cti:text key="energyexchange.text"/> 
-                      OFFER <%= offer.getOfferID().toString() %> - <%= revisionNumber %></b></p>
+                    <p align="center"><b><cti:text key="energyexchangeheading.text"/> - OFFER <%= offer.getOfferID().toString() %> 
+                      - <%= revisionNumber %> DETAILS</b></p>
                     <% 
            java.util.Date notificationDate = ((LMEnergyExchangeOfferRevision) offerRevisions.get(revisionNumber.intValue())).getNotificationDateTime();          
                       
@@ -222,9 +222,12 @@
                     <p></p>
                     <p> 
                       <center>
-                        <span class="MainHeader"><b>TOTAL: <%= totalCommitted %> kW</b></span> 
-                      </center>
-                    </p>
+                        <p><span class="MainHeader"><b>TOTAL: <%= totalCommitted %> 
+                          kW</b></span> </p>
+                        </center>
+                    <p align="center" class="MainHeader"> <a href="oper_ee.jsp?tab=Current" class="Link1"><b>Back 
+                      to Current Summary</b></a><br>
+              <br>
                     <p> 
                       <%
     }
