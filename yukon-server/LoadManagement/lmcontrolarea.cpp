@@ -1034,11 +1034,11 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(ULONG nowInSeconds, Cti
     {
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
 
-        if( currentLMProgram->getDisableFlag() &&
-            (currentLMProgram->getControlType() == CtiLMProgramBase::AutomaticType || currentLMProgram->getControlType() == "Enabled") )
+        if( currentLMProgram->getControlType() == CtiLMProgramBase::AutomaticType ||
+            currentLMProgram->getControlType() == "Enabled" )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             if( currentLMProgram->isAvailableToday() && currentLMProgram->isWithinValidControlWindow(nowInSeconds) &&
-                currentLMProgram->hasControlHoursAvailable() )
+                currentLMProgram->hasControlHoursAvailable() && !currentLMProgram->getDisableFlag() )
             {
                 if( currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
                     currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
