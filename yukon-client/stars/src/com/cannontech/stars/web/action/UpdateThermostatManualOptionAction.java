@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatManualEvent;
@@ -218,6 +219,24 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				
 				LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) StarsLiteFactory.createLite( event );
 				liteHw.getThermostatSettings().getThermostatManualEvents().add( liteEvent );
+				
+				// Log activity
+				String tempUnit = "F";
+				if (liteHw.getThermostatSettings().getDynamicData() != null &&
+					liteHw.getThermostatSettings().getDynamicData().getDisplayedTempUnit() != null)
+					tempUnit = liteHw.getThermostatSettings().getDynamicData().getDisplayedTempUnit();
+				
+				String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber() + ", ";
+				if (starsOption.getTemperature() == -1)
+					logMsg += "Run Program";
+				else
+					logMsg += "Mode:" + starsOption.getMode().toString() + ", " +
+							"Temp:" + starsOption.getTemperature() + tempUnit +
+							(starsOption.getHold()? "(HOLD)" : "") + ", " +
+							"Fan:" + starsOption.getFan().toString();
+				
+				ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), liteAcctInfo.getCustomer().getCustomerID(), energyCompany.getLiteID(),
+						"Thermostat Manual", logMsg);
 				
 				// The StarsThermostatManualEvent element of the response message only need to be set once
 				if (resp.getStarsThermostatManualEvent() == null) {

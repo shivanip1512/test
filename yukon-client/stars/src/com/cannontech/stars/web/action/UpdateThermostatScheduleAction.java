@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.YukonListFuncs;
@@ -305,6 +306,29 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							.append(" serial ").append(liteHw.getManufacturerSerialNumber());
 						
 						cmdList.add( cmd.toString() );
+						
+						// Log activity
+						String tempUnit = "F";
+						if (liteSettings.getDynamicData() != null && liteSettings.getDynamicData().getDisplayedTempUnit() != null)
+							tempUnit = liteSettings.getDynamicData().getDisplayedTempUnit();
+						
+						String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber() + ", " +
+								"Mode:" + starsSeason.getMode().toString() + ", " +
+								"Day:" + starsSched.getDay().toString() + ", ";
+						
+						if (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT) {
+							logMsg += "Occupied:" + starsSched.getTime4().toString().substring(0, 5) + "," + starsSched.getTemperature4() + tempUnit + ", " +
+									"Unoccupied:" + starsSched.getTime1().toString().substring(0, 5) + "," + starsSched.getTemperature1() + tempUnit;
+						}
+						else {
+							logMsg += "Wake:" + ((starsSched.getTemperature1() < 0)? "(NONE)" : starsSched.getTime1().toString().substring(0, 5) + "," + starsSched.getTemperature1() + tempUnit) + ", " +
+									"Leave:" + ((starsSched.getTemperature2() < 0)? "(NONE)" : starsSched.getTime2().toString().substring(0, 5) + "," + starsSched.getTemperature2() + tempUnit) + ", " +
+									"Return:" + ((starsSched.getTemperature3() < 0)? "(NONE)" : starsSched.getTime3().toString().substring(0, 5) + "," + starsSched.getTemperature3() + tempUnit) + ", " +
+									"Sleep:" + ((starsSched.getTemperature4() < 0)? "(NONE)" : starsSched.getTime4().toString().substring(0, 5) + "," + starsSched.getTemperature4() + tempUnit);
+						}
+						
+						ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), liteAcctInfo.getCustomer().getCustomerID(), energyCompany.getLiteID(),
+								"Thermostat Schedule", logMsg );
 					}
 				}
 				
@@ -817,19 +841,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						StarsThermostatSchedule starsRespSched2 = StarsLiteFactory.createStarsThermostatSchedule( towIDs[k], liteEntries2 );
 						starsRespSeason2.addStarsThermostatSchedule( starsRespSched2 );
 					}
-					
-					// Log activity
-					String tempUnit = "F";
-					if (liteSettings.getDynamicData() != null && liteSettings.getDynamicData().getDisplayedTempUnit() != null)
-						tempUnit = liteSettings.getDynamicData().getDisplayedTempUnit();
-					
-					String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber() + ", " +
-							"Mode:" + starsSeason.getMode().toString() + ", " +
-							"Day:" + starsSched.getDay().toString() + ", " +
-							"Wake:" + ((starsSched.getTemperature1() < 0)? "(NONE)" : starsSched.getTime1().toString().substring(0, 5) + "," + starsSched.getTemperature1() + tempUnit) + ", " +
-							"Leave:" + ((starsSched.getTemperature2() < 0)? "(NONE)" : starsSched.getTime2().toString().substring(0, 5) + "," + starsSched.getTemperature2() + tempUnit) + ", " +
-							"Return:" + ((starsSched.getTemperature3() < 0)? "(NONE)" : starsSched.getTime3().toString().substring(0, 5) + "," + starsSched.getTemperature3() + tempUnit) + ", " +
-							"Sleep:" + ((starsSched.getTemperature4() < 0)? "(NONE)" : starsSched.getTime4().toString().substring(0, 5) + "," + starsSched.getTemperature4() + tempUnit);
 				}
 			}
 		}
