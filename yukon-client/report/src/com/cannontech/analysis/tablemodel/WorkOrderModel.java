@@ -463,9 +463,11 @@ public class WorkOrderModel extends ReportModelBase {
 					}
 					else {
 						for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-							Integer invID = (Integer) liteAcctInfo.getInventories().get(k);
-							WorkOrder wo = new WorkOrder( ec.getLiteID(), liteOrder.getOrderID(), invID.intValue() );
-							getData().add( wo );
+							int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
+							if (ec.getInventoryBrief(invID, true) instanceof LiteStarsLMHardware) {
+								WorkOrder wo = new WorkOrder( ec.getLiteID(), liteOrder.getOrderID(), invID );
+								getData().add( wo );
+							}
 						}
 					}
 				}
