@@ -693,37 +693,27 @@ public final static Integer getIntervalSecondsValueFromDecimal(String selectedSt
 }
 
 /**
- * Returns whether we are executing as a client application or not
- * @return
- */
-public final static boolean isRunningAsClient() 
-{
-	//TODO: Is this reliable enough?
-	return (System.getProperty("cti.app.name") != null);
-}
-
-/**
  * Returns the directory log files should go to
+ * Here is the search order:
+ *  1) Uses System.getProperty("yukon.logdir") if found
+ *  2) Uses \yukon\client\log if found, else creates yukon\client\log
+ * 
  */
 public final static String getLogDirPath()
 {   
 	//Logs go different places depending on whether we are running
 	//as a client application or a server application
-	String yb = getYukonBase(); 
 	final String fs = System.getProperty("file.separator");
+	String clientLoc = getYukonBase() + fs + "client" + fs + "log" + fs;
 	String logDir = System.getProperty("yukon.logdir");
 	
 	if(logDir != null)
 	{
 		return logDir;
 	}
-	else if(isRunningAsClient()) 
+	else
 	{
-		return yb + fs + "client" + fs + "log";
-	}
-	else 
-	{
-		return yb + fs + "server" + fs + "log";
+		return clientLoc;
 	}
 }
 
