@@ -2795,7 +2795,7 @@ public void setDatabase(int whichDatabase)
 	getTreeViewPanel().setTreeModels(newModels);
 	if( models == CORE_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex( 1 ); //device is the default
-	if( models == LM_MODELS )
+	if( models == LM_MODELS || models == LM_MODELS_WITH_SA )
 		getTreeViewPanel().setSelectedSortByIndex( 5 ); //"load groups" is the default
 	if( models == SYSTEM_MODELS || models == NONLOGIN_SYSTEM_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex( 3 ); //"contacts" is the default
