@@ -92,7 +92,11 @@ public class DBPersistentBean implements SessionBean, IDBPersistent
 
 
          autoCommit = getDbConnection().getAutoCommit();
-         getDbConnection().setAutoCommit(false);
+         
+         //only do this if the caller did not provide a DB connection on the DBPersistent
+         if( conn == null )
+             getDbConnection().setAutoCommit(false);
+
          object.setDbConnection( getDbConnection() );
                
          switch( operation )
