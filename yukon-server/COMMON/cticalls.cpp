@@ -1384,7 +1384,6 @@ void IM_EX_CTIBASE    DumpOutMessage(void *Mess)
    {
       RWMutexLock::LockGuard guard(coutMux);
       fprintf(stderr,"Device ID:          %d\n",Om->DeviceID);
-      fprintf(stderr,"Route  ID:          %d\n",Om->RouteID);
       fprintf(stderr,"Port:               %d\n",Om->Port);
       fprintf(stderr,"Remote:             %d\n",Om->Remote);
       fprintf(stderr,"Sequence:           %d\n",Om->Sequence);

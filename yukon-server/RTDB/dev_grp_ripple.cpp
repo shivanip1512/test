@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/17 14:52:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/08/20 22:44:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,6 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
         setOutMessageTrxID( OutMessage->TrxID );                // This is the LM Group which started this mess
         initTrxID( OutMessage->TrxID, parse, vgList );                 // Be sure to accept, or create a new TrxID.
 
-        OutMessage->RouteID     = getRouteID();
         OutMessage->EventCode   = RIPPLE | NORESULT;
         OutMessage->Retry       = 2;                            // Default to two tries per route!
 

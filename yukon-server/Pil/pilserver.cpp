@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/08/12 16:53:33 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/08/20 22:45:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,7 +77,6 @@ void DumpOutMessage(void *Mess)
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << "  Device ID:          " << Om->DeviceID << endl;
         dout << "  Target ID:          " << Om->TargetID << endl;
-        dout << "  Route  ID:          " << Om->RouteID << endl;
         dout << "  Port:               " << Om->Port << endl;
         dout << "  Remote:             " << Om->Remote << endl;
         dout << "  Sequence:           " << Om->Sequence << endl;

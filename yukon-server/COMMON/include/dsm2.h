@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/19 20:02:10 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/08/20 22:44:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -787,7 +787,6 @@ public:
 
    LONG               DeviceID;                     // 083199 CGP    // The device id of the transmitter device.
    LONG               TargetID;                     // 022701 CGP    // The device id of the end-of-line device. May be the same as DeviceID depending on protocol
-   LONG               RouteID;                      // 083199 CGP
    USHORT             Sequence;                     // 083199 CGP    // Used by CCU711 to id a CCU queue entry.
 
    INT                Retry;                        // Instructions to porter!
@@ -859,7 +858,6 @@ public:
       {
          DeviceID          = aRef.DeviceID;
          TargetID          = aRef.TargetID;
-         RouteID           = aRef.RouteID;
          Sequence          = aRef.Sequence;
 
          Retry             = aRef.Retry;

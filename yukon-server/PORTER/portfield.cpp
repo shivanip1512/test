@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2002/08/08 23:23:09 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2002/08/20 22:45:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -757,7 +757,7 @@ INT InitInMessage(INMESS *InMessage, OUTMESS *OutMessage)
 
     InMessage->DeviceID        = OutMessage->DeviceID;
     InMessage->TargetID        = OutMessage->TargetID;
-    InMessage->RouteID         = OutMessage->RouteID;
+    // 082002 CGP // InMessage->RouteID         = OutMessage->RouteID;
 
     InMessage->Remote          = OutMessage->Remote;
     InMessage->Port            = OutMessage->Port;
@@ -2848,7 +2848,7 @@ BOOL areAnyOutMessagesForMyRteID(void *pId, void* d)
     LONG Id = (LONG)pId;
     OUTMESS *OutMessage = (OUTMESS *)d;
 
-    return(OutMessage->RouteID == Id);
+    return(OutMessage->Request.RouteID == Id);
 }
 
 BOOL areAnyOutMessagesForUniqueID(void *pId, void* d)

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/06/26 18:12:03 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/08/20 22:44:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,7 +147,6 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
         /* Copy over some of the standard stuff. */
         pOM->DeviceID              = getID();
         pOM->TargetID              = getID();
-        pOM->RouteID               = pReq->RouteId();
         EstablishOutMessagePriority( pOM, pReq->getMessagePriority() );
 
         /* Fill out the PIL_ECHO structure elements */

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/08 23:21:45 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/08/20 22:45:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,7 +129,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         InMessage.DeviceID      = OutMessage->DeviceID;
         InMessage.TargetID      = OutMessage->TargetID;
 
-        InMessage.RouteID       = OutMessage->RouteID;
+        // 082002 CGP // InMessage.RouteID       = OutMessage->RouteID;
 
         InMessage.Port          = OutMessage->Port;
         InMessage.Remote        = OutMessage->Remote;

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/07/30 21:16:47 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/08/20 22:44:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -312,7 +312,7 @@ void CtiDeviceMCT::sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > 
     OutMessage->TargetID  = getID();
     OutMessage->Port      = getPortID();
     OutMessage->Remote    = getAddress();
-    OutMessage->RouteID   = getRouteID();
+    // 082002 CGP // OutMessage->RouteID   = getRouteID();
     OutMessage->TimeOut   = 2;
     OutMessage->Sequence  = CtiProtocolEmetcon::PutConfig_LoadProfileInterval;     // Helps us figure it out later!
     OutMessage->Retry     = 2;
@@ -583,12 +583,12 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             else
                 routeID = getRouteID();
 
-            pOut->RouteID         = routeID;
+            // 082002 CGP // pOut->RouteID         = routeID;
             pOut->Request.RouteID = routeID;
 
             EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
 
-            if( (Route = CtiDeviceBase::getRoute( pOut->RouteID )) != NULL )
+            if( (Route = CtiDeviceBase::getRoute( pOut->Request.RouteID )) != NULL )
             {
                 pOut->TargetID                = getID();
                 pOut->EventCode = BWORD | RESULT | WAIT;
@@ -706,11 +706,11 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
             OutMessage->TargetID  = getID();
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
-            OutMessage->RouteID   = getRouteID();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 2;
+            OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
@@ -761,11 +761,11 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             OutMessage->TargetID  = getID();
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
-            OutMessage->RouteID   = getRouteID();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Integrity;     // Helps us figure it out later!;
             OutMessage->Retry     = 2;
+            OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
@@ -815,11 +815,11 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage->TargetID  = getID();
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
-            OutMessage->RouteID   = getRouteID();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_Accum;
             OutMessage->Retry     = 2;
+            OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
@@ -871,11 +871,11 @@ INT CtiDeviceMCT::LoadProfileScan(CtiRequestMsg *pReq,
             OutMessage->TargetID  = getID();
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
-            OutMessage->RouteID   = getRouteID();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_LoadProfile;
             OutMessage->Retry     = 2;
+            OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.MacroOffset = 0; // 20020730 CGP // selectInitialMacroRouteOffset(getRouteID());
 
             // Tell the porter side to complete the assembly of the message.
@@ -1193,10 +1193,10 @@ INT CtiDeviceMCT::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 2;
+        OutMessage->Request.RouteID   = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
@@ -1289,10 +1289,10 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 2;
+        OutMessage->Request.RouteID   = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
@@ -1419,11 +1419,11 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
+        OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
@@ -1557,11 +1557,11 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
+        OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
@@ -1622,11 +1622,11 @@ INT CtiDeviceMCT::executeGetStatus(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
+        OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
@@ -1673,11 +1673,11 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
        OutMessage->TargetID  = getID();
        OutMessage->Port      = getPortID();
        OutMessage->Remote    = getAddress();
-       OutMessage->RouteID   = getRouteID();
        OutMessage->TimeOut   = 2;
        OutMessage->Sequence  = function;     // Helps us figure it out later!
        OutMessage->Retry     = 2;
 
+       OutMessage->Request.RouteID   = getRouteID();
 
        if( OutMessage->Buffer.BSt.Function == 0x06 )  //  easiest way to tell it's an MCT3xx
        {
@@ -1863,11 +1863,11 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
+        OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
@@ -2211,11 +2211,11 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
        OutMessage->TargetID  = getID();
        OutMessage->Port      = getPortID();
        OutMessage->Remote    = getAddress();
-       OutMessage->RouteID   = getRouteID();
        OutMessage->TimeOut   = 2;
        OutMessage->Sequence  = function;     // Helps us figure it out later!
        OutMessage->Retry     = 2;
 
+       OutMessage->Request.RouteID   = getRouteID();
        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
@@ -2269,11 +2269,11 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
 
+        OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
         outList.append( OutMessage );

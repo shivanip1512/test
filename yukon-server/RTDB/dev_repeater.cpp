@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/07/30 21:16:47 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/08/20 22:44:16 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,7 +210,6 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
             else
                 routeID = getRouteID();
 
-            pOut->RouteID         = routeID;
             pOut->Request.RouteID = routeID;
 
             EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
@@ -318,7 +317,6 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
             OutMessage->TargetID  = getID();
             OutMessage->Port      = getPortID();
             OutMessage->Remote    = getAddress();
-            OutMessage->RouteID   = getRouteID();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
             OutMessage->Sequence  = CtiProtocolEmetcon::Scan_General;     // Helps us figure it out later!
@@ -326,6 +324,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
+            OutMessage->Request.RouteID = getRouteID();
             strncpy(OutMessage->Request.CommandStr, "loop", COMMAND_STR_SIZE);
 
             outList.insert(OutMessage);
@@ -372,10 +371,10 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 3;
+        OutMessage->Request.RouteID = getRouteID();
 
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
@@ -435,11 +434,11 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         OutMessage->TargetID  = getID();
         OutMessage->Port      = getPortID();
         OutMessage->Remote    = getAddress();
-        OutMessage->RouteID   = getRouteID();
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;     // Helps us figure it out later!
         OutMessage->Retry     = 3;
 
+        OutMessage->Request.RouteID = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
 
@@ -578,11 +577,11 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
            pOutMessage->TargetID  = getID();
            pOutMessage->Port      = getPortID();
            pOutMessage->Remote    = getAddress();
-           pOutMessage->RouteID   = getRouteID();
            pOutMessage->TimeOut   = 2;
            pOutMessage->Sequence  = function;     // Helps us figure it out later!
            pOutMessage->Retry     = 3;
 
+           OutMessage->Request.RouteID = getRouteID();
            // Tell the porter side to complete the assembly of the message.
            strncpy(pOutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
@@ -604,11 +603,11 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        OutMessage->TargetID  = getID();
        OutMessage->Port      = getPortID();
        OutMessage->Remote    = getAddress();
-       OutMessage->RouteID   = getRouteID();
        OutMessage->TimeOut   = 2;
        OutMessage->Sequence  = function;     // Helps us figure it out later!
        OutMessage->Retry     = 3;
 
+       OutMessage->Request.RouteID = getRouteID();
        // Tell the porter side to complete the assembly of the message.
        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
     }
@@ -648,11 +647,11 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
       OutMessage->TargetID  = getID();
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
-      OutMessage->RouteID   = getRouteID();
       OutMessage->TimeOut   = 2;
       OutMessage->Sequence  = function;         // Helps us figure it out later!
       OutMessage->Retry     = 3;
 
+      OutMessage->Request.RouteID = getRouteID();
       // Tell the porter side to complete the assembly of the message.
       strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
    }
