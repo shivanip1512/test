@@ -114,7 +114,8 @@ function confirmSubmit(form) { //v1.0
               <table width="300" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
                   <td class="HeaderCell">Date</td>
-                  <td class="HeaderCell">Duration</td>
+                  <td class="HeaderCell">Type - Duration</td>
+                  <td class="HeaderCell">Program</td>
                 </tr>
                 <tr> 
                   <td class="TableCell" width="100" >07/15/02</td>

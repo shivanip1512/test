@@ -125,7 +125,7 @@ public class CreateServiceRequestAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             	
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.removeAttribute("SERVICE_HISTORY");
+			operator.removeAttribute("$$SERVICE_HISTORY");
 			
             return 0;
         }

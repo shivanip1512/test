@@ -1,6 +1,6 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute("SERVICE_HISTORY");
+	StarsGetServiceRequestHistoryResponse getServHistResp = (StarsGetServiceRequestHistoryResponse) operator.getAttribute("$$SERVICE_HISTORY");
 	if (getServHistResp == null) {
 		response.sendRedirect("/servlet/SOAPClient?action=GetServiceHistory"); return;
 	}
@@ -90,7 +90,7 @@
                 <td width="49" class="TableCell"><%= servHist.getServiceType().getContent() %></td>
                 <td width="52" class="TableCell"><%= servHist.getCurrentState() %></td>
                 <td width="42" class="TableCell">&nbsp;</td>
-				<td width="74" class="TableCell"><%= servHist.getSerivceCompany() %></td>
+				<td width="74" class="TableCell"><%= servHist.getServiceCompany().getContent() %></td>
 				<td width="222"> 
 				  <textarea name="textarea2" rows="3" wrap="soft" cols="28" class = "TableCell"><%= servHist.getDescription() %></textarea>
 				</td>

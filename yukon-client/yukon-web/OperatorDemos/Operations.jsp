@@ -1,3 +1,4 @@
+<%@ include file="Consumer/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -50,9 +51,16 @@
             <td  class = "Main" width="114" >&nbsp;</td>
             <td  class = "Main" width="233" align = "right"> 
               <select name="SearchBy">
-                <option value="22">Acct #</option>
-                <option value="23">Phone #</option>
-                <option value="24">Name</option>
+<%
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SEARCHBY );
+	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+%>
+                <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
               </select>
               &nbsp; 
               <input type="text" name="SearchValue">

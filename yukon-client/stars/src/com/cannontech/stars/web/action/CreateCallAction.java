@@ -125,7 +125,7 @@ public class CreateCallAction implements ActionBase {
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
             	
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.removeAttribute("CALL_TRACKING");
+			operator.removeAttribute("$$CALL_TRACKING");
 			
             return 0;
         }

@@ -207,46 +207,121 @@
                       </form>
                     </tr>
                   </table>
-                  <div align="center"><br>
-                    <span class="MainHeader">Hardware History</span><br>
-                  </div>
-                  <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
-                    <tr> 
-                      <td width="104" class="HeaderCell">Date</td>
-                      <td width="100" class="HeaderCell">Action</td>
-                    </tr>
+                  <br>
+                </td>
+                <td width="300" valign="top" bgcolor="#FFFFFF"> 
+                  <div align="center">
+                    <table width="300" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                        <form name="form3" method="get" action="">
+                          <td valign="top"><span class="MainHeader"><b>INSTALL</b></span> 
+                            <hr>
+                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Date Installed: </div>
+                                </td>
+                                <td width="200"> 
+                                  <input type="text" name="InstallDate" maxlength="30" size="24" value="<%= dateFormat.format(hardware.getInstallDate()) %>">
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Service Company: </div>
+                                </td>
+                                <td width="200"> 
+                                  <select name="ServiceCompany">
+                                    <option><%= hardware.getInstallationCompany() %></option>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Location: </div>
+                                </td>
+                                <td width="200"> 
+                                  <select name="select4">
+                                    <option>Outside North</option>
+                                  </select>
+                                </td>
+                              </tr>
+                              <tr> 
+                                <td width="100" class="TableCell"> 
+                                  <div align="right">Notes: </div>
+                                </td>
+                                <td width="200"> 
+                                  <textarea name="notes" rows="3 wrap="soft" cols="28" class = "TableCell"></textarea>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </form>
+                      </tr>
+                    </table><br>
+                    <table width="100%" border="0" height="68" >
+                      <tr > 
+                        <td class = "TableCell" align = "center">Service Company<br>
+                          <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
+                            <tr>
+                              <td valign = "top" align = "center" class = "TableCell">
+                                <b>XYZ Company<br>12345 W Main Street<br>
+                                Golden Valley, MN 55427<br>	1-800-000-0000</b>
+							</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
+                    
+                    <table width="305" border="0" cellspacing="0" cellpadding="0">
+                      <tr> 
+                        <form name="form3" method="get" action="">
+                          <td valign="top" align = "center" class = "TableCell"> 
+                            <span class="MainHeader">Hardware History</span> <br>
+                            <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
+                              <tr> 
+                                <td width="104" class="HeaderCell">Date</td>
+                                <td width="100" class="HeaderCell">Action</td>
+                              </tr>
 <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
 	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
 		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
 %>
-                    <tr valign="top"> 
-                      <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= dateFormat.format(event.getEventDateTime()) %></td>
-                      <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
-                    </tr>
+							  <tr valign="top"> 
+							    <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= dateFormat.format(event.getEventDateTime()) %></td>
+							    <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
+							  </tr>
 <%
 	}
 %>
-                  </table>
-                  </td>
+                            </table>
+                          </td>
+                        </form>
+                      </tr>
+                    </table>
+                  </div>
+                  
+                </td>
               </tr>
             </table>
-            <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+            <table width="400" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
               <tr> 
                 <form name="form1" type="get" action="LCR5000.jsp">
-                  <td width="50%"> 
+                  <td width="42%"> 
                     <div align="right"> 
                       <input type="submit" name="Submit2" value="Submit">
                     </div>
                   </td>
-                  <td width="194">
+                  <td width="15%" align = "center"> 
                     <input type="reset" name="Cancel2" value="Cancel">
                   </td>
                 </form>
                 <form name="form1">
-                  <td width="194"> 
+                  <td width="43%"> 
                     <div align="left">
-                      <input type="button" name="Submit" value="Delete">
+                      <input type="button" name="Submit" value="Delete" onclick = "Javascript:confirm('Are you sure you would like to delete this hardware?');">
                     </div>
                   </td>
                 </form>

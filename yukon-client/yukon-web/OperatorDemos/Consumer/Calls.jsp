@@ -1,6 +1,6 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
-	StarsGetCallReportHistoryResponse callTrackingResp = (StarsGetCallReportHistoryResponse) operator.getAttribute("CALL_TRACKING");
+	StarsGetCallReportHistoryResponse callTrackingResp = (StarsGetCallReportHistoryResponse) operator.getAttribute("$$CALL_TRACKING");
 	if (callTrackingResp == null) {
 		response.sendRedirect("/servlet/SOAPClient?action=CallTracking"); return;
 	}

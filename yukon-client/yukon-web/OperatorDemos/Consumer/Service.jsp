@@ -90,7 +90,16 @@
                             </td>
                             <td width="210"> 
                               <select name="ServiceType">
-                                <option value="18">Service Call</option>
+<%
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
+	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
+%>
+                                <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                               </select>
                             </td>
                           </tr>
@@ -101,7 +110,15 @@
                             </td>
                             <td width="210"> 
                               <select name="ServiceCompany">
-                                <option value="25">Acme Company</option>
+<%
+	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList) selectionListTable.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+	for (int i = 0; i < serviceCompanyList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = serviceCompanyList.getStarsSelectionListEntry(i);
+%>
+                                <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+<%
+	}
+%>
                               </select>
                             </td>
                           </tr>
