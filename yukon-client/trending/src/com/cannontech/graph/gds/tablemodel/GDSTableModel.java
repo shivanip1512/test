@@ -5,7 +5,7 @@ package com.cannontech.graph.gds.tablemodel;
  * Creation date: (10/23/2001 9:10:18 AM)
  * @author: 
  */
-public abstract class GDSTableModel extends javax.swing.table.AbstractTableModel
+public class GDSTableModel extends javax.swing.table.AbstractTableModel
 {
 	public final static int DEVICE_NAME_COLUMN = 0;
 	public final static int POINT_NAME_COLUMN = 1;
@@ -13,6 +13,34 @@ public abstract class GDSTableModel extends javax.swing.table.AbstractTableModel
 	public final static int COLOR_NAME_COLUMN = 3;
 	public final static int AXIS_NAME_COLUMN = 4;
 	public final static int TYPE_NAME_COLUMN = 5;
+	
+
+	public static String includeType = com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES;
+	
+	public static String[] columnNames =
+	{
+		"Device",
+		"Point",
+		"Label",
+		"Color",
+		"Axis",
+		"Type"
+	};
+
+	public static Class[] columnTypes =
+	{
+		String.class,
+		String.class,
+		String.class,
+		java.awt.Color.class,
+		String.class,
+		javax.swing.JCheckBox.class
+	};	
+	
+	// rows contains GraphDataSeries
+	public java.util.ArrayList rows = new java.util.ArrayList(10);
+	public com.cannontech.database.db.graph.GraphDataSeries peakGDS = null;
+	
 /**
  * DataSeriesTableModel constructor comment.
  */
@@ -25,19 +53,22 @@ public GDSTableModel()
  * Creation date: (10/23/2001 9:22:50 AM)
  * @param gds com.cannontech.database.db.graph.GraphDataSeries
  */
-public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds)
+/**
+ * Adds the Graph_Series gds to model.rows array
+ * Adds the Peak_Series gds to model.excludedRows array
+ * Creation date: (10/25/00 11:21:21 AM)
+ */
+public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds) 
 {
-	String type = getIncludeType();
-	
-	if( gds.getType().equalsIgnoreCase(type) )
+
+	if (gds.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES))
+	{
+		setPeakGDS(gds);
+	}
+	else //if( gds.getType().equalsIgnoreCase(includeType) )
 	{
 		getRows().add(gds);
 		fireTableDataChanged();
-	}		
-	if (gds.getType().equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES)
-		&& type.equalsIgnoreCase(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES))
-	{
-		getExcludedRows().add(gds);
 	}
 }
 /**
@@ -47,8 +78,12 @@ public void addRow(com.cannontech.database.db.graph.GraphDataSeries gds)
  */
 public com.cannontech.database.db.graph.GraphDataSeries[] getAllDataSeries()
 {
+	int gdsArraySize = getRowCount();
+	if( getPeakGDS() != null)
+		gdsArraySize++;
+		
 	com.cannontech.database.db.graph.GraphDataSeries[] retVal =
-		new com.cannontech.database.db.graph.GraphDataSeries[ getRows().size() + getExcludedRows().size() ];
+		new com.cannontech.database.db.graph.GraphDataSeries[ gdsArraySize];
 
 	java.util.Iterator iter = getRows().iterator();
 
@@ -58,11 +93,8 @@ public com.cannontech.database.db.graph.GraphDataSeries[] getAllDataSeries()
 		retVal[i++] = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
 	}
 
-	iter = getExcludedRows().iterator();
-	while( iter.hasNext() )
-	{
-		retVal[i++] = (com.cannontech.database.db.graph.GraphDataSeries) iter.next();
-	}
+	if( getPeakGDS() != null)
+		retVal[i++] = getPeakGDS();
 
 	return retVal;
 }
@@ -94,22 +126,31 @@ public String getColumnName(int col) {
 }
 /**
  * Insert the method's description here.
- * Creation date: (10/23/2001 4:10:47 PM)
+ * Creation date: (10/23/2001 4:10:08 PM)
  * @return java.lang.Class[]
  */
-abstract String[] getColumnNames();
+public String[] getColumnNames()
+{
+	return columnNames;
+}
 /**
  * Insert the method's description here.
- * Creation date: (10/23/2001 4:10:47 PM)
+ * Creation date: (10/23/2001 4:10:08 PM)
  * @return java.lang.Class[]
  */
-abstract Class[] getColumnTypes();
+public Class[] getColumnTypes()
+{
+	return columnTypes;
+}
 /**
  * Insert the method's description here.
- * Creation date: (10/23/2001 4:06:43 PM)
- * @return java.util.ArrayList
+ * Creation date: (10/23/2001 4:05:56 PM)
+ * @return GraphDataSeries
  */
-abstract java.util.ArrayList getExcludedRows();
+public com.cannontech.database.db.graph.GraphDataSeries getPeakGDS()
+{
+	return peakGDS;
+}
 /**
  * Insert the method's description here.
  * Creation date: (10/25/00 11:26:55 AM)
@@ -124,7 +165,7 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 			
 		case POINT_NAME_COLUMN:
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			Long id = gds.getPointID();
+			Integer id = gds.getPointID();
 			
 			synchronized(cache)
 			{
@@ -162,10 +203,13 @@ public Object getGDSAttribute(int index, com.cannontech.database.db.graph.GraphD
 }
 /**
  * Insert the method's description here.
- * Creation date: (10/23/2001 4:01:32 PM)
+ * Creation date: (10/23/2001 4:02:45 PM)
  * @return int
  */
-abstract String getIncludeType();
+public String getIncludeType()
+{
+	return includeType;
+}
 /**
  * Insert the method's description here.
  * Creation date: (10/25/00 11:21:02 AM)
@@ -185,10 +229,13 @@ public int getRowCount()
 }
 /**
  * Insert the method's description here.
- * Creation date: (10/23/2001 4:07:35 PM)
+ * Creation date: (10/23/2001 4:05:03 PM)
  * @return java.util.ArrayList
  */
-abstract java.util.ArrayList getRows();
+public java.util.ArrayList getRows()
+{
+	return rows;
+}
 /**
  * getValueAt method comment.
  */
@@ -243,6 +290,15 @@ public void removeRow(int row)
 		getRows().remove(row);
 
 	fireTableDataChanged();
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (10/23/2001 4:05:56 PM)
+ * @return java.util.ArrayList
+ */
+public void setPeakGDS(com.cannontech.database.db.graph.GraphDataSeries newPeakGDS)
+{
+	peakGDS = newPeakGDS;
 }
 /**
  * Insert the method's description here.
