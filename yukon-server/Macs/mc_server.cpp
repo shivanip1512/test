@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/20 15:29:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/13 22:24:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -620,24 +620,31 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
 
                 CtiMCUpdateSchedule* update_msg = (CtiMCUpdateSchedule*) msg;
-
-                if( !update_msg->getSchedule().isSimpleSchedule() )
-                {
-                    CtiMCScript script_to_write;
-                    script_to_write.setScriptName( update_msg->getSchedule().getCommandFile() );
-                    script_to_write.setContents( update_msg->getScript() );
-
-                    if( !script_to_write.writeContents() )
-                    {
-                        errorMsg = new CtiMCInfo();
-                        errorMsg->setInfo("An error occured writing a script file.");
-                        break;
-                    }
-                }
-
+            
                 if( _schedule_manager.updateSchedule( update_msg->getSchedule() ) )
                 {
                     CtiMCSchedule* updated_sched = _schedule_manager.findSchedule( update_msg->getSchedule().getScheduleID() );
+
+                    if( updated_sched->getCurrentState() == CtiMCSchedule::Running )
+                    {
+                        errorMsg = new CtiMCInfo();
+                        errorMsg->setInfo("Cannot update a running schedule, stop or disable it first");
+                        break;
+                    }
+
+                     if( !update_msg->getSchedule().isSimpleSchedule() )
+                     {
+                         CtiMCScript script_to_write;
+                         script_to_write.setScriptName( update_msg->getSchedule().getCommandFile() );
+                         script_to_write.setContents( update_msg->getScript() );
+    
+                         if( !script_to_write.writeContents() )
+                         {
+                             errorMsg = new CtiMCInfo();
+                             errorMsg->setInfo("An error occured writing a script file.");
+                             break;
+                         }
+                     }
 
                     _scheduler.removeEvents(updated_sched->getScheduleID());
                     _scheduler.initEvents( stripSeconds( RWTime::now()), *updated_sched );
@@ -945,13 +952,13 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 
                 
             }
-            break;
+            break;  
+   }
 
    if( errorMsg != NULL )
    {
        _client_listener.BroadcastMessage(errorMsg);
    }
-  }
 
    return ret_val;
 }
