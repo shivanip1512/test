@@ -881,10 +881,6 @@ insert into yukongrouprole values (-797,-301,-209,-20906,'(none)');
 insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
 insert into yukongrouprole values (-2086,-303,-209,-20906,'(none)');
 
-/* Override individual hardware */
-insert into YukonRoleProperty values(-20158,-201,'Override Hardware','false','Controls whether to allow overriding individual hardware');
-insert into YukonRoleProperty values(-20817,-201,'Text Override','override','Term for override');
-
 insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
 insert into yukongrouprole values (-817,-301,-201,-20817,'(none)');
 insert into yukongrouprole values (-2058,-303,-201,-20158,'true');
@@ -909,10 +905,6 @@ insert into yukongrouprole values (-2339,-304,-400,-40139,'(none)');
 insert into yukongrouprole values (-2359,-304,-400,-40159,'(none)');
 
 /* Remove unused role properties */
-delete from yukongrouprole where rolepropertyid = -1100;
-delete from yukonuserrole where rolepropertyid = -1100;
-delete from yukonroleproperty where rolepropertyid = -1100;
-
 delete from yukongrouprole where rolepropertyid = -1103;
 delete from yukonuserrole where rolepropertyid = -1103;
 delete from yukonroleproperty where rolepropertyid = -1103;
@@ -1102,7 +1094,7 @@ alter table LMGroupExpressCom
       references LMGroupExpressComAddress (AddressID);
 go
 
-insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of certain emails sent by the energy company, e.g., odds for control and opt out notification.');
+update YukonRoleProperty set Description='Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.' where RolePropertyID=-1100;
 
 drop view ExpressComAddress_View;
 
@@ -1564,13 +1556,15 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-327, -84, 'MCT-410IL', 10, 'Y');
 alter table fdrtranslation drop constraint PK_FDRTrans;
 alter table FDRTRANSLATION add constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION);
 
-update YukonRoleProperty set KeyName='stars_preload_data', DefaultValue='false', Description='Controls whether the STARS application should preload data into the cache.' where RolePropertyID=-1013;
+update YukonRoleProperty set KeyName='stars_preload_data', DefaultValue='true', Description='Controls whether the STARS application should preload data into the cache.' where RolePropertyID=-1013;
 
 insert into YukonRoleProperty values(-10112,-101,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 insert into YukonGroupRole values(-1031,-2,-101,-10112,'(none)');
 
 insert into FDRInterface values( 19, 'XA21LM','Receive,Send', 't' );
 insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
+
+update YukonRoleProperty set DefaultValue='yukon/DefaultHeader.gif' where RolePropertyID=-10805;
 
 
 
