@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/28 18:29:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/07 16:13:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,11 +140,6 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
             InMessage.Buffer.DSt.DSTFlag = InMessage.MilliTime & DSTACTIVE;
         }
 
-        /* if calling sequence is waiting make return high priority */
-        if(OutMessage->EventCode & WAIT)
-            InMessage.Priority = MAXPRIORITY;
-        else if(OutMessage->Priority == MAXPRIORITY)
-            InMessage.Priority = MAXPRIORITY - 1;
 
         if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
