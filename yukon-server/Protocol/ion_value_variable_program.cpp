@@ -148,6 +148,8 @@ CtiIONStatement::CtiIONStatement( unsigned char *buf, unsigned long len, unsigne
     }
     else
     {
+        delete _method;
+
         setValid(false);
 
         //  read an invalid CtiIONMethod - rest of stream is likely corrupt.
@@ -159,6 +161,7 @@ CtiIONStatement::CtiIONStatement( unsigned char *buf, unsigned long len, unsigne
 
 CtiIONStatement::~CtiIONStatement( )
 {
+    delete _method;
 }
 
 
@@ -255,6 +258,7 @@ CtiIONMethod::CtiIONMethod( IONExtendedMethods method, CtiIONValue *parameter )
 
 CtiIONMethod::~CtiIONMethod( )
 {
+    delete _parameter;
 }
 
 
@@ -308,6 +312,8 @@ CtiIONMethod::CtiIONMethod( unsigned char *buf, unsigned long len, unsigned long
             }
             else
             {
+                delete _parameter;
+
                 setValid(false);
             }
         }
