@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.8 $
- * DATE         :  $Date: 2002/12/19 20:28:45 $
+ * REVISION     :  $Revision: 1.9 $
+ * DATE         :  $Date: 2003/03/06 18:04:33 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -62,6 +62,7 @@ public:
     void DeleteList(void);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
+    ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);
 
     ptr_type PortGetEqual(LONG pid);
 

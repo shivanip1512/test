@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/12/19 20:28:45 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/03/06 18:04:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include "mgr_port.h"
 #include "port_direct.h"
 #include "port_dialout.h"
+#include "port_pool_out.h"
 #include "dbaccess.h"
 #include "hashkey.h"
 #include "resolvers.h"
@@ -140,7 +141,28 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBSelector selector = conn.database().selector();
                 RWDBTable   keyTable;
 
-                if(DebugLevel & 0x00080000)  cout  << "Looking for Direct Ports" << endl;
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Direct Ports" << endl; }
+                CtiPortPoolDialout().getSQL( db, keyTable, selector );
+                RWDBReader  rdr = selector.reader( conn );
+                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+
+                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Direct Ports" << endl; }
+            }
+
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+                // are out of scope when the release is called
+
+                RWDBDatabase db = conn.database();
+                RWDBSelector selector = conn.database().selector();
+                RWDBTable   keyTable;
+
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Direct Ports" << endl; }
                 CtiPortDirect().getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -149,7 +171,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 }
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
-                if(DebugLevel & 0x00080000)  cout  << "Done looking for Direct Ports" << endl;
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Direct Ports" << endl; }
             }
 
             {
@@ -161,7 +183,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBSelector selector = conn.database().selector();
                 RWDBTable   keyTable;
 
-                if(DebugLevel & 0x00080000)  cout  << "Looking for TCPIP Ports" << endl;
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCPIP Ports" << endl; }
                 CtiPortTCPIPDirect().getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -170,7 +192,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 }
 
                 RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
-                if(DebugLevel & 0x00080000)  cout  << "Done looking for TCPIP Ports" << endl;
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCPIP Ports" << endl; }
             }
 
 
@@ -183,7 +205,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 RWDBSelector selector = conn.database().selector();
                 RWDBTable   keyTable;
 
-                if(DebugLevel & 0x00080000)  cout  << "Looking for DialABLE Ports" << endl;
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for DialABLE Ports" << endl; }
                 CtiPortDialable::getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader( conn );
                 if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -192,7 +214,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 }
 
                 RefreshDialableEntries(rowFound, rdr, Factory, testFunc, arg);
-                if(DebugLevel & 0x00080000)  cout  << "Done looking for DialABLE Ports" << endl;
+                if(DebugLevel & 0x00080000)  { CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for DialABLE Ports" << endl; }
             }
 
             if(_smartMap.getErrorCode() != RWDBStatus::ok)
@@ -266,6 +288,33 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
     }
 }
 
+CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_type, void*), void* d)
+{
+    ptr_type p;
+
+    try
+    {
+        CtiLockGuard<CtiMutex> gaurd(_mux);
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
+        {
+            if( findFun( itr->first, itr->second, d ) )
+            {
+                p = itr->second;
+                break;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return p;
+}
+
 
 void CtiPortManager::DumpList(void)
 {
@@ -333,7 +382,10 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
             {
                 pSp->DecodeDatabaseReader(rdr);         // Fills himself in from the reader
 
-                pSp->setPortThreadFunc( (*_portThreadFuncFactory)( pSp->getType() ) );  // Make the thing know who runs it.
+                if(_portThreadFuncFactory)
+                {
+                    pSp->setPortThreadFunc( (*_portThreadFuncFactory)( pSp->getType() ) );  // Make the thing know who runs it.
+                }
 
                 if(((*testFunc)(pSp, arg)))             // If I care about this point in the db in question....
                 {

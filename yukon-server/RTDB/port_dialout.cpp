@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/12/19 20:30:12 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/03/06 18:04:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, INT trace)
         }
         // If we cannot use dcd to tell if we are online, we must do a hangup
         // dcdTest indicates that we ARE on/off line if !FALSE, we must hangup.
-        if( _superPort->getTablePortSettings().getCDWait() == 0  || _superPort->dcdTest() )
+        if( _superPort->getCDWait() == 0  || _superPort->dcdTest() )
         {
             _superPort->disconnect(Device, trace);
         }
@@ -92,7 +92,7 @@ INT CtiPortDialout::connectToDevice(CtiDevice *Device, INT trace)
         {
             RWCString number = getTablePortDialup().getPrefixString() + Device->getPhoneNumber();
             /*  Now Dial */
-            if(modemConnect((char*)number.data(), trace, _superPort->getTablePortSettings().getCDWait() != 0))
+            if(modemConnect((char*)number.data(), trace, _superPort->getCDWait() != 0))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -141,7 +141,7 @@ INT CtiPortDialout::reset(INT trace)
 INT CtiPortDialout::setup(INT trace)
 {
     setDialedUpNumber(RWCString());
-    return modemSetup(trace, (_superPort->getTablePortSettings().getCDWait() != 0));
+    return modemSetup(trace, (_superPort->getCDWait() != 0));
 }
 
 INT CtiPortDialout::close(INT trace)
@@ -173,7 +173,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
     CTISleep( 500L );
 
     /* If we do not have CTS it is a problem */
-    if(!(_superPort->isCTS()))
+    if(!(_superPort->ctsTest()))
     {
         if(!(++tCount % 300))
         {
@@ -187,7 +187,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
         _superPort->raiseRTS();
         CTISleep( 500L );
 
-        if(!(_superPort->isCTS()))
+        if(!(_superPort->ctsTest()))
         {
             return READTIMEOUT;
         }
@@ -197,7 +197,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
     for(i = 0; i < 5; i++)
     {
         /* Wait for CTS */
-        if(!(_superPort->isCTS()))
+        if(!(_superPort->ctsTest()))
         {
             if(!(++tCount % 300))
             {
@@ -213,7 +213,7 @@ INT CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             _superPort->raiseRTS();
             CTISleep( 500L );
 
-            if(!(_superPort->isCTS()))
+            if(!(_superPort->ctsTest()))
             {
                 return READTIMEOUT;
             }
@@ -454,7 +454,7 @@ INT CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
             {
                 for(i = 0; i < 20; i++)
                 {
-                    if(_superPort->isDCD())
+                    if(_superPort->dcdTest())
                     {
                         /* Raise RTS */
                         _superPort->raiseRTS();
@@ -689,7 +689,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
             i = 0;
             while(i < 20)
             {
-                if(!(_superPort->isDCD()))
+                if(!(_superPort->dcdTest()))
                 {
                     CTISleep ( 1500L );
                     status = NORMAL;

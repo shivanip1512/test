@@ -14,17 +14,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_direct.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/12/19 20:30:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/03/06 18:04:34 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "port_base.h"
+#include "port_serial.h"
 #include "port_dialable.h"
 #include "tbl_port_serial.h"
 
-class IM_EX_PRTDB CtiPortDirect : public CtiPort
+class IM_EX_PRTDB CtiPortDirect : public CtiPortSerial
 {
 protected:
 
@@ -43,10 +43,9 @@ private:
     int getPortOutQueueCount();
     int getPortCommError();
 
-
 public:
 
-   typedef CtiPort  Inherited;
+   typedef CtiPortSerial Inherited;
 
    CtiPortDirect();
    CtiPortDirect(CtiPortDialable *dial);
@@ -93,6 +92,7 @@ public:
    virtual INT byteTime(ULONG bytes) const;
    virtual INT ctsTest() const;
    virtual INT dcdTest() const;
+   virtual INT dsrTest() const;
    virtual INT lowerRTS();
    virtual INT raiseRTS();
    virtual INT lowerDTR();

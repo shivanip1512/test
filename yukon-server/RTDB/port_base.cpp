@@ -21,6 +21,10 @@ void CtiPort::Dump() const
     dout << "Port \"" << _tblPAO.getID( ) << "\" Definition" << endl;;
     dout << " Description                       = " << getName() << endl;
     dout << " Protocol wrap                     = " << _tblPortBase.getProtocol() << endl;
+    dout << " Performance threashold            = " << _tblPortBase.getPerformanceThreshold() << endl;
+    dout << " AlarmInhibit                      = " << (_tblPortBase.getAlarmInhibit() ? "Y" : "N") << endl;
+    dout << " Shared Port Type                  = " << _tblPortBase.getSharedPortType() << endl;
+    dout << " Shared socket Number              = " << _tblPortBase.getSharedSocketNumber() << endl;
 
     return;
 }
@@ -256,17 +260,6 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     return status;
 }
 
-ULONG CtiPort::getDelay(int Offset) const
-{
-    return _tblPortTimings.getDelay(Offset);
-}
-
-CtiPort& CtiPort::setDelay(int Offset, int D)
-{
-    _tblPortTimings.setDelay(Offset, D);
-    return *this;
-}
-
 INT CtiPort::queueInit(HANDLE hQuit)
 {
     INT status = NORMAL;
@@ -371,8 +364,6 @@ void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
 
     _tblPAO.DecodeDatabaseReader(rdr);
     _tblPortBase.DecodeDatabaseReader(rdr);
-    _tblPortSettings.DecodeDatabaseReader(rdr);       // get the base class handled
-    _tblPortTimings.DecodeDatabaseReader(rdr);       // get the base class handled
 
     setValid();
 
@@ -472,8 +463,10 @@ CtiPort& CtiPort::setConnectedDevice(const LONG d)
 
 CtiPort &CtiPort::setBaudRate(INT baudRate)
 {
-    if(baudRate)
-        _tblPortSettings.setBaudRate(baudRate);
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Port " << getName() << " is not a serial port.  It cannot \"setBaudRate()\"" << endl;
+    }
 
     return *this;
 }
@@ -559,6 +552,7 @@ INT CtiPort::close(INT trace)                               { return NORMAL;}
 /* virtuals to make the world all fat and happy */
 INT       CtiPort::ctsTest() const            { return TRUE;}
 INT       CtiPort::dcdTest() const            { return TRUE;}
+INT       CtiPort::dsrTest() const            { return TRUE;}
 
 INT       CtiPort::lowerRTS()           { return NORMAL;}
 INT       CtiPort::raiseRTS()           { return NORMAL;}
@@ -581,8 +575,6 @@ void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selec
 {
     _tblPAO.getSQL(db, keyTable, selector);
     CtiTablePortBase::getSQL(db, keyTable, selector);
-    CtiTablePortSettings::getSQL(db, keyTable, selector);
-    CtiTablePortTimings::getSQL(db, keyTable, selector);
 }
 
 HCTIQUEUE&  CtiPort::getPortQueueHandle()
@@ -717,34 +709,6 @@ CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
     return oldFn;
 }
 
-
-
-/* Routine to check DCD on a Port */
-INT CtiPort::isDCD() const
-{
-    DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
-    return(eMask & MS_RLSD_ON);     // Yes, that is DCD or receive-line-signal detect.
-}
-
-
-/* Routine to check DSR on a port */
-INT CtiPort::isDSR() const
-{
-    DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
-    return(eMask & MS_DSR_ON);
-}
-
-
-/* Routine to check CTS on a port */
-INT CtiPort::isCTS() const
-{
-    DWORD   eMask = 0;
-    GetCommModemStatus(getHandle(), &eMask);
-    return(eMask & MS_CTS_ON);
-}
-
 INT CtiPort::setPortReadTimeOut(USHORT millitimeout)
 {
     {
@@ -840,3 +804,17 @@ bool CtiPort::setPortForDevice(CtiDevice* Device)
 
     return bret;
 }
+
+bool CtiPort::hasExclusions() const
+{
+    bool bret = _excluded.size() != 0;
+
+    return bret;
+}
+
+CtiPort::exclusions CtiPort::getExclusions() const
+{
+    return _excluded;
+}
+
+

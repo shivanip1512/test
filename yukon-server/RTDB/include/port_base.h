@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/01/07 22:12:05 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/03/06 18:04:33 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,8 +32,6 @@ using namespace std;
 #include "dlldefs.h"
 #include "logger.h"
 #include "tbl_port_base.h"
-#include "tbl_port_settings.h"
-#include "tbl_port_timing.h"
 #include "xfer.h"
 
 #ifdef CTIOLDSTATS
@@ -43,35 +41,13 @@ using namespace std;
 typedef shared_ptr< CtiPort > CtiPortSPtr;
 typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);
 typedef CTI_PORTTHREAD_FUNC_PTR (*CTI_PORTTHREAD_FUNC_FACTORY_PTR)(int);
-
 class CtiTraceMsg;
 
 class IM_EX_PRTDB CtiPort : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
-protected:
-
-    CtiTblPAO _tblPAO;
-    CtiTablePortBase _tblPortBase;
-    CtiTablePortSettings _tblPortSettings;
-    CtiTablePortTimings _tblPortTimings;
-
-    RWThreadFunction  _portThread;
-    HCTIQUEUE         _portQueue;
-    LONG              _connectedDevice;       // this is NON-ZERO if we are currently connected/communicating.
-    ULONG             _connectedDeviceUID;    // A unique reproducable indicator for this device/connection etc.
-    BOOL              _tapPort;               // This port has a TAP terminal connected to it!
-
-
-    mutable CtiLogger _portLog;
-
-private:
-
-    size_t                      _traceListOffset;
-    CTI_PORTTHREAD_FUNC_PTR     _portFunc;
-
 public:
 
-
+    typedef vector< unsigned long > exclusions;
     typedef CtiMemDBObject Inherited;
 
 
@@ -113,12 +89,12 @@ public:
     CtiLogger& getPortLog() { return _portLog; }
 
 
-
     /* virtuals to make the world all fat and happy */
     virtual bool      isViable() const;
 
     virtual INT       ctsTest() const;
     virtual INT       dcdTest() const;
+    virtual INT       dsrTest() const;
 
     virtual INT       lowerRTS();
     virtual INT       raiseRTS();
@@ -135,8 +111,6 @@ public:
     virtual RWCString getIPAddress() const;
     virtual RWCString getPhysicalPort() const;
     virtual RWCString getModemInit() const;
-    virtual ULONG     getDelay(int Offset) const;
-    virtual CtiPort&  setDelay(int Offset, int D);
 
     virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT) = 0;
     virtual INT reset(INT trace);
@@ -167,12 +141,6 @@ public:
 
     void haltLog();
 
-    const CtiTablePortSettings& getTablePortSettings() const
-    {
-        return _tblPortSettings;
-    }
-
-
     RWCString getSharedPortType() const;
     INT getSharedSocketNumber() const;
     INT getType() const;
@@ -186,12 +154,12 @@ public:
     virtual INT getStopBits() const;
     virtual INT getParity() const;
 
-
+    virtual ULONG getCDWait() const             { return 0L;}
 
     bool isTCPIPPort() const;
     INT getProtocol() const;
 
-    CtiPort &setBaudRate(INT baudRate);
+    virtual CtiPort &setBaudRate(INT baudRate);
 
     ULONG getConnectedDeviceUID() const;
     CtiPort& setConnectedDeviceUID(const ULONG &i);
@@ -200,9 +168,6 @@ public:
 
     CTI_PORTTHREAD_FUNC_PTR  setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn);
 
-    INT isCTS() const;
-    INT isDCD() const;
-    INT isDSR() const;
     virtual int enableXONXOFF();
     virtual int disableXONXOFF();
     virtual int enableRTSCTS();
@@ -210,6 +175,37 @@ public:
 
     virtual INT setLine(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT );     // Set/reset the port's linesettings.
     virtual bool setPortForDevice(CtiDevice* Device);
+
+    virtual ULONG getDelay(int Offset) const { return 0L; }
+    virtual CtiPort& setDelay(int Offset, int D) { return *this; }
+
+    virtual bool hasExclusions() const;
+    exclusions getExclusions() const;
+
+protected:
+
+    CtiTblPAO           _tblPAO;
+    CtiTablePortBase    _tblPortBase;
+
+    RWThreadFunction  _portThread;
+    HCTIQUEUE         _portQueue;
+    LONG              _connectedDevice;       // this is NON-ZERO if we are currently connected/communicating.
+    ULONG             _connectedDeviceUID;    // A unique reproducable indicator for this device/connection etc.
+    BOOL              _tapPort;               // This port has a TAP terminal connected to it!
+
+
+    mutable CtiLogger _portLog;
+
+    // Port pooling constructs.
+    bool _isServicingBadDevices;            // Indicates that this port has been designated for poor performers.  Typ. false.
+    bool _isBadPort;                        // Indicates that this port is performing in a questionable fashion.. Should be COMM FAILED if applicable.
+
+private:
+
+    size_t                      _traceListOffset;
+    CTI_PORTTHREAD_FUNC_PTR     _portFunc;
+
+    exclusions                  _excluded;
 
 };
 
@@ -226,7 +222,6 @@ inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup
 inline bool CtiPort::isDialin() const { return ((getType() == PortTypeLocalDialBack || getType() == PortTypeTServerDialBack)); }
 inline bool CtiPort::isTCPIPPort() const { return ((getType() == PortTypeTServerDirect) || (getType() == PortTypeTServerDialup)); }
 
-inline INT CtiPort::getBaudRate() const { return getTablePortSettings().getBaudRate();}
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }
 inline INT CtiPort::setPortWriteTimeOut(USHORT timeout) { return NORMAL; }
 inline INT CtiPort::setLine(INT rate, INT bits, INT parity, INT stopbits ) { return NORMAL; }
@@ -235,9 +230,10 @@ inline int CtiPort::disableXONXOFF()   { return NORMAL; }
 inline int CtiPort::enableRTSCTS()     { return NORMAL; }
 inline int CtiPort::disableRTSCTS()    { return NORMAL; }
 
-inline INT CtiPort::getBits() const { return getTablePortSettings().getBits(); }
-inline INT CtiPort::getStopBits() const { return getTablePortSettings().getStopBits(); }
-inline INT CtiPort::getParity() const { return getTablePortSettings().getParity(); }
+inline INT CtiPort::getBaudRate() const { return 0;}
+inline INT CtiPort::getBits() const { return 8; }
+inline INT CtiPort::getStopBits() const { return 1; }
+inline INT CtiPort::getParity() const { return NOPARITY; }
 
 
 #endif // #ifndef __PORT_BASE_H__

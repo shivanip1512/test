@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:04 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/03/06 18:04:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,13 +21,13 @@
 #include "logger.h"
 
 CtiTablePortTCPIP::CtiTablePortTCPIP() :
-   _ipPort(TSDEFAULTPORT)
+_ipPort(TSDEFAULTPORT)
 {
 }
 
 CtiTablePortTCPIP::CtiTablePortTCPIP(const CtiTablePortTCPIP& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiTablePortTCPIP::~CtiTablePortTCPIP()
@@ -36,73 +36,82 @@ CtiTablePortTCPIP::~CtiTablePortTCPIP()
 
 CtiTablePortTCPIP& CtiTablePortTCPIP::operator=(const CtiTablePortTCPIP& aRef)
 {
-   if(this != &aRef)
-   {
-      _ipPort           = aRef.getIPPort();
-      _ipAddress        = aRef.getIPAddress();
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        _ipPort           = aRef.getIPPort();
+        _ipAddress        = aRef.getIPAddress();
+    }
+    return *this;
 }
 
 INT                  CtiTablePortTCPIP::getIPPort() const
 {
-   return _ipPort;
+    return _ipPort;
 }
 
 INT&                 CtiTablePortTCPIP::getIPPort()
 {
-   return _ipPort;
+    return _ipPort;
 }
 
 CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPPort(const INT i)
 {
-   _ipPort = i;
-   return *this;
+    _ipPort = i;
+    return *this;
 }
 
 RWCString CtiTablePortTCPIP::getIPAddress() const
 {
-   return _ipAddress;
+    return _ipAddress;
 }
 
 RWCString& CtiTablePortTCPIP::getIPAddress()
 {
-   return _ipAddress;
+    return _ipAddress;
 }
 
 CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const RWCString &str)
 {
-   _ipAddress = str;
-   return *this;
+    _ipAddress = str;
+    return *this;
 }
 
 void CtiTablePortTCPIP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   RWDBTable portTbl = db.table(getTableName() );
+    RWDBTable portTbl = db.table(getTableName());
 
-   selector <<
-      portTbl["ipaddress"] <<
-      portTbl["socketportnumber"];
+    selector <<
+    portTbl["ipaddress"] <<
+    portTbl["socketportnumber"];
 
-   selector.from(portTbl);
+    selector.from(portTbl);
 
-   selector.where( selector.where() && keyTable["paobjectid"] == portTbl["portid"] );
+    selector.where( selector.where() && keyTable["paobjectid"] == portTbl["portid"] );
 }
 
 void CtiTablePortTCPIP::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    try
+    {
+        rdr["ipaddress"]        >> _ipAddress;
+        rdr["socketportnumber"] >> _ipPort;
 
-      rdr["ipaddress"]        >> _ipAddress;
-      if(getDebugLevel() & 0x00000800) dout << " IP Address           : " << _ipAddress << endl;
-      rdr["socketportnumber"] >> _ipPort;
-      if(getDebugLevel() & 0x00000800) dout << " IP Port              : " << _ipPort << endl;
-   }
+        if(getDebugLevel() & 0x00000800)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " IP Address           : " << _ipAddress << endl;
+            dout << " IP Port              : " << _ipPort << endl;
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 RWCString CtiTablePortTCPIP::getTableName()
 {
-   return "PortTerminalServer";
+    return "PortTerminalServer";
 }

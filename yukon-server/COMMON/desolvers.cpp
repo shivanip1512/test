@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/05 23:54:01 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/03/06 18:04:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -510,6 +510,10 @@ RWCString Ret;
     else if(aType == PortTypeTServerDialBack)
     {
         Ret = "terminal server dialback";
+    }
+    else if(aType == PortTypePoolDialout)
+    {
+        Ret = "dialout pool";
     }
     else
     {

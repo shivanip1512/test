@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/02/07 15:04:10 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/03/06 18:04:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -214,7 +214,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             }
 
             _connected   = true;
-            _baud        = getTablePortSettings().getBaudRate();
+            _baud        = getBaudRate();
         }
 
         if((status = reset(true)) != NORMAL)
@@ -786,8 +786,16 @@ void CtiPortTCPIPDirect::Dump() const
 
 void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    Inherited::DecodeDatabaseReader(rdr);
-    _tcpIpInfo.DecodeDatabaseReader(rdr);       // get the base class handled
+    try
+    {
+        Inherited::DecodeDatabaseReader(rdr);
+        _tcpIpInfo.DecodeDatabaseReader(rdr);       // get the base class handled
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 void CtiPortTCPIPDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)

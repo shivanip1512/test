@@ -185,19 +185,31 @@ INT CtiPortDirect::byteTime(ULONG bytes) const
 
 INT CtiPortDirect::ctsTest() const
 {
-    return(isCTS());
+    DWORD   eMask = 0;
+    GetCommModemStatus(getHandle(), &eMask);
+    return(eMask & MS_CTS_ON);
 }
 
 INT CtiPortDirect::dcdTest() const
 {
-    return(isDCD());
+    DWORD   eMask = 0;
+    GetCommModemStatus(getHandle(), &eMask);
+    return(eMask & MS_RLSD_ON);     // Yes, that is DCD or receive-line-signal detect.
+}
+
+/* Routine to check DSR on a port */
+INT CtiPortDirect::dsrTest() const
+{
+    DWORD   eMask = 0;
+    GetCommModemStatus(getHandle(), &eMask);
+    return(eMask & MS_DSR_ON);
 }
 
 INT CtiPortDirect::lowerRTS()
 {
     #if 1
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
-    return (EscapeCommFunction(_portHandle, CLRRTS) ? NORMAL : SYSTEM);
+    return (EscapeCommFunction(_portHandle, SETRTS) ? NORMAL : SYSTEM);
     #else
     _dcb.fRtsControl =  RTS_CONTROL_DISABLE;
     return (SetCommState( _portHandle, &_dcb ) ? NORMAL : SYSTEM);
@@ -595,7 +607,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
         }
 
         // We should determine if CTS is high.
-        if( getDebugLevel() & DEBUGLEVEL_PORTCOMM && !isCTS() )
+        if( getDebugLevel() & DEBUGLEVEL_PORTCOMM && !ctsTest() )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -606,7 +618,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
             INT cnt = rtstoout / 10;
 
             // We will wait one more RTS to DATA out cycle looking for this.
-            while( !isCTS() && cnt-- > 0 )
+            while( !ctsTest() && cnt-- > 0 )
             {
                 CTISleep(10);
             }

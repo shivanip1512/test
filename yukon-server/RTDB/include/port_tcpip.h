@@ -14,19 +14,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/01/07 22:12:05 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/03/06 18:04:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "port_base.h"
+#include "port_serial.h"
 #include "port_dialable.h"
 #include "tbl_port_tcpip.h"
 #include "tcpsup.h"
 
 
-class IM_EX_PRTDB CtiPortTCPIPDirect : public CtiPort
+class IM_EX_PRTDB CtiPortTCPIPDirect : public CtiPortSerial
 {
 protected:
 
@@ -47,7 +47,7 @@ private:
 
 public:
 
-   typedef CtiPort  Inherited;
+   typedef CtiPortSerial Inherited;
 
    CtiPortTCPIPDirect();
    CtiPortTCPIPDirect(CtiPortDialable *dial);

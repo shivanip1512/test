@@ -12,7 +12,7 @@
 *
 * CVS KEYWORDS:
 * REVISION     :  $Revision $
-* DATE         :  $Date: 2002/12/19 20:30:12 $
+* DATE         :  $Date: 2003/03/06 18:04:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
     CTISleep( 500L );
 
     /* If we do not have CTS it is a problem */
-    if(!(_superPort->isCTS()))
+    if(!(_superPort->ctsTest()))
     {
         if(!(++tCount % 300))
         {
@@ -158,7 +158,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
         _superPort->raiseRTS();
         CTISleep( 500L );
 
-        if(!(_superPort->isCTS()))
+        if(!(_superPort->ctsTest()))
         {
             return READTIMEOUT;
         }
@@ -168,7 +168,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
     for(i = 0; i < 5; i++)
     {
         /* Wait for CTS */
-        if(!(_superPort->isCTS()))
+        if(!(_superPort->ctsTest()))
         {
             if(!(++tCount % 300))
             {
@@ -184,7 +184,7 @@ INT CtiPortDialin::modemReset(USHORT Trace, BOOL dcdTest)
             _superPort->raiseRTS();
             CTISleep( 500L );
 
-            if(!(_superPort->isCTS()))
+            if(!(_superPort->ctsTest()))
             {
                 return READTIMEOUT;
             }
