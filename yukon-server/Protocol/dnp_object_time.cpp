@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/07/16 13:57:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/09/18 21:19:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,18 @@ CtiDNPTime::CtiDNPTime(int group, int variation) : CtiDNPObject(group, variation
 {
     _seconds      = 0.0;
     _milliseconds = 0.0;
+}
+
+
+double CtiDNPTime::getSeconds()
+{
+    return _seconds;
+}
+
+
+double CtiDNPTime::getMilliseconds()
+{
+    return _milliseconds;
 }
 
 
