@@ -522,7 +522,7 @@ public boolean processLoadPrograms()
 			(LMProgramDirect)LMFactory.createLoadManagement( DeviceTypes.LM_DIRECT_PROGRAM );
 
 		lmProgram.setName( line[4].trim() + " " + line[0].trim() );
-		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_AUTOMATIC );
+		lmProgram.getProgram().setControlType( LMProgramBase.OPSTATE_MANUALONLY );
 
 		//set our unique own deviceID
 		lmProgram.setPAObjectID( new Integer(START_PROGRAM_ID++) );
