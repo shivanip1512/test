@@ -49,7 +49,7 @@ public class TagTest implements Runnable {
 				Tag t = (Tag) iter.next();
 				t.setDescriptionStr("Tag " + t.getInstanceID() + " updated by TagTest for id " + pointid);
 				CTILogger.info("Updating tag " + t.getInstanceID() + " for point id: " + pointid);
-				tm.updateTag(t);
+				tm.updateTag(t, CtiUtilities.getUserName());
 				
 			}
 			
@@ -61,7 +61,7 @@ public class TagTest implements Runnable {
 				Tag t = (Tag) iter.next();
 				t.setDescriptionStr("Tag " + t.getInstanceID() + " removed by TagTest for id " + pointid);
 				CTILogger.info("Removing tag " + t.getInstanceID() + " for point id: " + pointid);
-				tm.removeTag(t);
+				tm.removeTag(t, CtiUtilities.getUserName());
 			}
 			
 
@@ -108,7 +108,7 @@ while(true) {
 		thrPool.stop();
 		thrPool.join();
 		
-		//Thread.sleep(10000);
+		Thread.sleep(10000);
 		}
 		catch(InterruptedException ie) {
 			ie.printStackTrace();

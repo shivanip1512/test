@@ -86,10 +86,11 @@ public class TagManager implements MessageListener {
 	 * Remove a given tag
 	 * @param tag
 	 */
-	public void removeTag(Tag tag) throws Exception {
+	public void removeTag(Tag tag, String username) throws Exception {
 		TagMsg tm = new TagMsg();
 		tm.setAction(TagMsg.REMOVE_TAG_ACTION);
 		tm.setTag(tag);
+		tm.setUserName(username);
 		writeMsg(tm);
 	}
 	
@@ -97,10 +98,11 @@ public class TagManager implements MessageListener {
 	 * Updated a given tag.
 	 * @param tag
 	 */
-	public void updateTag(Tag tag) throws Exception {
+	public void updateTag(Tag tag, String username) throws Exception {
 		TagMsg tm = new TagMsg();
 		tm.setAction(TagMsg.UPDATE_TAG_ACTION);
 		tm.setTag(tag);
+		tm.setUserName(username);
 		writeMsg(tm); 
 	}
 	
@@ -113,6 +115,27 @@ public class TagManager implements MessageListener {
 	public Set getTags(int pointID) {
 		HashSet ts = new HashSet(getTagSet(pointID));
 		return ts;
+	}
+	
+	/**
+	 * Returns the tag for the given pointid with the given instanceid.
+	 * The pointid parameter is included only for efficiency.
+	 * A version of this that only takes an instanceID is possible but
+	 * more expensive.
+	 * @param pointID
+	 * @param instanceID
+	 * @return
+	 */
+	public Tag getTag(int pointID, int instanceID) {
+		Set tagSet = getTags(pointID);
+		Iterator tagIter = tagSet.iterator();
+		while(tagIter.hasNext()) {
+			Tag tag = (Tag) tagIter.next();
+			if(tag.getInstanceID() == instanceID) {
+				return tag;
+			}
+		}
+		return null;
 	}
 	
 	/**
