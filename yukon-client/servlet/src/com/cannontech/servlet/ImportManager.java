@@ -434,7 +434,7 @@ public class ImportManager extends HttpServlet {
 			if (custFile == null && hwFile == null)
 				throw new WebClientException( "No import file is provided" );
 			
-			TimeConsumingTask task = new ImportCustAccountsTask( user, custFile, hwFile, email );
+			TimeConsumingTask task = new ImportCustAccountsTask( user, custFile, hwFile, email, false );
 			long id = ProgressChecker.addTask( task );
 			
 			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
