@@ -14,14 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/20 15:10:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/07/01 17:54:56 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <rw\cstring.h>
-
 #include "dev_dlcbase.h"
 
 class IM_EX_DEVDB CtiDeviceRepeater900 : public CtiDeviceDLCBase

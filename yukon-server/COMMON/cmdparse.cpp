@@ -16,6 +16,7 @@ using namespace std;
 #include "cmdparse.h"
 #include "devicetypes.h"
 #include "logger.h"
+#include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
 
@@ -604,7 +605,6 @@ void  CtiCommandParser::doParseControl(void)
 
     RWCRExpr   re_frozen("froz");
     RWCRExpr   re_update("upd");
-    RWCRExpr   re_test("test_mode_flag");
 
     RWCTokenizer   tok(chck);
 
@@ -862,10 +862,6 @@ void  CtiCommandParser::doParseControl(void)
         if(!(token = CmdStr.match(re_update)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_UPDATE;
-        }
-        if(!(token = CmdStr.match(re_test)).isNull())      // Sourcing from CmdStr, which is the entire command string.
-        {
-            flag |= CMD_FLAG_TESTMODE;
         }
     }
     else
@@ -1446,7 +1442,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(void)
                 _cmd["rawdata"] = CtiParseValue( rawData );
             }
         }
-        if(!(CmdStr.match("role")).isNull())
+        if(!(CmdStr.match(" role")).isNull())
         {
             if(!(token = CmdStr.match(rolecmd)).isNull())
             {
@@ -1467,6 +1463,74 @@ void  CtiCommandParser::doParsePutConfigEmetcon(void)
                 _cmd["rolein"] = CtiParseValue( atoi(temp2.data()) );
                 temp2 = cmdtok();
                 _cmd["rolerpt"] = CtiParseValue( atoi(temp2.data()) );
+            }
+        }
+        if(!(CmdStr.match(" mrole")).isNull())
+        {
+            if(!(token = CmdStr.match("mrole([ \t]+[0-9]+)+")).isNull())
+            {
+                RWCTokenizer cmdtok(token);
+
+                //  hop over "multi_role"
+                cmdtok();
+
+                // Command looks like this:
+                // putconfig emetcon multi_role 1 f1 vo1 vi1 stf1 f2 vo2 vi2 stf2 ... fn von vin stfn
+                // The roles are written in 6 role minimum blocks and are filled with default role (31 7 7 0)
+                // if fewer than 6 roles are defined in the block.
+
+                temp2 = cmdtok();
+                _cmd["multi_rolenum"] = CtiParseValue( atoi(temp2.data()) );    // This is the first role written.  They must be consecutive!
+
+                // Now we need to pull them off one at a time until done..
+                int fixbits;
+                int varbits_out;
+                int varbits_in;
+                int stagestf;
+                int rolecount = 0;
+
+                RWCString strFixed;
+                RWCString strVarOut;
+                RWCString strVarIn;
+                RWCString strStages;
+
+                while(!(temp2 = cmdtok()).isNull())
+                {
+                    fixbits = !temp2.isNull() ? atoi(temp2.data()) : 31;
+                    temp2 = cmdtok();
+                    varbits_out = !temp2.isNull() ? atoi(temp2.data()) : 7;
+                    temp2 = cmdtok();
+                    varbits_in = !temp2.isNull() ? atoi(temp2.data()) : 7;
+                    temp2 = cmdtok();
+                    stagestf = !temp2.isNull() ? atoi(temp2.data()) : 15;
+
+                    strFixed    += CtiNumStr( fixbits ) + " " ;
+                    strVarOut   += CtiNumStr( varbits_out ) + " " ;
+                    strVarIn    += CtiNumStr( varbits_in ) + " " ;
+                    strStages   += CtiNumStr( stagestf ) + " " ;
+
+                    rolecount++;
+                }
+
+#if 0
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << " Roles found " << rolecount << endl;
+
+                    dout << " First role " << getiValue("multi_rolenum") << endl;
+                    dout << " Fix   bits " << strFixed << endl;
+                    dout << " OD    bits " << strVarOut << endl;
+                    dout << " ID    bits " << strVarIn << endl;
+                    dout << " STF   bits " << strStages << endl;
+                }
+#endif
+
+                _cmd["multi_rolefixed"] = CtiParseValue( strFixed.strip() );
+                _cmd["multi_roleout"] = CtiParseValue( strVarOut.strip() );
+                _cmd["multi_rolein"] = CtiParseValue( strVarIn.strip() );
+                _cmd["multi_rolerpt"] = CtiParseValue( strStages.strip() );
+                _cmd["multi_rolecount"] = CtiParseValue( rolecount );
             }
         }
     }
@@ -2216,6 +2280,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(void)
     {
         // Something went WAY wrong....
         dout << "This better not ever be seen by mortals... " << endl;
+    }
+
+    if(!(token = CmdStr.match("test_mode_flag")).isNull())
+    {
+        _cmd["flag"] = CtiParseValue( CMD_FLAG_TESTMODE );
     }
 }
 

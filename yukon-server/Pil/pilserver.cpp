@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/06/24 15:00:14 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/07/01 17:54:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw\cstring.h>
@@ -49,6 +50,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "mgr_device.h"
+#include "numstr.h"
 #include "logger.h"
 #include "executor.h"
 #include "dlldefs.h"
@@ -58,8 +60,10 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctibase.h"
 #include "dllbase.h"
 #include "dll_msg.h"
-#include "utility.h"
 #include "logger.h"
+#include "repeaterrole.h"
+#include "rte_ccu.h"
+#include "utility.h"
 
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
@@ -698,6 +702,12 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
         if(Dev != NULL)
         {
+            if( parse.getCommandStr().compareTo(pExecReq->CommandString(), RWCString::ignoreCase) )
+            {
+                // They did not match!  We MUST re-parse!
+                parse = CtiCommandParser(pExecReq->CommandString());
+            }
+
             pExecReq->setMacroOffset( Dev->selectInitialMacroRouteOffset(pReq->RouteId() != 0 ? pReq->RouteId() : Dev->getRouteID()) );
 
             /*
@@ -994,6 +1004,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
     CtiDevice *Dev = DeviceManager->RemoteGetEqual(pReq->DeviceId());
 
+    if( (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) && parse.isKeyValid("install"))
+    {
+        analyzeAutoRole(*pReq,parse,execList,retList);
+    }
+
     if(parse.isKeyValid("serial"))
     {
         pReq->setDeviceId( SYS_DID_SYSTEM );    // Make sure we are targeting the serial/system device;
@@ -1242,3 +1257,157 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
 
     return;
 }
+
+INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList)
+{
+    INT status = NORMAL;
+    int i;
+    RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
+    RWRecursiveLock<RWMutexLock>::LockGuard rte_guard(RouteManager->getMux());
+
+    CtiDevice *pRepeaterToRole = DeviceManager->RemoteGetEqual(Req.DeviceId());    // This is our repeater we are curious about!
+
+    if(pRepeaterToRole)
+    {
+        if(pRepeaterToRole->getType() == TYPE_REPEATER800 || pRepeaterToRole->getType() == TYPE_REPEATER900)
+        {
+            //CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
+            //pReq->setConnectionHandle( Req.getConnectionHandle() );
+
+            // Alright.. An appropriate device has been selected for this command.
+            vector< CtiDeviceRepeaterRole > roleVector;
+            CtiRTDB<CtiRoute>::CtiRTDBIterator itr_rte(RouteManager->getMap());
+
+            int rolenum = 1;
+            int stagestofollow;
+            bool foundit;
+
+            for(; ++itr_rte ;)
+            {
+                foundit = false;
+                stagestofollow = 0;
+
+                CtiRoute *route = itr_rte.value();
+
+                if(route->getType() == CCURouteType)
+                {
+                    CtiRouteCCU *ccuroute = (CtiRouteCCU*)route;
+
+                    if( ccuroute->getRepeaterList().entries() > 0 )
+                    {
+                        // This CCURoute has repeater entries.
+                        if(ccuroute->getCarrier().getCCUVarBits() == 7)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << ccuroute->getName() << " Has variable bits set to 7 AND has repeaters. " << endl;
+                            }
+
+                            break;
+                        }
+                        else
+                        {
+                            CtiDeviceRepeaterRole role;
+
+                            for(i = 0; i < ccuroute->getRepeaterList().length(); i++)
+                            {
+
+                                role.setRouteID( ccuroute->getRouteID() );
+                                role.setRoleNumber( rolenum++ );
+
+                                if(!foundit)
+                                {
+                                    if( ccuroute->getRepeaterList()[i].getDeviceID() == pRepeaterToRole->getID() )   // Is our repeater in there?
+                                    {
+                                        foundit = true;
+
+                                        if(i == 0)
+                                        {
+                                            // Use the route to build up the Role object
+                                            role.setOutBits( ccuroute->getCarrier().getCCUVarBits() );
+                                        }
+                                        else
+                                        {
+                                            // Use the previous repeater to build up the role object.
+                                            role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
+                                        }
+                                        role.setFixBits(ccuroute->getCarrier().getCCUFixBits());
+                                        role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
+
+                                        if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
+                                        {
+                                            break;      // The for... It is kaput!
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // We have found it in this route.  We need to count the additional stages in the route.
+                                    stagestofollow++;
+                                    if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
+                                    {
+                                        break;      // The for... no more routes!
+                                    }
+                                }
+                            }
+
+                            role.setStages(stagestofollow);
+
+                            if(foundit)
+                            {
+                                roleVector.push_back( role );
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(roleVector.size() > 0)
+            {
+                RWCString newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
+                RWCString roleStr;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Looking for " << pRepeaterToRole->getName() << " in all routes" << endl;
+                }
+
+                for(i = 0; i < roleVector.size(); i++)
+                {
+#if 0
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << " RouteId " << roleVector[i].getRouteID() << endl;
+                        dout << " OutBits " << (int)roleVector[i].getOutBits() << endl;
+                        dout << " FixBits " << (int)roleVector[i].getFixBits() << endl;
+                        dout << " InBits  " << (int)roleVector[i].getInBits() << endl;
+                        dout << " Stages  " << (int)roleVector[i].getStages() << endl;
+                        dout << endl;
+                    }
+#endif
+                    roleStr += " " + CtiNumStr((int)roleVector[i].getFixBits());
+                    roleStr += " " + CtiNumStr((int)roleVector[i].getOutBits());
+                    roleStr += " " + CtiNumStr((int)roleVector[i].getInBits());
+                    roleStr += " " + CtiNumStr((int)roleVector[i].getStages());
+                }
+
+                newReqString += roleStr;
+
+                if(parse.isKeyValid("noqueue"))
+                {
+                    newReqString += " noqueue";
+                }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << "  " << newReqString << endl;
+                }
+
+                Req.setCommandString( newReqString );
+            }
+        }
+    }
+
+    return status;
+}
+

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 18:12:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/07/01 17:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1352,6 +1352,7 @@ INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &a
         }
     default:
         {
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;

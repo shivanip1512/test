@@ -10,13 +10,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/05/28 18:18:24 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/07/01 17:54:55 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include <windows.h>
+#include <rw\ctoken.h>
+
 #include "device.h"
 #include "devicetypes.h"
 #include "dev_repeater.h"
@@ -260,7 +262,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                 // Start the control request on its route(s)
                 if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
                 {
-                    resultString = "ERROR" + CtiNumStr(nRet).spad(3) + "performing command on route " + Route->getName().data();
+                    resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName().data();
                     pRet->setStatus(nRet);
                     pRet->setResultString(resultString);
                     retList.insert( pRet );
@@ -445,13 +447,14 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg                  *pReq,
+INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
                                    RWTPtrSlist< CtiMessage >      &vgList,
                                    RWTPtrSlist< CtiMessage >      &retList,
                                    RWTPtrSlist< OUTMESS >         &outList)
 {
+    int   i;
     bool  found = false;
     INT   nRet = NoError;
     CHAR  Temp[80];
@@ -485,12 +488,116 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg                  *pReq,
        OutMessage->Buffer.BSt.Message[0] = Temp[0];
        OutMessage->Buffer.BSt.Message[1] = Temp[1];
     }
+    else if(parse.isKeyValid("multi_rolenum"))
+    {
+       function = CtiProtocolEmetcon::PutConfig_Role;
+       found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+       int fixbits;
+       int varbits_out;
+       int varbits_in;
+       int stagestf;
+
+       int j;
+       int msgcnt = ((parse.getiValue("multi_rolecount") + 6) / 6);         // This is the number of OutMessages to send.
+       int firstrole = parse.getiValue("multi_rolenum") - 1;                // The first role to send.
+       int rolenum = parse.getiValue("multi_rolenum") - 1;                  // The first role to send.
+
+       RWCString strFixed = parse.getsValue("multi_rolefixed");
+       RWCString strVarOut = parse.getsValue("multi_roleout");
+       RWCString strVarIn = parse.getsValue("multi_rolein");
+       RWCString strStages = parse.getsValue("multi_rolerpt");
+
+       RWCString strTemp;
+
+       RWCTokenizer fixtok(strFixed);
+       RWCTokenizer vouttok(strVarOut);
+       RWCTokenizer vintok(strVarIn);
+       RWCTokenizer stftok(strStages);
+
+       for(j = 0; j < msgcnt; j++)
+       {
+           rolenum = firstrole + (j * 6);       // This is where we begin.
+
+           OUTMESS *pOutMessage = new OUTMESS(*OutMessage);  // Copy construct based upon OutMessage.
+
+           // Ok, multi_role always fills the message (6 roles or bust), unless we are filling the high role(ers)
+           if(rolenum > 18)
+           {
+               pOutMessage->Buffer.BSt.Length = pOutMessage->Buffer.BSt.Length * (24 - rolenum);
+           }
+           else
+           {
+               pOutMessage->Buffer.BSt.Length = pOutMessage->Buffer.BSt.Length * 6;
+           }
+
+           //  add on offset if it's role 2-24, else default to role 1 (no offset)
+           if( rolenum > 0 && rolenum < 24 )
+           {
+               pOutMessage->Buffer.BSt.Function += rolenum * Rpt_RoleLen;
+           }
+
+           for(i = 0; i < pOutMessage->Buffer.BSt.Length; i = i + 2)       // This is the number of defined roles.
+           {
+               strTemp = fixtok();
+               fixbits = !strTemp.isNull() ? atoi(strTemp.data()) : 31;
+
+               strTemp = vouttok();
+               varbits_out = !strTemp.isNull() ? atoi(strTemp.data()) : 7;
+
+               strTemp = vintok();
+               varbits_in = !strTemp.isNull() ? atoi(strTemp.data()) : 7;
+
+               strTemp = stftok();
+               stagestf = !strTemp.isNull() ? atoi(strTemp.data()) : 15;
+
+               #if 0
+               {
+                   CtiLockGuard<CtiLogger> doubt_guard(dout);
+                   dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                   dout << " Role       " << rolenum + i/2 << endl;
+                   dout << " Fix   bits " << fixbits << endl;
+                   dout << " OD    bits " << varbits_out << endl;
+                   dout << " ID    bits " << varbits_in << endl;
+                   dout << " STF   bits " << stagestf << endl;
+               }
+               #endif
+
+               Temp[0]  = fixbits & 0x1F;
+               Temp[0] |= varbits_out << 5;
+               Temp[1]  = (stagestf << 1) & 0x1F;
+               Temp[1] |= varbits_in << 5;
+               Temp[1] |= 0x01;  //  set lowest bit to 1 instead of 0, per spec
+
+               pOutMessage->Buffer.BSt.Message[i] = Temp[0];
+               pOutMessage->Buffer.BSt.Message[i+1] = Temp[1];
+           }
+
+           // Load all the other stuff that is needed
+           pOutMessage->DeviceID  = getID();
+           pOutMessage->TargetID  = getID();
+           pOutMessage->Port      = getPortID();
+           pOutMessage->Remote    = getAddress();
+           pOutMessage->RouteID   = getRouteID();
+           pOutMessage->TimeOut   = 2;
+           pOutMessage->Sequence  = function;     // Helps us figure it out later!
+           pOutMessage->Retry     = 3;
+
+           // Tell the porter side to complete the assembly of the message.
+           strcpy(pOutMessage->Request.CommandStr, pReq->CommandString());
+
+           outList.insert( pOutMessage );
+       }
+
+       delete OutMessage;
+       OutMessage = 0;          // Make the original go away!
+    }
 
     if(!found)
     {
        nRet = NoMethod;
     }
-    else
+    else if(OutMessage)
     {
        // Load all the other stuff that is needed
        OutMessage->DeviceID  = getID();
@@ -782,4 +889,5 @@ INT CtiDeviceRepeater900::getSSpec() const
 {
    return 0;
 }
+
 

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2002/06/24 20:25:58 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2002/07/01 17:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,8 +159,9 @@ VOID PortThread (VOID *arg)
     OUTMESS        *OutMessage;
     REQUESTDATA    ReadResult;
     BYTE           ReadPriority;
-    ULONG          MSecs;
+    ULONG          MSecs, QueEntries;
 
+    RWTime         lastQueueReportTime;
     CtiDeviceBase  *Device = NULL;
 
     CtiPort        *Port = (CtiPort*)arg;
@@ -230,7 +231,7 @@ VOID PortThread (VOID *arg)
          *  previous ReadQueue's operation. Note that the ReadQueue call mallocs space for the
          *  OutMessage pointer, and fills it from it's queue entries!
          */
-        if((status = ReadQueue (Port->getPortQueueHandle(), &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority)) != NORMAL )
+        if((status = ReadQueue (Port->getPortQueueHandle(), &ReadResult, &ReadLength, (PPVOID) &OutMessage, gQueSlot, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
         {
             if(status == ERROR_QUE_EMPTY)
             {
@@ -254,7 +255,17 @@ VOID PortThread (VOID *arg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << Port->getName() << " read an outmessage for " << tempDev->getName();
                 dout << " at priority " << OutMessage->Priority << endl;
+                dout << " Port has " << QueEntries << " pending OUTMESS requests " << endl;
             }
+        }
+
+        if(QueEntries > 5000 && RWTime() > lastQueueReportTime)  // Ok, we may have an issue here....
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Port " << Port->getName() << " has " << QueEntries << " pending OUTMESS requests " << endl;
+            }
+            lastQueueReportTime = RWTime() + 300;
         }
 
         statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID);
