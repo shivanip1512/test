@@ -8,6 +8,7 @@ package com.cannontech.graph.model;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.data.time.Minute;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -157,7 +158,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-							TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Minute.class);
+						    TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Second.class);
 
 							if( serie.getDataItemsMap() != null)
 							{
@@ -349,7 +350,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			return null;
 
 		DefaultCategoryDataset[] dataset = new DefaultCategoryDataset[2];
-		
+		SimpleDateFormat catFormat = CATEGORY_FORMAT;
 		for( int datasetIndex = 0; datasetIndex < 2; datasetIndex++)
 		{
 			int count = 0;				
@@ -360,11 +361,12 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					if( tSeries[i].getAxis().equals(axisChars[datasetIndex]))
 					{
 						count++;
+						if( tSeries[i].resolution <= 1000)
+						    catFormat = CATEGORY_WITH_SS_FORMAT;
 					}
 				}
 			}
 	
-		
 			java.util.TreeMap tree = buildTreeMap(tSeries, count, datasetIndex);
 			if( tree == null)
 				return null;		
@@ -383,7 +385,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			for (int j = 0; j < keyArray.length; j++)
 			{
 				Long ts = keyArray[j];
-				categoryVector.add(CATEGORY_FORMAT.format(new java.util.Date(ts.longValue())));
+				categoryVector.add(catFormat.format(new java.util.Date(ts.longValue())));
 			}
 
 			

@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.Legend;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.CategoryLabelPositions;
@@ -41,7 +40,7 @@ import org.jfree.chart.urls.TimeSeriesURLGenerator;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.Dataset;
-import org.jfree.data.time.Minute;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -89,6 +88,7 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
     private java.util.Date startDate = null;
     private java.util.Date	stopDate = null;
     
+    private YukonStandardLegend legend = null;
     private String chartName = "Yukon Trending";
     
 	//Used for load duration to determine which point to reference all others by.  null is valid.
@@ -441,9 +441,10 @@ private Integer getPrimaryGDSPointId()
 private YukonStandardLegend getLegend()
 {
 	//Legend setup
-	YukonStandardLegend legend = new YukonStandardLegend();
-	legend.setAnchor(Legend.SOUTH);
-	legend.setItemFont(new java.awt.Font("dialog", java.awt.Font.BOLD, 10));
+    if( legend == null)
+    {
+        legend = new YukonStandardLegend();
+    }
 /*
 	java.util.Vector stats = null;
 
@@ -706,7 +707,7 @@ private void hitDatabase_Basic(int seriesTypeMask)
 					tempCal = new GregorianCalendar();
 					tempCal.setTimeInMillis(ts.getTime());
 					tempCal.add(Calendar.DATE, Math.abs(day));	//map timestamps to current start/stop range.
-					RegularTimePeriod tp = new Minute((Date)tempCal.getTime().clone());
+					RegularTimePeriod tp = new Second((Date)tempCal.getTime().clone());
 					Long timeKey = new Long(tp.getStart().getTime());
 					double val = rset.getDouble(3);
 				
@@ -916,7 +917,7 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 				tempCal = new GregorianCalendar();
 				tempCal.setTimeInMillis(ts.getTime());
 				tempCal.add(Calendar.DATE, Math.abs(day));	//map timestamps to current start/stop range.
-				RegularTimePeriod tp = new Minute((Date)tempCal.getTime().clone());
+				RegularTimePeriod tp = new Second((Date)tempCal.getTime().clone());
 				Long timeKey = new Long(tp.getStart().getTime());
 
 				double val = rset.getDouble(3);
@@ -944,7 +945,7 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 							tempCal.setTime((Date)repeatItem.getPeriod().getStart().clone());
 							tempCal.add(Calendar.DATE, (int)i);
 							Long timeKey = new Long(tempCal.getTimeInMillis());
-							RegularTimePeriod tp = new Minute(new java.util.Date(timeKey.longValue()));
+							RegularTimePeriod tp = new Second(new java.util.Date(timeKey.longValue()));
 							
 							dataItem = new TimeSeriesDataItem(tp,v);
 							dataItemsMap.put(timeKey, dataItem);							

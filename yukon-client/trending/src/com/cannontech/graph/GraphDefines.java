@@ -73,7 +73,8 @@ public interface GraphDefines
 	
 	public static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
 	public static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
-
+	public static java.text.SimpleDateFormat CATEGORY_WITH_SS_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm:ss ");
+	
 	public static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
 	public static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
 	
