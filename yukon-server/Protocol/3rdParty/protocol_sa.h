@@ -1,0 +1,336 @@
+
+/*-----------------------------------------------------------------------------*
+*
+* File:   protocol_sa
+*
+* Class:
+* Date:   7/21/2003
+*
+* Author: Corey G. Plender
+*
+* CVS KEYWORDS:
+* REVISION     :  $Revision: 1.1 $
+* DATE         :  $Date: 2004/03/19 15:53:24 $
+*
+*
+* Notes:
+*       Proposed format for protocol DLL - Win32 format.
+*
+* Copyright (c) 2003
+*-----------------------------------------------------------------------------*/
+#include <iostream.h>
+#include <stdlib.h> 
+#include <stdio.h>
+#include <math.h>
+#include <memory.h>
+#include <string.h>
+
+#pragma warning( disable : 4786)
+#ifndef __PROTOCOL_SA_H__
+#define __PROTOCOL_SA_H__
+
+typedef char CHAR;
+typedef unsigned char BYTE;
+typedef int INT;
+typedef unsigned int UINT;
+typedef short int SHORT;
+typedef unsigned short int USHORT;
+
+typedef struct schedCode
+{  
+   CHAR code[7];
+   SHORT function;	/* The DCU function to be activated */
+   USHORT type;		/* Type of DCU defined below */
+   USHORT swTime;       /* desired (virtual) switch timeout in minutes */
+   USHORT cycleTime;    /* cycle time  in minutes */
+   SHORT repeats;       /* number repeats to effect virtual timeout */
+                        /* or number cycleTimes in control period (205)*/
+}SCODE;
+
+/* This is the current DCU types in OASyS LM */
+#define SA205 0
+#define GOLAY 1
+#define SADIG 2
+#define SA105 3
+#define SALAT 4
+#define GOLAT 5
+
+/* SA205 DCU management command */
+#define DEF_ADDR 1
+#define OVERRIDE 2
+#define TAMP_DET 3
+#define CLPU_ACT 4
+
+#define DEF_ADDR_FUNC 0
+#define OVERRIDE_FUNC 6
+#define TAMP_DET_FUNC 8
+#define CLPU_ACT_FUNC 12
+
+/* MAX databuffer len */
+#define MAX_XBUF	32
+
+#define SHED 1
+#define REST 0
+
+#define CODESZ 6
+#define CONTROL_CODESZ 7
+#define CONFIG_CODESZ 12
+
+// Success and non-fatal errors.
+#define PROTSA_SUCCESS                          0
+#define PROTSA_SUCCESS_MODIFIED_PARAM           1
+#define PROTSA_FAIL_INVALID_SW_CYCLE_TIME       2
+
+// .... and then some as needed...
+
+// Fatal errors.
+#define PROTSAERROR_BUFFER_TOO_SMALL            100
+#define PROTSAERROR_PARAMETER_OUT_OF_RANGE      101
+#define PROTSAERROR_BAD_PARAMETER               102
+// .... and then some as needed...
+
+
+/*----------------------------------------------------------------------------*
+ * Function: controlSADigital
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf.
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * code -  Input: valid input format is "xyz" or "xy-z".
+	where x,y,z could be the same digit. "xy-z" will be converted to an 
+	integer value = 8*xy+z.
+        In both cases, the maximum integer value of the code is 255.
+ *
+ * xmitter_addr - Input: Transmitter address
+ * 
+ * markIndex - Input: Mark Index
+ *
+ * spareIndex - Input: Spare Index
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[], 
+                      USHORT xmitter_addr,USHORT markIndex,
+                      USHORT spareIndex );
+
+
+/*----------------------------------------------------------------------------*
+ * Function: control105_205
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf.
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * scode     - Input: SA105/205 operational information as defined in the SCODE structure
+ *
+ * xmitter_addr - Input: Transmitter address
+ *
+ * Notes:
+ *	If invalid swTime/cycleTime is passed in by scode, error 
+ *	PROTSA_FAIL_INVALID_SW_CYCLE_TIME will be returned.
+ *	
+ *	Valid swTime/cycleTime for SA105/205 are listed below(column = 1 SA205 only):
+ *
+ *		{ 900,  900, 0}
+ *       	{1800, 1800, 0}
+ *       	{3600, 3600, 0}
+ *       	{ 450,  450, 1}
+ *       	{ 450, 1800, 0}
+ *       	{ 600, 1800, 0}
+ *       	{ 450,  900, 0}
+ *       	{ 600,  900, 0}
+ *       	{ 660,  900, 0}
+ *       	{ 720,  900, 0}
+ *       	{ 900, 1800, 1}
+ *       	{1350, 1800, 1}
+ *       	{ 750, 1800, 1}
+ *       	{ 450, 3600, 0}
+ *       	{ 900, 3600, 0}
+ *       	{1350, 3600, 0}
+ *       	{1800, 3600, 0}
+ *       	{2250, 3600, 0}
+ *       	{2700, 3600, 0}
+ *       	{3150, 3600, 0}
+ *       	{1200, 3600, 1}
+ *       	{2400, 3600, 1}
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT control105_205( BYTE *buf, INT *buflen, SCODE *scode, USHORT xmitter_addr);
+
+/*----------------------------------------------------------------------------*
+ * Function: controlGolay
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * code     - 6-digit operational code.
+ * 
+ * function - DCU function.
+ *
+ * xmitter_addr - Transmitter address
+ *
+ * Notes:
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT controlGolay( BYTE *buf, INT *buflen, CHAR code[], SHORT function, USHORT xmitter_addr);
+
+
+/*----------------------------------------------------------------------------*
+ * Function: config205
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * serialNum - Input: SA205 DCU serial number.
+ *
+ * address_slot - Input: Which of the 6 operational addresses the code represents
+ *
+ * new_code - Input: New operational code(6-digit) to assign into the address slot.
+ *
+ * xmitter_addr - Input: Transmitter address
+ *
+ * Notes:
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT config205( BYTE *buf, INT *buflen, CHAR serialNum[],
+	       USHORT address_slot, CHAR new_code[], USHORT xmitter_addr);
+
+/*----------------------------------------------------------------------------*
+ * Function: tempOutOfService205
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * serialNum  - DCU serial number.
+ *
+ * hours_out    - Number of hours to remain out of service, 0-255.
+ *
+ * xmitter_addr - Transmitter address
+ *
+ *
+ * Notes:
+ *      Times too large to be supported should be assigned the maximum value and
+ *      PROTSA_SUCCESS_MODIFIED_PARAM returned.
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT tempOutOfService205( BYTE *buf, INT *buflen, CHAR serialNum[], INT hours_out, USHORT xmitter_addr );
+
+/*----------------------------------------------------------------------------*
+ * Function:tamperDetect205 
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * serialNum  - Input: SA205 DCU serial number.
+ *
+ * relay - Input: valid entries are 1 or 2 only. Invalid input will result in
+ *         returning PROTSAERROR_BAD_PARAMETER.
+ *
+ * tdCount - Input: Tamper Detect Count, 0-255
+ *
+ * xmitter_addr - Transmitter address
+ *
+ *
+ * Notes:
+ *      If tdCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      returned.
+ *      If tdCount < 0, 0 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      returned.
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
+                      USHORT relay, INT tdCount, USHORT xmitter_addr);
+
+/*----------------------------------------------------------------------------*
+ * Function:coldLoadPickup205 
+ *
+ * buf      - output buffer. A fully formed control command is built and placed
+ *              in this buffer on successful completion of the function.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * serialNum  - Input: SA205 DCU serial number.
+ *
+ * relay - Input: valid entries are 1, 2, 3 or 4 only. Invalid input will 
+ *	      result in returning PROTSAERROR_BAD_PARAMETER.
+ *
+ * clpCount - Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
+ *
+ * xmitter_addr - Transmitter address
+ *
+ *
+ * Notes:
+ *      If clpCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      returned.
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT coldLoadPickup205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
+                      USHORT relay, INT clpCount, USHORT xmitter_addr);
+
+/*----------------------------------------------------------------------------*
+ * Function: lastSAError
+ *
+ * buf      - output buffer. A fully formed null terminated c-style string which
+ *              is indicates any textual error condition a user of this library
+ *              may wish to know.
+ *
+ * buflen   - input/output.  On entry buflen indicates the allowed size of buf
+ *              On successful exit, buflen indicates the length of the completed
+ *              message stored in buf.
+ *
+ * Notes:
+ *      Data is temporal and will be assumed to be non thread safe.
+ *
+ * Returns:
+ *          - A valid return code from above.
+ *
+ *----------------------------------------------------------------------------*/
+INT lastSAError( CHAR *buf, INT *buflen );
+
+#endif // #ifndef __PROTOCOL_SA_H__
+
