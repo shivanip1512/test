@@ -283,7 +283,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-			throw new WebClientException( "Failed to remove the hardware" );
+			throw new WebClientException( "Failed to remove the hardware", e );
 		}
 	}
 	

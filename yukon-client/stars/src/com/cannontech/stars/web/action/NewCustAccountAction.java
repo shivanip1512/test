@@ -443,7 +443,7 @@ public class NewCustAccountAction implements ActionBase {
 		}
 		catch (CommandExecutionException e) {
 			CTILogger.error( e.getMessage(), e );
-			throw new WebClientException( "Failed to create the customer account" );
+			throw new WebClientException( "Failed to create the customer account", e );
 		}
 	}
 	

@@ -1586,7 +1586,7 @@ public class ImportManager extends HttpServlet {
 					item.write( uploadFile );
 				}
 				catch (Exception e) {
-					throw new WebClientException("Failed to upload file '" + item.getName() + "'");
+					throw new WebClientException("Failed to upload file '" + item.getName() + "'", e);
 				}
 				
 				return uploadFile;

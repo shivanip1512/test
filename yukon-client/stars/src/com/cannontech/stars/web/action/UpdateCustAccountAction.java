@@ -351,7 +351,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			}
 			catch (java.sql.SQLException e2) {}
     		
-			throw new WebClientException( "Failed to update the customer account information" );
+			throw new WebClientException( "Failed to update the customer account information", e );
 		}
 		finally {
 			try {

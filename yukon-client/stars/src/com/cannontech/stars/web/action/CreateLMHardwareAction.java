@@ -522,7 +522,7 @@ public class CreateLMHardwareAction implements ActionBase {
 		}
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
-			throw new WebClientException( "Failed to create the hardware" );
+			throw new WebClientException( "Failed to create the hardware", e );
 		}
 	}
 	

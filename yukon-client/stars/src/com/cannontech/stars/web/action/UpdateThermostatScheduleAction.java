@@ -873,6 +873,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					}
 				}
 			}
+			
+			conn.commit();
 		}
 		catch (java.sql.SQLException e) {
 			try {
@@ -880,7 +882,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			}
 			catch (java.sql.SQLException e2) {}
     		
-			throw new WebClientException( "Failed to update thermostat schedule" );
+			throw new WebClientException( "Failed to update thermostat schedule", e );
 		}
 		finally {
 			try {

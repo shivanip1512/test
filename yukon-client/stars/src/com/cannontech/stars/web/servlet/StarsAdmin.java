@@ -1675,7 +1675,7 @@ public class StarsAdmin extends HttpServlet {
 					catch (java.sql.SQLException e) {
 						CTILogger.error( e.getMessage(), e );
 						conn.rollback();
-						throw new WebClientException("Cannot delete substation with id = " + entryID + ", make sure it is not referenced");
+						throw new WebClientException("Cannot delete substation with id = " + entryID + ", make sure it is not referenced", e);
 					}
 				}
 				
@@ -1745,7 +1745,7 @@ public class StarsAdmin extends HttpServlet {
 					catch (java.sql.SQLException e) {
 						CTILogger.error( e.getMessage(), e );
 						conn.rollback();
-						throw new WebClientException("Cannot delete list entry with id = " + entryID + ", make sure it is not referenced");
+						throw new WebClientException("Cannot delete list entry with id = " + entryID + ", make sure it is not referenced", e);
 					}
 				}
 				

@@ -695,7 +695,7 @@ public class ProgramSignUpAction implements ActionBase {
 		}
 		catch (TransactionException e) {
 			CTILogger.error( e.getMessage(), e );
-			throw new WebClientException( "Failed to update the program enrollment" );
+			throw new WebClientException( "Failed to update the program enrollment", e );
 		}
 		
 		return hwsToConfig;
