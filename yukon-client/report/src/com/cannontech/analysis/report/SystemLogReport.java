@@ -2,6 +2,7 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -22,14 +23,16 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.tablemodel.LMControlLogModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.database.db.point.SystemLog;
 
 /**
  * Created on Dec 15, 2003
- * Creates a LGControlLogReport using the com.cannontech.analysis.data.loadgroup.LMControlLogData tableModel
+ * Creates a SystemLogReport using the com.cannontech.analysis.tablemodel.SystemLogModel tableModel
  * Groups data by Date.  Orders asc/desc based on tableModel definition.  
  * @author snebben
  */
@@ -77,7 +80,6 @@ public class SystemLogReport extends YukonReportBase
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
-		YukonReportBase sysLogReport = ReportFuncs.createYukonReport(ReportTypes.SYSTEM_LOG_DATA);
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		cal.set(java.util.Calendar.MINUTE, 0);
@@ -88,8 +90,11 @@ public class SystemLogReport extends YukonReportBase
 		cal.add(java.util.Calendar.DATE, -90);
 		long start = cal.getTimeInMillis();
 
+//		SystemLogModel model = new SystemLogModel(start, stop);
+		LMControlLogModel model = new LMControlLogModel(start, stop);
+
 		//Initialize the report data and populate the TableModel (collectData).
-		sysLogReport.setModel( new SystemLogModel(start, stop));
+		SystemLogReport sysLogReport = new SystemLogReport(model);
 		sysLogReport.getModel().collectData();
 
 		//Create the report
@@ -112,60 +117,39 @@ public class SystemLogReport extends YukonReportBase
 		dialog.pack();
 		dialog.setVisible(true);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.report.YukonReportBase#getExpressions()
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{
-		super.getExpressions();
-		expressions.add(getDateExpression(getModel().getColumnProperties(0).getValueFormat(), getModel().getColumnName(0)));
-		return expressions;
-	}
-	
+
 	/**
-	 * Create a Group for LMControlLogData.Date column.  
+	 * Create a Group for SystemLog.date column.  
 	 * @return
 	 */
 	private Group createDateGroup()
 	{
 		final Group dateGroup = new Group();
-		dateGroup.setName("Date Exp Group");
-		dateGroup.addField(DATE_EXPRESSION);
+		dateGroup.setName(SystemLogModel.DATE_STRING + ReportFactory.NAME_GROUP);
+		dateGroup.addField(SystemLogModel.DATE_STRING);
 
-		final GroupHeader header = new GroupHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName("Date Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(0).getPositionX(), getModel().getColumnProperties(0).getPositionY()));
-		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(0).getWidth(), getModel().getColumnProperties(0).getHeight()));
-		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setNullString("<null>");
-		tfactory.setFieldname(DATE_EXPRESSION);
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), SystemLogModel.DATE_COLUMN);
 	  	header.addElement(tfactory.createElement());
 		
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+		header.addElement(ReportFactory.createBasicLine("dGroupLine", 0.5f, 20));
 
+		LabelElementFactory factory;
 		//Add all columns (excluding Date) to the table model.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
-		{
-			LabelElementFactory factory = new LabelElementFactory();
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-			factory.setText(getModel().getColumnNames()[i]);
-			header.addElement(factory.createElement());
+		{		
+			if (i != SystemLogModel.POINT_ID_COLUMN)	//skip this column
+			{
+				factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+				factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
+				header.addElement(factory.createElement());
+			}
 		}
-		
 		dateGroup.setHeader(header);
 
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+//		dateGroup.setFooter(footer);
 		
 		return dateGroup;
 	}
@@ -189,9 +173,7 @@ public class SystemLogReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 	
 		if( showBackgroundColor )
 		{
@@ -205,31 +187,28 @@ public class SystemLogReport extends YukonReportBase
 				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
 					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
+		
+		TextFieldElementFactory factory;
 		//Start at 1, we don't want to include the Date column, Date is our group by column.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
-			TextFieldElementFactory factory = new TextFieldElementFactory();
-
-			if( getModel().getColumnClass(i).equals(String.class))
-				factory = new TextFieldElementFactory();
-			else if( getModel().getColumnClass(i).equals(java.util.Date.class))
+			if (i != SystemLogModel.POINT_ID_COLUMN)	//skip this column
 			{
-				factory = new DateFieldElementFactory();
-				((DateFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
-			}
-			
-			if( factory != null)
-			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
-				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-				factory.setNullString("<null>");
-				factory.setFieldname(getModel().getColumnNames()[i]);
+				factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 				items.addElement(factory.createElement());
 			}
 		}
 
 		return items;
+	}
+	
+	/**
+	 * @return
+	 */
+	public PageFormat getPageFormat()
+	{
+		super.getPageFormat();
+		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
+		return pageFormat;
 	}
 }

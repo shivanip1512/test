@@ -1,7 +1,10 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
@@ -20,6 +23,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 
@@ -46,37 +50,12 @@ public class StatisticReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public StatisticReport(StatisticModel model_)
+	private StatisticReport(StatisticModel model_)
 	{
 		super();
 		setModel(model_);
 	}
-	/**
-	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogModel.
-	 * @param reportType_ - valid report types are:
-	 * 	carr[ier] - StatisticCarrierCommData
-	 * 	trans[mitter] - StatisticalTransmitterCommData
-	 * 	dev[ice] = StatisticalDeviceCommData
-	 * 	comm[channel] - StatisticalCommChannelData
-	 * @param statType_ - DYNAMICPAOSTATISTICS.statType
-	 */
-	public StatisticReport(String modelTypeString, String statType_)
-	{
-		super();
-		StatisticModel model = null;
-		if( modelTypeString.startsWith("carr"))
-			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_CARRIER_COMM_DATA);
-		else if( modelTypeString.startsWith("trans"))
-			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_TRANS_COMM_DATA);
-		else if( modelTypeString.startsWith("dev"))
-			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_DEVICE_COMM_DATA);
-		else if( modelTypeString.startsWith("comm"))
-			model = (StatisticModel)ReportTypes.create(ReportTypes.STAT_COMM_CHANNEL_DATA);
 
-		model.setStatType(statType_);
-		setModel(model);
-   }
 	/**
 	 * Runs this report and shows a preview dialog.
  	 *
@@ -92,11 +71,22 @@ public class StatisticReport extends YukonReportBase
 		String modelType = "carrier";	//default
 		if( args.length > 0)
 				modelType = args[0].toLowerCase();	//StatisticData report type
-		String statType = "Monthly";
+		String statPeriodType = StatisticModel.MONTHLY_STAT_PERIOD_TYPE_STRING;
 		if( args.length >= 2)	//DynamicPaoStatistics.statisticType
-			statType = args[1];
+			statPeriodType = args[1];
 		
-		YukonReportBase statReport = new StatisticReport(modelType, statType);
+		int statType = -1;
+		if( modelType.startsWith("trans"))
+			statType = StatisticModel.STAT_TRANS_COMM_DATA;
+		else if( modelType.startsWith("dev"))
+			statType = StatisticModel.STAT_DEVICE_COMM_DATA;
+		else if( modelType.startsWith("comm"))
+			statType = StatisticModel.STAT_COMM_CHANNEL_DATA;
+		else //if( modelTypeString.startsWith("carr"))
+			statType = StatisticModel.STAT_CARRIER_COMM_DATA;
+
+		StatisticModel model = new StatisticModel(statPeriodType, statType);
+		YukonReportBase statReport = new StatisticReport(model);
 		statReport.getModel().collectData();
 
 		//Create the report
@@ -126,31 +116,23 @@ public class StatisticReport extends YukonReportBase
 	private Group createColumnHeadingGroup()
 	{
 		final Group collHdgGroup = new Group();
-		collHdgGroup.setName("Column Heading");
+		collHdgGroup.setName("Column Heading" + ReportFactory.NAME_GROUP);
 	
-		final GroupHeader header = new GroupHeader();
-	
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-	
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
+
 		LabelElementFactory factory;
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			factory = new LabelElementFactory();
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()));
-			factory.setText(getModel().getColumnNames()[i]);
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+			if (i > 0)	//all but paoName
+				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 			header.addElement(factory.createElement());
 		}
 	
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
+		header.addElement(ReportFactory.createBasicLine("chGroupLine", 0.5f, 20));
 		collHdgGroup.setHeader(header);
 	
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		collHdgGroup.setFooter(footer);
 
 		return collHdgGroup;
@@ -173,56 +155,28 @@ public class StatisticReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 	
 		if(showBackgroundColor)
 		{
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
-				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
+				("background", Color.decode("#DFDFDF"), new BasicStroke(0),
+					new Rectangle2D.Float(0, 0, -100, -100), false, true));
 			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
+				("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f),
+					new Line2D.Float(0, 0, 0, 0)));
 			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+				("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f),
+					new Line2D.Float(0, 10, 0, 10)));
 		}
 			
-		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(0).getPositionX(), getModel().getColumnProperties(0).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(0).getWidth(), 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(getModel().getColumnNames()[0]);
-		items.addElement(factory.createElement());
-	
+		TextFieldElementFactory factory;
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			NumberFieldElementFactory nfactory;			
-			if( getModel().getColumnClass(i).equals(String.class))
-			{
-				factory = new TextFieldElementFactory();
-			}
-			else if( getModel().getColumnClass(i).equals(Integer.class) ||
-					getModel().getColumnClass(i).equals(Double.class))
-			{
-				factory = new NumberFieldElementFactory();
-				((NumberFieldElementFactory)factory).setFormatString(getModel().getColumnProperties(i).getValueFormat());
-			}
-			
-			if( factory != null)
-			{
-				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				factory.setHorizontalAlignment(ElementAlignment.LEFT);
-				factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-				factory.setNullString("<null>");
-				factory.setFieldname(getModel().getColumnNames()[i]);
-				items.addElement(factory.createElement());
-			}
+			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			if (i > 0)	//all but paoName
+				factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+			items.addElement(factory.createElement());
 		}
 
 		return items;

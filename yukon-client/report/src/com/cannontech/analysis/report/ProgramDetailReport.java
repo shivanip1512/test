@@ -23,6 +23,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.function.ElementVisibilityEvalFunction;
@@ -31,7 +32,7 @@ import com.cannontech.util.ServletUtil;
 
 /**
  * Created on Dec 15, 2003
- * Creates a LGControlLogReport using the com.cannontech.analysis.data.loadgroup.LMControlLogData tableModel
+ * Creates a ProgramDetailReport using the com.cannontech.analysis.tablemodel.ProgramDetailModel tableModel
  * Groups data by Date.  Orders asc/desc based on tableModel definition.  
  * @author snebben
  */
@@ -88,9 +89,6 @@ public class ProgramDetailReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		//Define start and stop parameters for a default 90 day report.
-		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.PROGRAM_DETAIL_DATA);
-		
 		//Define default start and stop parameters for a default year to date report.
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -100,13 +98,9 @@ public class ProgramDetailReport extends YukonReportBase
 		cal.add(java.util.Calendar.DATE, 1);	//default stop date is tomorrow
 		long stop = cal.getTimeInMillis();
 
-		cal.set(java.util.Calendar.DATE, 1);
-		cal.set(java.util.Calendar.MONTH, 0);
-		long start = cal.getTimeInMillis();	//default start date is begining of year
-
-		report.getModel().setStartTime(start);
-		report.getModel().setStopTime(stop);
-
+		//Define start and stop parameters for a default 90 day report.
+		ProgramDetailModel model = new ProgramDetailModel(stop);
+		boolean showNotEnrolled = false;
 		for (int i = 0; i < args.length; i++)
 		{
 			String arg = (String)args[i].toLowerCase();
@@ -116,24 +110,20 @@ public class ProgramDetailReport extends YukonReportBase
 			String subString = arg.substring(startIndex);				
 			
 			if( arg.startsWith("ec"))
-				report.getModel().setECIDs(Integer.valueOf(subString));
-			else if( arg.startsWith("start"))
-			{
-				Date startDate = ServletUtil.parseDateStringLiberally(subString);
-				report.getModel().setStartTime(startDate.getTime());
-			}
+				model.setECIDs(Integer.valueOf(subString));
 			else if( arg.startsWith("stop"))
 			{
 				Date stopDate = ServletUtil.parseDateStringLiberally(subString);
-				report.getModel().setStartTime(stopDate.getTime());
+				model.setStopTime(stopDate.getTime());
 			}
 			else if( arg.startsWith("notEnroll"))	//when true, show those "Not Enrolled"			
 			{
-				((ProgramDetailReport)report).setShowNotEnrolled(Boolean.valueOf(subString).booleanValue());				
+				showNotEnrolled = Boolean.valueOf(subString).booleanValue();				
 			}
 		}
-		
-		report.getModel().collectData();
+
+		YukonReportBase report = new ProgramDetailReport(model, showNotEnrolled);
+		report.getModel ().collectData();
 
 		//Create the report
 		JFreeReport freeReport = report.createReport();
@@ -163,21 +153,21 @@ public class ProgramDetailReport extends YukonReportBase
 	{
 		super.getExpressions();
 		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName(ProgramDetailModel.CONTACT_STRING + " Hidden");
+		hideItem.setName(ProgramDetailModel.CONTACT_STRING + ReportFactory.NAME_HIDDEN);
 		hideItem.setProperty("field", ProgramDetailModel.CONTACT_STRING);
-		hideItem.setProperty("element", ProgramDetailModel.CONTACT_STRING+" Element");
+		hideItem.setProperty("element", ProgramDetailModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
-		hideItem.setName(ProgramDetailModel.ACCOUNT_NUMBER_STRING + " Hidden");
+		hideItem.setName(ProgramDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_HIDDEN);
 		hideItem.setProperty("field", ProgramDetailModel.ACCOUNT_NUMBER_STRING);
-		hideItem.setProperty("element", ProgramDetailModel.ACCOUNT_NUMBER_STRING+" Element");
+		hideItem.setProperty("element", ProgramDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
-		hideItem.setName(ProgramDetailModel.PROGRAM_NAME_STRING + " Hidden");
+		hideItem.setName(ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_HIDDEN);
 		hideItem.setProperty("field", ProgramDetailModel.PROGRAM_NAME_STRING);
-		hideItem.setProperty("element", ProgramDetailModel.PROGRAM_NAME_STRING+" Element");
+		hideItem.setProperty("element", ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		//We negate the showNotEnrolled flag because if true, then we DO NOT want to hide the item.
@@ -191,50 +181,32 @@ public class ProgramDetailReport extends YukonReportBase
 	}
 
 	/**
-	 * Create a Group for LMControlLogData.Date column.  
+	 * Create a Group for EnergyCompany column.  
 	 * @return
 	 */
 	private Group createECGroup()
 	{
-		int index = ProgramDetailModel.ENERGY_COMPANY_COLUMN;
 		final Group ecGroup = new Group();
-		ecGroup.setName(ProgramDetailModel.ENERGY_COMPANY_STRING +" Group");
-		ecGroup.addField(getModel().getColumnName(index));
+		ecGroup.setName(ProgramDetailModel.ENERGY_COMPANY_STRING + ReportFactory.NAME_GROUP);
+		ecGroup.addField(getModel().getColumnName(ProgramDetailModel.ENERGY_COMPANY_COLUMN));
 
-		final GroupHeader header = new GroupHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName(ProgramDetailModel.ENERGY_COMPANY_STRING + " Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(index).getPositionX(), getModel().getColumnProperties(index ).getPositionY()));
-		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(index).getWidth(), getModel().getColumnProperties(index).getHeight()));
-		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setNullString("<null>");
-		tfactory.setFieldname(getModel().getColumnName(index));
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ProgramDetailModel.ENERGY_COMPANY_COLUMN);
 	  	header.addElement(tfactory.createElement());
 		
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+		header.addElement(ReportFactory.createBasicLine("ecGroupLine", 0.5f, 20));
 
 		//Add all columns (excluding Date) to the table model.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
-			LabelElementFactory factory = new LabelElementFactory();
-			factory.setName(getModel().getColumnName(i)+" Group Element");
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), getModel().getColumnProperties(i).getHeight() ));
-			factory.setText(getModel().getColumnNames()[i]);
+			LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));	//posY must be below energy_company textfield (size 18)
 			header.addElement(factory.createElement());
 		}
-		
 		ecGroup.setHeader(header);
 
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		ecGroup.setFooter(footer);
 		
 		return ecGroup;
@@ -242,24 +214,22 @@ public class ProgramDetailReport extends YukonReportBase
 
 
 	/**
-	 * Create a Group for LMControlLogData.Date column.  
+	 * Create a Group for Program column.  
 	 * @return
 	 */
 	private Group createProgramGroup()
 	{
 		final Group progGroup = new Group();
-		progGroup.setName(ProgramDetailModel.PROGRAM_NAME_STRING +" Group");
+		progGroup.setName(ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_GROUP);
 		progGroup.addField(getModel().getColumnName(ProgramDetailModel.ENERGY_COMPANY_COLUMN));
 		progGroup.addField(getModel().getColumnName(ProgramDetailModel.PROGRAM_NAME_COLUMN ));
 
-		final GroupHeader header = new GroupHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
-		header.setDynamicContent(true);
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));	//override size
 		progGroup.setHeader(header);
 		
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
-		footer.setDynamicContent(true);
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));	//override the size
 		progGroup.setFooter(footer);
 
 		return progGroup;
@@ -284,9 +254,7 @@ public class ProgramDetailReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 	
 		if( showBackgroundColor )
 		{
@@ -303,18 +271,9 @@ public class ProgramDetailReport extends YukonReportBase
 		//Start at 1, we don't want to include the EnergyCompany column, it's our group by column.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
-			TextFieldElementFactory factory = new TextFieldElementFactory();
-			factory.setName(getModel().getColumnNames()[i]+ " Element");
-			factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
-			factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-			factory.setDynamicHeight(Boolean.TRUE);
-			factory.setHorizontalAlignment(ElementAlignment.LEFT);
-			factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-			factory.setNullString("<null>");
-			factory.setFieldname(getModel().getColumnNames()[i]);
+			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			items.addElement(factory.createElement());
 		}
-		items.setDynamicContent(true);
 		return items;
 	}
 	

@@ -1,9 +1,9 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.geom.Point2D;
 
 import org.jfree.report.Boot;
-import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
@@ -17,12 +17,8 @@ import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.ElementStyleSheet;
-import org.jfree.report.style.FontDefinition;
-import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.ReportFuncs;
-import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
 
 /**
@@ -73,11 +69,12 @@ public class PowerFailReport extends YukonReportBase
 		cal.set(java.util.Calendar.MILLISECOND, 0);
 		cal.add(java.util.Calendar.DATE, 1);
 		long stop = cal.getTimeInMillis();
-		cal.add(java.util.Calendar.DATE, -90);
+		cal.add(java.util.Calendar.DATE, -10);
 		long start = cal.getTimeInMillis();
 
-		YukonReportBase powerFailReport = ReportFuncs.createYukonReport(ReportTypes.POWER_FAIL_DATA);
-		powerFailReport.getModel().setStartTime(start);
+		PowerFailModel model = new PowerFailModel(start);
+		
+		YukonReportBase powerFailReport = new PowerFailReport(model);
 		powerFailReport.getModel().collectData();
 		
 		//Create the report
@@ -107,42 +104,27 @@ public class PowerFailReport extends YukonReportBase
 	 */
 	private Group createCollGrpGroup()
 	{
-	  final Group collGrpGroup = new Group();
-	  collGrpGroup.setName("Collection Group");
-	  collGrpGroup.addField("Collection Group");
-
-	  final GroupHeader header = new GroupHeader();
-
-	  header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
-	  header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
-	  LabelElementFactory factory = new LabelElementFactory();
-	  factory.setName("Label 5");
-	  factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-	  factory.setMinimumSize(new FloatDimension(100, 20));
-	  factory.setHorizontalAlignment(ElementAlignment.LEFT);
-	  factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-	  factory.setText("COLLECTION GROUP:");
-	  header.addElement(factory.createElement());
-
-	  final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-	  tfactory.setName("Collection Group Element");
-	  tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
-	  tfactory.setMinimumSize(new FloatDimension(200, 20));
-	  tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-	  tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-	  tfactory.setNullString("<null>");
-	  tfactory.setFieldname("Collection Group");
-	  header.addElement(tfactory.createElement());
-
-	  header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
-	  collGrpGroup.setHeader(header);
-
-	  final GroupFooter footer = new GroupFooter();
-	  footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-	  footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
-	  return collGrpGroup;
+		final Group collGrpGroup = new Group();
+		collGrpGroup.setName(PowerFailModel.COLL_GROUP_NAME_STRING + ReportFactory.NAME_GROUP);
+		collGrpGroup.addField(PowerFailModel.COLL_GROUP_NAME_STRING);
+		
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
+		
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PowerFailModel.COLL_GROUP_NAME_COLUMN);
+		factory.setText(factory.getText() + ":");
+		header.addElement(factory.createElement());
+		
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PowerFailModel.COLL_GROUP_NAME_COLUMN);
+		tfactory.setAbsolutePosition(new Point2D.Float(110, 1));
+		header.addElement(tfactory.createElement());
+		
+		header.addElement(ReportFactory.createBasicLine("cgGroupLine", 0.5f, 20));
+		collGrpGroup.setHeader(header);
+		
+//		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+//		collGrpGroup.setFooter(footer);
+		
+		return collGrpGroup;
 	}
 	/**
 	 * Create a Group for Device, (by collectionGroup).  
@@ -151,41 +133,24 @@ public class PowerFailReport extends YukonReportBase
 	private Group createDeviceGroup()
 	{
 		final Group collGrpGroup = new Group();
-		collGrpGroup.setName("Device Name Group");
-		collGrpGroup.addField("Collection Group");
-		collGrpGroup.addField("Device Name");
+		collGrpGroup.setName(PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
+		collGrpGroup.addField(PowerFailModel.COLL_GROUP_NAME_STRING);
+		collGrpGroup.addField(PowerFailModel.DEVICE_NAME_STRING);
 		  
-		final GroupHeader header = new GroupHeader();
+		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 22));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-
-		LabelElementFactory factory = new LabelElementFactory();
-		factory.setName("Label 5");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-		factory.setMinimumSize(new FloatDimension(100, 18));
-		factory.setHorizontalAlignment(ElementAlignment.RIGHT);
-		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		factory.setText("DEVICE:");
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PowerFailModel.DEVICE_NAME_COLUMN);
+		factory.setText(factory.getText() + ":");
 		header.addElement(factory.createElement());
 
-		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName("Device Name Group Element");
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PowerFailModel.DEVICE_NAME_COLUMN);
 		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
-		tfactory.setMinimumSize(new FloatDimension(300, 18));
-		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
-		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		tfactory.setNullString("<null>");
-		tfactory.setFieldname("Device Name");
 		header.addElement(tfactory.createElement());
 
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
+		header.addElement(ReportFactory.createBasicLine("dGroupHeadLine", 0.5f, 20));
 
-		final GroupFooter footer = new GroupFooter();
-		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 12));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
-		//footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
-	
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+//		footer.addElement(ReportFactory.createBasicLine("dGroupFootLine", 0.5f, 4));
 		collGrpGroup.setFooter(footer);
 		return collGrpGroup;
 	}
@@ -203,7 +168,7 @@ public class PowerFailReport extends YukonReportBase
 		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName("hideItem");
 		hideItem.setProperty("field", PowerFailModel.DEVICE_NAME_STRING);
-		hideItem.setProperty("element", "Device Element");
+		hideItem.setProperty("element", PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		return expressions;
@@ -216,10 +181,10 @@ public class PowerFailReport extends YukonReportBase
 	 */
 	protected GroupList createGroups()
 	{
-	  final GroupList list = new GroupList();
-	  list.add(createCollGrpGroup());
-	  list.add(createDeviceGroup());
-	  return list;
+		final GroupList list = new GroupList();
+		list.add(createCollGrpGroup());
+		list.add(createDeviceGroup());
+		return list;
 	}
 
 
@@ -229,10 +194,7 @@ public class PowerFailReport extends YukonReportBase
 	 */
 	protected ItemBand createItemBand()
 	{
-		final ItemBand items = new ItemBand();
-
-		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		items.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
+		ItemBand items = ReportFactory.createItemBandDefault();
 
 		if(showBackgroundColor)
 		{
@@ -247,34 +209,13 @@ public class PowerFailReport extends YukonReportBase
 				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
 		}
 
-		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setName(getModel().getColumnName(PowerFailModel.DEVICE_NAME_COLUMN)+ " Element");		
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(PowerFailModel.DEVICE_NAME_COLUMN).getPositionX(),getModel().getColumnProperties(PowerFailModel.DEVICE_NAME_COLUMN).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(PowerFailModel.DEVICE_NAME_COLUMN).getWidth(), 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(getModel().getColumnName(PowerFailModel.DEVICE_NAME_COLUMN));
+		TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), PowerFailModel.DEVICE_NAME_COLUMN);
 		items.addElement(factory.createElement());
 
-		factory = new TextFieldElementFactory();
-		factory.setName(getModel().getColumnName(PowerFailModel.POINT_NAME_COLUMN)+ " Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(PowerFailModel.POINT_NAME_COLUMN).getPositionX(),getModel().getColumnProperties(PowerFailModel.POINT_NAME_COLUMN).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(PowerFailModel.POINT_NAME_COLUMN).getWidth(), 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(getModel().getColumnName(PowerFailModel.POINT_NAME_COLUMN));
+		factory = ReportFactory.createTextFieldElementDefault(getModel(), PowerFailModel.POINT_NAME_COLUMN);
 		items.addElement(factory.createElement());
 		
-		factory = new TextFieldElementFactory();
-		factory.setName(getModel().getColumnName(PowerFailModel.POWER_FAIL_COUNT_COLUMN)+ " Element");		
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(PowerFailModel.POWER_FAIL_COUNT_COLUMN).getPositionX(),getModel().getColumnProperties(PowerFailModel.POWER_FAIL_COUNT_COLUMN).getPositionY()));
-		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(PowerFailModel.POWER_FAIL_COUNT_COLUMN).getWidth(), 10));
-		factory.setHorizontalAlignment(ElementAlignment.LEFT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFieldname(getModel().getColumnName(PowerFailModel.POWER_FAIL_COUNT_COLUMN));
+		factory = ReportFactory.createTextFieldElementDefault(getModel(), PowerFailModel.POWER_FAIL_COUNT_COLUMN);
 		items.addElement(factory.createElement());
 	
 		return items;

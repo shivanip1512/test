@@ -1,6 +1,10 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 
 import org.jfree.report.Boot;
@@ -12,6 +16,7 @@ import org.jfree.report.PageFooter;
 import org.jfree.report.PageHeader;
 import org.jfree.report.ReportFooter;
 import org.jfree.report.ReportHeader;
+import org.jfree.report.ShapeElement;
 import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
@@ -28,6 +33,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.gui.PreviewPanel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 
@@ -71,8 +77,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected String PAGE_XOFY_EXPRESSION = "PageXofY";
 	
 	protected PageFormat pageFormat= null;
-	
-	 
+
 	public void showPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		// initialize JFreeReport
@@ -250,15 +255,11 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected PageFooter createPageFooter()
 	{
 		final PageFooter pageFooter = new PageFooter();
-		pageFooter.getStyle().setStyleProperty
-			(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 22));
+		pageFooter.getStyle().setStyleProperty (ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
 		pageFooter.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 
 		/** A rectangle around the page footer */
-		/*		
-		pageFooter.addElement(StaticShapeElementFactory.createRectangleShapeElement
-			(null, java.awt.Color.black, null, new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), true, false));
-		*/
+		pageFooter.addElement(ReportFactory.createBasicLine("pfLine", 0.5f, 6));
 		/** A label for Cannon Technologies in the footer object */
 		/*
 		final LabelElementFactory lfactory = new LabelElementFactory();
@@ -270,8 +271,20 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		lfactory.setDynamicHeight(Boolean.TRUE);
 		pageFooter.addElement(lfactory.createElement());
 		*/
+	
+		final DateFieldElementFactory factory = new DateFieldElementFactory();
+		factory.setAbsolutePosition(new Point2D.Float(0, 8));
+		factory.setMinimumSize(new FloatDimension(-100, 0));
+		factory.setDynamicHeight(new Boolean(true));
+		factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+		factory.setNullString("<null>");
+		factory.setFormatString("d-MMM-yyyy HH:mm:ss  ");
+		factory.setFieldname("report.date");
+		pageFooter.addElement(factory.createElement());
+
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 12));
+		tfactory.setAbsolutePosition(new Point2D.Float(0, 8));
 		tfactory.setMinimumSize(new FloatDimension(-100, 0));
 		tfactory.setHorizontalAlignment(ElementAlignment.CENTER);
 		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
@@ -288,32 +301,10 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected PageHeader createPageHeader()
 	{
 		final PageHeader header = new PageHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
+		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 14));
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 10));
 		header.setDisplayOnFirstPage(true);
 		header.setDisplayOnLastPage(false);
-
-		// is by default true, but it is defined in the xml template, so I add it here too.
-		header.addElement( StaticShapeElementFactory.createRectangleShapeElement(
-							null, java.awt.Color.decode("#AFAFAF"), null,
-							new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100),
-							false, true)
-		);
-	
-		final DateFieldElementFactory factory = new DateFieldElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 0));
-		factory.setMinimumSize(new FloatDimension(-100, 14));
-		factory.setHorizontalAlignment(ElementAlignment.RIGHT);
-		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
-		factory.setFormatString("d-MMM-yyyy");
-		factory.setFieldname("report.date");
-		header.addElement(factory.createElement());
-
-		header.addElement( StaticShapeElementFactory.createLineShapeElement(
-							"line1", java.awt.Color.decode("#CFCFCF"),
-							new BasicStroke(2), new java.awt.geom.Line2D.Float(0, 16, 0, 16))
-		);
 		return header;
 	}
 
@@ -323,12 +314,10 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	 */
 	protected ReportFooter createReportFooter()
 	{
-		final ReportFooter footer = new ReportFooter();
-		footer.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 48));
-		footer.getBandDefaults().setFontDefinitionProperty( new FontDefinition("Serif", 12, true, false, false, false));
-
+		ReportFooter footer = ReportFactory.createReportFooterDefault();
+		
 		final LabelElementFactory factory = new LabelElementFactory();
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 0));
+		factory.setAbsolutePosition(new Point2D.Float(0, 0));
 		factory.setMinimumSize(new FloatDimension(-100, 16));
 		factory.setHorizontalAlignment(ElementAlignment.CENTER);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
@@ -343,10 +332,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	 */
 	protected ReportHeader createReportHeader()
 	{
-		final ReportHeader header = new ReportHeader();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 58));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 20, true, false, false, false));
-		header.setPagebreakAfterPrint(true);
+		ReportHeader header = ReportFactory.createReportHeaderDefault();
 	
 		LabelElementFactory factory = new LabelElementFactory();
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 0));
