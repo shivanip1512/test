@@ -25,6 +25,9 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 	public static final int REQUEST_ALL_SUBS = 10;
 	public static final int RETURN_BANK_TO_FEEDER = 11;
 
+	//server does not use these commands
+	public static final int CMD_MANUAL_ENTRY	= 20;
+
 
 	public static final String[] COMMAND_STRINGS =
 	{
@@ -40,13 +43,14 @@ public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage
 		"CONFIRM OPEN",
 		"CONFIRM CLOSE",
 		"REQUEST ALL SUBSTATION BUSES",
-		"RETURN BANK TO FEEDER"
+		"RETURN BANK TO FEEDER",   //11
+		"","","","",
+		"","","","",
+		
+		//below are not used by the server
+		"Manual Entry" //20
 	};
 	
-
-	//server does not use these commands
-	public static final int CMD_INVALID			= -1;
-	public static final int CMD_MANUAL_ENTRY	= -2;
 
 
 	private int command;
