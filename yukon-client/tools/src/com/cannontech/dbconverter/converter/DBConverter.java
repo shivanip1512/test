@@ -1,6 +1,7 @@
 package com.cannontech.dbconverter.converter;
 
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.*;
 
 /**
@@ -8,11 +9,11 @@ import com.cannontech.tools.gui.*;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
-public class DBConverter implements IRunnableDBTool 
+public class DBConverter extends MessageFrameAdaptor 
 {
 	// main will set the path
 	private String filePathName;
-	private IMessageFrame cf = null;
+	//private IMessageFrame cf = null;
 	
 	private static final int MAX_DSM2_MACRO_COUNT = 30;
 	
@@ -113,10 +114,10 @@ public void run()
 	processAnalogPoints();
 	processAccumulatorPoints();
 
-	getCf().addOutput("");
-	getCf().addOutput("");
-	getCf().addOutput("...finished with Database Conversion");
-	getCf().finish( "Database Conversion is complete.");
+	getIMessageFrame().addOutput("");
+	getIMessageFrame().addOutput("");
+	getIMessageFrame().addOutput("...finished with Database Conversion");
+	getIMessageFrame().finish( "Database Conversion is complete.");
 }
 
 
@@ -170,33 +171,6 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 
 
 /**
- * Insert the method's description here.
- * Creation date: (7/12/2001 1:05:41 PM)
- * @param newCf IMessageFrame
- */
-public IMessageFrame getCf() 
-{
-	if( cf == null )
-	{
-		//just in case this is not set, add a default outputter
-		cf = new IMessageFrame()
-		{
-			public void addOutput( final String msg )
-			{
-				System.out.println(msg);
-			}
-			
-			public void finish( String msg)
-			{}  //no-op for now
-			
-		};
-	}
-	
-	return cf;
-}
-
-
-/**
  * appends a file name with the path
  * Creation date: (4/14/2001 3:13:24 PM)
  * @return java.lang.String
@@ -207,7 +181,7 @@ public String getFullFileName(String aFileName)
 	if( filePathName == null )
 	{
 		//try to get this value from our System properties
-		String propPath = System.getProperty(IRunnableDBTool.PROP_PATH);
+		String propPath = System.getProperty(IRunnableDBTool.PROP_SRCPATH);
 		if( propPath != null )
 			filePathName = propPath;
 	}
@@ -550,7 +524,7 @@ public static void main(String[] args)
 public boolean processAccumulatorPoints() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Accumulator Point file process...");
-	getCf().addOutput("Starting Accumulator Point file process...");
+	getIMessageFrame().addOutput("Starting Accumulator Point file process...");
 	
 	String aFileName = getFullFileName(AccumPointFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -574,7 +548,7 @@ public boolean processAccumulatorPoints()
 		if( tokenizer.countTokens() < ACCUM_PT_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Accumulator Point line #" + i + " has less than " + ACCUM_PT_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Accumulator Point line #" + i + " has less than " + ACCUM_PT_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Accumulator Point line #" + i + " has less than " + ACCUM_PT_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 
@@ -716,10 +690,10 @@ public boolean processAccumulatorPoints()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Accumulator Point file was processed and inserted Successfully");
-		getCf().addOutput("Accumulator Point file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Accumulator Point file was processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("Accumulator Point failed insertion");
+		getIMessageFrame().addOutput("Accumulator Point failed insertion");
 		
 	return success;
 }
@@ -733,7 +707,7 @@ public boolean processAccumulatorPoints()
 public boolean processAnalogPoints() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Analog Point file process...");
-	getCf().addOutput("Starting Analog Point file process...");
+	getIMessageFrame().addOutput("Starting Analog Point file process...");
 	
 	String aFileName = getFullFileName(AnalogPointFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -756,7 +730,7 @@ public boolean processAnalogPoints()
 		if( tokenizer.countTokens() < ANALOG_PT_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Analog Point line #" + i + " has less than " + ANALOG_PT_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Analog Point line #" + i + " has less than " + ANALOG_PT_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Analog Point line #" + i + " has less than " + ANALOG_PT_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 
@@ -916,13 +890,13 @@ public boolean processAnalogPoints()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Analog Point file was processed and inserted Successfully");
-		getCf().addOutput("Analog Point file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Analog Point file was processed and inserted Successfully");
 			
 		com.cannontech.clientutils.CTILogger.info(addCount + " Analog Points were added to the database");
-		getCf().addOutput(addCount + " Analog Points were added to the database");
+		getIMessageFrame().addOutput(addCount + " Analog Points were added to the database");
 	}
 	else
-		getCf().addOutput( " Analog Points failed adding to the database");
+		getIMessageFrame().addOutput( " Analog Points failed adding to the database");
 	return success;
 }
 
@@ -935,7 +909,7 @@ public boolean processAnalogPoints()
 public boolean processCapBankControllers() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Cap Bank Controller file process...");
-	getCf().addOutput("Starting Cap Bank Controller file process...");
+	getIMessageFrame().addOutput("Starting Cap Bank Controller file process...");
 	
 	String aFileName = getFullFileName(CBCFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -956,7 +930,7 @@ public boolean processCapBankControllers()
 		if( tokenizer.countTokens() < CBC_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** CBC line #" + i + " has less than " + CBC_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** CBC line #" + i + " has less than " + CBC_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** CBC line #" + i + " has less than " + CBC_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -986,13 +960,13 @@ public boolean processCapBankControllers()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("CBC file was processed and inserted Successfully");
-		getCf().addOutput("CBC file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("CBC file was processed and inserted Successfully");
 		
 		com.cannontech.clientutils.CTILogger.info(addCount + " CBC Devices were added to the database");
-		getCf().addOutput(addCount + " CBC Devices were added to the database");
+		getIMessageFrame().addOutput(addCount + " CBC Devices were added to the database");
 	}
 	else
-		getCf().addOutput(" CBC Devices failed addition to the database");
+		getIMessageFrame().addOutput(" CBC Devices failed addition to the database");
 	return success;
 }
 
@@ -1005,7 +979,7 @@ public boolean processCapBankControllers()
 public boolean processLoadGroups() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Load Group file process...");
-	getCf().addOutput("Starting Load Group file process...");
+	getIMessageFrame().addOutput("Starting Load Group file process...");
 	
 	String aFileName = getFullFileName(LMGroupFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1026,7 +1000,7 @@ public boolean processLoadGroups()
 		if( tokenizer.countTokens() < LMGROUP_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** LM Group line #" + i + " has less than " + LMGROUP_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** LM Group line #" + i + " has less than " + LMGROUP_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** LM Group line #" + i + " has less than " + LMGROUP_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1106,13 +1080,13 @@ public boolean processLoadGroups()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Load Group file was processed and inserted Successfully");
-		getCf().addOutput("Load Group file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Load Group file was processed and inserted Successfully");
 		
 		com.cannontech.clientutils.CTILogger.info(addCount + " Load Groups were added to the database");
-		getCf().addOutput(addCount + " Load Groups were added to the database");
+		getIMessageFrame().addOutput(addCount + " Load Groups were added to the database");
 	}
 	else
-		getCf().addOutput("Load Groups failed adding to the database");
+		getIMessageFrame().addOutput("Load Groups failed adding to the database");
 	return success;
 }
 
@@ -1125,7 +1099,7 @@ public boolean processLoadGroups()
 public boolean processMCTDevices() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting MCT Device file process...");
-	getCf().addOutput("Starting MCT Device file process...");
+	getIMessageFrame().addOutput("Starting MCT Device file process...");
 	
 	String aFileName = getFullFileName(MCTFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1145,7 +1119,7 @@ public boolean processMCTDevices()
 		if( tokenizer.countTokens() < MCT_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** MCT line #" + i + " has less than " + MCT_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** MCT line #" + i + " has less than " + MCT_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** MCT line #" + i + " has less than " + MCT_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1229,13 +1203,13 @@ public boolean processMCTDevices()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("MCT Device file was processed and inserted Successfully");
-		getCf().addOutput("MCT Device file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("MCT Device file was processed and inserted Successfully");
 		
 		com.cannontech.clientutils.CTILogger.info(addCount + " MCT Devices were added to the database");
-		getCf().addOutput(addCount + " MCT Devices were added to the database");
+		getIMessageFrame().addOutput(addCount + " MCT Devices were added to the database");
 	}
 	else
-		getCf().addOutput("MCT Devices failed adding to the database");
+		getIMessageFrame().addOutput("MCT Devices failed adding to the database");
 	return success;
 }
 
@@ -1248,7 +1222,7 @@ public boolean processMCTDevices()
 public boolean processPortFile() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Port file process...");
-	getCf().addOutput("Starting Port file process...");
+	getIMessageFrame().addOutput("Starting Port file process...");
 	
 	String aFileName = getFullFileName(portFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1267,7 +1241,7 @@ public boolean processPortFile()
 		if( tokenizer.countTokens() < PORT_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Port line #" + i + " has less than " + PORT_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Port line #" + i + " has less than " + PORT_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Port line #" + i + " has less than " + PORT_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1307,7 +1281,7 @@ public boolean processPortFile()
 		else
 		{
 			com.cannontech.clientutils.CTILogger.info("** Unsupported port type " + port.getCommPort().getSharedPortType() + " found at line #" + i + ", ignoring line.");
-			getCf().addOutput("** Unsupported port type " + port.getCommPort().getSharedPortType() + " found at line #" + i + ", ignoring line.");
+			getIMessageFrame().addOutput("** Unsupported port type " + port.getCommPort().getSharedPortType() + " found at line #" + i + ", ignoring line.");
 			continue;
 		}
 
@@ -1320,10 +1294,10 @@ public boolean processPortFile()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Port file processed and inserted Successfully");
-		getCf().addOutput("Port file processed and inserted Successfully");
+		getIMessageFrame().addOutput("Port file processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("Port file failed insertion");
+		getIMessageFrame().addOutput("Port file failed insertion");
 	return success;
 }
 
@@ -1337,7 +1311,7 @@ public boolean processPortFile()
 public boolean processRepeaterFile(int aPassCount) 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Repeater Pass " + aPassCount + " file process...");
-	getCf().addOutput("Starting Repeater Pass " + aPassCount + " file process...");
+	getIMessageFrame().addOutput("Starting Repeater Pass " + aPassCount + " file process...");
 	
 	String aFileName = getFullFileName(baseRepeaterFileName) + + aPassCount + ".txt";
 	
@@ -1357,7 +1331,7 @@ public boolean processRepeaterFile(int aPassCount)
 		if( tokenizer.countTokens() < REPEATER_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Repeater line #" + (i + 1) + " has less than " + REPEATER_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Repeater line #" + (i + 1) + " has less than " + REPEATER_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Repeater line #" + (i + 1) + " has less than " + REPEATER_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1389,10 +1363,10 @@ public boolean processRepeaterFile(int aPassCount)
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Repeater file " + aPassCount + " processed and inserted Successfully");
-		getCf().addOutput("Repeater file " + aPassCount + " processed and inserted Successfully");
+		getIMessageFrame().addOutput("Repeater file " + aPassCount + " processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("Repeater file failed insertion");
+		getIMessageFrame().addOutput("Repeater file failed insertion");
 	return success;
 }
 
@@ -1405,7 +1379,7 @@ public boolean processRepeaterFile(int aPassCount)
 public boolean processRouteMacro() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Route Macro file process...");
-	getCf().addOutput("Starting Route Macro file process...");
+	getIMessageFrame().addOutput("Starting Route Macro file process...");
 	
 	String aFileName = getFullFileName(RouteMacroFileName);
 	
@@ -1427,7 +1401,7 @@ public boolean processRouteMacro()
 		if( tokenizer.countTokens() < ROUTE_MACRO_TOKEN_COUNT)
 		{
 			com.cannontech.clientutils.CTILogger.info("** Route Macro line #" + (i+1) + " has less than " + ROUTE_MACRO_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Route Macro line #" + (i+1) + " has less than " + ROUTE_MACRO_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Route Macro line #" + (i+1) + " has less than " + ROUTE_MACRO_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1482,13 +1456,13 @@ public boolean processRouteMacro()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Route Macro file was processed and inserted Successfully");
-		getCf().addOutput("Route Macro file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Route Macro file was processed and inserted Successfully");
 		
 		com.cannontech.clientutils.CTILogger.info(addCount + " Macro Routes were added to the database");
-		getCf().addOutput(addCount + " Macro Routes were added to the database");
+		getIMessageFrame().addOutput(addCount + " Macro Routes were added to the database");
 	}
 	else
-		getCf().addOutput("Macro Routes failed addition to the database");	
+		getIMessageFrame().addOutput("Macro Routes failed addition to the database");	
 	return success;
 
 }
@@ -1503,7 +1477,7 @@ public boolean processRouteMacro()
 public boolean processRptRouteFile(int aPassCount) 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Routes with Repeaters Pass " + aPassCount + " file process...");
-	getCf().addOutput("Starting Routes with Repeaters Pass " + aPassCount + " file process...");
+	getIMessageFrame().addOutput("Starting Routes with Repeaters Pass " + aPassCount + " file process...");
 	
 	String aFileName = getFullFileName(baseRouteFileName) + + aPassCount + ".txt";
 	
@@ -1528,7 +1502,7 @@ public boolean processRptRouteFile(int aPassCount)
 		if( tokenizer.countTokens() < (SINGLE_ROUTE_TOKEN_COUNT + 2) )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Rpt Route line #" + (i+1) + " has less than " + (SINGLE_ROUTE_TOKEN_COUNT + 2) + " tokens, ignoring line.");
-			getCf().addOutput("** Rpt Route line #" + (i+1) + " has less than " + (SINGLE_ROUTE_TOKEN_COUNT + 2) + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Rpt Route line #" + (i+1) + " has less than " + (SINGLE_ROUTE_TOKEN_COUNT + 2) + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1581,13 +1555,13 @@ public boolean processRptRouteFile(int aPassCount)
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Rpt Route file " + aPassCount + " processed and inserted Successfully");
-		getCf().addOutput("Rpt Route file " + aPassCount + " processed and inserted Successfully");
+		getIMessageFrame().addOutput("Rpt Route file " + aPassCount + " processed and inserted Successfully");
 		
 		com.cannontech.clientutils.CTILogger.info(addCount + " Repeater Routes were added to the database");
-		getCf().addOutput(addCount + " Repeater Routes were added to the database");
+		getIMessageFrame().addOutput(addCount + " Repeater Routes were added to the database");
 	}
 	else
-		getCf().addOutput("Repeater Routes failed addition to the database");
+		getIMessageFrame().addOutput("Repeater Routes failed addition to the database");
 	return success;
 
 }
@@ -1601,7 +1575,7 @@ public boolean processRptRouteFile(int aPassCount)
 public boolean processRTUDevices() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting RTU Device file process...");
-	getCf().addOutput("Starting RTU Device file process...");
+	getIMessageFrame().addOutput("Starting RTU Device file process...");
 	
 	String aFileName = getFullFileName(RTUFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1623,7 +1597,7 @@ public boolean processRTUDevices()
 		if( tokenizer.countTokens() < RTU_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** RTU line #" + i + " has less than " + TRANSMITTER_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** RTU line #" + i + " has less than " + TRANSMITTER_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** RTU line #" + i + " has less than " + TRANSMITTER_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1663,10 +1637,10 @@ public boolean processRTUDevices()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("RTU file was processed and inserted Successfully");
-		getCf().addOutput("RTU file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("RTU file was processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("RTU Devices failed addition to the database");
+		getIMessageFrame().addOutput("RTU Devices failed addition to the database");
 		
 	return success;
 }
@@ -1680,7 +1654,7 @@ public boolean processRTUDevices()
 public boolean processSingleRouteFile()
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Single Route file process...");
-	getCf().addOutput("Starting Single Route file process...");
+	getIMessageFrame().addOutput("Starting Single Route file process...");
 	
 	String aFileName = getFullFileName(baseRouteFileName) + "0.txt";
 	
@@ -1701,7 +1675,7 @@ public boolean processSingleRouteFile()
 		if( tokenizer.countTokens() < SINGLE_ROUTE_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Route line #" + (i+1) + " has less than " + SINGLE_ROUTE_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Route line #" + (i+1) + " has less than " + SINGLE_ROUTE_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Route line #" + (i+1) + " has less than " + SINGLE_ROUTE_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1742,10 +1716,10 @@ public boolean processSingleRouteFile()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Single Route file processed and inserted Successfully");
-		getCf().addOutput("Single Route file processed and inserted Successfully");
+		getIMessageFrame().addOutput("Single Route file processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("Single Route file failed insertion");
+		getIMessageFrame().addOutput("Single Route file failed insertion");
 	return success;
 
 }
@@ -1759,7 +1733,7 @@ public boolean processSingleRouteFile()
 public boolean processStateGroupFile() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting StateGroup file process...");
-	getCf().addOutput("Starting StateGroup file process...");
+	getIMessageFrame().addOutput("Starting StateGroup file process...");
 	
 	String aFileName = getFullFileName(stateGroupFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1778,7 +1752,7 @@ public boolean processStateGroupFile()
 		if( tokenizer.countTokens() < STATE_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** State line #" + i + " has less than " + STATE_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** State line #" + i + " has less than " + STATE_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** State line #" + i + " has less than " + STATE_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 		
@@ -1812,10 +1786,10 @@ public boolean processStateGroupFile()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("StateGroup file processed and inserted Successfully");
-		getCf().addOutput("StateGroup file processed and inserted Successfully");
+		getIMessageFrame().addOutput("StateGroup file processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("StateGroup file failed insertion");	
+		getIMessageFrame().addOutput("StateGroup file failed insertion");	
 	return success;
 }
 
@@ -1828,7 +1802,7 @@ public boolean processStateGroupFile()
 public boolean processStatusPoints()
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Status Point file process...");
-	getCf().addOutput("Starting Status Point file process...");
+	getIMessageFrame().addOutput("Starting Status Point file process...");
 	
 	String aFileName = getFullFileName(StatusPointFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1851,7 +1825,7 @@ public boolean processStatusPoints()
 		if( tokenizer.countTokens() < STATUS_PT_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Status Point line #" + i + " has less than " + STATUS_PT_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Status Point line #" + i + " has less than " + STATUS_PT_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Status Point line #" + i + " has less than " + STATUS_PT_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 		
@@ -1925,13 +1899,13 @@ public boolean processStatusPoints()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Status Point file was processed and inserted Successfully");
-		getCf().addOutput("Status Point file was processed and inserted Successfully");
+		getIMessageFrame().addOutput("Status Point file was processed and inserted Successfully");
 		
 		com.cannontech.clientutils.CTILogger.info(addCount + " Status Points were added to the database");
-		getCf().addOutput(addCount + " Status Points were added to the database");
+		getIMessageFrame().addOutput(addCount + " Status Points were added to the database");
 	}
 	else
-		getCf().addOutput("Status Points failed addition to the database");
+		getIMessageFrame().addOutput("Status Points failed addition to the database");
 	return success;
 }
 
@@ -1944,7 +1918,7 @@ public boolean processStatusPoints()
 public boolean processTransmitterFile() 
 {
 	com.cannontech.clientutils.CTILogger.info("Starting Transmitter file process...");
-	getCf().addOutput("Starting Transmitter file process...");
+	getIMessageFrame().addOutput("Starting Transmitter file process...");
 	
 	String aFileName = getFullFileName(transmitterFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -1963,7 +1937,7 @@ public boolean processTransmitterFile()
 		if( tokenizer.countTokens() < TRANSMITTER_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Transmitter line #" + i + " has less than " + TRANSMITTER_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Transmitter line #" + i + " has less than " + TRANSMITTER_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Transmitter line #" + i + " has less than " + TRANSMITTER_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -1987,10 +1961,10 @@ public boolean processTransmitterFile()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Transmitter file processed and inserted Successfully");
-		getCf().addOutput("Transmitter file processed and inserted Successfully");
+		getIMessageFrame().addOutput("Transmitter file processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("Transmitter file failed insertion");
+		getIMessageFrame().addOutput("Transmitter file failed insertion");
 	return success;
 }
 
@@ -2003,7 +1977,7 @@ public boolean processTransmitterFile()
 public boolean processVirtualDeviceFile() 
 {	
 	com.cannontech.clientutils.CTILogger.info("Starting Virtual Device file process...");
-	getCf().addOutput("Starting Virtual Device file process...");
+	getIMessageFrame().addOutput("Starting Virtual Device file process...");
 	
 	String aFileName = getFullFileName(virtualDeviceFileName);
 	java.util.ArrayList lines = readFile(aFileName);
@@ -2022,7 +1996,7 @@ public boolean processVirtualDeviceFile()
 		if( tokenizer.countTokens() < VIRTUALDEV_TOKEN_COUNT )
 		{
 			com.cannontech.clientutils.CTILogger.info("** Virtual Deivce line #" + i + " has less than " + VIRTUALDEV_TOKEN_COUNT + " tokens, ignoring line.");
-			getCf().addOutput("** Virtual Deivce line #" + i + " has less than " + VIRTUALDEV_TOKEN_COUNT + " tokens, ignoring line.");
+			getIMessageFrame().addOutput("** Virtual Deivce line #" + i + " has less than " + VIRTUALDEV_TOKEN_COUNT + " tokens, ignoring line.");
 			continue;
 		}
 			
@@ -2045,10 +2019,10 @@ public boolean processVirtualDeviceFile()
 	if( success )
 	{
 		com.cannontech.clientutils.CTILogger.info("Virtual Device file processed and inserted Successfully");
-		getCf().addOutput("Virtual Device file processed and inserted Successfully");
+		getIMessageFrame().addOutput("Virtual Device file processed and inserted Successfully");
 	}
 	else
-		getCf().addOutput("Virtual Device file failed insertion");
+		getIMessageFrame().addOutput("Virtual Device file failed insertion");
 	return success;
 	
 }
@@ -2092,24 +2066,13 @@ private java.util.ArrayList readFile(String fileName)
 	else
 	{
 		com.cannontech.clientutils.CTILogger.info( "Unable to find file '" + fileName +"'" );
-		getCf().addOutput( "Unable to find file '" + fileName +"'" );
+		getIMessageFrame().addOutput( "Unable to find file '" + fileName +"'" );
 	}
 	return null;
 }
 
 
 /**
- * Insert the method's description here.
- * Creation date: (7/12/2001 1:05:41 PM)
- * @param newCf IMessageFrame
- */
-public void setIMessageFrame(IMessageFrame newCf) 
-{
-	cf = newCf;
-}
-
-
-	/**
  * Insert the method's description here.
  * Creation date: (3/31/2001 12:07:17 PM)
  * @param multi com.cannontech.database.data.multi.MultiDBPersistent

@@ -1,11 +1,16 @@
 package com.cannontech.tools.gui;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
+
+import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.dbconverter.converter.DBConverter;
+import com.cannontech.dbtools.tools.ModifyConstraints;
 import com.cannontech.dbtools.updater.DBUpdater;
 
 /**
@@ -13,13 +18,26 @@ import com.cannontech.dbtools.updater.DBUpdater;
  * Creation date: (7/11/2001 9:49:29 AM)
  * @author: Eric Schmit
  */
-class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt.event.ActionListener 
+class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt.event.ActionListener, javax.swing.event.PopupMenuListener 
 {
 	//less typing for these
 	private static final String FS = System.getProperty("file.separator");
 	private static final String LF = System.getProperty("line.separator");
 	public static final String DEF_PATH = "c:" +
 		FS + "yukon" + FS + "client" + FS + "export" + FS;
+
+	/** 
+	 * All the possible tools available for use, do not change the order of this!
+	 * Add any new items to the end of the list.
+	 */ 
+	public static final IRunnableDBTool[] ALL_TOOLS =
+	{
+		new DBUpdater(),
+		new DBConverter(DEF_PATH),
+		new ModifyConstraints()
+	};
+	
+	private TextMsgPanePopUp textMsgPanePopUp = null;
 	private ButtonGroup buttGroup = new ButtonGroup();
 	private javax.swing.JPanel ivjMainPanel = null;
 	private javax.swing.JTextField ivjPathField = null;
@@ -34,13 +52,7 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 	private javax.swing.JTextArea ivjMessageArea = null;
 	private Vector outputVector = null;
 	private boolean gonnaPrint = false;
-	private javax.swing.JButton ivjBrowseButton = null;
-	/** All the possible tools available for use */
-	public static final IRunnableDBTool[] ALL_TOOLS =
-	{
-		new DBUpdater(),
-		new DBConverter(DEF_PATH)
-	};
+	private javax.swing.JButton ivjBrowseButton = null;	
 	private javax.swing.JLabel ivjJLabelMsgs = null;
 	private javax.swing.JLabel ivjJLabelOption = null;
 	private javax.swing.JPanel ivjJPanelTools = null;
@@ -434,6 +446,37 @@ private javax.swing.JPanel getJPanelTools() {
 			getJPanelTools().add(getJRadioButton5(), getJRadioButton5().getName());
 			// user code begin {1}
 			
+
+			//this listener will say what to do on a selection
+			final ActionListener al = new ActionListener()
+			{
+				public void actionPerformed(java.awt.event.ActionEvent e) 
+				{
+					if( e.getSource() instanceof JRadioButton )
+					{
+						JRadioButton butt = (JRadioButton)e.getSource();
+						
+						int indx = -1;
+						
+						try
+						{
+							indx = Integer.parseInt( butt.getActionCommand() );
+						}
+						catch( Exception ex ) {}
+
+
+						if( indx == 2 )
+							getJLabelOption().setText( IRunnableDBTool.PROP_ENABLE );
+						else
+							getJLabelOption().setText( IRunnableDBTool.PROP_SRCPATH );						
+
+
+						getBrowseButton().setEnabled( indx != 2 );
+					}
+				}
+			};
+
+
 			for( int i = 0; i < getJPanelTools().getComponentCount(); i++ )
 			{
 				if( getJPanelTools().getComponent(i) instanceof JRadioButton )
@@ -445,6 +488,7 @@ private javax.swing.JPanel getJPanelTools() {
 						buttGroup.add( butt );
 						butt.setText( ALL_TOOLS[i].getName() );
 						butt.setActionCommand( String.valueOf(i) );
+						butt.addActionListener( al );
 					}
 					else
 					{
@@ -492,7 +536,6 @@ private javax.swing.JRadioButton getJRadioButton0() {
 		try {
 			ivjJRadioButton0 = new javax.swing.JRadioButton();
 			ivjJRadioButton0.setName("JRadioButton0");
-			ivjJRadioButton0.setSelected(true);
 			ivjJRadioButton0.setText("JRadioButton0");
 			// user code begin {1}
 			
@@ -696,8 +739,9 @@ private javax.swing.JTextArea getMessageArea()
 			ivjMessageArea.setName("MessageArea");
 			ivjMessageArea.setBounds(0, 0, 160, 120);
 			// user code begin {1}
-			
+
 			ivjMessageArea.setEditable( false );
+
 			// user code end
 		}
 		catch (java.lang.Throwable ivjExc) 
@@ -813,9 +857,24 @@ private void handleException(java.lang.Throwable exception)
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
+	
+	// init the popup box connections for the MsgPanel
+	MouseListener msgList = new PopUpMenuShower( getTextMsgPanePopUp() );
+	getMessageArea().addMouseListener( msgList );
+	getTextMsgPanePopUp().addPopupMenuListener( this );
+
+
 	// user code end
 	getStartButton().addActionListener(this);
 	getBrowseButton().addActionListener(this);
+}
+
+private TextMsgPanePopUp getTextMsgPanePopUp()
+{
+	if( textMsgPanePopUp == null )
+		textMsgPanePopUp = new TextMsgPanePopUp();
+	
+	return textMsgPanePopUp;
 }
 
 
@@ -843,6 +902,8 @@ private void initialize() {
 //	ourConverter.setCf(this);
 //	getChooser();
 
+	getJRadioButton0().doClick();
+
 	// user code end
 }
 
@@ -854,6 +915,8 @@ public static void main(java.lang.String[] args)
 {
 	try
 	{
+		System.setProperty("cti.app.name", "DBToolsFrame");
+
 		DBToolsFrame aConverterFrame;
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 		aConverterFrame = new DBToolsFrame();
@@ -881,6 +944,35 @@ public static void main(java.lang.String[] args)
 
 
 /**
+ * Insert the method's description here.
+ * Creation date: (8/25/00 9:45:22 AM)
+ * @param e javax.swing.event.PopupMenuEvent
+ */
+public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e)
+{
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (8/25/00 9:45:22 AM)
+ * @param e javax.swing.event.PopupMenuEvent
+ */
+public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e)
+{	
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (8/25/00 9:45:22 AM)
+ * @param e javax.swing.event.PopupMenuEvent
+ */
+public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
+{
+	if( e.getSource() == getTextMsgPanePopUp() )
+	{
+		getTextMsgPanePopUp().setTextArea( getMessageArea() );
+	}
+}
+
+/**
  * Use this method to set all properties needed by any of the tools.
  * This method takes the user entered values and stores them in the System space.
  * 
@@ -888,7 +980,8 @@ public static void main(java.lang.String[] args)
 private void setProps()
 {
 	// get the text from the input field
-	System.setProperty( IRunnableDBTool.PROP_PATH, getPathField().getText() );
+	System.setProperty( IRunnableDBTool.PROP_SRCPATH, getPathField().getText() );
+	System.setProperty( IRunnableDBTool.PROP_ENABLE, getPathField().getText() );
 }
 
 

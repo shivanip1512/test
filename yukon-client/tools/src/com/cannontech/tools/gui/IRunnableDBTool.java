@@ -8,7 +8,10 @@ package com.cannontech.tools.gui;
  */
 public interface IRunnableDBTool extends Runnable
 {
-	public static final String PROP_PATH = "srcpath";
+	//used as keys in hash maps and labels in GUIs
+	public static final String PROP_SRCPATH = "Src-Path";
+	public static final String PROP_ENABLE = "Enable/Disable";
+
 
 	void setIMessageFrame( IMessageFrame frm );
 	

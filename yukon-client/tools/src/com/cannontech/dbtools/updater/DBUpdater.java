@@ -14,7 +14,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.tools.gui.IMessageFrame;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
 
@@ -76,13 +75,11 @@ Suggested DBUpdate Process Steps
  * 
  * 
  */
-public class DBUpdater implements IRunnableDBTool
+public class DBUpdater extends MessageFrameAdaptor
 {
 	//local class to execute update functions
 	private UpdateDB updateDB = null;
 	
-	private IMessageFrame output = null;
-
 	private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
 	
 	//less typing for these
@@ -92,7 +89,7 @@ public class DBUpdater implements IRunnableDBTool
 
 	public final static String[] CMD_LINE_PARAM_NAMES = 
 	{
-		IRunnableDBTool.PROP_PATH,
+		IRunnableDBTool.PROP_SRCPATH,
 		"verbose"
 	};
 
@@ -171,12 +168,12 @@ public class DBUpdater implements IRunnableDBTool
 			System.out.println("An intermediate file is generated in the " + CtiUtilities.getLogDirPath() );
 			System.out.println("directory for each DBUpdate file found.");
 			System.out.println("");
-			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_PATH + "=<SRC_PATH> [verbose= true | false]");
+			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_SRCPATH + "=<SRC_PATH> [verbose= true | false]");
 			System.out.println("");
-			System.out.println("   " + IRunnableDBTool.PROP_PATH + "   : directory that contains the script files for updating the DB");
+			System.out.println("   " + IRunnableDBTool.PROP_SRCPATH + "   : directory that contains the script files for updating the DB");
 			System.out.println("   verbose  : should we show the most output possible (default true)");
 			System.out.println("");
-			System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_PATH + "=d:" +
+			System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_SRCPATH + "=d:" +
 						FS + "YukonMiscInstall" + FS + "YukonDatabase" + FS + "DatabaseUpdates" +
 						FS + "SqlServer");
 			
@@ -328,13 +325,15 @@ public class DBUpdater implements IRunnableDBTool
 
 	private void getUpdateCommands()
 	{		
+		final String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
+		//"d:/eclipse/head/yukon-database/DBUpdates/oracle" );
+
+
 		File[] files = null;
 		UpdateLine[] validLines = new UpdateLine[0];		
 
 		//get all the files in the DIR
-		files = updateDB.getDBUpdateFiles(
-					System.getProperty(CMD_LINE_PARAM_NAMES[0]) );
-					//"d:/eclipse/head/yukon-database/DBUpdates/oracle" );
+		files = updateDB.getDBUpdateFiles( srcPath );
 
 
 
@@ -442,39 +441,5 @@ public class DBUpdater implements IRunnableDBTool
 		CTILogger.error( exception.getMessage(), exception );
 	}
 	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (7/12/2001 1:05:41 PM)
-	 * @param newCf IMessageFrame
-	 */
-	public void setIMessageFrame(IMessageFrame newMf) 
-	{
-		output = newMf;
-	}
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (7/12/2001 1:05:41 PM)
-	 * @param newCf IMessageFrame
-	 */
-	public IMessageFrame getIMessageFrame() 
-	{
-		if( output == null )
-		{
-			//just in case this is not set, add a default outputter
-			output = new IMessageFrame()
-			{
-				public void addOutput( final String msg )
-				{
-					System.out.println(msg);
-				}
-			
-				public void finish( String msg )
-				{}  //no-op for now
-			
-			};
-		}
-	
-		return output;
-	}
 }
