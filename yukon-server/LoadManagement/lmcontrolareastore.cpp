@@ -470,6 +470,31 @@ void CtiLMControlAreaStore::reset()
                                 }
                             }
 
+                            BOOL cplHack = TRUE;
+                            {//HACK for CPL
+                                RWDBSelector selector = db.selector();
+                                selector << yukonPAObjectTable["type"];
+
+                                selector.from(yukonPAObjectTable);
+
+                                RWCString macroTypeString = desolveDeviceType(TYPE_MACRO);
+                                macroTypeString.toUpper();
+                                selector.where( yukonPAObjectTable["type"]==macroTypeString );
+
+                                /*if( _LM_DEBUG )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                                }*/
+
+                                RWOrdered& lmProgramDirectGroupList = currentLMProgramDirect->getLMProgramDirectGroups();
+                                RWDBReader rdr = selector.reader(conn);
+                                if( rdr() )
+                                {
+                                    cplHack = FALSE;
+                                }
+                            }//HACK for CPL
+
                             {
                                 RWDBTable lmGroupMacroExpanderView = db.table("lmgroupmacroexpander_view");
                                 RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
@@ -499,12 +524,32 @@ void CtiLMControlAreaStore::reset()
                                 selector.from(lmGroupMacroExpanderView);
                                 selector.from(dynamicLMGroupTable);
 
-                                selector.where( ( ( lmGroupMacroExpanderView["childid"].isNull() &&
-                                                    lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] ) ||
-                                                  ( !lmGroupMacroExpanderView["childid"].isNull() &&
-                                                    lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
-                                                lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
-                                                lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) );
+                                if( !cplHack )
+                                {//original where clause
+                                    selector.where( ( ( lmGroupMacroExpanderView["childid"].isNull() &&
+                                                        lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] ) ||
+                                                      ( !lmGroupMacroExpanderView["childid"].isNull() &&
+                                                        lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
+                                                    lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
+                                                    lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) );
+                                    /*if( _LM_DEBUG )
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - Original Query" << endl;
+                                    }*/
+                                }
+                                else
+                                {//cplHack where clause
+                                    selector.where( lmGroupMacroExpanderView["childid"].isNull() &&
+                                                    lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] &&
+                                                    lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
+                                                    lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) );
+                                    /*if( _LM_DEBUG )
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - CPL Hack Query" << endl;
+                                    }*/
+                                }
 
                                 selector.orderBy( lmGroupMacroExpanderView["grouporder"] );
                                 selector.orderBy( lmGroupMacroExpanderView["childorder"] );
