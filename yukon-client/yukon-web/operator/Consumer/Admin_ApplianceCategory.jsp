@@ -2,11 +2,6 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
-<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
-		|| ecSettings == null) {
-		response.sendRedirect("../Operations.jsp"); return;
-	}
-%>
 <%
 	StarsApplianceCategory category = null;
 	int catIdx = Integer.parseInt( request.getParameter("Category") );

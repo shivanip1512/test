@@ -1,6 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
-<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	String referer = request.getParameter("referer");
 	if (referer == null) {

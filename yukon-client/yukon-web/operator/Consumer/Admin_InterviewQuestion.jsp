@@ -1,9 +1,4 @@
 <%@ include file="include/StarsHeader.jsp" %>
-<%	if (!AuthFuncs.checkRoleProperty(lYukonUser, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
-		|| ecSettings == null) {
-		response.sendRedirect("../Operations.jsp"); return;
-	}
-%>
 <%
 	ArrayList questions = new ArrayList();
 	String qType = request.getParameter("Type");
