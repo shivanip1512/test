@@ -9,6 +9,8 @@ package com.cannontech.tdc.alarms.gui;
  
 import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.common.util.CtiProperties;
+import com.cannontech.clientutils.CTILogger;
+
 
 public class RowBlinker implements Runnable 
 {
@@ -86,11 +88,15 @@ public RowBlinker( AlarmTableModel dataModel, AlarmingRowVector alarmedRows )
 
 	this.alarmedRows = alarmedRows;
 	this.model = dataModel;
+}
 
+public void start()
+{
 	runningThread = new Thread( this , "TDCAlarmColorAndSound" );
 	runningThread.setDaemon(true);
 	runningThread.start();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/7/2001 3:16:14 PM)
@@ -145,8 +151,8 @@ private AlarmTableModel getModel() {
 private void handleException(java.lang.Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION --------- " + Thread.currentThread().toString() );
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;	
+	CTILogger.info("--------- UNCAUGHT EXCEPTION --------- " + Thread.currentThread().toString() );
+	CTILogger.error( exception.getMessage(), exception );;	
 }
 private synchronized void processAlarmColors()
 {
@@ -227,7 +233,6 @@ private synchronized void processOriginalColors()
  */
 public void run() 
 {
-
 	try
 	{
 		while( alarmedRows != null && alarmedRows.size() > 0 
@@ -255,7 +260,7 @@ public void run()
    				}
    				catch ( InterruptedException e )
    				{
-   					com.cannontech.clientutils.CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
+   					CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during AlarmColor.");
    				}
    				finally
    				{
@@ -271,7 +276,8 @@ public void run()
 			}
 			catch( InterruptedException e )
 			{
-				com.cannontech.clientutils.CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during OriginalColor.");
+				processOriginalColors();
+				CTILogger.debug("Thread " + Thread.currentThread().getName() + " was inturrupted during OriginalColor.");
 			}
 		}
 		

@@ -14,6 +14,7 @@ public class AlarmingRowVector
 {
 	private Vector alarmingRows = null;
 	public static final int ALARM_NOT_FOUND = -1;
+
 /**
  * AlarmingRowVector constructor comment.
  */
@@ -38,13 +39,11 @@ public AlarmingRowVector(int initialCapacity)
  * Creation date: (4/7/00 2:04:36 PM)
  * Version: <version>
  */
-public void addElement( Object obj)
+public void addElement( AlarmingRow alRow_ )
 {
-	if( obj instanceof AlarmingRow )
-		getAlarmingRows().addElement( obj );
-	else
-		throw new IllegalArgumentException("Trying to add a non alarmRow object to a " + this.getClass().getName());
+	getAlarmingRows().addElement( alRow_ );
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (4/7/00 2:04:36 PM)
@@ -87,7 +86,7 @@ public boolean containsSignal( Signal signal_ )
 {
 	for( int i = 0; i < getAlarmingRows().size(); i++ )
 	{
-		if( ((AlarmingRow)getAlarmingRows().get(i)).getSignal().equals(signal_) )
+		if( ((AlarmingRow)getAlarmingRows().get(i)).containsSignal(signal_) )
 			return true;
 	}
 	

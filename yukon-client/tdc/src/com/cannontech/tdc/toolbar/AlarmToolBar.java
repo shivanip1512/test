@@ -2,6 +2,15 @@ package com.cannontech.tdc.toolbar;
 
 import java.util.Date;
 
+import javax.swing.JComboBox;
+import javax.swing.plaf.metal.MetalComboBoxUI;
+
+import com.cannontech.tdc.filter.ActiveAlarmFilter;
+import com.cannontech.tdc.filter.DefaultTDCFilter;
+import com.cannontech.tdc.filter.ITDCFilter;
+import com.cannontech.tdc.filter.InactiveAlarmFilter;
+import com.cannontech.tdc.filter.UnackedAlarmFilter;
+
 /**
  * Insert the type's description here.
  * Creation date: (4/10/00 3:03:50 PM)
@@ -14,7 +23,7 @@ public class AlarmToolBar extends javax.swing.JToolBar implements java.awt.event
 	
 	private javax.swing.JButton ivjJToolBarButtonMuteAlarms = null;
 	private javax.swing.JButton jButtonSilenceAlarms = null;
-	private javax.swing.JButton jButtonActiveAlarms = null;
+	private JComboBox jComboBoxFilter = null;
 	
 	protected transient com.cannontech.tdc.toolbar.AlarmToolBarListener fieldAlarmToolBarListenerEventMulticaster = null;
 	private javax.swing.JButton ivjJToolBarButtonClear = null;
@@ -82,8 +91,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC5(e);
 	else if (e.getSource() == getDateJComboBox()) 
 		connEtoC6(e);		
-	else if( e.getSource() == getJToolBarButtonActiveAlarms() ) 
-		fireJToolBarButtonActiveAlarms_actionPerformed(new java.util.EventObject(this));
+	else if( e.getSource() == getJComboBoxFilter() ) 
+		fireJToolBarFilter_actionPerformed(new java.util.EventObject(this));
 	else
 	{
 		// make sure the event wasnt handled above first
@@ -96,6 +105,27 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	} 
 
 	// user code end
+}
+
+public ITDCFilter getSelectedFilter()
+{
+	return (ITDCFilter)getJComboBoxFilter().getSelectedItem();
+}
+
+public void setSelectedFilter( Object item )
+{
+	getJComboBoxFilter().setSelectedItem( item );
+}
+
+public void setSelectedFilter( int filterID_ )
+{
+	for( int i = 0; i < getJComboBoxFilter().getItemCount(); i++ )
+		if( ((ITDCFilter)getJComboBoxFilter().getItemAt(i)).getFilterID() == filterID_ )
+		{
+			getJComboBoxFilter().setSelectedIndex( filterID_ );			
+			break;
+		}
+
 }
 
 /**
@@ -304,11 +334,12 @@ protected void fireJToolBarButtonMuteSilenceAction_actionPerformed(java.util.Eve
 	fieldAlarmToolBarListenerEventMulticaster.JToolBarButtonSilenceAlarmsAction_actionPerformed(newEvent);
 }
 
-protected void fireJToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject newEvent) {
+protected void fireJToolBarFilter_actionPerformed(java.util.EventObject newEvent) 
+{
 	if (fieldAlarmToolBarListenerEventMulticaster == null) {
 		return;
 	};
-	fieldAlarmToolBarListenerEventMulticaster.JToolBarButtonActiveAlarms_actionPerformed(newEvent);
+	fieldAlarmToolBarListenerEventMulticaster.JToolBarFilter_actionPerformed(newEvent);
 }
 /**
  * 
@@ -593,28 +624,35 @@ private javax.swing.JButton getJToolBarButtonRefresh() {
 * Return the jToolBarButtonActiveAlarms() property value.
 * @return javax.swing.JButton
 */
-public javax.swing.JButton getJToolBarButtonActiveAlarms() 
+public JComboBox getJComboBoxFilter() 
 {
-	if (jButtonActiveAlarms == null) 
+	if( jComboBoxFilter == null ) 
 	{
 		try 
 		{
-			jButtonActiveAlarms = new javax.swing.JButton();
-			jButtonActiveAlarms.setName("JToolBarButtonSilenceAlarms");
-			jButtonActiveAlarms.setToolTipText("Toggles between viewing active alarms and inactive alarms");
-			jButtonActiveAlarms.setMnemonic('A');
-			jButtonActiveAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-			jButtonActiveAlarms.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			jButtonActiveAlarms.setMinimumSize(new java.awt.Dimension(50, 23));
-			jButtonActiveAlarms.setAutoscrolls(false);
-			jButtonActiveAlarms.setText("Inactive Alarms");
-			jButtonActiveAlarms.setMaximumSize(new java.awt.Dimension(91, 23));
-			jButtonActiveAlarms.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
-			jButtonActiveAlarms.setIcon(null);
-			jButtonActiveAlarms.setBorderPainted(true);
-			jButtonActiveAlarms.setPreferredSize(new java.awt.Dimension(91, 23));
-			jButtonActiveAlarms.setRolloverEnabled(false);
-			jButtonActiveAlarms.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+			jComboBoxFilter = new JComboBox();
+			
+			//do this to get a better looking drop down
+			jComboBoxFilter.setUI( new MetalComboBoxUI() );
+
+			jComboBoxFilter.setName("jComboBoxFilter");
+			jComboBoxFilter.setToolTipText("Toggles between available filters");
+			jComboBoxFilter.setMinimumSize(new java.awt.Dimension(50, 23));
+			jComboBoxFilter.setAutoscrolls(false);
+			jComboBoxFilter.setMaximumSize(new java.awt.Dimension(120, 23));
+			jComboBoxFilter.setPreferredSize(new java.awt.Dimension(120, 23));
+			
+			jComboBoxFilter.setBackground( this.getBackground() );
+			jComboBoxFilter.setBorder( null );
+			
+			
+			
+			//temp code to hard code filters for now!!!!
+			getJComboBoxFilter().addItem( new DefaultTDCFilter() );
+			getJComboBoxFilter().addItem( new ActiveAlarmFilter() );
+			getJComboBoxFilter().addItem( new InactiveAlarmFilter() );
+			getJComboBoxFilter().addItem( new UnackedAlarmFilter() );
+			
 		}
 		catch (java.lang.Throwable ivjExc) 
 		{
@@ -622,7 +660,7 @@ public javax.swing.JButton getJToolBarButtonActiveAlarms()
 		}
 	}
 
-	return jButtonActiveAlarms;
+	return jComboBoxFilter;
 }
 
 
@@ -674,7 +712,7 @@ private javax.swing.JComponent[] getOriginalComoponents()
 		originalComponents = new javax.swing.JComponent[ORIGINAL_COMPONENT_COUNT];
 		originalComponents[0] = getJToolBarButtonClear();
 		originalComponents[1] = getJToolBarButtonAckAll();
-		originalComponents[2] = getJToolBarButtonActiveAlarms();
+		originalComponents[2] = getJComboBoxFilter();
 		originalComponents[3] = getJSeparatorDate();
 		originalComponents[4] = getJLabelViewDate();
 		originalComponents[5] = getDateJComboBox();
@@ -716,7 +754,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
 	getJToolBarButtonSilenceAlarms().addActionListener(this);
-	getJToolBarButtonActiveAlarms().addActionListener(this);
+	getJComboBoxFilter().addActionListener(this);
 	
 	// user code end
 	getJToolBarButtonAckAll().addActionListener(this);
@@ -752,7 +790,7 @@ private void initialize()
 		addSeparator();
 		add(getJToolBarButtonClear(), getJToolBarButtonClear().getName());
 		add(getJToolBarButtonAckAll(), getJToolBarButtonAckAll().getName());
-		add(getJToolBarButtonActiveAlarms(), getJToolBarButtonActiveAlarms().getName());
+		add(getJComboBoxFilter(), getJComboBoxFilter().getName());
 		add(getJSeparatorDate(), getJSeparatorDate().getName());
 		add(getJLabelViewDate());
 		add(getDateJComboBox(), getDateJComboBox().getName());

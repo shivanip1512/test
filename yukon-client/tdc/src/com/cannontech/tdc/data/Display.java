@@ -3,73 +3,39 @@ package com.cannontech.tdc.data;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.cannontech.tdc.filter.DefaultTDCFilter;
+import com.cannontech.tdc.filter.ITDCFilter;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/3/00 2:53:36 PM)
  * @author: 
  */
-public class Display
+public class Display implements IDisplay
 {
-	// TDC Display info
-	public static final int BEGINNING_CLIENT_DISPLAY_NUMBER = -1;
-	public static final int PRECANNED_USER_DISPLAY_NUMBER = 99;
-	public static final int BEGINNING_USER_DISPLAY_NUMBER = 100;
-	public static final int MAX_DISPLAY_NUMBER = Integer.MAX_VALUE;
-
-	// Special displays that are predefined
-	public static final int UNKNOWN_DISPLAY_NUMBER = 0;
-	public static final int EVENT_VIEWER_DISPLAY_NUMBER = 1;
-	public static final int HISTORY_EVENT_VIEWER_DISPLAY_NUMBER = 2;
-	public static final int RAW_POINT_HISTORY_VIEWER_DISPLAY_NUMBER = 3;
-	public static final int GLOBAL_ALARM_DISPLAY = 4;
-	public static final int LAST_ALARM_DISPLAY = 14;
-	public static final int VIEWABLE_ALARM_COUNT = 11;  // ALL_ALARM display plus alarmStateIds 2 - 11 displays
-
-	// All possible display types with their default Title values
-	public static final String[] DISPLAY_TYPES =
-	{  
-		"Alarms and Events",		
-		"Custom Displays",
-		"Load Management Client",
-		"Cap Control Client",
-		"Scheduler Client",
-      "Static Displays"
-		//"Energy Exchange Client"
-	};
-
-	//these xxx_TYPE_INDEX variables are a mapping into the DISPLAY_TYPES[]
-	public static final int ALARMS_AND_EVENTS_TYPE_INDEX = 0;
-	public static final int CUSTOM_DISPLAYS_TYPE_INDEX = 1;	
-	public static final int LOAD_CONTROL_CLIENT_TYPE_INDEX = 2;
-	public static final int CAP_CONTROL_CLIENT_TYPE_INDEX = 3;
-	public static final int SCHEDULER_CLIENT_TYPE_INDEX = 4;
-   public static final int STATIC_CLIENT_TYPE_INDEX = 5;
-	//public static final int EEXCHANGE_CLIENT_TYPE_INDEX = 5;
-	
-	public static final int UNKNOWN_TYPE_INDEX = -1;
-	public static final int BEGINNING_OPTIONAL_INDEX = 2;	// All possible display types with their default Title values
-	private static String[] DISPLAY_TITLES =
-	{  
-		/* Mandatory displays */
-		"Alarms and Events",		
-		"Custom Displays",
-		
-		/* All optional displays go below*/
-		"Load Management Client",
-		"Cap Control Client",
-		"Scheduler Client",
-      "Yukon Servers"
-		//"Energy Exchange"
-	};
-
-	
 	// attributes
-	private long displayNumber = UNKNOWN_DISPLAY_NUMBER;
+	private int displayNumber = UNKNOWN_DISPLAY_NUMBER;
 	private String name = null;
 	private String type = null;
 	private String title = null;
 	private String description = null;
 	private ColumnData[] columnData = null;
+
+
+	//what filter is currently being applied to this display
+	private ITDCFilter tdcFilter = new DefaultTDCFilter();
+
+	public static final Display UNKNOWN_DISPLAY = new Display();
+	
+	static
+	{
+		UNKNOWN_DISPLAY.setName("UNKNOWN");
+		UNKNOWN_DISPLAY.setType("UNKNOWN");
+		UNKNOWN_DISPLAY.setTitle("UNKNOWN");
+		UNKNOWN_DISPLAY.setDescription("UNKNOWN");
+	}
+
+
 /**
  * Display constructor comment.
  */
@@ -175,7 +141,7 @@ public java.lang.String getDescription() {
  * Creation date: (10/3/00 2:55:08 PM)
  * @return long
  */
-public long getDisplayNumber() {
+public int getDisplayNumber() {
 	return displayNumber;
 }
 /**
@@ -318,7 +284,7 @@ public static void setDISPLAY_TITLES(Object[] newDISPLAY_TITLES)
  * Creation date: (10/3/00 2:55:08 PM)
  * @param newDisplayNumber long
  */
-public void setDisplayNumber(long newDisplayNumber) {
+public void setDisplayNumber(int newDisplayNumber) {
 	displayNumber = newDisplayNumber;
 }
 /**
@@ -352,6 +318,26 @@ public void setType(java.lang.String newType) {
  */
 public String toString() 
 {
-	return getType() + ":" + getName();
+	//return getType() + ":" + getName();
+	return getName();
 }
+	/**
+	 * @return
+	 */
+	public ITDCFilter getTdcFilter()
+	{
+		return tdcFilter;
+	}
+
+	/**
+	 * @param filter
+	 */
+	public void setTdcFilter(ITDCFilter filter)
+	{
+		if( filter == null )
+			filter = new DefaultTDCFilter();
+		else
+			tdcFilter = filter;
+	}
+
 }

@@ -6,29 +6,38 @@ package com.cannontech.tdc.alarms.gui;
  * @author: 
  * @Version: <version>
  */
+import java.util.HashMap;
+import java.util.Iterator;
+
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 
 public class AlarmingRow 
 {
-	private Signal signal = null;
+	//private Signal signal = null;
+	//signals can be null 
+	private HashMap signalHash = null;
+	
 	private int rowNumber = -1;
 	private int alarmColor = -1;
 	private int originalColor = -1;
 	private boolean isSilenced = false;
+	
+	private boolean isBlinking = false;
 
 
 /**
  * AlarmingRow constructor comment.
  */
-public AlarmingRow( int rowNumber, int alarmColor, int ogColor, Signal signal )
+public AlarmingRow( int rowNumber, int alarmColor, int ogColor )
 {
 	super();
 
 	setRowNumber( rowNumber );
 	setAlarmColor( alarmColor );
 	setOriginalColor( ogColor );
-	setSignal( signal );
+//	setSignal( signal );
 }
 /**
  * Insert the method's description here.
@@ -70,16 +79,6 @@ public int getAlarmColor() {
 }
 /**
  * Insert the method's description here.
- * Creation date: (4/7/00 1:56:16 PM)
- * Version: <version>
- * @return int
- */
-public long getAlarmStateID()
-{
-	return getSignal().getCategoryID();
-}
-/**
- * Insert the method's description here.
  * Creation date: (1/12/2001 1:40:45 PM)
  * @return int
  */
@@ -97,23 +96,34 @@ public int getRowNumber()
 {
 	return rowNumber;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/28/00 9:34:28 AM)
- * @return com.cannontech.message.dispatch.message.Signal
- */
-public com.cannontech.message.dispatch.message.Signal getSignal() {
-	return signal;
+
+public boolean containsSignal( Signal signal_ )
+{
+	return ( getSignalHash().get( new Integer(signal_.getCondition())) != null );
 }
+  
+/**
+ * @return
+ */
+private HashMap getSignalHash()
+{
+	if( signalHash == null )
+		signalHash = new HashMap(16);
+
+	return signalHash;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (8/9/00 3:41:32 PM)
  * @return boolean
  */
-public boolean isBlinking() 
+public synchronized boolean isBlinking() 
 {
-	return ( TagUtils.isAlarmUnacked(signal.getTags()) );
+	return isBlinking;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (1/12/2001 1:40:45 PM)
@@ -140,15 +150,53 @@ public void setRowNumber( int rowNum )
 {
 	rowNumber = rowNum;
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (7/28/00 9:34:28 AM)
- * @param newSignal com.cannontech.message.dispatch.message.Signal
+ * @param signal
+ * deny our EVENT signals from being in here
  */
-public synchronized void setSignal(com.cannontech.message.dispatch.message.Signal newSignal) 
+public synchronized void updateSignal(Signal signal)
 {
-	signal = newSignal;
+	if( signal != null && signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
+	{
+		getSignalHash().put( new Integer(signal.getCondition()), signal );
+		
+		updateBlinkingState();
+	}
+
 }
+
+private synchronized void updateBlinkingState()
+{
+	isBlinking = false;  //reset the blinking attribute
+	
+	
+	//build up the isBlinking value
+	Iterator iter = getSignalHash().values().iterator();
+	while( iter.hasNext() )
+	{
+		Signal sig = (Signal)iter.next();
+		
+		//we may or may not need to blink, if we are blinking, remain blinking
+		isBlinking |= TagUtils.isAlarmUnacked(sig.getTags());
+	}	
+}
+
+/**
+ * @param signal
+ * get that signal gone
+ */
+public synchronized void removeSignal(Signal signal)
+{
+	if( signal == null )
+		return;
+
+	getSignalHash().remove( new Integer(signal.getCondition()) );
+	
+	updateBlinkingState();	
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (4/7/00 1:56:16 PM)

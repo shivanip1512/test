@@ -37,5 +37,5 @@ void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObject new
  * 
  * @param newEvent java.util.EventObject
  */
-void JToolBarButtonActiveAlarms_actionPerformed(java.util.EventObject newEvent);
+void JToolBarFilter_actionPerformed(java.util.EventObject newEvent);
 }

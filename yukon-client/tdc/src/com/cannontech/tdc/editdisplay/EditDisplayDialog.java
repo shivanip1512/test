@@ -146,7 +146,7 @@ private void copyPoints( long displayNumber )
  * Insert the method's description here.
  * Creation date: (2/28/00 5:32:21 PM)
  */
-public Object createCopy() 
+public String createCopy() 
 {
 	boolean invalidName = true;
 	String newName = null;
