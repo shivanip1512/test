@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.common.constants.YukonListEntryFuncs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -246,7 +245,7 @@ public final class ContactFuncs
             LiteContactNotification ltCntNotif = 
                     (LiteContactNotification)contact.getLiteContactNotifications().get(j);
                 
-            if( YukonListEntryFuncs.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
+            if( YukonListFuncs.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
             {
                 phoneList.add( ltCntNotif );
             }

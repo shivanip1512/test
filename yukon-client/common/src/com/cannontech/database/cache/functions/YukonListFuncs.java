@@ -303,5 +303,16 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		YukonListEntry entry2 = getYukonListEntry( entryID2 );
 		return (entry1 != null && entry2 != null && entry1.getYukonDefID() == entry2.getYukonDefID());
 	}
+
+	/**
+	 * Checks for a valid phone number entry
+	 */
+	public static boolean isPhoneNumber( int listEntryID )
+	{
+	    return(
+	         listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PHONE
+	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
+	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+	}
 	
 }
