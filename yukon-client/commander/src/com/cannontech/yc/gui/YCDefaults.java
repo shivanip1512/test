@@ -147,17 +147,17 @@ public class YCDefaults
 		switch (index)
 		{
 			case 0 :
-				key = COMMAND_PRIORITY_KEY;
+				return COMMAND_PRIORITY_KEY;
 			case 1 :
-				key = QUEUE_COMMAND_KEY;
+				return QUEUE_COMMAND_KEY;
 			case 2 :
-				key = SHOW_MESSAGE_LOG_KEY;
+				return SHOW_MESSAGE_LOG_KEY;
 			case 3 :
-				key = CONFIRM_COMMAND_KEY;
+				return CONFIRM_COMMAND_KEY;
 			case 4 :
-				key = COMMAND_FILE_DIR_KEY;
+				return COMMAND_FILE_DIR_KEY;
 			case 5 :
-				key = OUTPUT_DIVIDER_LOC_KEY;
+				return OUTPUT_DIVIDER_LOC_KEY;
 		}
 		return key;
 	}
