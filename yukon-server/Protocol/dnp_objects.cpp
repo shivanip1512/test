@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/10/17 18:41:45 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/10/22 22:18:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,11 +105,26 @@ CtiDNPObjectBlock::CtiDNPObjectBlock()
 }
 
 
-CtiDNPObjectBlock::CtiDNPObjectBlock( enum QualifierType type )
+CtiDNPObjectBlock::CtiDNPObjectBlock( QualifierType type )
+{
+    //  this sets the object to take the group and variation from the first object added;
+    //    i don't know if this is necessary or desirable, but it's currently the way most
+    //    locations construct this object
+
+    init(type, -1, -1);
+}
+
+CtiDNPObjectBlock::CtiDNPObjectBlock( QualifierType type, int group, int variation )
+{
+    init(type, group, variation);
+}
+
+
+void CtiDNPObjectBlock::init( QualifierType type, int group, int variation )
 {
     _restoring = false;
-    _group     = -1;
-    _variation = -1;
+    _group     = group;
+    _variation = variation;
 
     switch( type )
     {
@@ -153,8 +168,10 @@ CtiDNPObjectBlock::~CtiDNPObjectBlock()
 }
 
 
-void CtiDNPObjectBlock::addObject( CtiDNPObject *object )
+bool CtiDNPObjectBlock::addObject( CtiDNPObject *object )
 {
+    bool success = false;
+
     switch( _qualifier )
     {
         case NoIndex_ByteQty:
@@ -166,9 +183,13 @@ void CtiDNPObjectBlock::addObject( CtiDNPObject *object )
                 _group     = object->getGroup();
                 _variation = object->getVariation();
             }
-            else if( object->getGroup() == _group )
+
+            if( object->getGroup()     == _group &&
+                object->getVariation() == _variation )
             {
                 _objectList.push_back(object);
+
+                success = true;
             }
             else
             {
@@ -195,11 +216,15 @@ void CtiDNPObjectBlock::addObject( CtiDNPObject *object )
     }
 
     _qty = _objectList.size();
+
+    return !success;
 }
 
 
-void CtiDNPObjectBlock::addObjectIndex( CtiDNPObject *object, int index )
+bool CtiDNPObjectBlock::addObjectIndex( CtiDNPObject *object, int index )
 {
+    bool success = false;
+
     if( index > 0 )
     {
         //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
@@ -218,11 +243,15 @@ void CtiDNPObjectBlock::addObjectIndex( CtiDNPObject *object, int index )
 
                 _objectList.push_back(object);
                 _objectIndices.push_back(index);
+
+                success = true;
             }
             else if( object->getGroup() == _group )
             {
                 _objectList.push_back(object);
                 _objectIndices.push_back(index);
+
+                success = true;
             }
             else
             {
@@ -250,6 +279,8 @@ void CtiDNPObjectBlock::addObjectIndex( CtiDNPObject *object, int index )
     }
 
     _qty = _objectList.size();
+
+    return !success;
 }
 
 /*void CtiDNPObjectBlock::addRange( CtiDNPObject *object, int start, int stop )
@@ -527,7 +558,7 @@ int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
                 case ShortIndex_ShortQty:
                 {
                     idx  = buf[pos++];
-                    idx |= buf[pos++] >> 8;
+                    idx |= buf[pos++] << 8;
                     break;
                 }
 
@@ -655,6 +686,49 @@ long CtiDNPObjectBlock::getBinaryOutputControlOffset( void ) const
 }
 
 
+bool CtiDNPObjectBlock::isCTO( void ) const
+{
+    bool retVal = false;
+
+    //  ACH:  we should eventually care about the CTO vs. un-synchronized CTO
+    if( _group     == CtiDNPTimeCTO::Group &&
+        _objectList.size() == 1 )
+    {
+        retVal = true;
+    }
+
+    return retVal;
+}
+
+
+unsigned long CtiDNPObjectBlock::getCTOSeconds( void ) const
+{
+    return 0;
+}
+
+
+bool CtiDNPObjectBlock::isTime( void ) const
+{
+    bool retVal = false;
+
+    //  ACH:  we should eventually care about the CTO vs. un-synchronized CTO
+    if( _group     == CtiDNPTime::Group &&
+        _variation == CtiDNPTime::TimeAndDate &&
+        _objectList.size() == 1 )
+    {
+        retVal = true;
+    }
+
+    return retVal;
+}
+
+
+unsigned long CtiDNPObjectBlock::getTimeSeconds( void ) const
+{
+    return ((CtiDNPTime *)_objectList[0])->getSeconds();
+}
+
+
 bool CtiDNPObjectBlock::hasPoints( void )
 {
     bool hasPoints = false;
@@ -714,6 +788,7 @@ void CtiDNPObjectBlock::getPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
             {
                 tmpObj = _objectList[i];
 
+                //  pass in the CTO object here, or a NULL otherwise;  the points can do with it as they please
                 pMsg = tmpObj->getPoint();
 
                 if( pMsg != NULL )

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/10/17 18:41:46 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/10/22 22:18:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,8 @@ public:
 
 class CtiDNPObjectBlock
 {
+    enum QualifierType;
+
 private:
     bool _restoring,
          _valid;
@@ -71,16 +73,18 @@ private:
     vector< CtiDNPObject * > _objectList;
     vector< int > _objectIndices;
 
+    void init( QualifierType type, int group, int variation );
+
     int restoreObject( unsigned char *buf, int len, CtiDNPObject *&obj );
     int restoreBitObject( unsigned char *buf, int bitpos, int len, CtiDNPObject *&obj );
 
     void eraseObjectList( void );
 
 public:
-    enum QualifierType;
 
     CtiDNPObjectBlock();  //  for restoring a serialized object
-    CtiDNPObjectBlock( enum QualifierType type );
+    CtiDNPObjectBlock( QualifierType type );
+    CtiDNPObjectBlock( QualifierType type, int group, int variation );
     ~CtiDNPObjectBlock();
 
     enum QualifierType
@@ -99,8 +103,8 @@ public:
         ObjectBlockMinSize = 3
     };
 
-    void addObject( CtiDNPObject *object );
-    void addObjectIndex( CtiDNPObject *object, int index );
+    bool addObject( CtiDNPObject *object );
+    bool addObjectIndex( CtiDNPObject *object, int index );
 //    void addRange( CtiDNPObject *objArray, int start, int stop );
 
 //    CtiDNPObject *getObject( int index );
@@ -115,6 +119,12 @@ public:
     bool isBinaryOutputControl( void )        const;
     int  getBinaryOutputControlStatus( void ) const;
     long getBinaryOutputControlOffset( void ) const;
+
+    bool          isCTO( void )         const;
+    unsigned long getCTOSeconds( void ) const;
+
+    bool          isTime( void )         const;
+    unsigned long getTimeSeconds( void ) const;
 };
 
 #endif // #ifndef __DNP_OBJECTS_H__
