@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/10/08 20:32:57 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/10/29 20:02:11 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.14  2004/10/29 20:02:11  mfisher
+* added verification support
+*
 * Revision 1.13  2004/10/08 20:32:57  cplender
 * Added method queuedWorkCount()
 *
@@ -70,6 +73,10 @@
 #include "pt_numeric.h"
 #include "pt_status.h"
 #include "pt_accum.h"
+
+#include "verification_objects.h"
+
+#include "numstr.h"
 
 
 CtiDeviceRTC::CtiDeviceRTC() :
@@ -497,6 +504,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
     try
     {
         CtiProtocolSA3rdParty prot;
+        char codestr[13];  //  needs to be able to hold -2000000000
 
         prot.setSAData( OutMessage->Buffer.SASt );
         {
@@ -516,9 +524,46 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
         msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
+        if( !OutMessage->VerificationSequence )
+        {
+            OutMessage->VerificationSequence = VerificationSequenceGen();
+        }
+
+        if( OutMessage->Buffer.SASt._code205 )
+        {
+            strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
+            codestr[12] = 0;
+        }
+        else
+        {
+            strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
+            codestr[6] = 0;
+        }
+
+        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, codestr, seconds(60));
+        _verification_objects.push(work);
 
         while( codecount <= gConfigParms.getValueAsULong("PORTER_SA_RTC_MAXCODES",35) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
         {
+            if( !rtcOutMessage->VerificationSequence )
+            {
+                rtcOutMessage->VerificationSequence = VerificationSequenceGen();
+            }
+
+            if( rtcOutMessage->Buffer.SASt._code205 )
+            {
+                strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 12);
+                codestr[12] = 0;
+            }
+            else
+            {
+                strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
+                codestr[6] = 0;
+            }
+
+            CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, codestr, seconds(60));
+            _verification_objects.push(work);
+
             now = now.now();
             codecount++;
             memcpy((char*)(&OutMessage->Buffer.OutMessage[OutMessage->OutLength]), (char*)rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->OutLength);

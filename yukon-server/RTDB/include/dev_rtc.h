@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/10/08 20:32:08 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2004/10/29 20:02:11 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.8  2004/10/29 20:02:11  mfisher
+* added verification support
+*
 * Revision 1.7  2004/10/08 20:32:08  cplender
 * Added method queuedWorkCount()
 *
@@ -70,6 +73,8 @@ private:
     LONG _millis;
 
     static ULONG messageDuration(int groupType);
+
+    queue< CtiVerificationBase * > _verification_objects;
 
 public:
 
