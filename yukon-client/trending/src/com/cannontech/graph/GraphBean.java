@@ -347,4 +347,9 @@ public class GraphBean implements GraphDefines
 			getGraph().encodePng(out);
 	}
 
+	public void getDataNow()
+	{
+		com.cannontech.clientutils.CTILogger.info("GET DATA NOW!!!");
+		getGraph().getDataNow();
+	}
 }
