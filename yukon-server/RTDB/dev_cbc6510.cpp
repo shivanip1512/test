@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/03/10 19:26:00 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/03/17 05:14:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,10 +64,7 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 
     if( parse.getCommand() == ControlRequest && !(parse.getFlags() & CMD_FLAG_OFFSET) )
     {
-        //  this needs to be fixed/updated to work with the new multiframe porter-side DNP stuff
-        /*
-        int offset;
-        Protocol::DNP::BinaryOutputControl::ControlCode controltype;
+        int offset = 0;
 
         if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
         {
@@ -77,35 +74,14 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
         {
             offset = 1;
         }
-        else
-        {
-            offset = 0;
-        }
 
-        Protocol::DNPInterface::output_point controlout;
+        pReq->setCommandString("control close offset " + CtiNumStr(offset));
 
-        controlout.type            = Protocol::DNPInterface::DigitalOutput;
-        controlout.control_offset  = offset;
+        CtiCommandParser new_parse(pReq->CommandString());
 
-        controlout.dout.control    = Protocol::DNP::BinaryOutputControl::PulseOn;
-        controlout.dout.trip_close = Protocol::DNP::BinaryOutputControl::NUL;
-        controlout.dout.on_time    = 0;
-        controlout.dout.off_time   = 0;
-        controlout.dout.count      = 1;
-        controlout.dout.queue      = false;
-        controlout.dout.clear      = false;
-
-        if( _dnp.setCommand(Protocol::DNPInterface::Command_SetDigitalOut_Direct, controlout) )
-        {
-            OutMessage->Port = getPortID();
-            OutMessage->DeviceID = getID();
-            OutMessage->TargetID = getID();
-
-            _dnp.sendCommRequest( OutMessage, outList );
-
-            nRet = NoError;
-        }
-        */
+        //  NOTE the new parser I'm passing in - i've already mangled the pReq string, so
+        //    i need to seal the deal with a new parse
+        nRet = Inherited::ExecuteRequest(pReq, new_parse, OutMessage, vgList, retList, outList);
     }
     else
     {
@@ -115,93 +91,85 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
-//  this must override something in dev_dnp to keep this behavior...
-/*
-void CtiDeviceCBC6510::processInboundPoints(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points )
+
+//  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
+void CtiDeviceCBC6510::processPoints( Cti::Protocol::Interface::pointlist_t &points )
 {
-    CtiPointDataMsg *tmpMsg;
-    CtiPointBase    *point;
-    CtiPointNumeric *pNumeric;
+    Cti::Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
+    int last_offset;
 
-    double tmpValue;
+    CtiPointDataMsg *pt_msg;
 
-    int tripped, closed;
+    last_pos    = points.end();
+    last_offset = -1;
 
-    tripped = -1;
-    closed  = -1;
-
-    while( !points.isEmpty() )
+    //  we need to find any status values for offsets 1 and 2
+    for( pt_itr = points.begin(); pt_itr != points.end(); pt_itr++ )
     {
-        tmpMsg = points.removeFirst();
+        pt_msg = *pt_itr;
 
-        if( tmpMsg->getId() == 1 && tmpMsg->getType() == StatusPointType )
+        //  is it a trip/close message?
+        if( pt_msg &&
+            (pt_msg->getType() == StatusPointType) &&
+            (pt_msg->getId() == PointOffset_Trip || pt_msg->getId() == PointOffset_Close) )
         {
-            closed  = tmpMsg->getValue();
-
-            delete tmpMsg;
-            tmpMsg = NULL;
-        }
-        else if( tmpMsg->getId() == 2 && tmpMsg->getType() == StatusPointType )
-        {
-            tripped = tmpMsg->getValue();
-
-            delete tmpMsg;
-            tmpMsg = NULL;
-        }
-
-        if( tmpMsg != NULL )
-        {
-            //  !!! getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
-            if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
+            if( pt_msg->getId() == PointOffset_Trip )
             {
-                tmpMsg->setId(point->getID());
+                _trip_info.time    = pt_msg->getTime();
+                _trip_info.millis  = pt_msg->getMillis();
+                _trip_info.state   = pt_msg->getValue();
+            }
+            else //  if( pt_msg->getId() == PointOffset_Close )
+            {
+                _close_info.time   = pt_msg->getTime();
+                _close_info.millis = pt_msg->getMillis();
+                _close_info.state  = pt_msg->getValue();
+            }
 
-                if( point->isNumeric() )
+            //  check to see if the last two messages were a pair...
+            if( last_pos != points.end() )
+            {
+                //  make sure it was the opposite offset...
+                if( last_offset != pt_msg->getId() )
                 {
-                    pNumeric = (CtiPointNumeric *)point;
+                    //  ... and that the times match exactly
+                    if( _trip_info.time == _close_info.time && _trip_info.millis == _close_info.millis )
+                    {
+                        *last_pos = 0;
 
-                    tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
-
-                    tmpMsg->setValue(tmpValue);
+                        last_pos    = points.end();
+                        last_offset = -1;
+                    }
                 }
+            }
 
-                retList.append(tmpMsg);
+            //  grab the info before we overwrite it
+            last_pos    = pt_itr;
+            last_offset = pt_msg->getId();
+
+
+            //  replace the old message with the calculated tristate message
+            if( _trip_info.state == 1.0 && _close_info.state == 0.0 )
+            {
+                pt_msg->setValue(0.0);
+            }
+            else if( _trip_info.state == 0.0 && _close_info.state == 1.0 )
+            {
+                pt_msg->setValue(1.0);
             }
             else
             {
-                delete tmpMsg;
+                pt_msg->setValue(2.0);
             }
+
+            pt_msg->setId(PointOffset_TripClosePaired);
         }
     }
 
-    if( (point = getDevicePointOffsetTypeEqual(1, StatusPointType)) != NULL )
-    {
-        if( tripped >= 0 || closed >= 0 )
-        {
-            tmpMsg = CTIDBG_new CtiPointDataMsg(point->getID());
-
-            if( tripped == 1 && closed == 0 )
-            {
-                tmpMsg->setValue( 0.0 );
-            }
-            else if( tripped == 0 && closed == 1 )
-            {
-                tmpMsg->setValue( 1.0 );
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                tmpMsg->setValue( 2.0 );
-            }
-
-            retList.append(tmpMsg);
-        }
-    }
+    //  do the final processing
+    Inherited::processPoints(points);
 }
-*/
+
 
 /*****************************************************************************
  * This method determines what should be displayed in the "Description" column
