@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2004/08/31 16:02:17 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/09/20 14:43:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -273,6 +273,11 @@ const RWCString& CtiTableLMControlHistory::getDefaultActiveRestore() const
     return _defaultActiveRestore;
 }
 
+const RWCString& CtiTableLMControlHistory::getLoadedActiveRestore() const
+{
+    return _loadedActiveRestore;
+}
+
 CtiTableLMControlHistory& CtiTableLMControlHistory::setDefaultActiveRestore( const RWCString& ar )
 {
     _defaultActiveRestore = ar;
@@ -519,13 +524,6 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     setLMControlHistoryID( LMControlHistoryIdGen() );
 
-#if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dump();
-    }
-#endif
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBInserter inserter = table.inserter();
@@ -832,6 +830,9 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
 
 void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
+    RWDBDateTime todaynow;
+    RWDBDateTime thepast = todaynow.addDays( -5 );      // Go back this many days?
+
     keyTable = db.table(getTableName());
 
     selector <<
@@ -853,10 +854,14 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
 
     RWDBExpr stdtXpr("startdatetime", FALSE);
     RWDBExpr anXpr("soe_tag", FALSE);
-    selector.where( selector.where() &&
-                    keyTable["activerestore"] == LMAR_NEWCONTROL &&
-                    !anXpr.in(RWDBExpr("(select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T' or activerestore='C' or activerestore='S')", FALSE)) &&
-                    stdtXpr.in(RWDBExpr("(select max(startdatetime) from lmcontrolhistory where activerestore='N' group by paobjectid)", FALSE)) );
+    // activerestore='N' and soe_tag not in (select soe_tag from lmcontrolhistory where activerestore='M' or activerestore='T')
 
+    selector.where( selector.where() &&
+                    (keyTable["activerestore"] == LMAR_NEWCONTROL ||
+                    keyTable["activerestore"] == LMAR_TIMED_RESTORE ||
+                    keyTable["activerestore"] == LMAR_MANUAL_RESTORE ||
+                    keyTable["activerestore"] == LMAR_CONT_CONTROL ||
+                    keyTable["activerestore"] == LMAR_DISPATCH_SHUTDOWN) &&
+                    keyTable["startdatetime"] > thepast);
 }
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2004/09/15 20:49:08 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2004/09/20 14:43:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,8 +134,7 @@ void ApplyGroupControlStatusVerification(const CtiHashKey *key, CtiPoint *&pPoin
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Adjusting point tags " << endl;
+                    dout << RWTime() << " Adjusting point tags for point id " << pStatus->getPointID() << endl;
                 }
 
                 pVG->updateGroupPseduoControlPoint( pPoint, now );
@@ -241,9 +240,24 @@ void CtiVanGogh::VGMainThread()
         }
         loadRTDB(true);
         loadPendingSignals();       // Reload any signals written out at last shutdown.
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reloading pending control information" << endl;
+        }
         loadPendingControls();      // Reload any controls written out at last shutdown.
-
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reloading pending control information" << endl;
+        }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Verifying control point states" << endl;
+        }
         PointMgr.getMap().apply( ApplyGroupControlStatusVerification, this );
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Done verifying control point states" << endl;
+        }
 
         _rphThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGRPHWriterThread);
         _rphThread.start();
@@ -2322,7 +2336,6 @@ INT CtiVanGogh::loadPendingSignals()
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << selector.asString() << endl;
         }
-
 
         while( rdr() )
         {
@@ -7302,9 +7315,11 @@ int CtiVanGogh::loadPendingControls()
     INT            status = NORMAL;
     LONG           lTemp;
 
+    typedef map< pair<LONG, LONG>, CtiTableLMControlHistory > LMCHMap_t;    // Key is make_pair(PAOID, SOE)
+
     CtiLockGuard<CtiMutex> pmguard(server_mux);
 
-    RWDBStatus upStat = CtiTableLMControlHistory::updateCompletedOutstandingControls();     // This cleans up any controls which "completed" while dispatch was not running.
+    // RWDBStatus upStat = CtiTableLMControlHistory::updateCompletedOutstandingControls();     // This cleans up any controls which "completed" while dispatch was not running.
 
     // This block will clean up any non closed control blocks.
     {
@@ -7326,10 +7341,21 @@ int CtiVanGogh::loadPendingControls()
             dout << selector.asString() << endl;
         }
 
+        LMCHMap_t dynCtrlMap;
+
         while( rdr() )
         {
-            CtiTableLMControlHistory dynControl;
-            dynControl.DecodeOutstandingControls(rdr);
+            CtiTableLMControlHistory dynC;
+            dynC.DecodeOutstandingControls(rdr);
+
+            if(dynC.getLoadedActiveRestore() == LMAR_NEWCONTROL)
+            {
+                pair< LMCHMap_t::iterator, bool > insertpair  = dynCtrlMap.insert( LMCHMap_t::value_type(make_pair(dynC.getPAOID(), dynC.getSoeTag()), dynC) );
+
+                if(insertpair.second == false)      // This is a collision!
+                {
+                    LMCHMap_t::iterator &itr = insertpair.first;
+                    CtiTableLMControlHistory &dynControl = (*itr).second;
 
             CtiPoint *pPt = PointMgr.getControlOffsetEqual(dynControl.getPAOID(),  1);
 
@@ -7382,6 +7408,16 @@ int CtiVanGogh::loadPendingControls()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+            }
+
+                    (*itr).second = dynC; // store the new 'N'ew control!
+                }
+            }
+            else
+            {
+                // We can remove the matching 'N' from the list!
+                dynCtrlMap.erase( make_pair(dynC.getPAOID(), dynC.getSoeTag()));
+
             }
         }
     }
