@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmconstraint;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.database.data.lite.LiteSeasonSchedule;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 import com.cannontech.common.util.CtiUtilities;
 /**
@@ -1108,11 +1109,13 @@ public Object getValue(Object o)
 	else
 		con.setHolidayScheduleID( new Integer(0) );
 	
-	if( getJComboBoxSeasonSchedule().getSelectedItem() == "(none)" )
-		con.setSeasonScheduleID( new Integer(0) );
-	else
-		con.setSeasonScheduleID( new Integer(((com.cannontech.database.data.lite.LiteSeasonSchedule)getJComboBoxSeasonSchedule().getSelectedItem()).getScheduleID() ));
 	
+	if( getJComboBoxSeasonSchedule().getSelectedItem() instanceof LiteSeasonSchedule )
+		con.setSeasonScheduleID( new Integer(((LiteSeasonSchedule)getJComboBoxSeasonSchedule().getSelectedItem()).getScheduleID() ));
+	else
+		con.setSeasonScheduleID( new Integer(0) ); //may be null or have "(none)" selected
+
+
 	return con;
 }
 /**
