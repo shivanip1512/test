@@ -1300,7 +1300,9 @@ public class StarsLiteFactory {
 				starsInvs.addStarsInventory( (StarsInventory)list.get(i) );
 		}
 		
-        if (liteContact.getLoginID() > com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID) {
+        if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
+        	liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_YUKON_ID)
+        {
 	        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
 			starsAcctInfo.setStarsUser( createStarsUser(liteUser) );
         }
