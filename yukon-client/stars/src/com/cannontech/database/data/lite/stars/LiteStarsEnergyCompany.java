@@ -559,7 +559,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized ArrayList getAllPrograms() {
 		if (pubPrograms == null)
 			getAllApplianceCategories();
-		return pubPrograms;
+		
+		ArrayList pubProgs = new ArrayList( pubPrograms );
+		if (getParent() != null)
+			pubProgs.addAll( 0, getParent().getAllPrograms() );
+		
+		return pubProgs;
 	}
     
 	public synchronized ArrayList getAllApplianceCategories() {
@@ -589,14 +594,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
 		}
 		
+		ArrayList appCats = new ArrayList( appCategories );
 		if (getParent() != null) {
 			// Inherite appliance categories and programs from the parent company
 			// May need to add a role property to control this in the future
-			appCategories.addAll( 0, getParent().getAllApplianceCategories() );
-			pubPrograms.addAll( 0, getParent().getAllPrograms() );
+			appCats.addAll( 0, getParent().getAllApplianceCategories() );
 		}
     	
-		return appCategories;
+		return appCats;
 	}
 
 	public synchronized ArrayList getAllSelectionLists() {
