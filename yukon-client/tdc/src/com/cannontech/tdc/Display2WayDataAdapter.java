@@ -1575,7 +1575,7 @@ public synchronized void processSignalReceived( Signal signal )
 {
 	// make sure we have a point and we are not a LOG display
 	if( (!checkFilter(signal) && !signalInTable(signal))
-		  || Display.isLogDisplay(getCurrentDisplay().getDisplayNumber())  )
+		  || Display.isLogDisplay(getCurrentDisplay().getDisplayNumber(), getCurrentDate()) )
 	{
 		return;
 	}
