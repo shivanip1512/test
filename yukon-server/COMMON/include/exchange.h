@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:26 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/18 15:00:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,7 @@ using namespace std;
 
 #include "dlldefs.h"
 #include "dllbase.h"
+#include "logger.h"
 
 #define MULTIBUFFEREDEXCHANGE
 
@@ -42,95 +43,95 @@ class IM_EX_CTIBASE CtiExchange : public RWMonitor< RWRecursiveLock< RWMutexLock
 {
 private:
 
-   RWSocketPortal    *Portal_;           // The connection is under this!
-   RWPortalStreambuf *sinbuf;
-   RWPortalStreambuf *soubuf;
-   RWpostream        *oStream;
-   RWpistream        *iStream;
+    RWSocketPortal    *Portal_;           // The connection is under this!
+    RWPortalStreambuf *sinbuf;
+    RWPortalStreambuf *soubuf;
+    RWpostream        *oStream;
+    RWpistream        *iStream;
 
-   CtiExchange();
+    CtiExchange();
 
 public:
-   CtiExchange(RWSocketPortal portal);
-   virtual ~CtiExchange();
+    CtiExchange(RWSocketPortal portal);
+    virtual ~CtiExchange();
 
-   RWBoolean   valid() const
-   {
-      LockGuard grd(monitor());
+    RWBoolean   valid() const
+    {
+        LockGuard grd(monitor());
 
-      RWBoolean bValid = Portal_->socket().valid();
+        RWBoolean bValid = Portal_->socket().valid();
 
-      if(!bValid ||
-         sinbuf  == NULL ||
-         soubuf  == NULL ||
-         oStream == NULL ||
-         iStream == NULL )
-      {
-         bValid = false;
-      }
+        if(!bValid ||
+           sinbuf  == NULL ||
+           soubuf  == NULL ||
+           oStream == NULL ||
+           iStream == NULL )
+        {
+            bValid = false;
+        }
 
-      return bValid;
-   }
+        return bValid;
+    }
 
-   RWBoolean   bad() const
-   {
-      LockGuard grd(monitor());
-      return (oStream->bad() || iStream->bad());
-   }
+    RWBoolean   bad() const
+    {
+        LockGuard grd(monitor());
+        return(oStream->bad() || iStream->bad());
+    }
 
 
-   RWpistream & In()
-   {
-      LockGuard grd(monitor());
-      #if 1
-      if(iStream != NULL)
-      {
-         if(iStream->bad())
-         {
+    RWpistream & In()
+    {
+        LockGuard grd(monitor());
+
+        if(iStream != NULL)
+        {
+            if(iStream->bad())
             {
-               RWMutexLock::LockGuard  guard(coutMux);
-               cout << "BAD  Progress " << __FILE__ << " " << __LINE__ << " " << iStream << endl;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Exchange istream has bad status " << __FILE__ << " (" << __LINE__ << ") " << iStream << endl;
+                }
+
+                RWxmsg   err("Exchange has problems on the inbound stream");
+                err.raise();
+            }
+        }
+        else
+        {
+            RWxmsg   err("Exchange iStream is invalid/NULL");
+            err.raise();
+        }
+
+        return *iStream;
+    }
+
+    RWpostream & Out()
+    {
+        LockGuard grd(monitor());
+        if(oStream->bad())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " oStream has BAD status " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            RWxmsg   err("Exchange has baggage in the inbound");
+            RWxmsg   err("Exchange has baggage in the outbound");
             err.raise();
-         }
-      }
-      else
-      {
-         RWxmsg   err("Exchange iStream is invalid/NULL");
-         err.raise();
-      }
-      #endif
+        }
+        return *oStream;
+    }
 
-      return *iStream;
-   }
-
-   RWpostream & Out()
-   {
-      LockGuard grd(monitor());
-      if(oStream->bad())
-      {
-         {
-            RWMutexLock::LockGuard  guard(coutMux);
-            cout << "BAD  Progress " << __FILE__ << " " << __LINE__ << " " << oStream << endl;
-         }
-
-         RWxmsg   err("Exchange has baggage in the outbound");
-         err.raise();
-      }
-      return *oStream;
-   }
-
-   RWInetHost getPeer() const
-   {
-      LockGuard grd(monitor());
-      /*
-       *  get the host from the RWSockAddr via a conversion to RWInetAddr
-       */
-      RWInetHost  iHost = RWInetAddr::as(Portal_->socket().getpeername()).host();
-      return iHost;
-   }
+    RWInetHost getPeer() const
+    {
+        LockGuard grd(monitor());
+        /*
+         *  get the host from the RWSockAddr via a conversion to RWInetAddr
+         */
+        RWInetHost  iHost = RWInetAddr::as(Portal_->socket().getpeername()).host();
+        return iHost;
+    }
 
 };
 
