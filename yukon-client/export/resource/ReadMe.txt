@@ -74,7 +74,7 @@ About Yukon Export:
   - CSVBilling - csvprop.dat
     FORMAT=0                                                //DO NOT EDIT
     DIR=c:\yukon\client\export\                             //The directory to export to (filename is dynamic based on input data).
-    ENERGYFILE=c:/yukon/client/config/EnergyNumbers.txt     //A file containing <customernumber>|<energydebtornum>|<energypremisenum>.
+    (DECREMENTED)ENERGYFILE=c:/yukon/client/config/EnergyNumbers.txt     //A file containing <customernumber>|<energydebtornum>|<energypremisenum>.
     START=03/16/2003                                        //Minimum date to accept valid data.
     STOP=03/17/2003                                         //Maximum date to accept valid data.
     DELIMITER=|                                             //Output data seperator. (default '|')
