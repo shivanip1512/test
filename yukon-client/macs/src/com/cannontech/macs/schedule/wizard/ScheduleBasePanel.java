@@ -2,7 +2,13 @@ package com.cannontech.macs.schedule.wizard;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.macs.message.Schedule;
 
 public class ScheduleBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.KeyListener, javax.swing.event.CaretListener 
@@ -530,10 +536,10 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			ivjJComboBoxHoliday.setToolTipText("Holiday schedule used to exclude control");
 			// user code begin {1}
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+			DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
-				java.util.List holidaySch = cache.getAllHolidaySchedules();
+				List holidaySch = cache.getAllHolidaySchedules();
 				for( int i = 0; i < holidaySch.size(); i++ )
 					ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
 			}
@@ -1719,7 +1725,32 @@ public boolean isInputValid()
 		setErrorString("The day of month text field must be a number");
 		return false;
 	}
+	
+/*	
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized( cache )
+	{
+		List paos = cache.getAllYukonPAObjects();
+		LiteYukonPAObject pao = null;
 		
+		for( int i = 0; i < paos.size(); i++ )
+		{
+			pao = (LiteYukonPAObject)paos.get(i);
+
+			if( pao.getCategory() != PAOGroups.CAT_SCHEDULE )
+				continue;
+			
+			if( getJTextFieldScheduleName().getText().equalsIgnoreCase(pao.getPaoName()) )
+			{
+				setErrorString("A schedule already exists with that name, choose another name");
+				return false;
+			}
+
+		}
+
+	}
+*/
+
 	return true;
 }
 
