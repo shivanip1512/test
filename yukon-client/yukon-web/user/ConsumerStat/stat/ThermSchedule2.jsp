@@ -325,9 +325,9 @@ MM_reloadPage(true);
               <table width="80%" border="1" cellspacing = "0" cellpadding = "2">
                 <tr> 
                     <td align = "center"  valign = "bottom" class = "Background"> 
-                      <table width="478" border="0" height="8" valign = "bottom" >
+                      <table width="478" border="0" height="8" valign = "bottom" cellpadding="0" cellspacing="0" >
                         <tr> 
-                          <td class = "TableCell1" align = "left" width="54%"> 
+                          <td class = "TableCell1" align = "left" width="50%"> 
                             <% if (daySetting.getType() == StarsThermoDaySettings.MONDAY_TYPE) { %>
                             <b><span class="Header2">Mon</span></b> 
                             <% } else { %>
@@ -369,15 +369,11 @@ MM_reloadPage(true);
                             <% } else { %>
                             <span class="Clickable" onClick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sun</span> 
                             <% } %>
-                          <td class = "Background" align = "right" width="46%"> 
-                            <%
-	String visibleStr = ServletUtils.isWeekday(daySetting)? "visible" : "hidden";
-	String checkStr = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS);
-	if (checkStr == null) checkStr = "";
-%>
-                            <span style="visibility:<%= visibleStr %>"> 
-                            <input type="checkbox" name="ApplyToWeekdays" value="true" <%= checkStr %>>
-                            <span class="TableCell1">Apply settings to all weekdays </span></span> 
+                          <td class = "Background" align = "right" width="50%"> 
+                            <input type="checkbox" name="ApplyToWeekdays" value="true">
+                            <span class="TableCell1">Apply to weekdays </span> 
+                            <input type="checkbox" name="ApplyToWeekend" value="true">
+                            <span class="TableCell1">Apply to weekends </span> 
 						  </td>
                         </tr>
                       </table>
