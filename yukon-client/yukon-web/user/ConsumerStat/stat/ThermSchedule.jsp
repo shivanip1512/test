@@ -223,13 +223,13 @@ MM_reloadPage(true);
               <table width="80%" border="1" height="411" cellspacing = "0" cellpadding = "2">
                 <tr> 
                   <td align = "center"  valign = "bottom" height="84"> 
-                    <table width="100%" border="0" class = "TableCell" height="89">
-                      <tr> 
-                        <td width="53%" valign = "top" height="22"><b>
-						  <%= seasonStr.toUpperCase() %> <%= dayStr.toUpperCase() %> SCHEDULE - <%= modeStr.toUpperCase() %>ING
-						</b></td>
-                        <td width="47%" valign = "top" align = "right" height="22"> 
-                          <table width="82%" border="0" height="8" valign = "bottom" >
+                      <table width="100%" border="0" class = "TableCell">
+                        <tr> 
+                          <td width="48%" valign = "top" height="22"><b> <%= seasonStr.toUpperCase() %> 
+                            <%= dayStr.toUpperCase() %> SCHEDULE - <%= modeStr.toUpperCase() %>ING 
+                            </b></td>
+                          <td width="52%" valign = "top" align = "right"> 
+                            <table width="82%" border="0" height="8" valign = "bottom" >
                             <tr> 
                                 <td class = "TableCell" align = "right"> 
                                   <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
@@ -255,12 +255,11 @@ MM_reloadPage(true);
                         </td>
                       </tr>
                       <tr> 
-                          <td width="53%">&nbsp; </td>
-                        <td width="47%" align = "right" valign = "bottom">
-                          <table width="114" border="0" height="66">
-                            <tr>
-                              <td height="17" align = "center">
-<%
+                          <td width="48%"> 
+                            <table width="140" border="0">
+                              <tr> 
+                                <td align = "center" width="42"> 
+                                  <%
 	String imgStrR, seasonStrR, modeStrR;
 	if (modeStr.equalsIgnoreCase( StarsThermoModeSettings.COOL.toString() )) {
 		imgStrR = dftWinter.getStarsWebConfig().getLogoLocation();
@@ -273,17 +272,16 @@ MM_reloadPage(true);
 		modeStrR = StarsThermoModeSettings.COOL.toString();
 	}
 %>
-								<span class="Clickable"><img src="<%= imgStrR %>" width="40" height="39" border="0" onclick="switchSettings('<%= dayStr %>','<%= modeStrR %>')"></span>
-							  </td>
-                            </tr>
-                            <tr>
-                              <td class = "TableCell" align = "center">
-							    Click icon to view <%= seasonStrR %> schedule
-							  </td>
-                            </tr>
-                          </table>
-                          
-                        </td>
+                                  <span class="Clickable"><img src="<%= imgStrR %>" width="40" height="39" border="0" onClick="switchSettings('<%= dayStr %>','<%= modeStrR %>')"></span> 
+                                </td>
+                                <td align = "center" width="148" class="TableCell" valign="top">Click 
+                                  icon to view <%= seasonStrR %> schedule </td>
+                              </tr>
+                            </table>
+                          </td>  
+                          <td width="52%" align = "right" valign = "top"> 
+                            <input type="checkbox" name="checkbox" value="checkbox">
+                            Apply settings to Saturday<br>and Sunday</td>
                       </tr>
                     </table>
                   </td>
@@ -299,7 +297,7 @@ MM_reloadPage(true);
                     </table><br>
                     
                     <img src="TempBG.gif" style ="position:relative;">
-                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 400px">
+                    <div id="MovingLayer1" style="position:absolute; width:25px; height:162px; left:309px; z-index:1; top: 368px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -311,7 +309,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 400px">
+                    <div id="MovingLayer2" style="position:absolute; width:21px; height:162px; left:354px; z-index:1; top: 368px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -323,7 +321,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 400px">
+                    <div id="MovingLayer3" style="position:absolute;  width:21px; height:162px; left:507px; z-index:1; top: 368px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -335,7 +333,7 @@ MM_reloadPage(true);
                         </tr>
                       </table>
                     </div>
-                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 400px">
+                    <div id="MovingLayer4" style="position:absolute;  width:21px; height:162px; left:578px; z-index:1; top: 368px">
                       <table width="100%" border="0">
                         <tr> 
                           <td>&nbsp;</td>
@@ -406,10 +404,10 @@ updateLayout(
               </table><br>
               <table width="75%" border="0">
                 <tr>
-                    <td width="37%" align = "right" class = "TableCell" > 
+                    <td width="36%" align = "right" class = "TableCell" > 
                       <input type="submit" name="Submit" value="Submit" onclick="switchSettings('<%= dayStr %>','<%= modeStr %>')">
                   </td>
-                    <td width="63%" align = "left" class = "TableCell"> 
+                    <td width="64%" align = "left" class = "TableCell"> 
                       <input type="button" name="default" value="Recommended Settings" title="These are the Acme Utility recommended settings." onclick="setScheduleChanged();setToDefault()">
                   </td>
                 </tr>
