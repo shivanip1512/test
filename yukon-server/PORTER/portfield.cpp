@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2003/01/13 18:24:23 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2003/01/17 21:32:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -644,11 +644,18 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDevice *Device, OUTMESS *OutMessage)
 
     try
     {
-        /*
-         *  If the port is inhibited, don't talk to it ok...
-         */
-        if( !(Port->isInhibited()) )
+        if(Port->getType() == PortTypeTServerDirect)
         {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << Port->getName() << ": IP ports open on usage." << endl;
+            }
+        }
+        else if( !(Port->isInhibited()))
+        {
+            /*
+             *  If the port is inhibited, don't talk to it ok...
+             */
             /*
              *  If the port has not been intialized at all, do it NOW!
              */

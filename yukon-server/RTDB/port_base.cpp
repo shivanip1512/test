@@ -699,6 +699,11 @@ pair< bool, INT > CtiPort::checkCommStatus(CtiDevice *Device, INT trace)
         setPortForDevice(Device);
 
         rpair = make_pair( true, status );
+
+        if(Device)
+        {
+            Device->setLogOnNeeded(TRUE); // Make sure this guy forgets about it.  He must reconnect himself.
+        }
     }
 
     return rpair;

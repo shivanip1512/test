@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/01/07 22:12:05 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2003/01/17 21:32:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -871,6 +871,18 @@ INT CtiPortTCPIPDirect::setup(INT trace)
 INT  CtiPortTCPIPDirect::connectToDevice(CtiDevice *Device, INT trace)
 {
     INT status = NORMAL;
+
+    pair< bool, INT > portpair = checkCommStatus(Device, trace);
+
+    status = portpair.second;
+
+    if( portpair.first && status == NORMAL )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " opened for connect." << endl;
+        }
+    }
 
     if(_dialable)
     {
