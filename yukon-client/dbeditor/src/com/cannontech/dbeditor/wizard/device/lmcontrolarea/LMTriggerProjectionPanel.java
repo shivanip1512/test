@@ -166,7 +166,7 @@ private javax.swing.JComboBox getJComboBoxAhead() {
 			ivjJComboBoxAhead.addItem("45 minute");
 			ivjJComboBoxAhead.addItem("50 minute");
 			ivjJComboBoxAhead.addItem("55 minute");
-			ivjJComboBoxAhead.addItem("60 minute");
+			ivjJComboBoxAhead.addItem("1 hour");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
