@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.editor.element.StateImage;
@@ -36,7 +37,11 @@ public class SVGGenerator {
 		
 	public SVGGenerator() {
 	}
-	/** 
+	
+	public void generate(Writer writer, Drawing d) throws IOException {
+		generate(writer, d.getLxGraph());
+	}
+	/**  
 	 * Writes an svg document to the given write based on the graph passed.
 	 * @param writer
 	 * @param graph
@@ -199,11 +204,9 @@ public class SVGGenerator {
 		int y = (int) r.getMinY();
 		int width = (int) r.getMaxX() - x;
 		int height = (int) r.getMaxY() - y;
-System.out.println("here!!!");		
+		
 	 	String relImage = Util.getRelativePath( new File(img.getDrawing().getFileName()), new File(img.getImageName()));
-System.out.println("here!!!!");	 	
 	 	relImage = relImage.replace('\\','/');
-System.out.println("here!!!!!");
 	 	
 		writer.write("<image id=\"" + img.getName() + "\" xlink:href=\"" + relImage + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" />\n");
 	}

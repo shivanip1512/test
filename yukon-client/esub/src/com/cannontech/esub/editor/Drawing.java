@@ -30,12 +30,12 @@ public class Drawing {
 
 	public void clear() {
 		fileName = null;
-		lxGraph.removeAll();
+		getLxGraph().removeAll();
 		setModified(false);
 	}
 	public void load(String file) {
 		clear();
-		lxGraph.read(file);
+		getLxGraph().read(file);
 		fileName = file;
 
 		// Fix up each element so they know who their drawing is
