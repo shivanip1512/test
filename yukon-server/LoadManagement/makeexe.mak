@@ -39,7 +39,8 @@ $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\proclog.lib \
-$(COMPILEBASE)\lib\ctiholidaydb.lib
+$(COMPILEBASE)\lib\ctiholidaydb.lib \
+$(COMPILEBASE)\lib\ctiseasondb.lib
 
 BASEOBJS= \
 clientconn.obj \
