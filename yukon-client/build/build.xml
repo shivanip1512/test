@@ -28,6 +28,7 @@
      <property name="servlet"      value="${yukon.base}/servlet" />
      <property name="palm"      value="${yukon.base}/palm" />
      <property name="tools"      value="${yukon.base}/tools" />
+     <property name="report"      value="${yukon.base}/report" />
      <property name="resource"      value="${yukon.base}/resource" />
 
      <target name="targets">         
@@ -77,6 +78,7 @@
         <ant dir="${palm}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
         <ant dir="${servlet}" target="${dotarget}"/>
+        <ant dir="${report}" target="${dotarget}"/>
 	<ant dir="${resource}" target="${dotarget}"/>
      <!--   <ant dir="${esub-editor}" target="${dotarget}" />        
         <ant dir="${esub-web}" target="${dotarget}"/>        
