@@ -1020,7 +1020,7 @@ public Object getValue(Object val)
    capBank.getCapBank().setBankSize( 
       (getJComboBankSize().getSelectedItem().toString().length() <= 0
       ? new Integer(150)
-      : (Integer)getJComboBankSize().getSelectedItem()) );
+      : new Integer(getJComboBankSize().getSelectedItem().toString()) ) );
 
 
 
@@ -1035,8 +1035,8 @@ public Object getValue(Object val)
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 
 
