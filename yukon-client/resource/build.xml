@@ -7,13 +7,21 @@
     </target>
    
    <target name="build">
-       <copy todir="${yukon.lib}">
+       <copy todir="${yukon.lib}" preservelastmodified="yes">
            <fileset dir=".">
                <include name="**/*.properties"/>
            </fileset>
        </copy>
    </target>
 
+	<target name="install" depends="build">   		
+   		<copy todir="${yukon.client.config}" preservelastmodified="yes">
+           <fileset dir=".">
+               <include name="**/*.properties"/>
+           </fileset>
+       </copy>
+   </target>
+   
    <target name="clean">       
     </target>
    

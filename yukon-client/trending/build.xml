@@ -30,6 +30,19 @@
        </copy>
    </target>
 
+	<target name="install" depends="build">
+   		<jar jarfile="${yukon.client.bin}/graph.jar"
+   			basedir="build/"
+   			manifest="resource/manifest.mf" />   			
+   			
+   		<copy todir="${yukon.client.bin}">
+ 	    	<fileset dir="resource">
+				<include name="**/*.gif"/>
+ 				<include name="**/*.ico"/>
+	    	</fileset>
+       </copy>       
+   </target>
+   
    <target name="clean">
        <delete dir="build"/>        
 

@@ -39,6 +39,11 @@
 		</war>-->
 	</target>
 
+	<target name="install" depends="build">
+   		<jar jarfile="${yukon.client.bin}/stars.jar"
+   			basedir="build/" />   			       
+   </target>
+   
 	<target name="clean">
 		<delete dir="build"/>
 	<!--	<delete>

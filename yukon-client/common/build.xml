@@ -22,6 +22,12 @@
             manifest="resource/manifest.mf" />            
    </target>
 
+   <target name="install" depends="build">
+   		<jar jarfile="${yukon.client.bin}/common.jar"
+   			basedir="build/"
+   			manifest="resource/manifest.mf" />   			
+   </target>
+   
    <target name="clean">
        <delete dir="build"/>        
 
