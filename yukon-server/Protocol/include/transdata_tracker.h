@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/01/07 16:47:06 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/01/08 23:19:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -79,6 +79,7 @@ class IM_EX_PROT CtiTransdataTracker
       int calcLPRecs( void );
       int countChannels( void );
       int calcAcks( int recs );
+      RWCString formatRecNums( int recs );
 
    protected:
 
@@ -91,7 +92,7 @@ class IM_EX_PROT CtiTransdataTracker
          doEnabledChannels,
          doTime,
          doIntervalSize,
-         doIdentify,
+//         doIdentify,
 
          //billing
          doScroll,
@@ -169,6 +170,7 @@ class IM_EX_PROT CtiTransdataTracker
       const char *const    _enter;
 
       RWCString            _password;
+      RWCString            _tempSent;
 
       bool                 _waiting;
       bool                 _moveAlong;
@@ -177,7 +179,6 @@ class IM_EX_PROT CtiTransdataTracker
       bool                 _ymodemsTurn;
       bool                 _first;
       bool                 _sec;
-//      bool                 _hold;
       bool                 _dataIsExpected;
       bool                 _didRecordCheck;
       bool                 _didLoadProfile;
