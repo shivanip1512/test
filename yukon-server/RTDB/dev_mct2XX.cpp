@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/20 22:28:39 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/04 18:10:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,6 +85,12 @@ bool CtiDeviceMCT2XX::initCommandStore()
 
     cs._cmd     = CtiProtocolEmetcon::GetConfig_Multiplier;
     cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT2XX_MultAddr,
+                             (int)MCT2XX_MultLen );
+    _commandStore.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Multiplier;
+    cs._io      = IO_WRITE | Q_ARMC;
     cs._funcLen = make_pair( (int)MCT2XX_MultAddr,
                              (int)MCT2XX_MultLen );
     _commandStore.insert( cs );
@@ -214,6 +220,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
+    //  ACH:  are these necessary?  /mskf
     resetScanFreezePending();
     resetScanFreezeFailed();
 
