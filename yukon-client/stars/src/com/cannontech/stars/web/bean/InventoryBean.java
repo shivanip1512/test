@@ -334,6 +334,7 @@ public class InventoryBean {
         		deviceType = getEnergyCompany().getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_METER ).getEntryText();
         		deviceName = PAOFuncs.getYukonPAOName( liteInv.getDeviceID() );
         	}
+        	if (deviceName.equals("")) deviceName = "&nbsp;";
         	
         	java.util.Date installDate = ServerUtils.translateDate( liteInv.getInstallDate() );
         	dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
