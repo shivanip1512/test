@@ -54,7 +54,9 @@ public interface GraphDefines
 	public static SimpleDateFormat extendedDateFormat = new SimpleDateFormat( "MMM d, yyyy");//old datePopupFormat
 
 	public static SimpleDateFormat multipleDaystimedateFormat = new SimpleDateFormat("MM/dd HH:mm");
-	public static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	public static SimpleDateFormat timeFormat_HH_mm = new SimpleDateFormat("HH:mm");
+	public static SimpleDateFormat timeFormat_HH_mm_ss = new SimpleDateFormat("HH:mm:ss");
+	public static SimpleDateFormat timeFormat_HH_mm_ss_SSS = new SimpleDateFormat("HH:mm:ss.SSS");
 	public static SimpleDateFormat extendedTimeFormat = new SimpleDateFormat("HH:mm:ss");
 	
 		
@@ -72,8 +74,9 @@ public interface GraphDefines
 
 	
 	public static java.text.SimpleDateFormat LEGEND_FORMAT = new java.text.SimpleDateFormat("MMM dd");
-	public static java.text.SimpleDateFormat CATEGORY_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
-	public static java.text.SimpleDateFormat CATEGORY_WITH_SS_FORMAT = new java.text.SimpleDateFormat(" MMM dd, HH:mm:ss ");
+	public static java.text.SimpleDateFormat CATEGORY_FORMAT_MMM_dd_HH_mm = new java.text.SimpleDateFormat(" MMM dd, HH:mm ");
+	public static java.text.SimpleDateFormat CATEGORY_FORMAT_MMM_dd_HH_mm_ss = new java.text.SimpleDateFormat(" MMM dd, HH:mm:ss ");
+	public static java.text.SimpleDateFormat CATEGORY_FORMAT_MMM_dd_HH_mm_ss_SSS = new java.text.SimpleDateFormat(" MMM dd, HH:mm:ss.SSS ");
 	
 	public static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
 	public static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");

@@ -346,7 +346,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 				// date data for exportArray
 				exportArray[x] = (String) (dateFormat.format(new java.util.Date(ts1.longValue())).toString());
 				// time data for exportArray			
-				exportArray[csvRowLength + x] = (String) (timeFormat.format(new java.util.Date(ts1.longValue())).toString());
+				exportArray[csvRowLength + x] = (String) (timeFormat_HH_mm.format(new java.util.Date(ts1.longValue())).toString());
 			}
 
 			int validIndex = 0;
