@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/24 21:38:46 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/24 22:35:25 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -360,6 +360,8 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         OutMessage = 0;
 
         retval = QUEUED_TO_DEVICE;
+
+        *dqcnt = _lmi.getNumCodes();
     }
 
     return retval;
