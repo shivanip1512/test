@@ -32,7 +32,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
 
     RWCString msg;
 
-    if(Xfer.doTrace(ErrorCode) &&  !(*Xfer.getInCountActual() == 0 && !ErrorCode) )
+    if(Xfer.doTrace(ErrorCode) &&  !(Xfer.getInCountActual() == 0 && !ErrorCode) )
     {
         if(!isTAP() || (Dev && !Dev->isTAP()))
         {
@@ -74,7 +74,7 @@ INT CtiPort::traceIn(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDev
 
                 //  then print the formatted hex trace
                 trace.setBrightMagenta();
-                traceBytes(Xfer.getInBuffer(), *Xfer.getInCountActual(), trace, traceList);
+                traceBytes(Xfer.getInBuffer(), Xfer.getInCountActual(), trace, traceList);
 
                 if(ErrorCode)
                 {
@@ -417,7 +417,7 @@ INT CtiPort::outInMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > 
 
     LockGuard gd(monitor());
 
-    *(Xfer.getInCountActual()) = 0L;    // Make sure that any error on the outMess does not affect a state machine!
+    Xfer.setInCountActual((ULONG)0L);    // Make sure that any error on the outMess does not affect a state machine!
 
     if( NORMAL == (status = outMess(Xfer, Dev, traceList)) )
     {

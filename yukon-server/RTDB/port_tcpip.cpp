@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/01/17 21:32:19 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/02/07 15:04:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -466,7 +466,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDevice* Dev, RWTPtrSlist< CtiMe
             if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
         }
 
-        if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), *Xfer.getInCountActual()))    // CRC check failed.
+        if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
         {
             status = BADCRC;
         }

@@ -405,7 +405,7 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceBase *Dev, RWTPtrSlist< CtiMes
         if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
     }
 
-    if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), *Xfer.getInCountActual()))    // CRC check failed.
+    if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
     {
         status = BADCRC;
     }
@@ -623,6 +623,8 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessag
         /* Remember when we started writing */
         MilliTime (&StartWrite);
 
+        setPortWriteTimeOut( (10000L * ByteCount) / getTablePortSettings().getBaudRate() + 500 );
+
         if(CTIWrite (getHandle(), Xfer.getOutBuffer(), Xfer.getOutCount(), &Written) || Written != Xfer.getOutCount())
         {
             close(false);
@@ -821,6 +823,7 @@ INT CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULO
 
 INT CtiPortDirect::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
 {
+    setPortWriteTimeOut( timeout * 1000 );
     return CTIWrite(getHandle(),pBuf,BufLen,pBytesWritten);
 }
 
