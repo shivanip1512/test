@@ -128,9 +128,9 @@ public class NewCustAccountAction implements ActionBase {
 			for (int i = 2; i <= 4; i++) {
 				String lastName = req.getParameter("LastName" + i);
 				String firstName = req.getParameter("FirstName" + i);
-	
+				
 				if (lastName != null && lastName.trim().length() > 0
-					&& firstName != null && firstName.trim().length() > 0) {
+					|| firstName != null && firstName.trim().length() > 0) {
 					AdditionalContact contact = new AdditionalContact();
 					contact.setLastName( lastName );
 					contact.setFirstName( firstName );
@@ -159,8 +159,10 @@ public class NewCustAccountAction implements ActionBase {
 			primContact.setWorkPhone( ServletUtils.formatPhoneNumber(primContact.getWorkPhone()) );
 			
 			for (int i = 0; i < account.getAdditionalContactCount(); i++) {
-				account.getAdditionalContact(i).setHomePhone( account.getAdditionalContact(i).getHomePhone() );
-				account.getAdditionalContact(i).setWorkPhone( account.getAdditionalContact(i).getWorkPhone() );
+				account.getAdditionalContact(i).setHomePhone(
+						ServletUtils.formatPhoneNumber(account.getAdditionalContact(i).getHomePhone()) );
+				account.getAdditionalContact(i).setWorkPhone(
+						ServletUtils.formatPhoneNumber(account.getAdditionalContact(i).getWorkPhone()) );
 			}
 			
 			StarsOperation operation = new StarsOperation();
