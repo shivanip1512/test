@@ -19,7 +19,6 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	
 	private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
 
-	private DCUEditorPanel dcuEditorPanel = null;
 	private GolayEditorPanel golayEditorPanel = null;
 	private SA305EditorPanel aSA305EditorPanel = null;
 	private SA205EditorPanel aSA205EditorPanel = null;
@@ -50,13 +49,7 @@ public java.awt.Dimension getActualSize()
  * This method was created in VisualAge.
  * @return LMGroupBasePanel
  */
-public DCUEditorPanel getDCUEditorPanel() 
-{
-	if( dcuEditorPanel == null )
-		dcuEditorPanel = new DCUEditorPanel();
-	
-	return dcuEditorPanel;
-}
+
 
 public GolayEditorPanel getGolayEditorPanel() 
 {
