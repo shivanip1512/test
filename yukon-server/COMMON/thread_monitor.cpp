@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/02/18 14:32:41 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -21,8 +21,7 @@
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadMonitor::CtiThreadMonitor() :
-   _quit( false )
+CtiThreadMonitor::CtiThreadMonitor()
 {
 }
 
@@ -31,6 +30,7 @@ CtiThreadMonitor::CtiThreadMonitor() :
 
 CtiThreadMonitor::~CtiThreadMonitor()
 {
+    _queue.clearAndDestroy();
 }
 
 //===========================================================================================================
@@ -43,7 +43,7 @@ void CtiThreadMonitor::run( void )
 
    messageOut( "ts", "Monitor Startup" );
 
-   while( !_quit )
+   while( !isSet(CtiThread::SHUTDOWN) )
    {
       sleep( snooze );
 
@@ -73,7 +73,7 @@ long CtiThreadMonitor::checkForExpriration( void )
 {
    ptime current_time( second_clock::local_time() );
    time_duration td( 0, 0, 3, 0 );
-   
+
    if( _threadData.size() != 0 )
    {
       for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
@@ -94,7 +94,7 @@ long CtiThreadMonitor::checkForExpriration( void )
             //
             td = check_time - current_time;
          }
-      } 
+      }
    }
 
    if( td.seconds() > 0 )
@@ -173,7 +173,7 @@ void CtiThreadMonitor::processExpired( void )
                   void* action1_args = i->second.getAlternateArgs();
 
                   if( action1 )
-                  {  
+                  {
                      //it doesn't matter if the args are null
                      action1( action1_args );
                   }
@@ -195,7 +195,7 @@ void CtiThreadMonitor::processExpired( void )
 
             default:
                {
-                  messageOut( "tsi", "Illegal Behaviour For ID", i->first );  
+                  messageOut( "tsi", "Illegal Behaviour For ID", i->first );
                }
                break;
             }
@@ -250,7 +250,7 @@ void CtiThreadMonitor::processExtraCommands( void )
 //===========================================================================================================
 
 void CtiThreadMonitor::dump( void )
-{  
+{
    //if we only operate on a copy, we can't explode if someone changes the map
    ThreadData temp_map = _threadData;
 
@@ -268,7 +268,7 @@ void CtiThreadMonitor::dump( void )
          messageOut( "sv", "Thread tickle time      : ", timeString( temp.getTickledTime() ) );
          messageOut( "" );
       }
-   }  
+   }
 }
 
 //===========================================================================================================
@@ -325,8 +325,8 @@ void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
 //
 // fmt == a format string that we look at to decide how to handle the parameters passed in
 // 'i' == integer
-// 's' == c-style string 
-// 'v' == a std::string 
+// 's' == c-style string
+// 'v' == a std::string
 // 't' == timestamp
 //===========================================================================================================
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/01/06 16:13:03 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/02/18 14:32:41 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -53,7 +53,6 @@ private:
    void messageOut( const char *fmt, ... );
 
    mutable CtiMutex                                         _collMux;
-   bool                                                     _quit;
    CtiQueue < CtiThreadRegData, less< CtiThreadRegData > >  _queue;
    ThreadData                                               _threadData;
 
