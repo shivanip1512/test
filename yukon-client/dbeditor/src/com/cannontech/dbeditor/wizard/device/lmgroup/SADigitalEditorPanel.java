@@ -430,8 +430,13 @@ public Object getValue(Object o)
 	{
 		if( digital == null )
 			digital = (LMGroupSADigital) o;
-			
-		StringBuffer opAddress = new StringBuffer(getOpAddress1JTextField().getText());
+		
+		//some annoying but necessary verification of the address string
+		StringBuffer opAddress = new StringBuffer();
+		if(getOpAddress1JTextField().getText().length() < 2)
+			opAddress.append("0");	
+		opAddress.append(getOpAddress1JTextField().getText());
+		opAddress.append("-");
 		opAddress.append(getOpAddress2JTextField().getText());
 		digital.getLMGroupSASimple().setOperationalAddress(opAddress.toString());
 			
@@ -589,7 +594,8 @@ public void setValue(Object o) {
 		
 		StringBuffer address = new StringBuffer(digital.getLMGroupSASimple().getOperationalAddress());
 		getOpAddress1JTextField().setText(address.substring(0,2));
-		getOpAddress2JTextField().setText(address.substring(2,3));
+		//skip that hyphen at position 2
+		getOpAddress2JTextField().setText(address.substring(3,4));
 
 		
 		com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
@@ -599,5 +605,11 @@ public void setValue(Object o) {
 			getVirtualTimeoutJComboBox(), digital.getLMGroupSASimple().getVirtualTimeout().intValue() );
 		
 	}
+}
+
+public boolean isInputValid() 
+{
+	
+	return true;
 }
 }
