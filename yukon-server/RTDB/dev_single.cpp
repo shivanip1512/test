@@ -8,9 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_single.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/14 15:36:56 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/17 18:45:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2028,18 +2027,25 @@ ULONG CtiDeviceSingle::getTardyTime(int scantype) const
 {
     ULONG maxtardytime = getScanRate(scantype);
 
-    switch(scantype)
+    if(maxtardytime < 60)
     {
-    case ScanRateGeneral:
-    case ScanRateIntegrity:
+        maxtardytime = 60;
+    }
+    else
+    {
+        switch(scantype)
         {
-            maxtardytime = maxtardytime * 2 + 1;
-            break;
-        }
-    case ScanRateAccum:
-        {
-            maxtardytime = maxtardytime + maxtardytime / 2;
-            break;
+        case ScanRateGeneral:
+        case ScanRateIntegrity:
+            {
+                maxtardytime = maxtardytime * 2 + 1;
+                break;
+            }
+        case ScanRateAccum:
+            {
+                maxtardytime = maxtardytime + maxtardytime / 2;
+                break;
+            }
         }
     }
 
