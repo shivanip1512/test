@@ -966,12 +966,13 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 
                 if( currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
                     currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
-                    currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState )
+                    currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState &&
+                    currentLMProgram->getProgramState() != CtiLMProgramBase::TimedActiveState)
                 {
                     if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                     {
                         CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
-                        if( lmProgramDirect->getDefaultPriority() > getCurrentPriority() )
+                        if( lmProgramDirect->getStartPriority() > getCurrentPriority() ) // I think this works because programs are stored in order of default priority(start priority)
                         {
                             if( getCurrentPriority() < 0 ||
                                 newlyActivePrograms == 0 )
@@ -984,7 +985,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                     _ltoa(getCurrentPriority(),tempchar,10);
                                     additional += tempchar;
                                     additional += " New Priority: ";
-                                    _ltoa(lmProgramDirect->getDefaultPriority(),tempchar,10);
+                                    _ltoa(lmProgramDirect->getStartPriority(),tempchar,10);
                                     additional += tempchar;
                                     CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
@@ -994,7 +995,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                         dout << RWTime() << " - " << text << ", " << additional << endl;
                                     }
                                 }
-                                setCurrentPriority(lmProgramDirect->getDefaultPriority());
+                                setCurrentPriority(lmProgramDirect->getStartPriority());
                             }
                             else
                             {
@@ -1019,9 +1020,9 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                         dout << RWTime() << " - Load Management can not automatically manage curtailment programs yet. in: " << __FILE__ << " at:" << __LINE__ << endl;
                         /*CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgram;
                         expectedLoadReduced = lmProgramCurtailment->reduceProgramLoad(loadReductionNeeded, multiPilMsg);
-                        if( currentLMProgram->getDefaultPriority() > getCurrentPriority() )
+                        if( currentLMProgram->getStartPriority() > getCurrentPriority() )
                         {
-                            setCurrentPriority(currentLMProgram->getDefaultPriority());
+                            setCurrentPriority(currentLMProgram->getStartPriority());
                         }
                         if( expectedLoadReduced > 0.0 )
                         {
@@ -1146,7 +1147,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                         {
                             expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
                         }
-                        if( currentLMProgram->getDefaultPriority() > getCurrentPriority() )
+                        if( currentLMProgram->getStartPriority() > getCurrentPriority() )
                         {
                             {
                                 char tempchar[80];
@@ -1156,7 +1157,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                                 _ltoa(getCurrentPriority(),tempchar,10);
                                 additional += tempchar;
                                 additional += " New Priority: ";
-                                _ltoa(currentLMProgram->getDefaultPriority(),tempchar,10);
+                                _ltoa(currentLMProgram->getStartPriority(),tempchar,10);
                                 additional += tempchar;
                                 CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
@@ -1166,7 +1167,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                                     dout << RWTime() << " - " << text << ", " << additional << endl;
                                 }
                             }
-                            setCurrentPriority(currentLMProgram->getDefaultPriority());
+                            setCurrentPriority(currentLMProgram->getStartPriority());
                         }
                     }
                     else if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
@@ -1175,9 +1176,9 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                         dout << RWTime() << " - Load Management can not automatically manage curtailment programs yet. in: " << __FILE__ << " at:" << __LINE__ << endl;
                         /*CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgram;
                         expectedLoadReduced = lmProgramCurtailment->reduceProgramLoad(loadReductionNeeded, multiPilMsg);
-                        if( currentLMProgram->getDefaultPriority() > getCurrentPriority() )
+                        if( currentLMProgram->getStartPriority() > getCurrentPriority() )
                         {
-                            setCurrentPriority(currentLMProgram->getDefaultPriority());
+                            setCurrentPriority(currentLMProgram->getStartPriority());
                         }
                         if( expectedLoadReduced > 0.0 )
                         {

@@ -48,9 +48,8 @@ public:
     LONG getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
-    LONG getUserOrder() const;
-    LONG getStopOrder() const;
-    LONG getDefaultPriority() const;
+    int getStartPriority() const;
+    int getStopPriority() const;
     const RWCString& getControlType() const;
     LONG getConstraintID() const;
     const RWCString& getConstraintName() const;
@@ -81,9 +80,8 @@ public:
     CtiLMProgramBase& setPAOType(LONG type);
     CtiLMProgramBase& setPAODescription(const RWCString& description);
     CtiLMProgramBase& setDisableFlag(BOOL disable);
-    CtiLMProgramBase& setUserOrder(LONG userorder);
-    CtiLMProgramBase& setStopOrder(LONG stoporder);
-    CtiLMProgramBase& setDefaultPriority(LONG defpriority);
+    CtiLMProgramBase& setStartPriority(int start_priority);
+    CtiLMProgramBase& setStopPriority(int stop_priority);
     CtiLMProgramBase& setControlType(const RWCString& conttype);
     CtiLMProgramBase& setConstraintID(LONG constraintid);
     CtiLMProgramBase& setConstraintName(const RWCString& constraintname);
@@ -168,9 +166,8 @@ private:
     LONG _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
-    LONG _userorder;
-    LONG _stoporder;
-    LONG _defaultpriority;
+    int _start_priority;
+    int _stop_priority;
     RWCString _controltype;
     LONG _constraintid;
     RWCString _constraintname;

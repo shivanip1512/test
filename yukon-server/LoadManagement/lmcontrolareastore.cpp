@@ -69,16 +69,6 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
     delete lm_program;
 }
 
-/*
-template <class T>
-struct fun_less : binary_function<T, T, bool> {
-  bool operator() (const T& t1, const T& t2) const
-	{
-	    return *t1 < *t2;
-	}
-};
-*/
-
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
@@ -2237,9 +2227,8 @@ void CtiLMControlAreaStore::reset()
                                  << lmControlAreaTable["defdailystoptime"]
                                  << lmControlAreaTable["requirealltriggersactiveflag"]
                                  << lmControlAreaProgramTable["lmprogramdeviceid"]
-                                 << lmControlAreaProgramTable["userorder"]
-                                 << lmControlAreaProgramTable["stoporder"]
-                                 << lmControlAreaProgramTable["defaultpriority"]
+                                 << lmControlAreaProgramTable["startpriority"]
+                                 << lmControlAreaProgramTable["stoppriority"]
                                  << dynamicLMControlAreaTable["nextchecktime"]
                                  << dynamicLMControlAreaTable["newpointdatareceivedflag"]
                                  << dynamicLMControlAreaTable["updatedflag"]
@@ -2265,9 +2254,7 @@ void CtiLMControlAreaStore::reset()
                                         lmControlAreaTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                         selector.orderBy(yukonPAObjectTable["paobjectid"]);
-                        selector.orderBy(lmControlAreaProgramTable["defaultpriority"]);
-                        selector.orderBy(lmControlAreaProgramTable["userorder"]);
-                        selector.orderByDescending(lmControlAreaProgramTable["stoporder"]);
+                        selector.orderBy(lmControlAreaProgramTable["startpriority"]);
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
@@ -2295,13 +2282,12 @@ void CtiLMControlAreaStore::reset()
                             if( !isNull )
                             {
                                 LONG tempProgramId = 0;
-                                LONG tempUserOrder = 0;
-                                LONG tempStopOrder = 0;
-                                LONG tempDefaultPriority = 0;
+                                int start_priority;
+                                int stop_priority;
+
                                 rdr["lmprogramdeviceid"] >> tempProgramId;
-                                rdr["userorder"] >> tempUserOrder;
-                                rdr["stoporder"] >> tempStopOrder;
-                                rdr["defaultpriority"] >> tempDefaultPriority;
+                                rdr["startpriority"] >> start_priority;
+                                rdr["stoppriority"] >> stop_priority;
 
                                 if( currentLMProgramBase == NULL ||
                                     ( currentLMProgramBase != NULL &&
@@ -2311,25 +2297,22 @@ void CtiLMControlAreaStore::reset()
 
                                     if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
-                                        currentLMProgramBase->setUserOrder(tempUserOrder);
-                                        currentLMProgramBase->setStopOrder(tempStopOrder);
-                                        currentLMProgramBase->setDefaultPriority(tempDefaultPriority);
+                                        currentLMProgramBase->setStartPriority(start_priority);
+                                        currentLMProgramBase->setStopPriority(stop_priority);
                                         lmControlAreaProgramList.insert(currentLMProgramBase);
                                         directProgramHashMap.remove(tempProgramId);
                                     }
                                     else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
-                                        currentLMProgramBase->setUserOrder(tempUserOrder);
-                                        currentLMProgramBase->setStopOrder(tempStopOrder);
-                                        currentLMProgramBase->setDefaultPriority(tempDefaultPriority);
+                                        currentLMProgramBase->setStartPriority(start_priority);
+                                        currentLMProgramBase->setStopPriority(stop_priority);                                        
                                         lmControlAreaProgramList.insert(currentLMProgramBase);
                                         curtailmentProgramHashMap.remove(tempProgramId);
                                     }
                                     else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                                     {
-                                        currentLMProgramBase->setUserOrder(tempUserOrder);
-                                        currentLMProgramBase->setStopOrder(tempStopOrder);
-                                        currentLMProgramBase->setDefaultPriority(tempDefaultPriority);
+                                        currentLMProgramBase->setStartPriority(start_priority);
+                                        currentLMProgramBase->setStopPriority(stop_priority);                                        
                                         lmControlAreaProgramList.insert(currentLMProgramBase);
                                         energyExchangeProgramHashMap.remove(tempProgramId);
                                     }

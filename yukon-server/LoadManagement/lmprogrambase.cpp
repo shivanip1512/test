@@ -156,33 +156,23 @@ BOOL CtiLMProgramBase::getDisableFlag() const
 }
 
 /*---------------------------------------------------------------------------
-    getUserOrder
+    getStartPriority
 
-    Returns the user order of the program
+    Returns the start priority of the program
 ---------------------------------------------------------------------------*/
-LONG CtiLMProgramBase::getUserOrder() const
+int CtiLMProgramBase::getStartPriority() const
 {
-    return _userorder;
+    return _start_priority;
 }
 
 /*---------------------------------------------------------------------------
-    getStopOrder
+    getStopPriority
 
-    Returns the stop order of the program
+    Returns the start priority of the program
 ---------------------------------------------------------------------------*/
-LONG CtiLMProgramBase::getStopOrder() const
+int CtiLMProgramBase::getStopPriority() const
 {
-    return _stoporder;
-}
-
-/*---------------------------------------------------------------------------
-    getDefaultPriority
-
-    Returns the default priority of the program
----------------------------------------------------------------------------*/
-LONG CtiLMProgramBase::getDefaultPriority() const
-{
-    return _defaultpriority;
+    return _stop_priority;
 }
 
 /*---------------------------------------------------------------------------
@@ -485,35 +475,24 @@ CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 }
 
 /*---------------------------------------------------------------------------
-    setUserOrder
+    setStartPriority
 
-    Sets the user order of the program
+    Sets the start priority of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setUserOrder(LONG userorder)
+CtiLMProgramBase& CtiLMProgramBase::setStartPriority(int start_priority)
 {
-    _userorder = userorder;
+    _start_priority = start_priority;
     return *this;
 }
 
 /*---------------------------------------------------------------------------
-    setStopOrder
+    setStopPriority
 
-    Sets the stop order of the program
+    Sets the stop priority of the program
 ---------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setStopOrder(LONG stoporder)
+CtiLMProgramBase& CtiLMProgramBase::setStopPriority(int stop_priority)
 {
-    _stoporder = stoporder;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setDefaultPriority
-
-    Sets the default priority of the program
----------------------------------------------------------------------------*/
-CtiLMProgramBase& CtiLMProgramBase::setDefaultPriority(LONG defpriority)
-{
-    _defaultpriority = defpriority;
+    _stop_priority = stop_priority;
     return *this;
 }
 
@@ -865,33 +844,32 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     RWTime tempTime1;
     RWTime tempTime2;
     istrm >> _paoid
-    >> _paocategory
-    >> _paoclass
-    >> _paoname
-    >> _paotype
-    >> _paodescription
-    >> _disableflag
-    >> _userorder
-    >> _stoporder
-    >> _defaultpriority
-    >> _controltype
-    >> _availableweekdays
-    >> _maxhoursdaily
-    >> _maxhoursmonthly
-    >> _maxhoursseasonal
-    >> _maxhoursannually
-    >> _minactivatetime
-    >> _minrestarttime/*
-    >> _holidayscheduleid
-    >> _seasonscheduleid*/
-    >> _programstatuspointid
-    >> _programstate
-    >> _reductionanalogpointid
-    >> _reductiontotal
-    >> tempTime1
-    >> tempTime2
-    >> _manualcontrolreceivedflag
-    >> _lmprogramcontrolwindows;
+          >> _paocategory
+          >> _paoclass
+          >> _paoname
+          >> _paotype
+          >> _paodescription
+          >> _disableflag
+          >> _start_priority
+          >> _stop_priority
+          >> _controltype
+          >> _availableweekdays
+          >> _maxhoursdaily
+          >> _maxhoursmonthly
+          >> _maxhoursseasonal
+          >> _maxhoursannually
+          >> _minactivatetime
+          >> _minrestarttime/*
+                              >> _holidayscheduleid
+                              >> _seasonscheduleid*/
+          >> _programstatuspointid
+          >> _programstate
+          >> _reductionanalogpointid
+          >> _reductiontotal
+          >> tempTime1
+          >> tempTime2
+          >> _manualcontrolreceivedflag
+          >> _lmprogramcontrolwindows;
 
     _startedcontrolling = RWDBDateTime(tempTime1);
     _lastcontrolsent = RWDBDateTime(tempTime2);
@@ -907,33 +885,32 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-    << _paocategory
-    << _paoclass
-    << _paoname
-    << _paotype
-    << _paodescription
-    << _disableflag
-    << _userorder
-    << _stoporder
-    << _defaultpriority
-    << _controltype
-    << _availableweekdays
-    << _maxhoursdaily
-    << _maxhoursmonthly
-    << _maxhoursseasonal
-    << _maxhoursannually
-    << _minactivatetime
-    << _minrestarttime/*
-    << _holidayscheduleid
-    << _seasonscheduleid*/
-    << _programstatuspointid
-    << _programstate
-    << _reductionanalogpointid
-    << _reductiontotal
-    << _startedcontrolling.rwtime()
-    << _lastcontrolsent.rwtime()
-    << _manualcontrolreceivedflag
-    << _lmprogramcontrolwindows;
+          << _paocategory
+          << _paoclass
+          << _paoname
+          << _paotype
+          << _paodescription
+          << _disableflag
+          << _start_priority
+          << _stop_priority
+          << _controltype
+          << _availableweekdays
+          << _maxhoursdaily
+          << _maxhoursmonthly
+          << _maxhoursseasonal
+          << _maxhoursannually
+          << _minactivatetime
+          << _minrestarttime/*
+                              << _holidayscheduleid
+                              << _seasonscheduleid*/
+          << _programstatuspointid
+          << _programstate
+          << _reductionanalogpointid
+          << _reductiontotal
+          << _startedcontrolling.rwtime()
+          << _lastcontrolsent.rwtime()
+          << _manualcontrolreceivedflag
+          << _lmprogramcontrolwindows;
 
     return;
 }
@@ -954,9 +931,8 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
-        _userorder = right._userorder;
-        _stoporder = right._stoporder;
-        _defaultpriority = right._defaultpriority;
+        _start_priority = right._start_priority;
+        _stop_priority = right._stop_priority;
         _controltype = right._controltype;
         _availableweekdays = right._availableweekdays;
         _maxhoursdaily = right._maxhoursdaily;
@@ -1133,12 +1109,6 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     tempBoolString.toLower();
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
-    /*rdr["userorder"] >> _userorder;
-    rdr["stoporder"] >> _stoporder;
-    rdr["defaultpriority"] >> _defaultpriority;*/
-    _userorder = 0;
-    _stoporder = 0;
-    _defaultpriority = 0;
 
     rdr["controltype"] >> _controltype;
     rdr["constraintid"] >> _constraintid;
