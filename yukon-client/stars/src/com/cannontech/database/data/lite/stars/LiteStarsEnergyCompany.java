@@ -781,43 +781,44 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 
 	public synchronized ArrayList getAllSelectionLists() {
+		if (getParent() != null)
+			return getParent().getAllSelectionLists();
+		
 		if (selectionLists == null) {
 			selectionLists = new ArrayList();
 	        
-	        if (getParent() == null) {
-				ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
-				if (items != null) {
-					for (int i = 0; i < items.length; i++)
-						selectionLists.add( YukonListFuncs.getYukonSelectionList(items[i].getItemID().intValue()) );
+			ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
+			if (items != null) {
+				for (int i = 0; i < items.length; i++)
+					selectionLists.add( YukonListFuncs.getYukonSelectionList(items[i].getItemID().intValue()) );
+			}
+	        
+			// Get substation list
+			YukonSelectionList subList = new YukonSelectionList();
+			subList.setListID( FAKE_LIST_ID );
+			subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
+			subList.setOrdering( "A" );
+			subList.setSelectionLabel( "" );
+			subList.setWhereIsList( "" );
+			subList.setUserUpdateAvailable( "Y" );
+	        
+			com.cannontech.database.db.stars.Substation[] subs =
+					com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
+			
+			if (subs != null) {
+				ArrayList entries = subList.getYukonListEntries();
+				for (int i = 0; i < subs.length; i++) {
+					YukonListEntry entry = new YukonListEntry();
+					entry.setEntryID( subs[i].getSubstationID().intValue() );
+					entry.setEntryText( subs[i].getSubstationName() );
+					entries.add( entry );
 				}
-		        
-				// Get substation list
-				YukonSelectionList subList = new YukonSelectionList();
-				subList.setListID( FAKE_LIST_ID );
-				subList.setListName( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-				subList.setOrdering( "A" );
-				subList.setSelectionLabel( "" );
-				subList.setWhereIsList( "" );
-				subList.setUserUpdateAvailable( "Y" );
-		        
-				com.cannontech.database.db.stars.Substation[] subs =
-						com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
 				
-				if (subs != null) {
-					ArrayList entries = subList.getYukonListEntries();
-					for (int i = 0; i < subs.length; i++) {
-						YukonListEntry entry = new YukonListEntry();
-						entry.setEntryID( subs[i].getSubstationID().intValue() );
-						entry.setEntryText( subs[i].getSubstationName() );
-						entries.add( entry );
-					}
-					
-					// Order the substation list alphabetically
-					Collections.sort( entries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
-					
-					selectionLists.add( subList );
-				}
-	        }
+				// Order the substation list alphabetically
+				Collections.sort( entries, ServerUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
+				
+				selectionLists.add( subList );
+			}
 		}
 		
 		return selectionLists;
@@ -1030,6 +1031,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public YukonSelectionList getYukonSelectionList(String listName, boolean useDefault) {
+		// If parent company exists, inherite the selection list from it
+		if (getParent() != null)
+			return getParent().getYukonSelectionList(listName, useDefault);
+		
 		ArrayList selectionLists = getAllSelectionLists();
 		synchronized (selectionLists) {
 			for (int i = 0; i < selectionLists.size(); i++) {
@@ -1056,11 +1061,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	}
 	
 	public YukonSelectionList getYukonSelectionList(String listName) {
-		// If parent company exists, inherite the selection list from it
-		if (getParent() != null)
-			return getParent().getYukonSelectionList(listName);
-		else
-			return getYukonSelectionList(listName, true);
+		return getYukonSelectionList(listName, true);
 	}
 	
 	public YukonSelectionList addYukonSelectionList(String listName, YukonSelectionList dftList, boolean populateDefault) {
