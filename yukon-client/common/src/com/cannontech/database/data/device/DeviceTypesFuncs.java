@@ -513,6 +513,19 @@ public static boolean isMCT410KWHONLY( int type )
 
 }
 
+public static boolean isMCT4XX( int type )
+{
+	switch (type)
+	{
+		case MCT410_KWH_ONLY:
+		case MCT410IL:  
+			return true;
+		default :
+			return false;
+	}
+
+}
+
 public static boolean isDisconnectMCT( int type)
 {
 	switch (type)
