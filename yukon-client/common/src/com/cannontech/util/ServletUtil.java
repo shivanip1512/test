@@ -119,6 +119,7 @@ public class ServletUtil {
 	{
 		new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss"),
 		new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"),
+		new SimpleDateFormat("MM/dd/yyyy HH:mm"),
 		new SimpleDateFormat("MM/dd/yy"),
 		new SimpleDateFormat("MM-dd-yy"),
 		new SimpleDateFormat("MM.dd.yy"),
