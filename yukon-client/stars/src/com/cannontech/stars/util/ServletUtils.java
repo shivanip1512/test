@@ -10,8 +10,12 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -631,6 +635,21 @@ public class ServletUtils {
 		if (str == null || str.trim().equals(""))
 			return num_unset;
 		return parseNumber( str, lowerLimit, upperLimit, fieldName );
+	}
+	
+	public static void updateUserStatus(LiteYukonUser liteUser, String status) {
+		com.cannontech.database.db.user.YukonUser dbUser = (com.cannontech.database.db.user.YukonUser)
+				StarsLiteFactory.createDBPersistent( liteUser );
+		dbUser.setStatus( status );
+		
+		try {
+			dbUser = (com.cannontech.database.db.user.YukonUser)
+					Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
+			ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
 	}
 
 }

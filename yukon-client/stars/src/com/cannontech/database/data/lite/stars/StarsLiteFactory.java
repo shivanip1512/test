@@ -851,6 +851,7 @@ public class StarsLiteFactory {
 		user.setUserID( new Integer(liteUser.getUserID()) );
 		user.setUsername( liteUser.getUsername() );
 		user.setPassword( liteUser.getPassword() );
+		user.setStatus( liteUser.getStatus() );
 	}
 	
 	public static void setLMThermostatSeason(com.cannontech.database.db.stars.hardware.LMThermostatSeason season, LiteLMThermostatSeason liteSeason) {
