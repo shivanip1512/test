@@ -1,0 +1,1 @@
+java -classpath .;../config;tools.jar;common.jar;log4j-1.2.4.jar;classes12.zip;SqlServer.jar com.cannontech.dbtools.image.ImageInserter
