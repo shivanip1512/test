@@ -58,8 +58,6 @@ private:
     ULONG _foregroundcolor;
     ULONG _backgroundcolor;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
-
     void restore(RWDBReader& rdr);
 };
 #endif

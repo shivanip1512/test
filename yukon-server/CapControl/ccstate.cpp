@@ -51,7 +51,6 @@ CtiCCState::~CtiCCState()
 ---------------------------------------------------------------------------*/
 const RWCString& CtiCCState::getText() const
 {   
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _text;
 }
 /*---------------------------------------------------------------------------
@@ -61,7 +60,6 @@ const RWCString& CtiCCState::getText() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCState::getForegroundColor() const
 {   
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _foregroundcolor;
 }
 
@@ -72,7 +70,6 @@ ULONG CtiCCState::getForegroundColor() const
 ---------------------------------------------------------------------------*/
 ULONG CtiCCState::getBackgroundColor() const
 {   
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _backgroundcolor;
 }
 
@@ -83,7 +80,6 @@ ULONG CtiCCState::getBackgroundColor() const
 ---------------------------------------------------------------------------*/    
 CtiCCState& CtiCCState::setText(const RWCString& text)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _text = text;
 
     return *this;
@@ -96,7 +92,6 @@ CtiCCState& CtiCCState::setText(const RWCString& text)
 ---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::setForegroundColor(ULONG foregroundcolor)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _foregroundcolor = foregroundcolor;
 
     return *this;
@@ -109,7 +104,6 @@ CtiCCState& CtiCCState::setForegroundColor(ULONG foregroundcolor)
 ---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::setBackgroundColor(ULONG backgroundcolor)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _backgroundcolor = backgroundcolor;
 
     return *this;
@@ -122,15 +116,11 @@ CtiCCState& CtiCCState::setBackgroundColor(ULONG backgroundcolor)
 --------------------------------------------------------------------------*/
 void CtiCCState::restoreGuts(RWvistream& istrm)
 {
-
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _text
           >> _foregroundcolor
           >> _backgroundcolor;
-
 }
 
 /*---------------------------------------------------------------------------
@@ -140,16 +130,11 @@ void CtiCCState::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiCCState::saveGuts(RWvostream& ostrm ) const  
 {
-
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _text
           << _foregroundcolor
           << _backgroundcolor;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------
@@ -157,8 +142,6 @@ void CtiCCState::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCState& CtiCCState::operator=(const CtiCCState& right)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     if( this != &right )
     {
         _text = right._text;
@@ -186,8 +169,6 @@ CtiCCState* CtiCCState::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCState::restore(RWDBReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     rdr["text"] >> _text;
     rdr["foregroundcolor"] >> _foregroundcolor;
     rdr["backgroundcolor"] >> _backgroundcolor;
