@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgram;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -367,7 +368,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					}
 					
 					numInvAdded++;
-					if (fields[ImportManager.IDX_DEVICE_NAME].equals(""))
+					if (liteInv instanceof LiteStarsLMHardware)
 						numRecvrAdded++;
 					else
 						numMeterAdded++;
