@@ -499,15 +499,15 @@ function init() {
               </table><br>
               <table width="80%" border="0">
                 <tr>
-                  <td width="35%" align = "right" class = "TableCell" > 
+                  <td width="85%" align = "center" class = "TableCell" > 
                     <input type="submit" name="Submit" value="Submit">
-                  </td>
-                  <td width="" align = "left" class = "TableCell"> 
+<% if (!isRecommended) { %>
                     <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault()">
+<% } %>
                   </td>
 <% if (isRecommended) { %>
                   <td width="15%" align = "right" class = "TableCell" > 
-                    <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
                   </td>
 <% } %>
                 </tr>

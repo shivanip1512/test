@@ -219,7 +219,7 @@ function newFAQSubject(form) {
                     <td width="290" align="right">&nbsp; </td>
                     <td width="205">&nbsp; </td>
                     <td width="75" align="right"> 
-                      <input type="button" name="Done" value="Done" onClick="location.href='AdminTest.jsp'">
+                      <input type="button" name="Back" value="Back" onClick="location.href='AdminTest.jsp'">
                     </td>
                   </tr>
                 </table>

@@ -645,7 +645,7 @@ function init() {
                     <input type="button" name="Reset" value="Reset" onclick="location.reload()">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>
