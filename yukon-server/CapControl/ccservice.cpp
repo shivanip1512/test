@@ -93,7 +93,7 @@ void CtiCCService::Init()
     RWCString str;
     char var[128];
 
-    _CC_DEBUG = TRUE;
+    _CC_DEBUG = FALSE;
 
     strcpy(var, "CAP_CONTROL_DEBUG");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
@@ -111,8 +111,6 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
-
-    RWCString dispatch_host = "127.0.0.1";
 
     strcpy(var, "CAP_CONTROL_LOG_FILE");
     if( !(str = gConfigParms.getValueAsString(var)).isNull() )
