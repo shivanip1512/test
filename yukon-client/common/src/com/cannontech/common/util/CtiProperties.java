@@ -45,6 +45,9 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 	public static final String KEY_CAP_CONTROL_MACHINE = "cap_control_machine";
 	public static final String KEY_CAP_CONTROL_PORT = "cap_control_port";
 
+	public static final String KEY_PORTER_MACHINE = "porter_machine";
+	public static final String KEY_PORTER_PORT = "porter_port";
+
 	public static final String KEY_LOADCONTROL_MACHINE = "loadcontrol_machine";
 	public static final String KEY_LOADCONTROL_PORT = "loadcontrol_port";
 	public static final String KEY_LOADCONTROL_EDIT = "loadcontrol_edit";
@@ -86,6 +89,9 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 
 		KEY_CAP_CONTROL_MACHINE,
 		KEY_CAP_CONTROL_PORT,
+		
+		KEY_PORTER_MACHINE,
+		KEY_PORTER_PORT,
 
 		KEY_LOADCONTROL_MACHINE,
 		KEY_LOADCONTROL_PORT,
@@ -121,7 +127,7 @@ private CtiProperties()
  * Creation date: (2/18/2002 10:46:51 AM)
  * @return com.cannontech.common.util.CtiProperties
  */
-public static CtiProperties getInstance() 
+public static synchronized CtiProperties getInstance() 
 {
 	if( props == null )
 		props = new CtiProperties();
