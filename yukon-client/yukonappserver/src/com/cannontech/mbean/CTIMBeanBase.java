@@ -4,7 +4,7 @@ import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
 
-import org.jboss.naming.NonSerializableFactory;
+//import org.jboss.naming.NonSerializableFactory;
 
 /**
  * @author rneuharth
@@ -79,7 +79,7 @@ System.out.println("------------rebind...");
 		System.out.println("fullName=" + fullName);
 
 		//JBOSS SPECIFIC CODE!!!!
-		NonSerializableFactory.rebind(fullName, this, true);
+//		NonSerializableFactory.rebind(fullName, this, true);
 	}
 
 	private void unbind(String jndiName) 
@@ -92,7 +92,7 @@ System.out.println("------------unbind...");
 			rootCtx.unbind(jndiName);
 			
 			//JBOSS SPECIFIC CODE!!!!
-			NonSerializableFactory.unbind(jndiName);
+//			NonSerializableFactory.unbind(jndiName);
 		}
 		catch (NamingException e) 
 		{
