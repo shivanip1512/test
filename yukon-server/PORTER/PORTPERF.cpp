@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/05 19:15:45 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/03 20:55:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@
 #include <time.h>
 #include <malloc.h>
 
+#include "cparms.h"
 #include "dsm2.h"
 #include "dsm2err.h"
 #include "device.h"
@@ -71,6 +72,7 @@
 #include "guard.h"
 
 static CtiStatisticsSet_t   gDeviceStatSet;
+static bool                 gDeviceStatDirty = false;
 static CtiMutex             gDeviceStatSetMux;
 
 static CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId);
@@ -694,7 +696,7 @@ VOID PerfThread (VOID *Arg)
 /* Routine to Update statistics for Ports and Remotes every 5 minutes */
 VOID PerfUpdateThread (PVOID Arg)
 {
-    ULONG PerfUpdateRate = 300L;
+    ULONG PerfUpdateRate = 3600L;
 
     ULONG PostCount;
     USHORT i;
@@ -703,22 +705,23 @@ VOID PerfUpdateThread (PVOID Arg)
     PSZ Environment;
     ULONG Rate;
     RWTime now;
+    LONG delay;
 
     /* set the priority of this guy high */
     CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
 
+
+    if(gConfigParms.isOpt("PORTER_DEVICESTATUPDATERATE"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " PerfUpdateThread started as TID:   " << CurrentTID() << endl;
+        if(!(PerfUpdateRate = atol(gConfigParms.getValueAsString("PORTER_DEVICESTATUPDATERATE").data())))
+        {
+            PerfUpdateRate = 3600L;
+        }
     }
 
-    /* Check for the port update frequency environment variable */
-    if(!(CTIScanEnv ("YUKON_DEVICESTATUPDATERATE", &Environment)))
     {
-        if(!(Rate = atoi (Environment)))
-        {
-            PerfUpdateRate = Rate;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " PerfUpdateThread started as TID:   " << CurrentTID() << " recording stats every " << PerfUpdateRate << " seconds." << endl;
     }
 
     try
@@ -734,8 +737,19 @@ VOID PerfUpdateThread (PVOID Arg)
                PorterQuit = TRUE;
             }
 
+            now = now.now();
+
             /* Do the statistics */
             statisticsRecord();
+
+            delay = RWTime().seconds() - now.seconds();
+            if(delay > 5)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << delay << " seconds to update statistics." << endl;
+                }
+            }
 
             Sleep(1000);                // Make sure we don't get a runaway.
         }
@@ -821,6 +835,8 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 
     CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
 
+    gDeviceStatDirty = true;
+
     if( dStatItr != gDeviceStatSet.end() )
     {
         CtiStatistics &dStats = *dStatItr;
@@ -852,6 +868,7 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
 
     CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
+    gDeviceStatDirty = true;
 
     if( dStatItr != gDeviceStatSet.end() )
     {
@@ -891,6 +908,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
     CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
 
     CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
+    gDeviceStatDirty = true;
 
     if( dStatItr != gDeviceStatSet.end() )
     {
@@ -920,41 +938,45 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
 
 void statisticsRecord()
 {
-    CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
-    CtiStatisticsIterator_t dstatitr;
-
-    try
+    if(gDeviceStatDirty)
     {
-#ifdef OLD_WAY
-        for(dstatitr = gDeviceStatSet.begin(); dstatitr != gDeviceStatSet.end(); dstatitr++)
+        try
         {
-            CtiStatistics &dStats = *dstatitr;
-            dStats.markForUpdate();
-        }
-#else
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+            int cnt = 0;
+            CtiLockGuard<CtiMutex> guard(gDeviceStatSetMux);
+            CtiStatisticsIterator_t dstatitr;
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
-        if(conn.isValid())
-        {
-            conn.beginTransaction();
-            for(dstatitr = gDeviceStatSet.begin(); dstatitr != gDeviceStatSet.end(); dstatitr++)
+            if(conn.isValid())
             {
-                CtiStatistics &dStats = *dstatitr;
-                if(dStats.isUpdatable())
+                conn.beginTransaction();
+                for(dstatitr = gDeviceStatSet.begin(); dstatitr != gDeviceStatSet.end(); dstatitr++)
                 {
-                    dStats.Update(conn);
+                    CtiStatistics &dStats = *dstatitr;
+                    if(dStats.isUpdatable())
+                    {
+                        cnt++;
+                        dStats.Update(conn);
+                    }
                 }
+                conn.commitTransaction();
             }
-            conn.commitTransaction();
+
+            if(cnt)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Recorded " << cnt << " device's performance statistics." << endl;
+            }
+
+            gDeviceStatDirty = false;
         }
-#endif
-    }
-    catch(...)
-    {
+        catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
 
