@@ -53,6 +53,12 @@ private:
     void SendAllControlAreas();
     void ChangeDailyStartTime();
     void ChangeDailyStopTime();
+    void ShedGroup();
+    void CycleGroup();
+    void RestoreGroup();
+    void EnableGroup();
+    void DisableGroup();
+    void ConfirmGroup();
 
     CtiLMCommand* _command;
 };
