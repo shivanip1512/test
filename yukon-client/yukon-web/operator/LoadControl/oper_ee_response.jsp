@@ -230,7 +230,7 @@
                   String price = "---";
                   String amount = "---";
 
-                  time = hourFormat.format( h ) + ":00";
+                  time = hourFormat.format( h+1 ) + ":00";
 
                   if( offer != null )
                   {
@@ -277,7 +277,7 @@
                   String price = "---";
                   String amount = "---";
 
-                  time = hourFormat.format( h ) + ":00";
+                  time = hourFormat.format( h+1 ) + ":00";
 
                   if( offer != null )
                   {
