@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/16 13:58:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/10/18 20:22:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,9 +27,9 @@ class CtiDNPTransport
 {
 private:
     CtiDNPDatalink _datalink;
-    unsigned char *_outAppLayer,     *_inAppLayer;
-    unsigned int   _outAppLayerLen,   _inAppLayerLen,
-                   _outAppLayerSent,  _inAppLayerRecv,
+    unsigned char *_outPayload,     *_inPayload;
+    unsigned int   _outPayloadLen,   _inPayloadLen,
+                   _outPayloadSent,  _inPayloadRecv,
                    _seq;
     unsigned short _srcAddr, _dstAddr;
 
