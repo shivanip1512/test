@@ -73,6 +73,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setEstimatedVarLoadPointValue( new Double( vstr.extractDouble() ) );
 	
 	feeder.setDailyOperationsAnalogPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setPowerFactorPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setEstimatedPowerFactorPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setRecentlyControlledFlag(
 		((int)vstr.extractUnsignedInt() == 1)
@@ -131,6 +133,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertDouble( feeder.getEstimatedVarLoadPointValue().doubleValue() );
 
 	vstr.insertUnsignedInt( feeder.getDailyOperationsAnalogPointID().intValue() );	
+	vstr.insertUnsignedInt( feeder.getPowerFactorPointID().intValue() );	
+	vstr.insertUnsignedInt( feeder.getEstimatedPowerFactorPointID().intValue() );	
 	vstr.insertUnsignedInt( feeder.getCurrentDailyOperations().intValue() );
 	vstr.insertUnsignedInt( 
 		(feeder.getRecentlyControlledFlag().booleanValue() == true)

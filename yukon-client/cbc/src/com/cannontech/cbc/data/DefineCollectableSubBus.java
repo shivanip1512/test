@@ -94,6 +94,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 
 	subBus.setDailyOperationsAnalogPointId( new Integer( (int)vstr.extractUnsignedInt() ) );
+	subBus.setPowerFactorPointId( new Integer( (int)vstr.extractUnsignedInt() ) );
+	subBus.setEstimatedPowerFactorPointId( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setPeakTimeFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
@@ -168,6 +170,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertDouble( subBus.getEstimatedVarLoadPointValue().doubleValue() );
 
 	vstr.insertUnsignedInt( subBus.getDailyOperationsAnalogPointId().intValue() );	
+	vstr.insertUnsignedInt( subBus.getPowerFactorPointId().intValue() );	
+	vstr.insertUnsignedInt( subBus.getEstimatedPowerFactorPointId().intValue() );	
 	vstr.insertUnsignedInt( subBus.getCurrentDailyOperations().intValue() );
 	vstr.insertUnsignedInt( 
 		(subBus.getPeakTimeFlag().booleanValue() == true)

@@ -42,6 +42,8 @@ public class SubBus extends StreamableCapObject
 	private Double estimatedVarLoadPointValue = null;
 
 	private Integer dailyOperationsAnalogPointId = null;
+	private Integer powerFactorPointId = null;
+	private Integer estimatedPowerFactorPointId = null;
 	private Integer currentDailyOperations = null;
 	private Boolean peakTimeFlag = null;
 	private Boolean recentlyControlledFlag = null;
@@ -734,6 +736,38 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setEstimatedPFValue(Double estimatedPFValue)
 	{
 		this.estimatedPFValue = estimatedPFValue;
+	}
+
+	/**
+	 * Returns the estimatedPowerFactorPointId.
+	 * @return Integer
+	 */
+	public Integer getEstimatedPowerFactorPointId() {
+		return estimatedPowerFactorPointId;
+	}
+
+	/**
+	 * Returns the powerFactorPointId.
+	 * @return Integer
+	 */
+	public Integer getPowerFactorPointId() {
+		return powerFactorPointId;
+	}
+
+	/**
+	 * Sets the estimatedPowerFactorPointId.
+	 * @param estimatedPowerFactorPointId The estimatedPowerFactorPointId to set
+	 */
+	public void setEstimatedPowerFactorPointId(Integer estimatedPowerFactorPointId) {
+		this.estimatedPowerFactorPointId = estimatedPowerFactorPointId;
+	}
+
+	/**
+	 * Sets the powerFactorPointId.
+	 * @param powerFactorPointId The powerFactorPointId to set
+	 */
+	public void setPowerFactorPointId(Integer powerFactorPointId) {
+		this.powerFactorPointId = powerFactorPointId;
 	}
 
 }

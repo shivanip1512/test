@@ -25,6 +25,8 @@ public class Feeder extends StreamableCapObject
 	private Double estimatedVarLoadPointValue = null;
 
 	private Integer dailyOperationsAnalogPointID = null;
+	private Integer powerFactorPointID = null;
+	private Integer estimatedPowerFactorPointID = null;
 	private Integer currentDailyOperations = null;
 	private Boolean recentlyControlledFlag = null;
 	private java.util.Date lastOperationTime = null;
@@ -474,6 +476,38 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setEstimatedPFValue(Double estimatedPFValue)
 	{
 		this.estimatedPFValue = estimatedPFValue;
+	}
+
+	/**
+	 * Returns the estimatedPowerFactorPointID.
+	 * @return Integer
+	 */
+	public Integer getEstimatedPowerFactorPointID() {
+		return estimatedPowerFactorPointID;
+	}
+
+	/**
+	 * Returns the powerFactorPointID.
+	 * @return Integer
+	 */
+	public Integer getPowerFactorPointID() {
+		return powerFactorPointID;
+	}
+
+	/**
+	 * Sets the estimatedPowerFactorPointID.
+	 * @param estimatedPowerFactorPointID The estimatedPowerFactorPointID to set
+	 */
+	public void setEstimatedPowerFactorPointID(Integer estimatedPowerFactorPointID) {
+		this.estimatedPowerFactorPointID = estimatedPowerFactorPointID;
+	}
+
+	/**
+	 * Sets the powerFactorPointID.
+	 * @param powerFactorPointID The powerFactorPointID to set
+	 */
+	public void setPowerFactorPointID(Integer powerFactorPointID) {
+		this.powerFactorPointID = powerFactorPointID;
 	}
 
 }
