@@ -79,11 +79,17 @@ function confirmDelete() {
             </div>
           </td>
           <td class="MainText" width="25%">
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT %>">
+<%
+	String importID = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT);
+	if (importID.equals("(none)")) importID = null;
+	if (importID != null) {
+%>
             <div align = "center" style = "border:solid 1px #666999;">
 			  <a href="Consumer/ImportAccount.jsp" class = "Link1" style = "text-decoration:none;">Import Accounts</a>
 			</div>
-</cti:checkProperty>
+<%
+	}
+%>
 		  </td>
           <form name = "custSearchForm" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
             <input type="hidden" name="action" value="SearchCustAccount">
