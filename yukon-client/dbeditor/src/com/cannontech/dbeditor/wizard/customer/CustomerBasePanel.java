@@ -515,7 +515,8 @@ private javax.swing.JTextField getJTextFieldTimeZone() {
 public Object getValue(Object o)
 {
 	Customer customer = (Customer)o;
-
+	if(customer == null)
+		customer = new CICustomerBase();
 	//set the primary contact here
 	if( getJComboBoxPrimaryContact().getSelectedItem() instanceof LiteContact )
 	{
