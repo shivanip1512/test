@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/02/25 22:00:02 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/03/01 16:04:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,9 @@ const CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDevic
 const CtiDeviceMCT410::QualityMap    CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
-    _intervalsSent(false)
+    _intervalsSent(false),
+    _sspec(0),
+    _rev(0)
 {
     _llpInterest.time    = 0;
     _llpInterest.channel = 0;
@@ -111,6 +113,16 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     s.insert(cs);
 
     cs._cmd     = CtiProtocolEmetcon::Scan_LoadProfile;
+    cs._io      = IO_FCT_READ;
+    cs._funcLen = make_pair(0, 0);
+    s.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::GetValue_LoadProfile;
+    cs._io      = IO_FCT_READ;
+    cs._funcLen = make_pair(0, 0);
+    s.insert( cs );
+
+    cs._cmd     = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
     cs._io      = IO_FCT_READ;
     cs._funcLen = make_pair(0, 0);
     s.insert( cs );
@@ -518,9 +530,6 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     string         descriptor;
     OUTMESS       *tmpOutMess;
 
-    demand_rate = getLoadProfile().getLoadProfileDemandRate();
-    block_size  = demand_rate * 6;
-
     if( !_intervalsSent )
     {
         sendIntervals(OutMessage, outList);
@@ -531,6 +540,17 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
+            if( (i + 1) == MCT410_LPVoltageChannel )
+            {
+                demand_rate = getLoadProfile().getVoltageLoadProfileRate();
+                block_size  = demand_rate * 6;
+            }
+            else
+            {
+                demand_rate = getLoadProfile().getLoadProfileDemandRate();
+                block_size  = demand_rate * 6;
+            }
+
             if( useScanFlags() )
             {
                 if( _lp_info[i].current_schedule <= Now )
@@ -801,6 +821,61 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
+unsigned char CtiDeviceMCT410::crc8( const unsigned char *buf, unsigned int len )
+{
+    const unsigned char llpcrc_poly = 0x07;
+
+    /* Function to calclulate the 8 bit crc of the channel of interest
+         and the period of interest start time.  This 8 bit crc will
+         be sent back in byte 1 of a long load profile read.
+
+       Parameters: uint8_t channel - This is the channel that is going
+                                       to be returned.
+                   uint8_t *time - A pointer to the period of interest start time
+
+       Return: uint8_t crc
+       */
+
+    unsigned short crc = 0;
+    unsigned char  current_byte;
+
+    // Walk through the bytes of data
+    for( int i = 0; i <= len; i++ )
+    {
+        if( i < len )
+        {
+            current_byte = buf[i];
+        }
+        else
+        {
+            current_byte = 0;
+        }
+
+        // Walk through each bit of the byte
+        for(int bit = 0; bit < 8; bit++ )
+        {
+            // Move the data bits into the crc
+            crc <<= 1;
+            if( current_byte & 0x80 )
+            {
+                crc |= 0x0001;
+            }
+
+            // Do the crc calculation
+            if( crc & 0x0100 )
+            {
+                crc ^= llpcrc_poly;
+            }
+
+            // Move the data byte ahead 1 bit
+            current_byte <<= 1;
+        }
+    }
+
+    return (unsigned char)(crc & 0xff);
+}
+
+
 CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
 {
     PointQuality_t quality    = NormalQuality;
@@ -896,14 +971,17 @@ CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len
 }
 
 
-INT CtiDeviceMCT410::executeGetValueLoadProfile( CtiRequestMsg              *pReq,
-                                                 CtiCommandParser           &parse,
-                                                 OUTMESS                   *&OutMessage,
-                                                 RWTPtrSlist< CtiMessage >  &vgList,
-                                                 RWTPtrSlist< CtiMessage >  &retList,
-                                                 RWTPtrSlist< OUTMESS >     &outList )
+INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
+                                      CtiCommandParser           &parse,
+                                      OUTMESS                   *&OutMessage,
+                                      RWTPtrSlist< CtiMessage >  &vgList,
+                                      RWTPtrSlist< CtiMessage >  &retList,
+                                      RWTPtrSlist< OUTMESS >     &outList )
 {
     INT nRet = NoMethod;
+
+    bool found = false;
+    int function;
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                                    RWCString(OutMessage->Request.CommandStr),
@@ -916,233 +994,328 @@ INT CtiDeviceMCT410::executeGetValueLoadProfile( CtiRequestMsg              *pRe
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    RWOrdered( ));
-    RWTime now_time;
-    RWDate now_date;
 
-    unsigned long request_time, relative_time;
-
-    int request_channel = parse.getiValue("lp_channel");
-    int year, month, day, hour, minute;
-    int interval_len, block_len, function;
-
-    RWCTokenizer date_tok(parse.getsValue("lp_date")),
-                 time_tok(parse.getsValue("lp_time"));
-
-    string cmd = parse.getsValue("lp_command");
-
-    /*
-    //  getvalue lp channel 1 12/14/04 12:00
-    //  getvalue lp channel 1 8-13-2005 14:45
-    RWCTokenizer cmdtok(token);
-
-    cmdtok();  //  move past lp
-    cmdtok();  //  move past channel
-
-    _cmd["lp_command"] = "lp";
-    _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
-    _cmd["lp_date"]    = cmdtok();
-    _cmd["lp_time"]    = cmdtok();
-    }
-    else if(!(token = CmdStr.match(re_lp_peak)).isNull())
+    if( parse.isKeyValid("lp_command") )  //  load profile
     {
-    //  getvalue lp peak daily channel 2 9/30/04 30
-    //  getvalue lp peak hourly channel 3 10-15-2003 15
-    RWCTokenizer cmdtok(token);
+        RWTime now_time;
+        RWDate now_date;
 
-    cmdtok();  //  move past lp
-    cmdtok();  //  move past peak
+        unsigned long request_time, relative_time;
 
-    _cmd["lp_peaktype"] = cmdtok();
+        int request_channel = parse.getiValue("lp_channel");
+        int year, month, day, hour, minute;
+        int interval_len, block_len;
 
-    cmdtok();  //  move past channel
+        RWCTokenizer date_tok(parse.getsValue("lp_date")),
+                     time_tok(parse.getsValue("lp_time"));
 
-    _cmd["lp_command"] = "peak";
-    _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
-    _cmd["lp_date"]    = cmdtok();
-    _cmd["lp_range"]   = atoi(RWCString(cmdtok()));
-    */
+        string cmd = parse.getsValue("lp_command");
 
+        /*
+        //  getvalue lp channel 1 12/14/04 12:00
+        //  getvalue lp channel 1 8-13-2005 14:45
+        RWCTokenizer cmdtok(token);
 
-    if( request_channel >  0 &&
-        request_channel <= MCT4XX_LPChannels )
-    {
-        month = atoi(RWCString(date_tok("-/")));
-        day   = atoi(RWCString(date_tok("-/")));
-        year  = atoi(RWCString(date_tok("-/")));
+        cmdtok();  //  move past lp
+        cmdtok();  //  move past channel
 
-        if( year < 100 )
-        {
-            //  watch out for the y2.1k bug
-            year += 2000;
+        _cmd["lp_command"] = "lp";
+        _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
+        _cmd["lp_date"]    = cmdtok();
+        _cmd["lp_time"]    = cmdtok();
         }
-
-        interval_len = getLoadProfile().getLoadProfileDemandRate();
-        block_len    = 6 * interval_len;
-
-        if( !cmd.compare("lp") )
+        else if(!(token = CmdStr.match(re_lp_peak)).isNull())
         {
-            hour   = atoi(RWCString(time_tok(":")));
-            minute = atoi(RWCString(time_tok(":")));
+        //  getvalue lp peak daily channel 2 9/30/04 30
+        //  getvalue lp peak hourly channel 3 10-15-2003 15
+        RWCTokenizer cmdtok(token);
 
-            request_time  = RWTime(RWDate(day, month, year), hour, minute).seconds();
-            request_time -= request_time % interval_len;
-            request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
+        cmdtok();  //  move past lp
+        cmdtok();  //  move past peak
 
-            //  this is the number of seconds from the current pointer
-            relative_time = request_time - _llpInterest.time;
+        _cmd["lp_peaktype"] = cmdtok();
 
-            if( (request_channel == _llpInterest.channel) &&  //  correct channel
-                (relative_time < (16 * block_len))        &&  //  within 16 blocks
-                !(relative_time % block_len) )                //  aligned
+        cmdtok();  //  move past channel
+
+        _cmd["lp_command"] = "peak";
+        _cmd["lp_channel"] = atoi(RWCString(cmdtok()));
+        _cmd["lp_date"]    = cmdtok();
+        _cmd["lp_range"]   = atoi(RWCString(cmdtok()));
+        */
+
+
+        if( request_channel >  0 &&
+            request_channel <= MCT4XX_LPChannels )
+        {
+            month = atoi(RWCString(date_tok("-/")));
+            day   = atoi(RWCString(date_tok("-/")));
+            year  = atoi(RWCString(date_tok("-/")));
+
+            if( year < 100 )
             {
-                //  it's aligned (and close enough) to the block we're pointing at
-                function  = 0x40;
-                function += relative_time / block_len;
+                //  watch out for the y2.1k bug
+                year += 2000;
+            }
 
-                _llpInterest.offset = relative_time;
+            if( request_channel == MCT410_LPVoltageChannel )
+            {
+                interval_len = getLoadProfile().getVoltageLoadProfileRate();
             }
             else
             {
-                //  just read the first block - it'll be the one we're pointing at
-                function  = 0x40;
+                interval_len = getLoadProfile().getLoadProfileDemandRate();
+            }
 
-                //  we need to set it to the requested interval
-                CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+            block_len    = 6 * interval_len;
 
-                if( interest_om )
+            if( !cmd.compare("lp") )
+            {
+                function = CtiProtocolEmetcon::GetValue_LoadProfile;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                if( found )
                 {
-                    _llpInterest.time    = request_time;
-                    _llpInterest.offset  = 0;
-                    _llpInterest.channel = request_channel;
+                    hour   = atoi(RWCString(time_tok(":")));
+                    minute = atoi(RWCString(time_tok(":")));
 
-                    interest_om->Sequence = CtiProtocolEmetcon::PutConfig_LoadProfileInterest;
+                    request_time  = RWTime(RWDate(day, month, year), hour, minute).seconds();
+                    request_time -= request_time % interval_len;
+                    request_time -= interval_len;  //  we report interval-ending, yet request interval-beginning...  so back that thing up
 
-                    interest_om->Buffer.BSt.Function = FuncWrite_LLPInterestPos;
-                    interest_om->Buffer.BSt.IO       = IO_FCT_WRITE;
-                    interest_om->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
+                    //  this is the number of seconds from the current pointer
+                    relative_time = request_time - _llpInterest.time;
 
-                    unsigned long utc_time = request_time - rwEpoch;
-
-                    interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                    interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
-
-                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                    interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
-
-                    outList.append(interest_om);
-                    interest_om = 0;
-                }
-                else
-                {
+                    if( (request_channel == _llpInterest.channel) &&  //  correct channel
+                        (relative_time < (16 * block_len))        &&  //  within 16 blocks
+                        !(relative_time % block_len) )                //  aligned
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-            }
+                        //  it's aligned (and close enough) to the block we're pointing at
+                        function  = 0x40;
+                        function += relative_time / block_len;
 
-            OutMessage->Sequence = CtiProtocolEmetcon::GetValue_LoadProfile;
-            OutMessage->Buffer.BSt.Function = function;
-            OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
-            OutMessage->Buffer.BSt.Length   = 13;
-
-            nRet = NoError;
-        }
-        else if( !cmd.compare("peak") )
-        {
-            int lp_peak_command = -1;
-            string lp_peaktype = parse.getsValue("lp_peaktype");
-            int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-
-            if( !lp_peaktype.compare("daily") )
-            {
-                lp_peak_command = FuncRead_LLPPeakDailyPos;
-            }
-            else if( !lp_peaktype.compare("hour") )
-            {
-                lp_peak_command = FuncRead_LLPPeakHourPos;
-            }
-            else if( !lp_peaktype.compare("interval") )
-            {
-                lp_peak_command = FuncRead_LLPPeakIntervalPos;
-            }
-
-            if( lp_peak_command > 0 )
-            {
-                //  add on a day - this is the end of the interval, not the beginning,
-                //    so we need to start at midnight of the following day
-                request_time  = RWTime(RWDate(day + 1, month, year)).seconds();
-
-                if( request_time    != _llpPeakInterest.time    ||
-                    request_channel != _llpPeakInterest.channel ||
-                    request_range   != _llpPeakInterest.period )
-                {
-                    //  we need to set it to the requested interval
-                    CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
-
-                    if( interest_om )
-                    {
-                        _llpPeakInterest.time    = request_time;
-                        _llpPeakInterest.channel = request_channel;
-                        _llpPeakInterest.period  = request_range;
-
-                        interest_om->Priority = OutMessage->Priority + 1;  //  just make sure this goes out first
-                        interest_om->Sequence = CtiProtocolEmetcon::PutConfig_LoadProfileReportPeriod;
-                        interest_om->Request.Connection = 0;
-
-                        interest_om->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-                        interest_om->Buffer.BSt.IO       = IO_FCT_WRITE;
-                        interest_om->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-
-                        unsigned long utc_time = request_time - rwEpoch;
-
-                        interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                        interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
-
-                        interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                        interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                        interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                        interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
-
-                        interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
-
-                        outList.append(interest_om);
-                        interest_om = 0;
+                        _llpInterest.offset = relative_time;
                     }
                     else
                     {
+                        //  just read the first block - it'll be the one we're pointing at
+                        function  = 0x40;
+
+                        //  we need to set it to the requested interval
+                        CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+                        if( interest_om )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            _llpInterest.time    = request_time;
+                            _llpInterest.offset  = 0;
+                            _llpInterest.channel = request_channel;
+
+                            interest_om->Sequence = CtiProtocolEmetcon::PutConfig_LoadProfileInterest;
+
+                            interest_om->Buffer.BSt.Function = FuncWrite_LLPInterestPos;
+                            interest_om->Buffer.BSt.IO       = IO_FCT_WRITE;
+                            interest_om->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
+                            interest_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+
+                            unsigned long utc_time = request_time - rwEpoch;
+
+                            interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                            interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
+
+                            interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
+                            interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
+                            interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
+                            interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
+
+                            outList.append(interest_om);
+                            interest_om = 0;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
                         }
                     }
+
+                    OutMessage->Buffer.BSt.Function = function;
+                    OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
+                    OutMessage->Buffer.BSt.Length   = 13;
+
+                    function = CtiProtocolEmetcon::GetValue_LoadProfile;
+
+                    nRet = NoError;
                 }
-
-                _llpPeakInterest.command = lp_peak_command;
-
-                OutMessage->Sequence = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
-                OutMessage->Buffer.BSt.Function = lp_peak_command;
-                OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
-                OutMessage->Buffer.BSt.Length   = 13;
-
-                nRet = NoError;
             }
+            else if( !cmd.compare("peak") )
+            {
+                function = CtiProtocolEmetcon::GetValue_LoadProfilePeakReport;
+                found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                if( found )
+                {
+                    int lp_peak_command = -1;
+                    string lp_peaktype = parse.getsValue("lp_peaktype");
+                    int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
+
+                    if( !lp_peaktype.compare("daily") )
+                    {
+                        lp_peak_command = FuncRead_LLPPeakDailyPos;
+                    }
+                    else if( !lp_peaktype.compare("hour") )
+                    {
+                        lp_peak_command = FuncRead_LLPPeakHourPos;
+                    }
+                    else if( !lp_peaktype.compare("interval") )
+                    {
+                        lp_peak_command = FuncRead_LLPPeakIntervalPos;
+                    }
+
+                    if( lp_peak_command > 0 )
+                    {
+                        //  add on a day - this is the end of the interval, not the beginning,
+                        //    so we need to start at midnight of the following day
+                        request_time  = RWTime(RWDate(day + 1, month, year)).seconds();
+
+                        if( request_time    != _llpPeakInterest.time    ||
+                            request_channel != _llpPeakInterest.channel ||
+                            request_range   != _llpPeakInterest.period )
+                        {
+                            //  we need to set it to the requested interval
+                            CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+                            if( interest_om )
+                            {
+                                _llpPeakInterest.time    = request_time;
+                                _llpPeakInterest.channel = request_channel;
+                                _llpPeakInterest.period  = request_range;
+
+                                interest_om->Priority = OutMessage->Priority + 1;  //  just make sure this goes out first
+                                interest_om->Sequence = CtiProtocolEmetcon::PutConfig_LoadProfileReportPeriod;
+                                interest_om->Request.Connection = 0;
+
+                                interest_om->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
+                                interest_om->Buffer.BSt.IO       = IO_FCT_WRITE;
+                                interest_om->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
+                                interest_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+
+                                unsigned long utc_time = request_time - rwEpoch;
+
+                                interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                                interest_om->Buffer.BSt.Message[1] = request_channel  & 0x000000ff;
+
+                                interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
+                                interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
+                                interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
+                                interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
+
+                                interest_om->Buffer.BSt.Message[6] = request_range    & 0x000000ff;
+
+                                outList.append(interest_om);
+                                interest_om = 0;
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
+                        }
+
+                        _llpPeakInterest.command = lp_peak_command;
+
+                        OutMessage->Buffer.BSt.Function = lp_peak_command;
+                        OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
+                        OutMessage->Buffer.BSt.Length   = 13;
+
+                        nRet = NoError;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if( errRet )
+            {
+                RWCString temp = "Bad channel specification - Acceptable values:  1-4";
+                errRet->setResultString( temp );
+                errRet->setStatus(NoMethod);
+                retList.insert( errRet );
+                errRet = NULL;
+            }
+        }
+    }
+    else if( parse.isKeyValid("outage") )  //  outages
+    {
+        if( !_sspec )
+        {
+            //  we need to set it to the requested interval
+            CtiOutMessage *sspec_om = new CtiOutMessage(*OutMessage);
+
+            if( sspec_om )
+            {
+                getOperation(CtiProtocolEmetcon::GetConfig_Model, sspec_om->Buffer.BSt.Function, sspec_om->Buffer.BSt.Length, sspec_om->Buffer.BSt.IO);
+
+                sspec_om->Sequence = CtiProtocolEmetcon::GetConfig_Model;
+
+                sspec_om->MessageFlags |= MSGFLG_EXPECT_MORE;
+
+                outList.append(sspec_om);
+                sspec_om = 0;
+            }
+        }
+
+        int outagenum = parse.getiValue("outage");
+
+        function = CtiProtocolEmetcon::GetValue_Outage;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( outagenum < 0 || outagenum > 6 )
+        {
+            found = false;
+
+            if( errRet )
+            {
+                RWCString temp = "Bad outage specification - Acceptable values:  1-6";
+                errRet->setResultString( temp );
+                errRet->setStatus(NoMethod);
+                retList.insert( errRet );
+                errRet = NULL;
+            }
+        }
+        else if(outagenum > 4 )
+        {
+            OutMessage->Buffer.BSt.Function += 2;
+        }
+        else if(outagenum > 2 )
+        {
+            OutMessage->Buffer.BSt.Function += 1;
         }
     }
     else
     {
-        if( errRet )
-        {
-            RWCString temp = "Bad channel specification - Acceptable values:  1-4";
-            errRet->setResultString( temp );
-            errRet->setStatus(NoMethod);
-            retList.insert( errRet );
-            errRet = NULL;
-        }
+        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Sequence  = function;         // Helps us figure it out later!
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
     }
 
     return nRet;
@@ -1726,109 +1899,128 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
         int outagenum, multiplier;
         unsigned long  timestamp;
         unsigned short duration;
-        RWCString pointString, resultString;
+        RWCString pointString, resultString, timeString;
         RWTime outageTime;
 
         ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        outagenum = parse.getiValue("outage");
-
-        if( !(outagenum % 2) )
+        if( _sspec )
         {
-            outagenum--;
-        }
+            outagenum = parse.getiValue("outage");
 
-        pPoint = getDevicePointOffsetTypeEqual( MCT410_PointOffset_Analog_Outage, AnalogPointType );
-
-        for( int i = 0; i < 2; i++ )
-        {
-            int days, hours, minutes, seconds, cycles;
-
-            timestamp = msgbuf[(i*6)+0] << 24 |
-                        msgbuf[(i*6)+1] << 16 |
-                        msgbuf[(i*6)+2] <<  8 |
-                        msgbuf[(i*6)+3];
-
-            duration  = msgbuf[(i*6)+4] << 8 |
-                        msgbuf[(i*6)+5];
-
-            outageTime = RWTime(timestamp + rwEpoch);
-
-            pointString += getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + outageTime.asString() + " for ";
-
-            if( duration == 0x8000 )
+            if( !(outagenum % 2) )
             {
-                pointString += "(unknown duration)\n";
+                outagenum--;
             }
-            else
+
+            pPoint = getDevicePointOffsetTypeEqual( MCT410_PointOffset_Analog_Outage, AnalogPointType );
+
+            for( int i = 0; i < 2; i++ )
             {
+                int days, hours, minutes, seconds, cycles;
 
-#ifdef OLD_OUTAGE_METHODS
-                if( duration & 0x8000 )
+                timestamp = msgbuf[(i*6)+0] << 24 |
+                            msgbuf[(i*6)+1] << 16 |
+                            msgbuf[(i*6)+2] <<  8 |
+                            msgbuf[(i*6)+3];
+
+                duration  = msgbuf[(i*6)+4] << 8 |
+                            msgbuf[(i*6)+5];
+
+                outageTime = RWTime(timestamp + rwEpoch);
+
+                if( timestamp > MCT4XX_DawnOfTime )
                 {
-                    cycles = (duration & 0x7fff) * 60;
+                    timeString = outageTime.asString();
                 }
                 else
                 {
-                    cycles = duration;
+                    timeString = "(invalid time)";
                 }
 
-                seconds = cycles  / 60;
-                minutes = seconds / 60;
-                hours   = minutes / 60;
+                pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-                cycles  %= 60;
-                seconds %= 60;
-                minutes %= 60;
-                hours   %= 24;
-
-                pointString += CtiNumStr(hours).zpad(2) + ":" +
-                               CtiNumStr(minutes).zpad(2) + ":" +
-                               CtiNumStr(seconds).zpad(2);
-
-                if( cycles )
+                if( _sspec == MCT410_Sspec &&
+                    _rev   >= MCT410_Min_NewOutageRev &&
+                    _rev   <= MCT410_Max_NewOutageRev )
                 {
-                    pointString += ", " + CtiNumStr(cycles) + " cycles\n";
-                }
-#else
-                /*
-                Units of outage:
-                Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
-                Bits 2-3 Unused
-                Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
-                Bits 6-7 Unused
-                */
+                    if( duration == 0x8000 )
+                    {
+                        pointString += "(unknown duration)\n";
+                    }
+                    else
+                    {
+                        /*
+                        Units of outage:
+                        Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                        Bits 2-3 Unused
+                        Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                        Bits 6-7 Unused
+                        */
 
-                if( i == 0 )
-                {
-                    multiplier = (msgbuf[12] >> 4) & 0x03;
+                        cycles = duration;
+
+                        if( i == 0 )
+                        {
+                            multiplier = (msgbuf[12] >> 4) & 0x03;
+                        }
+                        else
+                        {
+                            multiplier =  msgbuf[12] & 0x03;
+                        }
+
+                        switch( multiplier )
+                        {
+                            case 2: cycles *= 60;  //  minutes falls through to...
+                            case 1: cycles *= 60;  //  seconds, which falls through to...
+                            case 0: break;         //  cycles, which does nothing
+
+                            case 3: cycles = -1;   //  waiting time sync - don't report a value
+                        }
+
+                        if( cycles < 0 )
+                        {
+                            pointString += "(waiting for time sync to calculate outage duration)";
+                        }
+                        else
+                        {
+                            seconds = cycles  / 60;
+                            minutes = seconds / 60;
+                            hours   = minutes / 60;
+
+                            seconds %= 60;
+                            minutes %= 60;
+                            hours   %= 24;
+
+                            pointString += CtiNumStr(hours).zpad(2) + ":" +
+                                           CtiNumStr(minutes).zpad(2) + ":" +
+                                           CtiNumStr(seconds).zpad(2);
+
+                            if( cycles % 60 )
+                            {
+                                pointString += ", " + CtiNumStr(cycles % 60) + " cycles";
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    multiplier =  msgbuf[12] & 0x03;
-                }
+                    if( duration & 0x8000 )
+                    {
+                        cycles = (duration & 0x7fff) * 60;
+                    }
+                    else
+                    {
+                        cycles = duration;
+                    }
 
-                switch( multiplier )
-                {
-                    case 2: cycles *= 60;  //  minutes falls through to...
-                    case 1: cycles *= 60;  //  seconds, which falls through to...
-                    case 0: break;         //  cycles, which does nothing
-
-                    case 3: cycles = -1;   //  waiting time sync - don't report a value
-                }
-
-                if( cycles < 0 )
-                {
-                    pointString += "(waiting for time sync to calculate outage duration)\n";
-                }
-                else
-                {
                     seconds = cycles  / 60;
                     minutes = seconds / 60;
                     hours   = minutes / 60;
 
+                    cycles  %= 60;
                     seconds %= 60;
                     minutes %= 60;
                     hours   %= 24;
@@ -1837,37 +2029,40 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
                                    CtiNumStr(minutes).zpad(2) + ":" +
                                    CtiNumStr(seconds).zpad(2);
 
-                    if( cycles % 60 )
+                    if( cycles )
                     {
-                        pointString += ", " + CtiNumStr(cycles % 60) + " cycles\n";
+                        pointString += ", " + CtiNumStr(cycles) + " cycles\n";
                     }
                 }
-#endif
-            }
 
-            if( !i )    pointString += "\n";
+                if( !i )    pointString += "\n";
 
-            if( pPoint )
-            {
-                value  = cycles;
-                value /= 60;
-                value  = ((CtiPointNumeric*)pPoint)->computeValueForUOM(value);
-
-                if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), value, NormalQuality, AnalogPointType, pointString) )
+                if( pPoint )
                 {
-                    pData->setTime( outageTime );
+                    value  = cycles;
+                    value /= 60;
+                    value  = ((CtiPointNumeric*)pPoint)->computeValueForUOM(value);
 
-                    ReturnMsg->PointData().insert(pData);
-                    pData = 0;
+                    if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), value, NormalQuality, AnalogPointType, pointString) )
+                    {
+                        pData->setTime( outageTime );
+
+                        ReturnMsg->PointData().insert(pData);
+                        pData = 0;
+                    }
+                }
+                else
+                {
+                    resultString += pointString;
                 }
             }
-            else
-            {
-                resultString += pointString;
-            }
-        }
 
-        ReturnMsg->setResultString(resultString);
+            ReturnMsg->setResultString(resultString);
+        }
+        else
+        {
+            ReturnMsg->setResultString(getName() + " / Did not read sspec, could not reliably decode outages; try read again");
+        }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -1888,7 +2083,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
               badData;
     double    Value;
     data_pair dp;
-    unsigned long timeStamp, pulses, decode_time;
+    unsigned long timeStamp, decode_time;
     PointQuality_t quality;
 
 
@@ -1910,74 +2105,113 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        interval_len = getLoadProfile().getLoadProfileDemandRate();
-        block_len    = interval_len * 6;
+        unsigned char interest[5];
+        unsigned long tmptime = _llpInterest.time - rwEpoch;
 
-        channel      = _llpInterest.channel;
-        decode_time  = _llpInterest.time + _llpInterest.offset;
+        interest[0] = (tmptime >> 24) & 0x000000ff;
+        interest[1] = (tmptime >> 16) & 0x000000ff;
+        interest[2] = (tmptime >>  8) & 0x000000ff;
+        interest[3] = (tmptime)       & 0x000000ff;
+        interest[4] = _llpInterest.channel;
 
-        pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
-
-        for( int i = 0; i < 6; i++ )
+        /*
         {
-            //  this is where the block started...
-            timeStamp  = decode_time + (interval_len * i);
-            //  but we want interval *ending* times, so add on one more interval
-            timeStamp += interval_len;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+            for( int i = 0; i < 5; i++ )
+            {
+                dout << "interest " << i << ": " << (int)interest[i] << endl;
+            }
+
+            dout << "crc8 = " << (int)crc8(interest, 5) << endl;
+            dout << "dst  = " << (int)DSt->Message[0] << endl;
+        }
+        */
+
+        if( crc8(interest, 5) == DSt->Message[0] )
+        {
+            channel      = _llpInterest.channel;
+            decode_time  = _llpInterest.time + _llpInterest.offset;
 
             if( channel == MCT410_LPVoltageChannel )
             {
-                dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Voltage);
+                interval_len = getLoadProfile().getVoltageLoadProfileRate();
             }
             else
             {
-                dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_KW);
+                interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
 
-            pulses  = dp.first;
-            quality = dp.second;
+            block_len    = interval_len * 6;
 
-            Value = pulses;
+            pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
-            if( channel != MCT410_LPVoltageChannel )
+            for( int i = 0; i < 6; i++ )
             {
-                Value *= 3600 / interval_len;
-            }
+                //  this is where the block started...
+                timeStamp  = decode_time + (interval_len * i);
+                //  but we want interval *ending* times, so add on one more interval
+                timeStamp += interval_len;
 
-            if( pPoint != NULL )
-            {
-                if( quality != InvalidQuality )
+                if( channel == MCT410_LPVoltageChannel )
                 {
-                    Value = pPoint->computeValueForUOM( Value );
-
-                    valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
-                                                       Value,
-                                                       quality,
-                                                       DemandAccumulatorPointType,
-                                                       valReport);
-
-                    pData->setTime(timeStamp);
-
-                    ReturnMsg->insert(pData);
+                    dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_Voltage);
                 }
                 else
                 {
-                    resultString += getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = (invalid data)\n";
+                    dp = getData(DSt->Message + (i * 2) + 1, 2, ValueType_KW);
                 }
-            }
-            else
-            {
-                if( quality == NormalQuality )
+
+                Value   = dp.first;
+                quality = dp.second;
+
+                if( channel != MCT410_LPVoltageChannel )
                 {
-                    resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, 0) + "\n";
+                    Value *= 3600 / interval_len;
+                }
+
+                if( pPoint != NULL )
+                {
+                    if( quality != InvalidQuality )
+                    {
+                        Value = pPoint->computeValueForUOM( Value );
+
+                        valReport = getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(),
+                                                           Value,
+                                                           quality,
+                                                           DemandAccumulatorPointType,
+                                                           valReport);
+
+                        pData->setTime(timeStamp);
+
+                        ReturnMsg->insert(pData);
+                    }
+                    else
+                    {
+                        resultString += getName() + " / " + pPoint->getName() + " @ " + RWTime(timeStamp).asString() + " = (invalid data)\n";
+                    }
                 }
                 else
                 {
-                    resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = (invalid data)\n";
+                    if( quality == NormalQuality )
+                    {
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = " + CtiNumStr(Value, 0) + "\n";
+                    }
+                    else
+                    {
+                        resultString += getName() + " / LP channel " + CtiNumStr(channel) + " @ " + RWTime(timeStamp).asString() + " = (invalid data)\n";
+                    }
                 }
             }
+        }
+        else
+        {
+            resultString = "Load Profile Interest check does not match - try read again";
+
+            _llpInterest.channel = 0;
+            _llpInterest.time    = 0;
         }
 
         ReturnMsg->setResultString(resultString);
@@ -2145,7 +2379,14 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
             (block   = parse.getiValue("scan_loadprofile_block",   0)) )
         {
-            interval_len = getLoadProfile().getLoadProfileDemandRate();
+            if( channel == MCT410_LPVoltageChannel )
+            {
+                interval_len = getLoadProfile().getVoltageLoadProfileRate();
+            }
+            else
+            {
+                interval_len = getLoadProfile().getLoadProfileDemandRate();
+            }
 
             point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
@@ -2565,16 +2806,29 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         RWCString sspec;
         RWCString options;
         int  ssp;
-        char rev;
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
 
         ssp  = InMessage->Buffer.DSt.Message[0];
         ssp |= InMessage->Buffer.DSt.Message[4] << 8;
 
-        rev  = 'A' + InMessage->Buffer.DSt.Message[1] - 1;
+        sspec  = "\nSoftware Specification ";
+        sspec += CtiNumStr(ssp);
+        sspec += " Rom Revision ";
 
-        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString(rev) + "\n";
+        if( InMessage->Buffer.DSt.Message[1] <= 26 )
+        {
+            sspec += RWCString((char)(InMessage->Buffer.DSt.Message[1] + 'A' - 1));
+        }
+        else
+        {
+            sspec += CtiNumStr((int)InMessage->Buffer.DSt.Message[1]);
+            sspec += " (unreleased/unverified revision)";
+        }
+
+        sspec += "\n";
+
+        _sspec = ssp;
+        _rev   = InMessage->Buffer.DSt.Message[1];
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
@@ -2586,6 +2840,12 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( sspec + options );
+
+        //  this is hackish, and should be handled in a more centralized manner...  retMsgHandler, for example
+        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE )
+        {
+            ReturnMsg->setExpectMore(true);
+        }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
