@@ -11,14 +11,12 @@ import java.util.Observable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.servlet.http.HttpSessionBindingEvent;
 import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -32,15 +30,15 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class YC extends Observable implements com.cannontech.message.util.MessageListener, javax.servlet.http.HttpSessionBindingListener
+public class YC extends Observable implements MessageListener
 {
 	/** HashSet of userMessageIds for this instance */
 	private java.util.Set requestMessageIDs = new java.util.HashSet(10);
@@ -50,18 +48,8 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	/** An action listener for the timer events */
 	private ActionListener timerPerfomer = null;
 	/** A timer which fires an action event after a specified delay in millis */
-	private Timer timer = null;	
+	private Timer stopWatch = null;	
 	
-//	public final String ALT_SERIALNUMBER_FILENAME = "VersacomSerial";	//serial number file name
-//	public final String VERSACOM_SERIAL_FILENAME = "VersacomSerial";	//serial number file name
-//	public final String EXPRESSCOM_SERIAL_FILENAME = "ExpresscomSerial";	//serial number file name
-//	public final String SA205_SERIAL_FILENAME = "SA205Serial";	//serial number file name
-//	public final String SA305_SERIAL_FILENAME = "SA305Serial";	//serial number file name
-//	public final String SERIALNUMBER_FILENAME = "LCRSerial";	//serial number file name
-//	public final String DEFAULT_FILENAME = "default";	//serial number file name
-//	public final String COLLECTION_GROUP_FILENAME = "CollectionGroup";	//serial number file name
-//	public final String CICUSTOMER_FILENAME = "CICustomer";	//serial number file name
-
 	/** Porter Return messages displayable text */
 	private String resultText = "";
 	
@@ -106,9 +94,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	public static int LOOPLOCATE_ROUTE = 4;//loop locate route parsed
 	private int loopType = NOLOOP;
 	
-	/** A singleton instance for a connection to Pil */
-	//public static ClientConnection connToPorter = null;
-
 	/** Contains com.cannontech.database.data.lite.LiteDeviceTypeCommand for the deviceType selected */
 	private Vector liteDeviceTypeCommandsVector = new Vector();
 	/** The device Type for the currently selected object in the tree model. Values found in DeviceTypes class**/
@@ -230,20 +215,34 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 				else if ( getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
 				{
 					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
+					Vector savedVector = (Vector)getExecuteCmdsVector().clone();
 					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
 					{
 						setDeviceID(deviceMeterGroupIds[i].intValue());
 						handleDevice ();
+						//clone the vector because handleDevice() removed the command but in truth, it 
+						// shouldn't be removed until all of the devices have been looped through.
+						if( i < deviceMeterGroupIds.length)
+							executeCmdsVector = (Vector)savedVector.clone();
 					}
 				}
 				// Collectiongroup is selected.
 				else if ( getModelType() == ModelFactory.COLLECTIONGROUP )
 				{
-					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
+					synchronized(YC.this)
 					{
-						setDeviceID(deviceMeterGroupIds [i].intValue());
-						handleDevice();
+						Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_CollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
+						Vector savedVector = (Vector)getExecuteCmdsVector().clone();
+						
+						for ( int i = 0; i < deviceMeterGroupIds.length; i++)
+						{
+							setDeviceID(deviceMeterGroupIds [i].intValue());
+							handleDevice();
+							//clone the vector because handleDevice() removed the command but in truth, it
+							// shouldn't be removed until all of the devices have been looped through.							
+							if( i+1 < deviceMeterGroupIds.length)
+								executeCmdsVector = (Vector)savedVector.clone();
+						}
 					}
 				}
 				else
@@ -786,7 +785,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + request_.getCommandString() + "\'");
 		if( getPilConn().isValid() )
 		{
-			startTimer(getTimeOut());
+			startStopWatch(getTimeOut());
             getPilConn().write( request_ );
 			getRequestMessageIDs().add(new Long(currentUserMessageID));
 			generateMessageID();
@@ -832,9 +831,10 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 */
 	public void messageReceived(MessageEvent e)
 	{
-		if(e.getMessage() instanceof Return)
+		Message in = e.getMessage();		
+		if(in instanceof Return)
 		{
-			Return returnMsg = (Return) e.getMessage();
+			Return returnMsg = (Return) in;
 			synchronized(this)
 			{
 				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
@@ -980,7 +980,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 									getPorterRequest().setRouteID(rt.getYukonID());
 								}
 							}
-							startTimer(getTimeOut());
+							startStopWatch(getTimeOut());
 							getPilConn().write( getPorterRequest());	//do the saved loop request
 						}
 						else
@@ -1054,25 +1054,6 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	{
 		deviceID = deviceID_;
 	}
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.HttpSessionBindingEvent)
-	 */
-	public void valueBound(HttpSessionBindingEvent arg0)
-	{
-		// TODO Auto-generated method stub
-		System.out.println("***** Value Bound " + arg0.getValue().toString() + "*****");	
-		
-	}
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http.HttpSessionBindingEvent)
-	 */
-	public void valueUnbound(HttpSessionBindingEvent arg0)
-	{
-		// TODO Is removing the messageListener enough?
-		System.out.println("***** Value UNBound " + arg0.getValue().toString() + "*****");
-		getPilConn().removeMessageListener(this);
-	}
 	
 	/**
 	 * generate a unique mesageid, don't let it be negative
@@ -1123,13 +1104,13 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	/**
 	 * @return
 	 */
-	public void startTimer(int timeOutInMillis)
+	public void startStopWatch(int timeOutInMillis)
 	{
-		if( timer == null)
-			timer = new Timer(timeOutInMillis, timerPerfomer);
-		timer.setInitialDelay(timeOutInMillis);
-		timer.setRepeats(false);
-		timer.start();
+		if( stopWatch == null)
+			stopWatch = new Timer(timeOutInMillis, timerPerfomer);
+		stopWatch.setInitialDelay(timeOutInMillis);
+		stopWatch.setRepeats(false);
+		stopWatch.start();
 	}
 	/**
 	 * Returns true if the timer is running, otherwise return false (timer has stopped).
@@ -1137,7 +1118,7 @@ public class YC extends Observable implements com.cannontech.message.util.Messag
 	 */
 	public boolean isWatchRunning()
 	{
-		if( timer != null && timer.isRunning())
+		if( stopWatch != null && stopWatch.isRunning())
 			return true;
 		return false;
 	}
