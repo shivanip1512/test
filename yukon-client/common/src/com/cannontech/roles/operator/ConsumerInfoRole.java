@@ -36,6 +36,7 @@ public interface ConsumerInfoRole {
 	public static final int ORDER_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
 	public static final int CALL_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
 	public static final int OPT_OUT_RULES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
+	public static final int OVERRIDE_HARDWARE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 58;
 	
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;
@@ -44,6 +45,7 @@ public interface ConsumerInfoRole {
 	public static final int WEB_TEXT_OPT_OUT_VERB = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 14;
 	public static final int WEB_TEXT_OPT_OUT_PAST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 15;
 	public static final int WEB_TEXT_REENABLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 16;
+	public static final int WEB_TEXT_OVERRIDE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 17;
 	public static final int WEB_TEXT_ODDS_FOR_CONTROL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 19;
 	public static final int WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 20;
 	public static final int WEB_LABEL_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 30;
@@ -61,6 +63,7 @@ public interface ConsumerInfoRole {
 	public static final int WEB_LABEL_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 42;
 	public static final int WEB_LABEL_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 43;
 	public static final int WEB_LABEL_INTERVAL_DATA = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 44;
+	public static final int WEB_LABEL_THERM_SAVED_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 45;
 	public static final int WEB_TITLE_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 50;
 	public static final int WEB_TITLE_PROGRAM_CTRL_HIST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 51;
 	public static final int WEB_TITLE_PROGRAM_CTRL_SUM = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 52;
@@ -74,6 +77,8 @@ public interface ConsumerInfoRole {
 	public static final int WEB_TITLE_SERVICE_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 60;
 	public static final int WEB_TITLE_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 61;
 	public static final int WEB_TITLE_CREATE_TREND = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 62;
+	public static final int WEB_TITLE_THERM_SAVED_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 63;
+	public static final int WEB_TITLE_HARDWARE_OVERRIDING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 64;
  	public static final int WEB_DESC_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 70;
  	public static final int WEB_HEADING_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 80;
 	public static final int WEB_HEADING_METERING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 81;
