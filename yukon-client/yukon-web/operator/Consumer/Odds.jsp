@@ -67,17 +67,13 @@
 			  	<input type="hidden" name="action" value="SendControlOdds">
                 <table border="1" cellspacing="0" cellpadding="3" width="366">
                   <tr> 
-                    <td width="244" class="HeaderCell"> 
-                      <div align="center">Program Enrollment</div>
-                    </td>
-                    <td width="104" class="HeaderCell"> 
-                      <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="all_capital"/></div>
+                    <td width="200" class="HeaderCell" align="center">Program 
+                      Enrollment </td>
+                    <td width="148" class="HeaderCell" align="center">
+					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="all_capital"/>
                     </td>
                   </tr>
-                  
-                </table>
-             	<table border="1" cellspacing="0" cellpadding="3" width="366">
-<%
+                  <%
 	StarsCustSelectionList oddsList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );
 	
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -88,55 +84,55 @@
 			if (program.getChanceOfControl() != null)
 				progList.add( program );
 		}
-		
 		if (progList.size() == 0) continue;
 %>
                   <tr> 
-                    <td width="285" valign="middle" class="TableCell"> 
-                      <div align="center">
-                        <table width="350" border="0" cellspacing="0" cellpadding="0">
-                          <tr>
-                            <td width="88"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
-                            <td width="268">
-                              <table width="280" border="0" cellspacing="0" cellpadding="3">
-<%
+                    <td width="200" class="TableCell" align="center" style="border-right:none"> 
+                      <table width="200" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td width="64"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
+                          <td width="136"> 
+                            <table width="136" border="0" cellspacing="0" cellpadding="3">
+                              <%
 		for (int j = 0; j < progList.size(); j++) {
 			StarsEnrLMProgram program = (StarsEnrLMProgram) progList.get(j);
 %>
-                                <tr> 
-								  <input type="hidden" name="ProgID" value="<%= program.getProgramID() %>">
-                                  <td width="187" class="TableCell"><%= ServletUtils.getProgramDisplayNames(program)[0] %>
-								  </td>
-                                  <td width="81"> 
-                                    <select name="ControlOdds">
-<%
+                              <tr> 
+                                <input type="hidden" name="ProgID" value="<%= program.getProgramID() %>">
+                                <td class="TableCell" height="25" nowrap><%= ServletUtils.getProgramDisplayNames(program)[0] %></td>
+                              </tr>
+                              <%		} %>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="148" class="TableCell" align="center" style="border-left:none"> 
+                      <table width="148" border="0" cellspacing="0" cellpadding="3">
+                        <%
+		for (int j = 0; j < progList.size(); j++) {
+			StarsEnrLMProgram program = (StarsEnrLMProgram) progList.get(j);
+%>
+                        <tr> 
+                          <td height="25"> 
+                            <select name="ControlOdds">
+                              <%
 			for (int k = 0; k < oddsList.getStarsSelectionListEntryCount(); k++) {
 				StarsSelectionListEntry entry = oddsList.getStarsSelectionListEntry(k);
 				String selectedStr = (entry.getEntryID() == program.getChanceOfControl().getEntryID()) ? "selected" : "";
 %>
-									  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
-			}
-%>
-                                    </select>
-                                  </td>
-                                </tr>
-<%
-		}
-%>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                        
-                      </div>
+                              <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
+                              <%			} %>
+                            </select>
+                          </td>
+                        </tr>
+                        <%		} %>
+                      </table>
                     </td>
                   </tr>
-<%
-	}
-%>
+                  <%	} %>
                 </table>
-				<p>
+                <p>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
