@@ -48,12 +48,12 @@ insert into YukonSelectionList values (1004,'A','(none)','Device voltage selecti
 insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','Y');
 insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection','DeviceStatus','N');
 insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
-insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','N');
-insert into YukonSelectionList values (1009,'A','(none)','Service type selection','ServiceType','N');
+insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','Y');
+insert into YukonSelectionList values (1009,'A','(none)','Service type selection','ServiceType','Y');
 insert into YukonSelectionList values (1010,'N','(none)','Service request status','ServiceStatus','N');
 insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
 insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection','Manufacturer','Y');
-insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection','ApplianceLocation','N');
+insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection','ApplianceLocation','Y');
 insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection','ChanceOfControl','Y');
 insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection','TimeOfWeek','N');
 insert into YukonSelectionList values (1016,'N','(none)','Question type selection','QuestionType','N');
