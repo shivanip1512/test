@@ -2852,18 +2852,17 @@ public class ImportManager extends HttpServlet {
 			if (recvrLines != null) {
 				if (invFile.getName().equals("hwconfig.map")) {
 					// hwconfig.map file format: import_inv_id,relay1_db_app_id,relay2_db_app_id,relay3_db_app_id
-					// Notice: the parsed lines have line# inserted at the beginning
 					Hashtable appIDMap = new Hashtable();
 					
 					for (int i = 0; i < recvrLines.size(); i++) {
 						String[] fields = ((String) invLines.get(i)).split(",");
-						if (fields.length != 5)
+						if (fields.length != 4)
 							throw new WebClientException("Invalid format of file '" + invFile.getPath() + "'");
 						
-						Integer invID = Integer.valueOf( fields[1] );
+						Integer invID = Integer.valueOf( fields[0] );
 						int[] appIDs = new int[3];
 						for (int j = 0; j < 3; j++)
-							appIDs[j] = Integer.parseInt( fields[j+2] );
+							appIDs[j] = Integer.parseInt( fields[j+1] );
 						
 						appIDMap.put( invID, appIDs );
 					}
