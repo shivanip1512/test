@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/09/03 14:33:50 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -333,48 +333,56 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg               *pReq,
             }
             else
             {
-                CtiRouteManager::spiterator rte_itr;
-
-                for(rte_itr = _routeMgr->begin(); rte_itr != _routeMgr->end(); rte_itr++)
+                try
                 {
-                    Route = rte_itr->second;
+                    CtiRouteManager::spiterator rte_itr;
 
-                    switch(Route->getType())
+                    for(rte_itr = _routeMgr->begin(); rte_itr != _routeMgr->end(); CtiRouteManager::nextPos(rte_itr))
                     {
-                    case CCURouteType:         // These route types may be considered default routes
-                    case TCURouteType:
-                    case LCURouteType:
-                    case RepeaterRouteType:
-                    case VersacomRouteType:
-                    case TapRouteType:
-                    case WCTPRouteType:
-                        {
-                            if( Route->isDefaultRoute() )
-                            {
-                                OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
+                        Route = rte_itr->second;
 
-                                if(NewOMess)
+                        switch(Route->getType())
+                        {
+                        case CCURouteType:         // These route types may be considered default routes
+                        case TCURouteType:
+                        case LCURouteType:
+                        case RepeaterRouteType:
+                        case VersacomRouteType:
+                        case TapRouteType:
+                        case WCTPRouteType:
+                            {
+                                if( Route->isDefaultRoute() )
                                 {
-                                    Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-                                }
-                                else
-                                {
-                                    status = MEMORY;
+                                    OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
+
+                                    if(NewOMess)
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                                    }
+                                    else
+                                    {
+                                        status = MEMORY;
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
                                     }
                                 }
-                            }
 
-                            break;
-                        }
-                    case MacroRouteType:
-                    default:
-                        {
-                            break;
+                                break;
+                            }
+                        case MacroRouteType:
+                        default:
+                            {
+                                break;
+                            }
                         }
                     }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 

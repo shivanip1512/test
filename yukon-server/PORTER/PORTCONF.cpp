@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/03 14:33:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -666,7 +666,7 @@ VSend (VSTRUCT *VSt,
             CtiRouteManager::spiterator   rte_itr;
 
             /* Now do the routes */
-            for(rte_itr = RouteManager.begin() ; rte_itr != RouteManager.end(); rte_itr++ )
+            for(rte_itr = RouteManager.begin() ; rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
             {
                CtiRouteSPtr RouteRecord = rte_itr->second;
 

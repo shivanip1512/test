@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/03 14:33:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -25,6 +25,7 @@
 #include <rw/db/connect.h>
 #include <rw/db/db.h>
 
+#include "repeaterrole.h"
 #include "rte_base.h"
 #include "rtdb.h"
 #include "dlldefs.h"
@@ -70,12 +71,16 @@ public:
     spiterator begin();
     spiterator end();
 
+    static spiterator nextPos(spiterator &my_itr); // This is to overcome MS's flaw in the STL.  We MUST use this method in binaries other than this DLL.
+
     CtiMutex& getMux()
     {
         return _mux;
     }
 
     bool empty() const;
+    bool buildRoleVector( long id, vector< CtiDeviceRepeaterRole > & roleVector );
+
 };
 
 #endif                  // #ifndef __ROUTE_MGR_H__

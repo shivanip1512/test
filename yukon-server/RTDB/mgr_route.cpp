@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/09/09 21:49:22 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -492,3 +492,100 @@ CtiRouteManager::spiterator CtiRouteManager::end()
     return _smartMap.getMap().end();
 }
 
+CtiRouteManager::spiterator CtiRouteManager::nextPos(CtiRouteManager::spiterator &my_itr)
+{
+    return my_itr++;
+}
+
+bool CtiRouteManager::buildRoleVector( long id, vector< CtiDeviceRepeaterRole > & roleVector )
+{
+    LockGuard guard(_mux);
+    spiterator itr_rte;
+
+    int rolenum = 1;
+    int stagestofollow;
+    bool foundit;
+
+    for(itr_rte = begin(); itr_rte != end(); ++itr_rte)
+    {
+        foundit = false;
+        stagestofollow = 0;
+
+        CtiRouteSPtr route = itr_rte->second;
+
+        if(route && route->getType() == CCURouteType)
+        {
+            CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
+
+            if( ccuroute->getRepeaterList().entries() > 0 )
+            {
+                // This CCURoute has repeater entries.
+                if(ccuroute->getCarrier().getCCUVarBits() == 7)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << ccuroute->getName() << " Has variable bits set to 7 AND has repeaters. " << endl;
+                    }
+
+                    break;
+                }
+                else
+                {
+                    int i;
+                    CtiDeviceRepeaterRole role;
+
+                    for(i = 0; i < ccuroute->getRepeaterList().length(); i++)
+                    {
+
+                        role.setRouteID( ccuroute->getRouteID() );
+                        role.setRoleNumber( rolenum++ );
+
+                        if(!foundit)
+                        {
+                            if( ccuroute->getRepeaterList()[i].getDeviceID() == id )   // Is our repeater in there?
+                            {
+                                foundit = true;
+
+                                if(i == 0)
+                                {
+                                    // Use the route to build up the Role object
+                                    role.setOutBits( ccuroute->getCarrier().getCCUVarBits() );
+                                }
+                                else
+                                {
+                                    // Use the previous repeater to build up the role object.
+                                    role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
+                                }
+                                role.setFixBits(ccuroute->getCarrier().getCCUFixBits());
+                                role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
+
+                                if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
+                                {
+                                    break;      // The for... It is kaput!
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // We have found it in this route.  We need to count the additional stages in the route.
+                            stagestofollow++;
+                            if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
+                            {
+                                break;      // The for... no more routes!
+                            }
+                        }
+                    }
+
+                    role.setStages(stagestofollow);
+
+                    if(foundit)
+                    {
+                        roleVector.push_back( role );
+                    }
+                }
+            }
+        }
+    }
+
+    return !roleVector.empty();
+}

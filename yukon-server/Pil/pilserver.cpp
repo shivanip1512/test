@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2002/09/12 21:35:33 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1390,90 +1390,102 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
             // Alright.. An appropriate device has been selected for this command.
             vector< CtiDeviceRepeaterRole > roleVector;
-            CtiRouteManager::spiterator itr_rte;
 
-            int rolenum = 1;
-            int stagestofollow;
-            bool foundit;
-
-            for(itr_rte = RouteManager->begin(); itr_rte != RouteManager->end(); itr_rte++)
+            try
             {
-                foundit = false;
-                stagestofollow = 0;
+                // RouteManager->buildRoleVector( pRepeaterToRole->getID(), roleVector );
+                CtiRouteManager::spiterator itr_rte;
 
-                CtiRouteSPtr route = itr_rte->second;
+                long id = pRepeaterToRole->getID();
+                int rolenum = 1;
+                int stagestofollow;
+                bool foundit;
+                CtiRouteSPtr route;
 
-                if(route->getType() == CCURouteType)
+                for(itr_rte = RouteManager->begin(); itr_rte != RouteManager->end(); CtiRouteManager::nextPos(itr_rte))
                 {
-                    CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
+                    route = itr_rte->second;
+                    foundit = false;
+                    stagestofollow = 0;
 
-                    if( ccuroute->getRepeaterList().entries() > 0 )
+                    if(route && route->getType() == CCURouteType)
                     {
-                        // This CCURoute has repeater entries.
-                        if(ccuroute->getCarrier().getCCUVarBits() == 7)
+                        CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
+
+                        if( ccuroute->getRepeaterList().entries() > 0 )
                         {
+                            // This CCURoute has repeater entries.
+                            if(ccuroute->getCarrier().getCCUVarBits() == 7)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " " << ccuroute->getName() << " Has variable bits set to 7 AND has repeaters. " << endl;
-                            }
-
-                            break;
-                        }
-                        else
-                        {
-                            CtiDeviceRepeaterRole role;
-
-                            for(i = 0; i < ccuroute->getRepeaterList().length(); i++)
-                            {
-
-                                role.setRouteID( ccuroute->getRouteID() );
-                                role.setRoleNumber( rolenum++ );
-
-                                if(!foundit)
                                 {
-                                    if( ccuroute->getRepeaterList()[i].getDeviceID() == pRepeaterToRole->getID() )   // Is our repeater in there?
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " " << ccuroute->getName() << " Has variable bits set to 7 AND has repeaters. " << endl;
+                                }
+
+                                break;
+                            }
+                            else
+                            {
+                                int i;
+                                CtiDeviceRepeaterRole role;
+
+                                for(i = 0; i < ccuroute->getRepeaterList().length(); i++)
+                                {
+
+                                    role.setRouteID( ccuroute->getRouteID() );
+                                    role.setRoleNumber( rolenum++ );
+
+                                    if(!foundit)
                                     {
-                                        foundit = true;
-
-                                        if(i == 0)
+                                        if( ccuroute->getRepeaterList()[i].getDeviceID() == id )   // Is our repeater in there?
                                         {
-                                            // Use the route to build up the Role object
-                                            role.setOutBits( ccuroute->getCarrier().getCCUVarBits() );
-                                        }
-                                        else
-                                        {
-                                            // Use the previous repeater to build up the role object.
-                                            role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
-                                        }
-                                        role.setFixBits(ccuroute->getCarrier().getCCUFixBits());
-                                        role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
+                                            foundit = true;
 
+                                            if(i == 0)
+                                            {
+                                                // Use the route to build up the Role object
+                                                role.setOutBits( ccuroute->getCarrier().getCCUVarBits() );
+                                            }
+                                            else
+                                            {
+                                                // Use the previous repeater to build up the role object.
+                                                role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
+                                            }
+                                            role.setFixBits(ccuroute->getCarrier().getCCUFixBits());
+                                            role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
+
+                                            if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
+                                            {
+                                                break;      // The for... It is kaput!
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // We have found it in this route.  We need to count the additional stages in the route.
+                                        stagestofollow++;
                                         if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
                                         {
-                                            break;      // The for... It is kaput!
+                                            break;      // The for... no more routes!
                                         }
                                     }
                                 }
-                                else
+
+                                role.setStages(stagestofollow);
+
+                                if(foundit)
                                 {
-                                    // We have found it in this route.  We need to count the additional stages in the route.
-                                    stagestofollow++;
-                                    if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
-                                    {
-                                        break;      // The for... no more routes!
-                                    }
+                                    roleVector.push_back( role );
                                 }
-                            }
-
-                            role.setStages(stagestofollow);
-
-                            if(foundit)
-                            {
-                                roleVector.push_back( role );
                             }
                         }
                     }
                 }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             if(roleVector.size() > 0)

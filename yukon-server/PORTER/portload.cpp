@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/03 14:33:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,12 +120,17 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
                 RouteCount = 0;
 
                 /* now check if this dude has any routes */
+                try
                 {  // get me some SCOPE...
 
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                     CtiRouteManager::spiterator   rte_itr;
 
                     /* Now do the routes */
-                    for( rte_itr = RouteManager.begin(); rte_itr != RouteManager.end()  ; rte_itr++)
+                    for( rte_itr = RouteManager.begin(); rte_itr != RouteManager.end()  ; CtiRouteManager::nextPos(rte_itr))
                     {
                         CtiRouteCCU *CCURouteRecord = (CtiRouteCCU*)rte_itr->second.get();
 
@@ -264,6 +269,11 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
 
                         RouteCount++;
                     }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 /* Allocate some memory for additional functions */

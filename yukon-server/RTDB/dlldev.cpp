@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/09/03 14:33:50 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,58 +94,65 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
     CtiRouteManager::spiterator itr;
 
 
-    for(itr = RM->begin(); itr != RM->end() ; itr++)
+    try
     {
-        pRte = itr->second;
-
-        switch(pRte->getType())
+        for(itr = RM->begin(); itr != RM->end() ; RM->nextPos(itr))
         {
-        case CCURouteType:
-        case TCURouteType:
-        case LCURouteType:
-        case RepeaterRouteType:
-        case VersacomRouteType:
-        case TapRouteType:
-        case WCTPRouteType:
+            pRte = itr->second;
+
+            switch(pRte->getType())
             {
-                CtiRouteXCU  *pXCU = (CtiRouteXCU*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
-
-                dID = pXCU->getCommRoute().getTrxDeviceID();
-
-                if( dID > 0 )
+            case CCURouteType:
+            case TCURouteType:
+            case LCURouteType:
+            case RepeaterRouteType:
+            case VersacomRouteType:
+            case TapRouteType:
+            case WCTPRouteType:
                 {
-                    pDev = DM->getEqual(dID);
+                    CtiRouteXCU  *pXCU = (CtiRouteXCU*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
 
-                    if(pDev != NULL)
+                    dID = pXCU->getCommRoute().getTrxDeviceID();
+
+                    if( dID > 0 )
                     {
-                        //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
-                        pXCU->setDevicePointer(pDev);
+                        pDev = DM->getEqual(dID);
+
+                        if(pDev != NULL)
+                        {
+                            //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
+                            pXCU->setDevicePointer(pDev);
+                        }
+                        else
+                        {
+                            pXCU->resetDevicePointer();
+                        }
                     }
-                    else
+                    break;
+                }
+            case MacroRouteType:
+                {
+                    CtiRouteMacro *pMac = (CtiRouteMacro*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
+                    pMac->getRoutePtrList().clear();
+
+                    for(int i = 0; i < pMac->getRouteList().length(); i++)
                     {
-                        pXCU->resetDevicePointer();
+                        CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
+                        pMac->getRoutePtrList().insert( pSingleRoute );
                     }
                 }
-                break;
-            }
-        case MacroRouteType:
-            {
-                CtiRouteMacro *pMac = (CtiRouteMacro*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
-                pMac->getRoutePtrList().clear();
-
-                for(int i = 0; i < pMac->getRouteList().length(); i++)
+            default:
                 {
-                    CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
-                    pMac->getRoutePtrList().insert( pSingleRoute );
+                    break;
                 }
-            }
-        default:
-            {
-                break;
             }
         }
     }
-
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/09 14:55:09 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/16 13:49:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,11 +264,15 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 case TYPE_CCU700:
                 case TYPE_CCU710:
                     /* Walk down the routes for this ccu and pick out time routes */
+                    try
                     {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                         CtiRouteManager::LockGuard guard(RouteManager.getMux());
-
                         CtiRouteManager::spiterator rte_itr;
-                        for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); rte_itr++)
+                        for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr))
                         {
                             RouteRecord = rte_itr->second;
 
@@ -399,6 +403,11 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                                 }
                             }
                         }
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     break;
 
