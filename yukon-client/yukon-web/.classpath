@@ -9,20 +9,32 @@
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
-    <classpathentry kind="lib" path="/third-party/mail.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/catalina.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/commons-logging.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/jakarta-regexp-1.2.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/servlets-common.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/servlets-default.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/servlets-invoker.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/servlets-manager.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/servlets-webdav.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/tomcat-coyote.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/tomcat-http11.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/server/lib/tomcat-util.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/loadcontrol"/>
     <classpathentry kind="src" path="/servlet"/>
     <classpathentry kind="src" path="/stars"/>
     <classpathentry kind="src" path="/trending"/>
     <classpathentry kind="src" path="/yukonappserver"/>
-    <classpathentry kind="src" path="/resource"/>
     <classpathentry kind="lib" path="WEB-INF/lib/web.jar"/>
     <classpathentry kind="lib" path="/third-party/struts.jar"/>
-    <classpathentry kind="var" path="JDK_TOOLS"/>
-    <classpathentry kind="src" path="/esub"/>
-    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
     <classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
+    <classpathentry kind="var" path="JDK_TOOLS"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/bin/bootstrap.jar"/>
+    <classpathentry kind="src" path="/esub"/>
     <classpathentry kind="src" path="/cbc"/>
+    <classpathentry kind="lib" path="/third-party/batik.jar"/>
+    <classpathentry kind="lib" path="/third-party/jtds.jar"/>
     <classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>

@@ -10,40 +10,28 @@
     <webClassPathEntries>
         <webClassPathEntry>D:\eclipse\head\cbc\bin</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\common\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\dbeditor\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\esub\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\loadcontrol\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\macs\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\servlet\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\stars\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\tdc\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\third-party\log4j-1.2.4.jar</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\third-party\SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\third-party\acme.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\batik111.jar</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\third-party\batik.jar</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\third-party\castor-xml.jar</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\third-party\classes12.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\classes12.zip</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\commons-logging.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\dom4j.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\j2ee.jar</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\third-party\rwav.jar</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\third-party\xerces.jar</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\trending\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\yukon-web\WEB-INF\lib\web.jar</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\yukonappserver\bin</webClassPathEntry>
+        <webClassPathEntry>D:\j2sdk1.4.1\jre\lib\rt.jar</webClassPathEntry>
+        <webClassPathEntry>D:\j2sdk1.4.1\lib\tools.jar</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\third-party\jaxm-api.jar</webClassPathEntry>
         <webClassPathEntry>D:\eclipse\head\third-party\jaxm-client.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jboss-client.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jboss-common-client.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jboss-jmx-core.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jboss.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jbosssx-client.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jcchart401K.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jfreechart.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jcpagelayout450K.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jcommon.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jcfield401K.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jloox2.0.2.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jnp-client.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\jruntags.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\junit.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\led.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\log4j-1.2.4.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\mail.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\rwav.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\yukonappserver\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\trending\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\xerces.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\third-party\struts.jar</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\tdc\bin</webClassPathEntry>
-        <webClassPathEntry>D:\eclipse\head\servlet\bin</webClassPathEntry>
+        <webClassPathEntry>D:\eclipse\head\third-party\jtds.jar</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>
