@@ -99,8 +99,9 @@ public final class ContactFuncs
 	 * Returns the LiteContact for lastName_.
 	 * @return com.cannontech.database.data.lite.LiteContact
 	 * @param contactID_ int
+	 * @param partialMatch If true, lastName_ is to be matched partially from the first character
 	 */
-	public static LiteContact[] getContactsByLName( String lastName_ ) 
+	public static LiteContact[] getContactsByLName( String lastName_, boolean partialMatch ) 
 	{
 		if( lastName_ == null )
 			return null;
@@ -113,8 +114,10 @@ public final class ContactFuncs
 			
 			for( int j = 0; j < cstCnts.size(); j++ )
 			{
-				if( lastName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContLastName() ) )
-						notifs.add( cstCnts.get(j) );
+				String contLastName = ((LiteContact)cstCnts.get(j)).getContLastName();
+				if( contLastName.equalsIgnoreCase( lastName_ )
+					|| partialMatch && contLastName.toUpperCase().startsWith( lastName_.toUpperCase() ))
+					notifs.add( cstCnts.get(j) );
 			}
 		}
 	
@@ -122,7 +125,18 @@ public final class ContactFuncs
 		return (LiteContact[])notifs.toArray( cArr );
 	}
 	
-	public static LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
+	public static LiteContact[] getContactsByLName( String lastName_ ) {
+		return getContactsByLName( lastName_, false );
+	}
+	
+	/**
+	 * @param phoneNo
+	 * @param phoneNotifCatIDs Array of notification category IDs, currently the options are:
+	 * YukonListEntryTypes.YUK_ENTRY_ID_PHONE, YUK_ENTRY_ID_HOME_PHONE, YUK_ENTRY_ID_WORK_PHONE
+	 * @param partialMatch If true, phoneNo is to be matched partially from the last digit
+	 * @return Array of LiteContact for phoneNo
+	 */
+	public static LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs, boolean partialMatch) {
 		if (phoneNo == null) return null;
 		
 		java.util.Arrays.sort( phoneNotifCatIDs );
@@ -138,11 +152,14 @@ public final class ContactFuncs
 					LiteContactNotification lNotif = (LiteContactNotification)
 							lCont.getLiteContactNotifications().get(j);
 					
-					if (java.util.Arrays.binarySearch(phoneNotifCatIDs, lNotif.getNotificationCategoryID()) >= 0
-						&& phoneNo.equalsIgnoreCase( lNotif.getNotification() ))
+					if (java.util.Arrays.binarySearch(phoneNotifCatIDs, lNotif.getNotificationCategoryID()) >= 0)
 					{
-						contList.add( lCont );
-						break;
+						if (lNotif.getNotification().equalsIgnoreCase(phoneNo)
+							|| partialMatch && lNotif.getNotification().endsWith(phoneNo))
+						{
+							contList.add( lCont );
+							break;
+						}
 					}
 				}
 			}
@@ -151,6 +168,10 @@ public final class ContactFuncs
 		LiteContact[] contacts = new LiteContact[ contList.size() ];
 		contList.toArray( contacts );
 		return contacts;
+	}
+	
+	public static LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
+		return getContactsByPhoneNo( phoneNo, phoneNotifCatIDs, false );
 	}
 
 	/**
