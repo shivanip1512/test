@@ -79,7 +79,9 @@ public class DBUpdater extends MessageFrameAdaptor
 {
 	//local class to execute update functions
 	private UpdateDB updateDB = null;
+    
 	private boolean isIgnoreAllErrors = false;
+    private boolean isIgnoreBlockErrors = false;
 
 	
 	private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
@@ -223,6 +225,7 @@ public class DBUpdater extends MessageFrameAdaptor
 				sqlFile = files[i];
 				validLines = updateDB.readFile( sqlFile );
 				isIgnoreAllErrors = false;
+                isIgnoreBlockErrors = false;
 
 				for( int j = 0; j < validLines.length; j++ )
 				{
@@ -271,6 +274,18 @@ public class DBUpdater extends MessageFrameAdaptor
 		}
 		
 	}
+    
+    private void setIgnoreState( final UpdateLine line_ )
+    {
+        //once True, always True
+        isIgnoreAllErrors |= line_.isIgnoreRemainingErrors();
+        
+        if( line_.isIgnoreBegin() )
+            isIgnoreBlockErrors = true; 
+
+        if( line_.isIgnoreEnd() )
+            isIgnoreBlockErrors = false;
+    }
 
 	private void processLine( UpdateLine line_, Connection conn ) throws SQLException
 	{
@@ -287,10 +302,13 @@ public class DBUpdater extends MessageFrameAdaptor
 						0,
 						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
 
-			//once True, always True
-			isIgnoreAllErrors |= line_.isIgnoreRemainingErrors();
+            //set any error ignore flags
+            setIgnoreState( line_ );
 
-			if( line_.isIgnoreError() || isIgnoreAllErrors )
+
+			if( line_.isIgnoreError() 
+                || isIgnoreAllErrors
+                || isIgnoreBlockErrors )
 			{
 				try
 				{
@@ -298,7 +316,7 @@ public class DBUpdater extends MessageFrameAdaptor
 					line_.setSuccess( true );
 					getIMessageFrame().addOutput( "   SUCCESS : " + cmd );				
 				}
-				catch( SQLException ex )
+				catch( Exception ex ) //SQLException ex )
 				{
 					//since we are ignoring errors, do not let the SQL error force use to exit
 					line_.setSuccess( false );

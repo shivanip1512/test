@@ -13,7 +13,6 @@ import java.util.StringTokenizer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.tools.gui.IMessageFrame;
 
 /**
@@ -148,14 +147,15 @@ public class UpdateDB
 			if( getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
 				 || fVers <= getDBVersion() )
 			{
-				getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
+				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
 				continue;
 			}
 
 			if( isValidUpdateFile(sqlFile) )
 			{
 				CTILogger.debug("  GenDir - Adding file : " + sqlFile );
-				files.add( sqlFile ); //get all the .sql files in the directory
+                getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
+				files.add( sqlFile );   //get all the .sql files in the directory
 				versions.add( new Double(fVers) );
 			}
 
@@ -172,7 +172,7 @@ public class UpdateDB
 			if( getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
 				 || fVers <= getDBVersion() )
 			{
-				getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
+				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
 				continue;
 			}
 
@@ -180,6 +180,7 @@ public class UpdateDB
 				 && !versions.contains(new Double(fVers)) )
 			{
 				CTILogger.debug("  UserDIR - Adding file : " + sqlFile );
+                getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
 				files.add( sqlFile ); //get all the .sql files in the directory
 			}
 

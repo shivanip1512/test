@@ -174,4 +174,28 @@ public class UpdateLine
 		getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[0] );
 	}
 
+    /**
+     * @return
+     */
+    public boolean isIgnoreBegin()
+    {
+        Object o = getMetaProps().get( DBMSDefines.META_ERROR );
+        if( o != null )
+            return DBMSDefines.OPTIONS_ERROR[4].equalsIgnoreCase(o.toString());
+        else
+            return false;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isIgnoreEnd()
+    {
+        Object o = getMetaProps().get( DBMSDefines.META_ERROR );
+        if( o != null )
+            return DBMSDefines.OPTIONS_ERROR[5].equalsIgnoreCase(o.toString());
+        else
+            return false;
+    }
+
 }

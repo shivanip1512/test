@@ -25,7 +25,9 @@ public interface DBMSDefines
 		"ignore",  //print a messge and continue on
 		"autofix", //try to fix it with the provided FIX statement
 		"verbose",  //print out the provided error message
-		"ignore-remaining"  //ignore all remaining errors in the file
+		"ignore-remaining",  //ignore all remaining errors in the file
+        "ignore-begin",  //ignore all errors up to the ignore-end string
+        "ignore-end"
 	};
 
 
