@@ -2476,7 +2476,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             }
         }
 
-        if(!(CmdStr.match("scram")).isNull())
+        if(!(CmdStr.match(" scram")).isNull())
         {
             if(!(token = CmdStr.match("scram[ a-z]*" \
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)" \
@@ -2507,7 +2507,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
             }
         }
 
-        if(!(CmdStr.match("raw")).isNull())
+        if(!(CmdStr.match(" raw")).isNull())
         {
             if(!(token = CmdStr.match("raw" \
                                       "( *([ =]+0x)?[0-9a-f]+)" \
@@ -2564,6 +2564,57 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                 }
 
                 _cmd[ "raw" ] = rawStr;
+            }
+        }
+
+        if(!(CmdStr.match(" lcrmode")).isNull())
+        {
+            if(!(token = CmdStr.match("lcrmode (e|v)")).isNull())
+            {
+                RWCTokenizer tok( token );
+
+                tok();   // Get us past "lcrmode"
+
+                _cmd["lcrmode"] = CtiParseValue(tok());
+            }
+        }
+
+        if(!(CmdStr.match(" eclp")).isNull())
+        {
+            //  emetcon cold load pickup
+            if(!(token = CmdStr.match("eclp (en(able)?|dis(able)?)")).isNull())
+            {
+                RWCTokenizer tok( token );
+
+                tok();   // Get us past "eclp" moniker..
+
+                _cmd["eclp"] = CtiParseValue(tok());
+            }
+        }
+
+        if(!(CmdStr.match(" gold")).isNull())
+        {
+            //  emetcon cold load pickup
+            if(!(token = CmdStr.match("gold [0-9]")).isNull())
+            {
+                RWCTokenizer tok( token );
+
+                tok();   // Get us past "eclp" moniker..
+
+                _cmd["gold"] = CtiParseValue(atoi(RWCString(tok())));
+            }
+        }
+
+        if(!(CmdStr.match(" silver")).isNull())
+        {
+            //  emetcon cold load pickup
+            if(!(token = CmdStr.match("silver [0-9][0-9]")).isNull())
+            {
+                RWCTokenizer tok( token );
+
+                tok();   // Get us past "eclp" moniker..
+
+                _cmd["silver"] = CtiParseValue(atoi(RWCString(tok())));
             }
         }
     }
@@ -2779,11 +2830,7 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
     {
         if( isKeyValid("serial") )
         {
-            if(CmdStr.contains("emetcon"))
-            {
-                _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
-            }
-            else if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
+            if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
             {
                 _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
             }
@@ -2811,8 +2858,14 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             {
                 _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
             }
-            else if(CmdStr.contains("vcom") || CmdStr.contains("versacom"))
+            else if(CmdStr.contains("vcom") || CmdStr.contains("versacom") ||
+                    CmdStr.contains("emetcon"))
             {
+                //  NOTE:  all serial number requests with the "emetcon" specifier shall be parsed as Versacom instead.
+                //           this is because DLC LCRs are "emetcon" devices in many peoples' minds, despite being addressed
+                //           as Versacom for all serial-number (non Gold/Silver) addresses
+                //  _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
+
                 _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
             }
             else
