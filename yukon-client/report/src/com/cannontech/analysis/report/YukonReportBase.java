@@ -54,7 +54,10 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 {
 	/** Flag indicating background coloring added to separate items in band */
 	protected boolean showBackgroundColor = false;
-	
+	/** Flag indicating report footer is displayed*/
+	protected boolean showReportHeader = true;
+	/** Flag indicating report header is displayed*/
+	protected boolean showReportFooter = true;
 	/** TableModel data structure */
 	protected ReportModelBase model = null;
 	/** collection of functions */
@@ -130,8 +133,10 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	{
 		final JFreeReport report = new JFreeReport();
 		report.setName(getModel().getTitleString());
-		report.setReportFooter(createReportFooter());
-		report.setReportHeader(createReportHeader());
+		if(isShowReportFooter())
+			report.setReportFooter(createReportFooter());
+		if(isShowReportHeader())
+			report.setReportHeader(createReportHeader());
 		report.setPageFooter(createPageFooter());
 		report.setPageHeader(createPageHeader());
 		report.setGroups(createGroups());
@@ -401,4 +406,40 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		pageFormat = pageFormat_;
 	}
 
+	/**
+	 * @return Returns the showBackgroundColor.
+	 */
+	public boolean isShowBackgroundColor() {
+		return showBackgroundColor;
+	}
+	/**
+	 * @param showBackgroundColor The showBackgroundColor to set.
+	 */
+	public void setShowBackgroundColor(boolean showBackgroundColor) {
+		this.showBackgroundColor = showBackgroundColor;
+	}
+	/**
+	 * @return Returns the showReportFooter.
+	 */
+	public boolean isShowReportFooter() {
+		return showReportFooter;
+	}
+	/**
+	 * @param showReportFooter The showReportFooter to set.
+	 */
+	public void setShowReportFooter(boolean showReportFooter) {
+		this.showReportFooter = showReportFooter;
+	}
+	/**
+	 * @return Returns the showReportHeader.
+	 */
+	public boolean isShowReportHeader() {
+		return showReportHeader;
+	}
+	/**
+	 * @param showReportHeader The showReportHeader to set.
+	 */
+	public void setShowReportHeader(boolean showReportHeader) {
+		this.showReportHeader = showReportHeader;
+	}
 }
