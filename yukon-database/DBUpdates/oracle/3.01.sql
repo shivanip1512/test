@@ -392,6 +392,43 @@ alter table DynamicLMGroup modify InternalState number not null;
 update displaycolumns set typenum = 7 where title = 'Additional Info' and displaynum < 99;
 
 
+alter table LMProgramConstraints drop column AvailableSeasons;
+
+/*==============================================================*/
+/* Table : DateOfSeason                                         */
+/*==============================================================*/
+create table DateOfSeason  (
+   SeasonScheduleID     NUMBER                           not null,
+   SeasonName           VARCHAR2(20)                     not null,
+   SeasonStartMonth     NUMBER                           not null,
+   SeasonStartDay       NUMBER                           not null,
+   SeasonEndMonth       NUMBER                           not null,
+   SeasonEndDay         NUMBER                           not null
+);
+alter table DateOfSeason
+   add constraint PK_DATEOFSEASON primary key (SeasonScheduleID);
+create unique index Indx_DATOFSEAS_NAM on DateOfSeason (
+   SeasonName ASC
+);
+alter table DateOfSeason
+   add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
+      references SeasonSchedule (ScheduleID);
+
+alter table SeasonSchedule drop column WinterDay;
+alter table SeasonSchedule drop column WinterMonth;
+alter table SeasonSchedule drop column FallDay;
+alter table SeasonSchedule drop column FallMonth;
+alter table SeasonSchedule drop column SummerDay;
+alter table SeasonSchedule drop column SummerMonth;
+alter table SeasonSchedule drop column SpringDay;
+alter table SeasonSchedule drop column SpringMonth;
+
+delete from SeasonSchedule;
+insert into SeasonSchedule values( 0, 'Empty Schedule' );
+
+
+
+
 
 
 

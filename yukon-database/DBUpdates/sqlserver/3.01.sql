@@ -475,6 +475,60 @@ go
 
 update displaycolumns set typenum = 7 where title = 'Additional Info' and displaynum < 99;
 
+alter table LMProgramConstraints drop column AvailableSeasons;
+
+/*==============================================================*/
+/* Table : DateOfSeason                                         */
+/*==============================================================*/
+create table DateOfSeason (
+SeasonScheduleID     numeric              not null,
+SeasonName           varchar(20)          not null,
+SeasonStartMonth     numeric              not null,
+SeasonStartDay       numeric              not null,
+SeasonEndMonth       numeric              not null,
+SeasonEndDay         numeric              not null
+);
+go
+
+
+alter table DateOfSeason
+   add constraint PK_DATEOFSEASON primary key  (SeasonScheduleID);
+go
+
+create unique  index Indx_DATOFSEAS_NAM on DateOfSeason (
+SeasonName
+);
+go
+
+
+alter table DateOfSeason
+   add constraint FK_DaOfSe_SeSc foreign key (SeasonScheduleID)
+      references SeasonSchedule (ScheduleID);
+go
+
+alter table SeasonSchedule drop column WinterDay;
+go
+alter table SeasonSchedule drop column WinterMonth;
+go
+alter table SeasonSchedule drop column FallDay;
+go
+alter table SeasonSchedule drop column FallMonth;
+go
+alter table SeasonSchedule drop column SummerDay;
+go
+alter table SeasonSchedule drop column SummerMonth;
+go
+alter table SeasonSchedule drop column SpringDay;
+go
+alter table SeasonSchedule drop column SpringMonth;
+go
+
+delete from SeasonSchedule;
+insert into SeasonSchedule values( 0, 'Empty Schedule' );
+
+
+
+
 
 
 
