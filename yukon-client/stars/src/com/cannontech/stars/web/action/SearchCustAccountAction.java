@@ -1,5 +1,8 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Iterator;
+import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -167,8 +170,14 @@ public class SearchCustAccountAction implements ActionBase {
 					resp.setStarsCustAccountInformation( starsAcctInfo );
             	}
 				else {
+					// Order by account number
+					TreeMap map = new TreeMap();
 					for (int i = 0; i < accounts.length; i++)
-						resp.addAccountID( accounts[i].getAccountID() );
+						map.put( accounts[i].getCustomerAccount().getAccountNumber(), accounts[i] );
+					
+					Iterator it = map.values().iterator();
+					while (it.hasNext())
+						resp.addAccountID( ((LiteStarsCustAccountInformation) it.next()).getAccountID() );
 				}
             }
             
