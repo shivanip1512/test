@@ -2,6 +2,7 @@ package com.cannontech.dbeditor;
 
 import Acme.RefInt;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.user.UserUtils;
@@ -20,13 +21,14 @@ public class DBDeletionFuncs
    //types of delete
 	public static final int POINT_TYPE				= 1;
 	public static final int NOTIF_GROUP_TYPE		= 2;
-	public static final int STATEGROUP_TYPE		= 3;
+	public static final int STATEGROUP_TYPE			= 3;
 	public static final int PORT_TYPE				= 4;
 	public static final int DEVICE_TYPE				= 5;
 	public static final int PAO_TYPE					= 6;
 	public static final int CONTACT_TYPE			= 7;
 	public static final int CUSTOMER_TYPE			= 8;
 	public static final int LOGIN_TYPE				= 9;
+	public static final int HOLIDAY_SCHEDULE		= 10;
 
 
    //the return types of each possible delete
@@ -347,14 +349,21 @@ public class DBDeletionFuncs
 			unableDel.append("You cannot delete the customer '" + nodeName + "'");
 			anID = ((com.cannontech.database.data.customer.Customer) toDelete).getCustomerID().intValue();
 			deletionType = DBDeletionFuncs.CUSTOMER_TYPE;
-		}		
+	 	}		
 		else if (toDelete instanceof com.cannontech.database.data.user.YukonUser)
 		{
          message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
 			unableDel.append("You cannot delete the login '" + nodeName + "'");
 			anID = ((com.cannontech.database.data.user.YukonUser) toDelete).getUserID().intValue();
 			deletionType = DBDeletionFuncs.LOGIN_TYPE;
-		}		
+		}
+		else if (toDelete instanceof HolidaySchedule)
+			{
+		 message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the holiday schedule '" + nodeName + "'");
+			anID = ((HolidaySchedule) toDelete).getHolidayScheduleID().intValue();
+			deletionType = DBDeletionFuncs.HOLIDAY_SCHEDULE;
+			}	
 		else
 		{
 			message.append("You can not delete this object using the DatabaseEditor"); 
@@ -401,7 +410,8 @@ public class DBDeletionFuncs
 				return createDeleteStringForLogin(anID);
 	
 			else if( type == CUSTOMER_TYPE
-						 || type == PAO_TYPE )
+						 || type == PAO_TYPE || type == HOLIDAY_SCHEDULE
+						  )
 			{
 				return STATUS_CONFIRM;
 			}
