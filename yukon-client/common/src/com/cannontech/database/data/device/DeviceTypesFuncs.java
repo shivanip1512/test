@@ -605,6 +605,7 @@ public final static boolean isRTU(int deviceType)
       case RTU_DART:
 		case RTUILEX:
 		case RTUWELCO:
+		case RTM:
 			return true;
 	
 		default:

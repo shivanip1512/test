@@ -263,6 +263,8 @@ public final static int getDeviceType(String typeString)
    	  return SERIES_5_LMI;
    else if (isStringDevice(compareString, STRING_RTC))
    	  return RTC;
+   else if (isStringDevice(compareString, STRING_RTM))
+   	  return RTM;
    else
 	  return INVALID;
 }
@@ -409,6 +411,8 @@ public final static String getPAOTypeString(int type)
 		  return STRING_RTU_ILEX[0];
 	  case RTUWELCO:
 		  return STRING_RTU_WELCO[0];
+	  case RTM:
+	  	  return STRING_RTM[0];
 	  case TAPTERMINAL:
 		  return STRING_TAP_TERMINAL[0];
 	  case WCTP_TERMINAL:

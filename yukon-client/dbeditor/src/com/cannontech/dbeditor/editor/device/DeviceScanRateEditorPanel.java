@@ -1916,7 +1916,7 @@ public void setDeviceType(int type)
 			getIntegrityRateCheckBox().setText("Demand Rate");
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");			
 		}
-		else if( type == PAOGroups.RTUILEX ) 
+		else if( type == PAOGroups.RTUILEX || type == PAOGroups.RTM ) 
 		{
 			getPeriodicHealthCheckBox().setText("General Scan");
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
@@ -1956,7 +1956,7 @@ public void setDeviceType(int type)
 
       setIntegrityObjectsVisible(
          !(type == PAOGroups.RTUILEX
-          || type == PAOGroups.LCU415));
+          || type == PAOGroups.LCU415 || type == PAOGroups.RTM));
 		
       setHealthObjectsVisible( 
             !(type == PAOGroups.DCT_501
@@ -1969,7 +1969,8 @@ public void setDeviceType(int type)
 	            || type == PAOGroups.RTU_DNP
 	            || type == PAOGroups.RTU_DART
 					|| type == PAOGroups.LCU_T3026
-					|| type == PAOGroups.SERIES_5_LMI) );
+					|| type == PAOGroups.SERIES_5_LMI
+					|| type == PAOGroups.RTM) );
 		
 
 		getAccumulatorRateCheckBox().setSelected(false);

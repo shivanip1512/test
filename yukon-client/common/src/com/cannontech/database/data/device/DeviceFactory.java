@@ -270,6 +270,11 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType( PAOGroups.STRING_VIRTUAL_SYSTEM[0] );
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_VIRTUAL);
 			break;
+			
+		case PAOGroups.RTM:
+			returnDevice = new RTM();
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
+			break;
 	}
 
 	//Set a couple reasonable defaults
