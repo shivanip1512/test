@@ -706,13 +706,13 @@ public class YukonDataSetFactory
 						{
 							for (int y = 0; y < x; y++)
 							{
-								double currentVal = dSet[i].getSeries(j).getDataPair(y).getY().doubleValue();
-								double nextVal = dSet[i].getSeries(j).getDataPair(y+1).getY().doubleValue();
+								double currentVal = dSet[i].getSeries(j).getDataItem(y).getY().doubleValue();
+								double nextVal = dSet[i].getSeries(j).getDataItem(y+1).getY().doubleValue();
 								if( currentVal < nextVal)
 								{
 									//swap the values
-									dSet[i].getSeries(j).getDataPair(y+1).setY(new Double(currentVal));
-									dSet[i].getSeries(j).getDataPair(y).setY(new Double(nextVal));
+									dSet[i].getSeries(j).getDataItem(y+1).setY(new Double(currentVal));
+									dSet[i].getSeries(j).getDataItem(y).setY(new Double(nextVal));
 								}
 							}
 						}
@@ -731,12 +731,12 @@ public class YukonDataSetFactory
 				{
 					for( int y = 0; y < x; y++)
 					{
-						double currentVal = dSet[primaryDset].getSeries(primaryIndex).getDataPair(y).getY().doubleValue();
-						double nextVal = dSet[primaryDset].getSeries(primaryIndex).getDataPair(y+1).getY().doubleValue();
+						double currentVal = dSet[primaryDset].getSeries(primaryIndex).getDataItem(y).getY().doubleValue();
+						double nextVal = dSet[primaryDset].getSeries(primaryIndex).getDataItem(y+1).getY().doubleValue();
 						if( currentVal < nextVal)
 						{
-							dSet[primaryDset].getSeries(primaryIndex).getDataPair(y+1).setY(new Double(currentVal));
-							dSet[primaryDset].getSeries(primaryIndex).getDataPair(y).setY(new Double(nextVal));
+							dSet[primaryDset].getSeries(primaryIndex).getDataItem(y+1).setY(new Double(currentVal));
+							dSet[primaryDset].getSeries(primaryIndex).getDataItem(y).setY(new Double(nextVal));
 
 							//SORT ALL OTHER SERIES BASE ON PRIMARY
 							for(int a = 0; a < 2; a++)
@@ -745,11 +745,11 @@ public class YukonDataSetFactory
 								{
 									if( !(a==primaryDset && b == primaryIndex))	//not primary dSet/serie
 									{
-										currentVal = dSet[a].getSeries(b).getDataPair(y).getY().doubleValue();
-										nextVal = dSet[a].getSeries(b).getDataPair(y+1).getY().doubleValue();
+										currentVal = dSet[a].getSeries(b).getDataItem(y).getY().doubleValue();
+										nextVal = dSet[a].getSeries(b).getDataItem(y+1).getY().doubleValue();
 										
-										dSet[a].getSeries(b).getDataPair(y+1).setY(new Double(currentVal));
-										dSet[a].getSeries(b).getDataPair(y).setY(new Double(nextVal));
+										dSet[a].getSeries(b).getDataItem(y+1).setY(new Double(currentVal));
+										dSet[a].getSeries(b).getDataItem(y).setY(new Double(nextVal));
 									}
 								}
 							}
