@@ -19,8 +19,8 @@ public abstract class LMGroupBase implements ILMData
 	{
 		"Inactive",
 		"Active",
-		"Active Pending",
-		"Inactive Pending"
+		"Inactive Pending",
+		"Active Pending"
 	};
 	
 	private Integer yukonID = null;
