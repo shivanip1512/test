@@ -39,7 +39,7 @@ CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) 
             _char = 0;
         }
 
-        setValid( TRUE );
+        setValid(true);
     }
     else
     {
@@ -48,7 +48,7 @@ CtiIONChar::CtiIONChar( unsigned char *byteStream, unsigned long streamLength ) 
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        setValid( FALSE );
+        setValid(false);
     }
 }
 
