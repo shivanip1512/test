@@ -389,6 +389,8 @@ alter table DynamicLMGroup add InternalState number;
 update DynamicLMGroup set InternalState = 0;
 alter table DynamicLMGroup modify InternalState number not null;
 
+update displaycolumns set typenum = 7 where title = 'Additional Info' and displaynum < 99;
+
 
 
 

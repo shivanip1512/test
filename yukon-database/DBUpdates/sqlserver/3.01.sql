@@ -473,6 +473,8 @@ go
 alter table DynamicLMGroup alter column InternalState numeric not null;
 go
 
+update displaycolumns set typenum = 7 where title = 'Additional Info' and displaynum < 99;
+
 
 
 
