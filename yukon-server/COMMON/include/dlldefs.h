@@ -371,6 +371,22 @@
 #else
    #define IM_EX_FDRTELEGYRAPI       __declspec(dllimport)
 #endif
+#ifdef _DLL_FDRTEXTIMPORT
+   #define IM_EX_FDRTEXTIMPORT       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRTEXTIMPORT
+#else
+   #define IM_EX_FDRTEXTIMPORT       __declspec(dllimport)
+#endif
+#ifdef _DLL_FDRTEXTEXPORT
+   #define IM_EX_FDRTEXTEXPORT       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRTEXTEXPORT
+#else
+   #define IM_EX_FDRTEXTEXPORT       __declspec(dllimport)
+#endif
+
+
 
 
 
