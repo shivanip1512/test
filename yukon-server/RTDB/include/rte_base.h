@@ -13,14 +13,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/03 14:33:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "boost/shared_ptr.hpp"
+using boost::shared_ptr;
+using namespace std;
+
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
-
 #include <rw/tpslist.h>
 
 #include "dsm2.h"
@@ -45,7 +48,7 @@ protected:
 
 private:
 
-    public:
+public:
     typedef CtiMemDBObject Inherited;
 
     CtiRouteBase() {}
@@ -132,5 +135,7 @@ inline bool CtiRouteBase::processAdditionalRoutes( INMESS *InMessage ) const { r
 
 
 typedef CtiRouteBase CtiRoute;
+typedef shared_ptr< CtiRouteBase > CtiRouteSPtr;
+
 
 #endif // #ifndef __RTE_BASE_H__

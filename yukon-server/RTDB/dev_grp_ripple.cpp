@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/20 22:44:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/03 14:33:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,9 +99,9 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
 {
     INT   nRet = NoError;
     CHAR  Temp[80];
-    CtiRoute *Route = NULL;
+    CtiRouteSPtr Route;
 
-    if( (Route = getRoute( getRouteID() )) != NULL )            // This is "this's" route
+    if( (Route = getRoute( getRouteID() )) )            // This is "this's" route
     {
         setOutMessageTargetID( OutMessage->TargetID );          // This is the Device which is targeted.
         setOutMessageLMGID( OutMessage->DeviceIDofLMGroup );    // This is the LM Group which started this mess

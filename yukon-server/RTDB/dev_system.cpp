@@ -1,4 +1,5 @@
 
+
 #pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
@@ -9,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/28 18:25:05 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/03 14:33:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,256 +44,215 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg               *pReq,
                                     RWTPtrSlist< CtiMessage >      &retList,
                                     RWTPtrSlist< OUTMESS >         &outList)
 {
-   INT status = NORMAL;
-   INT iTemp;
+    INT status = NORMAL;
+    INT iTemp;
 
-   CtiRoute *Route;
+    CtiRouteSPtr Route;
 
-   /*
-    * OK, these are the items we are about to set out to perform..  Any additional signals will
-    * be added into the list upon completion of the Execute!
-    */
-   if(parse.getActionItems().entries())
-   {
-      for( size_t offset = 0; offset < parse.getActionItems().entries(); offset++)
-      {
-         RWCString actn = parse.getActionItems()[offset];
-         RWCString desc = getDescription(parse);
+    /*
+     * OK, these are the items we are about to set out to perform..  Any additional signals will
+     * be added into the list upon completion of the Execute!
+     */
+    if(parse.getActionItems().entries())
+    {
+        for( size_t offset = 0; offset < parse.getActionItems().entries(); offset++)
+        {
+            RWCString actn = parse.getActionItems()[offset];
+            RWCString desc = getDescription(parse);
 
-         vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-      }
-   }
+            vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        }
+    }
 
 
-   switch(parse.getCommand())
-   {
-   case PutConfigRequest:
-      {
-         switch(iTemp = parse.getiValue("type"))
-         {
-         case ProtocolVersacomType:
+    switch(parse.getCommand())
+    {
+    case PutConfigRequest:
+        {
+            switch(iTemp = parse.getiValue("type"))
             {
-               OutMessage->EventCode |= VERSACOM;
-               break;
-            }
-         case ProtocolFisherPierceType:
-         case ProtocolSA105Type:
-         case ProtocolSA205Type:
-         case ProtocolSA305Type:
-         default:
-            {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
-               }
-               break;
-            }
-         }
-
-         break;
-      }
-   case ControlRequest:
-      {
-         switch(iTemp = parse.getiValue("type"))
-         {
-         case ProtocolVersacomType:
-            {
-               memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
-
-               if(
-                 INT_MIN == (OutMessage->Buffer.VSt.Address = parse.getiValue("serial")) ||
-                 (
-                 INT_MIN == (OutMessage->Buffer.VSt.RelayMask = parse.getiValue("relaymask")) &&
-                 !(parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE))
-                 )
-                 )
-               {
-                  RWCString   problem;
-
-                  if( INT_MIN == OutMessage->Buffer.VSt.Address )
-                  {
-                     problem = RWCString("Invalid Request: Serial number not specified");
-                  }
-                  else
-                  {
-                     problem = RWCString("Invalid Request: (Relay 1,2,3) | (OPEN|CLOSE) not specified");
-                  }
-
-                  status = CtiInvalidRequest;
-
-                  vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
-                                                 pReq->getSOE(),
-                                                 getDescription(parse),
-                                                 problem,
-                                                 LoadMgmtLogType,
-                                                 SignalEvent,
-                                                 pReq->getUser()));
-
-                  retList.insert( new CtiReturnMsg(getID(),
-                                                   RWCString(OutMessage->Request.CommandStr),
-                                                   problem,
-                                                   status,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   RWOrdered()));
-
-               }
-
-               /*
-                *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
-                *  control path to take with this OutMessage!
-                */
-               OutMessage->EventCode    = VERSACOM | NORESULT;
-               OutMessage->Retry        = 2;                      // Default to two tries per route!
-
-               break;
-            }
-         case ProtocolFisherPierceType:
-         case ProtocolSA105Type:
-         case ProtocolSA205Type:
-         case ProtocolSA305Type:
-         default:
-            {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
-               }
-               break;
-            }
-         }
-         break;
-      }
-   case PutStatusRequest:
-      {
-         switch(iTemp = parse.getiValue("type"))
-         {
-         case ProtocolVersacomType:
-            {
-               BOOL        error = TRUE;
-               RWCString   problem(parse.getCommandStr() + ": " + FormatError(CtiInvalidRequest));
-
-               memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
-
-               if(INT_MIN == (OutMessage->Buffer.VSt.Address = parse.getiValue("serial")))
-               {
-                  problem = RWCString("Invalid Request: Serial number not specified");
-               }
-               if(INT_MIN != parse.getiValue("proptest"))
-               {
-                  OutMessage->Buffer.VSt.PropDIT = parse.getiValue("proptest");
-                  error = FALSE;
-               }
-               else if(INT_MIN != parse.getiValue("ovuv"))
-               {
-                  error = FALSE;
-               }
-
-               if(error)
-               {
-                  status = CtiInvalidRequest;
-
-                  vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
-                                                 pReq->getSOE(),
-                                                 getDescription(parse),
-                                                 problem,
-                                                 LoadMgmtLogType,
-                                                 SignalEvent,
-                                                 pReq->getUser()));
-
-                  retList.insert( new CtiReturnMsg(getID(),
-                                                   RWCString(OutMessage->Request.CommandStr),
-                                                   problem,
-                                                   status,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   RWOrdered()));
-
-               }
-
-               /*
-                *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
-                *  control path to take with this OutMessage!
-                */
-               OutMessage->EventCode    = VERSACOM | NORESULT;
-
-               break;
-            }
-         case ProtocolFisherPierceType:
-         case ProtocolSA105Type:
-         case ProtocolSA205Type:
-         case ProtocolSA305Type:
-         default:
-            {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
-               }
-               break;
-            }
-         }
-         break;
-      }
-   case GetStatusRequest:
-   case LoopbackRequest:
-   case GetValueRequest:
-   case PutValueRequest:
-   case GetConfigRequest:
-   default:
-      {
-         status = NoExecuteRequestMethod;
-
-         retList.insert( new CtiReturnMsg(getID(),
-                                          RWCString(OutMessage->Request.CommandStr),
-                                          RWCString("System Devices do not support this command (yet?)"),
-                                          status,
-                                          OutMessage->Request.RouteID,
-                                          OutMessage->Request.MacroOffset,
-                                          OutMessage->Request.Attempt,
-                                          OutMessage->Request.TrxID,
-                                          OutMessage->Request.UserID,
-                                          OutMessage->Request.SOE,
-                                          RWOrdered()));
-
-         break;
-      }
-   }
-
-   if(!status)
-   {
-      if( pReq->RouteId() )      // It has been requested on a route....
-      {
-         if( (Route = getRoute(pReq->RouteId())) != NULL )
-         {
-            OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
-
-            if(NewOMess)
-            {
-               Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-            }
-            else
-            {
-               status = MEMORY;
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+            case ProtocolVersacomType:
+                {
+                    OutMessage->EventCode |= VERSACOM;
+                    break;
+                }
+            case ProtocolFisherPierceType:
+            case ProtocolSA105Type:
+            case ProtocolSA205Type:
+            case ProtocolSA305Type:
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
+                    }
+                    break;
+                }
             }
 
-         }
-         else
-         {
-            status = BADROUTE;
+            break;
+        }
+    case ControlRequest:
+        {
+            switch(iTemp = parse.getiValue("type"))
+            {
+            case ProtocolVersacomType:
+                {
+                    memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
+
+                    if(
+                      INT_MIN == (OutMessage->Buffer.VSt.Address = parse.getiValue("serial")) ||
+                      (
+                      INT_MIN == (OutMessage->Buffer.VSt.RelayMask = parse.getiValue("relaymask")) &&
+                      !(parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE))
+                      )
+                      )
+                    {
+                        RWCString   problem;
+
+                        if( INT_MIN == OutMessage->Buffer.VSt.Address )
+                        {
+                            problem = RWCString("Invalid Request: Serial number not specified");
+                        }
+                        else
+                        {
+                            problem = RWCString("Invalid Request: (Relay 1,2,3) | (OPEN|CLOSE) not specified");
+                        }
+
+                        status = CtiInvalidRequest;
+
+                        vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+                                                       pReq->getSOE(),
+                                                       getDescription(parse),
+                                                       problem,
+                                                       LoadMgmtLogType,
+                                                       SignalEvent,
+                                                       pReq->getUser()));
+
+                        retList.insert( new CtiReturnMsg(getID(),
+                                                         RWCString(OutMessage->Request.CommandStr),
+                                                         problem,
+                                                         status,
+                                                         OutMessage->Request.RouteID,
+                                                         OutMessage->Request.MacroOffset,
+                                                         OutMessage->Request.Attempt,
+                                                         OutMessage->Request.TrxID,
+                                                         OutMessage->Request.UserID,
+                                                         OutMessage->Request.SOE,
+                                                         RWOrdered()));
+
+                    }
+
+                    /*
+                     *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
+                     *  control path to take with this OutMessage!
+                     */
+                    OutMessage->EventCode    = VERSACOM | NORESULT;
+                    OutMessage->Retry        = 2;                      // Default to two tries per route!
+
+                    break;
+                }
+            case ProtocolFisherPierceType:
+            case ProtocolSA105Type:
+            case ProtocolSA205Type:
+            case ProtocolSA305Type:
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    case PutStatusRequest:
+        {
+            switch(iTemp = parse.getiValue("type"))
+            {
+            case ProtocolVersacomType:
+                {
+                    BOOL        error = TRUE;
+                    RWCString   problem(parse.getCommandStr() + ": " + FormatError(CtiInvalidRequest));
+
+                    memset(&(OutMessage->Buffer.VSt), 0, sizeof(VSTRUCT));
+
+                    if(INT_MIN == (OutMessage->Buffer.VSt.Address = parse.getiValue("serial")))
+                    {
+                        problem = RWCString("Invalid Request: Serial number not specified");
+                    }
+                    if(INT_MIN != parse.getiValue("proptest"))
+                    {
+                        OutMessage->Buffer.VSt.PropDIT = parse.getiValue("proptest");
+                        error = FALSE;
+                    }
+                    else if(INT_MIN != parse.getiValue("ovuv"))
+                    {
+                        error = FALSE;
+                    }
+
+                    if(error)
+                    {
+                        status = CtiInvalidRequest;
+
+                        vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+                                                       pReq->getSOE(),
+                                                       getDescription(parse),
+                                                       problem,
+                                                       LoadMgmtLogType,
+                                                       SignalEvent,
+                                                       pReq->getUser()));
+
+                        retList.insert( new CtiReturnMsg(getID(),
+                                                         RWCString(OutMessage->Request.CommandStr),
+                                                         problem,
+                                                         status,
+                                                         OutMessage->Request.RouteID,
+                                                         OutMessage->Request.MacroOffset,
+                                                         OutMessage->Request.Attempt,
+                                                         OutMessage->Request.TrxID,
+                                                         OutMessage->Request.UserID,
+                                                         OutMessage->Request.SOE,
+                                                         RWOrdered()));
+
+                    }
+
+                    /*
+                     *  The VERSACOM tag is CRITICAL in that it indicates to the subsequent stages which
+                     *  control path to take with this OutMessage!
+                     */
+                    OutMessage->EventCode    = VERSACOM | NORESULT;
+
+                    break;
+                }
+            case ProtocolFisherPierceType:
+            case ProtocolSA105Type:
+            case ProtocolSA205Type:
+            case ProtocolSA305Type:
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    case GetStatusRequest:
+    case LoopbackRequest:
+    case GetValueRequest:
+    case PutValueRequest:
+    case GetConfigRequest:
+    default:
+        {
+            status = NoExecuteRequestMethod;
+
             retList.insert( new CtiReturnMsg(getID(),
                                              RWCString(OutMessage->Request.CommandStr),
-                                             RWCString("Bad route specified for execution on the \"system\" device"),
+                                             RWCString("System Devices do not support this command (yet?)"),
                                              status,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
@@ -302,95 +262,134 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg               *pReq,
                                              OutMessage->Request.SOE,
                                              RWOrdered()));
 
-         }
-      }
-      else        // OK, we need to hit each and every default route in the system...
-      {
-         RWRecursiveLock<RWMutexLock>::LockGuard guard(_routeMgr->getMux());
+            break;
+        }
+    }
 
-         if(!_routeMgr->entries())
-         {
-            vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
-                                           pReq->getSOE(),
-                                           getDescription(parse),
-                                           "System has no default routes",
-                                           GeneralLogType,
-                                           SignalEvent,
-                                           pReq->getUser()));
-
-            retList.insert( new CtiReturnMsg(getID(),
-                                             RWCString(OutMessage->Request.CommandStr),
-                                             "System has no default routes",
-                                             status,
-                                             OutMessage->Request.RouteID,
-                                             OutMessage->Request.MacroOffset,
-                                             OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
-                                             OutMessage->Request.UserID,
-                                             OutMessage->Request.SOE));
-
-         }
-         else
-         {
-            CtiRTDB<CtiRoute>::CtiRTDBIterator   itr_rte(_routeMgr->getMap());
-
-            for( ; ++itr_rte ; )
+    if(!status)
+    {
+        if( pReq->RouteId() )      // It has been requested on a route....
+        {
+            if( (Route = getRoute(pReq->RouteId())) )
             {
-               Route = itr_rte.value();
+                OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
 
-               switch(Route->getType())
-               {
-               case CCURouteType:         // These route types may be considered default routes
-               case TCURouteType:
-               case LCURouteType:
-               case RepeaterRouteType:
-               case VersacomRouteType:
-               case TapRouteType:
-               case WCTPRouteType:
-                  {
-                     CtiRouteXCU  *pXCU = (CtiRouteXCU*)Route;
+                if(NewOMess)
+                {
+                    Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                }
+                else
+                {
+                    status = MEMORY;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
 
-                     if( pXCU->isDefaultRoute() )
-                     {
-                        OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
-
-                        if(NewOMess)
-                        {
-                           pXCU->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-                        }
-                        else
-                        {
-                           status = MEMORY;
-                           {
-                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                           }
-                        }
-                     }
-
-                     break;
-                  }
-               case MacroRouteType:
-               default:
-                  {
-                     break;
-                  }
-               }
             }
-         }
+            else
+            {
+                status = BADROUTE;
+                retList.insert( new CtiReturnMsg(getID(),
+                                                 RWCString(OutMessage->Request.CommandStr),
+                                                 RWCString("Bad route specified for execution on the \"system\" device"),
+                                                 status,
+                                                 OutMessage->Request.RouteID,
+                                                 OutMessage->Request.MacroOffset,
+                                                 OutMessage->Request.Attempt,
+                                                 OutMessage->Request.TrxID,
+                                                 OutMessage->Request.UserID,
+                                                 OutMessage->Request.SOE,
+                                                 RWOrdered()));
 
-      }
-   }
+            }
+        }
+        else        // OK, we need to hit each and every default route in the system...
+        {
+            CtiRouteManager::LockGuard guard(_routeMgr->getMux());
+
+            if(_routeMgr->empty())
+            {
+                vgList.insert(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
+                                               pReq->getSOE(),
+                                               getDescription(parse),
+                                               "System has no default routes",
+                                               GeneralLogType,
+                                               SignalEvent,
+                                               pReq->getUser()));
+
+                retList.insert( new CtiReturnMsg(getID(),
+                                                 RWCString(OutMessage->Request.CommandStr),
+                                                 "System has no default routes",
+                                                 status,
+                                                 OutMessage->Request.RouteID,
+                                                 OutMessage->Request.MacroOffset,
+                                                 OutMessage->Request.Attempt,
+                                                 OutMessage->Request.TrxID,
+                                                 OutMessage->Request.UserID,
+                                                 OutMessage->Request.SOE));
+
+            }
+            else
+            {
+                CtiRouteManager::spiterator rte_itr;
+
+                for(rte_itr = _routeMgr->begin(); rte_itr != _routeMgr->end(); rte_itr++)
+                {
+                    Route = rte_itr->second;
+
+                    switch(Route->getType())
+                    {
+                    case CCURouteType:         // These route types may be considered default routes
+                    case TCURouteType:
+                    case LCURouteType:
+                    case RepeaterRouteType:
+                    case VersacomRouteType:
+                    case TapRouteType:
+                    case WCTPRouteType:
+                        {
+                            if( Route->isDefaultRoute() )
+                            {
+                                OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
+
+                                if(NewOMess)
+                                {
+                                    Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                                }
+                                else
+                                {
+                                    status = MEMORY;
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+                            }
+
+                            break;
+                        }
+                    case MacroRouteType:
+                    default:
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 
 
-   if(OutMessage != NULL)                // And get rid of our memory....
-   {
-      delete OutMessage;
-      OutMessage = NULL;
-   }
+    if(OutMessage != NULL)                // And get rid of our memory....
+    {
+        delete OutMessage;
+        OutMessage = NULL;
+    }
 
 
-   return status;
+    return status;
 }
 
 RWCString CtiDeviceSystem::getDescription(const CtiCommandParser &parse) const
@@ -431,27 +430,26 @@ CtiDeviceSystem::CtiDeviceSystem() {}
 
 CtiDeviceSystem::CtiDeviceSystem(const CtiDeviceSystem& aRef)
 {
-   *this = aRef;
+    *this = aRef;
 }
 
 CtiDeviceSystem::~CtiDeviceSystem() {}
 
 CtiDeviceSystem& CtiDeviceSystem::operator=(const CtiDeviceSystem& aRef)
 {
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
-   return *this;
+    if(this != &aRef)
+    {
+        Inherited::operator=(aRef);
+    }
+    return *this;
 }
 
 void CtiDeviceSystem::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
-   Inherited::getSQL(db, keyTable, selector);
+    Inherited::getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceSystem::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
-

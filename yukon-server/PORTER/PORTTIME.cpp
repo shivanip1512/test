@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/07/18 16:22:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/03 14:33:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
     ULONG       i, j;
     OUTMESS     *OutMessage;
     CtiDeviceBase   *RemoteRecord;
-    CtiRoute    *RouteRecord;
+    CtiRouteSPtr RouteRecord;
     DEVICE      DeviceRecord;
     USHORT      LeadAddress;
     PSZ         LeadTimeSyncs;
@@ -266,12 +266,12 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 case TYPE_CCU710:
                     /* Walk down the routes for this ccu and pick out time routes */
                     {
-                        RWRecursiveLock<RWMutexLock>::LockGuard     guard(RouteManager.getMux());
+                        CtiRouteManager::LockGuard guard(RouteManager.getMux());
 
-                        CtiRTDB<CtiRoute>::CtiRTDBIterator   rte_itr(RouteManager.getMap());
-                        for(; ++rte_itr ;)
+                        CtiRouteManager::spiterator rte_itr;
+                        for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); rte_itr++)
                         {
-                            RouteRecord = rte_itr.value();
+                            RouteRecord = rte_itr->second;
 
                             if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() &&
                                RouteRecord->isDefaultRoute())

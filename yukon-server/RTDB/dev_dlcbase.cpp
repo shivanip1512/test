@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/29 16:30:03 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/03 14:33:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -394,9 +394,9 @@ bool CtiDeviceDLCBase::processAdditionalRoutes( INMESS *InMessage ) const
 
     if(InMessage->Return.MacroOffset != 0)
     {
-        CtiRoute *Route = 0;
+        CtiRouteSPtr Route;
 
-        if( (Route = CtiDeviceBase::getRoute( InMessage->Return.RouteID )) != NULL )    // This is "this's" route
+        if( (Route = CtiDeviceBase::getRoute( InMessage->Return.RouteID )) )    // This is "this's" route
         {
             bret = Route->processAdditionalRoutes(InMessage);
         }
@@ -412,9 +412,9 @@ inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
 {
     ULONG offset = 0;
 
-    CtiRoute *Route = 0;
+    CtiRouteSPtr Route;
 
-    if(routeid > 0 && (Route = CtiDeviceBase::getRoute( routeid )) != NULL )    // This is "this's" route
+    if(routeid > 0 && (Route = CtiDeviceBase::getRoute( routeid )) )    // This is "this's" route
     {
         if(Route->getType() == MacroRouteType)
         {

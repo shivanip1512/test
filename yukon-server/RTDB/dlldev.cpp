@@ -1,3 +1,4 @@
+
 #pragma warning( disable : 4786 )
 /*-----------------------------------------------------------------------------*
 *
@@ -7,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 18:15:11 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/03 14:33:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +20,7 @@
 using namespace std;
 
 #include <rw/db/db.h>
+
 // #include "rtdb.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
@@ -41,109 +43,109 @@ using namespace std;
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
-   switch( ul_reason_for_call )
-   {
-   case DLL_PROCESS_ATTACH:
-      {
-         identifyProject(CompileInfo);
-         break;
-      }
-   case DLL_THREAD_ATTACH:
-      {
-         break;
-      }
-   case DLL_THREAD_DETACH:
-      {
-         break;
-      }
-   case DLL_PROCESS_DETACH:
-      {
-         // cout << "Yukon DB Miner RTDB DLL is exiting!" << endl;
-         break;
-      }
-   }
-   return TRUE;
+    switch( ul_reason_for_call )
+    {
+    case DLL_PROCESS_ATTACH:
+        {
+            identifyProject(CompileInfo);
+            break;
+        }
+    case DLL_THREAD_ATTACH:
+        {
+            break;
+        }
+    case DLL_THREAD_DETACH:
+        {
+            break;
+        }
+    case DLL_PROCESS_DETACH:
+        {
+            // cout << "Yukon DB Miner RTDB DLL is exiting!" << endl;
+            break;
+        }
+    }
+    return TRUE;
 }
 
 
 void IM_EX_DEVDB attachRouteManagerToDevices(CtiDeviceManager *DM, CtiRouteManager *RteMgr)
 {
-   CtiDeviceBase  *pBase;
+    CtiDeviceBase  *pBase;
 
-   CtiRTDB<CtiDevice>::CtiRTDBIterator   itr_dv(DM->getMap());
+    CtiRTDB<CtiDevice>::CtiRTDBIterator   itr_dv(DM->getMap());
 
-   RWRecursiveLock<RWMutexLock>::LockGuard guard(DM->getMux());
+    RWRecursiveLock<RWMutexLock>::LockGuard guard(DM->getMux());
 
-   for(; ++itr_dv ;)
-   {
-      pBase = itr_dv.value();
-      pBase->setRouteManager(RteMgr);
-   }
+    for(; ++itr_dv ;)
+    {
+        pBase = itr_dv.value();
+        pBase->setRouteManager(RteMgr);
+    }
 
 }
 
 void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
 {
-   int            i;
-   LONG           dID;
-   CtiRoute       *pRte;
-   CtiDeviceBase  *pDev;
+    int            i;
+    LONG           dID;
+    CtiRouteSPtr   pRte;
+    CtiDeviceBase  *pDev;
 
-   CtiRTDB<CtiRoute>::CtiRTDBIterator   itr(RM->getMap());
+    CtiRouteManager::spiterator itr;
 
 
-   for(; ++itr ;)
-   {
-      pRte = itr.value();
+    for(itr = RM->begin(); itr != RM->end() ; itr++)
+    {
+        pRte = itr->second;
 
-      switch(pRte->getType())
-      {
-      case CCURouteType:
-      case TCURouteType:
-      case LCURouteType:
-      case RepeaterRouteType:
-      case VersacomRouteType:
-      case TapRouteType:
-      case WCTPRouteType:
-         {
-            CtiRouteXCU  *pXCU = (CtiRouteXCU*)pRte;
-
-            dID = pXCU->getCommRoute().getTrxDeviceID();
-
-            if( dID > 0 )
+        switch(pRte->getType())
+        {
+        case CCURouteType:
+        case TCURouteType:
+        case LCURouteType:
+        case RepeaterRouteType:
+        case VersacomRouteType:
+        case TapRouteType:
+        case WCTPRouteType:
             {
-               pDev = DM->getEqual(dID);
+                CtiRouteXCU  *pXCU = (CtiRouteXCU*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
 
-               if(pDev != NULL)
-               {
-                  //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
-                  pXCU->setDevicePointer(pDev);
-               }
-               else
-               {
-                  pXCU->resetDevicePointer();
-               }
+                dID = pXCU->getCommRoute().getTrxDeviceID();
+
+                if( dID > 0 )
+                {
+                    pDev = DM->getEqual(dID);
+
+                    if(pDev != NULL)
+                    {
+                        //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
+                        pXCU->setDevicePointer(pDev);
+                    }
+                    else
+                    {
+                        pXCU->resetDevicePointer();
+                    }
+                }
+                break;
             }
-            break;
-         }
-      case MacroRouteType:
-         {
-            CtiRouteMacro *pMac = (CtiRouteMacro*)pRte;
-            pMac->getRoutePtrList().clear();
-
-            for (int i = 0; i < pMac->getRouteList().length(); i++)
+        case MacroRouteType:
             {
-               pMac->getRoutePtrList().insert(RM->getEqual(pMac->getRouteList()[i].getSingleRouteID()));
+                CtiRouteMacro *pMac = (CtiRouteMacro*)itr->second.get();         // Wild man, wild!  I guess that holding pRte lets this be ok...
+                pMac->getRoutePtrList().clear();
+
+                for(int i = 0; i < pMac->getRouteList().length(); i++)
+                {
+                    CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
+                    pMac->getRoutePtrList().insert( pSingleRoute );
+                }
             }
-         }
-      default:
-         {
-            break;
-         }
-      }
-   }
+        default:
+            {
+                break;
+            }
+        }
+    }
 
 }
-
 
 

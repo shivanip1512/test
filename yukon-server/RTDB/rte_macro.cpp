@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/29 16:33:58 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/03 14:33:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,9 +90,9 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     {
         if( offset < RoutePtrList.length())
         {
-            CtiRoute *&pRoute = RoutePtrList[offset];
+            CtiRouteSPtr pRoute = RoutePtrList[offset];
 
-            if(pRoute && pRoute != this)  // No jerking around here thank you.
+            if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
             {
                 if(pRoute->getType() != MacroRouteType)
                 {
@@ -149,9 +149,9 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     {
         for(int i = 0; i < RoutePtrList.length(); i++)
         {
-            CtiRoute *&pRoute = RoutePtrList[i];
+            CtiRouteSPtr pRoute = RoutePtrList[i];
 
-            if(pRoute && pRoute != this)  // No jerking around here thank you.
+            if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
             {
                 OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
 

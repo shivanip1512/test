@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/09/03 14:33:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -626,7 +626,7 @@ VSend (VSTRUCT *VSt,
 
 {
    ULONG      i;
-   CtiRoute   *RouteRecord;
+   CtiRouteSPtr RouteRecord;
    ROUTEMACRO RouteMacroRecord;
 
    /* Make sure that we are blank padded out to STANDNAMLEN */
@@ -661,14 +661,14 @@ VSend (VSTRUCT *VSt,
 #else
 
          {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
+            CtiRouteManager::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
 
-            CtiRTDB<CtiRoute>::CtiRTDBIterator   rte_itr(RouteManager.getMap());
+            CtiRouteManager::spiterator   rte_itr;
 
             /* Now do the routes */
-            for( ; ++rte_itr ; )
+            for(rte_itr = RouteManager.begin() ; rte_itr != RouteManager.end(); rte_itr++ )
             {
-               CtiRoute *RouteRecord = rte_itr.value();
+               CtiRouteSPtr RouteRecord = rte_itr->second;
 
                // A timed route is the original nomenclature fro a default route. 072099 CGP
                if(RouteRecord->isValid() && (RouteRecord->isDefaultRoute() || !CheckTimed))
@@ -714,10 +714,9 @@ VSend (VSTRUCT *VSt,
 
    default:
       /* get the route */
-      CtiHashKey   TempKey(atol(Route));
-      RouteRecord = RouteManager.getMap().findValue(&TempKey);
+      RouteRecord = RouteManager.getEqual(atol(Route));
 
-      if(RouteRecord != NULL)
+      if(RouteRecord)
       {
          VSend2 (VSt, RouteRecord);
       }
@@ -729,7 +728,7 @@ VSend (VSTRUCT *VSt,
 
 
 /* Routine to actually send the message */
-VSend2 (VSTRUCT *VSt, CtiRoute *RouteRecord)
+VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
 
 {
    ULONG i;

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/08/28 14:56:31 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/03 14:33:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "dsm2.h"
 
 #include "cmdparse.h"
+#include "rte_base.h"
 #include "tbl_base.h"
 #include "tbl_2way.h"
 #include "tbl_stats.h"
@@ -38,8 +39,7 @@ class CtiMessage;
 class CtiReturnMsg;
 class CtiRequestMsg;
 class CtiSignalMsg;
-class IM_EX_DEVDB CtiRouteBase;
-class IM_EX_DEVDB CtiRouteManager;
+class CtiRouteManager;
 class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
@@ -94,7 +94,7 @@ public:
 
     CtiDeviceBase& operator=(const CtiDeviceBase& aRef);
 
-    CtiRouteBase*        getRoute(LONG RteId) const;
+    CtiRouteSPtr         getRoute(LONG RteId) const;
     CtiRouteManager*     getRouteManager() const;
     CtiDeviceBase&       setRouteManager(CtiRouteManager* aPtr);
 

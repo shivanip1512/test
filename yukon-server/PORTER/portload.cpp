@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/23 21:01:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/03 14:33:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,12 +122,12 @@ LoadRemoteRoutes(CtiDeviceBase *Dev)
                 /* now check if this dude has any routes */
                 {  // get me some SCOPE...
 
-                    CtiRTDB<CtiRoute>::CtiRTDBIterator   rte_itr(RouteManager.getMap());
+                    CtiRouteManager::spiterator   rte_itr;
 
                     /* Now do the routes */
-                    for( ; ++rte_itr ; )
+                    for( rte_itr = RouteManager.begin(); rte_itr != RouteManager.end()  ; rte_itr++)
                     {
-                        CtiRouteCCU *CCURouteRecord = (CtiRouteCCU*)rte_itr.value();
+                        CtiRouteCCU *CCURouteRecord = (CtiRouteCCU*)rte_itr->second.get();
 
                         //  we only care about routes on this device
                         if( CCURouteRecord->getCommRoute().getTrxDeviceID() != Dev->getID() )       // if not me.

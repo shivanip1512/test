@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/08/05 20:42:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/03 14:33:51 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -29,12 +29,16 @@
 #include "rtdb.h"
 #include "dlldefs.h"
 #include "slctdev.h"
+#include "smartmap.h"
 
 IM_EX_DEVDB BOOL isARoute(CtiRouteBase*,void*);
 
-class IM_EX_DEVDB CtiRouteManager : public CtiRTDB<CtiRoute>
+class IM_EX_DEVDB CtiRouteManager
 {
 private:
+
+    CtiSmartMap< CtiRouteBase > _smartMap;
+    mutable CtiMutex            _mux;
 
     void RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
     void RefreshRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
@@ -43,15 +47,35 @@ private:
     void RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
 
 public:
-   CtiRouteManager();
-   virtual ~CtiRouteManager();
 
-   void DumpList(void);
-   void DeleteList(void);
+    typedef CtiLockGuard<CtiMutex>                      LockGuard;
+    typedef CtiSmartMap< CtiRouteBase >                 coll_type;              // This is the collection type!
+    typedef CtiSmartMap< CtiRouteBase >::ptr_type       ptr_type;
+    typedef CtiSmartMap< CtiRouteBase >::spiterator     spiterator;
+    typedef CtiSmartMap< CtiRouteBase >::insert_pair    insert_pair;
 
-   void RefreshList(CtiRouteBase* (*Factory)(RWDBReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
-   CtiRouteBase *getEqual( LONG rid );
-   CtiRouteBase *RouteGetEqualByName( RWCString &rname );
+
+    CtiRouteManager();
+    virtual ~CtiRouteManager();
+
+    void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
+
+    void DumpList(void);
+    void DeleteList(void);
+
+    void RefreshList(CtiRouteBase* (*Factory)(RWDBReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
+    ptr_type getEqual( LONG rid );
+    ptr_type getEqualByName( RWCString &rname );
+
+    spiterator begin();
+    spiterator end();
+
+    CtiMutex& getMux()
+    {
+        return _mux;
+    }
+
+    bool empty() const;
 };
 
 #endif                  // #ifndef __ROUTE_MGR_H__

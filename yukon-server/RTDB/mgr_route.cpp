@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/08/05 20:42:56 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/09/03 14:33:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,13 @@ CtiRouteManager::CtiRouteManager() {}
 CtiRouteManager::~CtiRouteManager() {}
 
 
-void CtiRouteManager::DeleteList(void)   { Map.clearAndDestroy();}
+void CtiRouteManager::DeleteList(void)
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
 
 
 
@@ -50,41 +56,45 @@ inline RWBoolean  isRouteNotUpdated(CtiRouteBase *pRoute, void* d)
 }
 
 
-void ApplyRouteResetUpdated(const CtiHashKey *key, CtiRouteBase *&pRoute, void* d)
+void ApplyRouteResetUpdated(const long key, CtiRouteSPtr pRoute, void* d)
 {
     pRoute->resetUpdatedFlag();
 
     if(pRoute->getType() == MacroRouteType)
     {
-        ((CtiRouteMacro*)pRoute)->getRouteList().clear();   // We will refill this one as we go!
+        CtiRouteMacro* pMacro = (CtiRouteMacro*)pRoute.get();
+        pMacro->getRouteList().clear();   // We will refill this one as we go!
     }
     if(pRoute->getType() == CCURouteType)
     {
-        ((CtiRouteCCU*)pRoute)->getRepeaterList().clear();  //  ditto
+        CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
+        pCCU->getRepeaterList().clear();  //  ditto
     }
 
     return;
 }
 
-void ApplyRepeaterSort(const CtiHashKey *key, CtiRouteBase *&pRoute, void* d)
+void ApplyRepeaterSort(const long key, CtiRouteSPtr pRoute, void* d)
 {
     if(pRoute->getType() == CCURouteType)  //  used to be RepeaterRouteType
     {
-        ((CtiRouteCCU*)pRoute)->getRepeaterList().sort();
+        CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
+        pCCU->getRepeaterList().sort();
     }
     return;
 }
 
-void ApplyMacroRouteSort(const CtiHashKey *key, CtiRouteBase *&pRoute, void* d)
+void ApplyMacroRouteSort(const long key, CtiRouteSPtr pRoute, void* d)
 {
     if(pRoute->getType() == MacroRouteType)
     {
-        ((CtiRouteMacro*)pRoute)->getRouteList().sort();
+        CtiRouteMacro* pMacro = (CtiRouteMacro*)pRoute.get();
+        pMacro->getRouteList().sort();
     }
     return;
 }
 
-void ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiRouteBase *&pPt, void* d)
+void ApplyInvalidateNotUpdated(const long key, CtiRouteSPtr pPt, void* d)
 {
     if(!pPt->getUpdatedFlag())
     {
@@ -95,17 +105,19 @@ void ApplyInvalidateNotUpdated(const CtiHashKey *key, CtiRouteBase *&pPt, void* 
 
 void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    CtiRouteBase *pTempCtiRoute = NULL;
+    ptr_type pTempCtiRoute;
     bool rowFound = false;
 
     try
     {
         {
-            LockGuard guard(monitor());
-
             // Reset everyone's Updated flag.
-            Map.apply(ApplyRouteResetUpdated, NULL);
-            resetErrorCode();
+            if(!_smartMap.empty())
+            {
+                apply(ApplyRouteResetUpdated, NULL);
+            }
+
+            _smartMap.resetErrorCode();
 
             /*
              *  093099 CGP: Look for items starting at the bottom of the inheritance hierarchy.
@@ -134,7 +146,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 CtiRouteCCU().getSQL( db, keyTable, selector );
                 selector.where( keyTable["category"] == RWDBExpr("ROUTE") && selector.where());
                 RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -161,7 +173,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 }
                 CtiTableVersacomRoute::getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -188,7 +200,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 }
                 CtiTableRepeaterRoute::getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -214,7 +226,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 }
                 CtiTableMacroRoute::getSQL( db, keyTable, selector );
                 RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                 }
@@ -225,12 +237,12 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 }
             }
 
-            if(getErrorCode() != RWDBStatus::ok)
+            if(_smartMap.getErrorCode() != RWDBStatus::ok)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " database had a return code of " << getErrorCode() << endl;
+                    dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
                 }
             }
             else
@@ -240,37 +252,33 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                     // Now I need to check for any Route removals based upon the
                     // Updated Flag being NOT set
 
-                    Map.apply(ApplyInvalidateNotUpdated, NULL);
+                    apply(ApplyInvalidateNotUpdated, NULL);
                 }
             }
 
         }   // Temporary results are destroyed to free the connection
     }
-    catch(RWExternalErr e )
+    catch(...)
     {
-        //Make sure the list is cleared
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << endl;}
-        Map.clearAndDestroy();
-
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getRoutes:  " << e.why() << endl;}
-        RWTHROW(e);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
 
 void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    LONG              lTemp = 0;
-    CtiRouteBase*    pTempCtiRoute = NULL;
+    LONG lTemp = 0;
+    ptr_type pTempCtiRoute;
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
         rdr["paobjectid"] >> lTemp;            // get the RouteID
-        CtiHashKey key(lTemp);
 
-
-        if( Map.entries() > 0 && ((pTempCtiRoute = Map.findValue(&key)) != NULL) )
+        if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
@@ -290,8 +298,8 @@ void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBas
 
                 if(((*testFunc)(pSp, arg)))            // If I care about this point in the db in question....
                 {
-                    pSp->setUpdatedFlag();               // Mark it updated
-                    Map.insert( new CtiHashKey(pSp->getRouteID()), pSp ); // Stuff it in the list
+                    pSp->setUpdatedFlag();             // Mark it updated
+                    _smartMap.insert( pSp->getRouteID(), pSp );
                 }
                 else
                 {
@@ -304,18 +312,16 @@ void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBas
 
 void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    LONG        lTemp = 0;
-    CtiRouteBase*   pTempCtiRoute = NULL;
+    LONG lTemp = 0;
+    ptr_type pTempCtiRoute;
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
-        CtiRouteBase* pSp = NULL;
 
         rdr["routeid"] >> lTemp;            // get the RouteID
-        CtiHashKey key(lTemp);
 
-        if( Map.entries() > 0 && ((pTempCtiRoute = Map.findValue(&key)) != NULL) )
+        if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
         {
             if(pTempCtiRoute->getType() == CCURouteType)  //  used to be RepeaterRouteType
             {
@@ -324,29 +330,28 @@ void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOO
                  *  add this repeater to the route entry... It had better be a repeater route.
                  */
 
-                ((CtiRouteCCU*)pTempCtiRoute)->DecodeRepeaterDatabaseReader(rdr);        // Fills himself in from the reader
+                CtiRouteCCU *pCCU = (CtiRouteCCU*)pTempCtiRoute.get();
+                pCCU->DecodeRepeaterDatabaseReader(rdr);        // Fills himself in from the reader
             }
         }
     }
 
     // Sort all the repeater listings based on repeater order
-    Map.apply(ApplyRepeaterSort, NULL);
+    apply(ApplyRepeaterSort, NULL);
 }
 
 void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    LONG            lTemp = 0;
-    CtiRouteBase*   pTempCtiRoute = NULL;
+    LONG lTemp = 0;
+    ptr_type pTempCtiRoute;
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
-        CtiRouteBase* pSp = NULL;
 
         rdr["routeid"] >> lTemp;            // get the RouteID
-        CtiHashKey key(lTemp);
 
-        if( Map.entries() > 0 && ((pTempCtiRoute = Map.findValue(&key)) != NULL) )
+        if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
         {
             if(pTempCtiRoute->getType() == MacroRouteType)
             {
@@ -355,28 +360,28 @@ void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (
                  *  add this route to the macro route entry... It had better be a macro route.
                  */
 
-                ((CtiRouteMacro*)pTempCtiRoute)->DecodeMacroReader(rdr);        // Fills himself in from the reader
+                CtiRouteMacro *pMacro = (CtiRouteMacro*)pTempCtiRoute.get();
+                pMacro->DecodeMacroReader(rdr);        // Fills himself in from the reader
             }
         }
     }
 
-    Map.apply(ApplyMacroRouteSort, NULL);
+    apply(ApplyMacroRouteSort, NULL);
 }
 
 void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
-    CtiRouteBase*   pTempCtiRoute = NULL;
+    ptr_type    pTempCtiRoute;
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
         CtiRouteBase* pSp = NULL;
 
-        rdr["routeid"] >> lTemp;            // get the RouteID
-        CtiHashKey key(lTemp);
+        rdr["routeid"] >> lTemp; // get the RouteID
 
-        if( Map.entries() > 0 && ((pTempCtiRoute = Map.findValue(&key)) != NULL) )
+        if( !_smartMap.empty() && (pTempCtiRoute = _smartMap.find(lTemp)) )
         {
             if(pTempCtiRoute->getType() == VersacomRouteType)
             {
@@ -385,67 +390,110 @@ void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOO
                  *  add this versacom data to the route entry... It had better be a versacom route.
                  */
 
-                ((CtiRouteVersacom*)pTempCtiRoute)->DecodeVersacomDatabaseReader(rdr);        // Fills himself in from the reader
+                CtiRouteVersacom *pVersacom = (CtiRouteVersacom*)pTempCtiRoute.get();
+                pVersacom->DecodeVersacomDatabaseReader(rdr);        // Fills himself in from the reader
             }
         }
     }
 }
 
-CtiRouteBase *CtiRouteManager::getEqual( LONG Rte )
+CtiRouteManager::ptr_type CtiRouteManager::getEqual( LONG Rte )
 {
-    CtiHashKey key(Rte);
-    return Map.findValue(&key);
+    ptr_type p;
+    try
+    {
+        p = _smartMap.find(Rte);
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return p;
 }
 
 
 
-CtiRouteBase *CtiRouteManager::RouteGetEqualByName( RWCString &rname )
+CtiRouteManager::ptr_type CtiRouteManager::getEqualByName( RWCString &rname )
 {
-    CtiRTDBIterator itr(Map);
-    CtiRouteBase *tmpRoute = NULL;
+    ptr_type p;
     RWCString tmpName;
-
     rname.toLower();
 
+    spiterator itr;
+
     //  go through the list looking for a matching name
-    for( ; itr(); )
+    for( itr = begin(); itr != end(); itr++)
     {
-        tmpName = (itr.value())->getName();
+        tmpName = itr->second->getName();
         tmpName.toLower();
 
         if( tmpName == rname )
         {
-            tmpRoute = itr.value();
+            p = itr->second;
             break;  //  look, ma, this makes us O(n/2) instead of O(n) - ha ha.
         }
     }
 
-    return tmpRoute;
+    return p;
 }
 
 
 void CtiRouteManager::DumpList(void)
 {
-    CtiRoute *p = NULL;
     try
     {
-        CtiRTDBIterator itr(Map);
+        LockGuard gaurd(_mux);
+        spiterator itr;
 
-        for(; itr() ;)
+        for(itr = begin(); itr != end(); itr++)
         {
-            p = itr.value();
-            p->DumpData();
+            itr->second->DumpData();
         }
     }
-    catch(RWExternalErr e )
+    catch(...)
     {
-        //Make sure the list is cleared
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear port list..." << endl;}
-        Map.clearAndDestroy();
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpRoutes:  " << e.why() << endl;}
-        RWTHROW(e);
-
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
 
+void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
+{
+    try
+    {
+        LockGuard gaurd(_mux);
+        spiterator itr;
+
+        for(itr = begin(); itr != end(); itr++)
+        {
+            applyFun( itr->first, itr->second, d);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
+
+bool CtiRouteManager::empty() const
+{
+    LockGuard guard(_mux);
+    return _smartMap.empty();
+}
+
+CtiRouteManager::spiterator CtiRouteManager::begin()
+{
+    return _smartMap.getMap().begin();
+}
+CtiRouteManager::spiterator CtiRouteManager::end()
+{
+    return _smartMap.getMap().end();
+}
 

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/08/05 20:42:56 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/09/03 14:33:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,11 +109,13 @@ CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_PTR fn) :
 _portThreadFunc(fn)
 {}
 
-CtiPortManager::~CtiPortManager() {}
+CtiPortManager::~CtiPortManager()
+{
+}
 
 void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
-    CtiSmartMap< CtiPort >::ptr_type pTempPort;
+    ptr_type pTempPort;
 
     bool rowFound = false;
 
@@ -215,11 +217,10 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             }
         }   // Temporary results are destroyed to free the connection
     }
-    catch(RWExternalErr e )
+    catch(...)
     {
-        //Make sure the list is cleared
-        cout << "getPorts:  " << e.why() << endl;
-        RWTHROW(e);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -255,12 +256,10 @@ void CtiPortManager::DumpList(void)
             itr->second->Dump();
         }
     }
-    catch(RWExternalErr e )
+    catch(...)
     {
-        //Make sure the list is cleared
-        cout << "DumpPorts:  " << e.why() << endl;
-        RWTHROW(e);
-
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -271,11 +270,12 @@ CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
     {
         p = _smartMap.find(pid);
     }
-    catch(RWExternalErr e )
+    catch(...)
     {
-        //Make sure the list is cleared
-        cout << "PortGetEqual:  " << e.why() << endl;
-        RWTHROW(e);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return p;

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_macro.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/09/03 14:33:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,12 @@
 #include <rw/tpordvec.h>
 #include <rw/tvordvec.h>
 #include <rw/tpslist.h>
+
+#include "boost/shared_ptr.hpp"
+using namespace std;
+using boost::shared_ptr;
+
+
 
 #include "tbl_rtmacro.h"
 #include "rte_base.h"
@@ -34,7 +40,7 @@ protected:
 
    // All I really do is hint at REAL Routes.... Which had better exist somewhere else.. I think.
    RWTValOrderedVector< CtiTableMacroRoute >  RouteList;
-   RWTPtrOrderedVector< CtiRoute           >  RoutePtrList;    // Not responsible for these route pointer's memory...
+   RWTValOrderedVector< shared_ptr< CtiRoute > >  RoutePtrList;    // Not responsible for these route pointer's memory...
 
 private:
 
@@ -43,7 +49,7 @@ public:
    typedef CtiRouteBase Inherited;
 
    typedef RWTValOrderedVector< CtiTableMacroRoute > CtiRouteList_t;
-   typedef RWTPtrOrderedVector< CtiRoute > CtiRoutePtrList_t;
+   typedef RWTValOrderedVector< shared_ptr< CtiRoute > > CtiRoutePtrList_t;
 
    CtiRouteMacro();
    CtiRouteMacro(const CtiRouteMacro& aRef);

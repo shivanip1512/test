@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/08/29 16:37:28 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/09/03 14:33:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,14 +55,14 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     INT   nRet = NoError;
     RWCString resultString;
 
-    CtiRoute *Route = NULL;
+    CtiRouteSPtr Route;
     /*
      *  This method should only be called by the dev_base method
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
      *   That method prepares an outmessage for submission to the internals..
      */
 
-    if( (Route = getRoute( getRouteID() )) != NULL )    // This is "this's" route
+    if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {
         OutMessage->TargetID = getID();
 

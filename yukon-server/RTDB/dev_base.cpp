@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/08/28 14:56:56 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2002/09/03 14:33:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,9 +39,9 @@ CtiDeviceBase::~CtiDeviceBase()
 }
 
 
-CtiRoute* CtiDeviceBase::getRoute(LONG RteId) const
+CtiRouteSPtr CtiDeviceBase::getRoute(LONG RteId) const
 {
-    CtiRoute *Rte = NULL;
+    CtiRouteSPtr Rte;
 
     LockGuard  guard(monitor());
 

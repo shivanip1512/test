@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(PROCLOG)\include \
 -I$(RW) \
+-I$(BOOST) \
 -I$(XERCESINC) \
 
 
@@ -30,6 +31,7 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(TCLINC) \
+;$(BOOST) \
 ;$(RW)
 
 

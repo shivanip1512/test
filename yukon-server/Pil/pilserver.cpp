@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2002/08/28 16:15:41 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2002/09/03 14:33:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1052,11 +1052,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         {
             //  apparently we've been sent a route name
             RWCString routeName = parse.getsValue("route");
-            CtiRouteBase *tmpRoute;
+            CtiRouteSPtr tmpRoute;
 
-            tmpRoute = RouteManager->RouteGetEqualByName( routeName );
+            tmpRoute = RouteManager->getEqualByName( routeName );
 
-            if(tmpRoute != NULL)
+            if(tmpRoute)
             {
                 pReq->setRouteId( tmpRoute->getRouteID() );
             }
@@ -1270,7 +1270,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
     INT status = NORMAL;
     int i;
     RWRecursiveLock<RWMutexLock>::LockGuard dev_guard(DeviceManager->getMux());
-    RWRecursiveLock<RWMutexLock>::LockGuard rte_guard(RouteManager->getMux());
+    CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
 
     CtiDevice *pRepeaterToRole = DeviceManager->RemoteGetEqual(Req.DeviceId());    // This is our repeater we are curious about!
 
@@ -1283,22 +1283,22 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
             // Alright.. An appropriate device has been selected for this command.
             vector< CtiDeviceRepeaterRole > roleVector;
-            CtiRTDB<CtiRoute>::CtiRTDBIterator itr_rte(RouteManager->getMap());
+            CtiRouteManager::spiterator itr_rte;
 
             int rolenum = 1;
             int stagestofollow;
             bool foundit;
 
-            for(; ++itr_rte ;)
+            for(itr_rte = RouteManager->begin(); itr_rte != RouteManager->end(); itr_rte++)
             {
                 foundit = false;
                 stagestofollow = 0;
 
-                CtiRoute *route = itr_rte.value();
+                CtiRouteSPtr route = itr_rte->second;
 
                 if(route->getType() == CCURouteType)
                 {
-                    CtiRouteCCU *ccuroute = (CtiRouteCCU*)route;
+                    CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
 
                     if( ccuroute->getRepeaterList().entries() > 0 )
                     {

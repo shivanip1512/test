@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/08/29 16:44:20 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/09/03 14:33:49 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 {
     INT   nRet = NoError;
     RWCString resultString;
-    CtiRoute *Route = NULL;
+    CtiRouteSPtr Route;
     long  routeID;
 
     bool found = false;
@@ -214,7 +214,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 
             EstablishOutMessagePriority( pOut, MAXPRIORITY - 4 );
 
-            if( (Route = CtiDeviceBase::getRoute( routeID )) != NULL )    // This is "this's" route
+            if( (Route = CtiDeviceBase::getRoute( routeID )) )    // This is "this's" route
             {
                 pOut->TargetID                = getID();
                 pOut->EventCode               = BWORD | RESULT | WAIT;

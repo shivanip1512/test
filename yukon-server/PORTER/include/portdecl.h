@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/08 23:19:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/09/03 14:33:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ INT WWVBufferWrite (HFILE, char *);
 /* Prototypes from PORTCONF.C */
 VOID VConfigThread (PVOID);
 INT VSend (VSTRUCT *, PCHAR, USHORT);
-INT VSend2 (VSTRUCT *, CtiRoute *);
+INT VSend2 (VSTRUCT *, CtiRouteSPtr );
 
 /* Prototypes from PORTCONT.C */
 INT RemoteControl (OUTMESS *);
