@@ -419,6 +419,8 @@ public javax.swing.JButton getCreateScheduleButton()
 		createScheduleButton.setPreferredSize( new java.awt.Dimension( 80, 23 ) );
 		createScheduleButton.addActionListener(this);
 		createScheduleButton.setVisible( com.cannontech.macs.gui.Scheduler.isCreateable() );
+        
+        getCreateScheduleButton().setEnabled( false );
 	}
 
 	return createScheduleButton;
@@ -1119,7 +1121,7 @@ private void showWizardPanel(WizardPanel wizard)
  * This method was created in VisualAge.
  * @param selected Schedule
  */
-protected void synchTableAndButtons(Schedule selected)
+private void synchTableAndButtons(Schedule selected)
 {
    if (startStopButton == null || editButton == null || enableDisableButton == null)
 	  return;
@@ -1225,6 +1227,8 @@ public void messageReceived( MessageEvent e )
 	}
     else if( in instanceof ConnStateChange )
     {
+        ConnStateChange csMsg = (ConnStateChange)in;
+        
         // set the frames Title to a connected/not connected text
         final String connectedString = getConnectionState();
                 
@@ -1237,8 +1241,27 @@ public void messageReceived( MessageEvent e )
                     f.setTitle(connectedString);
             }
                 
-        });         
-                        
+        });
+        
+        getCreateScheduleButton().setEnabled( csMsg.isConnected() );
+
+        //remove any editors or wizards for schedules if we have been disconnected
+        // disable all buttons
+        if( !csMsg.isConnected() )
+        {
+            getStartStopButton().setEnabled(false);
+            getEnableDisableButton().setEnabled(false);
+            getEditViewButton().setEnabled(false);
+            getDeleteScheduleButton().setEnabled(false);
+            
+            for( int i = 0; i < getFrames().size(); i++ )
+            {
+                javax.swing.JFrame f = (javax.swing.JFrame)getFrames().get(i);
+                if( f.isVisible() )
+                    f.setVisible(false);
+            }
+        }
+        
     }
     
     
