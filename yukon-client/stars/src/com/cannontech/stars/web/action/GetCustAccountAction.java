@@ -101,7 +101,11 @@ public class GetCustAccountAction implements ActionBase {
             }
             
             liteAcctInfo.setLastLoginTime( System.currentTimeMillis() );	// Update the last login time
+            
             if (ServerUtils.hasTwoWayThermostat(liteAcctInfo, energyCompany)) {
+            	// Get up-to-date thermostat settings and register the account
+            	energyCompany.updateThermostatSettings( liteAcctInfo );
+            	
 	            java.util.ArrayList accountList = energyCompany.getAccountsWithGatewayEndDevice();
 	            synchronized (accountList) {
 	            	if (!accountList.contains( liteAcctInfo )) accountList.add( liteAcctInfo );
