@@ -126,7 +126,7 @@ public Integer getNominalTimeout() {
 }
 
 public Integer getVirtualTimeout() {
-	return nominalTimeout;
+	return virtualTimeout;
 }
 
 
