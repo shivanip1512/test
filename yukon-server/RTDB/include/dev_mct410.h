@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/10/22 15:43:35 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/10/26 21:18:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ private:
 public:
 
    typedef CtiDeviceMCT Inherited;
-   typedef pair<unsigned long, PointQuality_t> data_pair;
+   typedef pair<double, PointQuality_t> data_pair;
 
    CtiDeviceMCT410( );
    CtiDeviceMCT410( const CtiDeviceMCT410 &aRef );

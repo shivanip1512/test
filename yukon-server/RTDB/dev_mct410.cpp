@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/10/22 15:43:34 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/10/26 21:18:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -673,13 +673,13 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 }
 
 
-pair<unsigned long, PointQuality_t> CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
+CtiDeviceMCT410::data_pair CtiDeviceMCT410::getData( unsigned char *buf, int len, ValueType vt )
 {
     PointQuality_t quality   = NormalQuality;
     unsigned long  value     = 0,
                    errorcode = 0xffffffff;
-    unsigned char  demandbits;
-    pair<unsigned long, PointQuality_t> retval;
+    unsigned char  demandbits, resolution;
+    data_pair retval;
 
     for( int i = 0; i < len; i++ )
     {
@@ -695,7 +695,8 @@ pair<unsigned long, PointQuality_t> CtiDeviceMCT410::getData( unsigned char *buf
             //  if we fill in the demand bits in the error code, we can run it through
             //    the same switch statement as anything else
             errorcode  |= buf[i] | 0xc0;
-            value      |= buf[i] & 0x3f;
+            resolution  = buf[i] & 0x30;
+            value      |= buf[i] & 0x0f;
         }
         else if( vt == ValueType_Voltage && !i )
         {
@@ -730,8 +731,7 @@ pair<unsigned long, PointQuality_t> CtiDeviceMCT410::getData( unsigned char *buf
             case 0x40:  quality = PowerfailQuality;          break;
         }
 
-        if( vt == ValueType_Voltage &&
-            value > 0x7fff )
+        if( vt == ValueType_Voltage && value > 0x7fff )
         {
             value = 0;
             quality = AbnormalQuality;
@@ -740,6 +740,26 @@ pair<unsigned long, PointQuality_t> CtiDeviceMCT410::getData( unsigned char *buf
 
     retval.first  = value;
     retval.second = quality;
+
+    if( vt == ValueType_KW )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - demand value " << value << " resolution " << resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+
+        switch( resolution )
+        {
+            default:
+            case 0x00:  retval.first /=    10.0;    break;  //  100 WH units -> kWH
+            case 0x10:  retval.first /=   100.0;    break;  //   10 WH units -> kWH
+            case 0x20:  retval.first /=  1000.0;    break;  //    1 WH units -> kWH
+            case 0x30:  retval.first /= 10000.0;    break;  //  0.1 WH units -> kWH
+        }
+
+        retval.first *= 10.0;  //  REMOVE THIS for HEAD or WHATEVER build HAS the proper, pretty, nice 1.0 kWH output code
+    }
 
     return retval;
 }
