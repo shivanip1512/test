@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/10/18 21:03:02 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/05/13 19:21:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -378,7 +378,8 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 
         interp->evaluate(init_id, true);
 
-        // init default pil request priority        
+	// (re)set some variables
+	interp->evaluate("set ScheduleName " + sched.getScheduleName());
         interp->evaluate("set MessagePriority 7");
 
         {        

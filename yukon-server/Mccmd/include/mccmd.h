@@ -112,6 +112,16 @@ static int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 /* Handles exiting the interpreter properly */
 static int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 
+/* Get a device name/id from the database */
+static int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+static int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+
+/* Format an error (status) code from PIL */
+static int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+
+/* Get the base directory yukon is installed in */
+static int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+
 //MORE............
 
 static int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
@@ -132,8 +142,9 @@ static void HandleMessage(RWCollectable* msg,
 /* Retrieves the id of a notification group given its name */
 static long GetNotificationGroupID( const RWCString& name );
 
-/* Retrive the name of a device */
+/* Retrive the name/id of a device */
 static void GetDeviceName(long deviceID, RWCString& name);
+static long GetDeviceID(const RWCString& name);
 
 /* Strips out the select list part of the command and builds up
    a set of n select name commands from it, which are returned

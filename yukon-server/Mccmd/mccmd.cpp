@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2003/04/08 21:26:47 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2003/05/13 19:21:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -459,6 +459,13 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "ImportCommandFile", importCommandFile, NULL, NULL );
     Tcl_CreateCommand( interp, "IMPORTCOMMANDFILE", importCommandFile, NULL, NULL );
 
+    Tcl_CreateCommand( interp, "getDeviceID", getDeviceID, NULL, NULL);
+    Tcl_CreateCommand( interp, "getDeviceName", getDeviceName, NULL, NULL);
+
+    Tcl_CreateCommand( interp, "formatError", formatError, NULL, NULL);
+
+    Tcl_CreateCommand( interp, "getYukonBaseDir", getYukonBaseDir, NULL, NULL);
+
     /* Load up the initialization script */
     RWCString init_script;
     HINSTANCE hLib = LoadLibrary("cparms.dll");
@@ -472,34 +479,21 @@ int Mccmd_Init(Tcl_Interp* interp)
         if( (*fpGetAsString)(MCCMD_CTL_SCRIPTS_DIR, temp, 64) )
             init_script = temp;
         else
-	  {
             init_script = "c:/yukon/server/macsscripts";
-	    {
-	      CtiLockGuard<CtiLogger> guard(dout);
-	      dout << RWTime() << " Unable to find " << MCCMD_CTL_SCRIPTS_DIR <<
-		" in master.cfg, defaulting to: " << init_script << endl;
-	    }
-	  }
 
         init_script += "/";
 
         if( (*fpGetAsString)(MCCMD_INIT_SCRIPT, temp, 64) )
             init_script += temp;
         else
-	  {
             init_script += "init.tcl";
-	    {
-	      CtiLockGuard<CtiLogger> guard(dout);
-	      dout << RWTime() << " Unable to find " << MCCMD_INIT_SCRIPT <<
-		" in master.cfg, defaulting to: " << init_script << endl;
-	    }
-	  }
 
         if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )
         {
             char *eptr;
             gMccmdDebugLevel = strtoul(temp, &eptr, 16);
         }
+            //    gMccmdDebugLevel = atoi(temp);
 
         if( gMccmdDebugLevel > 0 )
         {
@@ -521,13 +515,8 @@ int Mccmd_Init(Tcl_Interp* interp)
         dout << "Using: " << init_script << endl;
     }
 
-    
-    if(Tcl_EvalFile(interp, (char*) init_script.data()) != TCL_OK)
-      {
-	CtiLockGuard<CtiLogger> guard(dout);
-	dout << RWTime() << " WARNING:  Unable to evaluate: " << init_script <<
-	  ", Check that this files exists!" << endl;
-      }
+
+    Tcl_EvalFile(interp, (char*) init_script.data() );
 
     /* declare that we are implementing the MCCmd package so that scripts that have
     "package require McCmd" can load McCmd automatically. */
@@ -1296,6 +1285,60 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     return TCL_OK;
 }
 
+int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+  if(argc < 2)
+    {
+      WriteOutput("Usage: getDeviceName <deviceid>");
+      Tcl_SetResult(interp, "0", NULL);
+      return TCL_OK;
+    }
+  
+  long id = atoi(argv[1]);
+  RWCString name;
+  GetDeviceName(id,name);
+  Tcl_Obj* tcl_name = Tcl_NewStringObj((const char*)name.data(), -1);
+  Tcl_SetObjResult(interp, tcl_name);
+  return TCL_OK;
+}
+
+int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]) 
+{
+  if(argc < 2)
+    {
+      WriteOutput("Usage: getDeviceID <devicename>");
+      return TCL_OK;
+    }
+
+  long id = GetDeviceID(RWCString(argv[1]));
+  Tcl_Obj* tcl_id = Tcl_NewStringObj((const char*)CtiNumStr(id),-1);
+  Tcl_SetObjResult(interp, tcl_id);
+  return TCL_OK;
+}
+
+int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+  if(argc < 2) 
+    {
+      WriteOutput("Usage: formatError <errorcode>");
+      return TCL_OK;
+    }
+  
+  int id = atoi(argv[1]);
+  RWCString err_str = FormatError(id);
+  Tcl_Obj* tcl_str = Tcl_NewStringObj(err_str,-1);
+  Tcl_SetObjResult(interp, tcl_str);
+  return TCL_OK;
+}
+
+int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+{
+  RWCString base_dir = gConfigParms.getYukonBaseDir();
+  Tcl_Obj* tcl_str = Tcl_NewStringObj(base_dir, -1);
+  Tcl_SetObjResult(interp, tcl_str);
+  return TCL_OK;
+}
+
 int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line)
 {
     char* p;
@@ -1390,7 +1433,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
         status = queue_ptr->read(msg, 100);
 
         if( status != RW_THR_TIMEOUT && msg != NULL )
-        {
+	  {
             if( msg->isA() == MSG_PCRETURN )
             {
                 // received a message, reset the timeout
@@ -1464,7 +1507,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 	
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
 	Tcl_ListObjAppendElement(interp, status_list, 
-				 Tcl_NewStringObj(FormatError(m_iter->second->Status()),-1));
+				 Tcl_NewIntObj(m_iter->second->Status()));
 	delete m_iter->second;
     }
 
@@ -1479,7 +1522,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name, -1));
 	    Tcl_ListObjAppendElement(interp, status_list, 
-				     Tcl_NewStringObj(FormatError(m_iter->second->Status()),-1));
+				     Tcl_NewIntObj(m_iter->second->Status()));
        	    delete m_iter->second;
         }
     }
@@ -1684,6 +1727,36 @@ static void GetDeviceName(long deviceID, RWCString& name)
     {
         WriteOutput("Error retreive device name __LINE__ __FILE__");
     }
+}
+
+static long GetDeviceID(const RWCString& name) 
+{
+  long id = 0;
+  try 
+    {
+      {
+	CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+	RWDBConnection conn = getConnection();
+    
+	RWCString sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
+	sql += name;
+	sql += "'";
+	RWDBReader rdr = ExecuteQuery(conn,sql);
+	if(rdr())
+	  {
+	    rdr >> id;
+	  }
+	else
+	  {
+	    WriteOutput("Unable to retrieve device id __LINE__ __FILE__");
+	  }
+      }
+    }
+  catch(RWExternalErr err)
+    {
+      WriteOutput("Unsable to retrieve device id __LINE__ __FILE__");
+    }
+  return id;
 }
 
 void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
