@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:48 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/04/25 22:40:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,8 +53,7 @@ public:
 
     CtiProtocolDNP &operator=(const CtiProtocolDNP &aRef);
 
-    void setMasterAddress( unsigned short address );
-    void setSlaveAddress( unsigned short address );
+    void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
     void setOptions( int options );
 
     void setCommand( DNPCommand command, dnp_output_point *points = NULL, int numPoints = 0 );

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:53 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/04/25 22:40:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -461,8 +461,7 @@ void CtiDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
-   _dnp.setSlaveAddress(_dnpAddress.getSlaveAddress());
-   _dnp.setMasterAddress(_dnpAddress.getMasterAddress());
+   _dnp.setAddresses(_dnpAddress.getSlaveAddress(), _dnpAddress.getMasterAddress());
 
    if( getType() == TYPE_DARTRTU )
    {
