@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/06/10 21:04:23 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/05/17 16:50:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -327,9 +327,6 @@ bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
     return(bool) strm;
 }
 
-
-
-
 ostream& CtiLogger::operator<<(const char *s)
 {
     *_current_stream << s;
@@ -403,6 +400,12 @@ ostream& CtiLogger::operator<<(long double n)
 ostream& CtiLogger::operator<<(void * n)
 {
     *_current_stream << n;
+    return *_current_stream;
+}
+
+ostream& CtiLogger::operator<<(const string& s)
+{
+    *_current_stream << s;
     return *_current_stream;
 }
 
