@@ -1407,13 +1407,7 @@ private void getExternalResources()
 				TDCRole.TDC_EXPRESS, "no_soup" );
 
 	TDCDefines.MAX_ROWS = Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue( TDCRole.TDC_MAX_ROWS, "500" ) ); 
-		
-		
-	//java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-	//noCreationAllowed = bundle.getString("tdc_express");
-	//TDCDefines.MAX_ROWS = Integer.parseInt( bundle.getString("tdc_max_rows") );
-
+				ClientSession.getInstance().getRolePropertyValue( TDCRole.TDC_MAX_ROWS, "500" ) );		
 }
 
 
