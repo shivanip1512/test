@@ -73,6 +73,7 @@ public TrendModel(com.cannontech.database.data.graph.GraphDefinition newGraphDef
 		dsVector.toArray(trendSeries);
 		hitDatabase_Basic(GraphDataSeries.NORMAL_QUERY_MASK);
 		hitDatabase_Basic(GraphDataSeries.YESTERDAY_MASK);
+		hitDatabase_Basic(GraphDataSeries.PEAK_VALUE_MASK);
 	}
 	else
 	{
@@ -221,8 +222,7 @@ private Integer getPeakPointId()
 		}
 	}
 	return peakPointId;
-}
-			
+}			
 private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 {
 	//Legend setup
@@ -263,31 +263,7 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 				
 				stats.add(stat);
 			}
-//YOU ARE HERE TRYING TO FIX THE LEGEND WHEN THERE IS A USAGE (NON VALID) INTERVAL GDS
 		}
-		
-/*		for( int i = 0; i < dataset.getSeriesCount(); i++)
-		{
-//			String stat = "";
-			if ((getOptionsMaskSettings() & TrendModelType.LEGEND_LOAD_FACTOR_MASK) == TrendModelType.LEGEND_LOAD_FACTOR_MASK)
-			{
-				stat += "Load Factor: " + LF_FORMAT.format(trendSeries[i].getLoadFactor());
-			}
-			if( (getOptionsMaskSettings() & TrendModelType.LEGEND_MIN_MAX_MASK) == TrendModelType.LEGEND_MIN_MAX_MASK)
-			{
-				if( dataset.getMinValue(i).doubleValue() == Double.MAX_VALUE)
-					stat += "    Min:  n/a";
-				else
-					stat += "    Min: " + MIN_MAX_FORMAT.format(dataset.getMinValue(i));
-					
-				if( dataset.getMaxValue(i).doubleValue() == Double.MIN_VALUE)
-					stat += "    Max:  n/a";
-				else
-					stat += "    Max: " + MIN_MAX_FORMAT.format(dataset.getMaxValue(i));
-			}
-			stats.add(stat);
-		}
-		*/
 	}
 
 	if( stats != null)
@@ -396,12 +372,31 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 			
 			// YESTERDAY series type //
 			long day = 0;			
+
 			if ((seriesTypeMask & GraphDataSeries.YESTERDAY_MASK) == GraphDataSeries.YESTERDAY_MASK)
+			{
 				day = 86400000;
-
-			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
-			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() - day) );
-
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() - day) );
+			}
+			else if ((seriesTypeMask & GraphDataSeries.PEAK_VALUE_MASK) == GraphDataSeries.PEAK_VALUE_MASK)
+			{
+				for (int i = 0; i < trendSeries.length; i++)
+				{
+					if ((trendSeries[i].getTypeMask() & GraphDataSeries.PEAK_VALUE_MASK) ==  GraphDataSeries.PEAK_VALUE_MASK)
+					{
+						day = retrievePeakIntervalTranslateMillis(trendSeries[i].getPointId().intValue());
+						pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() - day) );
+						pstmt.setTimestamp(2, new java.sql.Timestamp( getStartDate().getTime() - day + 86400000) );
+					}
+				}
+			}
+			else
+			{
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime()) );
+				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()) );
+			}
+			
 			rset = pstmt.executeQuery();
 			
 			com.jrefinery.data.TimeSeriesDataPair dataPair = null;
@@ -443,9 +438,25 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 				dataPairVector.add(dataPair);
 								
 			}
-
 			if( !dataPairVector.isEmpty())
 			{
+				// Repeat the interval x # of days with Peak_interval data series.
+				if ((seriesTypeMask & GraphDataSeries.PEAK_VALUE_MASK) == GraphDataSeries.PEAK_VALUE_MASK)
+				{
+					int size = dataPairVector.size();
+					long numDays = (getStopDate().getTime() - getStartDate().getTime()) / 86400000;
+					for ( long i = 1; i < numDays; i++)
+					{
+						for (int j = 0; j < size; j++)
+						{
+							double v = ((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getValue().doubleValue();
+							com.jrefinery.data.TimePeriod tp = new com.jrefinery.data.Second(new java.util.Date(((com.jrefinery.data.TimeSeriesDataPair)dataPairVector.get(j)).getPeriod().getStart()+ (86400000*i)));
+							dataPair = new com.jrefinery.data.TimeSeriesDataPair(tp,v);
+							dataPairVector.add(dataPair);							
+						}					
+					}
+				}
+				
 				com.jrefinery.data.TimeSeriesDataPair[] dataPairArray = 
 					new com.jrefinery.data.TimeSeriesDataPair[dataPairVector.size()];
 				dataPairVector.toArray(dataPairArray);
@@ -484,6 +495,65 @@ private TrendSerie[] hitDatabase_Basic(int seriesTypeMask)
 	return trendSeries;
 }
 
+private long retrievePeakIntervalTranslateMillis(int peakIntervalPointID)
+{
+	long timerStart = System.currentTimeMillis();
+	long translateMillis = 0;
+	String sqlString = "SELECT TIMESTAMP FROM PEAKPOINTHISTORY_VIEW WHERE POINTID = " + peakIntervalPointID;
+
+	java.sql.Connection conn = null;
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
+	try 
+	{
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+		stmt = conn.createStatement();
+		rset = stmt.executeQuery(sqlString);
+
+		while (rset.next())
+		{
+			java.sql.Timestamp ts = rset.getTimestamp(1);
+
+			java.util.Calendar cal = new java.util.GregorianCalendar();
+			if( ts.getTime() %86400 == 0)	//must have Day+1 00:00:00 instead of Day 00:00:01+
+			{	
+				cal.setTimeInMillis(ts.getTime());
+				cal.roll(java.util.Calendar.DAY_OF_YEAR, false);
+			}
+			else
+			{
+				cal.setTimeInMillis(ts.getTime());
+				cal.set(java.util.Calendar.HOUR, 0);
+				cal.set(java.util.Calendar.MINUTE, 0);
+				cal.set(java.util.Calendar.SECOND, 0);
+				cal.set(java.util.Calendar.MILLISECOND, 0);
+			}
+			ts.setTime(cal.getTime().getTime());
+			
+			translateMillis = (getStartDate().getTime() - ts.getTime());
+		}
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( stmt != null )
+				stmt.close();
+			if( conn != null )
+				conn.close();
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+
+	}
+	return translateMillis;
+}
 /**
  * Starting point for the demonstration application.
  */
@@ -577,22 +647,30 @@ public JFreeChart refresh(int rendererType)
 	//Plot setup
 	com.jrefinery.chart.Plot plot = null;
 	
-	if( rendererType == TrendModelType.LINE_MODEL || rendererType == TrendModelType.SHAPES_LINE_MODEL)
+	if( rendererType == TrendModelType.LINE_VIEW|| rendererType == TrendModelType.SHAPES_LINE_VIEW)
 	{
-//		if( (getOptionsMaskSettings() & TrendModelType.PLOT_YESTERDAY_MASK) == TrendModelType.PLOT_YESTERDAY_MASK)
-//			dataset = YukonDataSetFactory.createMultipleDaysDataSet(trendSeries, getStartDate(), getCompareStartDate());
-//		else
+		com.jrefinery.chart.ValueAxis domainAxis = null;
+		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+		{
+			dataset = YukonDataSetFactory.createLoadDurationDataSet(trendSeries, getPeakPointId());
+			domainAxis = getHorizontalPercentAxis();
+		}
+		else
+		{
 			dataset = YukonDataSetFactory.createBasicDataSet(trendSeries);
+			domainAxis = getHorizontalDateAxis();
+		}
 
 		com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator generator =
 			 new com.jrefinery.chart.tooltips.TimeSeriesToolTipGenerator(com.cannontech.graph.GraphDataFormats.dwellValuesDateTimeformat, valueFormat);
 
 		com.jrefinery.chart.XYItemRenderer rend = null;
+
 		// Need to convert yukon TrendModelType into StandardXYItemRenderer type
 		int type = 0;
-		if( rendererType == TrendModelType.LINE_MODEL)
+		if( rendererType == TrendModelType.LINE_VIEW)
 			type = com.jrefinery.chart.StandardXYItemRenderer.LINES;
-		else if( rendererType == TrendModelType.SHAPES_LINE_MODEL)
+		else if( rendererType == TrendModelType.SHAPES_LINE_VIEW)
 			type = com.jrefinery.chart.StandardXYItemRenderer.SHAPES_AND_LINES;
 		
 		if( (getOptionsMaskSettings()  & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
@@ -602,12 +680,10 @@ public JFreeChart refresh(int rendererType)
 
 			for ( int i = 0; i < dataset.getSeriesCount(); i++)
 			{
-				com.jrefinery.data.BasicTimeSeries timeSeries = ((TimeSeriesCollection)dataset).getSeries(i);
-				if( timeSeries != null)
+				if(dataset.getMaxValue(i) != null && dataset.getMinValue(i) != null)
 				{
 					((com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax)rend).minMaxValues[i] = 
-						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(
-							timeSeries.getMinValue().doubleValue(), timeSeries.getMaxValue().doubleValue());
+						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(dataset.getMinValue(i).doubleValue(), dataset.getMaxValue(i).doubleValue());
 				}
 			}
 		}
@@ -615,17 +691,32 @@ public JFreeChart refresh(int rendererType)
 		{
 			rend = new com.jrefinery.chart.StandardXYItemRenderer(type, generator);
 		}
-
-		plot = new com.jrefinery.chart.XYPlot( (TimeSeriesCollection)dataset, getHorizontalDateAxis(), getVerticalNumberAxis(), rend);		
-	}
-	else if( rendererType == TrendModelType.STEP_MODEL)
-	{
-//		if( (getOptionsMaskSettings()  & TrendModelType.PLOT_YESTERDAY_MASK) == TrendModelType.PLOT_YESTERDAY_MASK)
-//			dataset = YukonDataSetFactory.createMultipleDaysDataSet(trendSeries, getStartDate(), getCompareStartDate());
-//		else
-			dataset = YukonDataSetFactory.createBasicDataSet(trendSeries);
+		//TimeSeriesCollection
+//        com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm mavg = new com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm();
+//        mavg.setPeriod(30);
+//        com.jrefinery.chart.data.PlotFit pf = new com.jrefinery.chart.data.PlotFit((com.jrefinery.data.XYDataset)dataset, mavg);
+//        dataset = (com.jrefinery.data.AbstractSeriesDataset)pf.getFit();
 		
-		com.jrefinery.chart.XYStepRenderer rend = null;
+		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis(), rend);
+		
+//        ((com.jrefinery.chart.XYPlot)plot).addRangeMarker(new com.jrefinery.chart.Marker(.64, java.awt.Color.blue));
+//		
+	}
+	else if( rendererType == TrendModelType.STEP_VIEW)
+	{
+		com.jrefinery.chart.ValueAxis domainAxis = null;
+		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)
+		{
+			dataset = YukonDataSetFactory.createLoadDurationDataSet(trendSeries, getPeakPointId());
+			domainAxis = getHorizontalPercentAxis();
+		}
+		else
+		{
+			dataset = YukonDataSetFactory.createBasicDataSet(trendSeries);
+			domainAxis = getHorizontalDateAxis();
+		}
+
+		com.jrefinery.chart.XYItemRenderer rend = null;
 		if( (getOptionsMaskSettings()  & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
 		{
 			rend = new com.cannontech.jfreechart.chart.XYStepRenderer_MinMax(true);
@@ -633,12 +724,10 @@ public JFreeChart refresh(int rendererType)
 
 			for ( int i = 0; i < dataset.getSeriesCount(); i++)
 			{
-				com.jrefinery.data.BasicTimeSeries timeSeries = ((TimeSeriesCollection)dataset).getSeries(i);
-				if( timeSeries != null)
+				if( dataset.getMaxValue(i) != null && dataset.getMinValue(i) != null)
 				{
 					((com.cannontech.jfreechart.chart.XYStepRenderer_MinMax)rend).minMaxValues[i] = 
-						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(
-							timeSeries.getMinValue().doubleValue(), timeSeries.getMaxValue().doubleValue());
+						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(dataset.getMinValue(i).doubleValue(), dataset.getMaxValue(i).doubleValue());
 				}
 			}
 		}
@@ -647,75 +736,29 @@ public JFreeChart refresh(int rendererType)
 			rend = new com.jrefinery.chart.XYStepRenderer();
 		}
 
-		plot = new com.jrefinery.chart.XYPlot( (TimeSeriesCollection)dataset, getHorizontalDateAxis(), getVerticalNumberAxis(), rend);	
+		plot = new com.jrefinery.chart.XYPlot( (com.jrefinery.data.XYDataset)dataset, domainAxis, getVerticalNumberAxis(), rend);	
 	}
-	else if( rendererType == TrendModelType.BAR_MODEL)
+	else if( rendererType == TrendModelType.BAR_VIEW)
 	{
-		dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
+		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)		
+			dataset = YukonDataSetFactory.createVerticalCategoryDataSet_LD(trendSeries, getPeakPointId());
+		else
+			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
 
 		com.jrefinery.chart.CategoryItemRenderer rend = new com.jrefinery.chart.VerticalBarRenderer(new com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator());
+		
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis(), rend);
 	}
-	else if( rendererType == TrendModelType.BAR_3D_MODEL)
+	else if( rendererType == TrendModelType.BAR_3D_VIEW)
 	{
-		dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
+		if( (getOptionsMaskSettings()  & TrendModelType.LOAD_DURATION_MASK) == TrendModelType.LOAD_DURATION_MASK)		
+			dataset = YukonDataSetFactory.createVerticalCategoryDataSet_LD(trendSeries, getPeakPointId());
+		else
+			dataset = YukonDataSetFactory.createVerticalCategoryDataSet(trendSeries);
+
 		
 		com.jrefinery.chart.CategoryItemRenderer rend = new com.jrefinery.chart.VerticalBarRenderer3D(new com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator(), 10);
 		plot = new com.jrefinery.chart.VerticalCategoryPlot( (DefaultCategoryDataset)dataset, getHorizontalCategoryAxis(), getVerticalNumberAxis3D(), rend);
-	}
-	else if( rendererType == TrendModelType.LOAD_DURATION_LINE_MODEL)
-	{
-		dataset = YukonDataSetFactory.createLoadDurationDataSet(trendSeries, getPeakPointId());
-
-		com.jrefinery.chart.StandardXYItemRenderer rend = null;
-		
-		if( (getOptionsMaskSettings()  & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
-		{
-			rend = new com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax(com.jrefinery.chart.StandardXYItemRenderer.LINES);
-			((com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax)rend).minMaxValues = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[dataset.getSeriesCount()];
-
-			for ( int i = 0; i < dataset.getSeriesCount(); i++)
-			{
-				com.jrefinery.data.XYSeries timeSeries = ((com.jrefinery.data.XYSeriesCollection)dataset).getSeries(i);
-				if( timeSeries != null)
-				{
-					((com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax)rend).minMaxValues[i] = 
-						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(
-							timeSeries.getMinValue().doubleValue(), timeSeries.getMaxValue().doubleValue());
-				}
-			}
-		}
-		else
-		{
-			rend = new com.jrefinery.chart.StandardXYItemRenderer(com.jrefinery.chart.StandardXYItemRenderer.LINES);
-		}
-				plot = new com.jrefinery.chart.XYPlot((com.jrefinery.data.XYDataset)dataset, getHorizontalPercentAxis(),getVerticalNumberAxis(), rend);
-	}
-	else if( rendererType == TrendModelType.LOAD_DURATION_STEP_MODEL)
-	{
-		dataset = YukonDataSetFactory.createLoadDurationDataSet(trendSeries, getPeakPointId());
-		com.jrefinery.chart.XYStepRenderer rend = null;
-		if( (getOptionsMaskSettings() & TrendModelType.PLOT_MIN_MAX_MASK) == TrendModelType.PLOT_MIN_MAX_MASK)
-		{
-			rend = new com.cannontech.jfreechart.chart.XYStepRenderer_MinMax(true);
-			((com.cannontech.jfreechart.chart.XYStepRenderer_MinMax)rend).minMaxValues = new com.cannontech.jfreechart.chart.Dataset_MinMaxValues[dataset.getSeriesCount()];
-			
-			for ( int i = 0; i < dataset.getSeriesCount(); i++)
-			{
-				com.jrefinery.data.XYSeries timeSeries = ((com.jrefinery.data.XYSeriesCollection)dataset).getSeries(i);
-				if( timeSeries != null)
-				{
-					((com.cannontech.jfreechart.chart.XYStepRenderer_MinMax)rend).minMaxValues[i] = 
-						new com.cannontech.jfreechart.chart.Dataset_MinMaxValues(
-							timeSeries.getMinValue().doubleValue(), timeSeries.getMaxValue().doubleValue());
-				}
-			}
-		}
-		else
-		{
-			rend = new com.jrefinery.chart.XYStepRenderer();
-		}
-		plot = new com.jrefinery.chart.XYPlot((com.jrefinery.data.XYDataset) dataset, getHorizontalPercentAxis(), getVerticalNumberAxis(), rend);
 	}
 
 	plot.setSeriesPaint(getDatasetColors(dataset));
