@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -143,7 +142,7 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public ActivityModel(long startTime_, long stopTime_)
 	{
-		super(ReportTypes.EC_ACTIVITY_LOG_DATA, startTime_, stopTime_);//default type
+		super(startTime_, stopTime_);//default type
 	}
 
 	/**
@@ -152,16 +151,7 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public ActivityModel()
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default report type		
-	}
-	/**
-	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
-	 */
-	public ActivityModel(int reportType_)
-	{
-		super();//default type
-		setReportType(reportType_);		
+		super();		
 	}
 	/**
 	 * Constructor class
@@ -169,7 +159,7 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public ActivityModel(int [] ecIDs_)
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default type
+		this();
 		setECIDs(ecIDs_);
 	}
 	/**
@@ -179,7 +169,7 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public ActivityModel(Integer ecID_)
 	{
-		this(ReportTypes.EC_ACTIVITY_LOG_DATA);//default type
+		this();
 		setECIDs(ecID_);
 	}
 	
@@ -546,12 +536,12 @@ public class ActivityModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 150, 18, null),
-				new ColumnProperties(0, 1, 150, 18, null),
-				new ColumnProperties(150, 1, 100, 18, null),
-				new ColumnProperties(250, 1, 100, 18, null),
-				new ColumnProperties(350, 1, 150, 18, null),
-				new ColumnProperties(500, 1, 25, 18, null)
+				new ColumnProperties(0, 1, 150, 10, null),
+				new ColumnProperties(0, 1, 150, 10, null),
+				new ColumnProperties(150, 1, 100, 10, null),
+				new ColumnProperties(250, 1, 100, 10, null),
+				new ColumnProperties(350, 1, 150, 10, null),
+				new ColumnProperties(500, 1, 30, 10, "#")
 			};				
 		}
 		return columnProperties;

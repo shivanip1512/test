@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -126,7 +125,7 @@ public class ActivityDetailModel extends ReportModelBase
 	 */
 	public ActivityDetailModel(long startTime_, long stopTime_)
 	{
-		super(ReportTypes.EC_ACTIVITY_DETAIL_DATA, startTime_, stopTime_);//default type
+		super(startTime_, stopTime_);//default type
 	}
 
 	/**
@@ -135,24 +134,16 @@ public class ActivityDetailModel extends ReportModelBase
 	 */
 	public ActivityDetailModel()
 	{
-		this(ReportTypes.EC_ACTIVITY_DETAIL_DATA);//default report type		
+		super();		
 	}
-	/**
-	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
-	 */
-	public ActivityDetailModel(int reportType_)
-	{
-		super();//default type
-		setReportType(reportType_);		
-	}
+
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ActivityDetailModel(int [] ecIDs_)
 	{
-		this(ReportTypes.EC_ACTIVITY_DETAIL_DATA);//default type
+		this();
 		setECIDs(ecIDs_);
 	}
 	/**
@@ -162,7 +153,7 @@ public class ActivityDetailModel extends ReportModelBase
 	 */
 	public ActivityDetailModel(Integer ecID_)
 	{
-		this(ReportTypes.EC_ACTIVITY_DETAIL_DATA);//default type
+		this();//default type
 		setECIDs(ecID_);
 	}
 	
@@ -533,14 +524,14 @@ public class ActivityDetailModel extends ReportModelBase
 			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, 150, 18, null),
-				new ColumnProperties(offset, 1, 75, 18, "MMMM dd, yyyy"),
-				new ColumnProperties(offset, 1, offset+=75, 18, "HH:mm:ss"),
-				new ColumnProperties(offset, 1, offset+=125, 18, null),
-				new ColumnProperties(offset, 1, offset+=75, 18, null),
-				new ColumnProperties(offset, 1, offset+=90, 18, null),
-				new ColumnProperties(offset, 1, offset+=125, 18, null),
-				new ColumnProperties(offset-125, 12, 600, 18, null)
+				new ColumnProperties(offset, 1, 150, 10, null),
+				new ColumnProperties(offset, 1, 75, 10, "MMMM dd, yyyy"),
+				new ColumnProperties(offset, 1, offset+=75, 10, "HH:mm:ss"),
+				new ColumnProperties(offset, 1, offset+=125, 10, null),
+				new ColumnProperties(offset, 1, offset+=75, 10, null),
+				new ColumnProperties(offset, 1, offset+=90, 10, null),
+				new ColumnProperties(offset, 1, offset+=125, 10, null),
+				new ColumnProperties(offset-125, 12, 600, 10, null)
 			};				
 		}
 		return columnProperties;

@@ -8,6 +8,7 @@ import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.pao.DeviceClasses;
 
 /**
  * Created on Dec 15, 2003
@@ -21,7 +22,7 @@ import com.cannontech.database.PoolManager;
  *  String collGroup		- DeviceMeterGroup.collectionGroup
  *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
  */
-public class DatabaseModel extends ReportModelBase
+public class CarrierDBModel extends ReportModelBase
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
@@ -43,48 +44,16 @@ public class DatabaseModel extends ReportModelBase
 	public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
 	
 	/** A string for the title of the data */
-	private static String title = "Database Report - Carrier";
+	private static String title = "Database Report";
 		
-	/** Class fields */
-	private String paoClass = null;
-	
 	/**
 	 * Default Constructor
 	 */
-	public DatabaseModel()
-	{
-		this("CARRIER", ReportTypes.CARRIER_DATA);
-	}
-
-	/**
-	 * Constructor.
-	 * @param paoClass_ = YukonPaobject.paoClass
-	 */
-//	public DatabaseModel(int reportType_)
-//	{
-//		super();
-//		setReportType(reportType_);
-//	}	
-	/**
-	 * Constructor.
-	 * @param paoClass_ = YukonPaobject.paoClass
-	 */
-	public DatabaseModel(String paoClass_)
-	{
-		this(paoClass_, ReportTypes.CARRIER_DATA);
-	}	
-
-	/**
-	 * Constructor.
-	 * @param paoClass_ = YukonPaobject.paoClass
-	 */
-	public DatabaseModel(String paoClass_, int reportType_)
+	public CarrierDBModel()
 	{
 		super();
-		setPaoClass(paoClass_);
-		setReportType(reportType_);
-	}	
-		
+	}
+
 	/**
 	 * Add CarrierData objects to data, retrieved from rset.
 	 * @param ResultSet rset
@@ -191,15 +160,6 @@ public class DatabaseModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-		
-	/**
-	 * Set the paoClass (YukonPaobject.paoClass)
-	 * @param string paoClass_
-	 */
-	public void setPaoClass(String paoClass_)
-	{
-		paoClass = paoClass_;
-	}
 	
 	/**
 	 * Return the paoclass
@@ -207,7 +167,7 @@ public class DatabaseModel extends ReportModelBase
 	 */
 	private String getPaoClass()
 	{
-		return paoClass;
+		return DeviceClasses.STRING_CLASS_CARRIER;
 	}
 
 	/* (non-Javadoc)
@@ -313,6 +273,6 @@ public class DatabaseModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		return title;
+		return title + " - " +getPaoClass();
 	}
 }
