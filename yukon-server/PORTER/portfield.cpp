@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.102 $
-* DATE         :  $Date: 2004/05/10 21:35:51 $
+* REVISION     :  $Revision: 1.103 $
+* DATE         :  $Date: 2004/05/11 15:52:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3326,11 +3326,13 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
                 if( DeviceManager.mayDeviceExecuteExclusionFree(Device, exclusion) )
                 {
+                    #if 0 // 5/11/2004 CGP This is too darn much.
                     if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Found an excludable which MAY be executed!" << endl;
                     }
+                    #endif
                     bStatus = TRUE;     // This device is locked in as executable!!!
                 }
             }
@@ -3342,11 +3344,14 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         }
         else
         {
+            #if 0 // 5/11/2004 CGP This is too darn much.
             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " NON-Excludable OM found for PAOID " << OutMessage->DeviceID << endl;
             }
+            #endif
+
             bStatus = TRUE; // We can send anything which says it is non-excludable!
         }
     }
