@@ -301,7 +301,10 @@ public class UpdateDB
 						else
 						{
 							updLine.getValue().append( token );
-	
+
+							if( updLine.getValue().toString().indexOf(DBMSDefines.LINE_TERM) >= 0)	//white space follows the LINE_TERM
+								updLine.setValue(new StringBuffer(updLine.getValue().toString().trim()));
+								
 							if( updLine.getValue().toString().endsWith(DBMSDefines.LINE_TERM) )
 							{
 								validLines.add( updLine );
