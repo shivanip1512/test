@@ -6,21 +6,13 @@ package com.cannontech.loadcontrol.gui;
  * @author: 
  */
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.device.lm.IlmDefines;
-import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 
@@ -260,7 +252,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 					strBuf.append(
 						(trigger.getThresholdKickPercent().intValue() <= 0
 						 ? "DISABLED KU"
-						 : trigger.getThresholdKickPercent().toString() + "%") );
+						 : trigger.getThresholdKickPercent().toString()) );
 				}
 				
 				break;
