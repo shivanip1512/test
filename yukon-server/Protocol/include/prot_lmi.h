@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/24 22:36:06 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/02 20:59:20 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,13 +51,18 @@ private:
     unsigned long _transmitter_power_time;
 
     //crc_ccitt_type _crc;
-    vector<unsigned int>    _codes;
+    vector<unsigned int> _codes;
+    vector<unsigned int> _retrieved_codes;
+    vector<unsigned int> _returned_codes;
+
+    unsigned int  _num_codes_retrieved;
 
     enum LMIOpcode
     {
         Opcode_Invalid   = 0,
-        Opcode_SendCodes = 1,
-        Opcode_SetTime   = 3,
+        Opcode_SendCodes,
+        Opcode_GetOriginalCodes,
+        Opcode_SetTime,
         Opcode_DownloadSystemData,
         Opcode_UploadSystemData,
         Opcode_Reset,
@@ -89,7 +94,7 @@ private:
 
     struct lmi_inmess_struct
     {
-        //unsigned short num_codes;
+        unsigned short num_codes;
         unsigned short seriesv_inmess_length;
     };
 
@@ -139,6 +144,8 @@ private:
     RWTime _completion_time,
            _transmitting_until;
 
+    bool _first_comm;
+
     RWCString _name;
 
 protected:
@@ -167,7 +174,8 @@ public:
         Command_Timesync,
         Command_QueueCode,
         Command_TransmitCodes,
-        Command_SendQueuedCodes
+        Command_SendQueuedCodes,
+        Command_ReadQueuedCodes
     };
 
     void setAddress( unsigned char address );
@@ -179,8 +187,8 @@ public:
     int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     int recvCommResult ( INMESS   *InMessage,  RWTPtrSlist< OUTMESS > &outList );
 
-    bool hasInboundPoints( void );
-    void getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList );
+    bool hasInboundData( void );
+    void getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWCString &info );
 
     //  porter-side (portfield, specificially) functions
     int recvCommRequest( OUTMESS *OutMessage );

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/05/24 22:36:06 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/06/02 20:59:19 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,8 @@
 
 CtiProtocolLMI::CtiProtocolLMI() :
     _transmitter_power_time(0),
-    _address(0)
+    _address(0),
+    _first_comm(true)
 {
 }
 
@@ -90,6 +91,7 @@ void CtiProtocolLMI::setCommand( LMICommand cmd, unsigned control_offset, unsign
     _command = cmd;
     _control_offset    = control_offset;
     _control_parameter = control_parameter;
+    _num_codes_retrieved = 0;
 }
 
 
@@ -141,23 +143,35 @@ int CtiProtocolLMI::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
     offset += sizeof(lmi_in);
 
     seriesv_inmess.InLength = lmi_in.seriesv_inmess_length;
-    memcpy(&seriesv_inmess, buf + offset, lmi_in.seriesv_inmess_length);
 
-    //  ACH:  make sure to fill in any INMESS parameters the seriesv may need
+    //  copy out the codes
+    for( int i = 0; i < lmi_in.num_codes; i++ )
+    {
+        _returned_codes.push_back(*((unsigned int *)(buf + offset)));
+
+        offset += sizeof(unsigned int);
+    }
+
+    //  restore the seriesv inmessage
+    memcpy(seriesv_inmess.Buffer.InMessage, buf + offset, lmi_in.seriesv_inmess_length);
+
+    //  ACH:  make sure to fill in any INMESS parameters the seriesv may need - i think it's
+    //          pretty simple, but watch this space for breakage if it gets more complex
     _seriesv.recvCommResult(&seriesv_inmess, outList);
 
     return 0;
 }
 
 
-bool CtiProtocolLMI::hasInboundPoints( void )
+bool CtiProtocolLMI::hasInboundData( void )
 {
-    return _seriesv.hasInboundPoints() | (_transmitter_power_time != 0);
+    return _seriesv.hasInboundPoints() | (_transmitter_power_time != 0) | !_returned_codes.empty();
 }
 
 
-void CtiProtocolLMI::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList )
+void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, RWCString &info )
 {
+    int i = 1;
     CtiPointDataMsg *pdm;
 
     _seriesv.getInboundPoints(pointList);
@@ -172,17 +186,40 @@ void CtiProtocolLMI::getInboundPoints( RWTPtrSlist< CtiPointDataMsg > &pointList
         _transmitter_power      = -1;
         _transmitter_power_time =  0;
     }
+
+    if( !_returned_codes.empty() )
+    {
+        info += "Codes:\n";
+    }
+
+    while( !_returned_codes.empty() )
+    {
+        info += CtiNumStr(_returned_codes.back()).zpad(6) + " ";
+        _returned_codes.pop_back();
+
+        if( !(i++ % 6) )
+        {
+            info += "\n";
+        }
+    }
 }
 
 
 int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - in recvCommRequest **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
     if( OutMessage->Sequence == QueuedWorkToken )
     {
         setCommand(Command_SendQueuedCodes, 0, 0);
 
         _completion_time    = OutMessage->ExpirationTime;
         _transmitting_until = RWTime::now();
+        _first_comm = true;
     }
     else
     {
@@ -208,12 +245,21 @@ int CtiProtocolLMI::sendCommResult( INMESS  *InMessage )
 
     _seriesv.sendCommResult(&seriesv_inmess);
 
-    //  record the seriesv inmessage length
+    lmi_in.num_codes             = _retrieved_codes.size();
     lmi_in.seriesv_inmess_length = seriesv_inmess.InLength;
 
     //  store the header in the inmessage
     memcpy(buf + offset, &lmi_in, sizeof(lmi_in));
     offset += sizeof(lmi_in);
+
+    //  store the retrieved codes
+    while( !_retrieved_codes.empty() )
+    {
+        *((unsigned int *)(buf + offset)) = _retrieved_codes.back();
+        _retrieved_codes.pop_back();
+
+        offset += sizeof(unsigned int);
+    }
 
     //  store the seriesv data after the header
     memcpy(buf + offset, seriesv_inmess.Buffer.InMessage, seriesv_inmess.InLength);
@@ -283,15 +329,27 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
         {
             case Command_SendQueuedCodes:
             {
-                long numcodes;
+                unsigned long numcodes;
                 int current_code;
 
-                long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 166),
+                long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250),
                      fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
 
-                numcodes  = _completion_time.seconds() - _transmitting_until.seconds() * 1000;
-                numcodes -= fudge;
-                numcodes /= percode;
+                if( _completion_time.seconds()  > _transmitting_until.seconds() )
+                {
+                    numcodes  = (_completion_time.seconds() - _transmitting_until.seconds()) * 1000;
+                    //numcodes -= fudge;  //  this is so that we can tweak the amount of time we request - we don't want to subtract it back off
+                    numcodes /= percode;
+                }
+                else
+                {
+                    numcodes = 0;
+                }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                    slog << RWTime() << " LMI device \"" << _name << "\" has enough time to load " << numcodes << " codes" << endl;
+                }
 
                 if( numcodes > 42 )
                 {
@@ -303,6 +361,17 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 }
 
                 _outbound.body_header.message_type = Opcode_SendCodes;
+                _outbound.body_header.flush_codes  = _first_comm;
+
+                if( _first_comm )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " LMI device \"" << _name << "\" purging all other codes" << endl;
+                    }
+
+                    _first_comm = false;
+                }
 
                 if( (long)_codes.size() <= numcodes )
                 {
@@ -315,6 +384,11 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                     _outbound.data[0] = numcodes;
                 }
 
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                    slog << RWTime() << " LMI device \"" << _name << "\" loading " << (numcodes & 0x3f) << " codes this pass:" << endl;
+                }
+
                 _outbound.length = (numcodes * 6) + 2;
                 _transmitting_until += ((numcodes * percode) + fudge) / 1000;
 
@@ -325,7 +399,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" loading code: " << current_code << endl;
+                        slog << current_code << " ";
                     }
 
                     //  all offset by one because of the "num_codes" byte at the beginning
@@ -337,6 +411,20 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                     _outbound.data[i+6] = codestr[5];
                     _codes.pop_back();
                 }
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(slog);
+                    slog << endl;
+                }
+
+                break;
+            }
+
+            case Command_ReadQueuedCodes:
+            {
+                _outbound.length  = 2;
+                _outbound.body_header.message_type = Opcode_GetOriginalCodes;
+                _outbound.data[0] = _num_codes_retrieved + 1;  //  starts out at 0, incremented by every subsequent retrieval
 
                 break;
             }
@@ -461,28 +549,46 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                 switch( _command )
                 {
-                    case Command_Loopback:
+                    case Command_SendQueuedCodes:
                     {
-                        //  all we have to do is verify that the message got to us okay - nothing more
-                        //    what will it take to return a message from a loopback?
-
-                        _transactionComplete = true;
+                        if( _codes.empty() ||
+                            Now >= (_transmitting_until - 1) )  //  knock off a second so we get out of here with some room to spare
+                        {
+                            _transactionComplete = true;
+                        }
 
                         break;
                     }
 
-                    case Command_Timesync:
-                    {   /*
-                        _outbound.body_header.message_type = Opcode_SetTime;
-                        _outbound.data[0] = NowDate.month();
-                        _outbound.data[0] = NowDate.dayOfMonth();
-                        _outbound.data[0] = NowDate.year() % 1900;
-                        _outbound.data[0] = NowTime.hour();
-                        _outbound.data[0] = NowTime.minute();
-                        _outbound.data[0] = NowTime.second();
+                    case Command_ReadQueuedCodes:
+                    {
+                        int offset = 0;
 
-                        in_body_expected = 8;
-                        */
+                        offset++;  //  move past the UPA status for the time being
+
+                        if( !(_inbound.data[offset++] & 0x80) )
+                        {
+                            _transactionComplete = true;
+                        }
+
+                        while( offset < (_inbound.length - 1) )
+                        {
+                            char buf[7];
+
+                            memcpy(buf, _inbound.data + offset, 6);
+                            buf[6] = 0;
+
+                            _retrieved_codes.push_back(atoi(buf));
+                            offset += 6;
+
+                            _num_codes_retrieved++;
+                        }
+
+                        if( _num_codes_retrieved > 0xff )
+                        {
+                            _transactionComplete = true;
+                        }
+
                         break;
                     }
 
@@ -506,7 +612,10 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                             retval = _seriesv.decode(seriesv_xfer, status);
 
-                            _transactionComplete = _seriesv.isTransactionComplete();
+                            if( _command != Command_ScanAccumulator )
+                            {
+                                _transactionComplete = _seriesv.isTransactionComplete();
+                            }
                         }
                         else
                         {
@@ -528,6 +637,10 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                         break;
                     }
 
+                    case Command_Loopback:
+                    //  all we have to do is verify that the message got to us okay - nothing more
+                    //    what will it take to return a message from a loopback?
+                    case Command_Timesync:
                     default:
                     {
                         _transactionComplete = true;
