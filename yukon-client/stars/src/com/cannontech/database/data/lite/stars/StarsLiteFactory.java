@@ -1770,7 +1770,7 @@ public class StarsLiteFactory {
 		for (int i = liteAcctInfo.getProgramHistory().size() - 1; i >= 0; i--) {
 			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) liteAcctInfo.getProgramHistory().get(i);
 			if (liteEvent.getProgramID() == liteProg.getLmProgram().getProgramID()) {
-				YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getEventTypeID() );
+				YukonListEntry entry = YukonListFuncs.getYukonListEntry( liteEvent.getActionID() );
 				if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP) {
 					starsProg.setDateEnrolled( new Date(liteEvent.getEventDateTime()) );
 					break;

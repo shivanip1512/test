@@ -439,7 +439,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		// If inventory loading task is present, cancel it first
 		if (loadInvTask != null) {
 			loadInvTask.cancel();
-			loadInvTask = null;
 			
 			// Wait up to 3 seconds for it to stop
 			for (int i = 0; i < 30; i++) {
@@ -453,6 +452,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				}
 				catch (InterruptedException e) {}
 			}
+			
+			loadInvTask = null;
 		}
 		
 		custAccountInfos = null;
