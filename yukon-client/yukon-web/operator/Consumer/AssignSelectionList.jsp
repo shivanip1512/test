@@ -21,14 +21,17 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
 function setEnabled(form, checked, idx) {
-	if (form.EntryText != null) {
+<% if (valueIDMap.size() > 1) { %>
+	if (form.EntryText != null)
 		form.EntryText[idx].disabled = !checked;
-		form.EntryText.disabled = !checked;	// in case there is only one entry
-	}
-	else {
+	else
 		form.EntryID[idx].disabled = !checked;
+<% } else { %>
+	if (form.EntryText != null)
+		form.EntryText.disabled = !checked;
+	else
 		form.EntryID.disabled = !checked;
-	}
+<% } %>
 }
 </script>
 </head>
@@ -81,13 +84,13 @@ function setEnabled(form, checked, idx) {
               <% String header = "IMPORT ACCOUNTS - ASSIGN SELECTION LIST"; %>
               <%@ include file="include/InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <table width="500" border="0" cellspacing="0" cellpadding="0">
+              <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                   <td class="MainText"> 
                     <div align="center">Select or enter a new selection list entry 
-                      for each value appeared in the import file. Uncheck the 
-                      checkbox before the import value if you don't want to assign 
-                      any entry to it.</div>
+                      for each value appeared in the import file.<br>
+                      Uncheck the box before the import value if you don't want 
+                      to assign any entry to it.</div>
                   </td>
                 </tr>
               </table>
@@ -96,6 +99,7 @@ function setEnabled(form, checked, idx) {
 			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
 			  <input type="hidden" name="action" value="AssignSelectionList">
 			  <input type="hidden" name="ListName" value="<%= listName %>">
+			  <input type="hidden" name="NewList" value="<%= newList %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportAccount2.jsp">
               <table width="500" border="1" cellspacing="0" cellpadding="3" align="center" class="MainText">
                 <tr> 
@@ -122,8 +126,29 @@ function setEnabled(form, checked, idx) {
                   <td width="50%" class="TableCell"> 
 <%
 		if (newList) {
+			String entryText = value;
+			if (id != null) {
+				if (list != null) {
+					for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+						if (entry.getEntryID() == id.intValue()) {
+							entryText = entry.getEntryText();
+							break;
+						}
+					}
+				}
+				else if (listName.equals("ServiceCompany")) {
+					for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
+						StarsServiceCompany company = companies.getStarsServiceCompany(j);
+						if (company.getCompanyID() == id.intValue()) {
+							entryText = company.getCompanyName();
+							break;
+						}
+					}
+				}
+			}
 %>
-                    <input type="text" name="EntryText" <% if (!enabled) out.write("disabled"); %>>
+                    <input type="text" name="EntryText" value="<%= entryText %>" <% if (!enabled) out.write("disabled"); %>>
 <%
 		}
 		else {
