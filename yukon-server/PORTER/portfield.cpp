@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.106 $
-* DATE         :  $Date: 2004/05/24 17:03:54 $
+* REVISION     :  $Revision: 1.107 $
+* DATE         :  $Date: 2004/05/24 20:25:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -829,7 +829,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
      */
     UINT dqcnt;
 
-    if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
+    if( (MSGFLG_APPLY_EXCLUSION_LOGIC & OutMessage->MessageFlags) && QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
         Port->setDeviceQueued( Device->getID() );
 

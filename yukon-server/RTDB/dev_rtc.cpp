@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/05/24 19:08:27 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/05/24 20:25:36 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.9  2004/05/24 20:25:36  cplender
+* Scramble
+*
 * Revision 1.8  2004/05/24 19:08:27  cplender
 * Must have exclusions to queue work into self.
 *
@@ -354,11 +357,11 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     INT status = NORMAL;
 
-    if(hasExclusions() && !(MSGFLG_QUEUED_TO_DEVICE & OutMessage->MessageFlags))
+    if(hasExclusions())
     {
         _millis += messageDuration(OutMessage->Buffer.SASt._groupType);
 
-        OutMessage->MessageFlags |= MSGFLG_QUEUED_TO_DEVICE;
+        OutMessage->MessageFlags &= ~MSGFLG_APPLY_EXCLUSION_LOGIC;
         _workQueue.putQueue(OutMessage);
         OutMessage= 0;
 

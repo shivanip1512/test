@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2004/05/24 20:10:29 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2004/05/24 20:25:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -847,6 +847,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
     case TYPE_SERIESVLMIRTU:
         {
             OutMessage->EventCode = RESULT | ENCODED;
+            OutMessage->Buffer.SASt._groupType = GOLAY;
             strncpy(OutMessage->Buffer.SASt._codeSimple, "123456", 6);
             break;
         }
