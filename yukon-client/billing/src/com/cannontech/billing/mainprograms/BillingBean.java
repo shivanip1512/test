@@ -15,7 +15,6 @@ public class BillingBean implements java.util.Observer
 {
 	public static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
 		
-	private Thread timerThread = null;
 	public static final String BILLING_VERSION = com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "2.3.13";
 	private BillingFile billingFile = null;
 	private java.text.SimpleDateFormat startDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -28,7 +27,6 @@ public class BillingBean implements java.util.Observer
 	private String outputFile = "";
 	private boolean removeMult = false;
 	private boolean appendToFile = false;
-//	private String inputFileText = "";
 	private Date endDate  = com.cannontech.util.ServletUtil.getToday();
 	private String endDateStr = null;
 	
@@ -98,21 +96,13 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 	{
 		getFileFormatBase().setIsAppending(getAppendToFile());
 
-//		Thread billingThread = new Thread( getBillingFile(), "BillingFileThread" );
-//		billingThread.setDaemon(true);
-		
-		enableTimer( true );
-		
+		Date timerStart = new Date();
 		com.cannontech.clientutils.CTILogger.info("Started " + 
 					FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
-					" format at: " + new java.util.Date());
-
-		//start our timerThread
-		getTimerThread().start();
+					" format at: " + timerStart);
 
 		//start our DB thread
 		getBillingFile().encodeOutput(out);
-//		billingThread.start();
 	}
 	else
 	{
@@ -190,7 +180,6 @@ public void setDemandDaysPrev(int newDemandDaysPrev)
 	demandDaysPrev = newDemandDaysPrev;
 	
 	getBillingDefaults().setDemandDaysPrev(demandDaysPrev);
-
 //	getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
 
 }
@@ -202,7 +191,6 @@ public int getEnergyDaysPrev()
 public void setEnergyDaysPrev(int newEnergyDaysPrev)
 {
 	energyDaysPrev = newEnergyDaysPrev;
-	
 	getBillingDefaults().setEnergyDaysPrev(energyDaysPrev);
 
 //	getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
@@ -245,7 +233,6 @@ public void setBillingGroupType(int newBillingGroupType)
 	billingGroupType = newBillingGroupType;
 
 	getBillingDefaults().setBillGroupSQLString(billingGroupType);
-
 //	getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
 }
 
@@ -259,39 +246,6 @@ public void setOutputFile(String newOutputFile)
 	
 	getBillingDefaults().setOutputFile(outputFile);
 }
-		
-/**
- * Insert the method's description here.
- * Creation date: (8/31/2001 4:27:56 PM)
- * @return java.lang.Thread
- */
-public java.lang.Thread getTimerThread() 
-{
-	if( timerThread == null )
-			timerThread = new Thread("SecondsCounterThread")
-			{
-				public void run()
-				{
-					while(true)
-					{
-						try
-						{
-							this.currentThread().sleep(1000);
-							timerString = String.valueOf(timer++)+" sec";
-						}
-						catch( InterruptedException e )
-						{ 
-							return; 
-						}
-					}
-
-				}
-				
-			};
-
-	return timerThread;
-}
-
 
 /**
  * Insert the method's description here.
@@ -302,31 +256,7 @@ public FileFormatBase getFileFormatBase()
 {
 	return getBillingFile().getFileFormatBase();
 }
-/**
- * Handle a string to specify an input file
- * Creation date: (6/7/2002 10:41:22 AM)
- * @return java.lang.String
- */
-/*
-private String getInputFileText()
-{
-	String tempNameHolder;
 
-	if( inputFileText == "" )
-	{
-		try
-		{
-			inputFileText = com.cannontech.common.util.CtiProperties.getInstance().getProperty( com.cannontech.common.util.CtiProperties.KEY_BILLING_INPUT);
-		}
-		catch( Exception e)
-		{
-			inputFileText = "C:\\yukon\\client\\config\\input.txt";
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Billing File Input Path was NOT found in config.properties, defaulted to " + inputFileText);
-			com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Add row named 'billing_input_file' to config.properties with the proper billing file location.");
-		}
-	}
-	return inputFileText;
-}*/
 private void setBillingDefaults(BillingFileDefaults newDefaults)
 {
 	getBillingFile().setBillingDefaults(newDefaults);
@@ -354,10 +284,6 @@ public synchronized void update(java.util.Observable obs, Object data)
 	{
 		com.cannontech.clientutils.CTILogger.info("...Ended format at: " + new java.util.Date() );
 
-		//kill our timerThread
-		getTimerThread().interrupt();
-		timerThread = null;
-		
 		BillingFile src =  (BillingFile)obs;
 		src.deleteObserver( this );
 		enableTimer(false);
