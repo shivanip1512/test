@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/08 14:28:06 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/17 18:51:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,6 +54,7 @@ using namespace std;
 #include "mgr_port.h"
 #include "mgr_device.h"
 #include "logger.h"
+#include "numstr.h"
 #include "utility.h"
 
 extern CtiDeviceManager    DeviceManager;
@@ -184,11 +185,13 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode)
         }
     }
 
-    GetErrorString(ErrorCode, errstr);
-    sprintf(logstr," DeviceID %d, Error %3hd: %s", OutMessage->DeviceID, ErrorCode, errstr);
+    if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << logstr << endl;
+        GetErrorString(ErrorCode, errstr);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " DeviceID " << CtiNumStr(OutMessage->DeviceID) << ", Error " << CtiNumStr(ErrorCode) << " " << errstr << endl;
+        }
     }
 
     /* free up the Memory */
