@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:08:12 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/03/06 18:06:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -310,11 +310,13 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
         issue = "Splinter addressing sent to group " + getName() + ".  Group addressing overrides.";
         status = true;
     }
+#if 0 // 030803 CGP We don't really care about this.
     else if(parse.isKeyValid("relaymask"))
     {
         issue = "Load addressing sent to group " + getName() + ".  Group addressing overrides.";
         status = true;
     }
+#endif
 
     if(status)
     {
