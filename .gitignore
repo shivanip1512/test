@@ -12,6 +12,7 @@ yukon-client/custom/.cvsignore
 yukon-client/custom/bin
 yukon-client/dbeditor/.cvsignore
 yukon-client/dbeditor/bin
+yukon-client/dbeditor/build
 yukon-client/export/.cvsignore
 yukon-client/export/bin
 yukon-client/loadcontrol/.cvsignore
