@@ -44,6 +44,14 @@
 		operGroup += operGroups[i].getGroupName() + ",";
 	for (int i = 0; i < custGroups.length; i++)
 		custGroup += custGroups[i].getGroupName() + ",";
+	
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	ArrayList yukonGroups = null;
+	synchronized (cache) {
+		List groups = cache.getAllYukonGroups();
+		Collections.sort(groups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+		yukonGroups = new ArrayList(groups);
+	}
 %>
 <html>
 <head>
@@ -56,6 +64,33 @@ function editAddress(form) {
 	form.attributes["action"].value = "";
 	form.action.value = "EditAddress";
 	form.submit();
+}
+
+function appendString(str1, str2) {
+	var i = str1.length - 1;
+	while (i >= 0) {
+		if (str1.charAt(i) != ' ' && str1.charAt(i) != '\t') break;
+		i--;
+	}
+	
+	if (i < 0)
+		str1 = str2;
+	else if (str1.charAt(i) == ',')
+		str1 = str1.substr(0, i+1) + str2;
+	else
+		str1 = str1.substr(0, i+1) + "," + str2;
+	
+	return str1;
+}
+
+function addOperatorGroup(form) {
+	if (form.OperGroupList.value == "") return;
+	form.OperatorGroup.value = appendString(form.OperatorGroup.value, form.OperGroupList.value);
+}
+
+function addCustomerGroup(form) {
+	if (form.CustGroupList.value == "") return;
+	form.CustomerGroup.value = appendString(form.CustomerGroup.value, form.CustGroupList.value);
 }
 </script>
 </head>
@@ -99,27 +134,27 @@ function editAddress(form) {
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>">
+                          <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>" size="30">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>">
+                          <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>" size="30">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>">
+                          <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>" size="30">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Email:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="Email" value="<%= ec.getEmail() %>">
+                          <input type="text" name="Email" value="<%= ec.getEmail() %>" size="30">
                         </td>
                       </tr>
                       <tr> 
@@ -150,14 +185,14 @@ function editAddress(form) {
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Time Zone:</td>
-                        <td width="75%" class="TableCell"> 
+                        <td class="TableCell"> 
                           <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>" size="14">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Default 
                           Route:</td>
-                        <td width="75%" class="TableCell"> 
+                        <td class="TableCell"> 
                           <select name="Route">
                             <option value="-1">(none)</option>
                             <%
@@ -175,21 +210,55 @@ function editAddress(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Operator 
                           Groups: </td>
-                        <td width="75%" class="TableCell"> 
+                        <td class="TableCell"> 
                           <input type="text" name="OperatorGroup" size="50" value="<%= operGroup %>">
+                          <br>
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="25%" align="right" class="TableCell">&nbsp;</td>
+                        <td class="TableCell"> 
+                          <select name="OperGroupList">
+                            <%
+	for (int i = 0; i < yukonGroups.size(); i++) {
+		LiteYukonGroup group = (LiteYukonGroup) yukonGroups.get(i);
+%>
+                            <option value="<%= group.getGroupName() %>"><%= group.getGroupName() %></option>
+                            <%
+	}
+%>
+                          </select>
+                          <input type="button" name="AddOperGrp" value="Add" onClick="addOperatorGroup(this.form)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Res. Customer 
                           Groups:</td>
-                        <td width="75%" class="TableCell"> 
+                        <td class="TableCell"> 
                           <input type="text" name="CustomerGroup" size="50" value="<%= custGroup %>">
+                          <br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="25%" align="right" class="TableCell">&nbsp;</td>
+                        <td class="TableCell">
+                          <select name="CustGroupList">
+                            <%
+	for (int i = 0; i < yukonGroups.size(); i++) {
+		LiteYukonGroup group = (LiteYukonGroup) yukonGroups.get(i);
+%>
+                            <option value="<%= group.getGroupName() %>"><%= group.getGroupName() %></option>
+                            <%
+	}
+%>
+                          </select>
+                          <input type="button" name="AddCustGrp" value="Add" onClick="addCustomerGroup(this.form)">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Opt out 
                           Notif. Recipients:</td>
-                        <td width="75%" class="TableCell"> 
+                        <td class="TableCell"> 
                           <input type="text" name="OptOutNotif" size="50" value="<%= liteEC.getEnergyCompanySetting(EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS) %>">
                         </td>
                       </tr>

@@ -1,9 +1,18 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%
 	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
 		response.sendRedirect("../Operations.jsp");
 		return;
+	}
+	
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	ArrayList yukonGroups = null;
+	synchronized (cache) {
+		List groups = cache.getAllYukonGroups();
+		Collections.sort(groups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+		yukonGroups = new ArrayList(groups);
 	}
 %>
 <html>
@@ -27,6 +36,33 @@ function validate(form) {
 		return false;
 	}
 	return true;
+}
+
+function appendString(str1, str2) {
+	var i = str1.length - 1;
+	while (i >= 0) {
+		if (str1.charAt(i) != ' ' && str1.charAt(i) != '\t') break;
+		i--;
+	}
+	
+	if (i < 0)
+		str1 = str2;
+	else if (str1.charAt(i) == ',')
+		str1 = str1.substr(0, i+1) + str2;
+	else
+		str1 = str1.substr(0, i+1) + "," + str2;
+	
+	return str1;
+}
+
+function addOperatorGroup(form) {
+	if (form.OperGroupList.value == "") return;
+	form.OperatorGroup.value = appendString(form.OperatorGroup.value, form.OperGroupList.value);
+}
+
+function addCustomerGroup(form) {
+	if (form.CustGroupList.value == "") return;
+	form.CustomerGroup.value = appendString(form.CustomerGroup.value, form.CustGroupList.value);
 }
 </script>
 </head>
@@ -92,20 +128,53 @@ function validate(form) {
                         <td width="10%" align="right" class="TableCell" valign="top">Step 
                           2:</td>
                         <td width="90%" class="TableCell"><span class="ConfirmMsg">Create 
-                          one or more groups for operators, and one or more groups 
-                          for residential customers (optional) in DBEditor. Enter 
-                          the group names below, separated by comma:</span> 
+                          one or more login groups for operators and residential 
+                          customers (optional) in DBEditor. Enter the group names 
+                          below, separated by comma (or select from the list of 
+                          all login groups):</span> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                             <tr> 
                               <td width="25%" align="right">Operator Groups:</td>
                               <td width="75%"> 
                                 <input type="text" name="OperatorGroup" size="30">
-                                <span class="ErrorMsg">*</span> </td>
+                                <span class="ErrorMsg">*</span></td>
+                            </tr>
+                            <tr> 
+                              <td width="25%" align="right">&nbsp;</td>
+                              <td width="75%"> 
+                                <select name="OperGroupList">
+                                  <%
+	for (int i = 0; i < yukonGroups.size(); i++) {
+		LiteYukonGroup group = (LiteYukonGroup) yukonGroups.get(i);
+%>
+                                  <option value="<%= group.getGroupName() %>"><%= group.getGroupName() %></option>
+                                  <%
+	}
+%>
+                                </select>
+                                <input type="button" name="AddOperGrp" value="Add" onClick="addOperatorGroup(this.form)">
+                              </td>
                             </tr>
                             <tr> 
                               <td width="25%" align="right">Res. Customer Groups:</td>
                               <td width="75%"> 
                                 <input type="text" name="CustomerGroup" size="30">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td width="25%" align="right">&nbsp;</td>
+                              <td width="75%">
+                                <select name="CustGroupList">
+                                  <%
+	for (int i = 0; i < yukonGroups.size(); i++) {
+		LiteYukonGroup group = (LiteYukonGroup) yukonGroups.get(i);
+%>
+                                  <option value="<%= group.getGroupName() %>"><%= group.getGroupName() %></option>
+                                  <%
+	}
+%>
+                                </select>
+                                <input type="button" name="AddCustGrp" value="Add" onClick="addCustomerGroup(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -171,13 +240,11 @@ function validate(form) {
                       <tr> 
                         <td width="10%" align="right" class="TableCell" valign="top"> 
                           Step 5:</td>
-                        <td width="90%" class="MainText"> 
-                          <p class="ConfirmMsg">After the energy company is created, 
-                            <u>login as the default operator</u> you just created, 
-                            and edit the energy company settings by <u>clicking 
-                            the &quot;Config Energy Company&quot; button</u> on 
-                            the home page.</p>
-                        </td>
+                        <td width="90%" class="ConfirmMsg">After the energy company 
+                          is created, login as the default operator created above, 
+                          and edit the energy company settings by clicking the 
+                          &quot;Config Energy Company&quot; button on the home 
+                          page.</td>
                       </tr>
                       <tr> 
                         <td width="10%" align="right" class="TableCell" valign="top">&nbsp;</td>
@@ -197,7 +264,7 @@ function validate(form) {
                     <input type="reset" name="Reset" value="Reset">
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="location.href='../Operations.jsp'">
                   </td>
                 </tr>
               </table>
