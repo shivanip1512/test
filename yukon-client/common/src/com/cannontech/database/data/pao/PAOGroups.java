@@ -595,7 +595,7 @@ public final static boolean isLoadManagement( com.cannontech.database.data.lite.
  * @return int
  * @param typeString java.lang.String
  */
-private final static boolean isStringDevice(final String typeString, final String[] category ) 
+public final static boolean isStringDevice(final String typeString, final String[] category ) 
 {
 	for( int i = 0; i < category.length; i++ )
 	{
