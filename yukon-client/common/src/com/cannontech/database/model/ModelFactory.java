@@ -74,6 +74,7 @@ public final class ModelFactory
 	
 	public static final int LMGROUPMACRO = 54;
 	public static final int TOUSCHEDULE = 55;
+	public static final int CBC_ORDER_BY = 56;
 	
 	//The above is an enumeration of indices into
 	//the following array
@@ -134,7 +135,8 @@ public final class ModelFactory
 		EnergyCompanyCheckBoxTreeModel.class,
 /* 53*/	SystemLogTypeCheckBoxTreeModel.class,
 		LMGroupMacroModel.class,
-		TOUScheduleModel.class
+		TOUScheduleModel.class,
+		CBCOrderByTreeModel.class
 	};
 
 /**
