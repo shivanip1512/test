@@ -253,4 +253,29 @@ public void update() throws java.sql.SQLException
 	
 }
 
+public final static boolean inUseByMCT(Integer configID) throws java.sql.SQLException 
+{	
+	return inUseByMCT(configID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+}
+/**
+ * This method was created in VisualAge.
+ * @param pointID java.lang.Integer
+ */
+public final static boolean inUseByMCT(Integer conID, String databaseAlias) throws java.sql.SQLException 
+{
+	com.cannontech.database.SqlStatement stmt =
+		new com.cannontech.database.SqlStatement("SELECT MctID FROM MCTConfigMapping WHERE ConfigID=" + conID,
+													databaseAlias );
+
+	try
+	{
+		stmt.execute();
+		return (stmt.getRowCount() > 0 );
+	}
+	catch( Exception e )
+	{
+		return false;
+	}
+}
+
 }
