@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2003/08/19 19:34:27 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2003/09/02 18:50:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,7 +253,7 @@ public:
     void establishListener();
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
-    void writeMessageToPIL(CtiMessage *&pReq);
+    void writeMessageToClient(CtiMessage *&pReq, RWCString clientName);
     void writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatus *pPoint, const CtiCommandMsg *&Cmd  );
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
     int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);

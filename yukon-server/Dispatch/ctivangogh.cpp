@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2003/08/25 16:21:30 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2003/09/02 18:50:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -687,6 +687,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
                                 pDyn->getDispatch().setTags( amask );
 
+#if 0
                                 // Hey fool you need to send out tags now!
                                 CtiSignalMsg *pTagSig = CTIDBG_new CtiSignalMsg(pPt->getID(), Cmd->getSOE(), "Tag Update");
                                 pTagSig->setMessagePriority(15);
@@ -694,6 +695,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pTagSig->setTags( pDyn->getDispatch().getTags() | TAG_REPORT_MSG_TO_ALARM_CLIENTS);
                                 postMessageToClients(pTagSig);
                                 delete pTagSig;
+#endif
                             }
 
                             if(DebugLevel & DEBUGLEVEL_LUDICROUS)
@@ -718,6 +720,11 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
             }
 
+            break;
+        }
+    case (CtiCommandMsg::PorterConsoleInput):
+        {
+            writeMessageToClient((CtiMessage*&)Cmd, RWCString(PORTER_REGISTRATION_NAME));
             break;
         }
     case (CtiCommandMsg::ControlRequest):
@@ -3294,14 +3301,14 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     }
                 case (CtiTablePointAlarming::limit0):
                 case (CtiTablePointAlarming::limit1):
-                case (CtiTablePointAlarming::limit2):
-                case (CtiTablePointAlarming::limit3):
-                case (CtiTablePointAlarming::limit4):
-                case (CtiTablePointAlarming::limit5):
-                case (CtiTablePointAlarming::limit6):
-                case (CtiTablePointAlarming::limit7):
-                case (CtiTablePointAlarming::limit8):
-                case (CtiTablePointAlarming::limit9):
+//                case (CtiTablePointAlarming::limit2):
+//                case (CtiTablePointAlarming::limit3):
+//                case (CtiTablePointAlarming::limit4):
+//                case (CtiTablePointAlarming::limit5):
+//                case (CtiTablePointAlarming::limit6):
+//                case (CtiTablePointAlarming::limit7):
+//                case (CtiTablePointAlarming::limit8):
+//                case (CtiTablePointAlarming::limit9):
                     {
                         checkNumericLimits( alarm, pData, aWrap, *pNumeric, pDyn, pSig );
                         break;
@@ -5118,23 +5125,26 @@ void CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
     if(pReq = CTIDBG_new CtiRequestMsg( deviceid, cmdstr ))
     {
         pReq->setUser( Cmd->getUser() );
-        writeMessageToPIL((CtiMessage*&)pReq);
+        writeMessageToClient((CtiMessage*&)pReq, RWCString(PIL_REGISTRATION_NAME));
     }
+
+    delete pReq;
+    pReq = 0;
 }
 
-void CtiVanGogh::writeMessageToPIL(CtiMessage *&pReq)
+void CtiVanGogh::writeMessageToClient(CtiMessage *&pReq, RWCString clientName)
 {
-    CtiVanGoghConnectionManager *PilCM;
+    CtiVanGoghConnectionManager *CM;
     bool bDone = false;
     {
         CtiLockGuard<CtiMutex> guard(server_mux);
         CtiServer::iterator  iter(mConnectionTable);
 
-        for(;(PilCM = (CtiVanGoghConnectionManager *)iter());)
+        for(;(CM = (CtiVanGoghConnectionManager *)iter());)
         {
-            if(PilCM->getClientName() == PIL_REGISTRATION_NAME)
+            if(CM->getClientName() == clientName)
             {
-                if( PilCM->WriteConnQue( pReq->replicateMessage(), 5000 ) )
+                if( CM->WriteConnQue( pReq->replicateMessage(), 5000 ) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Message to PIL was unable to be queued" << endl;
@@ -5164,9 +5174,6 @@ void CtiVanGogh::writeMessageToPIL(CtiMessage *&pReq)
             dout << "  ---- End Control Request ---- " << endl;
         }
     }
-
-    delete pReq;
-    pReq = 0;
 }
 
 void CtiVanGogh::bumpDeviceToAlternateRate(CtiPointBase *pPoint)

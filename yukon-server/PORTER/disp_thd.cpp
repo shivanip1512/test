@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/07/21 22:14:07 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/09/02 18:50:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,6 +50,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "mgr_port.h"
 #include "dlldefs.h"
 #include "connection.h"
+#include "numstr.h"
 
 #include "portglob.h"
 #include "ctibase.h"
@@ -63,10 +64,13 @@ CtiConnection  VanGoghConnection;
 
 extern INT RefreshPorterRTDB(void *ptr = NULL);
 extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
+extern bool processInputFunction(CHAR Char);
+extern void KickPIL();
 
 void DispatchMsgHandlerThread(VOID *Arg)
 {
     extern CtiPortManager PortManager;
+    extern CtiPILServer PIL;
 
     BOOL           bServerClosing = FALSE;
 
@@ -83,7 +87,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
     VanGoghConnection.setName("Dispatch");
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("Porter MsgHandler", rwThreadId(), FALSE));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, rwThreadId(), FALSE));
 
     RWTime nowTime;
     RWTime nextTime = nowTime + 30;
@@ -91,109 +95,178 @@ void DispatchMsgHandlerThread(VOID *Arg)
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
-        omc = OutMessageCount();
-        nowTime = nowTime.now();
-
-        if(omc > 10 && nowTime > nextTime)
+        try
         {
-            nextTime = nowTime.seconds() - (nowTime.seconds() % 300) + 300;
+            omc = OutMessageCount();
+            nowTime = nowTime.now();
+
+            if(omc > 10 && nowTime > nextTime)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Porter's OM Count = " << omc << endl;
+                nextTime = nowTime.seconds() - (nowTime.seconds() % 300) + 300;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Porter's OM Count = " << omc << endl;
+                }
+
+                PortManager.apply( applyPortQueueReport, NULL );
             }
 
-            PortManager.apply( applyPortQueueReport, NULL );
-        }
-
-
-        MsgPtr = VanGoghConnection.ReadConnQue(2000L);
-
-        TimeNow = TimeNow.now();
-
-        if(MsgPtr != NULL)
-        {
-            switch(MsgPtr->isA())
+            if( PIL.isBroken() && !bServerClosing )
             {
-            case MSG_DBCHANGE:
                 {
-                    changeCnt++;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " PIL interface is indicating a failure.  Restarting the interface." << endl;
+                }
+                KickPIL();
+            }
 
+
+            MsgPtr = VanGoghConnection.ReadConnQue(2000L);
+
+            TimeNow = TimeNow.now();
+
+            if(MsgPtr != NULL)
+            {
+                switch(MsgPtr->isA())
+                {
+                case MSG_DBCHANGE:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << TimeNow << " Porter has received a " << ((CtiDBChangeMsg*)MsgPtr)->getCategory() << " DBCHANGE message from Dispatch." << endl;
+                        changeCnt++;
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow << " Porter has received a " << ((CtiDBChangeMsg*)MsgPtr)->getCategory() << " DBCHANGE message from Dispatch." << endl;
+                        }
+
+                        if(pChg)
+                        {
+                            delete pChg;
+                            pChg = NULL;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << TimeNow << "  Pending DBCHANGE message has been preempted." << endl;
+                            }
+                        }
+
+                        if(changeCnt < 2)           // If we have more than one change we must reload all items.
+                        {
+                            pChg = (CtiDBChangeMsg *)MsgPtr->replicateMessage();
+                        }
+
+                        RefreshTime = TimeNow;        // We will update two minutes after db changes cease!
+                        SetEvent(hPorterEvents[P_REFRESH_EVENT]);
+
+                        break;
+                    }
+                case MSG_COMMAND:
+                    {
+                        CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr;
+
+                        switch(Cmd->getOperation())
+                        {
+                        case (CtiCommandMsg::Shutdown):
+                            {
+                                SetEvent(hPorterEvents[P_QUIT_EVENT]);
+                                PorterQuit = TRUE;
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Porter received a shutdown message from somewhere" << endl;
+                                break;
+                            }
+                        case (CtiCommandMsg::AreYouThere):
+                            {
+                                VanGoghConnection.WriteConnQue(Cmd->replicateMessage()); // Copy one back
+                                break;
+                            }
+                        case (CtiCommandMsg::PorterConsoleInput):
+                            {
+                                CHAR operation = Cmd->getOpArgList().at(1);
+
+                                switch(operation)
+                                {
+                                case 0x01:
+                                    {
+                                        PorterDebugLevel = Cmd->getOpArgList().at(2);
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << "  PorterDebugLevel set to 0x" << (char*)CtiNumStr(PorterDebugLevel).hex().zpad(8) << endl;
+
+                                        }
+                                        break;
+                                    }
+                                case 0x02:
+                                    {
+                                        DebugLevel = Cmd->getOpArgList().at(2);
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << "  DebugLevel set to 0x" << (char*)CtiNumStr(DebugLevel).hex().zpad(8) << endl;
+
+                                        }
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        processInputFunction(operation);
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        default:
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << endl;
+                            }
+                        }
+                        break;
                     }
 
+                default:
+                    {
+                        break;
+                    }
+                }
+
+                delete MsgPtr;
+            }
+
+            if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
+            {
+                bServerClosing = TRUE;
+            }
+            else if(TimeNow > RefreshTime || ( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_REFRESH_EVENT], 0L) ))
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " DispatchMsgHandlerThd beginning a database reload";
                     if(pChg)
                     {
-                        delete pChg;
-                        pChg = NULL;
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << "  Pending DBCHANGE message has been preempted." << endl;
-                        }
+                        dout << " - DBChange message." << endl;
                     }
-
-                    if(changeCnt < 2)           // If we have more than one change we must reload all items.
+                    else
                     {
-                        pChg = (CtiDBChangeMsg *)MsgPtr->replicateMessage();
+                        dout << " - No DBChange message." << endl;
                     }
-
-                    RefreshTime = TimeNow;        // We will update two minutes after db changes cease!
-                    SetEvent(hPorterEvents[P_REFRESH_EVENT]);
-
-                    break;
                 }
-            case MSG_COMMAND:
-                {
-                    CtiCommandMsg* Cmd = (CtiCommandMsg*)MsgPtr;
+                ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
+                RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
+                RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
-                    switch(Cmd->getOperation())
-                    {
-                    case (CtiCommandMsg::Shutdown):
-                        {
-                            SetEvent(hPorterEvents[P_QUIT_EVENT]);
-                            PorterQuit = TRUE;
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Porter received a shutdown message from somewhere" << endl;
-                            break;
-                        }
-                    case (CtiCommandMsg::AreYouThere):
-                        {
-                            VanGoghConnection.WriteConnQue(Cmd->replicateMessage()); // Copy one back
-                            break;
-                        }
-                    default:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << endl;
-                        }
-                    }
-                    break;
-                }
+                changeCnt = 0;
+                pChg = NULL;
 
-            default:
                 {
-                    break;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " DispatchMsgHandlerThd done reloading" << endl;
                 }
             }
-
-            delete MsgPtr;
         }
-
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
+        catch(...)
         {
-            bServerClosing = TRUE;
-        }
-        else if(TimeNow > RefreshTime || ( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_REFRESH_EVENT], 0L) ))
-        {
-            // Refresh the porter in memory database once every 5 minutes.
-            ResetEvent(hPorterEvents[P_REFRESH_EVENT]);
-            RefreshPorterRTDB((void*)pChg);                 // Deletes the message!
-            RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
-
-            changeCnt = 0;
-            pChg = NULL;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     } /* End of for */
 
