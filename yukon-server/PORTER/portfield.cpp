@@ -1,5 +1,4 @@
 
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   portfield
@@ -8,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2003/12/09 17:55:26 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2003/12/09 20:57:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1421,9 +1420,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
                         CtiProtocolTransdata &transdata = markv->getProtocol();
-                        
+
                         transdata.recvOutbound( OutMessage );
-   
+
                         trx.setInBuffer( inBuffer );
                         trx.setOutBuffer( outBuffer );
                         trx.setInCountActual( &bytesReceived );
@@ -1462,9 +1461,9 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         CtiDeviceMarkV       *markv = ( CtiDeviceMarkV *)Device;
                         CtiProtocolTransdata &transdata = markv->getProtocol();
-                        
+
                         transdata.recvOutbound( OutMessage );
-   
+
                         trx.setInBuffer( inBuffer );
                         trx.setOutBuffer( outBuffer );
                         trx.setInCountActual( &bytesReceived );
@@ -1475,16 +1474,16 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         while( !transdata.isTransactionComplete() )
                         {
                            transdata.generate( trx );
-                           
+
                            status = Port->outInMess( trx, Device, traceList );
-                           
+
                            transdata.decode( trx, status );
-                           
+
                            if( trx.doTrace( status ))
                            {
                              Port->traceXfer( trx, traceList, Device, status );
                            }
-                           
+
                            DisplayTraceList( Port, traceList, true );
                         }
 
@@ -2260,7 +2259,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 if(!status)
                                 {
                                     /* Oh wow, I got me five bytes of datum! */
-                                    if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
+                                    if( (InMessage->IDLCStat[1] >> 1) != Device->getAddress() )
+                                    {
+                                        status = ADDRESSERROR;
+                                    }
+                                    else if(InMessage->IDLCStat[2] & 0x01)    // Supervisory frame. Emetcon S-Spec Section 4.5
                                     {
                                         /* Ack patooy What to do here now ya don't ya' know */
                                         switch(InMessage->IDLCStat[2] & 0x0f)
