@@ -26,7 +26,7 @@ var text = [
 %>
 			""];
 
-function toolTipAppear(event, divId, index, w, h) {
+function toolTipAppear(event, divId, index, w, text) {
 
 	var coordx = getLeftCoordinate();
 	var coordy = getTopCoordinate();
@@ -41,7 +41,6 @@ function toolTipAppear(event, divId, index, w, h) {
 	var element = document.getElementById(divId);
 	element.innerHTML = text[index]; 
 	element.style.width = w;
-	element.style.height = h;
 	element.style.left = coordx + 'px';
 	element.style.top = coordy + 'px';
 	element.style.visibility = 'visible';
@@ -178,7 +177,7 @@ function changeProgram(radioBtn, index) {
                       <table width="100%" border="0" height="80">
                       <tr> 
                         <td align = "center" width="15%"> 
-                          <p><b><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 350, 150, text)"></b><br>
+                          <p><b><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"></b><br>
                             <font face="Arial, Helvetica, sans-serif" size="1">click on icon for a description</font></p>
                         </td>
                         <td width="85%" valign="top"> 
