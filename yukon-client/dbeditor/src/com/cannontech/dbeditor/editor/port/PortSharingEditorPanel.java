@@ -3,13 +3,9 @@ package com.cannontech.dbeditor.editor.port;
 /**
  * This type was created in VisualAge.
  */
- import com.cannontech.database.db.*;
- import com.cannontech.database.db.port.*;
- import com.cannontech.database.data.*;
- import com.cannontech.database.data.port.*;
 
- import com.cannontech.common.gui.util.DataInputPanel;
- import com.cannontech.common.util.CtiUtilities;
+ import com.cannontech.database.data.port.DirectPort;
+import com.cannontech.database.db.port.CommPort;
  
 public class PortSharingEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener {
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldSocketNumber = null;

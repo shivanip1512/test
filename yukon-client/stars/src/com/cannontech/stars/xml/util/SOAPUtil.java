@@ -1,9 +1,17 @@
 package com.cannontech.stars.xml.util;
 
-import java.io.*;
-import java.util.*;
-import javax.xml.messaging.*;
-import javax.xml.soap.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPMessage;
+
 import com.cannontech.stars.xml.serialize.StarsOperation;
 
 /**

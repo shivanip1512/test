@@ -4,8 +4,6 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.gui.util.DataInputPanel;
-
 import com.cannontech.common.util.CtiUtilities;
 
 public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {

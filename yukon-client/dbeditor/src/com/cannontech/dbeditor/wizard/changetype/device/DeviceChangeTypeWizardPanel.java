@@ -4,12 +4,6 @@ package com.cannontech.dbeditor.wizard.changetype.device;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
-import com.cannontech.dbeditor.wizard.device.lmgroup.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.editor.*;
 
 public class DeviceChangeTypeWizardPanel extends WizardPanel
 {

@@ -3,10 +3,10 @@ package com.cannontech.cbc.data;
 /**
  * This type was created in VisualAge.
  */
-import com.roguewave.vsj.*;
-import com.roguewave.vsj.streamer.SimpleMappings;
 import com.cannontech.database.db.state.State;
 import com.roguewave.tools.v2_0.Comparator;
+import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableState implements com.roguewave.vsj.DefineCollectable 
 {

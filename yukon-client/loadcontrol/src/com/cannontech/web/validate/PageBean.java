@@ -1,6 +1,9 @@
 package com.cannontech.web.validate;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
 /**
  * Insert the type's description here.
  * Creation date: (6/12/2001 12:36:46 PM)

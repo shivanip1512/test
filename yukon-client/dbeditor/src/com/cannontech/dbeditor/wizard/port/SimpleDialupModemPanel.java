@@ -4,9 +4,7 @@ package com.cannontech.dbeditor.wizard.port;
  * This type was created in VisualAge.
  */
  
-  import java.awt.Dimension;
-
-  import com.cannontech.common.gui.util.DataInputPanel;
+import java.awt.Dimension;
   
 public class SimpleDialupModemPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JComboBox ivjModemTypeComboBox = null;

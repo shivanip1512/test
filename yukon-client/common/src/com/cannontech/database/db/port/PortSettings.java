@@ -4,7 +4,7 @@ package com.cannontech.database.db.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.database.db.*;
+ import com.cannontech.database.db.DBPersistent;
  
 public class PortSettings extends DBPersistent {
 	private Integer portID = null;

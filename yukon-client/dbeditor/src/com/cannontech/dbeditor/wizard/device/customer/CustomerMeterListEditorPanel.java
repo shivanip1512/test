@@ -1,9 +1,5 @@
 package com.cannontech.dbeditor.wizard.device.customer;
 
-import com.cannontech.database.db.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
-
 /**
  * This type was created in VisualAge.
  */

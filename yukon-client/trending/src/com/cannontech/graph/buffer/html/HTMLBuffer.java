@@ -5,7 +5,7 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (11/5/2001 10:47:56 AM)
  * @author: 
  */
-import com.cannontech.graph.model.*;
+import com.cannontech.graph.model.GraphModel;
 //import com.cannontech.graph.GraphDataFormats;
 
 public abstract class HTMLBuffer implements com.cannontech.graph.GraphDataFormats

@@ -4,9 +4,9 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * Creation date: (8/1/2002 11:56:33 AM)
  * @author: 
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
 public class TimeRefreshGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxGroupSelection = null;

@@ -21,10 +21,16 @@ package com.cannontech.dbtools.dbsleuth;
  * @author Philip Milne
  */
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
-import java.sql.*;
+
 import javax.swing.table.AbstractTableModel;
-import javax.swing.event.TableModelEvent;
 
 public class JDBCAdapter extends AbstractTableModel {
 	Connection          connection;

@@ -6,12 +6,8 @@ package com.cannontech.tdc.bookmark;
  * @author: 
  */
 
-import java.util.*;
-import com.cannontech.database.*;
-import java.awt.Cursor;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.clientutils.CommonUtils;
 
 public class RemoveBookMarkPanel extends javax.swing.JPanel 
 {

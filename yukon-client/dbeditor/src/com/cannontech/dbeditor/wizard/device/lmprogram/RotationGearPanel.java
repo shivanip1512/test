@@ -5,8 +5,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * @author: 
  */
 
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.common.util.StringUtils; 
+import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear; 
  
 public class RotationGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxGroupSelection = null;

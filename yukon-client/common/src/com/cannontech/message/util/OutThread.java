@@ -4,8 +4,8 @@ package com.cannontech.message.util;
  * This type was created in VisualAge.
  */
 
-import com.roguewave.vsj.VirtualOutputStream;
 import com.roguewave.vsj.CollectableStreamer;
+import com.roguewave.vsj.VirtualOutputStream;
 
 class OutThread extends Thread {
 

@@ -1,6 +1,6 @@
 package com.cannontech.servlet;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
 /**
  * Returns low, high, or duration limit value for a given point id.
  *

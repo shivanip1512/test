@@ -1,7 +1,17 @@
 package com.cannontech.common.gui.util;
 
- import java.awt.*;
- import java.awt.event.*;
+ import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
  public class SplashWindow extends Window {
    private Image splashImage;   

@@ -5,10 +5,10 @@ package com.cannontech.database.data.customer;
  * Creation date: (12/6/00 3:54:11 PM)
  * @author: 
  */
-import com.cannontech.database.db.customer.CustomerAddress;
-import com.cannontech.database.db.customer.CustomerWebSettings;
-import com.cannontech.database.db.customer.CustomerBaseLine;
 import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.database.db.customer.CustomerAddress;
+import com.cannontech.database.db.customer.CustomerBaseLine;
+import com.cannontech.database.db.customer.CustomerWebSettings;
 
 public class CICustomerBase extends CustomerBase implements com.cannontech.common.editor.EditorPanel
 {

@@ -6,20 +6,26 @@ package com.cannontech.logger;
  * @author: 
  * @Version: <version>
  */
-import com.klg.jclass.page.awt.*;
-import com.klg.jclass.page.*;
-import java.awt.Font;
 import java.awt.Color;
-import com.cannontech.clientutils.parametersfile.ParametersFile;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.logger.config.LoggerMainFrame;
-import javax.swing.Timer;
+import java.awt.Font;
 import java.awt.print.PrinterJob;
-import com.cannontech.logger.scm.*;
-import com.cannontech.logger.scm.SCMEventManager;
-import com.cannontech.message.dispatch.message.PointRegistration;
+
+import javax.swing.Timer;
+
+import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.logger.config.LoggerMainFrame;
+import com.cannontech.logger.scm.SCMEvent;
+import com.cannontech.logger.scm.SCMEventListener;
+import com.cannontech.logger.scm.SCMEventManager;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.klg.jclass.page.JCDocument;
+import com.klg.jclass.page.JCFlow;
+import com.klg.jclass.page.JCPrinter;
+import com.klg.jclass.page.JCTextStyle;
+import com.klg.jclass.page.awt.JCAWTPrinter;
 
 public class Logger implements java.awt.event.ActionListener, SCMEventListener
 {

@@ -3,8 +3,9 @@ package com.cannontech.database.db.port;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
-import com.cannontech.database.db.*;
+import java.sql.SQLException;
+
+import com.cannontech.database.db.DBPersistent;
 
 public class CommPort extends DBPersistent 
 {

@@ -3,7 +3,7 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 
 public class LMProgramModel extends DeviceTreeModel
 {

@@ -4,10 +4,8 @@ package com.cannontech.dbeditor.wizard.device;
  * This type was created in VisualAge.
  */
  import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
 
- import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.RemoteBase;
  
 public class DevicePhoneNumberPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjPhoneNumberLabel = null;

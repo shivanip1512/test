@@ -5,10 +5,10 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
-import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTriggerJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTimeChangeJPanel;
+import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTriggerJPanel;
+import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJPopupMenu implements java.awt.event.ActionListener
 {

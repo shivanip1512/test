@@ -1,6 +1,6 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.db.device.*;
+import com.cannontech.database.db.device.DeviceTapPagingSettings;
 
 /**
  * This type was created in VisualAge.

@@ -32,8 +32,8 @@ package com.cannontech.common.util;
 
 
 import java.io.File;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * A convenience implementation of FileFilter that filters out

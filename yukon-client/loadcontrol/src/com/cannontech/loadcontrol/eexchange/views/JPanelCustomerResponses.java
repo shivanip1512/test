@@ -5,10 +5,10 @@ package com.cannontech.loadcontrol.eexchange.views;
  * Creation date: (8/2/2001 11:43:30 AM)
  * @author: 
  */
-import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
+
+import com.cannontech.loadcontrol.eexchange.datamodels.CustomerHistoryRowData;
 import com.cannontech.loadcontrol.eexchange.datamodels.CustomerHistoryTableModel;
 import com.cannontech.loadcontrol.eexchange.datamodels.RevisionHistoryRowData;
-import com.cannontech.loadcontrol.eexchange.datamodels.CustomerHistoryRowData;
 
 
 public class JPanelCustomerResponses extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {

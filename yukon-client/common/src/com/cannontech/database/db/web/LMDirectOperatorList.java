@@ -1,6 +1,6 @@
 package com.cannontech.database.db.web;
 
-import com.cannontech.database.db.*;
+import com.cannontech.database.db.DBPersistent;
 /**
  * Creation date: (4/9/2002 8:56:08 AM)
  * @author: 

@@ -3,7 +3,8 @@ package com.cannontech.database.data.port;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.port.*;
+import com.cannontech.database.db.port.CommPort;
+import com.cannontech.database.db.port.PortSettings;
  
 public class DirectPort extends com.cannontech.database.data.pao.YukonPAObject implements com.cannontech.common.editor.EditorPanel
 {

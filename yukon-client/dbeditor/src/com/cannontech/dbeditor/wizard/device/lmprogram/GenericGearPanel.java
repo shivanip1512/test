@@ -4,9 +4,6 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * Creation date: (8/1/2002 2:59:27 PM)
  * @author: 
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.common.util.StringUtils;
  
 public class GenericGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 

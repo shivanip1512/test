@@ -5,12 +5,10 @@ package com.cannontech.macs.gui;
  */
 import java.awt.Color;
 import java.awt.Font;
-
-import java.util.Observer;
 import java.util.Observable;
 
-import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.macs.MACSClientConnection;
+import com.cannontech.message.macs.message.Schedule;
 
 public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer 
 {

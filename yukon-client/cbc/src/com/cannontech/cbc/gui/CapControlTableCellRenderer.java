@@ -3,8 +3,6 @@ package com.cannontech.cbc.gui;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Color;
-//import com.cannontech.common.gui.util.Colors;
 
 public class CapControlTableCellRenderer extends javax.swing.JLabel implements javax.swing.table.TableCellRenderer 
 {

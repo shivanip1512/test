@@ -1,10 +1,20 @@
 package com.cannontech.esub.editor.element;
 
-import com.cannontech.common.gui.util.*;
-import com.cannontech.database.data.lite.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.lite.LitePoint;
 /**
  * Creation date: (12/18/2001 2:05:01 PM)
  * @author: 

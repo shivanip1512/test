@@ -3,13 +3,11 @@ package com.cannontech.dbeditor.wizard.copy.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
-import com.cannontech.dbeditor.wizard.point.*;
-import com.cannontech.database.db.point.*;
-import com.cannontech.database.data.point.*;
 
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.dbeditor.wizard.point.PointPhysicalSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointStatusPhysicalSettingsPanel;
 
 public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PointCopyNameDevicePanel pointCopyNameDevicePanel;

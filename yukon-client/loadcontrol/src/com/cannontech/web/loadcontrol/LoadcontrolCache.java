@@ -11,19 +11,20 @@ package com.cannontech.web.loadcontrol;
  * @author: Aaron Lauinger
  */
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Date;
+import java.util.Vector;
 
 import javax.swing.Timer;
 
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
-import com.cannontech.loadcontrol.data.LMProgramCurtailment;
-import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
-import com.cannontech.loadcontrol.data.*;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramCurtailment;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 
 public class LoadcontrolCache implements java.util.Observer, java.awt.event.ActionListener {
 

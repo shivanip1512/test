@@ -6,8 +6,8 @@ package com.cannontech.database.data.web;
  */
 
 import com.cannontech.database.db.web.EnergyCompany;
-import com.cannontech.database.db.web.OperatorLogin;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
+import com.cannontech.database.db.web.OperatorLogin;
 
 public class Operator extends com.cannontech.database.db.DBPersistent 
 {	

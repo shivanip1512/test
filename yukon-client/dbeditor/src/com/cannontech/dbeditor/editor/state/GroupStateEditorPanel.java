@@ -2,9 +2,9 @@ package com.cannontech.dbeditor.editor.state;
 /**
  * This type was created in VisualAge.
  */
-import com.klg.jclass.util.value.JCValueListener;
-import com.klg.jclass.util.value.JCValueEvent;
+
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.klg.jclass.util.value.JCValueEvent;
 
 public class GroupStateEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	// this must be changed whenever the number or states are changed

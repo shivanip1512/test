@@ -8,9 +8,8 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.common.util.LogWriter;
-
+import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.util.Constants;
 
 public class PILConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {

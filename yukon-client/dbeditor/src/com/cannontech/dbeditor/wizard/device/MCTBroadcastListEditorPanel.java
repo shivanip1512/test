@@ -1,8 +1,4 @@
 package com.cannontech.dbeditor.wizard.device;
-import java.util.Vector;
-import com.cannontech.database.db.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * This type was created in VisualAge.

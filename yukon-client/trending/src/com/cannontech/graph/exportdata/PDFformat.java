@@ -6,8 +6,7 @@ package com.cannontech.graph.exportdata;
  * @author: 
  */
 
-import com.klg.jclass.chart.JCChart; 
-import com.cannontech.graph.Graph;
+
 
 public class PDFformat
 {

@@ -1,6 +1,7 @@
 package com.cannontech.stars.xml.util;
 
-import org.apache.commons.logging.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>Title: </p>

@@ -4,7 +4,7 @@ package com.cannontech.tdc.utils;
  * Creation date: (2/11/00 1:18:48 PM)
  * @author: 
  */
-import java.awt.Color;
+
 
 public final class TDCDefines 
 {

@@ -5,12 +5,11 @@ package com.cannontech.macs;
  * MACS.  Specifically it registers MACS specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
-import com.roguewave.vsj.CollectableStreamer;
-import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.macs.events.MACSCategoryChange;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
+import com.roguewave.vsj.CollectableStreamer;
 
 public class MACSClientConnection extends com.cannontech.message.util.ClientConnection
 {

@@ -6,12 +6,10 @@ package com.cannontech.tdc.removedisplay;
  * @author: 
  */
 
-import java.util.*;
-import com.cannontech.database.*;
-import java.awt.Cursor;
+import java.util.Vector;
+
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class RemoveDisplayPanel extends javax.swing.JPanel 

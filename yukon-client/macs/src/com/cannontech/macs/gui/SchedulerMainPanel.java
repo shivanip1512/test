@@ -4,31 +4,27 @@ package com.cannontech.macs.gui;
  * This type was created in VisualAge.
  */
 
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
 
-import com.cannontech.common.gui.panel.ManualChangeJPanel;
-import com.cannontech.message.macs.message.Schedule;
-import com.cannontech.common.wizard.WizardPanelEvent;
-import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.common.gui.util.MessagePanel;
-import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.panel.ManualChangeJPanel;
+import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.wizard.WizardPanel;
+import com.cannontech.common.wizard.WizardPanelEvent;
+import com.cannontech.macs.debug.ScheduleDebugViewer;
 import com.cannontech.macs.gui.popup.SchedulerPopUpMenu;
 import com.cannontech.macs.schedule.editor.ScheduleEditorPanel;
-import com.cannontech.macs.debug.ScheduleDebugViewer;
 import com.cannontech.message.macs.message.OverrideRequest;
+import com.cannontech.message.macs.message.Schedule;
 
 public class SchedulerMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, com.cannontech.common.wizard.WizardPanelListener, com.cannontech.common.editor.PropertyPanelListener, javax.swing.event.PopupMenuListener, com.cannontech.clientutils.popup.PopUpEventListener
 {

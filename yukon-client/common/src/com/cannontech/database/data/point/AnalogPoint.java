@@ -3,7 +3,7 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.point.*;
+import com.cannontech.database.db.point.PointAnalog;
 
 public class AnalogPoint extends ScalarPoint {
 	

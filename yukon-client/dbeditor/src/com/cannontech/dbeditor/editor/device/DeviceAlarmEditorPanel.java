@@ -1,10 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.device.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.db.device.DeviceTwoWayFlags;
 
 /**
  * This type was created in VisualAge.

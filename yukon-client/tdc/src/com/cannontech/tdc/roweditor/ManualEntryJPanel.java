@@ -5,16 +5,7 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (11/14/2001 2:38:51 PM)
  * @author: 
  */
-import com.cannontech.tdc.PointValues;
-import java.util.Observer;
-import com.cannontech.tdc.ObservableRow;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.tdc.commandevents.ControlCommand;
 
 public abstract class ManualEntryJPanel extends javax.swing.JPanel 
 {

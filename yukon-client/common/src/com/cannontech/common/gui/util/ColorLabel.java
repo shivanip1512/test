@@ -3,7 +3,8 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.*;
+ import java.awt.Color;
+import java.awt.Graphics;
  
 public class ColorLabel extends javax.swing.JComponent {
 	private Color color = Color.red;

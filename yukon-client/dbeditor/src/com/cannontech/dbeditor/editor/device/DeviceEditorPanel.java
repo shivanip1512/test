@@ -1,10 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
-import java.awt.Dimension;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.common.editor.PropertyPanel;
+
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
+import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * This type was created in VisualAge.

@@ -2,7 +2,7 @@ package com.cannontech.esub.editor.element;
 
 import java.util.ArrayList;
 
-import javax.swing.table.*;
+import javax.swing.table.TableModel;
 /**
  * Creation date: (1/21/2002 11:47:15 AM)
  * @author: 

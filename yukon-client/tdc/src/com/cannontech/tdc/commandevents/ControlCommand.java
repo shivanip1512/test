@@ -5,9 +5,10 @@ package com.cannontech.tdc.commandevents;
  * Creation date: (8/30/00 9:43:39 AM)
  * @author: 
  */
-import com.cannontech.tdc.roweditor.SendData;
-import com.cannontech.message.dispatch.message.Command;
 import java.util.Vector;
+
+import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.tdc.roweditor.SendData;
 
 public class ControlCommand 
 {

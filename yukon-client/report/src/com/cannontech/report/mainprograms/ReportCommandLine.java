@@ -6,7 +6,9 @@ package com.cannontech.report.mainprograms;
  * @author: 
  */
 
-import com.cannontech.report.*;
+import com.cannontech.report.ReportBase;
+import com.cannontech.report.ReportFactory;
+import com.cannontech.report.ReportTypes;
 
 public class ReportCommandLine
 {

@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (7/17/2001 11:56:30 AM)
  * @author: 
  */
-import com.cannontech.loadcontrol.datamodels.GroupTableModel;
+
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 
 public class MultiLineGearRenderer extends javax.swing.JPanel implements javax.swing.table.TableCellRenderer 

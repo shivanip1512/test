@@ -7,12 +7,10 @@ import com.cannontech.common.cache.PointChangeCache;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.message.dispatch.message.PointData;
-
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxView;
 

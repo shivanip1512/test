@@ -1,12 +1,15 @@
 package com.cannontech.common.gui.image;
 
-import javax.swing.*;
-
-import com.cannontech.common.cache.*;
-
-import java.beans.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 
 public class ImagePreview extends JComponent 
                           implements PropertyChangeListener {

@@ -4,8 +4,8 @@ package com.cannontech.common.util;
  * This type was created in VisualAge.
  */
 
-import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 
 public class FileMessageLog implements com.cannontech.common.util.MessageEventListener 
 {

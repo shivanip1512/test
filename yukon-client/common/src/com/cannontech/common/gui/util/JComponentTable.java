@@ -3,7 +3,9 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.table.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 public class JComponentTable extends javax.swing.JTable {
 /**

@@ -5,12 +5,10 @@ package com.cannontech.tdc.createdisplay;
  * Creation date: (1/24/00 3:50:10 PM)
  * @author: 
  */
-import com.cannontech.tdc.utils.DataBaseInteraction;
-
+import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.tdc.utils.TDCDefines;
+import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class CreateTopPanel extends javax.swing.JPanel {
 	private javax.swing.JComboBox ivjJComboBoxType = null;

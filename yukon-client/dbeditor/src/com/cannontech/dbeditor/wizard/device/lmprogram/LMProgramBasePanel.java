@@ -3,8 +3,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgram;
+
 import com.cannontech.database.data.device.lm.LMProgramBase;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.unchanging.JCheckBoxSeasonChooserListener, com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {

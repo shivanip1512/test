@@ -1,17 +1,12 @@
 package com.cannontech.dbeditor.wizard.device.capcontrol;
 
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
+import java.awt.Dimension;
+
+import com.cannontech.database.data.device.DeviceFactory;
 
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
-
- import com.cannontech.common.gui.util.DataInputPanel;
  
 public class CapBankNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 {

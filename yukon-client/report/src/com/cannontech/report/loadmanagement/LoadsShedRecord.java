@@ -5,7 +5,7 @@ package com.cannontech.report.loadmanagement;
  * Creation date: (6/28/00 11:55:04 AM)
  * @author: 
  */
-import com.cannontech.report.*;
+import com.cannontech.report.ReportRecordBase;
 public class LoadsShedRecord implements ReportRecordBase
 {
 	private String controlAreaName = null;

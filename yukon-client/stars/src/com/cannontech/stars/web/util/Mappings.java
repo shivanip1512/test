@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.util;
 
-import java.util.*;
+import java.util.Hashtable;
+
 import com.cannontech.database.db.starsappliance.ApplianceCategory;
 import com.cannontech.database.db.starshardware.LMHardwareBase;
 

@@ -4,13 +4,10 @@ package com.cannontech.loadcontrol.eexchange.datamodels;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.util.Observer;
-import java.util.Observable;
-import java.awt.Font;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
+
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeOffer;
+import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 
 public class OfferTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
 {

@@ -1,16 +1,9 @@
 package com.cannontech.dbeditor.wizard.capsubbus;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
 
 /**
  * This type was created in VisualAge.
  */
  import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
-
- import com.cannontech.common.gui.util.DataInputPanel;
  
 public class CCSubstationBusMiscSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjControlIntervalLabel = null;

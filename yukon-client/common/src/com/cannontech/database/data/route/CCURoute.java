@@ -1,7 +1,8 @@
 package com.cannontech.database.data.route;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.route.*;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.route.CarrierRoute;
+import com.cannontech.database.db.route.RepeaterRoute;
 
 /**
  * This type was created in VisualAge.

@@ -3,14 +3,14 @@ package com.cannontech.message.util;
 /**
  * This type was created in VisualAge.
  */
-import java.net.Socket;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
+import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
 import com.roguewave.vsj.PortableOutputStream;
-import com.roguewave.vsj.CollectableStreamer;
 
 public class ClientConnection extends java.util.Observable implements Runnable 
 {

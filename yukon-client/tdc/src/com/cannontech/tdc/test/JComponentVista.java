@@ -1,8 +1,13 @@
 package com.cannontech.tdc.test;
 
-import java.awt.*;
-import java.awt.print.*;
-import javax.swing.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+
+import javax.swing.JComponent;
 
 public class JComponentVista extends Vista implements Printable {
 

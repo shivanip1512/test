@@ -3,7 +3,7 @@ package com.cannontech.database.data.port;
 /**
  * This type was created in VisualAge.
  */
- import com.cannontech.database.db.port.*;
+ import com.cannontech.database.db.port.PortTiming;
  
 public class TerminalServerSharedPort extends TerminalServerDirectPort {
 	private PortTiming portTiming = null;

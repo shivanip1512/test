@@ -1,7 +1,7 @@
 package com.cannontech.web.taglib;
 
-import javax.servlet.jsp.*;
-import javax.servlet.jsp.tagext.*;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 /**
  * Creation date: (11/14/2001 1:04:09 PM)
  * @author: 

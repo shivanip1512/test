@@ -5,7 +5,6 @@ package com.cannontech.dbeditor.wizard.notification.recipients;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
-import com.cannontech.database.data.lite.LiteNotificationRecipient;
 
 public class NameEmailPanel extends javax.swing.JPanel {
 	private RecipientEmailTableModel tableModel = null;

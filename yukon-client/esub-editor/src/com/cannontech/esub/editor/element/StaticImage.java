@@ -1,18 +1,16 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 
-import com.cannontech.common.gui.image.ImageCache;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
-import com.loox.jloox.*;
+import com.loox.jloox.LxAbstractImage;
+import com.loox.jloox.LxSaveUtils;
 /**
  * Creation date: (1/22/2002 10:15:09 AM)
  * @author: 

@@ -4,8 +4,8 @@ package com.cannontech.message.util;
  * This type was created in VisualAge.
  */
 
-import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.CollectableStreamer;
+import com.roguewave.vsj.VirtualInputStream;
 
 class InThread extends Thread {
 

@@ -5,11 +5,14 @@ package com.cannontech.dbeditor.editor.regenerate;
  * 
  * A undefined generated comment
  */
-import com.cannontech.database.db.route.*;
-import java.util.*;
-import com.cannontech.database.data.route.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.db.*;
+import java.util.List;
+import java.util.Vector;
+
+import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.route.CarrierRoute;
+import com.cannontech.database.db.route.RepeaterRoute;
 public class RegenerateRoute
 {
 	public static final int LARGE_VALID_FIXED = 31;

@@ -1,6 +1,6 @@
 package com.cannontech.palm.test;
 
-import java.awt.*;
+
 //================================================================================================
 // This is just a wrapper for daPanel (which is the Prsu config file builder) 
 // Creation date: (5/7/2001 1:22:38 PM)

@@ -4,14 +4,22 @@ package com.cannontech.dbeditor.wizard.device;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import javax.swing.event.*;
-import com.cannontech.database.db.*;
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.data.port.*;
-import com.cannontech.database.data.pao.PAOGroups;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-import com.cannontech.common.gui.util.DataInputPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.port.DirectPort;
+import com.cannontech.database.db.DBPersistent;
  
 public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
 	private javax.swing.JComboBox ivjPortComboBox = null;

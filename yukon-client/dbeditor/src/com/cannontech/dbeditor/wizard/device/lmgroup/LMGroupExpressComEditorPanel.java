@@ -2,7 +2,6 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.LineLabel;
 
 public class LMGroupExpressComEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	public static final String STRING_NEW = "(new)";

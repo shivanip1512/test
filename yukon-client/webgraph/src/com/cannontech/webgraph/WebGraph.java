@@ -5,11 +5,15 @@ package com.cannontech.webgraph;
  * Creation date: (10/24/2001 11:51:56 AM)
  * @author: 
  */
-import com.klg.jclass.util.swing.encode.*;
 import java.util.GregorianCalendar;
-import com.cannontech.graph.buffer.html.*;
-import com.cannontech.graph.model.*;
-import com.cannontech.graph.*;
+
+import com.cannontech.graph.Graph;
+import com.cannontech.graph.buffer.html.HTMLBuffer;
+import com.cannontech.graph.buffer.html.PeakHtml;
+import com.cannontech.graph.buffer.html.TabularHtml;
+import com.cannontech.graph.buffer.html.UsageHtml;
+import com.cannontech.graph.model.GraphModel;
+import com.cannontech.graph.model.GraphModelType;
 public class WebGraph
 {
 	private GregorianCalendar nextRunTime = null;
@@ -524,5 +528,5 @@ private void writeHTML(String outString, String fileName)
 		System.out.println("@@ Text variable is null -> html format");
 	
 
-}
+} 
 }

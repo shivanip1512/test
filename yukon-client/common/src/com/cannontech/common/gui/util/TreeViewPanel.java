@@ -3,22 +3,23 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
-import com.cannontech.database.data.lite.LiteBase;
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Vector;
 
-import javax.swing.event.TreeSelectionListener;
-
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeExpansionEvent;
-
-import javax.swing.tree.*;
-import javax.swing.JTree;
-import javax.swing.tree.TreeModel;
-import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.model.LiteBaseTreeModel;
 
 public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, java.awt.event.ActionListener, ItemListener

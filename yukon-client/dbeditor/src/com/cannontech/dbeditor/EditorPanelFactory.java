@@ -7,9 +7,9 @@ package com.cannontech.dbeditor;
  * @author: Aaron Lauinger aka The MAN
  */
 
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.database.db.DBPersistent;
 
 public final class EditorPanelFactory
 {

@@ -1,6 +1,6 @@
 package com.cannontech.database.db.state;
 
-import com.cannontech.database.db.state.StateGroupUtils;
+
 /**
  * This type was created in VisualAge.
  */

@@ -5,16 +5,18 @@ package com.cannontech.tdc.test;
  * Creation date: (2/14/00 2:33:45 PM)
  * @author: 
  */
-import java.awt.print.*;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.text.AttributedCharacterIterator;
-import java.text.AttributedString;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
+import java.awt.geom.Point2D;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.Vector;
-import java.awt.Font;
-import java.awt.FontMetrics;
 
 public class PrintText implements java.awt.print.Printable 
 {

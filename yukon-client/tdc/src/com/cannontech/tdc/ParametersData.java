@@ -6,6 +6,7 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.util.Vector;
+
 import com.cannontech.tdc.utils.TDCDefines;
 
 public class ParametersData 

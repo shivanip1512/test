@@ -1,12 +1,7 @@
 package com.cannontech.dbeditor.editor.state;
 
-import java.awt.Dimension;
-
-import com.cannontech.database.db.*;
-import com.cannontech.database.data.state.GroupState;
-
-import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.state.GroupState;
 
 /**
  * This type was created in VisualAge.

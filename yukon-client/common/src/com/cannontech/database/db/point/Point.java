@@ -3,7 +3,7 @@ package com.cannontech.database.db.point;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
+import java.sql.Connection;
 
 public class Point extends com.cannontech.database.db.DBPersistent 
 {

@@ -5,12 +5,11 @@ package com.cannontech.cbc.popupmenu;
  * Creation date: (8/25/00 10:36:10 AM)
  * @author: 
  */
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.messages.CBCCommand;
 import com.cannontech.cbc.capbankeditor.CapBankManualEntryPanel;
 import com.cannontech.cbc.capbankeditor.ObservableCapBankRow;
-import com.cannontech.cbc.gui.CapBankTableModel;
+import com.cannontech.cbc.data.CBCClientConnection;
+import com.cannontech.cbc.data.CapBankDevice;
+import com.cannontech.cbc.messages.CBCCommand;
 
 public class CapBankDevicePopUp extends javax.swing.JPopupMenu implements java.awt.event.ActionListener, javax.swing.event.TableModelListener 
 {

@@ -5,16 +5,12 @@ package com.cannontech.esub.editor;
  * @author: 
  */
 
-import java.util.HashMap;
-
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.util.Util;

@@ -6,10 +6,6 @@ package com.cannontech.dbeditor.wizard.billing;
  * @author: 
  */
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import com.cannontech.billing.*;
-
 public class BillingFileGenerationPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private com.cannontech.billing.mainprograms.BillingFileFormatPanel generatedBillingFileFormatPanel;
 	private com.cannontech.billing.mainprograms.BillingFileFormatPanel ivjBillingFileFormatPanel1 = null;

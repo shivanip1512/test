@@ -1,14 +1,10 @@
 package com.cannontech.esub.editor.element;
 
-import java.io.File;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
-import javax.swing.SwingUtilities;
-import javax.swing.event.*;
-
-import com.cannontech.common.gui.util.*;
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.util.Util;
 
 /**
  * Creation date: (1/14/2002 3:37:58 PM)

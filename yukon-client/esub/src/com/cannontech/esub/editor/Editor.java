@@ -3,7 +3,6 @@ package com.cannontech.esub.editor;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,19 +10,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import com.cannontech.clientutils.CTILogger;
@@ -32,8 +27,6 @@ import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.esub.editor.element.DrawingElement;
 import com.cannontech.esub.util.DrawingUpdater;
-import com.cannontech.esub.util.Util;
-
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxElement;
 import com.loox.jloox.LxGraph;

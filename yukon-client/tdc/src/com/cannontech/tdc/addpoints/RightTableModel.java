@@ -5,11 +5,11 @@ package com.cannontech.tdc.addpoints;
  * @author: 
  */
 import java.util.Vector;
-import javax.swing.event.TableModelEvent;
+
 import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.TDCDefines;
 
 public class RightTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.common.gui.dnd.IDroppableTableModel
 {

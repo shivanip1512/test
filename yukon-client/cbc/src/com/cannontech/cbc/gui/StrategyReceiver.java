@@ -3,10 +3,8 @@ package com.cannontech.cbc.gui;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JRootPane;
-import javax.swing.JMenu;
+
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.messages.CBCSubAreaNames;
 

@@ -1,21 +1,13 @@
 package com.cannontech.esub.editor.element;
 
-import com.cannontech.common.gui.image.ImageCache;
-import com.cannontech.common.gui.util.*;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.database.db.state.YukonImage;
-import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
-import com.cannontech.esub.util.Util;
-
 import java.awt.Frame;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)

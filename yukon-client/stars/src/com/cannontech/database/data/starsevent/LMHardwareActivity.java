@@ -1,8 +1,9 @@
 package com.cannontech.database.data.starsevent;
 
-import com.cannontech.database.db.*;
-import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.xml.serialize.LMHardwareEvent;
+import com.cannontech.stars.xml.serialize.StarsLMHardwareHistory;
 
 /**
  * <p>Title: </p>

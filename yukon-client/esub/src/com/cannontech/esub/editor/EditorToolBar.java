@@ -6,8 +6,9 @@ package com.cannontech.esub.editor;
  */
 
 import java.awt.Dimension;
-import javax.swing.JToolBar;
+
 import javax.swing.AbstractButton;
+import javax.swing.JToolBar;
 
 import com.loox.jloox.LxAbstractAction;
 

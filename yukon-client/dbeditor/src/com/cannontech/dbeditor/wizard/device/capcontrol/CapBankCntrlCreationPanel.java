@@ -4,10 +4,10 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+
+import com.cannontech.common.util.CtiProperties;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.common.util.CtiProperties;
-import com.cannontech.common.gui.util.DataInputPanel;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private java.util.List points = null;

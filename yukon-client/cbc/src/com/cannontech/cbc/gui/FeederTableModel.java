@@ -4,16 +4,12 @@ package com.cannontech.cbc.gui;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.awt.Font;
-import java.util.Observer;
-import java.util.Observable;
+
+import com.cannontech.cbc.data.CapBankDevice;
+import com.cannontech.cbc.data.CapControlConst;
 import com.cannontech.cbc.data.Feeder;
 import com.cannontech.cbc.data.SubBus;
-import com.cannontech.cbc.data.CBCClientConnection;
-import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
-import com.cannontech.cbc.data.CapControlConst;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {

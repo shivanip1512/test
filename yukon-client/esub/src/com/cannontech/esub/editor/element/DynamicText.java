@@ -1,15 +1,20 @@
 package com.cannontech.esub.editor.element;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Drawing;
-import com.loox.jloox.*;
-import java.io.*;
-import java.util.Iterator;
-import java.util.List;
-import java.awt.Font;
-import java.awt.Color;
+import com.loox.jloox.LxAbstractText;
+import com.loox.jloox.LxContainer;
+import com.loox.jloox.LxSaveUtils;
 
 /**
  * DynamicText is a text element that is bound to a point attribute.

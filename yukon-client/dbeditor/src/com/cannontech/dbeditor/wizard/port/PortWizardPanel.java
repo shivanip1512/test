@@ -3,11 +3,9 @@ package com.cannontech.dbeditor.wizard.port;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.*;
+import javax.swing.UIManager;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
-import com.cannontech.common.wizard.WizardPanel;
 
 public class PortWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PortTypeQuestionPanelA portTypeQuestionPanelA;

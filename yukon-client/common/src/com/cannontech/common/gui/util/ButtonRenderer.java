@@ -1,8 +1,11 @@
 package com.cannontech.common.gui.util;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.awt.Component;
+
+import javax.swing.JButton;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.table.TableCellRenderer;
 
 /**
  * @version 1.0 11/09/98

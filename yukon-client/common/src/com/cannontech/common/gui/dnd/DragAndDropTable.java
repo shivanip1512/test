@@ -8,9 +8,13 @@ package com.cannontech.common.gui.dnd;
 
 
 
-import java.awt.dnd.*;
 import java.awt.datatransfer.DataFlavor;
-import java.io.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd.DropTargetListener
 {

@@ -5,12 +5,14 @@ package com.cannontech.tdc;
  */
 
 //import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.*;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
-import java.util.Enumeration;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class TDCClient extends com.cannontech.clientutils.ClientBase
 {

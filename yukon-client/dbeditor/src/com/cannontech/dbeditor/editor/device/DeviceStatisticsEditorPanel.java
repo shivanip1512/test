@@ -1,13 +1,6 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.device.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
-
-import com.cannontech.common.util.CtiUtilities;
-
+import com.cannontech.database.data.device.DeviceBase;
 
 /**
  * This type was created in VisualAge.

@@ -6,11 +6,12 @@ package com.cannontech.tdc.createdisplay;
  * @author: 
  * @Version: <version>
  */
-import com.cannontech.tdc.TDCMainFrame;
 import java.util.Vector;
-import com.cannontech.tdc.utils.TDCDefines;
+
+import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.TDCDefines;
 
 public class ColumnEditorDialog extends javax.swing.JDialog {
 	private String title = "";

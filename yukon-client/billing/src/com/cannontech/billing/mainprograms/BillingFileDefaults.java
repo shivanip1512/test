@@ -1,7 +1,5 @@
 package com.cannontech.billing.mainprograms;
 
-import java.util.Date;
-
 /**
  * Insert the type's description here.
  * Creation date: (5/6/2002 10:55:56 AM)

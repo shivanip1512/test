@@ -3,9 +3,11 @@ package com.cannontech.database.data.device;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.device.lm.*;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.device.lm.LMGroupPoint;
+import com.cannontech.database.data.device.lm.LMGroupRipple;
+import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 
 
 public final class DeviceFactory {

@@ -8,7 +8,12 @@ package com.cannontech.clientutils;
  */
 
 import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.*;
+import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.dispatch.message.Signal;
 
 public abstract class ClientBase implements Runnable, ClientBaseInterface
 {

@@ -6,10 +6,12 @@ package com.cannontech.graph;
  * Creation date: (10/23/00 3:24:57 PM)
  * @author: 
  */
- import com.cannontech.graph.gds.tablemodel.*;
- import com.cannontech.database.db.graph.GraphDataSeries;
- import com.cannontech.database.db.DBPersistent.*;
  import java.util.Vector;
+
+import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.graph.gds.tablemodel.GDSTableModel;
+import com.cannontech.graph.gds.tablemodel.GraphGDSTableModel;
+import com.cannontech.graph.gds.tablemodel.UsageGDSTableModel;
 public class CreateGraphPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, javax.swing.event.ChangeListener {
 	public static final int OK = 1;
 	public static final int CANCEL = 2;

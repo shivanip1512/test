@@ -3,21 +3,23 @@ package com.cannontech.dbeditor.wizard.device;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.route.CarrierRoute;
-import com.cannontech.database.db.route.RepeaterRoute;
-import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.MCT310;
+import com.cannontech.database.data.device.MCT310ID;
+import com.cannontech.database.data.device.MCT310IL;
+import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 
 public class DeviceRoutePanel
 	extends com.cannontech.common.gui.util.DataInputPanel {

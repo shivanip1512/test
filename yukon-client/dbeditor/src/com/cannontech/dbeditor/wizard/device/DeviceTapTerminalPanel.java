@@ -1,17 +1,12 @@
 package com.cannontech.dbeditor.wizard.device;
 
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
+import java.awt.Dimension;
+
+import com.cannontech.database.data.device.PagingTapTerminal;
 
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
-
- import com.cannontech.common.gui.util.DataInputPanel;
  
 public class DeviceTapTerminalPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjNameLabel = null;

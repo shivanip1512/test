@@ -5,7 +5,8 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:09 PM)
  * @author: 
  */
-import com.cannontech.graph.model.*;
+import com.cannontech.graph.model.DataViewModel;
+import com.cannontech.graph.model.LoadDurationCurveModel;
 //import com.cannontech.graph.GraphDataFormats;
 public class TabularHtml extends HTMLBuffer
 {

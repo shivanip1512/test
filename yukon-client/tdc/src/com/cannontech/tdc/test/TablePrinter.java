@@ -7,8 +7,9 @@ package com.cannontech.tdc.test;
  */
 
 import java.awt.Graphics2D;
-import javax.swing.RepaintManager;
 import java.awt.print.Printable;
+
+import javax.swing.RepaintManager;
 
 public class TablePrinter implements java.awt.print.Printable 
 {

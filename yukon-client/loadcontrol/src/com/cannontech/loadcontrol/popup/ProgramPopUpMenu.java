@@ -5,14 +5,12 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
-import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.gui.manualentry.CurtailmentEntryPanel;
-import com.cannontech.loadcontrol.data.LMProgramBase;
-
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
+import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class ProgramPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {

@@ -1,6 +1,10 @@
 package com.cannontech.database.data.starsprogram;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 /**

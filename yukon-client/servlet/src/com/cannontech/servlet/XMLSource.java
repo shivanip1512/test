@@ -1,6 +1,7 @@
 package com.cannontech.servlet;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 /**
  * Creation date: (1/7/2002 1:01:45 PM)
  * @author:  Aaron Lauinger 

@@ -23,7 +23,6 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
 

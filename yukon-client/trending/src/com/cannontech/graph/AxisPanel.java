@@ -6,7 +6,6 @@ package com.cannontech.graph;
  * @author: 
  */
 
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
 public class AxisPanel extends javax.swing.JPanel implements java.awt.event.ItemListener {

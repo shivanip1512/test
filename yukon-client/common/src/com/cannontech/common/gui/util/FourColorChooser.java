@@ -3,7 +3,8 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.*;
+ import java.awt.Color;
+import java.awt.GridLayout;
 public class FourColorChooser extends javax.swing.JPanel {
 	private java.awt.Color selectedColor;
 protected transient com.cannontech.common.gui.util.FourColorChooserListener fieldFourColorChooserListenerEventMulticaster = null;

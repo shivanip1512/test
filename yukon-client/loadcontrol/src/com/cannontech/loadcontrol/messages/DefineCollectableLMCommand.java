@@ -5,7 +5,6 @@ package com.cannontech.loadcontrol.messages;
  */
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableLMCommand extends DefineCollectableLMMessage
 {

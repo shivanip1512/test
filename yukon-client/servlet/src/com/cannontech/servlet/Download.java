@@ -5,11 +5,9 @@ package com.cannontech.servlet;
  * Creation date: (10/19/2001 3:32:09 PM)
  * @author: 
  */
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.*;
+import javax.servlet.http.HttpServlet;
+
 import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
 
 public class Download extends HttpServlet
 {

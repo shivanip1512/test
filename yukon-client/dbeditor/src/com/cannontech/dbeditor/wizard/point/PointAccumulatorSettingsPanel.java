@@ -4,8 +4,6 @@ package com.cannontech.dbeditor.wizard.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.gui.util.DataInputPanel;
-
 public class PointAccumulatorSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjDataOffsetLabel = null;
 	private javax.swing.JLabel ivjMultiplierLabel = null;

@@ -6,15 +6,12 @@ package com.cannontech.tdc.calendar;
  * @author: 
  */
 
-import com.klg.jclass.field.JCPopupField;
+import java.util.Date;
+
+import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.klg.jclass.field.validate.JCDateValidator;
 import com.klg.jclass.util.value.DateValueModel;
-import java.util.Calendar;
-import com.cannontech.tdc.utils.DataBaseInteraction;
-import java.util.Date;
-import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.tdc.data.Display;
 
 public class CalendarDialog extends javax.swing.JDialog 
 {

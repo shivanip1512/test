@@ -5,7 +5,6 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (3/4/2002 8:36:18 AM)
  * @author: 
  */
-import com.cannontech.billing.*;
 
 public class BillingFileFormatFrame extends javax.swing.JFrame implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer {
 	private Thread timerThread = null;

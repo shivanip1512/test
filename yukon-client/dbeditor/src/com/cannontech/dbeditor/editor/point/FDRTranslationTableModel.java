@@ -6,8 +6,8 @@ package com.cannontech.dbeditor.editor.point;
  */
 
 import java.util.Vector;
+
 import javax.swing.table.AbstractTableModel;
-import javax.swing.event.TableModelEvent;
 
 public class FDRTranslationTableModel extends AbstractTableModel 
 {

@@ -3,8 +3,8 @@ package com.cannontech.dbeditor.wizard.capfeeder;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
-import com.cannontech.common.gui.util.DataInputPanel;
  
 public class CCFeederPeakSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjOffPeakSetPointLabel = null;

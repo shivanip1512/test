@@ -1,7 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.database.data.device.lm.LMGroup;
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.point.PointTypes;
 
 public class LMGroupBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {

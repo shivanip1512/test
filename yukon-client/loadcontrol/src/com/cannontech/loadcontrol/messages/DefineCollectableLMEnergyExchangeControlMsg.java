@@ -4,7 +4,6 @@ package com.cannontech.loadcontrol.messages;
  * Creation date: (5/29/2001 11:40:59 AM)
  * @author: Aaron Lauinger
  */
-import java.util.Date;
 
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;

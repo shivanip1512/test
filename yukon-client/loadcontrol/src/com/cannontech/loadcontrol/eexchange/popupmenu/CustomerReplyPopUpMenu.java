@@ -5,7 +5,6 @@ package com.cannontech.loadcontrol.eexchange.popupmenu;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
-import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.eexchange.datamodels.EExchangeRowData;
 
 public class CustomerReplyPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener

@@ -5,9 +5,10 @@ package com.cannontech.tdc.test;
  * Creation date: (2/3/00 1:34:52 PM)
  * @author: 
  */
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
 import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class TestTableRenderer implements javax.swing.table.TableCellRenderer 
 {

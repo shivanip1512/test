@@ -1,7 +1,8 @@
 package com.cannontech.database.data.starscustomer;
 
-import java.util.*;
-import com.cannontech.database.db.*;
+import java.util.Vector;
+
+import com.cannontech.database.db.DBPersistent;
 
 
 /**

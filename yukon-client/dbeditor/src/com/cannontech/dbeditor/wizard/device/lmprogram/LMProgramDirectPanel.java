@@ -1,13 +1,9 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-
-
-
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgram;
+
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 

@@ -3,8 +3,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgram;
+
 import com.cannontech.database.data.device.lm.LMProgramCurtailment;
 
 public class LMProgramCurtailmentPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, javax.swing.event.CaretListener {

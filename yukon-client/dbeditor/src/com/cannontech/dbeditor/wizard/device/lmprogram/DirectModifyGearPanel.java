@@ -3,14 +3,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
-import java.awt.event.ActionEvent;
-import java.util.Vector;
-
-import com.cannontech.database.data.device.lm.LMProgramDirect;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.database.db.device.lm.LMProgramDirectGearDefines;
-import com.cannontech.database.db.device.lm.LMThermostatGear;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private String gearType = null;

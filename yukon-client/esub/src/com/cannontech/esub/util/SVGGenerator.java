@@ -5,7 +5,6 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -14,12 +13,11 @@ import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
-import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.DrawingElement;
+import com.cannontech.esub.editor.element.DynamicText;
 import com.cannontech.esub.editor.element.StateImage;
 import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.editor.element.StaticText;
-
 import com.loox.jloox.LxAbstractStyle;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;

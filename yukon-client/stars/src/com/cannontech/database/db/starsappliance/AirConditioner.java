@@ -1,6 +1,6 @@
 package com.cannontech.database.db.starsappliance;
 
-import com.cannontech.database.db.*;
+import com.cannontech.database.db.DBPersistent;
 
 
 /**

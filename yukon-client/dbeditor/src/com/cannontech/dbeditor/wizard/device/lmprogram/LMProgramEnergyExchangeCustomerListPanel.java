@@ -3,8 +3,6 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgram;
 
 public class LMProgramEnergyExchangeCustomerListPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
 	private com.cannontech.common.gui.util.AddRemovePanel ivjAddRemovePanel = null;

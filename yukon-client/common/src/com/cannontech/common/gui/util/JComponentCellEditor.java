@@ -1,15 +1,19 @@
 package com.cannontech.common.gui.util;
 
+import java.awt.Component;
+import java.awt.event.MouseEvent;
 import java.io.Serializable;
+import java.util.EventObject;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import javax.swing.table.*;
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.EventListenerList;
+import javax.swing.table.TableCellEditor;
+import javax.swing.tree.TreeCellEditor;
 
 public class JComponentCellEditor implements TableCellEditor, TreeCellEditor,
 	Serializable {

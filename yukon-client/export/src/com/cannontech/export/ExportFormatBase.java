@@ -5,7 +5,6 @@ package com.cannontech.export;
  * Creation date: (4/8/2002 11:11:48 AM)
  * @author: 
  */
-import com.cannontech.export.record.*;
 
 public abstract class ExportFormatBase //extends com.ms.service.Service
 {

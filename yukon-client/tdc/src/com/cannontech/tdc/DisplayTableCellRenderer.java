@@ -5,9 +5,8 @@ package com.cannontech.tdc;
  * Creation date: (2/3/00 1:26:04 PM)
  * @author: 
  */
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
-import com.cannontech.tdc.utils.TDCDefines;
+
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 

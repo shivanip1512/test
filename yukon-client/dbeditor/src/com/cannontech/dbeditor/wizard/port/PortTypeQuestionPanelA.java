@@ -5,8 +5,6 @@ package com.cannontech.dbeditor.wizard.port;
  */
 import java.awt.Dimension;
 
-import com.cannontech.common.gui.util.DataInputPanel;
-
 public class PortTypeQuestionPanelA extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JLabel ivjJLabel1 = null;
 	private javax.swing.JRadioButton ivjLocalSerialPortRadioButton = null;

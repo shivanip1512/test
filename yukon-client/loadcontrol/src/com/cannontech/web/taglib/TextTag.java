@@ -1,7 +1,7 @@
 package com.cannontech.web.taglib;
 
 
-import javax.servlet.jsp.*;/**
+import javax.servlet.jsp.JspException;/**
  * Creation date: (11/13/2001 4:30:35 PM)
  * @author: Aaron Lauinger
  */

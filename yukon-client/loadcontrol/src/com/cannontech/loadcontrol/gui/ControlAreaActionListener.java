@@ -5,7 +5,6 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (2/2/2001 12:04:22 PM)
  * @author: 
  */
-import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 
 public class ControlAreaActionListener implements java.awt.event.ActionListener
 {

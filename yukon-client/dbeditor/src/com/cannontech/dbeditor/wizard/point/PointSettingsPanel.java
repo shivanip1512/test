@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.wizard.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
 
 public class PointSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjDeviceComboBox = null;

@@ -5,7 +5,7 @@ package com.cannontech.database.data.device;
  * @author: 
  */
 
-import com.cannontech.database.db.device.*;
+import com.cannontech.database.db.device.MCTBroadcastMapping;
 
 public class MCT_Broadcast extends CarrierBase {
 

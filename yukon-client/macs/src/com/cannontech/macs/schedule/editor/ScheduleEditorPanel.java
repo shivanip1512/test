@@ -1,7 +1,5 @@
 package com.cannontech.macs.schedule.editor;
 
-import java.awt.Dimension;
-import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.message.macs.message.Schedule;
 

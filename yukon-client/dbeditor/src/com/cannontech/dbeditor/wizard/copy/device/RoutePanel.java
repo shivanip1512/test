@@ -3,11 +3,9 @@ package com.cannontech.dbeditor.wizard.copy.device;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.*;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
+ import java.awt.Dimension;
 
- import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.db.DBPersistent;
  
 public class RoutePanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjRouteLabel = null;

@@ -5,9 +5,8 @@ package com.cannontech.cbc.data;
  * Creation date: (8/17/00 3:21:47 PM)
  * @author: 
  */
-import com.roguewave.vsj.*;
+import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
-import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableFeeder extends DefineCollectableStreamableCapObject
 {

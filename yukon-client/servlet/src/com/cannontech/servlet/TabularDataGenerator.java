@@ -21,7 +21,6 @@ package com.cannontech.servlet;
  * @author: 
  */
 import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
 
 public class TabularDataGenerator extends javax.servlet.http.HttpServlet {
 

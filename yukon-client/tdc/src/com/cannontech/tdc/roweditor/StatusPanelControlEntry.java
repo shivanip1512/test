@@ -5,16 +5,11 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/8/00 11:45:00 AM)
  * @author: 
  */
-import com.cannontech.tdc.PointValues;
-import com.cannontech.message.dispatch.message.PointData;
-import java.util.Observer;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.tdc.commandevents.ControlCommand;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.commandevents.ControlCommand;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class StatusPanelControlEntry extends ManualEntryJPanel implements RowEditorDialogListener, java.awt.event.ActionListener, java.util.Observer 
 {

@@ -3,7 +3,7 @@ package com.cannontech.message.dispatch.test;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.message.dispatch.*;
+import com.cannontech.message.dispatch.ClientConnection;
 
 public class ChangeSink {
 /**

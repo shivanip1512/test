@@ -5,13 +5,14 @@ package com.cannontech.tdc.utils;
  * Creation date: (9/12/00 2:21:06 PM)
  * @author: 
  */
-import java.util.Vector;
 import java.sql.Connection;
-import com.cannontech.database.PoolManager;
-import java.sql.PreparedStatement;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Vector;
+
+import com.cannontech.database.PoolManager;
 
 public class DataBaseInteraction 
 {

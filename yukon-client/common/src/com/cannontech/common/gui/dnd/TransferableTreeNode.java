@@ -6,6 +6,7 @@ package com.cannontech.common.gui.dnd;
  * @author: 
  */
 import java.awt.datatransfer.DataFlavor;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class TransferableTreeNode extends javax.swing.tree.DefaultMutableTreeNode implements java.awt.datatransfer.Transferable 

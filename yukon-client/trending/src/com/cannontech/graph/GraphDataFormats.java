@@ -5,8 +5,8 @@ package com.cannontech.graph;
  * Creation date: (7/16/2001 9:47:47 AM)
  * @author: 
  */
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 public interface GraphDataFormats
 {

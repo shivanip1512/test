@@ -1,10 +1,17 @@
 package com.cannontech.database;
 
-import java.sql.*;
-import java.io.*;
-import java.util.*;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import com.cannontech.common.util.LogWriter;
 import com.cannontech.clientutils.CTILogger;
 
 public class PoolManager

@@ -3,8 +3,7 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgram;
+
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 
 public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.beans.PropertyChangeListener, javax.swing.event.CaretListener {

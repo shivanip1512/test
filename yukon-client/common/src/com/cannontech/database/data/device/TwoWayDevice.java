@@ -1,8 +1,11 @@
 package com.cannontech.database.data.device;
 
-import java.util.*;
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
+import java.util.Vector;
+
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.device.DeviceTwoWayFlags;
+import com.cannontech.database.db.device.DeviceWindow;
 
 /**
  * This type was created in VisualAge.

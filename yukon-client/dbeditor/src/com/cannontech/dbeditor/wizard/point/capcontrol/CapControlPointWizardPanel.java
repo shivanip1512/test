@@ -4,7 +4,11 @@ package com.cannontech.dbeditor.wizard.point.capcontrol;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dbeditor.wizard.point.*;
+import com.cannontech.dbeditor.wizard.point.PointAnalogSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointPhysicalSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointStatusPhysicalSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointStatusSettingsPanel;
 
 public class CapControlPointWizardPanel extends com.cannontech.common.wizard.WizardPanel 
 {

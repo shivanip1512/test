@@ -4,8 +4,6 @@ package com.cannontech.dbeditor.wizard.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.gui.util.DataInputPanel;
-
 public class PointCalcBaseSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JComboBox ivjPeriodicRateComboBox = null;
 	private javax.swing.JLabel ivjPeriodicRateLabel = null;

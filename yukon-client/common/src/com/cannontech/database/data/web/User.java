@@ -8,10 +8,10 @@ package com.cannontech.database.data.web;
 
 import java.util.Date;
 
-import com.cannontech.database.db.customer.CustomerLogin;
-import com.cannontech.database.db.customer.CustomerWebSettings;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.CustomerContact;
+import com.cannontech.database.db.customer.CustomerLogin;
+import com.cannontech.database.db.customer.CustomerWebSettings;
 
 public class User extends com.cannontech.database.db.DBPersistent {
 

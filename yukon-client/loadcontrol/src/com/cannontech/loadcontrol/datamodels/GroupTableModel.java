@@ -4,10 +4,9 @@ package com.cannontech.loadcontrol.datamodels;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.util.Observer;
-import java.util.Observable;
-import com.cannontech.loadcontrol.data.LMGroupBase;
+
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 
 public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, SelectableLMTableModel
 {

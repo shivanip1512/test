@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.editor.capfeeder;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 
 public class CCFeederCapBankListEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {

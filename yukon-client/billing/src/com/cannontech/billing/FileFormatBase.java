@@ -5,9 +5,8 @@ package com.cannontech.billing;
  * Creation date: (5/18/00 2:07:05 PM)
  * @author: 
  */
-import com.cannontech.billing.record.*;
-import com.cannontech.billing.*;
-import com.cannontech.billing.mainprograms.*;
+import com.cannontech.billing.mainprograms.BillingFileDefaults;
+import com.cannontech.billing.record.BillingRecordBase;
 
 public abstract class FileFormatBase
 {

@@ -3,8 +3,9 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.point.*;
-import com.cannontech.database.db.point.calculation.*;
+import com.cannontech.database.db.point.DynamicCalcHistorical;
+import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 
 public class CalculatedPoint extends ScalarPoint {
 	private CalcBase calcBase = null;

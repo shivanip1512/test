@@ -3,15 +3,15 @@ package com.cannontech.dbeditor.editor.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.*;
-
-import com.cannontech.database.data.point.*;
-import com.cannontech.database.db.point.*;
 
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.DataInputPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.StatusPoint;
 
 public class PointBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjBasePanel = null;

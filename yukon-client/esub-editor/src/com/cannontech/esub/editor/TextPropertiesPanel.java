@@ -1,7 +1,16 @@
 package com.cannontech.esub.editor;
 
 import java.awt.Font;
-import javax.swing.*;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 /**
  * Creation date: (12/20/2001 5:40:03 PM)
  * @author: 

@@ -5,8 +5,8 @@ package com.cannontech.database.data.device.lm;
  * Creation date: (2/18/2002 9:38:37 AM)
  * @author: 
  */
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 
 public final class LMFactory {
 /**

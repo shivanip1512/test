@@ -6,11 +6,10 @@ package com.cannontech.tdc.roweditor;
  * @author: 
  * @Version: <version>
  */
+import javax.swing.JPanel;
+
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.tdc.ObservableRow;
-import com.cannontech.tdc.utils.TDCDefines;
-import javax.swing.JPanel;
 import com.cannontech.tdc.commandevents.ClearAlarm;
 
 public class AlarmPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer {

@@ -2,11 +2,12 @@ package com.cannontech.dbeditor.wizard.device;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.*;
-import com.cannontech.database.db.*;
-import com.cannontech.database.data.device.*;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.common.gui.util.DataInputPanel;
  
 public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener 
 {

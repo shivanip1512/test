@@ -1,14 +1,23 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.data.device.IEDBase;
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.IEDBase;
+import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RTUDNP;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.Schlumberger;
+import com.cannontech.database.data.device.Sixnet;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceDialupSettings;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
 
 public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
 {

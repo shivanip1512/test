@@ -5,14 +5,12 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/20/00 4:27:31 PM)
  * @author: 
  */
-import com.cannontech.tdc.TDCClient;
-import com.cannontech.tdc.TDCMainFrame;
-
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.dispatch.message.Command;
-import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.tdc.TDCClient;
+import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
 public class SendData 

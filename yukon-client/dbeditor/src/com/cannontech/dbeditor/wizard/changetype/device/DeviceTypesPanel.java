@@ -1,19 +1,13 @@
 package com.cannontech.dbeditor.wizard.changetype.device;
 
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
-
-/**
- * This type was created in VisualAge.
- */
 import java.awt.Dimension;
-import com.cannontech.database.db.*;
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.database.data.pao.PAOGroups;
+
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceScanRate;
 
 public class DeviceTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener
 {

@@ -4,8 +4,8 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * Creation date: (8/1/2002 3:43:26 PM)
  * @author: 
  */
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
 public class SmartCycleGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxCycleCountSndType = null;

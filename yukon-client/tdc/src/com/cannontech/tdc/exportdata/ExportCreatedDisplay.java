@@ -7,7 +7,6 @@ package com.cannontech.tdc.exportdata;
  */
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class ExportCreatedDisplay 

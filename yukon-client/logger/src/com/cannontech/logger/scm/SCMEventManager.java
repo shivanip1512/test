@@ -4,7 +4,7 @@ package com.cannontech.logger.scm;
  * SCMEventManager.java	1.0 (5 May 2000)
  */
 
-import java.util.*;
+import java.util.Vector;
 
 public class SCMEventManager extends Vector
 {

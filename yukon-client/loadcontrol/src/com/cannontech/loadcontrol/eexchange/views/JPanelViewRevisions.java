@@ -6,8 +6,8 @@ package com.cannontech.loadcontrol.eexchange.views;
  * @author: 
  */
 import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
-import com.cannontech.loadcontrol.eexchange.datamodels.RevisionHistoryTableModel;
 import com.cannontech.loadcontrol.eexchange.datamodels.RevisionHistoryRowData;
+import com.cannontech.loadcontrol.eexchange.datamodels.RevisionHistoryTableModel;
 
 public class JPanelViewRevisions extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 	private com.cannontech.web.history.EnergyExchangeHistory historyData = null;

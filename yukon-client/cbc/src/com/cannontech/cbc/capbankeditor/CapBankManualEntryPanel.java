@@ -5,8 +5,8 @@ package com.cannontech.cbc.capbankeditor;
  * Creation date: (12/14/00 4:00:59 PM)
  * @author: 
  */
-import com.cannontech.cbc.gui.CapBankTableModel;
 import com.cannontech.cbc.data.CBCClientConnection;
+import com.cannontech.cbc.gui.CapBankTableModel;
 
 public class CapBankManualEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.util.Observer 
 {

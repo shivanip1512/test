@@ -2,13 +2,8 @@ package com.cannontech.dbeditor.editor.route;
 
 import javax.swing.JOptionPane;
 
-import com.cannontech.database.Transaction;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.db.*;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.util.MessageEvent;
 
 /**
  * This type was created in VisualAge.

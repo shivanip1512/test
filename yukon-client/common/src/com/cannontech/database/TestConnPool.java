@@ -1,6 +1,7 @@
 package com.cannontech.database;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * This class tests the basic behavior of the connectiom pool

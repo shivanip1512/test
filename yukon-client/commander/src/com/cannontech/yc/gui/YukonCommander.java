@@ -3,22 +3,18 @@ package com.cannontech.yc.gui;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.event.ActionListener;
+
 import java.awt.event.ActionEvent;
-
-import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-
-import javax.swing.JRootPane;
-import javax.swing.JMenu;
-
 import java.util.Vector;
 
+import javax.swing.event.TreeSelectionEvent;
+
 import com.cannontech.database.model.ModelFactory;
-import com.cannontech.yc.gui.menu.*;
+import com.cannontech.yc.gui.menu.YCCommandMenu;
+import com.cannontech.yc.gui.menu.YCFileMenu;
+import com.cannontech.yc.gui.menu.YCHelpMenu;
+import com.cannontech.yc.gui.menu.YCViewMenu;
 
 public class YukonCommander extends javax.swing.JFrame implements com.cannontech.database.cache.DBChangeListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.KeyListener, Runnable, javax.swing.event.TreeSelectionListener {
 	private static  YC ycClass;

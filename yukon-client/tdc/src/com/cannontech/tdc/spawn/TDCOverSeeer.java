@@ -5,8 +5,9 @@ package com.cannontech.tdc.spawn;
  * Creation date: (10/10/00 3:55:14 PM)
  * @author: 
  */
-import com.cannontech.tdc.TDCMainFrame;
 import java.util.Vector;
+
+import com.cannontech.tdc.TDCMainFrame;
 
 public final class TDCOverSeeer implements TDCMainFrameSpawnListener
 {

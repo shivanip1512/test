@@ -1,11 +1,11 @@
 package com.cannontech.esub.editor.element;
 
-import com.cannontech.common.gui.util.*;
-
 import java.awt.Font;
 
-import javax.swing.JDialog;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+
+import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * Creation date: (1/22/2002 10:23:18 AM)

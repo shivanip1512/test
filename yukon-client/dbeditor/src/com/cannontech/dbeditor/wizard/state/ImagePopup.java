@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.state;
 
 import javax.swing.JPopupMenu;
+
 import com.cannontech.database.data.lite.LiteYukonImage;
 /**
  * @author rneuharth

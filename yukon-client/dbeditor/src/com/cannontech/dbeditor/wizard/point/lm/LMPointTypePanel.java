@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.wizard.point.lm;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
 
 public class LMPointTypePanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JRadioButton ivjAnalogRadioButton = null;

@@ -1,8 +1,10 @@
 package com.cannontech.common.gui.image;
 
 import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.filechooser.FileView;
 
 import com.cannontech.common.util.CtiUtilities;
 

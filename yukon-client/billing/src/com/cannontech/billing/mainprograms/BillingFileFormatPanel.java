@@ -7,7 +7,9 @@ package com.cannontech.billing.mainprograms;
  */ 
 import java.util.Date;
 
-import com.cannontech.billing.*;
+import com.cannontech.billing.FileFormatBase;
+import com.cannontech.billing.FileFormatFactory;
+import com.cannontech.billing.FileFormatTypes;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer {
 	private javax.swing.JComboBox ivjFileFormatComboBox = null;

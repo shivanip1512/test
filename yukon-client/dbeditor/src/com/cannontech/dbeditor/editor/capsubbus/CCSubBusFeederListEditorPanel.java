@@ -1,9 +1,5 @@
 package com.cannontech.dbeditor.editor.capsubbus;
 
-import com.cannontech.database.db.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
-
 /**
  * This type was created in VisualAge.
  */

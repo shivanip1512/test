@@ -5,10 +5,6 @@ package com.cannontech.dbeditor.wizard.port;
  */
 import java.awt.Dimension;
 
-import com.cannontech.database.db.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
-
 public class TerminalServerTypeQuestionPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.ButtonGroup ivjCommLineTypeButtonGroup = null;
 	private javax.swing.JRadioButton ivjDedicatedRadioButton = null;

@@ -5,14 +5,14 @@ package com.cannontech.cbc.gui;
  */
 import java.awt.Color;
 import java.awt.Font;
-import java.util.Observer;
 import java.util.Observable;
-import com.cannontech.cbc.data.SubBus;
+
 import com.cannontech.cbc.data.CBCClientConnection;
 import com.cannontech.cbc.data.CapBankDevice;
-import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
-import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
 import com.cannontech.cbc.data.CapControlConst;
+import com.cannontech.cbc.data.SubBus;
+import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.cbc.tablemodelevents.StateTableModelEvent;
 
 public class SubBusTableModel extends javax.swing.table.AbstractTableModel implements java.util.Observer, com.cannontech.tdc.alarms.gui.AlarmTableModel, com.cannontech.common.gui.util.SortableTableModel
 {

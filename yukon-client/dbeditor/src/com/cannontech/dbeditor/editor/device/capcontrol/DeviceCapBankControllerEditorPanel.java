@@ -1,7 +1,5 @@
 package com.cannontech.dbeditor.editor.device.capcontrol;
-import com.cannontech.database.db.*;
 
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
 

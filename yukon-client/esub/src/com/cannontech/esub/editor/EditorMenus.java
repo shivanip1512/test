@@ -5,16 +5,15 @@ package com.cannontech.esub.editor;
  * @author: 
  */
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
 import com.loox.jloox.LxAbstractAction;
-import com.loox.jloox.LxView;
 
 class EditorMenus {
 

@@ -2,12 +2,8 @@ package com.cannontech.dbeditor.wizard.route;
 
 import java.awt.Dimension;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.db.route.*;
-import com.cannontech.database.data.route.*;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
-import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * This type was created in VisualAge.

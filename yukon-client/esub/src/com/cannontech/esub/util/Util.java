@@ -7,14 +7,11 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.util.*;
+import com.cannontech.common.util.FileFilter;
 import com.cannontech.esub.editor.Drawing;
 
 /**

@@ -7,8 +7,6 @@ package com.cannontech.tdc.alarms.gui;
  * @Version: <version>
  */
  
-import java.util.Vector;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.TDCDefines;
 
 public class RowBlinker implements Runnable 

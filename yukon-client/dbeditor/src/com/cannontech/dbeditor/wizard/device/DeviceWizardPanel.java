@@ -2,9 +2,6 @@ package com.cannontech.dbeditor.wizard.device;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
 
 public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel 
 {

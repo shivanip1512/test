@@ -4,10 +4,9 @@ package com.cannontech.dbeditor.wizard.device.capcontrol;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import com.cannontech.database.data.device.DeviceBase;
+
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.dbeditor.defines.CommonDefines;
+import com.cannontech.database.data.device.DeviceBase;
  
 public class CapBankSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private String capBankSelectedType = null;

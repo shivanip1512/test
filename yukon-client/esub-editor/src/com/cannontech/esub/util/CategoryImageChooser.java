@@ -1,7 +1,5 @@
 package com.cannontech.esub.util;
 
-import javax.swing.JPanel;
-
 import com.cannontech.common.gui.util.DataInputPanel;
 
 /**

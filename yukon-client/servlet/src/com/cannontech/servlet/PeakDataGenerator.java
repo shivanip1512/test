@@ -21,7 +21,6 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 import com.cannontech.common.util.LogWriter;
-import com.cannontech.database.data.web.User;
 
 public class PeakDataGenerator extends javax.servlet.http.HttpServlet {
 

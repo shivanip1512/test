@@ -1,6 +1,6 @@
 package com.cannontech.common.gui.image;
 
-import com.cannontech.common.util.*;
+import com.cannontech.common.util.ImageFilter;
 
 /**
  * Creation date: (1/21/2002 3:16:08 PM)

@@ -1,9 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.db.device.DeviceDialupSettings;
 
 public class DeviceAdvancedDialupEditorPanel extends javax.swing.JPanel implements com.cannontech.common.gui.util.AdvancedPropertiesGUI
 {

@@ -1,10 +1,14 @@
 package com.cannontech.palm.client;
 
-import com.cannontech.palm.test.*;
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;  
+import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Vector;  
 //==============================================================================================
 //Second attempt at an app that builds the files the conduit looks for to config the Palm-RSU
 //Creation date: (6/14/2001 10:18:16 AM)

@@ -1,19 +1,13 @@
 package com.cannontech.dbeditor.wizard.copy.point;
 
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
-
 /**
  * This type was created in VisualAge.
  */
+
  import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
- import com.cannontech.database.data.capcontrol.CapBank;
- import com.cannontech.common.gui.util.DataInputPanel;
- import com.cannontech.database.data.point.*;
- import com.cannontech.database.db.point.*;
+
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.point.Point;
 
   public class PointCopyNameDevicePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjNameLabel = null;

@@ -3,13 +3,10 @@ package com.cannontech.macs.gui;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.event.ActionListener;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.JRootPane;
-import javax.swing.JMenu;
-
-import com.cannontech.message.macs.message.Schedule;
 
 public class Scheduler implements java.awt.event.ActionListener, com.cannontech.tdc.SpecialTDCChild, java.util.Observer
 {

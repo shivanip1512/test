@@ -11,8 +11,7 @@ package com.cannontech.stars.honeywell.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.Serializable;
-import org.exolab.castor.xml.*;
+
 
 /**
  * 

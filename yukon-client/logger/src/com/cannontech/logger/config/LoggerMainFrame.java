@@ -7,10 +7,9 @@ package com.cannontech.logger.config;
  * @Version: <version>
  */
 import com.cannontech.clientutils.parametersfile.ParametersFile;
-import java.awt.Color;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.logger.LoggerClient;
 import com.cannontech.logger.Logger;
+import com.cannontech.logger.LoggerClient;
 
 public class LoggerMainFrame extends javax.swing.JFrame {
 	public static final String[] PARAMETER_LIST =

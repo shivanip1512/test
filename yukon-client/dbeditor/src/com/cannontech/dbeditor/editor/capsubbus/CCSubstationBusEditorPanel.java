@@ -1,13 +1,6 @@
 package com.cannontech.dbeditor.editor.capsubbus;
 
-import java.awt.Dimension;
-import com.cannontech.database.db.*;
-import com.cannontech.database.data.capcontrol.*;
-
-import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
 
 /**
  * This type was created in VisualAge.

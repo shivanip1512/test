@@ -1,6 +1,6 @@
 package com.cannontech.database.data.route;
 
-import com.cannontech.database.db.route.*;
+import com.cannontech.database.db.route.Route;
 
 /**
  * This type was created in VisualAge.

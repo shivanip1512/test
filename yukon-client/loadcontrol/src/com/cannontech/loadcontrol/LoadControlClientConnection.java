@@ -5,14 +5,12 @@ package com.cannontech.loadcontrol;
  * LoadControl.  Specifically it registers LoadControl specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
-import com.roguewave.vsj.CollectableStreamer;
-import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMCurtailCustomer;
-import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
+import com.roguewave.vsj.CollectableStreamer;
 
 public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection
 {

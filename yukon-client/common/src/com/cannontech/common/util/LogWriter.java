@@ -1,7 +1,8 @@
 package com.cannontech.common.util;
 
-import java.io.*;
-import java.util.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
 
 public class LogWriter
 {

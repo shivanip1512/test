@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.wizard.changetype.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
 
 public class PointTypePanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private int pointType = com.cannontech.database.data.point.PointTypes.INVALID_POINT;

@@ -1,17 +1,28 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.data.pao.PAOGroups;
-import java.awt.event.ItemEvent;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
-
-import com.cannontech.common.util.*;
-import com.cannontech.dbeditor.*;
-import javax.swing.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.CCUBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IEDMeter;
+import com.cannontech.database.data.device.LCUBase;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RTUBase;
+import com.cannontech.database.data.device.RTUDNP;
+import com.cannontech.database.data.device.RepeaterBase;
+import com.cannontech.database.data.device.TCUBase;
+import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.device.DeviceWindow;
 
 /**
  * This type was created in VisualAge.

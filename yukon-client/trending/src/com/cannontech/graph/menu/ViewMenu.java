@@ -3,8 +3,7 @@ package com.cannontech.graph.menu;
 /**
  * This type was created in VisualAge.
  */
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+
 //import com.cannontech.graph.model.GraphModelType;
 
 public class ViewMenu extends javax.swing.JMenu {

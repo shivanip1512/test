@@ -4,9 +4,6 @@ package com.cannontech.loadcontrol.eexchange.datamodels;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.util.Observer;
-import java.util.Observable;
-import java.awt.Font;
 
 public class CustomerHistoryTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.loadcontrol.datamodels.SelectableLMTableModel
 {

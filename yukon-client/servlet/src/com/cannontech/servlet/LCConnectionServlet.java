@@ -8,11 +8,8 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.web.loadcontrol.LoadcontrolCache;
-import com.cannontech.macs.MACSClientConnection;
 import com.cannontech.common.util.LogWriter;
-
+import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.util.Constants;
 
 public class LCConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {

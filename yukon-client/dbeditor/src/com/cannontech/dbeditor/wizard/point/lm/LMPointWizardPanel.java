@@ -4,7 +4,13 @@ package com.cannontech.dbeditor.wizard.point.lm;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dbeditor.wizard.point.*;
+import com.cannontech.dbeditor.wizard.point.PointAccumulatorSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointAnalogSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointPhysicalSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointStatusPhysicalSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointStatusSettingsPanel;
+import com.cannontech.dbeditor.wizard.point.PointWizardPanel;
 
 public class LMPointWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PointAccumulatorSettingsPanel pointAccumulatorSettingsPanel;

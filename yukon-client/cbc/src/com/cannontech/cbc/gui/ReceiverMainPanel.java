@@ -4,26 +4,24 @@ package com.cannontech.cbc.gui;
  * This type was created in VisualAge.
  */
 
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import com.cannontech.common.gui.util.SortTableModelWrapper;
-import javax.swing.JTable;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
-import com.cannontech.cbc.popupmenu.CapBankDevicePopUp;
-import com.cannontech.common.gui.util.MessagePanel;
+
 import com.cannontech.cbc.data.SubBus;
 import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.cbc.popupmenu.SubBusPopUp;
+import com.cannontech.cbc.popupmenu.CapBankDevicePopUp;
 import com.cannontech.cbc.popupmenu.FeederPopUp;
+import com.cannontech.cbc.popupmenu.SubBusPopUp;
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.gui.util.SortTableModelWrapper;
 
 public class ReceiverMainPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener, javax.swing.event.ListSelectionListener, javax.swing.event.TableModelListener, java.util.Observer, javax.swing.event.PopupMenuListener 
 {

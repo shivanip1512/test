@@ -1,10 +1,16 @@
 package com.cannontech.stars.web.action;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
+
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.util.*;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsOperatorLogin;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
 
 /**
  * <p>Title: OperatorLoginAction.java</p>

@@ -8,13 +8,6 @@ package com.cannontech.graph.model;
 //package com.jrefinery.chart.demo;
 
 import com.jrefinery.data.BasicTimeSeries;
-import com.jrefinery.data.Quarter;
-import com.jrefinery.data.TimeSeriesCollection;
-import com.jrefinery.ui.ApplicationFrame;
-import com.jrefinery.chart.JFreeChart;
-import com.jrefinery.chart.ChartFactory;
-import com.jrefinery.chart.ChartPanel;
-import com.jrefinery.chart.TextTitle;
 
 public class TestFreeChart //extends com.jrefinery.chart.JFreeChart// com.jrefinery.ui.ApplicationFrame
 {

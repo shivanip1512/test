@@ -5,7 +5,10 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (3/7/00 2:09:37 PM)
  * @author: 
  */
-import java.awt.dnd.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTarget;
 
 public class DragAndDropJlist extends javax.swing.JList implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
 {

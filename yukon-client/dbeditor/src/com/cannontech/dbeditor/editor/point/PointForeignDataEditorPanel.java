@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.editor.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
 
 public class PointForeignDataEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 	private String currentPointType = com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);

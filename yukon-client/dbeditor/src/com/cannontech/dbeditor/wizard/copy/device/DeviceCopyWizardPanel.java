@@ -3,9 +3,7 @@ package com.cannontech.dbeditor.wizard.copy.device;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
+
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 
 /* All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent  */

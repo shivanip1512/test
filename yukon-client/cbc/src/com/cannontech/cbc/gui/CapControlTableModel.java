@@ -6,6 +6,7 @@ package com.cannontech.cbc.gui;
  * @author: 
  */
 import java.awt.Color;
+
 import com.cannontech.common.gui.util.Colors;
 
 public interface CapControlTableModel

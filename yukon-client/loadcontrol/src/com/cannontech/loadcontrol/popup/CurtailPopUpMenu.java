@@ -7,9 +7,9 @@ package com.cannontech.loadcontrol.popup;
  */
 
 
-import com.cannontech.loadcontrol.gui.manualentry.AckUserPanel;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.gui.manualentry.AckUserPanel;
 import com.cannontech.loadcontrol.gui.manualentry.LMGroupInfoPanel;
 import com.cannontech.loadcontrol.messages.LMCurtailmentAcknowledgeMsg;
 

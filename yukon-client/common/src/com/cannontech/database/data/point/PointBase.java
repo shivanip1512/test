@@ -3,10 +3,16 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.point.*;
-import com.cannontech.database.db.point.fdr.FDRTranslation;
-import com.cannontech.database.db.graph.GraphDataSeries;
 import java.util.Vector;
+
+import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.point.DynamicAccumulator;
+import com.cannontech.database.db.point.DynamicPointDispatch;
+import com.cannontech.database.db.point.Point;
+import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 
 public class PointBase extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {

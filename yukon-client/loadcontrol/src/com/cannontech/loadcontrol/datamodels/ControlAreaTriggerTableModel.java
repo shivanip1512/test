@@ -4,12 +4,6 @@ package com.cannontech.loadcontrol.datamodels;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
-import java.util.Observer;
-import java.util.Observable;
-import java.awt.Font;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class ControlAreaTriggerTableModel extends javax.swing.table.AbstractTableModel
 {

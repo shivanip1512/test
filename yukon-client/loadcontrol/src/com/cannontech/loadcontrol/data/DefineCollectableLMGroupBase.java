@@ -3,9 +3,9 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
-import com.roguewave.vsj.*;
-import com.roguewave.vsj.streamer.SimpleMappings;
 import com.roguewave.tools.v2_0.Comparator;
+import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableLMGroupBase implements com.roguewave.vsj.DefineCollectable 
 {

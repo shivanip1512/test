@@ -1,8 +1,10 @@
 package com.cannontech.palm.test;
 
-import java.util.*;
-import java.io.*;
-import com.cannontech.palm.test.PalmMenuFrame.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Vector;
 //=============================================================================================
 //This application deciphers input from the user and builds a text-file based config file called prsu.cfg that
 //the Palm-RSU uses when the Conduit reads the file and sends it to the palm during HotSync

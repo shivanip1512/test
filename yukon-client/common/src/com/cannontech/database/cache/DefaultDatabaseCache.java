@@ -5,8 +5,8 @@ package com.cannontech.database.cache;
  * Creation date: (3/14/00 3:20:44 PM)
  * @author: 
  */
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public class DefaultDatabaseCache
 {

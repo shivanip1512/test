@@ -4,12 +4,12 @@ package com.cannontech.dbeditor.editor.port;
  * This type was created in VisualAge.
  */
 
-import javax.swing.*;
-import com.cannontech.database.data.port.*;
-import com.cannontech.database.data.pao.PortTypes;
-import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.editor.PropertyPanel;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.pao.PortTypes;
+import com.cannontech.database.data.port.DirectPort;
  
 public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {

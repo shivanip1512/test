@@ -1,12 +1,12 @@
 package com.cannontech.tdc.test;
 
 	import java.awt.Graphics;
-	import java.awt.Graphics2D;
-	import java.awt.geom.Point2D;
-	import java.awt.print.Pageable; 
-	import java.awt.print.PageFormat;
-	 import java.awt.print.Printable;
-	import java.awt.print.PrinterException;
+import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 
 		/**
 	 * A simple Pageable class that can

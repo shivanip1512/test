@@ -3,13 +3,11 @@ package com.cannontech.dbeditor.editor.port;
 /**
  * This type was created in VisualAge.
  */
- import com.cannontech.database.data.*;
- import com.cannontech.database.data.port.*;
- import com.cannontech.database.db.*;
- import com.cannontech.database.db.port.*;
 
- import com.cannontech.common.gui.util.DataInputPanel;
  import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.port.LocalDialupPort;
+import com.cannontech.database.data.port.TerminalServerDialupPort;
+import com.cannontech.database.db.port.PortDialupModem;
  
 public class PortModemEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjInitializationStringLabel = null;

@@ -1,6 +1,6 @@
 package com.cannontech.esub.editor.element;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 /**
  * Creation date: (12/20/2001 5:36:24 PM)
  * @author: 

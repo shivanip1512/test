@@ -2,10 +2,8 @@ package com.cannontech.macs.schedule.wizard;
 /**
  * This type was created in VisualAge.
  */
-import com.klg.jclass.field.validate.JCDateValidator;
-import com.klg.jclass.util.value.DateValueModel;
-import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.message.macs.message.Schedule;
 
 public class ScheduleBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.KeyListener, javax.swing.event.CaretListener 
 {

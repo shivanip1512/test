@@ -6,8 +6,6 @@ package com.cannontech.loadcontrol.messages;
  * and the server only receives them.
  */
 
-import com.cannontech.loadcontrol.data.*;
-
 public class LMManualControlMsg extends LMMessage 
 {
 	private int command;

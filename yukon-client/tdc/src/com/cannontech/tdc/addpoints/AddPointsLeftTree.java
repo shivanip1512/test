@@ -5,19 +5,17 @@ package com.cannontech.tdc.addpoints;
  * Creation date: (1/28/00 2:05:35 PM)
  * @author: 
  */
-import com.cannontech.database.model.DBTreeModel;
-import com.cannontech.database.model.ModelFactory;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceListener;
+
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.dnd.*;
 import javax.swing.tree.TreePath;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
+import com.cannontech.common.gui.dnd.DragSourceListenerClass;
+import com.cannontech.common.gui.dnd.TransferableTreeNode;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-
-import com.cannontech.common.gui.dnd.TransferableTreeNode;
-import com.cannontech.common.gui.dnd.DragSourceListenerClass;
 
 public class AddPointsLeftTree extends javax.swing.JTree implements java.awt.dnd.DragGestureListener
 {

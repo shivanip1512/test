@@ -1,7 +1,16 @@
 package com.cannontech.esub.editor;
 
-import javax.swing.*;
-import com.loox.jloox.*;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
+import com.loox.jloox.LxView;
 /**
  * Creation date: (1/22/2002 11:22:51 AM)
  * @author: 

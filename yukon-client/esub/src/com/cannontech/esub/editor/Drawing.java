@@ -1,17 +1,11 @@
 package com.cannontech.esub.editor;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 
 import com.cannontech.esub.editor.element.DrawingElement;
-import com.cannontech.esub.editor.element.StateImage;
-import com.cannontech.esub.editor.element.StaticImage;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.SVGGenerator;
-import com.cannontech.esub.util.Util;
-
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxSVGGenerator;

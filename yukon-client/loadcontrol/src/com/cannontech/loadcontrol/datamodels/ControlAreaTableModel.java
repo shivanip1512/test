@@ -4,8 +4,8 @@ package com.cannontech.loadcontrol.datamodels;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
+
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class ControlAreaTableModel extends com.cannontech.tdc.observe.ObservableRowTableModel implements com.cannontech.loadcontrol.gui.ControlAreaListener
 {

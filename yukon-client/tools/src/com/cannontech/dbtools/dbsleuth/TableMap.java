@@ -26,9 +26,10 @@ package com.cannontech.dbtools.dbsleuth;
  * @version 1.6 08/26/98
  * @author Philip Milne */
 
-import javax.swing.table.*; 
-import javax.swing.event.TableModelListener; 
-import javax.swing.event.TableModelEvent; 
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel; 
 
 public class TableMap extends AbstractTableModel implements TableModelListener
 {

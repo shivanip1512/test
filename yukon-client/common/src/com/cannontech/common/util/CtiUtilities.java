@@ -2,11 +2,10 @@ package com.cannontech.common.util;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Logger;
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.MenuComponent;
 
 import javax.swing.JComboBox;
 

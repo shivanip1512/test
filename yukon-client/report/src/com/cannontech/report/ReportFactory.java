@@ -6,7 +6,8 @@ package com.cannontech.report;
  * @author: 
  */
 
-import com.cannontech.report.loadmanagement.*;
+import com.cannontech.report.loadmanagement.DailyPeaksReport;
+import com.cannontech.report.loadmanagement.LoadsShedReport;
 public final class ReportFactory
 {
 /**

@@ -3,10 +3,14 @@ package com.cannontech.database.db;
 /**
  * This type was created in VisualAge.
  */
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
-import java.sql.*;
 
-import javax.swing.event.*;
+import javax.swing.event.TableModelEvent;
 
 public abstract class DBPersistentTableModel extends javax.swing.table.AbstractTableModel {
 

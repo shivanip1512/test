@@ -1,8 +1,12 @@
 package com.cannontech.common.gui.util;
 
-import java.util.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.util.Date;
+
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
 
 public class SortTableModelWrapper extends AbstractTableModel implements TableModelListener
 {

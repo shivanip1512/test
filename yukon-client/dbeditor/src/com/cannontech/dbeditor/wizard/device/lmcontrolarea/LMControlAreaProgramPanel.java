@@ -4,7 +4,6 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import com.cannontech.database.db.device.lm.LMProgram;
 
 public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private javax.swing.JButton ivjJButtonAdd = null;

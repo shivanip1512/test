@@ -4,13 +4,10 @@ package com.cannontech.dbeditor.editor.defaults;
  * Creation date: (6/27/2002 9:04:02 AM)
  * @author: 
  */
-import java.awt.Container;
-import java.awt.event.*;
+
 import java.util.Hashtable;
 import java.util.Vector;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -20,6 +17,7 @@ import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.RepeaterRoute;
+
 public class DefaultRoutes
 {
 	/**

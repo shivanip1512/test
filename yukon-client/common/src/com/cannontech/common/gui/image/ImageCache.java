@@ -1,13 +1,10 @@
 package com.cannontech.common.gui.image;
 
-import java.util.HashMap;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-import java.net.*;
-
-import javax.swing.JPanel;
+import java.util.HashMap;
 
 /**
  * Loads and caches images.

@@ -23,6 +23,7 @@ PARAMETERS
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.data.web.Operator;
 import com.cannontech.database.data.web.User;

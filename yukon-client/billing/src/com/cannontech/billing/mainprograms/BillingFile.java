@@ -6,7 +6,8 @@ package com.cannontech.billing.mainprograms;
  * @author: 
  */
 
-import com.cannontech.billing.*;
+import com.cannontech.billing.FileFormatBase;
+import com.cannontech.billing.FileFormatTypes;
 public class BillingFile extends java.util.Observable implements Runnable
 {
 	private BillingFileDefaults billingDefaults = null;

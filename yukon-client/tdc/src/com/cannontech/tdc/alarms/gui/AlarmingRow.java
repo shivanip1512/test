@@ -7,7 +7,6 @@ package com.cannontech.tdc.alarms.gui;
  * @Version: <version>
  */
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.tdc.utils.TDCDefines;
 
 public class AlarmingRow 
 {

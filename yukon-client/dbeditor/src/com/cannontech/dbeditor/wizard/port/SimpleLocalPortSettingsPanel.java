@@ -4,12 +4,10 @@ package com.cannontech.dbeditor.wizard.port;
  * This type was created in VisualAge.
  */
 
- import java.awt.Dimension;
+import java.awt.Dimension;
+
+import com.cannontech.database.data.port.LocalDirectPort;
  
- import com.cannontech.database.data.port.*;
- 
- import com.cannontech.common.gui.util.DataInputPanel;
-  
 public class SimpleLocalPortSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjBaudRateLabel = null;
 	private javax.swing.JLabel ivjPhysicalPortLabel = null;

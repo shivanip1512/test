@@ -5,13 +5,21 @@ package com.cannontech.cbc.data;
  * CBC.  Specifically it registers CBC specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
-import com.roguewave.vsj.CollectableStreamer;
-
+import com.cannontech.cbc.messages.CBCCommand;
+import com.cannontech.cbc.messages.CBCMessage;
+import com.cannontech.cbc.messages.CBCStates;
+import com.cannontech.cbc.messages.CBCSubAreaNames;
+import com.cannontech.cbc.messages.CBCSubstationBuses;
+import com.cannontech.cbc.messages.DefineCollectableCBCCommand;
+import com.cannontech.cbc.messages.DefineCollectableCBCMessage;
+import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
+import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
+import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
-import com.roguewave.vsj.DefineCollectable;
-import com.cannontech.cbc.messages.*;
 import com.cannontech.message.util.ClientConnection;
+import com.roguewave.vsj.CollectableStreamer;
+import com.roguewave.vsj.DefineCollectable;
 
 public class CBCClientConnection extends java.util.Observable implements java.util.Observer, Runnable
 {

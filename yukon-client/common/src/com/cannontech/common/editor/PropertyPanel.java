@@ -7,6 +7,7 @@ package com.cannontech.common.editor;
 import java.util.Vector;
 
 import javax.swing.JTabbedPane;
+
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelEvent;
 

@@ -1,6 +1,6 @@
 package com.cannontech.database.data.starshardware;
 
-import com.cannontech.database.db.*;
+import com.cannontech.database.db.DBPersistent;
 
 
 /**

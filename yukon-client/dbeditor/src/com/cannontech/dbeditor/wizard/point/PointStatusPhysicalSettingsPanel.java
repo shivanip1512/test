@@ -4,8 +4,6 @@ package com.cannontech.dbeditor.wizard.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.gui.util.DataInputPanel;
-
 public class PointStatusPhysicalSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ItemListener {
 	private javax.swing.JLabel ivjControlOffsetLabel = null;
 	private javax.swing.JLabel ivjPointOffsetLabel = null;

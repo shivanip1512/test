@@ -1,6 +1,7 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.db.device.*;
+import com.cannontech.database.db.device.Device;
+import com.cannontech.database.db.device.DynamicDeviceScanData;
 
 
 /**

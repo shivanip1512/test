@@ -7,12 +7,17 @@ package com.cannontech.logger;
  * @Version: <version>
  */
 import java.util.Enumeration;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.*;
-import java.util.Enumeration;
-import com.cannontech.message.util.Message;
-import com.cannontech.database.SqlStatement;
+
 import com.cannontech.clientutils.CommonUtils;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Message;
 
 public class LoggerClient extends com.cannontech.clientutils.ClientBase
 {

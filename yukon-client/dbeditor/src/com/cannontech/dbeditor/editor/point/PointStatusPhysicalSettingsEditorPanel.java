@@ -4,10 +4,8 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.database.data.point.PointTypes;
-
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointTypes;
 
 public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjPointOffsetLabel = null;

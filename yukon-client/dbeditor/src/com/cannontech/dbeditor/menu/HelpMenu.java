@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.menu;
 /**
  * This type was created by Cannon Technologies Inc.
  */
-import javax.swing.JSeparator;
 
 import com.cannontech.common.gui.util.CommandableMenuItem;
 

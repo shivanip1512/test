@@ -1,11 +1,10 @@
 package com.cannontech.dbeditor.wizard.route;
 
 import java.awt.Dimension;
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.db.device.*;
+
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
-import com.cannontech.common.gui.util.DataInputPanel;
 /**
  * This type was created in VisualAge.
  */

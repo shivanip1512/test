@@ -1,6 +1,6 @@
 package com.cannontech.esub.editor.element;
 
-import com.cannontech.common.editor.*;
+import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 /**
  * Creation date: (1/22/2002 10:22:13 AM)

@@ -5,9 +5,7 @@ package com.cannontech.tdc;
  * Creation date: (2/2/00 4:31:00 PM)
  * @author: 
  */
-import java.util.Vector;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.message.dispatch.message.Signal;
 
 public class PointValues 

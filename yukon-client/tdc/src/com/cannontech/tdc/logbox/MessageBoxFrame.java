@@ -6,8 +6,6 @@ package com.cannontech.tdc.logbox;
  * @author: 
  */
 
-import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.util.MessageEvent;
 
 public class MessageBoxFrame extends javax.swing.JFrame 

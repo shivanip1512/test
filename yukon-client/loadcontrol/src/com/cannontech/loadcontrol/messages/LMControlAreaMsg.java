@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.messages;
 /**
  */
 
-import com.cannontech.loadcontrol.data.*;
+import com.cannontech.loadcontrol.data.LMControlArea;
 
 public class LMControlAreaMsg extends LMMessage
 {

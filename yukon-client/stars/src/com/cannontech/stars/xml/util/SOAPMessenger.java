@@ -1,11 +1,21 @@
 package com.cannontech.stars.xml.util;
 
-import java.io.*;
-import java.util.*;
-import javax.xml.messaging.*;
-import javax.xml.soap.*;
-import org.apache.commons.logging.*;
-import org.apache.log4j.Logger;
+import java.io.ByteArrayOutputStream;
+import java.util.Iterator;
+
+import javax.xml.messaging.URLEndpoint;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPConnection;
+import javax.xml.soap.SOAPConnectionFactory;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPHeaderElement;
+import javax.xml.soap.SOAPMessage;
+
+import org.apache.commons.logging.Log;
 
 /**
  * <p>Title: </p>

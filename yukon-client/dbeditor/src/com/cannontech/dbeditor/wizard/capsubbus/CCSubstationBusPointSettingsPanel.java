@@ -1,16 +1,10 @@
 package com.cannontech.dbeditor.wizard.capsubbus;
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
 
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
 
- import com.cannontech.common.gui.util.DataInputPanel;
+import java.awt.Dimension;
  
 public class CCSubstationBusPointSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener
 {

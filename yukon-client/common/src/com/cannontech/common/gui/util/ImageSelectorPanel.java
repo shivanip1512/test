@@ -9,20 +9,14 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.HashMap;
 
-// custom hole!
-
-// and another customer hole!
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
-
-import com.cannontech.clientutils.CTILogger;
 
 /**
  * 5

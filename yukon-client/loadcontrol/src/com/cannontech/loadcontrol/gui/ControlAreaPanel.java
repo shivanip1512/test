@@ -6,8 +6,8 @@ package com.cannontech.loadcontrol.gui;
  * @author: 
  */
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.datamodels.ControlAreaTriggerTableModel;
 import com.cannontech.loadcontrol.datamodels.ControlAreaRowData;
+import com.cannontech.loadcontrol.datamodels.ControlAreaTriggerTableModel;
 
 public class ControlAreaPanel extends javax.swing.JPanel 
 {

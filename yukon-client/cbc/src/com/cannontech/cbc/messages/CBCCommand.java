@@ -5,7 +5,6 @@ package com.cannontech.cbc.messages;
  * be done on the given strategy.  Clients only send CBCCommands
  * and the server only receives them.
  */
-import com.cannontech.cbc.data.CapBankDevice;
 
 public class CBCCommand extends com.cannontech.cbc.messages.CBCMessage 
 {

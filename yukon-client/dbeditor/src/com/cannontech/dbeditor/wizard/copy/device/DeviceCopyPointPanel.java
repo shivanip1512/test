@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.wizard.copy.device;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
 
 public class DeviceCopyPointPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.KeyListener{
 	private int numberOfDevicePoints = 0;

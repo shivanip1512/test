@@ -4,10 +4,8 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.CtiUtilities;
-import javax.swing.JComboBox;
+import com.cannontech.database.data.point.PointTypes;
 
 public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, com.klg.jclass.util.value.JCValueListener
 {

@@ -5,10 +5,11 @@ package com.cannontech.tdc.createdisplay;
  * Creation date: (1/24/00 3:46:59 PM)
  * @author: 
  */
-import com.cannontech.tdc.utils.DataBaseInteraction;
 import java.awt.Cursor;
+
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
  
 public class CreateDisplayDialog extends javax.swing.JDialog {

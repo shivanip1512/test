@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.notification.recipients;
  * @author: 
  */
 import java.util.Vector;
+
 import com.cannontech.database.data.lite.LiteNotificationRecipient;
 
 public class RecipientEmailTableModel extends javax.swing.table.AbstractTableModel 

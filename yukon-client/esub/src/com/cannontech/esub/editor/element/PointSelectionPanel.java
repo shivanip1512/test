@@ -1,12 +1,13 @@
 package com.cannontech.esub.editor.element;
 
 import javax.swing.JPanel;
-import javax.swing.JTree;
 import javax.swing.JScrollPane;
-
+import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreePath;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;

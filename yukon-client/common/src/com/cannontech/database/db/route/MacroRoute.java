@@ -3,7 +3,7 @@ package com.cannontech.database.db.route;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
+import java.sql.SQLException;
 
 public class MacroRoute extends com.cannontech.database.db.DBPersistent 
 {	

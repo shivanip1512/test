@@ -5,13 +5,10 @@ package com.cannontech.tdc.addpoints;
  * Creation date: (1/28/00 4:54:40 PM)
  * @author: 
  */
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.Cursor;
+
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.Display2WayDataAdapter;
-import com.cannontech.tdc.MissingPointsDialog;
-import java.awt.Cursor;
-import com.cannontech.common.gui.dnd.DragAndDropTable;
 
 public class AddPointsCenterPanel extends javax.swing.JPanel implements javax.swing.event.TableModelListener
 {

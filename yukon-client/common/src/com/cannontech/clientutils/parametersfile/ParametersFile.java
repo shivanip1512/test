@@ -6,8 +6,8 @@ package com.cannontech.clientutils.parametersfile;
  * @author: 
  * @Version: <version>
  */
-import java.util.Vector;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class ParametersFile 
 {

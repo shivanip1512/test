@@ -3,7 +3,7 @@ package com.cannontech.dbeditor.editor.point;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.DataInputPanel;
+
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {

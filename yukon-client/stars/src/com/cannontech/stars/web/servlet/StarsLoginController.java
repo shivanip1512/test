@@ -1,11 +1,17 @@
 package com.cannontech.stars.web.servlet;
 
-import com.cannontech.servlet.LoginController;
+import java.io.StringReader;
+import java.io.StringWriter;
 
-import java.io.*;
-import javax.servlet.http.*;
-import com.cannontech.stars.xml.util.*;
-import com.cannontech.stars.xml.serialize.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.cannontech.servlet.LoginController;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsOperatorLogin;
+import com.cannontech.stars.xml.util.SOAPMessenger;
+import com.cannontech.stars.xml.util.XMLUtil;
 
 /**
  * <p>Title: </p>

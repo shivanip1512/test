@@ -2,8 +2,6 @@ package com.cannontech.common.util;
 
 import java.io.File;
 
-import com.cannontech.common.util.*;
-
 public class ImageFilter extends FileFilter {
     
     // Accept all directories and all gif, jpg, or tiff files.

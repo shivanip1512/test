@@ -6,6 +6,7 @@ package com.cannontech.common.gui.util;
  */
 
 import java.util.Vector;
+
 import javax.swing.table.AbstractTableModel;
 
 public class CalcComponentTableModel extends AbstractTableModel 

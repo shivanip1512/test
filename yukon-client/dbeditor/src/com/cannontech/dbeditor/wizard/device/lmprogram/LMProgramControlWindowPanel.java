@@ -3,7 +3,6 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.db.device.lm.LMProgram;
 
 public class LMProgramControlWindowPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	javax.swing.ButtonGroup buttonGroup = new javax.swing.ButtonGroup();

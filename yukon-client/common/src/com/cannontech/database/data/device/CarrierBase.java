@@ -1,6 +1,7 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.db.device.*;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.database.db.device.DeviceRoutes;
 
 /**
  * This type was created in VisualAge.

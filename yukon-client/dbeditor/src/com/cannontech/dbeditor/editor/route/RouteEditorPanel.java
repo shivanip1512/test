@@ -1,14 +1,8 @@
 package com.cannontech.dbeditor.editor.route;
 
-import java.awt.Dimension;
-
-import com.cannontech.database.db.*;
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.route.RouteBase;
-import com.cannontech.database.data.route.RouteFactory;
-
-import com.cannontech.common.editor.PropertyPanel;
-import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * This type was created in VisualAge.

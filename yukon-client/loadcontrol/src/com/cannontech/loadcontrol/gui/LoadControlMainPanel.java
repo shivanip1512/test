@@ -5,25 +5,24 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (9/19/00 10:13:05 AM)
  * @author: 
  */
-import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
-import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
-import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.messages.LMCommand;
-import com.cannontech.loadcontrol.popup.CurtailPopUpMenu;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.GroupTableModel;
-import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
+import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.SelectableLMTableModel;
-
-import com.cannontech.loadcontrol.eexchange.datamodels.OfferTableModel;
 import com.cannontech.loadcontrol.eexchange.datamodels.EExchangeCustomerTableModel;
-import com.cannontech.loadcontrol.eexchange.gui.EExchangeButtonPanel;
-import com.cannontech.loadcontrol.eexchange.popupmenu.OfferPopUpMenu;
-import com.cannontech.loadcontrol.eexchange.datamodels.OfferRowData;
-import com.cannontech.loadcontrol.eexchange.popupmenu.CustomerReplyPopUpMenu;
 import com.cannontech.loadcontrol.eexchange.datamodels.EExchangeRowData;
+import com.cannontech.loadcontrol.eexchange.datamodels.OfferRowData;
+import com.cannontech.loadcontrol.eexchange.datamodels.OfferTableModel;
+import com.cannontech.loadcontrol.eexchange.gui.EExchangeButtonPanel;
+import com.cannontech.loadcontrol.eexchange.popupmenu.CustomerReplyPopUpMenu;
+import com.cannontech.loadcontrol.eexchange.popupmenu.OfferPopUpMenu;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
+import com.cannontech.loadcontrol.popup.CurtailPopUpMenu;
+import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
+import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
 
 public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBarPanelListener, com.cannontech.tdc.SpecialTDCChild, java.awt.event.MouseListener, java.util.Observer, javax.swing.event.ListSelectionListener, javax.swing.event.PopupMenuListener, javax.swing.event.TableModelListener 
 {

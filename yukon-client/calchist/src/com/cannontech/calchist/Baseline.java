@@ -5,12 +5,12 @@ package com.cannontech.calchist;
  * Creation date: (2/1/2002 9:52:28 AM)
  * @author: 
  */
-import java.util.Vector;
 import java.util.GregorianCalendar;
-import com.cannontech.database.db.point.calculation.CalcComponent;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.PointData;
+import java.util.Vector;
+
 import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.message.dispatch.message.PointData;
 
 
 public class Baseline

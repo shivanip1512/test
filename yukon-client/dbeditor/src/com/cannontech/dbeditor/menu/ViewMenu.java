@@ -3,10 +3,11 @@ package com.cannontech.dbeditor.menu;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.gui.util.CommandableMenuItem;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.ButtonGroup;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
+
+import com.cannontech.common.gui.util.CommandableMenuItem;
 
 
 public class ViewMenu extends javax.swing.JMenu 

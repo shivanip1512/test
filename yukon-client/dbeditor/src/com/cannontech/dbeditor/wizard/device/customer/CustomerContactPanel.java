@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device.customer;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+
 import com.cannontech.database.data.customer.CustomerContact;
 
 public class CustomerContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {

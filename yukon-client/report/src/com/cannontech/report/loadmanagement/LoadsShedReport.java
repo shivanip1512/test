@@ -5,7 +5,7 @@ package com.cannontech.report.loadmanagement;
  * Creation date: (3/21/2002 4:04:12 PM)
  * @author: 
  */
-import com.cannontech.report.*;
+import com.cannontech.report.ReportBase;
 public class LoadsShedReport extends ReportBase
 {
   class TempControlAreaIdNameObject

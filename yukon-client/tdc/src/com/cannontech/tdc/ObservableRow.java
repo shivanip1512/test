@@ -6,8 +6,9 @@ package com.cannontech.tdc;
  * @author: 
  */
 import java.util.Vector;
-import com.cannontech.tdc.roweditor.ObservedPointDataChange;
+
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.tdc.roweditor.ObservedPointDataChange;
 
 public class ObservableRow extends java.util.Observable 
 {

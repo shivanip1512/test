@@ -5,13 +5,15 @@ package com.cannontech.tdc.editdisplay;
  * Creation date: (1/27/00 3:47:03 PM)
  * @author: 
  */
-import com.cannontech.database.SqlStatement;
-import com.cannontech.tdc.TDCMainFrame;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.createdisplay.*;
 import java.awt.Cursor;
-import com.cannontech.tdc.utils.TDCDefines;
+
+import com.cannontech.tdc.TDCMainFrame;
+import com.cannontech.tdc.createdisplay.ColumnData;
+import com.cannontech.tdc.createdisplay.CreateTopPanel;
+import com.cannontech.tdc.createdisplay.TemplatePanel;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
+import com.cannontech.tdc.utils.TDCDefines;
 
 public class EditDisplayDialog extends javax.swing.JDialog {
 	private String displayName = null;

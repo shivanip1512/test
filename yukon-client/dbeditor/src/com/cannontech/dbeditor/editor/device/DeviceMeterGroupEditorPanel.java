@@ -1,10 +1,11 @@
 package com.cannontech.dbeditor.editor.device;
 
-import com.cannontech.database.data.device.*;
-import com.cannontech.database.db.*;
-import com.cannontech.database.db.device.*;
-
-import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IEDMeter;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.db.device.DeviceLoadProfile;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * This type was created in VisualAge.

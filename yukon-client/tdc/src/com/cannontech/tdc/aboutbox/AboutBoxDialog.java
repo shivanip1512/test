@@ -5,10 +5,11 @@ package com.cannontech.tdc.aboutbox;
  * Creation date: (8/10/00 2:20:18 PM)
  * @author: 
  */
+import java.util.Vector;
+
+import com.cannontech.tdc.SpecialTDCChild;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
-import com.cannontech.tdc.SpecialTDCChild;
-import java.util.Vector;
 
 public class AboutBoxDialog extends javax.swing.JDialog {
 	private Vector listData = null;

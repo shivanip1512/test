@@ -1,15 +1,18 @@
 package com.cannontech.stars.server.servlet;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import javax.xml.messaging.JAXMServlet;
 import javax.xml.messaging.ReqRespListener;
+import javax.xml.soap.SOAPMessage;
 
-import java.io.*;
-import java.util.*;
-import javax.xml.soap.*;
-import javax.servlet.http.HttpSession;
-import com.cannontech.stars.xml.util.*;
-import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.*;
+import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.util.SOAPUtil;
+import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.stars.xml.util.XMLUtil;
 
 /**
  * <p>Title: </p>

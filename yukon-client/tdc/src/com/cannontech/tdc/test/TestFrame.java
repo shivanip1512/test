@@ -5,17 +5,8 @@ package com.cannontech.tdc.test;
  * Creation date: (2/3/00 1:34:07 PM)
  * @author: 
  */
-import java.awt.print.*;
-
-import com.klg.jclass.page.*;
-import com.klg.jclass.page.pcl.*;
-import com.klg.jclass.page.adobe.pdf.*;
-import com.klg.jclass.page.adobe.postscript.*;
-
-/* JDK12_START */
-import com.klg.jclass.page.awt.*;
-import com.klg.jclass.page.awt.*;
-import com.klg.jclass.page.awt.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 
 
 public class TestFrame extends javax.swing.JFrame implements Printable {

@@ -1,6 +1,8 @@
 package com.cannontech.common.gui.util;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 /**
  * This type was created in VisualAge.
  */

@@ -5,9 +5,7 @@ package com.cannontech.tdc;
  * Creation date: (2/24/00 12:18:13 PM)
  * @author: 
  */
-import com.cannontech.database.SqlStatement;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class MissingPointsDialog extends javax.swing.JDialog {

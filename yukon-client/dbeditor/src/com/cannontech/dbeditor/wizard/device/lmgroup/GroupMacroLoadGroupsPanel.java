@@ -2,7 +2,6 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Dimension;
 
-import com.cannontech.common.gui.util.DataInputPanel;
 /**
  * This type was created in VisualAge.
  */

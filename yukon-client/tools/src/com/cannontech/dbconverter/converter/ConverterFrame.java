@@ -1,9 +1,8 @@
 package com.cannontech.dbconverter.converter;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Vector;
 //=======================================================================================
 // This is just a GUI interface for the command-line database converter
 // Creation date: (7/11/2001 9:49:29 AM)

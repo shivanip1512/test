@@ -4,12 +4,12 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (5/29/2001 10:16:11 AM)
  * @author: Aaron Lauinger
  */
-import com.roguewave.vsj.*;
-import com.roguewave.vsj.streamer.SimpleMappings;
-import com.roguewave.tools.v2_0.Comparator;
-
 import java.util.Date;
 import java.util.Vector;
+
+import com.roguewave.tools.v2_0.Comparator;
+import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableLMEnergyExchangeOffer implements com.roguewave.vsj.DefineCollectable 
 {

@@ -8,9 +8,8 @@ package com.cannontech.servlet;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.macs.MACSClientConnection;
 import com.cannontech.common.util.LogWriter;
-
+import com.cannontech.macs.MACSClientConnection;
 import com.cannontech.util.Constants;
 
 public class MACSConnectionServlet extends javax.servlet.http.HttpServlet implements java.util.Observer {

@@ -3,10 +3,13 @@ package com.cannontech.common.gui.util;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.common.util.MessageEvent;
+import java.awt.Component;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+
+import com.cannontech.common.util.MessageEvent;
 
 public class MessagePanel extends JPanel implements com.cannontech.common.util.MessageEventListener {
 

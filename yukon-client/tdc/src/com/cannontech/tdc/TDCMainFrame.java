@@ -5,28 +5,32 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:51:54 AM)
  * @author: 
  */
-import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
-import com.cannontech.tdc.bookmark.BookMarkBase;
-import javax.swing.UIManager;
-import com.cannontech.tdc.fonteditor.*;
-import com.cannontech.clientutils.CommonUtils;
 import java.awt.Cursor;
-import java.io.StringReader;
-import com.klg.jclass.page.awt.*;
-import com.klg.jclass.page.*;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
-import com.cannontech.tdc.utils.TDCDefines;
-
 import java.util.GregorianCalendar;
-import java.util.Observer;
-import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
+
+import javax.swing.UIManager;
+
+import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.tdc.aboutbox.AboutBoxDialog;
+import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.commandevents.ClearAlarm;
-import com.cannontech.tdc.aboutbox.AboutBoxDialog;
-import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
+import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.exportdata.ExportCreatedDisplay;
+import com.cannontech.tdc.fonteditor.FontEditorFrame;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
+import com.cannontech.tdc.spawn.TDCMainFrameSpawnListener;
+import com.cannontech.tdc.utils.TDCDefines;
+import com.klg.jclass.page.JCDocument;
+import com.klg.jclass.page.JCFlow;
+import com.klg.jclass.page.JCPageTable;
+import com.klg.jclass.page.JCPageTableFromJTable;
+import com.klg.jclass.page.JCPrinter;
+import com.klg.jclass.page.JCTextStyle;
+import com.klg.jclass.page.awt.JCAWTPreviewer;
+import com.klg.jclass.page.awt.JCAWTScreenPrinter;
 
 public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener, TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener, java.awt.event.FocusListener, java.awt.event.ItemListener, java.util.Observer {
 	private transient javax.swing.JDialog textSearchDialog = null;

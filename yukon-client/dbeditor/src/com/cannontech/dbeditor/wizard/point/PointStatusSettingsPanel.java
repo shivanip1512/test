@@ -4,8 +4,6 @@ package com.cannontech.dbeditor.wizard.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.gui.util.DataInputPanel;
-
 public class PointStatusSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener {
 	private javax.swing.JComboBox ivjStateTableComboBox = null;
 	private javax.swing.JLabel ivjStateTableLabel = null;

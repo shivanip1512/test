@@ -1,25 +1,19 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Image;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Iterator;
-import java.util.List;
 
-import com.loox.jloox.*;
-
-import com.cannontech.common.gui.image.ImageCache;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.util.Util;
+import com.loox.jloox.LxAbstractImage;
+import com.loox.jloox.LxSaveUtils;
 
 /**
  * 

@@ -5,27 +5,33 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:43:56 AM)
  * @author: 
  */
-import com.cannontech.common.gui.util.Colors;
-import com.cannontech.tdc.roweditor.*;
-import java.util.Vector;
-import com.cannontech.database.SqlStatement;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Command;
 import java.awt.Cursor;
-import com.cannontech.tdc.logbox.MessageBoxFrame;
+import java.util.Vector;
+
 import javax.swing.JPanel;
+
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.tdc.calendar.CalendarDialog;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.tdc.utils.TDCDefines;
 import com.cannontech.tdc.commandevents.ClearAlarm;
+import com.cannontech.tdc.data.ColumnData;
+import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.roweditor.AnalogPanel;
+import com.cannontech.tdc.roweditor.EditorDialogData;
+import com.cannontech.tdc.roweditor.ManualEntryJPanel;
+import com.cannontech.tdc.roweditor.RowEditorDialog;
+import com.cannontech.tdc.roweditor.SendData;
+import com.cannontech.tdc.roweditor.StatusPanelControlEntry;
+import com.cannontech.tdc.roweditor.StatusPanelManualEntry;
 import com.cannontech.tdc.toolbar.AlarmToolBar;
 import com.cannontech.tdc.utils.DataBaseInteraction;
-import com.cannontech.tdc.data.Display;
-import com.cannontech.tdc.data.ColumnData;
-import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.tdc.utils.TDCDefines;
 
 public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.tdc.bookmark.BookMarkSelectionListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.MouseListener, javax.swing.event.PopupMenuListener 
 {

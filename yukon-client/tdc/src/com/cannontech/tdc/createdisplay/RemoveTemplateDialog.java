@@ -8,10 +8,10 @@ package com.cannontech.tdc.createdisplay;
  */
 
 import java.util.Vector;
-import com.cannontech.tdc.utils.DataBaseInteraction;
-import com.cannontech.tdc.utils.TDCDefines;
+
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
+import com.cannontech.tdc.utils.DataBaseInteraction;
 
 public class RemoveTemplateDialog extends javax.swing.JDialog {
 	private Vector templateNumbers = null;

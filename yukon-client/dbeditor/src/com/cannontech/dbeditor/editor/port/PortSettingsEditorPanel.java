@@ -3,13 +3,14 @@ package com.cannontech.dbeditor.editor.port;
 /**
  * This type was created in VisualAge.
  */
- import com.cannontech.database.db.*;
- import com.cannontech.database.db.port.*;
- import com.cannontech.database.data.*;
- import com.cannontech.database.data.port.*;
 
- import com.cannontech.common.gui.util.DataInputPanel;
  import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.port.DirectPort;
+import com.cannontech.database.data.port.LocalDirectPort;
+import com.cannontech.database.data.port.TerminalServerDirectPort;
+import com.cannontech.database.db.port.CommPort;
+import com.cannontech.database.db.port.PortSettings;
+import com.cannontech.database.db.port.PortTerminalServer;
  
 public class PortSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjCommonProtocolComboBox = null;

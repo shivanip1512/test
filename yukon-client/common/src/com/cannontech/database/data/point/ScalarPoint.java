@@ -5,7 +5,8 @@ package com.cannontech.database.data.point;
  */
 import java.util.Vector;
 
-import com.cannontech.database.db.point.*;
+import com.cannontech.database.db.point.PointLimit;
+import com.cannontech.database.db.point.PointUnit;
 
 public class ScalarPoint extends PointBase {
 	private java.util.Vector pointLimitsVector = null;

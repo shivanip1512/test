@@ -5,7 +5,6 @@ package com.cannontech.graph.menu;
  */
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
-import com.cannontech.graph.model.GraphModelType;
 
 public class GraphViewMenu extends javax.swing.JMenu
 {

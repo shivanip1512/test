@@ -1,9 +1,9 @@
 package com.cannontech.palm.test;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;  
+import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Vector;  
 //=========================================================================================
 // This panel has a table on it that updates as the user enters addressing info 
 //  Creation date: (5/31/2001 3:06:01 PM)

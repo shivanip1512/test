@@ -5,13 +5,13 @@ package com.cannontech.loadcontrol.eexchange.datamodels;
  * Creation date: (7/31/2001 10:52:47 AM)
  * @author: 
  */
-import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
-import com.cannontech.loadcontrol.data.LMEnergyExchangeOffer;
-import com.cannontech.loadcontrol.data.LMEnergyExchangeOfferRevision;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyOffer;
+import com.cannontech.loadcontrol.data.LMEnergyExchangeOffer;
+import com.cannontech.loadcontrol.data.LMEnergyExchangeOfferRevision;
+import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 
 public class OfferRowData 
 {

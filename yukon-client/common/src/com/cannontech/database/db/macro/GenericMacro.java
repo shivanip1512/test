@@ -3,7 +3,7 @@ package com.cannontech.database.db.macro;
 /**
  * This type was created in VisualAge.
  */
-import java.sql.*;
+import java.sql.SQLException;
 
 public class GenericMacro extends com.cannontech.database.db.DBPersistent {
 	

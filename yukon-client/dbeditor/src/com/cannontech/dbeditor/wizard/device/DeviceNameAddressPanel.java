@@ -1,19 +1,21 @@
 package com.cannontech.dbeditor.wizard.device;
 
-import com.cannontech.database.db.device.*;
-import com.cannontech.database.data.*;
-import com.cannontech.database.data.device.*;
+import java.awt.Dimension;
+
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.MCT_Broadcast;
+import com.cannontech.database.data.device.RTUDNP;
+import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
 
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
- import com.cannontech.database.db.*;
- import com.cannontech.database.data.device.*;
 
- import com.cannontech.common.gui.util.DataInputPanel;
- 
 public class DeviceNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener 
 {
 	private int deviceType = -1;

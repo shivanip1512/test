@@ -4,7 +4,6 @@ package com.cannontech.dbeditor.editor.route;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.PAOGroups;
 
 public class CommunicationRouteEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener

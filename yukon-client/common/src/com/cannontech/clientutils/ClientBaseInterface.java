@@ -5,10 +5,10 @@ package com.cannontech.clientutils;
  * Creation date: (6/15/00 2:13:08 PM)
  * @author: 
  */
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Message;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public interface ClientBaseInterface 
 {

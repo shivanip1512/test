@@ -1,9 +1,15 @@
 package com.cannontech.stars.web.servlet;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.stars.web.StarsOperator;
-import com.cannontech.stars.xml.serialize.*;
+import com.cannontech.stars.xml.serialize.AdditionalContact;
+import com.cannontech.stars.xml.serialize.PrimaryContact;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInfo;
+import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 
 /**
  * <p>Title: </p>

@@ -1,6 +1,6 @@
 package com.cannontech.servlet;
 
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
 
 import com.cannontech.util.GlobalProperties;
 

@@ -5,8 +5,8 @@ package com.cannontech.database.data.multi;
  * Creation date: (12/31/2001 11:40:21 AM)
  * @author: 
  */
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
 
 public abstract class CommonMulti extends com.cannontech.database.db.DBPersistent 
 {

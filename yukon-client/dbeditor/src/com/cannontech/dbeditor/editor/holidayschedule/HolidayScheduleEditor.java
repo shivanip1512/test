@@ -1,6 +1,5 @@
 package com.cannontech.dbeditor.editor.holidayschedule;
 
-import com.cannontech.database.db.*;
 import com.cannontech.common.gui.util.DataInputPanel;
 
 /**

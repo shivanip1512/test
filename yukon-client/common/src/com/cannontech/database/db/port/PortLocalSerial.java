@@ -4,7 +4,7 @@ package com.cannontech.database.db.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.database.db.*;
+ import com.cannontech.database.db.DBPersistent;
  
 public class PortLocalSerial extends DBPersistent {
 	

@@ -3,7 +3,7 @@ package com.cannontech.database.data.device.lm;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.device.DeviceBase;
 
 public abstract class LMGroup extends DeviceBase
 {

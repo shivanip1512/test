@@ -2,8 +2,9 @@ package com.cannontech.common.gui.util;
 
 import java.awt.Component;
 
-import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 public class JComponentCellRenderer implements TableCellRenderer
 	{
