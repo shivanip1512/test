@@ -503,6 +503,7 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
 
     serial_num = atol(token);
 
+    serviceTempCmd += token;
     serviceCmd += token;
     configCmd += token;
 
@@ -628,6 +629,7 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
 
     serial_num = atol(token);
 
+    serviceTempCmd += token;
     serviceCmd += token;
 
     if( func == 3 )
