@@ -568,22 +568,21 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 		//Search for the correct sub-type and set the address
 		if( getAddressTextField().isVisible() )
 		{
-			Integer address = new Integer(getAddressTextField().getText());
 			
 			if (val instanceof IDLCBase)
-				((IDLCBase) val).getDeviceIDLCRemote().setAddress(address);
+				((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof DNPBase)
-				((DNPBase) val).getDeviceAddress().setMasterAddress(address);
+				((DNPBase) val).getDeviceAddress().setMasterAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof CarrierBase)
 			{
-				 Integer addressHolder = address;
+				 Integer addressHolder = new Integer(getAddressTextField().getText());
 				 if(val instanceof Repeater900)
 				  	addressHolder = new Integer(addressHolder.intValue() + 4190000);
 				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
 				 
 				if( DeviceTypesFuncs.isMCT(getDeviceType()) )
 				{
-					checkMCTAddresses( address.intValue() );
+					checkMCTAddresses( new Integer(getAddressTextField().getText()).intValue() );
 				}
 			}
 			else if (val instanceof CapBank)
@@ -1014,10 +1013,12 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 
       if( val instanceof CapBank )
       {
-         getPhysicalAddressLabel().setText( "Location:" );
+         getPhysicalAddressLabel().setText( "     Street Location:" );
 
          getAddressTextField().setText( 
-            ((CapBank)val).getPAODescription().toString() );            
+            ((CapBank)val).getPAODescription().toString() ); 
+            
+         getAddressTextField().setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_CAP_BANK_ADDRESS_LENGTH));           
       }
 
 
