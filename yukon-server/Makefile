@@ -11,6 +11,11 @@ all:
         @echo:
         @%cd $(COMPILEBASE)\tcl
         @$(MAKE) -nologo
+        @title Building in xerces
+        @echo Building in xerces
+        @echo:
+        @%cd $(COMPILEBASE)\xerces
+        @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\common
         @echo:
         @title Building in $(COMPILEBASE)\common
