@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/23 20:02:36 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/01 20:41:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,11 @@ void CtiMCScheduler::initEvents(const RWTime& now, CtiMCSchedule& sched)
     RWDate yesterday(now);
     RWTime yesterday_time(yesterday);
     RWTime calc_start = calcPolicyStart(yesterday_time,sched);
-    RWTime calc_stop = calcPolicyStop(yesterday_time,sched);
+    RWTime calc_stop;
+    
+    if( calc_start.isValid() )
+        /* changed because duration stops were not being restarted */
+        calcPolicyStop(/*yesterday_time*/ calc_start,sched); 
 
     if( calc_start.isValid() && calc_stop.isValid()     &&
         calc_start <= now && now <= calc_stop    )
