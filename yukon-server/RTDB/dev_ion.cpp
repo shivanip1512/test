@@ -578,6 +578,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     RWTPtrSlist<CtiSignalMsg>    eventData;
     RWCString returnInfo;
 
+    bool expectMore = false;
+
     RWCString commandStr(InMessage->Return.CommandStr);
 
     resetScanPending();
@@ -585,11 +587,6 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     if( !ErrReturn && !_ion.recvCommResult(InMessage, outList) )
     {
         _ion.getInboundData(pointData, eventData, returnInfo);
-
-        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData, returnInfo);
-
-        pointData.clear();
-        eventData.clear();
 
         switch( InMessage->Sequence )
         {
@@ -600,6 +597,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                expectMore = true;
 
                 CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                  "scan general post_control",
@@ -618,7 +617,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     newReq->setCommandString(newReq->CommandString() + " duke_issg_stop");
                 }
 
-                newReq->setMessagePriority(15);
+                newReq->setMessagePriority(MAXPRIORITY);
 
                 newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -640,6 +639,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) == 0 &&
                             _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) == 0 )
                         {
+                            expectMore = true;
+
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_start",
                                                                              InMessage->Return.UserID,
@@ -648,7 +649,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                                              InMessage->Return.MacroOffset,
                                                                              InMessage->Return.Attempt);
 
-                            newReq->setMessagePriority(15);
+                            newReq->setMessagePriority(MAXPRIORITY);
 
                             newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -666,6 +667,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         if( _ion.hasPointUpdate(StatusPointType, 1) && _ion.getPointUpdateValue(StatusPointType, 1) != 0 ||
                             _ion.hasPointUpdate(StatusPointType, 2) && _ion.getPointUpdateValue(StatusPointType, 2) != 0 )
                         {
+                            expectMore = true;
+
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_stop",
                                                                              InMessage->Return.UserID,
@@ -674,7 +677,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                                              InMessage->Return.MacroOffset,
                                                                              InMessage->Return.Attempt);
 
-                            newReq->setMessagePriority(15);
+                            newReq->setMessagePriority(MAXPRIORITY);
 
                             newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -702,6 +705,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         dout << RWTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
+                    expectMore = true;
+
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                      "getstatus eventlog",
                                                                      InMessage->Return.UserID,
@@ -710,7 +715,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                                      InMessage->Return.MacroOffset,
                                                                      InMessage->Return.Attempt);
 
-                    newReq->setMessagePriority(15);
+                    newReq->setMessagePriority(MAXPRIORITY);
 
                     newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -734,14 +739,16 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                           InMessage->Return.MacroOffset,
                                                           InMessage->Return.Attempt);
 
-                        newReq->setMessagePriority(15);
+                        newReq->setMessagePriority(MAXPRIORITY);
 
-                        newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                        newReq->setConnectionHandle(0);  //  discard the return, we don't want to interrupt the scan
 
                         CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
                         delete newReq;
                     }
+
+                    expectMore = true;
 
                     newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                       "scan general",
@@ -751,7 +758,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                       InMessage->Return.MacroOffset,
                                                       InMessage->Return.Attempt);
 
-                    newReq->setMessagePriority(15);
+                    newReq->setMessagePriority(MAXPRIORITY);
 
                     newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -767,6 +774,8 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             {
                 CtiRequestMsg *newReq;
 
+                expectMore = true;
+
                 newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                   "scan general",
                                                   InMessage->Return.UserID,
@@ -775,7 +784,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                   InMessage->Return.MacroOffset,
                                                   InMessage->Return.Attempt);
 
-                newReq->setMessagePriority(15);
+                newReq->setMessagePriority(MAXPRIORITY);
 
                 newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -794,6 +803,11 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             }*/
 
         }
+
+        processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData, returnInfo, expectMore);
+
+        pointData.clear();
+        eventData.clear();
 
         _ion.clearInboundData();
     }
@@ -817,7 +831,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
 
 void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList,
-                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, RWCString &returnInfo )
+                                       RWTPtrSlist<CtiPointDataMsg> &points, RWTPtrSlist<CtiSignalMsg> &events, RWCString &returnInfo, bool expectMore )
 {
     CtiReturnMsg *retMsg, *vgMsg;
 
@@ -909,6 +923,11 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, RWTime &TimeNow, RWTPt
         {
             retMsg->setResultString(retMsg->ResultString() + "\nEvent log collection complete.");
         }
+    }
+
+    if( expectMore )
+    {
+        retMsg->setExpectMore();
     }
 
     retList.append(retMsg);
