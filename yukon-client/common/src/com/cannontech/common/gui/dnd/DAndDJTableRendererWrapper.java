@@ -18,8 +18,8 @@ public class DAndDJTableRendererWrapper implements TableCellRenderer
 	private int dragOverRow = -1;
 
 	//the border for the bottom line to paint
-	private static final javax.swing.border.MatteBorder BOTTOM_BORDER = 
-		javax.swing.BorderFactory.createMatteBorder( 0, 0, 2, 0, new java.awt.Color(125,50,180) );
+	private static final javax.swing.border.MatteBorder LINE_BORDER = 
+		javax.swing.BorderFactory.createMatteBorder( 2, 0, 2, 0, new java.awt.Color(125,50,180) );
 
 /**
  * DragAndDropJListRenderer constructor comment.
@@ -47,7 +47,7 @@ public Component getTableCellRendererComponent(
 	{	
 		if( row == dragOverRow )
 		{
-			((DefaultTableCellRenderer)c).setBorder( BOTTOM_BORDER );
+			((DefaultTableCellRenderer)c).setBorder( LINE_BORDER );
 		}
 		else
 			((DefaultTableCellRenderer)c).setBorder( 
