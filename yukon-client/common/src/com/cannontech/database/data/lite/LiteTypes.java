@@ -52,4 +52,5 @@ public final class LiteTypes
 	public final static int STARS_INTERVIEW_QUESTION = 122;
 	public final static int STARS_APPLIANCE = 123;
 	public final static int STARS_CUSTOMER_FAQ = 124;
+	public final static int STARS_LMTHERMOSTAT_MANUAL_EVENT = 125;
 }
