@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/10/30 20:36:13 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2004/01/06 20:28:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -590,10 +590,9 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         {
             ReturnMsg->setResultString("No load profile point defined for '" + getName() + "'");
         }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
-
-
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -885,89 +884,89 @@ INT CtiDeviceMCT24X::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
  */
 INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-   INT status = NORMAL;
+    INT status = NORMAL;
 
-   DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      // No error occured, we must do a real decode!
+    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    {
+        // No error occured, we must do a real decode!
 
-      INT ssp;
-      char rev;
-      char temp[80];
+        INT ssp;
+        char rev;
+        char temp[80];
 
-      RWCString sspec;
-      RWCString options("Options:\n");
+        RWCString sspec;
+        RWCString options("Options:\n");
 
-      CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-
-      ssp = InMessage->Buffer.DSt.Message[4] * 256 + InMessage->Buffer.DSt.Message[0];
-      rev = 64 + InMessage->Buffer.DSt.Message[1];
-
-      sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString::RWCString(rev) + "\n";
-
-      if(InMessage->Buffer.DSt.Message[2] & 0x01)
-      {
-         options+= RWCString("  Latched loads\n");
-      }
-      if(InMessage->Buffer.DSt.Message[2] & 0x02)
-      {
-         options+= RWCString("  Timed loads\n");
-      }
-      if(InMessage->Buffer.DSt.Message[2] & 0x40)
-      {
-         options+= RWCString("  Extended addressing\n");
-      }
-      if(InMessage->Buffer.DSt.Message[2] & 0x80)
-      {
-         options+= RWCString("  Metering of basic kWh\n");
-      }
-
-      if(InMessage->Buffer.DSt.Message[3] & 0x01)
-      {
-         options+= RWCString("  Time-of-demand\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x04)
-      {
-         options+= RWCString("  Load survey\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x08)
-      {
-         options+= RWCString("  Full group address support\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x10)
-      {
-         options+= RWCString("  Feedback load control\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x40)
-      {
-         options+= RWCString("  Volt/VAR control\n");
-      }
-      if(InMessage->Buffer.DSt.Message[3] & 0x80)
-      {
-         options+= RWCString("  Capacitor control\n");
-      }
-
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-         }
-
-         return MEMORY;
-      }
-
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-      ReturnMsg->setResultString( sspec + options );
-
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-   }
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
 
-   return status;
+        ssp = InMessage->Buffer.DSt.Message[4] * 256 + InMessage->Buffer.DSt.Message[0];
+        rev = 64 + InMessage->Buffer.DSt.Message[1];
+
+        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString::RWCString(rev) + "\n";
+
+        if( InMessage->Buffer.DSt.Message[2] & 0x01 )
+        {
+            options+= RWCString("  Latched loads\n");
+        }
+        if( InMessage->Buffer.DSt.Message[2] & 0x02 )
+        {
+            options+= RWCString("  Timed loads\n");
+        }
+        if( InMessage->Buffer.DSt.Message[2] & 0x40 )
+        {
+            options+= RWCString("  Extended addressing\n");
+        }
+        if( InMessage->Buffer.DSt.Message[2] & 0x80 )
+        {
+            options+= RWCString("  Metering of basic kWh\n");
+        }
+
+        if( InMessage->Buffer.DSt.Message[3] & 0x01 )
+        {
+            options+= RWCString("  Time-of-demand\n");
+        }
+        if( InMessage->Buffer.DSt.Message[3] & 0x04 )
+        {
+            options+= RWCString("  Load survey\n");
+        }
+        if( InMessage->Buffer.DSt.Message[3] & 0x08 )
+        {
+            options+= RWCString("  Full group address support\n");
+        }
+        if( InMessage->Buffer.DSt.Message[3] & 0x10 )
+        {
+            options+= RWCString("  Feedback load control\n");
+        }
+        if( InMessage->Buffer.DSt.Message[3] & 0x40 )
+        {
+            options+= RWCString("  Volt/VAR control\n");
+        }
+        if( InMessage->Buffer.DSt.Message[3] & 0x80 )
+        {
+            options+= RWCString("  Capacitor control\n");
+        }
+
+        if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            }
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( sspec + options );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+
+    return status;
 }
 
 
