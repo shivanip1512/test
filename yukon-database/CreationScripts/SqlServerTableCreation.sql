@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/30/2004 3:43:24 PM                        */
+/* Created on:     1/10/2005 2:40:19 PM                         */
 /*==============================================================*/
 
 
@@ -6859,7 +6859,7 @@ create table YukonImage (
    ImageID              numeric              not null,
    ImageCategory        varchar(20)          not null,
    ImageName            varchar(80)          not null,
-   ImageValue           ntext                null
+   ImageValue           image                null
 )
 go
 
