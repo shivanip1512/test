@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/17 15:28:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/19 16:53:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -630,7 +630,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway Comm Status: " << (GatewayRX.U.CommFaultStatus.CommFaultStatus ? "FAILED" : "OK") << endl;
+                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Comm Status: " << (GatewayRX.U.CommFaultStatus.CommFaultStatus ? "FAILED" : "OK") << endl;
             }
 
             break;
@@ -639,7 +639,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway Bind Mode: " << (GatewayRX.U.BindMode.BindMode ? "ACTIVE" : "INACTIVE") << endl;
+                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Bind Mode: " << (GatewayRX.U.BindMode.BindMode ? "ACTIVE" : "INACTIVE") << endl;
             }
 
             break;
@@ -648,7 +648,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway Ping Mode: " << (GatewayRX.U.PingMode.PingMode ? "ACTIVE" : "INACTIVE") << endl;
+                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Ping Mode: " << (GatewayRX.U.PingMode.PingMode ? "ACTIVE" : "INACTIVE") << endl;
             }
 
             break;
@@ -657,7 +657,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway Reset: " << (GatewayRX.Reset.Address) << endl;
+                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Reset: " << (GatewayRX.Reset.Address) << endl;
             }
 
             break;
@@ -666,7 +666,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Gateway Error: " << ntohs(GatewayRX.U.ErrorReport.Error) << endl;
+                dout << RWTime() << " Gateway " << getMACAddress() << " / " << getIPAddress() << " Error: " << ntohs(GatewayRX.U.ErrorReport.Error) << endl;
             }
 
             break;
