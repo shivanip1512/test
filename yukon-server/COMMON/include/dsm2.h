@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2004/05/20 22:39:51 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2004/07/27 15:48:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -835,6 +835,8 @@ public:
    LONG               DeviceID;                     // 083199 CGP    // The device id of the transmitter device.
    LONG               TargetID;                     // 022701 CGP    // The device id of the end-of-line device. May be the same as DeviceID depending on protocol
    USHORT             Sequence;                     // 083199 CGP    // Used by CCU711 to id a CCU queue entry.
+   LONG               VerificationSequence;         // 072104 mskf   // Used to track multiple OutMessage requests for the same code
+                                                                     //   transmission, esp. for the purpose of logging retry success
 
    INT                Retry;                        // Instructions to porter!
    INT                Priority;
@@ -910,42 +912,44 @@ public:
    {
       if(this != &aRef)
       {
-         HeadFrame[0]      = aRef.HeadFrame[0];
-         HeadFrame[1]      = aRef.HeadFrame[1];
-         DeviceID          = aRef.DeviceID;
-         TargetID          = aRef.TargetID;
-         Sequence          = aRef.Sequence;
+         HeadFrame[0]           = aRef.HeadFrame[0];
+         HeadFrame[1]           = aRef.HeadFrame[1];
+         DeviceID               = aRef.DeviceID;
+         TargetID               = aRef.TargetID;
+         Sequence               = aRef.Sequence;
+         VerificationSequence   = aRef.VerificationSequence;
 
-         Retry             = aRef.Retry;
-         Priority          = aRef.Priority;
-         TimeOut           = aRef.TimeOut;
+         Retry                  = aRef.Retry;
+         Priority               = aRef.Priority;
+         TimeOut                = aRef.TimeOut;
 
-         Port              = aRef.Port;
-         Remote            = aRef.Remote;
+         Port                   = aRef.Port;
+         Remote                 = aRef.Remote;
 
-         OutLength         = aRef.OutLength;
-         InLength          = aRef.InLength;
+         OutLength              = aRef.OutLength;
+         InLength               = aRef.InLength;
 
-         Source            = aRef.Source;
-         Destination       = aRef.Destination;
-         Command           = aRef.Command;
-         Function          = aRef.Function;
-         EventCode         = aRef.EventCode;
-         MessageFlags      = aRef.MessageFlags;
+         Source                 = aRef.Source;
+         Destination            = aRef.Destination;
+         Command                = aRef.Command;
+         Function               = aRef.Function;
+         EventCode              = aRef.EventCode;
+         MessageFlags           = aRef.MessageFlags;
 
-         DeviceIDofLMGroup = aRef.DeviceIDofLMGroup;
-         TrxID             = aRef.TrxID;
+         DeviceIDofLMGroup      = aRef.DeviceIDofLMGroup;
+         TrxID                  = aRef.TrxID;
 
-         Request           = aRef.Request;
+         ExpirationTime         = aRef.ExpirationTime;
 
+         Request                = aRef.Request;
 
-         ReturnNexus       = aRef.ReturnNexus;
-         SaveNexus         = aRef.SaveNexus;
+         ReturnNexus            = aRef.ReturnNexus;
+         SaveNexus              = aRef.SaveNexus;
 
-         Buffer            = aRef.Buffer;
+         Buffer                 = aRef.Buffer;
 
-         TailFrame[0]      = aRef.TailFrame[0];
-         TailFrame[1]      = aRef.TailFrame[1];
+         TailFrame[0]           = aRef.TailFrame[0];
+         TailFrame[1]           = aRef.TailFrame[1];
       }
 
       return *this;
