@@ -252,7 +252,7 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 					response.sendRedirect("oper_ee.jsp");
                     return;
                 }
-				checker.setError("offertoearly", "Warning: First hourly offer is earlier than the notification time");
+				checker.setError("offertooearly", "Warning: First hourly offer is earlier than the notification time");
 			}			
 		}
 		else {
