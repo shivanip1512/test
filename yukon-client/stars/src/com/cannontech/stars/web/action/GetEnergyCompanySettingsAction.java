@@ -87,6 +87,7 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             if (SOAPServer.isClientLocal()) {
             	resp.setStarsEnergyCompany( energyCompany.getStarsEnergyCompany() );
 	            if (ServerUtils.isOperator( user )) {
+		            resp.setStarsWebConfig( energyCompany.getStarsWebConfig(energyCompany.getWebConfigID()) );
 	            	resp.setStarsEnrollmentPrograms( energyCompany.getStarsEnrollmentPrograms(getSettings.getProgramCategory()) );
 	            	resp.setStarsCustomerSelectionLists( energyCompany.getStarsCustomerSelectionLists() );
 	            }
@@ -115,6 +116,8 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             else {
             	resp.setStarsEnergyCompany( StarsLiteFactory.createStarsEnergyCompany(energyCompany) );
 	            if (ServerUtils.isOperator( user )) {
+		            resp.setStarsWebConfig( StarsLiteFactory.createStarsWebConfig(
+		            		SOAPServer.getWebConfiguration(energyCompany.getWebConfigID())) );
 	            	resp.setStarsEnrollmentPrograms( StarsLiteFactory.createStarsEnrollmentPrograms(
 	            			energyCompany.getAllApplianceCategories(), getSettings.getProgramCategory(), energyCompanyID) );
 	            	resp.setStarsCustomerSelectionLists( StarsLiteFactory.createStarsCustomerSelectionLists(
