@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/07/27 16:41:57 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/09/21 16:50:32 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -55,12 +55,13 @@ private:
 
     receiver_map _receiver_work;
 
-    priority_queue< CtiVerificationWork *, vector< CtiVerificationWork * >, CtiVerificationWork::earlier > _work_queue;
+    priority_queue< CtiVerificationWork *, pending_vector, CtiVerificationWork::earlier > _work_queue;
 
     static const string _table_name;
 
     void verificationThread(void);
     void loadAssociations(void);
+    void processWorkQueue(bool purge=false);
     void writeWorkRecord(const CtiVerificationWork &work);
     void writeUnknown(const CtiVerificationReport &report);
     void pruneEntries(const ptime::time_duration_type &earliest);
