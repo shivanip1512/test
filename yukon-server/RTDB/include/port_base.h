@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/06/04 15:15:55 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/05 17:42:03 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,7 @@ protected:
     RWThreadFunction  _portThread;
     HCTIQUEUE         _portQueue;
     LONG              _connectedDevice;       // this is NON-ZERO if we are currently connected/communicating.
+    ULONG             _connectedDeviceUID;    // A unique reproducable indicator for this device/connection etc.
     RWCString         _portNameWas;
     INT               _lastBaudRate;
     BOOL              _tapPort;               // This port has a TAP terminal connected to it!
@@ -187,6 +188,10 @@ public:
     INT getProtocol() const;
 
     CtiPort &setBaudRate(INT baudRate);
+
+    ULONG getConnectedDeviceUID() const;
+    CtiPort& setConnectedDeviceUID(const ULONG &i);
+
 
 };
 

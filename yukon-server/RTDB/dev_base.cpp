@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/14 15:36:55 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/06/05 17:41:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,7 +180,7 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
         pOM->Request.UserID        = pReq->UserMessageId();
         pOM->Request.SOE           = pReq->getSOE();
 
-        pOM->Request.CheckSum      = getPhoneNumberCRC();
+        pOM->Request.CheckSum      = getUniqueIdentifier();
     }
 
     return;

@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/28 18:20:27 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/06/05 17:42:02 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ public:
     virtual LONG getDemandInterval() const;
 
 
-    virtual ULONG getPhoneNumberCRC() const;
+    virtual ULONG getUniqueIdentifier() const;
 
     /*
      *  This method is called to mark any and all tables which may need removal based upon a DBChange.
@@ -223,11 +223,11 @@ inline LONG CtiDeviceBase::getAddress() const            { return -1;}
 inline INT  CtiDeviceBase::getPostDelay() const          { return 0;}
 inline RWCString CtiDeviceBase::getPassword() const      { return RWCString();}
 inline RWCString CtiDeviceBase::getPhoneNumber() const   { return RWCString();}
-inline LONG CtiDeviceBase::getMinConnectTime() const     { return 0;}
-inline LONG CtiDeviceBase::getMaxConnectTime() const     { return LONG_MAX;}
+inline LONG CtiDeviceBase::getMinConnectTime() const     { return 0L;}
+inline LONG CtiDeviceBase::getMaxConnectTime() const     { return 1L;}
 inline LONG CtiDeviceBase::getRouteID() const            { return -1;}
 inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
-inline ULONG CtiDeviceBase::getPhoneNumberCRC() const    {  return 0;}
+inline ULONG CtiDeviceBase::getUniqueIdentifier() const  { return getID();}
 inline void CtiDeviceBase::invalidateScanRates()         { return;}
 inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
 inline RWCString CtiDeviceBase::getMeterGroupName() const    { return RWCString();}

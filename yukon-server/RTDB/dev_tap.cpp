@@ -1,4 +1,5 @@
 
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_tap
@@ -7,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/28 18:24:14 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/05 17:41:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1322,7 +1323,6 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
         if(getDebugLevel() & 0x00000001)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Port has indicated a connected device swap. " << endl;
             dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
         }
@@ -1440,3 +1440,28 @@ void CtiDeviceTapPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
     _tap.DecodeDatabaseReader(rdr);
 
 }
+
+
+
+ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
+{
+    ULONG CSum = 0;
+
+    RWCString num;
+
+    for(int i = 0; i < getTap().getPagerNumber().length(); i++ )
+    {
+        CHAR ch = getTap().getPagerNumber().data()[(size_t)i];
+
+        if( isdigit(ch) )
+        {
+            num.append(ch);
+        }
+    }
+
+    // Now get a standard CRC
+    CSum = (ULONG)CCITT16CRC( 0, (BYTE*)num.data(), num.length(), FALSE);
+
+    return CSum;
+}
+

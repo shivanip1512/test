@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/05 17:42:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
     {
         // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-        OutMessage->Request.CheckSum = Device->getPhoneNumberCRC();
+        OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
 
         OutMessage->EventCode |= VERSACOM;
 

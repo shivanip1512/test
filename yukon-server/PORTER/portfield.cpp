@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/06/05 16:38:23 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/06/05 17:42:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,10 +121,10 @@ bool deviceCanSurviveThisStatus(INT status);
 void commFail(CtiDeviceBase *Device, INT state);
 BOOL areAnyOutMessagesForMyDevID(void *pId, void* d);
 BOOL areAnyOutMessagesForMyRteID(void *pId, void* d);
-BOOL areAnyOutMessagesForCRCID(void *pId, void* d);
+BOOL areAnyOutMessagesForUniqueID(void *pId, void* d);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
-INT PostCommToDialup(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage);
+INT PostCommQueuePeek(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage);
 INT VerifyPortStatus(CtiPort *Port);
 INT ResetPortParameters(CtiPort *Port);
 INT ResetCommsChannel(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage);
@@ -145,6 +145,7 @@ INT TerminateHandshake (CtiPort *aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSl
 INT PerformRequestedCmd ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT ReturnLoadProfileData ( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
 INT LogonToDevice( CtiPort *aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+INT verifyConnectedDevice(CtiPort *Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID);
 
 /* Threads that handle each port for communications */
 VOID PortThread (VOID *arg)
@@ -550,7 +551,7 @@ void RemoteReset (const CtiHashKey *key, CtiDeviceBase *&Device, void *ptr)
  * doing so to verify that no entries exist for this device.  It will peek
  * 4 times per second for the post comm wait number of seconds.
  *----------------------------------------------------------------------------*/
-INT PostCommToDialup(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
+INT PostCommQueuePeek(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
 {
     INT    i = 0;
     INT    status = NORMAL;
@@ -570,57 +571,47 @@ INT PostCommToDialup(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
         ULONG stayConnectedMin = Device->getMinConnectTime();
         ULONG stayConnectedMax = Device->getMaxConnectTime();
 
-        // We know that we are dialup... Initialize our modem pointer..
-        if(Port->getType() == PortTypeLocalDialup)
+        if(stayConnectedMin)
         {
-            modem = (CtiPortLocalModem*)Port;
-
             for(i = 0; i < (ULONG)(4 * stayConnectedMin); i++)
             {
-                /* Check the queue 4 times per second for a new entry for this dialup port ... */
-                if((gQueSlot = SearchQueue(modem->getPortQueueHandle(), (void*)modem->getDialedUpDeviceCRC(), areAnyOutMessagesForCRCID)) != 0 )
+                /* Check the queue 4 times per second for a new entry for this port ... */
+                if((gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID)) != 0 )
                 {
                     break;
                 }
 
                 CTISleep (250L);
             }
-
-            /* do not reinit i since times are non cumulative! */
-            for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
-            {
-                /* Check the queue 4 times per second for a new entry for this dialup port ... */
-                if( !QueryQueue(modem->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
-                {
-                    gQueSlot = SearchQueue(modem->getPortQueueHandle(), (void*)modem->getDialedUpDeviceCRC(), areAnyOutMessagesForCRCID);
-
-                    if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
-                    {
-                        bHangup = TRUE;
-                        break;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                CTISleep (250L);
-            }
         }
-        else
+
+        /* do not reinit i since times are non cumulative! */
+        for( ; gQueSlot == 0 && i < (ULONG)(4 * stayConnectedMax); i++)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+            /* Check the queue 4 times per second for a new entry for this port ... */
+            if( !QueryQueue(Port->getPortQueueHandle(), &QueueCount) && QueueCount > 0)
+            {
+                gQueSlot = SearchQueue(Port->getPortQueueHandle(), (void*)Port->getConnectedDeviceUID(), areAnyOutMessagesForUniqueID);
 
+                if( gQueSlot == 0 ) // No entry, or the entry is not first on the list
+                {
+                    bHangup = TRUE;
+                    break;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            CTISleep (250L);
+        }
 
         if(gQueSlot == 0 || bHangup != FALSE)
         {
             /* Hang Up */
             Port->disconnect(Device, TraceFlag);
         }
-
     }
 
     return status;
@@ -634,7 +625,7 @@ INT VerifyPortStatus(CtiPort *Port)
 
     if(NULL != Port)
     {
-        if(Port->getHandle() == NULL && !Port->isDialup())
+        if(Port->needsReinit() && !Port->isDialup())
         {
             if( NORMAL != (status = Port->init()) )
             {
@@ -757,14 +748,11 @@ INT ResetCommsChannel(CtiPort *Port, CtiDevice *Device, OUTMESS *OutMessage)
 
         if(status == NORMAL)
         {
-            if(!(Port->isTCPIPPort()))
-            {
-                status = VerifyPortStatus(Port);    // Is this port still A-OK?
-            }
+            status = VerifyPortStatus(Port);    // Is this port still A-OK?
 
             if(Port->isDialup())
             {
-                PostCommToDialup(Port, Device, OutMessage);
+                PostCommQueuePeek(Port, Device, OutMessage);
             }
         }
     }
@@ -890,7 +878,7 @@ INT EstablishConnection(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, C
             /* Must call CheckAndRetry to make the re-queue happen if needed */
             status = CheckAndRetryMessage(status, modem, InMessage, OutMessage, Device);     // This call may free OutMessages
         }
-        else if( !modem->connectedTo(Device->getPhoneNumberCRC()) ) /* Check if we made the connect OK */
+        else if( !modem->connectedTo(Device->getUniqueIdentifier()) ) /* Check if we made the connect OK */
         {
             /* Must call CheckAndRetry to make the re-queue happen if needed */
             // This call may free OutMessages
@@ -1158,58 +1146,17 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
 				}
             case TYPE_TAPTERM:
                 {
-                    CtiDeviceIED         *IED= (CtiDeviceIED*)Device;
-                    CtiPortLocalModem    *modem = NULL;
-                    LONG                 DialedUpDeviceCRC = -1;
+                    LONG portConnectedUID = -1;
+                    CtiDeviceIED *IED= (CtiDeviceIED*)Device;
 
-                    // Initialize our modem pointer..
-                    if(Port->isDialup())
-                    {
-                        if(Port->getType() == PortTypeLocalDialup)
-                        {
-                            modem = (CtiPortLocalModem*)Port;
-                            DialedUpDeviceCRC = modem->getDialedUpDeviceCRC();
-
-                            /* 050201 CGP Added this if... May cause issues, so pay attention */
-                            /*
-                             *  Is the port connected to a DIFFERENT device with the same CRC?
-                             */
-                            if( modem->getConnectedDevice() != IED->getID())
-                            {
-                                // We need to fix up the old device... because we are stealing some of his thunder here!
-                                {
-                                    RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-                                    CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(modem->getConnectedDevice());
-                                    oldid = pOldConnectedDevice->getPortID();
-                                    pOldConnectedDevice->setLogOnNeeded(TRUE);
-
-                                    if( pOldConnectedDevice->getPhoneNumberCRC() != IED->getPhoneNumberCRC() )
-                                    {
-                                        // OK, this means we need to do a logon. (At least to TAP)
-                                        oldid = 0;
-                                        IED->setLogOnNeeded(TRUE);
-                                    }
-                                }
-
-                                modem->setConnectedDevice( IED->getID() ); // Let's switch allegiance.
-                            }
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
+                    verifyConnectedDevice(Port, Device, oldid, portConnectedUID);
 
                     IED->allocateDataBins(OutMessage);
                     IED->setInitialState(oldid);
 
                     if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
                     {
-                        if(modem != NULL)
-                        {
-                            modem->setConnectedDevice( IED->getID() );
-                        }
+                        Port->setConnectedDevice( IED->getID() );
 
                         status = PerformRequestedCmd (Port, IED, NULL, NULL, traceList);
 
@@ -1219,7 +1166,7 @@ INT CommunicateDevice(CtiPort *Port, INMESS *InMessage, OUTMESS *OutMessage, Cti
                         }
                         else
                         {
-                            if( SearchQueue(Port->getPortQueueHandle(), (void*)DialedUpDeviceCRC, areAnyOutMessagesForCRCID) == 0 )
+                            if( SearchQueue(Port->getPortQueueHandle(), (void*)portConnectedUID, areAnyOutMessagesForUniqueID) == 0 )
                             {
                                 IED->setLogOnNeeded(TRUE);      // We have zero queue entries!
                             }
@@ -2867,7 +2814,7 @@ BOOL areAnyOutMessagesForMyRteID(void *pId, void* d)
     return(OutMessage->RouteID == Id);
 }
 
-BOOL areAnyOutMessagesForCRCID(void *pId, void* d)
+BOOL areAnyOutMessagesForUniqueID(void *pId, void* d)
 {
     LONG Id = (LONG)pId;
     OUTMESS *OutMessage = (OUTMESS *)d;
@@ -2935,3 +2882,37 @@ bool deviceCanSurviveThisStatus(INT status)
 
 
 
+INT verifyConnectedDevice(CtiPort *Port, CtiDevice *pDevice, LONG &oldid, LONG &portConnectedUID)
+{
+    INT status = NORMAL;
+
+    portConnectedUID = Port->getConnectedDeviceUID();
+
+    /* 050201 CGP Added this if... May cause issues, so pay attention */
+    /*
+     *  Is the port connected to a DIFFERENT device with the same UID?
+     */
+    if( Port->getConnectedDevice() != pDevice->getID() )
+    {
+        // We need to fix up the old device... because we are stealing some of his thunder here!
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+
+            CtiDevice *pOldConnectedDevice = DeviceManager.getEqual(Port->getConnectedDevice());
+
+            oldid = pOldConnectedDevice->getPortID();
+            pOldConnectedDevice->setLogOnNeeded(TRUE);
+
+            if( pOldConnectedDevice->getUniqueIdentifier() != pDevice->getUniqueIdentifier() )
+            {
+                // OK, this means we need to do a logon. (At least to TAP)
+                oldid = 0;
+                pDevice->setLogOnNeeded(TRUE);
+            }
+        }
+
+        Port->setConnectedDevice( pDevice->getID() ); // Let's switch allegiance.
+    }
+
+    return status;
+}

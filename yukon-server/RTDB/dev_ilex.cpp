@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/21 15:09:12 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/05 17:41:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -321,7 +321,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                     setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
                     // if((i = ILEXExceptionScan (RemoteRecord, DeviceRecord, InMessage->Buffer.InMessage[0] & 0x10, MAXPRIORITY - 4)) != NORMAL)            }
-                    if((i = exceptionScan(OutMessage, MAXPRIORITY - 4)) != NORMAL)
+                    if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
                     {
                         ReportError ((USHORT)i); /* Send Error to logger */
                     }
@@ -570,7 +570,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                 CtiCommandParser parse(InMessage->Return.CommandStr);
                                 setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
 
-                                if((i = exceptionScan(OutMessage, MAXPRIORITY - 4)) != NORMAL)
+                                if((i = exceptionScan(OutMessage, MAXPRIORITY - 4, outList)) != NORMAL)
                                 {
                                     ReportError ((USHORT)i); /* Send Error to logger */
                                 }
@@ -1038,7 +1038,7 @@ CtiDeviceILEX& CtiDeviceILEX::setIlexSequenceNumber(BYTE number)
     return *this;
 }
 
-INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority)
+INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
 
@@ -1058,6 +1058,9 @@ INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority)
         OutMessage->EventCode             = RESULT | ENCODED;
         OutMessage->Sequence              = 0;
         OutMessage->Retry                 = 2;
+
+        outList.insert(OutMessage);
+        OutMessage = NULL;
     }
 
     return status;

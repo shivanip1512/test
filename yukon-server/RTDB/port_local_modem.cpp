@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_local_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/24 21:36:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/05 17:42:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ CtiPortLocalModem& CtiPortLocalModem::setLocalDialup(const CtiTablePortDialup& a
 INT CtiPortLocalModem::connectToDevice(CtiDevice *Device, INT trace)
 {
     INT status     = NORMAL;
-    ULONG DeviceCRC = Device->getPhoneNumberCRC();
+    ULONG DeviceCRC = Device->getUniqueIdentifier();
 
     /*
      *  This next block Makes sure we hang up if we are connected to a different device's PhoneCRC
@@ -100,9 +100,9 @@ INT CtiPortLocalModem::connectToDevice(CtiDevice *Device, INT trace)
     if(status == NORMAL)
     {
         /* Make sure the remotes match */
-        setDialedUpDevice( Device->getID() );
+        setConnectedDevice( Device->getID() );
+        setConnectedDeviceUID( DeviceCRC );
         setDialedUpNumber( Device->getPhoneNumber() );
-        setDialedUpDeviceCRC( DeviceCRC );
     }
 
     return status;
@@ -112,12 +112,8 @@ INT CtiPortLocalModem::disconnect(CtiDevice *Device, INT trace)
 {
     INT status = NORMAL;
 
-    if(Device != NULL)
-    {
-        Device->setLogOnNeeded(TRUE);
-    }
+    Inherited::disconnect(Device, trace);
 
-    setConnectedDevice(0L);
     status = modemHangup( trace );
 
     if(status)
@@ -134,7 +130,7 @@ BOOL CtiPortLocalModem::connected()
 {
     BOOL status = FALSE;
 
-    if(_tblPortSettings.getCDWait() != 0 && getDialedUpDevice() > 0)
+    if(_tblPortSettings.getCDWait() != 0 && getConnectedDevice() > 0)
     {
         if(!dcdTest())    // No DCD and we think we are connected!  This is BAD.
         {
@@ -142,12 +138,7 @@ BOOL CtiPortLocalModem::connected()
         }
     }
 
-    if(getDialedUpDevice() > 0)
-    {
-        status = TRUE;
-    }
-
-    return status;
+    return Inherited::connected();
 }
 
 BOOL CtiPortLocalModem::connectedTo(const LONG Id)
@@ -164,18 +155,18 @@ INT CtiPortLocalModem::reset(INT trace)
 {
     setLastBaudRate(0);
 
-    setDialedUpDevice(0);
+    setConnectedDevice(0);
     setDialedUpNumber(RWCString());
-    setDialedUpDeviceCRC(-1);
+    setConnectedDeviceUID(-1);
 
     return modemReset(getPortID(), trace);
 }
 
 INT CtiPortLocalModem::setup(INT trace)
 {
-    setDialedUpDevice(0);
+    setConnectedDevice(0);
     setDialedUpNumber(RWCString());
-    setDialedUpDeviceCRC(-1);
+    setConnectedDeviceUID(-1);
 
     return modemSetup(trace, (_tblPortSettings.getCDWait() != 0));
 }

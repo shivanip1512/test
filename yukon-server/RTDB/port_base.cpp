@@ -373,17 +373,6 @@ void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
 
 CtiPort::~CtiPort()
 {
-#ifdef CTIOLDSTATS
-    for(int i = 0; i < StatTypeInvalid; i++)
-    {
-        if( _portStatistics[i] != NULL )
-        {
-            delete _portStatistics[i];
-            _portStatistics[i] = NULL;
-        }
-    }
-#endif
-
     if(_portQueue != NULL)
     {
         CloseQueue( _portQueue );
@@ -423,15 +412,10 @@ INT CtiPort::outInMess(CtiXfer& Xfer, CtiDevice *Dev, RWTPtrSlist< CtiMessage > 
 CtiPort::CtiPort() :
 _portQueue(NULL),
 _connectedDevice(0L),
+_connectedDeviceUID(-1),
 _lastBaudRate(0),
 _tapPort(FALSE)
 {
-#ifdef CTIOLDSTATS
-    for(int i = 0; i < StatTypeInvalid; i++)
-    {
-        _portStatistics[i] = NULL;
-    }
-#endif
 }
 
 CtiPort::CtiPort(const CtiPort& aRef)
@@ -447,23 +431,13 @@ CtiPort& CtiPort::operator=(const CtiPort& aRef)
         Inherited::operator=(aRef);
 
         _traceListOffset = aRef._traceListOffset;
+        setConnectedDeviceUID( aRef.getConnectedDeviceUID() );
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << " FINISH THIS " << endl;
         }
-
-#ifdef CTIOLDSTATS
-        for(int i = 0; i < StatTypeInvalid; i++)
-        {
-            if(_portStatistics[i] == NULL)
-                _portStatistics[i] = new CtiTablePortStatistics;
-
-            if(_portStatistics[i] != NULL)    // Make sure we got some.
-                *_portStatistics[i] = aRef.getPortStatistics(i);
-        }
-#endif
     }
     return *this;
 }
@@ -506,22 +480,6 @@ CtiPort& CtiPort::setTAP(BOOL b)
     return *this;
 }
 
-#ifdef CTIOLDSTATS
-CtiTablePortStatistics  CtiPort::getPortStatistics(INT i) const      { return *_portStatistics[i];}
-CtiTablePortStatistics& CtiPort::getPortStatistics(INT i)            { return *_portStatistics[i];}
-
-CtiPort& CtiPort::setPortStatistics(const CtiTablePortStatistics& ps, INT i)
-{
-    if(_portStatistics[i] == NULL)
-        _portStatistics[i] = new CtiTablePortStatistics;
-
-    if(_portStatistics[i] != NULL)    // Make sure we got some.
-        *_portStatistics[i] = ps;
-
-    return *this;
-}
-#endif
-
 INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
 {
     {
@@ -531,10 +489,37 @@ INT CtiPort::connectToDevice(CtiDevice *Device, INT trace)
     return NORMAL;
 }
 
-BOOL CtiPort::connected()                                    { return FALSE;}
-BOOL CtiPort::connectedTo(LONG devID)                        { return TRUE;}
-BOOL CtiPort::connectedTo(ULONG crc)                         { return TRUE;}
-INT CtiPort::disconnect(CtiDevice *Device, INT trace)        { return NORMAL;}
+BOOL CtiPort::connected()
+{
+    BOOL status = FALSE;
+
+    if(getConnectedDevice() > 0)
+    {
+        status = TRUE;
+    }
+
+    return status;
+}
+
+BOOL CtiPort::connectedTo(LONG devID)
+{
+    return(devID == getConnectedDevice());
+}
+BOOL CtiPort::connectedTo(ULONG crc)
+{
+    return(crc == getConnectedDeviceUID());
+}
+INT CtiPort::disconnect(CtiDevice *Device, INT trace)
+{
+    if(Device != NULL)
+    {
+        Device->setLogOnNeeded(TRUE);
+    }
+
+    setConnectedDevice(0L);
+
+    return NORMAL;
+}
 BOOL CtiPort::shouldDisconnect() const                       { return FALSE;}
 INT CtiPort::reset(INT trace)                                { return NORMAL;}
 INT CtiPort::setup(INT trace)                                { return NORMAL;}
@@ -571,29 +556,6 @@ void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selec
     CtiTablePortSettings::getSQL(db, keyTable, selector);
     CtiTablePortTimings::getSQL(db, keyTable, selector);
 }
-
-#ifdef CTIOLDSTATS
-void CtiPort::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
-{
-    RWCString rwsTemp;
-
-    rdr["statistictype"] >> rwsTemp;
-
-    INT i = resolveStatisticsType(rwsTemp);
-
-    if(i < StatTypeInvalid)
-    {
-        if(!_portStatistics[i])
-        {
-            _portStatistics[i] = new CtiTablePortStatistics;
-        }
-
-        if(_portStatistics[i])
-            _portStatistics[i]->DecodeDatabaseReader(rdr);
-    }
-}
-#endif
-
 
 HCTIQUEUE&  CtiPort::getPortQueueHandle()
 {
@@ -666,3 +628,15 @@ void CtiPort::fileTraces(RWTPtrSlist< CtiMessage > &traceList) const
         _portLog << endl;
     }
 }
+
+ULONG CtiPort::getConnectedDeviceUID() const
+{
+    return _connectedDeviceUID;
+}
+CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
+{
+    _connectedDeviceUID = i;
+    return *this;
+}
+
+

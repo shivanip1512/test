@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/31 16:15:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/05 17:42:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
     if(Device != NULL)      // This is the pointer which refers this rte to its transmitter device.
     {
         // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-        OutMessage->Request.CheckSum = Device->getPhoneNumberCRC();
+        OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
 
         if(OutMessage->EventCode & VERSACOM)
         {

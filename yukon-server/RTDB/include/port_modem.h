@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_modem.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:30 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/05 17:42:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,12 +38,7 @@ protected:
    /* Definitions for Dial Up */
    BOOL           _shouldDisconnect;
 
-   LONG           _dialedUpDevice;
    RWCString      _dialedUpNumber;
-
-   ULONG          _dialedUpCRC;
-
-
 
 public:
 
@@ -62,15 +57,6 @@ public:
    BOOL                 shouldDisconnect() const;
    CtiPortModem&        setShouldDisconnect(BOOL b = TRUE);
 
-   LONG                 getDialedUpDevice() const;
-   LONG&                getDialedUpDevice();
-   CtiPortModem&        setDialedUpDevice(const LONG &i);
-
-   ULONG                getDialedUpDeviceCRC() const;
-   ULONG&               getDialedUpDeviceCRC();
-   CtiPortModem&        setDialedUpDeviceCRC(const ULONG &i);
-
-
    RWCString            getDialedUpNumber() const;
    RWCString&           getDialedUpNumber();
    CtiPortModem&        setDialedUpNumber(const RWCString &str);
@@ -79,14 +65,10 @@ public:
     * Used to establish a connection to the remote Device
     *-----------------------------------------------------*/
 
-   virtual BOOL connectedTo(const LONG devID);
-   virtual BOOL connectedTo(const ULONG crc);
-
    INT modemReset(USHORT Trace, BOOL dcdTest = TRUE);
    INT modemSetup(USHORT Trace, BOOL dcdTest = TRUE);
    INT modemHangup(USHORT Trace, BOOL dcdTest = TRUE);
    INT modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest = TRUE);
-
 };
 
 

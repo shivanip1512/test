@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/04/22 19:47:17 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/06/05 17:42:02 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -173,7 +173,7 @@ public:
       return getDirect().getPortID();
    }
 
-   virtual ULONG getPhoneNumberCRC() const
+   virtual ULONG getUniqueIdentifier() const
    {
       ULONG CSum = 0;
 
@@ -196,7 +196,7 @@ public:
       }
       else
       {
-         CSum = Inherited::getPhoneNumberCRC();
+         CSum = Inherited::getUniqueIdentifier();
       }
 
       return CSum;

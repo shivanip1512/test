@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/30 16:25:48 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/06/05 17:42:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,20 +22,9 @@ using namespace std;
 #include "logger.h"
 #include "port_modem.h"
 
-BOOL CtiPortModem::connectedTo(const LONG devID)
-{
-    return(devID == getDialedUpDevice());
-}
-
-BOOL CtiPortModem::connectedTo(const ULONG crc)
-{
-    return(crc == getDialedUpDeviceCRC());
-}
 
 CtiPortModem::CtiPortModem(LONG id) :
-_shouldDisconnect(FALSE),
-_dialedUpCRC(0),
-_dialedUpDevice(id)
+_shouldDisconnect(FALSE)
 {}
 
 CtiPortModem::CtiPortModem(const CtiPortModem& aRef)
@@ -51,9 +40,7 @@ CtiPortModem& CtiPortModem::operator=(const CtiPortModem& aRef)
     {
         Inherited::operator=(aRef);
 
-        _dialedUpDevice = aRef.getDialedUpDevice();
         _dialedUpNumber = aRef.getDialedUpNumber();
-        _dialedUpCRC    = aRef.getDialedUpDeviceCRC();
     }
     return *this;
 }
@@ -65,23 +52,6 @@ CtiPortModem&        CtiPortModem::setShouldDisconnect(BOOL b)
     _shouldDisconnect = b;
     return *this;
 }
-
-LONG                 CtiPortModem::getDialedUpDevice() const              { return _dialedUpDevice;}
-LONG&                CtiPortModem::getDialedUpDevice()                    { return _dialedUpDevice;}
-CtiPortModem&        CtiPortModem::setDialedUpDevice(const LONG &i)
-{
-    _dialedUpDevice = i;
-    return *this;
-}
-
-ULONG                CtiPortModem::getDialedUpDeviceCRC() const             { return _dialedUpCRC;}
-ULONG&               CtiPortModem::getDialedUpDeviceCRC()                    { return _dialedUpCRC;}
-CtiPortModem&        CtiPortModem::setDialedUpDeviceCRC(const ULONG &i)
-{
-    _dialedUpCRC = i;
-    return *this;
-}
-
 
 RWCString            CtiPortModem::getDialedUpNumber() const              { return _dialedUpNumber;}
 RWCString&           CtiPortModem::getDialedUpNumber()                    { return _dialedUpNumber;}
@@ -674,8 +644,8 @@ INT CtiPortModem::modemHangup(USHORT Trace, BOOL dcdTest)
         _portLog << RWTime() << " " << getName() << " modem hangup " << (getDialedUpNumber().isNull ? "" : RWCString("on ") + getDialedUpNumber()) << endl;
     }
 
-    setDialedUpDeviceCRC(-1);
-    setDialedUpDevice(0);
+    setConnectedDevice(0);
+    setConnectedDeviceUID(-1);
     setDialedUpNumber(RWCString());
 
     return status;

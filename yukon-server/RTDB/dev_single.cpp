@@ -8,8 +8,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/04 15:15:54 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/05 17:41:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,7 +213,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
                 return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
             }
 
-            OutMessage->Request.CheckSum = getPhoneNumberCRC();  // Mark the OUTMESS with this DEVICE's CRC Id.
+            OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
             // Do the device's AccumulatorScan!
             nRet = AccumulatorScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
@@ -312,7 +312,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
 
     if(OutMessage != NULL)
     {
-        OutMessage->Request.CheckSum = getPhoneNumberCRC();  // Mark the OUTMESS with this DEVICE's CRC Id.
+        OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
         if(isInhibited())
         {
@@ -423,7 +423,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
 
     if(OutMessage != NULL)
     {
-        OutMessage->Request.CheckSum = getPhoneNumberCRC();  // Mark the OUTMESS with this DEVICE's CRC Id.
+        OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
         if(getNextScan(ScanRateGeneral).seconds() == 0)
         {
@@ -560,7 +560,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
 
     if(OutMessage != NULL)
     {
-        OutMessage->Request.CheckSum = getPhoneNumberCRC();  // Mark the OUTMESS with this DEVICE's CRC Id.
+        OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
         if(isInhibited())
         {
