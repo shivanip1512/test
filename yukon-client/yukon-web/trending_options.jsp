@@ -1,127 +1,95 @@
-<HEAD>
-<link rel="stylesheet" href="../CannonStyle.css" type="text/css">
-<SCRIPT LANGUAGE="JavaScript">
-//variable options mapped to com.cannontech.graph.model.TrendModelType options.
-var MULT = parseInt(<%=com.cannontech.graph.model.TrendModelType.GRAPH_MULTIPLIER%>); 
-var MIN_MAX = parseInt(<%=com.cannontech.graph.model.TrendModelType.PLOT_MIN_MAX_MASK%>);
-var LEGEND_MIN_MAX = parseInt(<%=com.cannontech.graph.model.TrendModelType.LEGEND_MIN_MAX_MASK%>);
-var LEGEND_LOAD_FACTOR = parseInt(<%=com.cannontech.graph.model.TrendModelType.LEGEND_LOAD_FACTOR_MASK%>);
-
-function submitMForm()
-{
-	window.opener.submitMForm();
-	window.close();
-}
-
-function initOptions()
-{
-	var currentMask = parseInt(window.opener.document.MForm.option.value);
-
-	if  ((currentMask & MIN_MAX) != 0) 
-		document.otherOptions.min_max.checked = true;
-
-	if ((currentMask & MULT) != 0) 
-		document.otherOptions.mult.checked = true;
-
-	if ((currentMask & LEGEND_MIN_MAX) != 0 )
-		document.otherOptions.legend_min_max.checked = true;
-
-	if ((currentMask & LEGEND_LOAD_FACTOR) != 0)
-		document.otherOptions.legend_load_factor.checked = true;
-}
-
-function showMinMax()
-{
-	window.opener.setMask(LEGEND_MIN_MAX, document.otherOptions.legend_min_max.checked);
-}
-
-function showLoadFactor()
-{
-	window.opener.setMask(LEGEND_LOAD_FACTOR, document.otherOptions.legend_load_factor.checked);
-}
-
-function changeMinMax()
-{
-	window.opener.setMask(MIN_MAX, document.otherOptions.min_max.checked);
-}
-function changeMult()
-{
-	window.opener.setMask(MULT, document.otherOptions.mult.checked);
-}
-</script>
-
-<body onLoad="initOptions()">
-<center>
-	<table width="300" border="0" align="center" cellpadding="0" cellspacing="0">
-    	<tr>
-        	<td align="center">
-            <form name = "otherOptions">
-            <div align = "left">
-            <table width="300" border="0" cellspacing="0" cellpadding="3">
-            <tr>
-				<td>
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" align = "center">
-               	<tr> 
-                   	<td class = "TableCell" width="100%" valign = "top" align="left"> 
-					<table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
-                    <tr> 
-                    	<td width="10%" >
-                        	<input id = "min_max" type="checkbox" name="min_max" value="checkbox" onClick = "changeMinMax()">
-						</td>
-						<td width="90%">Plot Min/Max</td>
-					</tr>
-					</table>
-					</td>
-				</tr>
-				<tr>
-					<td class = "TableCell" width="100%" valign = "top"> 
-					<table width="100%" border="0" cellspacing="0" cellpadding="0" class = "TableCell" height="19">
-					<tr> 
-						<td width="10%" >
-							<input type="checkbox" name="mult" value="checkbox" onClick = "changeMult()">
-						</td>
-						<td width="90%">Use Graph Scaling</td>
-					</tr>
-					</table>
-					</td>
-				</tr>
-				<tr>
-					<td class = "TableCell"  width="11%" valign = "top">
-					<table width="100%" border="0" cellspacing="0" cellpadding="0" class = "tableCell">
-					<tr> 
-						<td width="10%"> 
-							<input type="checkbox" name="legend_min_max" value="checkbox" onclick = "showMinMax()" > 
-						</td>
-						<td width="90%">Show Legend Min/Max</td>
-					</tr>
-					</table>
-					</td>
-				</tr>
-				<tr>
-					<td class = "TableCell"  width="100%" valign = "top">
-					<table width="100%" border="0" cellspacing="0" cellpadding="0" class = "tableCell">
-					<tr> 
-						<td width="10%"> 
-							<input type="checkbox" name="legend_load_factor" value="checkbox" onclick = "showLoadFactor()"> 
-						</td>
-						<td width="90%">Show Legend Load Factor</td>
-					</tr>
-					</table>
-					</td>
-				</tr>
-				</table>
-				</td>
-			</tr>
-			<tr>
-			<td>
-				<input type="button" name="Submit" value="Update" align="center" onClick = "submitMForm()">
+<!--TRENDING OPTIONS-->
+<table width="575" border="0" align="center" cellpadding="4" cellspacing="0">
+    <tr>
+        <td width="303" valign="top">
+            <div>
+                <table width="375" border="0" cellspacing="2" cellpadding="0">
+                    <tr>
+                        <form method="GET" action="<%=pageName%>" name="MForm">
+                            <INPUT TYPE="hidden" NAME="gdefid" VALUE="<%=graphBean.getGdefid()%>">
+                            <INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
+                            <INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >
+                        <td width="163" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Start Date:</font>
+                            <input type="text" name="start" value="<%= datePart.format(graphBean.getStartDate()) %>" size="8">
+                            <A HREF="javascript:show_calendar('MForm.start')"
+                                onMouseOver="window.status='Pop Calendar';return true;"
+                                onMouseOut="window.status='';return true;"><IMG SRC="/Images/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
+                            </A>
+                        </td>
+                        <td width="154" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Time Period:</font>
+                            <select name="period">
+                                <% /* Fill in the period drop down and attempt to match the current period with one of the options */                           
+                                for( int j = 0; j < com.cannontech.util.ServletUtil.historicalPeriods.length; j++ )
+                                {
+                                    if( com.cannontech.util.ServletUtil.historicalPeriods[j].equals(graphBean.getPeriod()) )
+                                        out.println("<OPTION SELECTED>" + graphBean.getPeriod());
+                                    else
+                                        out.println("<OPTION>" + com.cannontech.util.ServletUtil.historicalPeriods[j]);
+                                }%>
+                            </select>
+                        </td>
+                        <td width="75">
+                            <div align="left">
+                                <input type="image" src="/GoButton.gif" name="image" border="0">
+                            </div>
+                        </td>
+                        </form>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td width="200" valign = "top" align= "center"> 
+		<table width="200" border="0" class = "Main" cellspacing = "4" height="16">
+		<tr> 
+		
+			<td width = "40%"> 
+				<div name = "trend" align = "center" style = "border:solid 1px #666999; cursor:default;" onMouseOver = "menuAppear(event, 'trendMenu')" >Trend</div>
 			</td>
-			</tr>
-			</table>
-			</div>
-			</form>
+			<td width = "40%"> 
+				<div align = "center" style = "border:solid 1px #666999; cursor:default;" onMouseOver = "menuAppear(event, 'viewMenu')">View</div>
 			</td>
+            <td width="12%">
+                <div align="right">
+					<a href="JavaScript:" class="Link4" name="optionPopup" onClick="window.open('/options_popup.jsp','optionPopup','width=200,height=160,top=250,left=520');">Options</a>            	                            
+                </div>
+            </td>
+			
 		</tr>
-	</table 
-</center>
-</body>
+		</table>
+		</td>
+    </tr>
+</table>
+<table width="575" border="0" align="center" cellpadding="0" cellspacing="0">
+<tr>
+	<td>
+	<div id="viewMenu" class = "bgmenu" style = "width:120px" align = "left"> 
+      	<div id = "LINEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.LINE_VIEW%>);">&nbsp;&nbsp;&nbsp;<%=TrendModelType.LINE_VIEW_STRING%></div>
+			<div id = "BARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.BAR_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.BAR_VIEW_STRING%></div>
+			<div id = "3DBARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.BAR_3D_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.BAR_3D_VIEW_STRING%></div>
+			<div id = "SHAPEID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.SHAPES_LINE_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SHAPES_LINE_VIEW_STRING%></div>
+			<div id = "STEPID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.STEP_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.STEP_VIEW_STRING%></div>
+			<div id = "TABULARID" name = "view"  style = "width:120px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.TABULAR_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.TABULAR_VIEW_STRING%></div>
+			<div id = "SUMMARYID" name = "view" style = "width:120px"  onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=TrendModelType.SUMMARY_VIEW%>)">&nbsp;&nbsp;&nbsp;<%=TrendModelType.SUMMARY_VIEW_STRING%></div>
+			<hr>
+			<div id = "LDID" onmouseover = "changeOptionStyle(this)" style = "width:120px" class = "optmenu1" onclick = "changeLD()">&nbsp;&nbsp;&nbsp;Load Duration</div>
+		</div>
+		<form name="exportForm">
+			<div id="trendMenu" class = "bgmenu" style = "width:75px" align = "left"> 
+			<%if (graphBean.getViewType() == TrendModelType.TABULAR_VIEW || graphBean.getViewType() == TrendModelType.SUMMARY_VIEW )
+			{%>
+				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('html')">&nbsp;&nbsp;&nbsp;Export .html</div>
+			<%}
+			else
+			{%>
+				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('csv')">&nbsp;&nbsp;&nbsp;Export .csv</div>
+				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('png')">&nbsp;&nbsp;&nbsp;Export .png</div>
+				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('pdf')">&nbsp;&nbsp;&nbsp;Export .pdf</div>
+				<div id = "LINEID" name = "format"  style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "exportData('jpeg')">&nbsp;&nbsp;&nbsp;Export .jpeg</div>
+			<%}%>								
+				<div id = "PRINTID" name = "print" style = "width:75px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "location='/trending_print.jsp?';">&nbsp;&nbsp;&nbsp;Print</div>
+			</div>
+	    </form>
+	</td>
+</tr>
+</table>
+<!--END TRENDING OPTIONS-->
