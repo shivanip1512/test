@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/09 19:13:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/05/14 15:36:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2633,7 +2633,8 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     pReq = new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
                     pReq->setConnectionHandle( InMessage->Return.Connection );
 
-                    CtiDeviceBase::ExecuteRequest(pReq, vgList, retList, outList, OutTemplate);
+                    CtiCommandParser parse(pReq->CommandString());
+                    CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                     delete pReq;
 
                     //  put the load profile interval if it's a lp device
@@ -2641,16 +2642,18 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     {
                         pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
                         pReq->setConnectionHandle( InMessage->Return.Connection );
+                        parse = CtiCommandParser(pReq->CommandString());
 
-                        CtiDeviceBase::ExecuteRequest(pReq, vgList, retList, outList, OutTemplate);
+                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                         delete pReq;
                     }
 
                     //  put the demand interval
                     pReq = new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
                     pReq->setConnectionHandle( InMessage->Return.Connection );
+                    parse = CtiCommandParser(pReq->CommandString());
 
-                    CtiDeviceBase::ExecuteRequest(pReq, vgList, retList, outList, OutTemplate);
+                    CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                     delete pReq;
 
                     if( OutTemplate != NULL )

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:03 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/14 15:36:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,9 @@ INT CtiDeviceMCT210::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
             newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-            CtiDeviceBase::ExecuteRequest(&newReq, vgList, retList, outList);
+            CtiCommandParser parse(newReq.CommandString());
+
+            CtiDeviceBase::ExecuteRequest(&newReq, parse, vgList, retList, outList);
 
             break;
         }

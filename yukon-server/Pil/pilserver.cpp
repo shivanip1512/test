@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/02 17:02:29 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/05/14 15:39:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -155,7 +155,7 @@ void CtiPILServer::mainThread()
 
     RWTime                     TimeNow;
 
-    CtiConnection::InQ_t          *APQueue;
+    // CtiConnection::InQ_t          *APQueue;
     CtiExecutor                   *pExec;
     CtiMessage                    *MsgPtr;
 
@@ -672,9 +672,10 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     CtiMessage     *pVg  = NULL;
     CtiDevice      *Dev;
 
+    CtiCommandParser parse(pReq->CommandString());
 
     // Note that any and all arguments into this method may be altered on exit!
-    analyzeWhiteRabbits(*pReq, execList, retList);
+    analyzeWhiteRabbits(*pReq, parse, execList, retList);
 
     for(i = 0; i < execList.entries(); i++)
     {
@@ -696,7 +697,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             }
 
             tempOutList.clear();
-            status = Dev->ExecuteRequest(pExecReq, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
+            status = Dev->ExecuteRequest(pExecReq, parse, vgList, retList, tempOutList);    // Defined ONLY in dev_base.cpp
 
             for(int j = tempOutList.entries(); j > 0; j--)
             {
@@ -964,12 +965,10 @@ void CtiPILServer::vgConnThread()
 
 }
 
-INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList)
+INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList)
 {
     INT status = NORMAL;
     INT i;
-
-    CtiCommandParser parse(Req.CommandString());
 
     CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
     pReq->setConnectionHandle( Req.getConnectionHandle() );

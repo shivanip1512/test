@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/04/22 19:47:15 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/14 15:36:57 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,7 +150,7 @@ public:
     virtual INT ProcessResult(INMESS*, RWTime&, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     // This one is a preprocessing method which calls the other ExecuteRequest method.
-    INT ExecuteRequest(CtiRequestMsg *pReq, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, const OUTMESS *OutTemplate = NULL);
+    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, const OUTMESS *OutTemplate = NULL);
 
     // This one is implemented in the child classes
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);

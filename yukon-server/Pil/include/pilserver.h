@@ -63,7 +63,7 @@ public:
    void  resultThread();
    void  vgConnThread();
 
-   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList);
+   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList);
 
 };
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/05/08 14:28:05 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2002/05/14 15:44:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1447,7 +1447,7 @@ INT GenerateCompleteRequest(RWTPtrSlist< OUTMESS > &outList, OUTMESS *&OutMessag
              *  We will execute based upon the data in the request....
              */
 
-            status = Dev->ExecuteRequest(pReq, vgList, retList, outList, OutMessage);    // Defined ONLY in dev_base.cpp
+            status = Dev->ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);    // Defined ONLY in dev_base.cpp
 
             if(status != NORMAL)
             {

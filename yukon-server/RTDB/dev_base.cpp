@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/05/08 14:28:02 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/05/14 15:36:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,7 @@ CtiDeviceBase& CtiDeviceBase::setRouteManager(CtiRouteManager* aPtr)
 
 
 INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
+                                  CtiCommandParser             &parse,
                                   RWTPtrSlist< CtiMessage >    &vgList,
                                   RWTPtrSlist< CtiMessage >    &retList,
                                   RWTPtrSlist< OUTMESS >       &outList,
@@ -112,8 +113,6 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
         }
         else
         {
-            CtiCommandParser parse(pReq->CommandString());     // Create a parser reference to be passed through the operation
-
             /*
              *  Now that the OutMessageTemplate is primed, we should send it out to the specific device..
              *

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_single.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/05/14 15:36:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -445,7 +445,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                  *
                  *  FIX FIX FIX 082899 CGP
                  */
-                
+
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Device " << getID() << ": " << getName() << " is inhibited!" << endl;
@@ -704,7 +704,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             size_t cnt = outList.entries();
-            ExecuteRequest(pReq, vgList, retList, outList, OutTemplate);
+            ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate);
             if(cnt == outList.entries())
             {
                 bLastFail = true;
