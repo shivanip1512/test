@@ -374,6 +374,16 @@ insert into YukonRoleProperty values(-1302,-4,'radius_acct_port','1813','Radius 
 insert into YukonRoleProperty values(-1303,-4,'radius_secret_key','(none)','Radius clients secret key value, defined by the radius server.');
 insert into YukonRoleProperty values(-1304,-4,'radius_auth_method','PAP','Radius authentication method. Possible values are PAP, [chap, others to follow soon]');
 
+alter table DynamicLMProgramDirect add DailyOps numeric;
+go
+update DynamicLMProgramDirect set DailyOps = 0;
+go
+alter table DynamicLMProgramDirect alter column DailyOps numeric not null;
+go
+
+
+
+
 
 
 /******************************************************************************/
