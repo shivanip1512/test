@@ -225,15 +225,12 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 
 		return getRoutePanel();
 	}
-	else if( currentInputPanel == getDeviceCopyNameAddressPanel() 
-				&& getDeviceCopyNameAddressPanel().copyPointsIsChecked() )
-	{
-		getDeviceCopyPointPanel().setValue(copyObject);
-		return getDeviceCopyPointPanel();
-	}
+
 	else if( (currentInputPanel == getDeviceCopyNameAddressPanel() || currentInputPanel == getDeviceCopyPointPanel()) &&
 	getDeviceType() == com.cannontech.database.data.pao.PAOGroups.CAPBANK)
 		return getCapBankCntrlCreationPanel();
+	
+	
 	
 	else
 		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
@@ -262,19 +259,7 @@ public Object getValue(Object o)
  * isLastInputPanel method comment.
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
-	boolean editPointID = false;
-	try
-	{
-		java.util.ResourceBundle res = java.util.ResourceBundle.getBundle("config");
-		String editPointIDString = res.getString("point_id_edit").toLowerCase();
-		if( editPointIDString.equals("true") )
-			editPointID = true;
-	}
-	catch( java.util.MissingResourceException se )
-	{
-		com.cannontech.clientutils.CTILogger.error( se.getMessage(), se );
-	}
-
+	
 
 	if( currentPanel == getRoutePanel() )
 	{
@@ -283,12 +268,6 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	else if (isCapBank)
 		return (currentPanel == getCapBankCntrlCreationPanel());
 	
-	else	
-	if( editPointID )
-	{
-		return ( (currentPanel == getDeviceCopyNameAddressPanel() && (!getDeviceCopyNameAddressPanel().copyPointsIsChecked())) ||
-							(currentPanel == getDeviceCopyPointPanel()) );
-	}
 	else 
 	if ((currentPanel == getDeviceCopyNameAddressPanel()) && !((getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON)
 		 || (getDeviceType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM)) )
@@ -297,7 +276,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	}
 	else 
 	{ 
-		return false;
+		return currentPanel == getDeviceCopyNameAddressPanel();
 	}
 }
 /**
@@ -313,20 +292,20 @@ public void setAddressUsage()
  */
 public void setCopyObject(com.cannontech.database.db.DBPersistent newObject) 
 {
- 	try 
- 	{ 
-	 	copyObject = newObject;
+	try 
+	{ 
+		copyObject = newObject;
 	 	
 		com.cannontech.database.Transaction t = 
 				com.cannontech.database.Transaction.createTransaction(
 					com.cannontech.database.Transaction.RETRIEVE, copyObject);
 
 		copyObject = t.execute();
- 	}
- 	catch (com.cannontech.database.TransactionException e) 
- 	{
-	 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
- 	}
+	}
+	catch (com.cannontech.database.TransactionException e) 
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
  	
 }  
 /**
