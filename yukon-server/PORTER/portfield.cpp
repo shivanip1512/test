@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2004/05/20 22:44:11 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2004/05/24 17:03:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,11 +143,13 @@ INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device);
 INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
-INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
-INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
-INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
-INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+
+INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
+INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, RWTPtrSlist< CtiMessage > &traceList);
+INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList);
+
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
 BOOL findExclusionFreeOutMessage(void *data, void* d);
@@ -1259,12 +1261,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         IED->setLogOnNeeded(TRUE);
                         IED->setInitialState(0);
 
-                        if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
+                        if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
                         {
                             int dcstat;
 
-                            status = PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList);
-                            dcstat = TerminateHandshake (Port, IED, traceList);
+                            status = PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList);
+                            dcstat = TerminateHandshake (Port, Device, traceList);
 
                             if(status == NORMAL)
                                 status = dcstat;
@@ -1291,7 +1293,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             IED->setInitialState(0);
                             IED->allocateDataBins(OutMessage);
 
-                            status = PerformRequestedCmd(Port, IED, InMessage, OutMessage, traceList);
+                            status = PerformRequestedCmd(Port, Device, InMessage, OutMessage, traceList);
 
                             IED->freeDataBins();
 
@@ -1318,11 +1320,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         IED->allocateDataBins(OutMessage);
                         IED->setInitialState(oldid);
 
-                        if( (status = InitializeHandshake (Port, IED, traceList)) == NORMAL )
+                        if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
                         {
                             Port->setConnectedDevice( IED->getID() );
 
-                            status = PerformRequestedCmd (Port, IED, NULL, NULL, traceList);
+                            status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
 
                             if( status != NORMAL)
                             {
@@ -1346,7 +1348,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                             }
 
-                            INT dcstat = TerminateHandshake (Port, IED, traceList);
+                            INT dcstat = TerminateHandshake (Port, Device, traceList);
 
                             if(status == NORMAL)
                                 status = dcstat;
@@ -1381,12 +1383,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             */
 
                             IED->allocateDataBins(OutMessage);
-                            status = InitializeHandshake (Port,IED, traceList);
+                            status = InitializeHandshake (Port,Device, traceList);
 
                             if(!status)
                             {
                                 // this will do the initial command requested
-                                if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                                if(!(status=PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList)))
                                 {
                                     /*********************************************
                                     * Use the byte 2 of the command message to keep the
@@ -1404,7 +1406,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                         // note, current command must be reset to scan data before returning
                                         // or the decode response routine will not work correctly
-                                        PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+                                        PerformRequestedCmd ( Port, Device, InMessage, OutMessage , traceList);
 
                                         // reset to scan data once completed
                                         IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
@@ -1468,12 +1470,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         *************************
                         */
 
-                        status = LogonToDevice (Port,IED,InMessage,OutMessage, traceList);
+                        status = LogonToDevice (Port,Device,InMessage,OutMessage, traceList);
 
                         if(!status)
                         {
                             // this will do the initial command requested
-                            if(!(status=PerformRequestedCmd (Port, IED, InMessage, OutMessage, traceList)))
+                            if(!(status=PerformRequestedCmd (Port, Device, InMessage, OutMessage, traceList)))
                             {
                                 /*********************************************
                                 * Use the byte 2 of the command message to keep the
@@ -1491,7 +1493,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                                     // note, current command must be reset to scan data before returning
                                     // or the decode response routine will not work correctly
-                                    PerformRequestedCmd ( Port, IED, InMessage, OutMessage , traceList);
+                                    PerformRequestedCmd ( Port, Device, InMessage, OutMessage , traceList);
 
                                     // reset to scan data once completed
                                     IED->setCurrentCommand( CtiDeviceIED::CmdScanData );
@@ -2831,13 +2833,15 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
     return status;
 }
 
-INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList)
+INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     CtiXfer        transfer;
     BYTE           inBuffer[512];
     BYTE           outBuffer[256];
     INT            status = NORMAL;
     ULONG          bytesReceived (0);
+
+    CtiDeviceIED *aIEDDevice = (CtiDeviceIED *)dev.get();
 
     // initialize the transfer structure
     transfer.setInBuffer( inBuffer );
@@ -2850,11 +2854,11 @@ INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTP
              (aIEDDevice->getCurrentState() == CtiDeviceIED::StateHandshakeComplete)))
     {
         status = aIEDDevice->generateCommandHandshake (transfer, traceList);
-        status = aPortRecord->outInMess(transfer, CtiDeviceSPtr(aIEDDevice), traceList);
+        status = aPortRecord->outInMess(transfer, dev, traceList);
 
         if( transfer.doTrace(status) )
         {
-            aPortRecord->traceXfer(transfer, traceList, CtiDeviceSPtr(aIEDDevice), status);
+            aPortRecord->traceXfer(transfer, traceList, dev, status);
         }
 
         if( deviceCanSurviveThisStatus(status) )
@@ -2875,7 +2879,7 @@ INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTP
     return status;
 }
 
-INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
+INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT            status = NORMAL;
     CtiXfer        transfer;
@@ -2884,6 +2888,8 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
     ULONG          bytesReceived=0;
 
     INT            infLoopPrevention = 0;
+
+    CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
 
     // initialize the transfer structure
     transfer.setInBuffer( inBuffer );
@@ -2896,10 +2902,10 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
         do
         {
             status = aIED->generateCommand ( transfer , traceList);
-            status = aPortRecord->outInMess( transfer, CtiDeviceSPtr(aIED), traceList );
+            status = aPortRecord->outInMess( transfer, dev, traceList );
             if( transfer.doTrace( status ) )
             {
-                aPortRecord->traceXfer(transfer, traceList, CtiDeviceSPtr(aIED), status);
+                aPortRecord->traceXfer(transfer, traceList, dev, status);
             }
 
             if( deviceCanSurviveThisStatus(status) )
@@ -2910,7 +2916,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
             // check if we are sending load profile to scanner
             if(!status && aIED->getCurrentState() == CtiDeviceIED::StateScanReturnLoadProfile)
             {
-                status = ReturnLoadProfileData ( aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+                status = ReturnLoadProfileData ( aPortRecord, dev, aInMessage, aOutMessage, traceList);
             }
 
             if(status != NORMAL)
@@ -2969,12 +2975,14 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *a
 
 
 
-INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage,  RWTPtrSlist< CtiMessage > &traceList)
+INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage,  RWTPtrSlist< CtiMessage > &traceList)
 {
     INT         status = NORMAL;
 
     INMESS      MyInMessage;
     ULONG       bytesWritten;
+
+    CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
 
     // need a copy of the read message
     memcpy(&MyInMessage, aInMessage, sizeof(INMESS));
@@ -3012,11 +3020,13 @@ INT ReturnLoadProfileData ( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS 
 }
 
 
-INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
+INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aInMessage, OUTMESS *aOutMessage, RWTPtrSlist< CtiMessage > &traceList)
 {
     int retCode (NORMAL);
     int i;
+    CtiDeviceIED *aIED = (CtiDeviceIED *)dev.get();
     INT   previousCmd ((INT)aIED->getCurrentCommand());
+
 
 
     /************************
@@ -3027,24 +3037,24 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessa
     {
         // may need to put handshake here in case we had to re-dial and the master needs to
         // be interrogated first
-        i = InitializeHandshake (aPortRecord,aIED, traceList);
+        i = InitializeHandshake (aPortRecord, dev, traceList);
         aIED->setCurrentState (CtiDeviceIED::StateHandshakeInitialize);
 
         // set the command to send the switch statement
         aIED->setCurrentCommand(CtiDeviceIED::CmdSelectMeter);
 
-        retCode = PerformRequestedCmd (aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+        retCode = PerformRequestedCmd (aPortRecord, dev, aInMessage, aOutMessage, traceList);
 
         // we're ok so try do the handshake
         if(!retCode)
         {
             // back to the handshake
             aIED->setCurrentState (CtiDeviceIED::StateHandshakeInitialize);
-            i = InitializeHandshake (aPortRecord,aIED, traceList);
+            i = InitializeHandshake (aPortRecord, dev, traceList);
 
             // finishes the switch command
             if(!i)
-                retCode = PerformRequestedCmd (aPortRecord, aIED, aInMessage, aOutMessage, traceList);
+                retCode = PerformRequestedCmd (aPortRecord, dev, aInMessage, aOutMessage, traceList);
         }
 
         aIED->setCurrentState (CtiDeviceIED::StateHandshakeComplete);
@@ -3052,17 +3062,19 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceIED *aIED, INMESS *aInMessa
 
     }
     else
-        retCode = InitializeHandshake (aPortRecord,aIED, traceList);
+        retCode = InitializeHandshake (aPortRecord, dev, traceList);
     return retCode;
 }
 
-INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPtrSlist< CtiMessage > &traceList)
+INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, RWTPtrSlist< CtiMessage > &traceList)
 {
     CtiXfer        transfer;
     BYTE           inBuffer[512];
     BYTE           outBuffer[256];
     INT            status = NORMAL;
     ULONG          bytesReceived (0);
+
+    CtiDeviceIED *aIEDDevice = (CtiDeviceIED *)dev.get();
 
     // initialize the transfer structure
     transfer.setInBuffer( inBuffer );
@@ -3073,11 +3085,11 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceIED *aIEDDevice, RWTPt
     do
     {
         status = aIEDDevice->generateCommandDisconnect(transfer, traceList);
-        status = aPortRecord->outInMess(transfer, CtiDeviceSPtr(aIEDDevice), traceList);
+        status = aPortRecord->outInMess(transfer, dev, traceList);
 
         if( transfer.doTrace(status) )
         {
-            aPortRecord->traceXfer(transfer, traceList, CtiDeviceSPtr(aIEDDevice), status);
+            aPortRecord->traceXfer(transfer, traceList, dev, status);
         }
 
         if( deviceCanSurviveThisStatus(status) )
