@@ -5,15 +5,15 @@ insert into CTIDatabase values('2.40', 'Ryan', '2-FEB-2003', 'Merged STARS custo
 
 
 
-/* ***** IMPORTANT *****  -  This update is to disable MV_90 DATA Import */
-/*  DO NOT RUN THIS UPDATE IF THE CUSTOMER HAS PAID FOR THE MV_90 FORMAT */
+/* ***** IMPORTANT *****  -  the billingFileFormats update is to disable MV_90 DATA Import */
+/*  DO NOT RUN THE BILLINGFILEFORMATS UPDATE IF THE CUSTOMER HAS PAID FOR THE MV_90 FORMAT */
 update billingFileFormats set formatid = -11 where formatid = 11
 go
 
 /******************* NEW BILLING FORMATS *******************/
 insert into billingfileformats values(13, 'NISC-Turtle')
 go
-insert into billingfileformats values(14, 'NISC-Single Phase')
+insert into billingfileformats values(14, 'NISC-NCDC')
 go
 
 /******************* START YUKONLISTENTRY CHANGES *******************/
