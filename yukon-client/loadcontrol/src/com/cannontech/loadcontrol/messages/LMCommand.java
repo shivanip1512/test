@@ -12,20 +12,32 @@ public class LMCommand extends LMMessage
 	private int yukonID = 0;
 	private int number = 0;
 	private double value = 0.0;
+	private int count = 0;
+	private int auxid = 0;
+
 
 	//The following are the different commands that
 	//can be applied to control area, trigger, or program and map into the C++ side
-  public static final int CHANGE_THRESHOLD = 0;
-  public static final int CHANGE_RESTORE_OFFSET = 1;
-  public static final int CHANGE_CURRENT_START_TIME = 2;
-  public static final int CHANGE_CURRENT_STOP_TIME = 3;
-  public static final int CHANGE_CURRENT_OPERATIONAL_STATE = 4;
-  public static final int ENABLE_CONTROL_AREA = 5;  
-  public static final int DISABLE_CONTROL_AREA = 6;
-  public static final int ENABLE_PROGRAM = 7;  
-  public static final int DISABLE_PROGRAM = 8;
-  public static final int RETRIEVE_ALL_CONTROL_AREAS = 9;
-  
+	public static final int CHANGE_THRESHOLD							= 0;
+	public static final int CHANGE_RESTORE_OFFSET					= 1;
+	public static final int CHANGE_CURRENT_START_TIME				= 2;
+	public static final int CHANGE_CURRENT_STOP_TIME				= 3;
+	public static final int CHANGE_CURRENT_OPERATIONAL_STATE		= 4;
+	public static final int ENABLE_CONTROL_AREA						= 5;
+	public static final int DISABLE_CONTROL_AREA						= 6;
+	public static final int ENABLE_PROGRAM								= 7;
+	public static final int DISABLE_PROGRAM 							= 8;
+	public static final int RETRIEVE_ALL_CONTROL_AREAS				= 9;
+	  
+	public static final int SHED_GROUP									= 10;
+	public static final int SMART_CYCLE_GROUP							= 11;
+	public static final int TRUE_CYCLE_GROUP							= 12;
+	public static final int RESTORE_GROUP								= 13;
+	public static final int ENABLE_GROUP								= 14;
+	public static final int DISABLE_GROUP								= 15;
+	public static final int CONFIRM_GROUP								= 16;
+
+          
 	public static final String[] COMMAND_STRINGS =
 	{
 		"CHANGE THRESHOLD",
@@ -36,7 +48,15 @@ public class LMCommand extends LMMessage
 		"ENABLE CONTROL AREA",
 		"DISABLE CONTROL AREA",
 		"ENABLE PROGRAM",
-		"DISABLE PROGRAM"
+		"DISABLE PROGRAM",
+		"SHED GROUP",
+		"SMART CYCLE GROUP",
+		"TRUE CYCLE GROUP",
+		"RESTORE GROUP",
+		"ENABLE GROUP",
+		"DISABLE GROUP",
+		"CONFIRM GROUP"
+		
 	};
 /**
  * ScheduleCommand constructor comment.
@@ -128,4 +148,40 @@ public void setValue(double newValue) {
 public void setYukonID(int newYukonID) {
 	yukonID = newYukonID;
 }
+	/**
+	 * Returns the auxid.
+	 * @return int
+	 */
+	public int getAuxid()
+	{
+		return auxid;
+	}
+
+	/**
+	 * Returns the count.
+	 * @return int
+	 */
+	public int getCount()
+	{
+		return count;
+	}
+
+	/**
+	 * Sets the auxid.
+	 * @param auxid The auxid to set
+	 */
+	public void setAuxid(int auxid)
+	{
+		this.auxid = auxid;
+	}
+
+	/**
+	 * Sets the count.
+	 * @param count The count to set
+	 */
+	public void setCount(int count)
+	{
+		this.count = count;
+	}
+
 }

@@ -76,5 +76,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( (long) cmd.getYukonID() );
 	vstr.insertUnsignedInt( (long) cmd.getNumber() );
 	vstr.insertDouble( cmd.getValue() );
+	
+	vstr.insertUnsignedInt( (long) cmd.getCount() );
+	vstr.insertUnsignedInt( (long) cmd.getAuxid() );	
 }
 }
