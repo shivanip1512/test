@@ -789,7 +789,8 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 
 	}
 
-	if(com.cannontech.database.data.device.DeviceTypesFuncs.isTransmitter(currentType))
+	if(com.cannontech.database.data.device.DeviceTypesFuncs.isTransmitter(currentType)
+		&& !(selectedObject instanceof com.cannontech.database.data.point.PointBase))
 	{
 		String temp = "is a transmitter \n" + "and COULD be associated with a route." + '\n' + "Continuing may result in a route/device type mismatch." + '\n' + "Continue to change type?" + "\n" + "\n";  
 		confirm =
