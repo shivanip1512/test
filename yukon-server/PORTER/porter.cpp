@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2005/04/05 16:55:23 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2005/04/05 17:47:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1195,7 +1195,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_dnpudpThread.isValid())
     {
-        if(_dnpunpThread.join(15000) != RW_THR_COMPLETED )
+        if(_dnpudpThread.join(15000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _dnpudpThread did not shutdown" << endl;
