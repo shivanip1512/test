@@ -113,6 +113,25 @@
       <div align="left"><span class="PageHeader">Metering</span><br>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>">
         <%= links.get("Metering.jsp") %><br>
+       <table>
+          <tr>
+            <td>
+<%   /* Retrieve all the predefined graphs for this user*/                       
+	if( gData != null )
+	{
+		for( int i = 0; i < gData.length; i++ )                                                          
+		{
+			if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid())
+			{%>
+				<img src="<%=bulletImg%>" width="12" height="12"><span class="Nav"><%=gData[i][1] %></span><br>
+			<%}
+			else 
+			{%>
+				<img src="<%=bulletImg2%>" width="12" height="12"><a href="<%=request.getContextPath()%>/operator/Consumer/Metering.jsp?<%= "gdefid=" + gData[i][0]%>" class="Link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+			<%}
+		}
+	}%>
+	</td></tr></table>        
 </cti:checkProperty>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>">
         <%= links.get("Usage.jsp") %><br>
