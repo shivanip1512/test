@@ -460,6 +460,7 @@ void  CtiCommandParser::doParseGetStatus(void)
 
     RWCRExpr   re_frozen("froz");
     RWCRExpr   re_update("upd");
+    RWCRExpr   re_iedlink("ied[ \t]+link");
 
     RWCRExpr   re_sele("select");
 
@@ -498,6 +499,15 @@ void  CtiCommandParser::doParseGetStatus(void)
         else if(!(token = CmdStr.match(re_extern)).isNull())
         {
             flag |= CMD_FLAG_GS_EXTERNAL;
+        }
+        else if(!(token = CmdStr.match("ied")).isNull())
+        {
+            flag |= CMD_FLAG_GS_IED;
+
+            if(!(token = CmdStr.match(re_iedlink)).isNull())
+            {
+                flag |= CMD_FLAG_GS_LINK;
+            }
         }
         else
         {
