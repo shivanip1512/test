@@ -15,6 +15,7 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.yukon.server.cache.ServerDatabaseCache;
 
+/* Add this to DatabaseCacheHome class */
 //public com.cannontech.ejb.DatabaseCache create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
 /**
