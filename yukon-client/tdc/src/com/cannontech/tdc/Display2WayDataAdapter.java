@@ -1959,7 +1959,7 @@ private void setCorrectRowValue( PointValues point, int location )
 		{				
 			setRowTimeStamp( 
 					point,
-					point.getTimeStamp(),
+					point.getPointDataTimeStamp(),
 					location );
 		}
 
