@@ -76,6 +76,7 @@ public:
     //Immediately move everything to the queue for writing
     CtiLogger& flush();
 
+    bool acquire(unsigned long millis);
     CtiLogger& acquire();
     CtiLogger& release();
 

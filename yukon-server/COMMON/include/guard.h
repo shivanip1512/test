@@ -30,14 +30,24 @@
 
 #include "dlldefs.h"
 
+extern IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
+
 template<class T>
 class IM_EX_CTIBASE CtiLockGuard
 {
 public:
     CtiLockGuard(T& resource) :  _res(resource)
     {
+        #ifdef _DEBUG
+        while(!(_acquired = _res.acquire(900000)))
+        {
+            autopsy( __FILE__, __LINE__ );
+        }
+
+        #else
         _res.acquire();
         _acquired = true;
+        #endif
     }
 
     CtiLockGuard(T& resource, unsigned long millis ) : _res(resource)

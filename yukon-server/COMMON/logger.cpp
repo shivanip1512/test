@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/15 17:40:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,6 +148,11 @@ CtiLogger& CtiLogger::release()
     flush();
     _log_mux.release();
     return *this;
+}
+
+bool CtiLogger::acquire(unsigned long millis)
+{
+    return _log_mux.acquire(millis);
 }
 
 ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))
