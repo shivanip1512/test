@@ -24,7 +24,7 @@ RWINCL=-I. -I$(RWWORKSPACE)
 
 
 # Command to invoke compiler.
-CC=cl
+CC=cl $(COMPILEONLY)
 
 RWCPPINVOKE=$(CC)
 
