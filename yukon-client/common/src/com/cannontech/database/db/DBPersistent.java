@@ -628,7 +628,7 @@ private Object substituteObject(Object o)
 	else
 	if( o instanceof Character )
 	{
-		return o.toString();
+		return o.toString().trim();
 	}
 	else
 	if( o instanceof java.util.GregorianCalendar )
@@ -649,7 +649,7 @@ private Object substituteObject(Object o)
 	else
 	if( o instanceof String )
 	{
-		return o.toString();
+		return o.toString().trim();
 	}
 	else
 		return o;
