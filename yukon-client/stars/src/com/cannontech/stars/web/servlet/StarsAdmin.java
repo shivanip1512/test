@@ -767,7 +767,7 @@ public class StarsAdmin extends HttpServlet {
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsLMHw( createHw, liteHw, energyCompany );
 			createHw.setInstallDate( new java.util.Date() );
-			createHw.setRemoveDate( null );
+			createHw.setRemoveDate( new java.util.Date(0) );
 			createHw.setInstallationNotes( "" );
 		}
 		else {
@@ -814,7 +814,7 @@ public class StarsAdmin extends HttpServlet {
 			updateHw = new StarsUpdateLMHardware();
 			StarsLiteFactory.setStarsLMHw( updateHw, liteHw, energyCompany );
 			updateHw.setInstallDate( new java.util.Date() );
-			updateHw.setRemoveDate( null );
+			updateHw.setRemoveDate( new java.util.Date(0) );
 			updateHw.setInstallationNotes( "" );
 		}
 		else {
@@ -835,6 +835,10 @@ public class StarsAdmin extends HttpServlet {
 			StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 			deleteHw.setInventoryID( invIDOld );
 			deleteHw.setDeleteFromInventory( false );
+			if (fields[IDX_REMOVE_DATE].length() > 0) {
+				deleteHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(
+						fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
+			}
 			
 			operation.setStarsDeleteLMHardware( deleteHw );
 		}
@@ -877,6 +881,10 @@ public class StarsAdmin extends HttpServlet {
 		StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
 		deleteHw.setInventoryID( liteHw.getInventoryID() );
 		deleteHw.setDeleteFromInventory( false );
+		if (fields[IDX_REMOVE_DATE].length() > 0) {
+			deleteHw.setRemoveDate( com.cannontech.util.ServletUtil.parseDateStringLiberally(
+					fields[IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone()) );
+		}
 		
 		StarsOperation operation = new StarsOperation();
 		operation.setStarsDeleteLMHardware( deleteHw );
