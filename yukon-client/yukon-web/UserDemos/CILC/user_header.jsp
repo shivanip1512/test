@@ -2,7 +2,7 @@
 <%@ page import="com.cannontech.database.data.web.User" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
-<%@ taglib uri="jruntags" prefix="jrun" %>
+<%@ taglib uri="/WEB-INF/jruntags.jar" prefix="jrun" %>
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <cti:checklogin/>
@@ -10,7 +10,6 @@
 <%
     String content = null;
     User user = (User) request.getSession(false).getValue("USER");
-
     long customerID = user.getCustomerId();
 
     String logo = user.getCustomerWebSettings().getHomeURL() + "/NavLogo.gif";

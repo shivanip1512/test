@@ -7,14 +7,16 @@
    //out.println("select graphdefinition.graphdefinitionid,graphdefinition.name from graphdefinition,GraphCustomerList where graphdefinition.graphdefinitionid=GraphCustomerList.graphdefinitionid and GraphCustomerList.LMCustomerDeviceID=" + user.getCustomerId() + " order by GraphCustomerList.CustomerOrder");
    String referrer;
    int graphDefinitionId = -1;
+   int width = 556;
+   int height = 433;
    java.util.Date start = null;
    java.util.Date saveStart = null;
    java.util.Date stop = null;
    String period = null;
    String selectedPeriod = null;
-   String page;
+   String page_;
    String tab;
-   int modelType = 0;
+   int modelType = 0;//com.cannontech.graph.model.TrendModelType.BAR_3D_MODEL;
 
    int numDays;
                 
@@ -26,9 +28,9 @@
    if( tab == null )
       tab = "graph";
 
-   page = request.getParameter("page");
-   if( page == null )
-       page = "1";
+   page_ = request.getParameter("page");
+   if( page_ == null )
+       page_ = "1";
    
    String modelTypeStr = request.getParameter("model");
    if (modelTypeStr != null)
@@ -36,6 +38,14 @@
        modelType = Integer.parseInt(modelTypeStr);
 	   //out.println("model Type = "+ modelType + " string "+ modelTypeStr);
    }
+
+   String sizeStr = request.getParameter("width");
+   if( sizeStr != null )                           
+      width = Integer.parseInt(sizeStr);
+
+   sizeStr = request.getParameter("height");
+   if( sizeStr != null )                           
+      height = Integer.parseInt(sizeStr);
 
    String gDefIDStr = request.getParameter("gdefid");
    if( gDefIDStr != null )                           

@@ -66,6 +66,7 @@ function jumpPage(form)
 </SCRIPT>
 </head>
 
+
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -155,7 +156,7 @@ function jumpPage(form)
                     <table width="337" valign="top" cellpadding="0" cellspacing="0">
                     <tr> 
                       <td width="82" valign="top"> 
-                        <form method="Get" action="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" + modelType%>" target="_self">
+                        <form method="Get" action="/UserDemos/CILC/user_trending.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=graph&page=1&model=" +modelType%>" target="_self">
                           <div align="center"> 
                             <input type="submit" name="tab" value="Graph">
                           </div>
@@ -176,7 +177,7 @@ function jumpPage(form)
                           </form>
                       </td>
                         <td width="103" valign="top"> 
-                          <form method="Get" action="/UserDemos/CILC/user_print_trend.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=" + tab + "&page=1&model=" + modelType %>" target="_self">
+                          <form method="Get" action="/UserDemos/CILC/user_print_trend.jsp?<%= "db=" + dbAlias + "&gdefid=" + graphDefinitionId + "&start=" + dateFormat.format(saveStart) + "&period=" + java.net.URLEncoder.encode(period) + "&tab=tab&page=1&model=" + modelType%>" target="_self">
                             <div align="left">
                               <input type="submit" name="print" value="Print View">
                             </div>
@@ -227,14 +228,14 @@ document.writeln('</FORM>');
              if( tab.equalsIgnoreCase("summary") )
              {
               %>
-                      <%@ include file="/trendingsummary.jsp" %>
+                      <%@ include file="../trendingsummary.jsp" %>
                       <%
              }
              else
              if( tab.equalsIgnoreCase("tab") )
              {
               %>
-                      <%@ include file="/trendingtabular.jsp" %>
+                      <%@ include file="../trendingtabular.jsp" %>
                       <%
              }
              else // "graph" is default

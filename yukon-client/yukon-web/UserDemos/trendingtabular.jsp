@@ -8,7 +8,7 @@
 <center>
 <%
     int numWeeks = (numDays-1) / 7;
-    int currentWeek = (Integer.parseInt(page)-1) / 7;
+    int currentWeek = (Integer.parseInt(page_)-1) / 7;
     int basePage = currentWeek * 7 +  1;
     java.util.Date now = new java.util.Date();
 
@@ -45,7 +45,7 @@
         if( cal.getTime().compareTo( now ) > 0 )
             break;
 
-        if( p == Integer.parseInt(page) )
+        if( p == Integer.parseInt(page_) )
         {
             
 %>    
@@ -86,13 +86,13 @@ if( numWeeks > 0 && cal.getTime().compareTo( now ) <= 0 )
     }
 %>
 
-<jrun:servlet code="TabularDataGenerator">
+<!--<jrun:servlet code="TabularDataGenerator">
 <jrun:servletparam name="gdefid" value="<%= Integer.toString(graphDefinitionId) %>" />
 <jrun:servletparam name="start" value="<%= dateFormat.format(start) %>" />
 <jrun:servletparam name="page" value="<%= page %>" />
 <jrun:servletparam name="end" value="<%= dateFormat.format(stop) %>" />
 <jrun:servletparam name="db" value="<%= dbAlias %>" />
-</jrun:servlet>
+</jrun:servlet>-->
 
 <br>
 <center>
@@ -124,7 +124,7 @@ if( numWeeks > 0 && cal.getTime().compareTo( now ) <= 0 )
 
     for( int p = basePage; numDays != 1 && p < basePage + 7 && p <= numDays; p++ )
     {    
-        if( p == Integer.parseInt(page) )
+        if( p == Integer.parseInt(page_) )
         {
             
 %>
