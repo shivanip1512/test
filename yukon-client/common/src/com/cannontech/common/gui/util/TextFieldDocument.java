@@ -9,7 +9,7 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 {
 	private int maxCharCount = 0;
 	private String currentValue = null;
-	public static int MAX_DEVICE_NAME_LENGTH = 40;
+	public static int MAX_DEVICE_NAME_LENGTH = 60;
 	public static int MAX_IED_PASSWORD_LENGTH = 20;
 	public static int MAX_INITIALIZATION_STRING_LENGTH = 50;
 	public static int MAX_MCT_PASSWORD_LENGTH = 6;
