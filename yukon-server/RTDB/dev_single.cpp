@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2004/07/02 16:30:30 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2004/07/12 19:05:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -602,11 +602,6 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Load Profile Scan error " << nRet << endl;
                 }
-                else
-                {
-                    setScanPending();
-                }
-
             }
             else
             {
