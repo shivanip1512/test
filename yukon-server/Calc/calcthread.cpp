@@ -12,7 +12,7 @@
 
 #include "calcthread.h"
 
-extern BOOL _CALC_DEBUG;
+extern ULONG _CALC_DEBUG;
 
 void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
 {
@@ -26,7 +26,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
 
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
@@ -84,7 +84,6 @@ void CtiCalculateThread::periodicLoop( void )
         RWRunnableSelf _pSelf = rwRunnable( );
         BOOL interrupted = FALSE, messageInMulti;
         clock_t now;
-        int quality;
 
         while( !interrupted )
         {
@@ -117,9 +116,10 @@ void CtiCalculateThread::periodicLoop( void )
             periodicIter.reset( );
             messageInMulti = FALSE;
 
+            int calcQuality;
+            RWTime calcTime;
             for( ; periodicIter( ); )
             {
-                quality = NormalQuality;
                calcPoint = (CtiCalc *)(periodicIter.value( ));
                if( calcPoint==NULL || !calcPoint->ready( ) )
                 {
@@ -132,18 +132,7 @@ void CtiCalculateThread::periodicLoop( void )
 
                 {
                     RWMutexLock::LockGuard msgLock(_pointDataMutex);
-                    newPointValue = calcPoint->calculate( );
-                }
-
-                //added 7/31/03 JW.  Repositioned 6/22/04 CP
-                if( _isnan(newPointValue) || !_finite(newPointValue) )
-                {
-                    newPointValue = 0.0;
-                    quality = InvalidQuality;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << __FILE__ << " (" << __LINE__ << ")  periodic calculate() tried to return a NaN for Calc Point Id: " << calcPoint->getPointId() << endl;
-                    }
+                    newPointValue = calcPoint->calculate( calcQuality, calcTime );
                 }
 
                 calcPoint->setNextInterval(calcPoint->getUpdateInterval());
@@ -152,8 +141,9 @@ void CtiCalculateThread::periodicLoop( void )
                 {
                     sprintf( pointDescription, "calc point %ul update", pointId );
 
-                    CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, quality,
+                    CtiPointDataMsg *pointData = new CtiPointDataMsg(pointId, newPointValue, calcQuality,
                                                                      CalculatedPointType, pointDescription);
+                    pointData->setTime(calcTime);
 
                     periodicMultiMsg->getData( ).insert( pointData );
 
@@ -172,10 +162,11 @@ void CtiCalculateThread::periodicLoop( void )
                     _outbox.append( periodicMultiMsg );
                 }
 
-                //{
-                //    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                //    dout << RWTime( ) << " - periodicLoop posting a message - took " << (clock( ) - now) << " ticks" << endl;
-                //}
+                if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime( ) << "  periodicLoop posting a message - took " << (clock( ) - now) << " ticks" << endl;
+                }
             }
             else
             {
@@ -208,7 +199,9 @@ void CtiCalculateThread::onUpdateLoop( void )
         CtiMultiMsg *pChg;
         CtiCalc *calcPoint;
         RWRunnableSelf _auSelf = rwRunnable( );
-        int quality;
+
+        int calcQuality;
+        RWTime calcTime;
 
         while( !interrupted )
         {
@@ -243,32 +236,33 @@ void CtiCalculateThread::onUpdateLoop( void )
                     CtiHashKey recalcKey(recalcPointID);
                     calcPoint = (CtiCalc *)(_onUpdatePoints[&recalcKey]);
 
+                    CtiPointStore* pointStore = CtiPointStore::getInstance();
+                    CtiHashKey pointHashKey(calcPoint->getPointId());
+                    CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
+
                     //  if not ready
                     if( calcPoint==NULL || !calcPoint->ready( ) )
                         continue;  // for
 
-                    recalcValue = calcPoint->calculate( );
-                    quality = NormalQuality;
+                    recalcValue = calcPoint->calculate( calcQuality, calcTime );
+                    calcPoint->setNextInterval(calcPoint->getUpdateInterval());     // This only matters for periodicPlusUpdatePoints.
 
-                    //added 7/31/03 JW.  Repositioned, !_finite added 6/22/04 CP
-                    if( _isnan(recalcValue) || !_finite(recalcValue) )
+                    // Make sure we do not try to move backwards in time.
+                    if( pointPtr->getPointTime() > calcTime )
                     {
-                        recalcValue = 0.0;
-                        quality = InvalidQuality;
+                        if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << __FILE__ << " (" << __LINE__ << ")  calculate() tried to return a NaN for Calc Point Id: " << calcPoint->getPointId() << endl;
+                            dout << RWTime() << " Calc point " << calcPoint->getPointId() << " calculation result is attempting to move backward in time." << endl;
+                            dout << RWTime() << "   Update type may be inappropriate for the component device/points." << endl;
                         }
+                        calcTime = RWTime().now();
                     }
 
                     CtiPointDataMsg *pData = NULL;
 
                     if( calcPoint->getPointCalcWindowEndTime().seconds() > RWTime(RWDate(1,1,1991)).seconds() )
                     {// demand average point madness
-                        CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-                        CtiHashKey pointHashKey(calcPoint->getPointId());
-                        CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore)[&pointHashKey]);
                         CtiHashKey componentPointHashKey(calcPoint->findDemandAvgComponentPointId());
                         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentPointHashKey]);
 
@@ -281,7 +275,7 @@ void CtiCalculateThread::onUpdateLoop( void )
                         if( RWTime().seconds() >= calcPoint->getPointCalcWindowEndTime().seconds() &&
                             RWTime().seconds() < calcPoint->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() )
                         {
-                            if( _CALC_DEBUG )
+                            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID
@@ -291,15 +285,16 @@ void CtiCalculateThread::onUpdateLoop( void )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << __FILE__ << " (" << __LINE__ << ") RWTime() >= calcPoint->getPointCalcWindowEndTime()" << endl;
                             }*/
-                            pData = new CtiPointDataMsg(recalcPointID, recalcValue, quality, CalculatedPointType, pointDescription);
+                            pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, CalculatedPointType, pointDescription);
                             pData->setTime(calcPoint->getPointCalcWindowEndTime());
                         }
 
-                        pointPtr->setPointValue( recalcValue, RWTime(), quality, 0 );
+                        pointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
                     }
                     else
                     {//normal calc point
-                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, quality, CalculatedPointType, pointDescription);
+                        pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, CalculatedPointType, pointDescription);
+                        pData->setTime(calcTime);
                     }
 
                     if( pData != NULL )
@@ -309,7 +304,7 @@ void CtiCalculateThread::onUpdateLoop( void )
                         pChg->getData( ).insert( pData );
                     }
 
-                    if( _CALC_DEBUG )
+                    if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " onUpdateLoop setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
@@ -327,9 +322,10 @@ void CtiCalculateThread::onUpdateLoop( void )
 
                 //  i kinda want to keep away from having a hold on both of the mutexes, as a little programming error
                 //    earlier earned me a touch of the deadlock.
+                if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " - onUpdateLoop posting a message" << endl;
+                    dout << RWTime( ) << "  onUpdateLoop posting a message" << endl;
                 }
             }
             else
@@ -395,6 +391,7 @@ void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
             break;
         case allUpdate:
         case anyUpdate:
+        case periodicPlusUpdate:
             _onUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
             break;
         default:

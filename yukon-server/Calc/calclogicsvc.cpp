@@ -23,6 +23,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
 #include "msg_dbchg.h"
+#include "numstr.h"
 #include "pointtypes.h"
 #include "configparms.h"
 #include "logger.h"
@@ -37,7 +38,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 BOOL UserQuit = FALSE;
 
 //Boolean if debug messages are printed
-BOOL _CALC_DEBUG;
+ULONG _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
 
 BOOL MyCtrlHandler( DWORD fdwCtrlType )
 {
@@ -97,7 +98,7 @@ void CtiCalcLogicService::Init( )
         RWCString logFile = RWCString("calc");
         _dispatchMachine = RWCString("127.0.0.1");
         _dispatchPort = VANGOGHNEXUS;
-        _CALC_DEBUG = FALSE;
+        _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
         //defaults
 
         RWCString str;
@@ -158,14 +159,19 @@ void CtiCalcLogicService::Init( )
         }
 
         strcpy(var, "CALC_LOGIC_DEBUG");
-        if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+        if(gConfigParms.isOpt(var,"true"))
         {
-            str.toLower();
-            _CALC_DEBUG = (str=="true"?TRUE:FALSE);
-            if( _CALC_DEBUG )
+            _CALC_DEBUG = 0xFFFFFFFF;
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else if( 0 != (_CALC_DEBUG = gConfigParms.getValueAsULong(var,0,16)) )
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << var << ":  0x" << CtiNumStr(_CALC_DEBUG).hex() << endl;
             }
         }
         else
@@ -179,56 +185,6 @@ void CtiCalcLogicService::Init( )
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
-    /*char temp[180];
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime( ) << " - CtiCalcLogicService::Init..." << endl;
-    }
-
-
-    HINSTANCE hLib = LoadLibrary( "cparms.dll" );
-
-    if (hLib)
-    {
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        if( (*fpGetAsString)( "DISPATCH_MACHINE", temp, 180 ) )
-        {
-            _dispatchMachine = temp;
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " DISPATCH_MACHINE not defined, defaulting to local 127.0.0.1 " << endl;
-            }
-            _dispatchMachine = RWCString ("127.0.0.1");
-        }
-
-        if( (*fpGetAsString)( "DISPATCH_PORT", temp, 180 ) )
-        {
-            _dispatchPort = atoi(temp);
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " DISPATCH_PORT not defined, defaulting to " << VANGOGHNEXUS << endl;
-            }
-            _dispatchPort = VANGOGHNEXUS;
-        }
-
-        if( (*fpGetAsString)( "CALC_LOGIC_DEBUG", temp, 180 ) )
-        {
-            _CALC_DEBUG = temp;
-        }
-        else
-        {
-            _CALC_DEBUG = FALSE;
-        }
-    }*/
 }
 
 
@@ -432,7 +388,7 @@ void CtiCalcLogicService::Run( )
             msgPtReg = new CtiPointRegistrationMsg(0);
             for( ; (*depIter)( ); )
             {
-                if( _CALC_DEBUG )
+                if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
@@ -478,7 +434,7 @@ void CtiCalcLogicService::Run( )
                 if( timeNow > nextCheckTime )
                 {
 
-                    if( _CALC_DEBUG )
+                    if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Timer Checking for DB Change." << endl;
@@ -502,7 +458,7 @@ void CtiCalcLogicService::Run( )
                 if( ((timeNow-18000) % 86400) == 0 )
                 {//reset the max allocations once a day, midnight central standard time
                     LONG currentAllocations = ResetBreakAlloc();
-                    if( _CALC_DEBUG )
+                    if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
@@ -746,7 +702,8 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
                 // pull all of the messages out
                 msgMulti = (CtiMultiMsg *)message;
 
-                {
+            if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
+            {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime()  << "  Processing Multi Message with: " << msgMulti->getData( ).entries( ) << " messages -  " << endl;
                 }
@@ -760,10 +717,11 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
 
             case MSG_SIGNAL:
                 // not an error
-                {
+            if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
+            {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " - Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
-                }
+                dout << RWTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+            }
                 break;
 
             default:
@@ -831,7 +789,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             pointIdList[CalcCount] = pointid;
             ++CalcCount;
 
-            if( _CALC_DEBUG )
+            if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Loaded Calc #" << CalcCount << " Id: " << pointid << " Type: " << updatetype << endl;
@@ -880,7 +838,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
 
             //cout << componentselector.asString().data() << endl;
 
-            if( _CALC_DEBUG )
+            if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Loading Components for Calc Id: " << pointIdList[i] << endl;
@@ -903,7 +861,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
                 //    order is defined externally - by the order that they're selected and appended
                 calcThread->appendPointComponent( pointIdList[i], componenttype, componentpointid,
                                                   operationtype, constantvalue, functionname );
-                if( _CALC_DEBUG )
+                if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Component for calc Id " << pointIdList[i] <<

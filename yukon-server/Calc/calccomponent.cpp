@@ -10,7 +10,7 @@ using namespace std;
 #include "logger.h"
 #include "calc.h"
 
-extern BOOL _CALC_DEBUG;
+extern ULONG _CALC_DEBUG;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
@@ -49,7 +49,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
             _valid = FALSE;
         }
 
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Adding CtiCalcComponent - Normal Operation ComponentPointID = " << componentPointId << endl;
@@ -75,7 +75,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
             _valid = FALSE;
         }
 
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
@@ -141,7 +141,7 @@ void CtiCalcComponent::saveGuts(RWvostream &aStream) const
    aStream << _valid;
 }
 */
-BOOL CtiCalcComponent::isUpdated( void )
+BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUpdateTime )
 {
     //  you can only be updated (or non-) if you're a point...
     if( _componentType == operation )
@@ -149,13 +149,10 @@ BOOL CtiCalcComponent::isUpdated( void )
         CtiHashKey hashKey(_componentPointId);
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
-        if( _lastUseUpdateNum != componentPointPtr->getNumUpdates() )
+
+        if( componentPointPtr->getPointQuality() == NonUpdatedQuality )
         {
-            return TRUE;
-        }
-        else if( componentPointPtr->getPointQuality() == NonUpdatedQuality )
-        {
-            if( _CALC_DEBUG )
+            if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " - Point quality is non updated, Point ID: " << componentPointPtr->getPointNum() << endl;
@@ -164,10 +161,22 @@ BOOL CtiCalcComponent::isUpdated( void )
         }
         else if( componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
         {
+            if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " - Point tags mark component disabled, Point ID: " << componentPointPtr->getPointNum() << endl;
             }
+            return TRUE;
+        }
+        else if( (calcsUpdateType == periodicPlusUpdate) )
+        {
+            if( componentPointPtr->getPointTime() > calcsLastUpdateTime)
+                return TRUE;
+            else
+                return FALSE;
+        }
+        else if( _lastUseUpdateNum != componentPointPtr->getNumUpdates() )
+        {
             return TRUE;
         }
         else
@@ -179,9 +188,28 @@ BOOL CtiCalcComponent::isUpdated( void )
         return TRUE;
 }
 
-double CtiCalcComponent::calculate( double input )
+double CtiCalcComponent::calculate( double input, int &component_quality, RWTime &component_time )
 {
     double orignal = input;
+
+    // Prime these for non-point comps.
+    if(_componentPointId > 0)
+    {
+        CtiPointStore* pointStore = CtiPointStore::getInstance();
+        CtiHashKey componentHashKey(_componentPointId);
+        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+        if(componentPointPtr != NULL)
+        {
+            component_quality = componentPointPtr->getPointQuality();
+            component_time = componentPointPtr->getPointTime();
+        }
+    }
+    else
+    {
+        component_quality = NormalQuality;
+        component_time = component_time.now();
+    }
 
     if( _componentType == operation )
     {
@@ -200,25 +228,18 @@ double CtiCalcComponent::calculate( double input )
                     CtiHashKey componentHashKey(_componentPointId);
                     CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
 
-                    if(_parent != NULL && componentPointPtr != NULL)
+                    if(componentPointPtr != NULL)
                     {
-                        DOUBLE componentPointValue = componentPointPtr->getPointValue();
-
+                        if(_parent != NULL)
+                        {
                         _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
-                        _parent->push( componentPointValue );
+                            _parent->push( componentPointPtr->getPointValue() );
+                        }
                     }
                 }
                 break;
             }
         }
-
-/*
-        if( _CALC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiCalcComponent::calculate(); point operation; input:" << orignal << ",   value:" << componentPointPtr->getPointValue() << ",   return:" << input << endl;
-        }
-*/
     }
     else if( _componentType == constant )
     {
@@ -241,7 +262,7 @@ double CtiCalcComponent::calculate( double input )
         case division:       input = _doFunction(RWCString("division"));  break;
         case push:           break; // This was completed with the above push!
         }
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return:" << input << endl;
@@ -251,7 +272,7 @@ double CtiCalcComponent::calculate( double input )
     {
         //  this, to keep this function small, and the functions elsewhere for maintenence
         input = _doFunction( _functionName );
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "CtiCalcComponent::calculate(); function return:" << input << endl;
@@ -622,6 +643,16 @@ double CtiCalcComponent::_doFunction( RWCString &functionName )
         }
     }
 
+    //added 7/31/03 JW
+    if( _isnan(retVal) )
+    {
+        retVal = 0.0;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN for Calc Point Id: " << _parent->getPointId() << endl;
+        }
+    }
+
     _parent->push( retVal );       // Return it to the stack so it can be used properly by another callee.
 
     return retVal;
@@ -652,7 +683,7 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
     if( componentPointPtr->getPointTime().seconds() >= (_parent->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() - secondsInAvg) &&
         componentPointPtr->getPointTime().seconds() < (_parent->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime()) )
     {//is the last point data received in the average or not
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
@@ -666,7 +697,7 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
         _updatesInCurrentAvg++;
         retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
 
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
@@ -683,7 +714,7 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
         {
             retVal = componentPointPtr->getPointValue();
             _updatesInCurrentAvg = 1;
-            if( _CALC_DEBUG )
+            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
@@ -700,7 +731,7 @@ double CtiCalcComponent::_figureDemandAvg(long secondsInAvg)
         {
             retVal = componentPointPtr->getPointValue();
             _updatesInCurrentAvg = 1;
-            if( _CALC_DEBUG )
+            if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " - Calc Point Id: " << _parent->getPointId()

@@ -3,7 +3,7 @@
 #define __CALC_H__
 
 #include <rw/slistcol.h>
-#include <rw/tvdlist.h> 
+#include <rw/tvdlist.h>
 #include <rw/tstack.h>
 
 #include "calccomponent.h"
@@ -28,10 +28,15 @@ private:
     static const CHAR * UpdateType_AllChange;
     static const CHAR * UpdateType_OneChange;
     static const CHAR * UpdateType_Historical;
+    static const CHAR * UpdateType_PeriodicPlusUpdate;
+
+    RWTime calcTimeFromComponentTime( const RWTime &minTime, const RWTime &maxTime );
+    bool calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime );
+    int calcQualityFromComponentQuality( int qualityFlag, const RWTime &minTime, const RWTime &maxTime );
 
 public:
 
-    CtiCalc( ) : 
+    CtiCalc( ) :
     _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ), _pointCalcWindowEndTime( RWTime(RWDate(1,1,1990)) )
     {};
 
@@ -56,7 +61,7 @@ public:
     void appendComponent( CtiCalcComponent *componentToAdd );
     void cleanup( void );
     PointUpdateType getUpdateType( void );
-    double calculate( void );
+    double calculate( int &calc_quality, RWTime &calc_time );
     BOOL ready( void );
     void push( double );
     double pop( void );

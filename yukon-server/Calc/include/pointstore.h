@@ -14,13 +14,27 @@
 #include "rtdb.h"
 #include "pointdefs.h"
 
+#define CALC_DEBUG_INBOUND_POINTS                   0x00000001
+#define CALC_DEBUG_OUTBOUND_POINTS                  0x00000002
+#define CALC_DEBUG_PRECALC_VALUE                    0x00000004
+#define CALC_DEBUG_POSTCALC_VALUE                   0x00000008
+#define CALC_DEBUG_CALC_INIT                        0x00000010
+#define CALC_DEBUG_COMPONENT_POSTCALC_VALUE         0x00000020
+#define CALC_DEBUG_POINTDATA_QUALITY                0x00000040
+#define CALC_DEBUG_DEMAND_AVG                       0x00000080
+#define CALC_DEBUG_DISPATCH_INIT                    0x00000100
+#define CALC_DEBUG_POINTDATA                        0x00000200
+#define CALC_DEBUG_THREAD_REPORTING                 0x00000400
+#define CALC_DEBUG_INBOUND_MSGS                     0x00000800
+
 enum PointUpdateType
 {
     undefined,
     periodic,
     allUpdate,
     anyUpdate,
-    historical
+    historical,
+    periodicPlusUpdate
 };
 
 using namespace std;
@@ -68,9 +82,9 @@ public:
     RWTime  getPointTime( void )        {   return _pointTime;  };
     long    getNumUpdates( void )       {   return _numUpdates; };
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
-    RWTValHashSetIterator<depStore, depStore, depStore> 
+    RWTValHashSetIterator<depStore, depStore, depStore>
             *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
-//    RWTValSetIterator<depStore, depStore> 
+//    RWTValSetIterator<depStore, depStore>
 //            *getDependents( void )      {   return new RWTValSetIterator<depStore, depStore>( _dependents );    };
 
 protected:
@@ -115,7 +129,7 @@ private:
 
     //The singleton instance of CtiPointStore
     static CtiPointStore* _instance;
-    
+
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 };
 

@@ -10,8 +10,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "calc.h"
 #include "logger.h"
+#include "numstr.h"
 
-extern BOOL _CALC_DEBUG;
+extern ULONG _CALC_DEBUG;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalc, "CtiCalc" );
 
@@ -20,7 +21,7 @@ const CHAR * CtiCalc::UpdateType_Periodic   = "On Timer";
 const CHAR * CtiCalc::UpdateType_AllChange  = "On All Change";
 const CHAR * CtiCalc::UpdateType_OneChange  = "On First Change";
 const CHAR * CtiCalc::UpdateType_Historical = "Historical";
-
+const CHAR * CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
 
 CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval )
 {
@@ -56,6 +57,12 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
 //            dout << "Historical Update Type not supported in calc and logic server." << endl;
 //        }
         _valid = FALSE;
+    }
+    else if( !updateType.compareTo(UpdateType_PeriodicPlusUpdate, RWCString::ignoreCase) )
+    {
+        _updateInterval = updateInterval;
+        setNextInterval (updateInterval);
+        _updateType = periodicPlusUpdate;
     }
     else
     {
@@ -105,17 +112,15 @@ void CtiCalc::cleanup( void )
 }
 
 
-double CtiCalc::calculate( void )
+double CtiCalc::calculate( int &calc_quality, RWTime &calc_time )
 {
     double retVal = 0.0;
     RWSlistCollectablesIterator iter( _components );
 
-//    _countdown = _updateInterval;
-
     try
     {
         //  Iterate through all of the calculations in the collection
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_PRECALC_VALUE )
         {
             CtiPointStore* pointStore = CtiPointStore::getInstance();
 
@@ -128,24 +133,36 @@ double CtiCalc::calculate( void )
 
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
 
+        bool solidTime = false;             // If time is "solid" all components are the same time stamp.
+        int componentQuality, qualityFlag = 0;
+        RWTime componentTime, minTime = RWTime(ULONG_MAX - 86400 * 2), maxTime = rwEpoch;
+
         for( ; iter( ) && _valid; )
         {
             CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
             _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
-            retVal = tmpComponent->calculate( retVal );  //  Calculate on returned value
+
+            retVal = tmpComponent->calculate( retVal, componentQuality, componentTime );  //  Calculate on returned value
+
+            qualityFlag |= (1 << componentQuality);    // Flag each returned quality...
+            solidTime = calcTimeFromComponentTime( componentTime, componentQuality, minTime, maxTime );
         }
 
+        calc_time = calcTimeFromComponentTime( minTime, maxTime );
+        calc_quality = calcQualityFromComponentQuality( qualityFlag, minTime, maxTime );
+
         if( !_valid )   //  NOT valid - actually, you should never get here, because the ready( ) back in CalcThread should
-        {               //    detect that you're invalid, and reject you with a "not ready" then.
+        {
+            //    detect that you're invalid, and reject you with a "not ready" then.
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to calculate invalid point \"" << _pointId << "\" - returning 0.0" << endl;
             retVal = 0.0;
         }
 
-        if( _CALC_DEBUG )
+        if( _CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
+            dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
         }
     }
     catch(...)
@@ -231,20 +248,23 @@ BOOL CtiCalc::ready( void )
 {
     RWSlistCollectablesIterator iter( _components );
     BOOL isReady = TRUE;
-    if( !_valid )
-    {
-        setNextInterval(getUpdateInterval());       // It is not valid, do not harp about it so often!
-        isReady = FALSE;
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
-    }
-    else
+    try
     {
-        switch( _updateType )
+        if( !_valid )
         {
+            setNextInterval(getUpdateInterval());       // It is not valid, do not harp about it so often!
+            isReady = FALSE;
+
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
+        }
+        else
+        {
+            switch( _updateType )
+            {
             case periodic:
-                if (RWTime().seconds() > getNextInterval())
+                if(RWTime().seconds() > getNextInterval())
                 {
                     isReady = TRUE;
                 }
@@ -268,6 +288,27 @@ BOOL CtiCalc::ready( void )
                     }
                 }
                 break;
+            case periodicPlusUpdate:
+                {
+                    if(RWTime().seconds() >= getNextInterval())
+                    {
+                        for( ; iter( ); )
+                            isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( _updateType, RWTime(getNextInterval()) );
+                    }
+                    else
+                    {
+                        isReady = FALSE;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -285,17 +326,23 @@ BOOL CtiCalc::ready( void )
 */
 CtiCalc& CtiCalc::setNextInterval( int aInterval )
 {
-   RWTime timeNow;
-   ULONG secondsPastHour;
+    RWTime timeNow;
 
-   // check where we sit
-   secondsPastHour = timeNow.seconds() % 3600L;
+    if(aInterval > 0)
+    {
+        ULONG secondsPastHour;
 
-   // if we are on the interval, go now
-   if ((secondsPastHour % aInterval) == 0)
-      _nextInterval = timeNow.seconds();
+        // check where we sit
+        secondsPastHour = timeNow.seconds() % 3600L;
+
+        // if we are on the interval, go now
+        if((secondsPastHour % aInterval) == 0)
+            _nextInterval = timeNow.seconds();
+        else
+            _nextInterval = timeNow.seconds() + (aInterval - (secondsPastHour % aInterval));
+    }
     else
-        _nextInterval = timeNow.seconds() + (aInterval - (secondsPastHour % aInterval));
+        _nextInterval = timeNow.seconds();
 
     return *this;
 }
@@ -343,4 +390,64 @@ long CtiCalc::findDemandAvgComponentPointId()
 
     return returnPointId;
 }
+
+RWTime CtiCalc::calcTimeFromComponentTime( const RWTime &minTime, const RWTime &maxTime )
+{
+    RWTime rtime;
+
+    if(getUpdateType() != periodic)
+    {
+        if( minTime == maxTime)  // If all components are the same.
+        {
+            rtime = minTime;
+        }
+    }
+
+    return rtime;
+}
+
+bool CtiCalc::calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime )
+{
+    if(componentQuality != NonUpdatedQuality)
+    {
+        if(minTime > componentTime)
+            minTime = componentTime;
+
+        if(maxTime < componentTime)
+            maxTime = componentTime;
+    }
+
+    return minTime == maxTime;
+}
+
+int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const RWTime &minTime, const RWTime &maxTime )
+{
+    int component_quality = NormalQuality;
+
+    if(qualityFlag & (1 << ManualQuality) )
+    {
+        component_quality = ManualQuality;
+        qualityFlag &= ~(1 << ManualQuality);
+    }
+
+    if(qualityFlag & (1 << NonUpdatedQuality) )
+    {
+        component_quality = NonUpdatedQuality;
+    }
+    else if(qualityFlag & ~(1 << NormalQuality))    // There is a bit set other than Normal or NonUpdated.
+    {
+        component_quality = QuestionableQuality;
+    }
+
+    if(getUpdateType() == periodicPlusUpdate)
+    {
+        if(component_quality == NormalQuality && maxTime.seconds() - minTime.seconds() > getUpdateInterval())
+        {
+            component_quality = QuestionableQuality;
+        }
+    }
+
+    return component_quality;
+}
+
 

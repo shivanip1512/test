@@ -25,7 +25,7 @@ CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dep
     //  in either case, newElement now points to the CtiPointStoreElement of pointID pointNum...
 
     //  we append the pointID of the calc point that is dependent on it...
-    if( ( updateType == allUpdate || updateType == anyUpdate ) &&
+    if( ( updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate) &&
         dependentId > 0 )// this be for the calc points cause they ain't got no dependents
         newElement->appendDependent( dependentId, updateType );
 
@@ -38,7 +38,7 @@ CtiPointStore* CtiPointStore::_instance = NULL;
 
 /*---------------------------------------------------------------------------
     getInstance
-    
+
     Returns a pointer to the singleton instance of CtiPointStore
 ---------------------------------------------------------------------------*/
 CtiPointStore *CtiPointStore::getInstance()
