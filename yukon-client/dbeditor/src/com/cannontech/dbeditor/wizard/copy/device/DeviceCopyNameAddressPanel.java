@@ -447,6 +447,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 	 * This method was created in VisualAge.
 	 * @return java.lang.Object
 	 * @param val java.lang.Object
+	 * TODO: Cap Bank pointID assignment should be handled by utilizing a CommonMulti
 	 */
 	public Object getValue(Object val)
 	{
@@ -469,7 +470,9 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 		if( getAddressTextField().isVisible() )
 		{
 			if (val instanceof IDLCBase)
-				 ((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
+				((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
+			else if (val instanceof DNPBase)
+				((DNPBase) val).getDeviceDNP().setMasterAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof CarrierBase)
 				 {
 				 	 Integer addressHolder = new Integer(getAddressTextField().getText());
@@ -486,6 +489,8 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Ion7700)
 				 ((Ion7700) val).getDeviceDNP().setSlaveAddress( new Integer(getAddressTextField().getText()) );
+			/*else if (val instanceof RTCBase)
+				((RTCBase) val).getDeviceRTC().setRTCAddress( new Integer( getAddressTextField().getText()));*/
 			else //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the address");
 		}
@@ -833,6 +838,9 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
       if( val instanceof IDLCBase )
          getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
    
+   	  if( val instanceof DNPBase )
+   	  	 getAddressTextField().setText( ((DNPBase)val).getDeviceDNP().getMasterAddress().toString() );
+   
       if( val instanceof MCTBase )
          getJTextFieldMeterNumber().setText( ((MCTBase)val).getDeviceMeterGroup().getMeterNumber().toString() );
    
@@ -846,6 +854,11 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
          getAddressTextField().setText( 
             ((Ion7700)val).getDeviceDNP().getSlaveAddress().toString() );            
       }
+      
+      /*if( val instanceof RTCBase )
+      {
+      	 getAddressTextField().setText( ((RTCBase)val).getDeviceRTC().getRTCAddress().toString());
+      }*/
    
       if( val instanceof ICapBankController )
       {
