@@ -85,8 +85,8 @@ public class JNTServices implements IServiceConstants
 
 		if (bLibraryLoaded == false)
 		{
-			//System.loadLibrary( "JNTServices" );
-			System.load(DLL_FILE);
+			System.loadLibrary( DLL_FILE );
+			//System.load(DLL_FILE);
 			bLibraryLoaded = true;
 		}
 
