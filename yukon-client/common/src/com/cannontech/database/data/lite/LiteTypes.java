@@ -34,7 +34,8 @@ public final class LiteTypes
 	public final static int LMCONSTRAINT			= 27;
 	public final static int LMSCENARIO_PROG		= 28;
 	public final static int SEASON_SCHEDULE			= 29;
-	public final static int GEAR					= 30;	
+	public final static int GEAR					= 30;
+	public final static int LM_PAO_EXCLUSION		= 31;	
 
 	
 	// Stars lite types

@@ -45,6 +45,7 @@ public interface IDatabaseCache
    public java.util.List getAllGears();
    public java.util.List getAllLoadManagement();
    public java.util.List getAllLMScenarioProgs();
+   public java.util.List getAllLMPAOExclusions();
    public java.util.List getAllSeasonSchedules();
 
 
@@ -130,6 +131,7 @@ public interface IDatabaseCache
    public void releaseAllConfigs();
    public void releaseAllLMProgramConstraints();
    public void releaseAllLMScenarios();
+   public void releaseAllLMPAOExclusions();
    public void releaseAllTags();
    public void releaseAllSeasonSchedules();
    public void releaseAllNotificationGroups();

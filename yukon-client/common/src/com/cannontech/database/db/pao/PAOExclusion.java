@@ -551,7 +551,7 @@ public class PAOExclusion extends NestedDBPersistent
 		value = integer;
 	}
 	
-	public final static boolean isMasterProgram(Integer anID)
+	/*public final static boolean isMasterProgram(Integer anID)
 	{	
 		try
 		{
@@ -578,9 +578,9 @@ public class PAOExclusion extends NestedDBPersistent
 		{
 			return false;
 		}
-
-	}
 	
+	}
+	*/
 	
 
 }

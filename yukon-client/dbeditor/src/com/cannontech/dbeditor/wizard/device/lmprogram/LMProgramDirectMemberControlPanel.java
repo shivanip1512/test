@@ -5,6 +5,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import java.util.Vector;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteLMPAOExclusion;
 
 /**
  * This type was created in VisualAge.
@@ -190,6 +191,7 @@ private javax.swing.JCheckBox getJCheckBoxActivateMaster() {
 			ivjJCheckBoxActivateMaster.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJCheckBoxActivateMaster.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 			// user code begin {1}
+			ivjJCheckBoxActivateMaster.setSelected(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -206,10 +208,10 @@ private javax.swing.JCheckBox getJCheckBoxActivateMaster() {
 public Object getValue(Object o) 
 {
 	com.cannontech.database.data.device.lm.LMProgramDirect program = (com.cannontech.database.data.device.lm.LMProgramDirect)o;
+	
+	program.getPAOExclusionVector().removeAllElements();
 	if(getJCheckBoxActivateMaster().isSelected())
 	{
-		program.getPAOExclusionVector().removeAllElements();
-	
 		for( int i = 0; i < getAddRemovePanel().rightListGetModel().getSize(); i++ )
 		{
 			PAOExclusion subordinateProg = new PAOExclusion();
@@ -292,11 +294,13 @@ private void initialize() {
 private void initializeAddPanel()
 {
 	getAddRemovePanel().setMode( com.cannontech.common.gui.util.AddRemovePanel.TRANSFER_MODE );
-
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
+		
 		java.util.List availableSubs = cache.getAllLMPrograms();
+		java.util.List currentlyExcluded = cache.getAllLMPAOExclusions();
+				
 		Vector lmSubordinates = new Vector();
 
 		for( int i = 0; i < availableSubs.size(); i++ )
@@ -304,7 +308,7 @@ private void initializeAddPanel()
 			Integer theID = new Integer(((LiteYukonPAObject)availableSubs.get(i)).getLiteID());
 			//makes sure it is a direct program and it is not already a master
 			if(DeviceTypesFuncs.isLMProgramDirect(((LiteYukonPAObject)availableSubs.get(i)).getType()) 
-					&& !(PAOExclusion.isMasterProgram(theID)))
+					&& !(isMasterProgram(theID.intValue(), currentlyExcluded)))
 				lmSubordinates.addElement( availableSubs.get(i) );
 		}
 
@@ -458,6 +462,11 @@ public void setValue(Object o)
 		getJCheckBoxActivateMaster().setSelected(true);
 		getAddRemovePanel().setAddRemoveEnabled(true);
 	}
+	else
+	{
+		getJCheckBoxActivateMaster().setSelected(false);
+		getAddRemovePanel().setAddRemoveEnabled(false);
+	}
 	
 	//init storage that will contain exclusion (member control) information
 	java.util.Vector allSubordinates = new java.util.Vector( getAddRemovePanel().leftListGetModel().getSize() );
@@ -468,13 +477,13 @@ public void setValue(Object o)
 		if(program.getPAObjectID().intValue() != ((LiteYukonPAObject)getAddRemovePanel().leftListGetModel().getElementAt(i)).getLiteID())
 			allSubordinates.add( getAddRemovePanel().leftListGetModel().getElementAt(i) );
 	}
-	
+
 	Vector assignedSubordinates = new Vector( getAddRemovePanel().leftListGetModel().getSize() );
 
 	for( int j = 0; j < program.getPAOExclusionVector().size(); j++ )
 	{
 		PAOExclusion subordinateProg = (PAOExclusion)program.getPAOExclusionVector().elementAt(j);
-	
+		
 		for( int x = 0; x < allSubordinates.size(); x++ )
 		{
 			if( ((LiteYukonPAObject)allSubordinates.get(x)).getLiteID() ==
@@ -484,12 +493,25 @@ public void setValue(Object o)
 				allSubordinates.removeElementAt(x);				
 				break;
 			}
-		
 		}		
 	}
 
 	getAddRemovePanel().leftListSetListData( allSubordinates );
 	getAddRemovePanel().rightListSetListData( assignedSubordinates );
+}
+
+public boolean isMasterProgram(int theID, java.util.List theList)
+{
+	if(theList != null)
+	{
+		for(int j = 0; j < theList.size(); j++)
+		{
+			if(theID == ((LiteLMPAOExclusion)theList.get(j)).getMasterPaoID())
+				return true;
+		}
+	}
+	
+	return false;
 }
 
 }

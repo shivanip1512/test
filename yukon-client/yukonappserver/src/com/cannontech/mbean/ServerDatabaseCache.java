@@ -71,6 +71,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allLMProgramConstraints = null;
 	private ArrayList allLMScenarios = null;
 	private ArrayList allLMScenarioProgs = null;
+	private ArrayList allLMPAOExclusions = null;
 
 	private ArrayList allTags = null;
 	private ArrayList allSeasonSchedules = null;
@@ -575,6 +576,19 @@ public synchronized java.util.List getAllLMScenarios()
 	}
 
 	return allLMScenarios;
+}
+
+public synchronized java.util.List getAllLMPAOExclusions()
+{
+
+	if( allLMPAOExclusions == null )
+	{
+		allLMPAOExclusions = new ArrayList();
+		LMPAOExclusionLoader ldr = new LMPAOExclusionLoader(allLMPAOExclusions, databaseAlias);
+		ldr.run();
+	}
+	
+	return allLMPAOExclusions;
 }
 /**
  * Insert the method's description here.
@@ -1567,6 +1581,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			allLMPrograms = null;
 			allLMScenarios = null;
 			allLMScenarioProgs = null;
+			allLMPAOExclusions = null;
 		}
 		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
 		{
@@ -2796,6 +2811,11 @@ public synchronized void releaseAllLMProgramConstraints()
 public synchronized void releaseAllLMScenarios()
 {
 	allLMScenarios = null;
+}
+
+public synchronized void releaseAllLMPAOExclusions()
+{
+	allLMPAOExclusions = null;
 }
 /**
  * Insert the method's description here.

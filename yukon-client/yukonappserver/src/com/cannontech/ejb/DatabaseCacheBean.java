@@ -210,6 +210,10 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
 		return getCache().getAllLMScenarioProgs();
 	}
 
+	public synchronized java.util.List getAllLMPAOExclusions()
+	{
+		return getCache().getAllLMPAOExclusions();
+	}
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -591,6 +595,11 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllLMScenarios()
    {   
 	  getCache().releaseAllLMScenarios();
+   }
+   
+   public synchronized void releaseAllLMPAOExclusions()
+   {
+   	  getCache().releaseAllLMPAOExclusions();
    }
    /**
     * @ejb:interface-method

@@ -171,6 +171,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllLMScenarioProgs();
 	}
 	
+	public synchronized java.util.List getAllLMPAOExclusions()
+	{
+		return getDBCache().getAllLMPAOExclusions();
+	}
+	
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -510,6 +515,11 @@ public class DefaultDatabaseCache implements IDatabaseCache
    public synchronized void releaseAllLMScenarios()
    {
 	  getDBCache().releaseAllLMScenarios();
+   }
+   
+   public synchronized void releaseAllLMPAOExclusions()
+   {
+   	  getDBCache().releaseAllLMPAOExclusions();
    }
    /**
     * @ejb:interface-method
