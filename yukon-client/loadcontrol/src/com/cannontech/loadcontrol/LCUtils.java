@@ -155,7 +155,8 @@ public class LCUtils
 			}
 			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_ACTIVE
 						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_FULL_ACTIVE
-						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_MANUAL_ACTIVE )
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_MANUAL_ACTIVE
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_TIMED_ACTIVE )
 			{
 				retColor = CELL_COLORS[1];
 			}
