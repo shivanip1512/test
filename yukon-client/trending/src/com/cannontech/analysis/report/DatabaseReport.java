@@ -20,11 +20,11 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.DatabaseData;
+import com.cannontech.analysis.tablemodel.DatabaseModel;
 
 /**
  * Created on Dec 15, 2003
- * Creates a DatabaseReport using the com.cannontech.analysis.data.DatabaseData tableModel
+ * Creates a DatabaseReport using the com.cannontech.analysis.data.DatabaseModel tableModel
  * No Group by used, only by column headings.
  *  
  * @author snebben
@@ -33,7 +33,7 @@ public class DatabaseReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseData.
+	 * Data Base for this report type is instanceOf DatabaseModel.
 	 */
 	public DatabaseReport()
 	{
@@ -42,20 +42,20 @@ public class DatabaseReport extends YukonReportBase
 	
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseData.
+	 * Data Base for this report type is instanceOf DatabaseModel.
 	 * @param String paoClass_ (YukonPaoclass.paoclass)
 	 */
 	public DatabaseReport(String paoClass_)
 	{
 		super();
-		data = new DatabaseData(paoClass_);
+		data = new DatabaseModel(paoClass_);
 	}
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseData.
-	 * @param data_ - DatabaseData TableModel data
+	 * Data Base for this report type is instanceOf DatabaseModel.
+	 * @param data_ - DatabaseModel TableModel data
 	 */
-	public DatabaseReport(DatabaseData data_)
+	public DatabaseReport(DatabaseModel data_)
 	{
 		super();
 		data = data_;

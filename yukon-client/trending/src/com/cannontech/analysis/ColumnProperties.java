@@ -1,4 +1,4 @@
-package com.cannontech.analysis.data;
+package com.cannontech.analysis;
 
 /**
  * Created on Oct 10, 2003 

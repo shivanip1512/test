@@ -27,7 +27,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.ReportDataBase;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
 
 /**
  * Created on Dec 15, 2003
@@ -54,7 +54,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected boolean showBackgroundColor = false;
 	
 	/** TableModel data structure */
-	public ReportDataBase data = null;
+	public ReportModelBase data = null;
 	/** collection of functions */
 	protected ExpressionCollection functions = null;
 	/** collection of expressions */
@@ -66,7 +66,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected String PAGE_XOFY_EXPRESSION = "PageXofY";
 	
 	 
-	public void showPreviewFrame(ReportDataBase data_) throws Exception
+	public void showPreviewFrame(ReportModelBase data_) throws Exception
 	{
 		// initialize JFreeReport
 		Boot.start();
@@ -84,7 +84,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		dialog.setVisible(true);
 	}
 	
-	public PreviewInternalFrame getPreviewFrame(ReportDataBase data_) throws Exception
+	public PreviewInternalFrame getPreviewFrame(ReportModelBase data_) throws Exception
 	{
 		Boot.start();
 		data = data_;

@@ -1,13 +1,13 @@
-package com.cannontech.analysis.data;
+package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
-import com.cannontech.analysis.data.ColumnProperties;
-import com.cannontech.analysis.data.ReportDataBase;
+import com.cannontech.analysis.ReportTypes;
+import com.cannontech.database.db.point.SystemLog;
 
 /**
  * Created on Dec 15, 2003
- * SystemLogData TableModel object
+ * SystemLogModel TableModel object
  * Innerclass object for row data is SystemLog: 
  *  java.util.Date dateTime	- SystemLog.dateTime
  *  Integer pointID 		- SystemLog.pointID
@@ -17,7 +17,7 @@ import com.cannontech.analysis.data.ReportDataBase;
  *  String userName 		- SystemLog.userName
  * @author snebben
  */
-public class SystemLogData extends ReportDataBase
+public class SystemLogModel extends ReportModelBase
 {
 	/** Class fields */
 	/** Flag indicating data to be ordered ASC or DESC in tableModel*/
@@ -39,58 +39,14 @@ public class SystemLogData extends ReportDataBase
 	 */	
 	private Integer pointID = null;
 	
-	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 7;
-	
-	/** Enum values for column representation */
-	public final static int DATE_COLUMN = 0;
-	public final static int TIME_COLUMN = 1;
-	public final static int POINT_ID_COLUMN = 2;
-	public final static int PRIORITY_COLUMN = 3;
-	public final static int ACTION_COLUMN = 4;
-	public final static int DESCRIPTION_COLUMN = 5;	
-	public final static int USERNAME_COLUMN = 6;
-
-	/** String values for column representation */
-	public final static String DATE_STRING = "Date";
-	public final static String TIME_STRING = "Time";
-	public final static String POINT_ID_STRING = "PointID";
-	public final static String PRIORITY_STRING = "Priority";
-	public final static String ACTION_STRING = "Action";
-	public final static String DESCRIPTION_STRING = "Description";
-	public final static String USERNAME_STRING = "UserName";
-	
-	/** Inner class container of table model data*/
-	protected class SystemLog
-	{
-		public java.util.Date dateTime = null;
-		public Integer pointID;
-		public Integer priority;
-		public String action = null;
-		public String description = null;
-		public String userName = null;
-		
-		public SystemLog(java.util.Date dateTime_, Integer pointID_, Integer priority_,
-						String action_, String description_, String userName_)
-		{
-			dateTime = dateTime_;
-			pointID = pointID_;
-			priority = priority_;
-			action = action_;
-			description = description_;
-			userName = userName_;
-		}
-	}
 	/**
 	 * Constructor class
 	 * @param startTime_ SYSTEMLOG.dateTime
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 */
-	public SystemLogData(long startTime_, long stopTime_)
+	public SystemLogModel(long startTime_, long stopTime_)
 	{
-		super();
-		setStartTime(startTime_);
-		setStopTime(stopTime_);		
+		this(startTime_, stopTime_, null, null, ReportTypes.SYSTEM_LOG_DATA);
 	}	
 	/**
 	 * Constructor class
@@ -98,12 +54,9 @@ public class SystemLogData extends ReportDataBase
 	 * @param stopTime_ SYSTEMLOG.dateTime
 	 * @param logType_ SYSTEMLOG.pointID
 	 */
-	public SystemLogData(long startTime_, long stopTime_, Integer logType_)
+	public SystemLogModel(long startTime_, long stopTime_, Integer logType_)
 	{
-		super();
-		setStartTime(startTime_);
-		setStopTime(stopTime_);
-		setLogType(logType_);
+		this(startTime_, stopTime_, logType_, null, ReportTypes.SYSTEM_LOG_DATA);
 	}
 	/**
 	 * Constructor class
@@ -112,13 +65,25 @@ public class SystemLogData extends ReportDataBase
 	 * @param pointID_ SYSTEM.pointID
 	 * @param logType_ SYSTEMLOG.type
 	 */
-	public SystemLogData(long startTime_, long stopTime_, Integer logType_, Integer pointID_)
+	public SystemLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_)
+	{
+		this(startTime_, stopTime_, logType_, pointID_ , ReportTypes.SYSTEM_LOG_DATA);
+	}
+	/**
+	 * Constructor class
+	 * @param startTime_ SYSTEMLOG.dateTime
+	 * @param stopTime_ SYSTEMLOG.dateTime
+	 * @param pointID_ SYSTEM.pointID
+	 * @param logType_ SYSTEMLOG.type
+	 */
+	public SystemLogModel(long startTime_, long stopTime_, Integer logType_, Integer pointID_, int reportType_)
 	{
 		super();
 		setStartTime(startTime_);
 		setStopTime(stopTime_);
 		setLogType(logType_);
 		setPointID(pointID_);
+		setReportType(reportType_);
 	}
 	/**
 	 * Add SystemLog objects to data, retrieved from rset.
@@ -134,9 +99,14 @@ public class SystemLogData extends ReportDataBase
 			String action = rset.getString(4);
 			String description = rset.getString(5);
 			String userName = rset.getString(6);
-						
-			SystemLog systemLog = new SystemLog(new java.util.Date(dateTime.getTime()),
-								pointID, priority, action, description, userName);
+
+			SystemLog systemLog = (SystemLog)ReportTypes.create(getReportType());
+			systemLog.setDateTime(new java.util.Date(dateTime.getTime()));
+			systemLog.setPointID(pointID);
+			systemLog.setPriority(priority);
+			systemLog.setAction(action);
+			systemLog.setDescription(description);
+			systemLog.setUserName(userName);
  
 			data.add(systemLog);
 		}
@@ -153,18 +123,18 @@ public class SystemLogData extends ReportDataBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer("SELECT DATETIME, POINTID, PRIORITY, ACTION, DESCRIPTION, USERNAME "+
-				" FROM SYSTEMLOG "+
-				" WHERE (DATETIME > ?) AND (DATETIME <= ?)");
-				if( getLogType() != null)
-					sql.append(" AND TYPE = " + getLogType().intValue());
-				if( getPointID() != null)
-					sql.append(" AND POINTID = " + getPointID().intValue());
-				sql.append(" ORDER BY DATETIME " + getOrderByString());
+			" FROM SYSTEMLOG "+
+			" WHERE (DATETIME > ?) AND (DATETIME <= ?)");
+			if( getLogType() != null)
+				sql.append(" AND TYPE = " + getLogType().intValue());
+			if( getPointID() != null)
+				sql.append(" AND POINTID = " + getPointID().intValue());
+			sql.append(" ORDER BY DATETIME " + getOrderByString());
 		return sql;
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#collectData()
+	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
 	 */
 	public void collectData()
 	{
@@ -248,104 +218,6 @@ public class SystemLogData extends ReportDataBase
 		orderDescending = orderDesc_;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnNames()
-	 */
-	public String[] getColumnNames()
-	{
-		if( columnNames == null)
-		{
-			columnNames = new String[NUMBER_COLUMNS];
-			columnNames[0] = DATE_STRING;
-			columnNames[1] = TIME_STRING;
-			columnNames[2] = POINT_ID_STRING;
-			columnNames[3] = PRIORITY_STRING;
-			columnNames[4] = ACTION_STRING;
-			columnNames[5] = DESCRIPTION_STRING;
-			columnNames[6] = USERNAME_STRING;
-		}
-		return columnNames;
-	}
-	
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnTypes()
-	 */
-	public Class[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = new Class[NUMBER_COLUMNS];
-			columnTypes[0] = java.util.Date.class;
-			columnTypes[1] = java.util.Date.class;
-			columnTypes[2] = Integer.class;
-			columnTypes[3] = Integer.class;
-			columnTypes[4] = String.class;
-			columnTypes[5] = String.class;
-			columnTypes[6] = String.class;
-		}
-			
-		return columnTypes;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnProperties()
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
-		if(columnProperties == null)
-		{
-			columnProperties = new ColumnProperties[NUMBER_COLUMNS];
-			//posX, posY, width, height, numberFormatString
-			columnProperties[0] = new ColumnProperties(100, 1, 100, 18, "MMMMM dd, yyyy");
-			columnProperties[1] = new ColumnProperties(0, 1, 50, 18, "hh:mm:ss");
-			columnProperties[2] = new ColumnProperties(50, 1, 50, 18, null);
-			columnProperties[3] = new ColumnProperties(100, 1, 50, 18, null);
-			columnProperties[4] = new ColumnProperties(150, 1, 200, 18, null);
-			columnProperties[5] = new ColumnProperties(350, 1, 200, 18, null);
-			columnProperties[6] = new ColumnProperties(550, 1, 65, 18, null);
-			
-		}
-		return columnProperties;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.StatisticReportDataBase#getAttribute(int, java.lang.Object)
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if( o instanceof SystemLog)
-		{
-			SystemLog sl = ((SystemLog)o);
-			switch( columnIndex)
-			{
-				case DATE_COLUMN:
-					return sl.dateTime;
-				case TIME_COLUMN:
-					return sl.dateTime;
-				case POINT_ID_COLUMN:
-					return sl.pointID;
-				case PRIORITY_COLUMN:
-					return sl.priority;
-				case ACTION_COLUMN:
-					return sl.action;					
-				case DESCRIPTION_COLUMN:
-					return sl.description;
-				case USERNAME_COLUMN:
-					return sl.userName;
-			}
-		}
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getTitleString()
-	 */
-	public String getTitleString()
-	{
-		return "SYSTEM LOG";
-	}
-
 	/**
 	 * Returns the startTime
 	 * @return long startTime
@@ -385,6 +257,18 @@ public class SystemLogData extends ReportDataBase
 	 */
 	public Integer getLogType()
 	{
+		if( logType == null )
+		{
+			switch (getReportType())
+			{
+				case ReportTypes.SYSTEM_LOG_DATA:
+					logType = null;
+				case ReportTypes.LM_CONTROL_LOG_DATA:
+					logType = new Integer(SystemLog.TYPE_LOADMANAGEMENT);
+				default:
+					return logType;
+			}	
+		}
 		return logType;
 	}
 
@@ -393,7 +277,7 @@ public class SystemLogData extends ReportDataBase
 	 * Valid types are found in com.cannontech.database.db.point.SYSTEMLOG
 	 * @param type Integer
 	 */
-	public void setLogType(Integer type_)
+	private void setLogType(Integer type_)
 	{
 		logType = type_;
 	}
@@ -416,7 +300,7 @@ public class SystemLogData extends ReportDataBase
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getDateRangeString()
+	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
 	 */
 	public String getDateRangeString()
 	{

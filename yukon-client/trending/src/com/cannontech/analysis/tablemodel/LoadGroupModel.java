@@ -1,9 +1,8 @@
-package com.cannontech.analysis.data.loadgroup;
+package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 
-import com.cannontech.analysis.data.ColumnProperties;
-import com.cannontech.analysis.data.ReportDataBase;
+import com.cannontech.analysis.data.lm.LGAccounting;
 
 /**
  * Created on Dec 15, 2003
@@ -20,7 +19,7 @@ import com.cannontech.analysis.data.ReportDataBase;
  *  String annualControl		- LMControlHistory.currentAnnualControl (in seconds)
  * @author snebben
  */
-public class LoadGroupReportData extends ReportDataBase
+public class LoadGroupModel extends ReportModelBase
 {
 	/** Class fields */
 	/** Start time for query in millis */
@@ -28,65 +27,19 @@ public class LoadGroupReportData extends ReportDataBase
 	/** Stop time for query in millis */
 	private long stopTime = Long.MIN_VALUE;
 	
-	/** Vector of Strings (of loadGroup paoNames)*/
+	/** Vector of IDs (of loadGroup paoNames)*/
 	private java.util.Vector loadGroups = null;
 
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 10;
 	
-	/** Enum values for column representation */
-	public final static int PAO_NAME_COLUMN = 0;
-	public final static int CONTROL_DATE_COLUMN = 1;
-	public final static int CONTROL_START_TIME_COLUMN = 2;
-	public final static int CONTROL_STOP_TIME_COLUMN = 3;
-	public final static int CONTROL_DURATION_COLUMN = 4;
-	public final static int CONTROL_TYPE_COLUMN = 5;
-	public final static int DAILY_CONTROL_COLUMN = 6;
-	public final static int MONTHLY_CONTROL_COLUMN = 7;
-	public final static int SEASONAL_CONTROL_COLUMN = 8;
-	public final static int ANNUAL_CONTROL_COLUMN = 9;
-
-	/** String values for column representation */
-	public final static String PAO_NAME_STRING = "Load Group";
-	public final static String CONTROL_DATE_STRING = "Date";
-	public final static String CONTROL_START_STRING = "Control Start";
-	public final static String CONTROL_STOP_STRING = "Control Stop";
-	public final static String CONTROL_DURATION_STRING = "Control Duration";
-	public final static String CONTROL_TYPE_STRING= "Control Type";
-	public final static String DAILY_CONTROL_STRING= "Daily Control";
-	public final static String MONTHLY_CONTROL_STRING= "Monthly Control";
-	public final static String SEASONAL_CONTROL_STRING= "Seasonal Control";
-	public final static String ANNUAL_CONTROL_STRING= "Annual Control";
-
-	/** Inner class container of table model data*/
-	private class LGAccounting
+	
+	public LoadGroupModel()
 	{
-		public String paoName = null;
-		//date is intuitive from startDate
-		public java.util.Date startDate = null;	//startTime
-		public java.util.Date stopDate = null;	//stopTime
-		public String duration = null;
-		public String controlType = null; 
-		public String dailyControl = null;
-		public String monthlyControl = null;
-		public String seasonalControl = null;
-		public String annualControl = null;
-		
-		public LGAccounting(String paoName_, java.util.Date startDate_, java.util.Date stopDate_,
-							Integer duration_, String controlType_, Integer daily_, Integer monthly_,
-							Integer seasonal_, Integer annual_)
-		{
-			paoName = paoName_;
-			startDate = startDate_;
-			stopDate = stopDate_;
-			duration = convertSecondsToTimeString(duration_.intValue());
-			controlType = controlType_;
-			dailyControl = convertSecondsToTimeString(daily_.intValue());
-			monthlyControl = convertSecondsToTimeString(monthly_.intValue());
-			seasonalControl = convertSecondsToTimeString(seasonal_.intValue());
-			annualControl = convertSecondsToTimeString(annual_.intValue());
-		}
-	}
+		super();
+	}	
+
+	
 	/**
 	 * Constructor class
 	 * @param startTime_ LMControlHistory.startDateTime
@@ -94,7 +47,7 @@ public class LoadGroupReportData extends ReportDataBase
 	 * 
 	 * A null loadGroup is specified, which means ALL Load Groups!
 	 */
-	public LoadGroupReportData(long startTime_, long stopTime_)
+	public LoadGroupModel(long startTime_, long stopTime_)
 	{
 		super();
 		setStartTime(startTime_);
@@ -106,7 +59,7 @@ public class LoadGroupReportData extends ReportDataBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTiem
 	 */
-	public LoadGroupReportData(String loadGroup_, long startTime_, long stopTime_)
+	public LoadGroupModel(String loadGroup_, long startTime_, long stopTime_)
 	{
 		super();
 		setLoadGroups(loadGroup_);
@@ -119,7 +72,7 @@ public class LoadGroupReportData extends ReportDataBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTiem
 	 */
-	public LoadGroupReportData(java.util.Vector loadGroups_, long startTime_, long stopTime_)
+	public LoadGroupModel(java.util.Vector loadGroups_, long startTime_, long stopTime_)
 	{
 		super();
 		setLoadGroups(loadGroups_);
@@ -248,117 +201,6 @@ public class LoadGroupReportData extends ReportDataBase
 		return;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnNames()
-	 */
-	public String[] getColumnNames()
-	{
-		if( columnNames == null)
-		{
-			columnNames = new String[NUMBER_COLUMNS];
-			columnNames[0] = PAO_NAME_STRING;
-			columnNames[1] = CONTROL_DATE_STRING;
-			columnNames[2] = CONTROL_START_STRING;
-			columnNames[3] = CONTROL_STOP_STRING;
-			columnNames[4] = CONTROL_DURATION_STRING;
-			columnNames[5] = CONTROL_TYPE_STRING;
-			columnNames[6] = DAILY_CONTROL_STRING;
-			columnNames[7] = MONTHLY_CONTROL_STRING;
-			columnNames[8] = SEASONAL_CONTROL_STRING;
-			columnNames[9] = ANNUAL_CONTROL_STRING;
-		}
-		return columnNames;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnTypes()
-	 */
-	public Class[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = new Class[NUMBER_COLUMNS];
-			columnTypes[0] = String.class;
-			columnTypes[1] = java.util.Date.class;
-			columnTypes[2] = java.util.Date.class;
-			columnTypes[3] = java.util.Date.class;
-			columnTypes[4] = String.class;
-			columnTypes[5] = String.class;
-			columnTypes[6] = String.class;
-			columnTypes[7] = String.class;
-			columnTypes[8] = String.class;
-			columnTypes[9] = String.class;
-		}
-			
-		return columnTypes;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnProperties()
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
-		if(columnProperties == null)
-		{
-			columnProperties = new ColumnProperties[10];
-			//posX, posY, width, height, numberFormatString
-			columnProperties[0] = new ColumnProperties(0, 1, 55, 18, null);
-			columnProperties[1] = new ColumnProperties(0, 1, 65, 18, "MM/dd/yyyy");
-			columnProperties[2] = new ColumnProperties(65, 1, 55, 18, "hh:mm:ss");
-			columnProperties[3] = new ColumnProperties(120, 1, 55, 18, "hh:mm:ss");
-			columnProperties[4] = new ColumnProperties(175, 1, 55, 18, null);
-			columnProperties[5] = new ColumnProperties(230, 1, 80, 18, null);
-			columnProperties[6] = new ColumnProperties(310, 1, 55, 18, null);
-			columnProperties[7] = new ColumnProperties(365, 1, 55, 18, null);
-			columnProperties[8] = new ColumnProperties(420, 1, 55, 18, null);
-			columnProperties[9] = new ColumnProperties(475, 1, 55, 18, null);
-		}
-		return columnProperties;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getAttribute(int, java.lang.Object)
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if( o instanceof LGAccounting)
-		{
-			LGAccounting lga = ((LGAccounting)o);
-			switch( columnIndex)
-			{
-				case PAO_NAME_COLUMN:
-					return lga.paoName;
-				case CONTROL_DATE_COLUMN:
-					return lga.startDate;
-				case CONTROL_START_TIME_COLUMN:
-					return lga.startDate;
-				case CONTROL_STOP_TIME_COLUMN:
-					return lga.stopDate;
-				case CONTROL_DURATION_COLUMN:
-					return lga.duration;
-				case CONTROL_TYPE_COLUMN:
-					return lga.controlType;
-				case DAILY_CONTROL_COLUMN:
-					return lga.dailyControl;
-				case MONTHLY_CONTROL_COLUMN:
-					return lga.monthlyControl;
-				case SEASONAL_CONTROL_COLUMN:
-					return lga.seasonalControl;
-				case ANNUAL_CONTROL_COLUMN:
-					return lga.annualControl;
-			}
-		}
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getTitleString()
-	 */
-	public String getTitleString()
-	{
-		return "LOAD GROUP ACCOUNTING";
-	}
-
 	/**
 	 * Returns the startTime in millis
 	 * @return long startTime
@@ -417,19 +259,4 @@ public class LoadGroupReportData extends ReportDataBase
 		loadGroups.add(loadGroup_);
 	}
 
-	/**
-	 * Convert seconds of time into hh:mm:ss string.
-	 * @param int seconds
-	 * @return String in format hh:mm:ss
-	 */
-	private String convertSecondsToTimeString(int seconds)
-	{
-		java.text.DecimalFormat format = new java.text.DecimalFormat("00");
-		int hour = seconds / 3600;
-		int temp = seconds % 3600;
-		int min = temp / 60;
-		int sec = temp % 60; 
-		
-		return format.format(hour) + ":" + format.format(min) + ":" + format.format(sec);
-	}
 }

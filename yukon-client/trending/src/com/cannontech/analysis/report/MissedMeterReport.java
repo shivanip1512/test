@@ -20,7 +20,8 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.MissedMeterData;
+import com.cannontech.analysis.data.device.MissedMeter;
+import com.cannontech.analysis.tablemodel.MissedMeterModel;
 
 /**
  * Created on Dec 15, 2003
@@ -43,7 +44,7 @@ public class MissedMeterReport extends YukonReportBase
 
 		MissedMeterReport missedMeterReport = new MissedMeterReport();
 		
-		missedMeterReport.data = new MissedMeterData();
+		missedMeterReport.data = new MissedMeterModel();
 		missedMeterReport.data.collectData();
 		
 		//Define the report Paper properties and format.
@@ -175,7 +176,7 @@ public class MissedMeterReport extends YukonReportBase
 		
 		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
 		hideItem.setName("hideItem");
-		hideItem.setProperty("field", MissedMeterData.DEVICE_NAME_STRING);
+		hideItem.setProperty("field", MissedMeter.DEVICE_NAME_STRING);
 		hideItem.setProperty("element", "Device Element");
 		functions.add(hideItem);
 
@@ -227,7 +228,7 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeterData.DEVICE_NAME_STRING);
+		factory.setFieldname(MissedMeter.DEVICE_NAME_STRING);
 		items.addElement(factory.createElement());
 
 		factory = new TextFieldElementFactory();
@@ -237,7 +238,7 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeterData.POINT_NAME_STRING);
+		factory.setFieldname(MissedMeter.POINT_NAME_STRING);
 		items.addElement(factory.createElement());
 	
 		return items;

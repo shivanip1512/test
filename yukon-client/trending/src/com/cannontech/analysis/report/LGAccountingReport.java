@@ -21,7 +21,8 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.loadgroup.LoadGroupReportData;
+import com.cannontech.analysis.data.lm.LGAccounting;
+import com.cannontech.analysis.tablemodel.LoadGroupModel;
 
 /**
  * Created on Dec 15, 2003
@@ -42,14 +43,14 @@ public class LGAccountingReport extends YukonReportBase
 
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
+	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param startTime_ - startTime in millis for data query
 	 * @param stopTime_ - stopTime in millis for data query
 	 */
 	public LGAccountingReport(long startTime_, long stopTime_)
 	{
 		super();
-		data = new LoadGroupReportData( startTime_, stopTime_);
+		data = new LoadGroupModel( startTime_, stopTime_);
 	}
 	
 	/**
@@ -57,7 +58,7 @@ public class LGAccountingReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf LoadGroupReportData.
 	 * @param data_ - LoadGroupReportData TableModel data
 	 */
-	public LGAccountingReport(LoadGroupReportData data_)
+	public LGAccountingReport(LoadGroupModel data_)
 	{
 		super();
 		data = data_;
@@ -124,7 +125,7 @@ public class LGAccountingReport extends YukonReportBase
 	{
 	  final Group collGrpGroup = new Group();
 	  collGrpGroup.setName("Load Group");
-	  collGrpGroup.addField(LoadGroupReportData.PAO_NAME_STRING);
+	  collGrpGroup.addField(LGAccounting.PAO_NAME_STRING);
 
 	  final GroupHeader header = new GroupHeader();
 
@@ -148,7 +149,7 @@ public class LGAccountingReport extends YukonReportBase
 	  tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 	  tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 	  tfactory.setNullString("<null>");
-	  tfactory.setFieldname(LoadGroupReportData.PAO_NAME_STRING);
+	  tfactory.setFieldname(LGAccounting.PAO_NAME_STRING);
 	  header.addElement(tfactory.createElement());
 	  
 	  for (int i = 1; i < data.getColumnNames().length; i++)

@@ -1,6 +1,8 @@
-package com.cannontech.analysis.data;
+package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+
+import com.cannontech.analysis.data.device.MissedMeter;
 
 /**
  * Created on Dec 15, 2003
@@ -12,44 +14,13 @@ import java.sql.ResultSet;
  *  Integer pointID		- Point.pointID  
  * @author snebben
  */
-public class MissedMeterData extends ReportDataBase
+public class MissedMeterModel extends ReportModelBase
 {
 	/** Class fields */
 	/** Start time for query in millis */
 	private long startTime = Long.MIN_VALUE;
 	/** Stop time for query in millis */
 	private long stopTime = Long.MIN_VALUE;
-
-	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 4;
-
-	/** Enum values for column representation */
-	public final static int COLL_GROUP_NAME_COLUMN = 0;
-	public final static int DEVICE_NAME_COLUMN = 1;
-	public final static int POINT_NAME_COLUMN = 2;
-	public final static int POINT_ID_COLUMN = 3;
-
-	/** String values for column representation */
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
-	public final static String DEVICE_NAME_STRING = "Device Name";
-	public final static String POINT_NAME_STRING = "Point Name";
-	public final static String POINT_ID_STRING = "Point ID";
-
-	/** Inner class container of table model data*/
-	private class MissedMeter
-	{
-		public String collGroup = null;
-		public String deviceName = null;
-		public String pointName = null;
-		public Integer pointID = null;
-		public MissedMeter(String collGroup_, String deviceName_, String pointName_, Integer pointID_)
-		{
-			collGroup = collGroup_;
-			deviceName = deviceName_;
-			pointName = pointName_;
-			pointID = pointID_;			
-		}
-	}
 
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -89,56 +60,10 @@ public class MissedMeterData extends ReportDataBase
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnNames()
-	 */
-	public String[] getColumnNames()
-	{
-		if( columnNames == null)
-		{
-			columnNames = new String[NUMBER_COLUMNS];
-			columnNames[0] = COLL_GROUP_NAME_STRING;
-			columnNames[1] = DEVICE_NAME_STRING;
-			columnNames[2] = POINT_NAME_STRING;
-			columnNames[3] = POINT_ID_STRING;
-		}
-		return columnNames;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnTypes()
-	 */
-	public Class[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = new Class[NUMBER_COLUMNS];
-			columnTypes[0] = String.class;
-			columnTypes[1] = String.class;
-			columnTypes[2] = String.class;
-			columnTypes[3] = Integer.class;
-		}
-		return columnTypes;
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getColumnProperties()
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
-		if(columnProperties == null)
-		{
-			columnProperties = new ColumnProperties[NUMBER_COLUMNS];
-			//posX, posY, width, height, numberFormatString
-			columnProperties[0] = new ColumnProperties(0, 1, 100, 18, null);
-			columnProperties[1] = new ColumnProperties(100, 1, 100, 18, null);
-			columnProperties[2] = new ColumnProperties(200, 1, 100, 18, null);
-			columnProperties[3] = new ColumnProperties(300, 1, 100, 18, null);
-		}
-		return columnProperties;
-	}
+
 
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#collectData()
+	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
 	 */
 	public void collectData()
 	{
@@ -195,39 +120,7 @@ public class MissedMeterData extends ReportDataBase
 	}
 
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getAttribute(int, java.lang.Object)
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if ( o instanceof MissedMeter)
-		{
-			MissedMeter meter = ((MissedMeter)o); 
-			switch( columnIndex)
-			{
-				case COLL_GROUP_NAME_COLUMN:
-					return meter.collGroup;
-		
-				case DEVICE_NAME_COLUMN:
-					return meter.deviceName;
-	
-				case POINT_NAME_COLUMN:
-					return meter.pointName;
-	
-				case POINT_ID_COLUMN:
-					return meter.pointID;
-			}
-		}
-		return null;
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getTitleString()
-	 */
-	public String getTitleString()
-	{
-		return "Missed Meter Reads By Collection Group";
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportDataBase#getDateRangeString()
+	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
 	 */
 	public String getDateRangeString()
 	{

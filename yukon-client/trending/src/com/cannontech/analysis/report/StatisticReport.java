@@ -20,7 +20,8 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.statistic.StatisticReportDataBase;
+import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.tablemodel.StatisticModel;
 
 /**
  * Created on Dec 15, 2003
@@ -33,7 +34,7 @@ public class StatisticReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
+	 * Data Base for this report type is instanceOf SystemLogModel.
 	 */
 	public StatisticReport()
 	{
@@ -41,17 +42,17 @@ public class StatisticReport extends YukonReportBase
 	}
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
-	 * @param data_ - SystemLogData TableModel data
+	 * Data Base for this report type is instanceOf SystemLogModel.
+	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public StatisticReport(StatisticReportDataBase data_)
+	public StatisticReport(StatisticModel data_)
 	{
 		super();
 		data = data_;
 	}
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
+	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param reportType_ - valid report types are:
 	 * 	carr[ier] - StatisticCarrierCommData
 	 * 	trans[mitter] - StatisticalTransmitterCommData
@@ -59,17 +60,21 @@ public class StatisticReport extends YukonReportBase
 	 * 	comm[channel] - StatisticalCommChannelData
 	 * @param statType_ - DYNAMICPAOSTATISTICS.statType
 	 */
-	public StatisticReport(String reportType_, String statType_)
+	public StatisticReport(String reportTypeString, String statType_)
 	{
 		super();
-		if( reportType_.startsWith("carr"))
-			data = new com.cannontech.analysis.data.statistic.StatisticCarrierCommData("DEVICE", "CARRIER", statType_);
-		else if( reportType_.startsWith("trans"))
-			data = new com.cannontech.analysis.data.statistic.StatisticTransmitterCommData("DEVICE", "TRANSMITTER", statType_);
-		else if( reportType_.startsWith("dev"))
-			data = new com.cannontech.analysis.data.statistic.StatisticDeviceCommData("DEVICE", statType_);
-		else if( reportType_.startsWith("comm"))
-			data = new com.cannontech.analysis.data.statistic.StatisticCommChannelData("PORT", "PORT", statType_);
+		int statReportType = ReportTypes.CARRIER_COMM_DATA;	//something for a default value!
+		
+		if( reportTypeString.startsWith("carr"))
+			statReportType = ReportTypes.CARRIER_COMM_DATA;
+		else if( reportTypeString.startsWith("trans"))
+			statReportType = ReportTypes.TRANS_COMM_DATA;
+		else if( reportTypeString.startsWith("dev"))
+			statReportType = ReportTypes.DEVICE_COMM_DATA;
+		else if( reportTypeString.startsWith("comm"))
+			statReportType = ReportTypes.COMM_CHANNEL_DATA;
+
+		data = new StatisticModel(statType_, statReportType);
    }
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -85,7 +90,7 @@ public class StatisticReport extends YukonReportBase
 
 		String reportType = "carrier";	//default
 		if( args.length > 0)
-				reportType = args[0].toLowerCase();	//Statistic report type
+				reportType = args[0].toLowerCase();	//StatisticData report type
 		String statType = "Monthly";
 		if( args.length >= 2)	//DynamicPaoStatistics.statisticType
 			statType = args[1];

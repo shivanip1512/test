@@ -22,8 +22,8 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.SystemLogData;
-import com.cannontech.analysis.data.loadgroup.LMControlLogData;
+import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.database.db.point.SystemLog;
 
 /**
@@ -36,7 +36,7 @@ public class LMControlLogReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
+	 * Data Base for this report type is instanceOf SystemLogModel.
 	 */
 	public LMControlLogReport()
 	{
@@ -44,17 +44,18 @@ public class LMControlLogReport extends YukonReportBase
 	}
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
-	 * @param data_ - SystemLogData TableModel data
+	 * Data Base for this report type is instanceOf SystemLogModel.
+	 * @param data_ - SystemLogModel TableModel data
 	 */
-	public LMControlLogReport(SystemLogData data_)
+	public LMControlLogReport(SystemLogModel data_)
 	{
 		super();
 		data = data_;
+		data.setReportType(ReportTypes.LM_CONTROL_LOG_DATA);
 	}
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf SystemLogData.
+	 * Data Base for this report type is instanceOf SystemLogModel.
 	 * @param startTime_ - startTime in millis for data query
 	 * @param stopTime_ - stopTime in millis for data query
 	 * @param logType_ - SystemLog.TYPE_x, type of logging to report on. 
@@ -62,8 +63,7 @@ public class LMControlLogReport extends YukonReportBase
 	 */
 	public LMControlLogReport(long startTime_, long stopTime_, Integer logType_)
 	{
-		super();
-		data = new SystemLogData( startTime_, stopTime_,  logType_);
+		this(new SystemLogModel( startTime_, stopTime_,  logType_));
 	}
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -89,7 +89,9 @@ public class LMControlLogReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 
 		//Initialize the report data and populate the TableModel (collectData).
-		lmControlLogReport.data = new LMControlLogData(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT));
+		lmControlLogReport.data = new SystemLogModel(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT));
+		lmControlLogReport.data.setReportType(ReportTypes.LM_CONTROL_LOG_DATA); 
+//		lmControlLogReport.data = new LMControlLog(start, stop, new Integer(SystemLog.TYPE_LOADMANAGEMENT));
 		lmControlLogReport.data.collectData();
 
 		//Define the report Paper properties and format.

@@ -1,0 +1,189 @@
+package com.cannontech.analysis.data.statistic;
+
+import com.cannontech.analysis.ColumnProperties;
+
+/**
+ * Created on Dec 15, 2003
+ * StatisticCarrierCommData TableModel object
+ * Innerclass object for row data is CarrierCommData:
+ *  String mctName			- YukonPaobject.paoName
+ *  Integer totalAttempts	- DynamicPaoStatistics.attempts
+ *  Integer dlcAttempts		- DynamicPaoStatistics.attempts - DPS.commErrors - DPS.systemErrors
+ *  Double dlcPercent		- (DynamicPaoStatistics.attempts - DPS.protocolErrors) / DPS.attempts
+ *  Double succCommPerc		- DynamicPaoStatistics.completions / DPS.requests
+ * @author snebben
+ */
+public class CarrierCommData extends StatisticData
+{
+	/** Number of columns */
+	protected final int NUMBER_COLUMNS = 5;
+	
+	/** Enum values for column representation */
+	private final int MCT_NAME_COLUMN = 0;
+	private final int TOTAL_ATTEMPTS_COLUMN = 1;
+	private final int DLC_ATTEMPTS_COLUMN = 2;
+	private final int DLC_PERCENT_COLUMN = 3;
+	private final int SUCC_COMM_PERC_COLUMN = 4;
+
+	/** String values for column representation */
+	public final static String MCT_NAME_STRING = "MCT Name";
+	public final static String TOTAL_ATTEMPTS_STRING = "Total Attempts";
+	public final static String DLC_ATTEMPTS_STRING = "DLC Attempts";
+	public final static String DLC_PERCENT_STRING = "DLC Percent";
+	public final static String SUCC_COMM_PERC_STRING= "Successful Communication%";
+
+	/** Array of Strings representing the column names */
+	private static String[] columnNames = null;
+	/** Array of ColumnProperties representing the column width/height/pos/etc */
+	private static ColumnProperties[] columnProperties = null;
+	/** Array of Classes representing the data in each column */
+	private static Class[] columnTypes = null;
+	/** A string for the title of the data */
+	private static String title = "CARRIER COMMUNICATION STATISTICS";
+	
+	/**
+	 * @param mctName_
+	 * @param attempts_
+	 * @param commErrors_
+	 * @param systemErrors_
+	 * @param protocolErrs_
+	 * @param completions_
+	 * @param requests_
+	 */
+	public CarrierCommData(String mctName_, Integer attempts_, Integer commErrors_, Integer systemErrors_, Integer protocolErrs_, Integer completions_, Integer requests_)
+	{	
+		super(mctName_, attempts_, commErrors_, systemErrors_, protocolErrs_, completions_, requests_);
+	}
+
+	/**
+	 * Default constructor
+	 */
+	public CarrierCommData()
+	{	
+		super();
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
+	 */
+	public Object getAttribute(int columnIndex, Object o)
+	{
+		if( o instanceof CarrierCommData)
+		{
+			CarrierCommData ccs = (CarrierCommData)o;
+			switch( columnIndex)
+			{
+				case MCT_NAME_COLUMN:
+					return ccs.getPAOName();
+				
+				case TOTAL_ATTEMPTS_COLUMN:
+					return ccs.getAttempts();
+	
+				case DLC_ATTEMPTS_COLUMN:
+					return ccs.getDlcAttempts();
+	
+				case DLC_PERCENT_COLUMN:
+					return ccs.getDlcPercent();
+					
+				case SUCC_COMM_PERC_COLUMN:
+					return ccs.getSuccessPercent();
+			}
+		}
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnNames()
+	 */
+	public String[] getColumnNames()
+	{
+		if( columnNames == null)
+		{
+			columnNames = new String[]{
+				MCT_NAME_STRING,
+				TOTAL_ATTEMPTS_STRING,
+				DLC_ATTEMPTS_STRING,
+				DLC_PERCENT_STRING,
+				SUCC_COMM_PERC_STRING
+			};
+		}
+		return columnNames;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
+	 */
+	public ColumnProperties[] getColumnProperties()
+	{
+		if( columnProperties == null)
+		{
+			columnProperties = new ColumnProperties[]{
+				//posX, posY, width, height, numberFormatString
+				new ColumnProperties(0, 1, 210, 20, null),
+				new ColumnProperties(210, 1, 60, 20, "#,##0"),
+				new ColumnProperties(270, 1, 60, 20, "#,##0"),
+				new ColumnProperties(330, 1, 60, 20, "##0.00%"),
+				new ColumnProperties(390, 1, 110, 20, "##0.00%")
+			};
+		}
+		return columnProperties;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
+	 */
+	public Class[] getColumnTypes()
+	{
+		if( columnTypes == null)
+		{
+			columnTypes = new Class[]{
+				String.class,
+				Integer.class,
+				Integer.class,
+				Double.class,
+				Double.class
+			};
+		}
+		return columnTypes;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.Reportable#getTitleString()
+	 */
+	public String getTitleString()
+	{
+		return title;
+	}
+
+	/**
+	 * @param string
+	 */
+/*	public void setTitleString(String string)
+	{
+		title = string;
+	}
+*/
+	/**
+	 * @param strings
+	 */
+/*	public static void setColumnNames(String[] strings)
+	{
+		columnNames = strings;
+	}
+*/
+	/**
+	 * @param properties
+	 */
+/*	public static void setColumnProperties(ColumnProperties[] properties)
+	{
+		columnProperties = properties;
+	}
+*/
+	/**
+	 * @param classes
+	 */
+/*	public static void setColumnTypes(Class[] classes)
+	{
+		columnTypes = classes;
+	}
+*/
+}

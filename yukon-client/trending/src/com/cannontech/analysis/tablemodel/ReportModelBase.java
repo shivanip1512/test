@@ -1,4 +1,8 @@
-package com.cannontech.analysis.data;
+package com.cannontech.analysis.tablemodel;
+
+import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportTypes;
+import com.cannontech.analysis.Reportable;
 
 /**
  * Created on Dec 15, 2003
@@ -6,7 +10,7 @@ package com.cannontech.analysis.data;
  * Base Class for Report data models.  Implements the required AbstractTableModel
  * for use with the JFreeReport API.
  
- * Extending classes must initialize these ReportDataBase fields:
+ * Extending classes must initialize these ReportModelBase fields:
  *   String[] columnNames - table column names
  *   Class[] columnTypes  - table column class type.
  *   ColumnProperties[] columnProperties - properties for column display in the report.
@@ -17,7 +21,7 @@ package com.cannontech.analysis.data;
  * 
  * @author snebben
  */
-public abstract class ReportDataBase extends javax.swing.table.AbstractTableModel
+public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel
 {
 	/** Array of String values representing the column names. */
 	protected String[] columnNames;
@@ -28,13 +32,21 @@ public abstract class ReportDataBase extends javax.swing.table.AbstractTableMode
 	/** Array of ColumnProperties values representing the columns. */
 	protected ColumnProperties[] columnProperties;
 	
+	/** String for the title for the table model */
+	protected String title;
+	
+	/** Yukon.paobjectid's to query for, null means all */
+	private int[] paoIDs = null;
+
 	/** Vector of data (of inner class type from implementors)*/
 	protected java.util.Vector data = new java.util.Vector(100);
-	
+
+	/** The report type, valid types are in com.cannontech.analysis.data.ReportTypes*/
+	protected int reportType;	
 	/**
 	 * Default Constructor
 	 */
-	public ReportDataBase()
+	public ReportModelBase()
 	{
 		super();
 	}	
@@ -71,7 +83,10 @@ public abstract class ReportDataBase extends javax.swing.table.AbstractTableMode
 	 * @param o object (inner class of most extenders)
 	 * @return object value for the columnIndex and o class.
 	 */
-	abstract public Object getAttribute(int columnIndex, Object o);
+	public Object getAttribute(int columnIndex, Object o)
+	{
+		return ((Reportable)o).getAttribute(columnIndex, o);
+	}
 
 	/**
 	 * Return the Vector of data objects
@@ -95,7 +110,11 @@ public abstract class ReportDataBase extends javax.swing.table.AbstractTableMode
 	 */
 	public String getTitleString()
 	{
-		return "Report";
+		if( title == null)
+		{
+			title = ReportTypes.getTitleString(getReportType());
+		}
+		return title;
 	}	
 	
 	/**
@@ -115,8 +134,13 @@ public abstract class ReportDataBase extends javax.swing.table.AbstractTableMode
 	 */
 	public String[] getColumnNames()
 	{
+		if( columnNames == null)
+		{
+			columnNames = ReportTypes.getColumnNames(getReportType());
+		}
 		return columnNames;
 	}
+
 	
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnName(int)
@@ -138,15 +162,22 @@ public abstract class ReportDataBase extends javax.swing.table.AbstractTableMode
 	 */
 	public Class[] getColumnTypes()
 	{
+		if( columnTypes == null)
+		{
+			columnTypes = ReportTypes.getColumnTypes(getReportType());
+		}
 		return columnTypes;
 	}
-
 	/**
 	 * Return the columnProperties array
 	 * @return ColumnProperties[] columnProperties
 	 */
 	public ColumnProperties[] getColumnProperties()
 	{
+		if( columnProperties == null)
+		{
+			columnProperties = ReportTypes.getColumnProperties(getReportType());
+		}
 		return columnProperties;
 	}
 
@@ -167,4 +198,36 @@ public abstract class ReportDataBase extends javax.swing.table.AbstractTableMode
 	{
 		columnProperties = properties_;
 	}
+	/**
+	 * @return
+	 */
+	public int[] getPaoIDs()
+	{
+		return paoIDs;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setPaoIDs(int[] is)
+	{
+		paoIDs = is;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getReportType()
+	{
+		return reportType;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setReportType(int i)
+	{
+		reportType = i;
+	}
+
 }
