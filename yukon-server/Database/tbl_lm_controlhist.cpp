@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/04/30 17:17:27 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/05/15 22:35:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -464,7 +464,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     RWDBDateTime(getStartTime()) <<
     getSoeTag() <<
     (getStopTime().seconds() - getStartTime().seconds()) <<     // getControlDuration() <<
-    getControlType() <<
+    (getControlType().isNull() ? "(none)" : getControlType()) <<
     getCurrentDailyTime() <<
     getCurrentMonthlyTime() <<
     getCurrentSeasonalTime() <<
