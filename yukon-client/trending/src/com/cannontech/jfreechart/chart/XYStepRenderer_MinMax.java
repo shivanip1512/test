@@ -11,8 +11,8 @@ package com.cannontech.jfreechart.chart;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import org.jfree.chart.CrosshairInfo;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CrosshairState;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.XYItemRendererState;
@@ -75,9 +75,9 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
                          XYDataset dataset,
                          int series, 
                          int item,
-                         CrosshairInfo crosshairInfo,
+                         CrosshairState crosshairState,
                          int pass) {
-		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairInfo, pass);
+		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState, pass);
 
         // get the data point...
         Number x1 = dataset.getXValue(series, item);
@@ -88,8 +88,8 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 		final RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
 		final RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
 
-		double transX1 = domainAxis.translateValueToJava2D(x1.doubleValue(), dataArea, xAxisLocation);
-		double transY1 = rangeAxis.translateValueToJava2D(y1.doubleValue(), dataArea, yAxisLocation);
+		double transX1 = domainAxis.java2DToValue(x1.doubleValue(), dataArea, xAxisLocation);
+		double transY1 = rangeAxis.java2DToValue(y1.doubleValue(), dataArea, yAxisLocation);
 
         if( this.plotMinMaxValues)
 		{
