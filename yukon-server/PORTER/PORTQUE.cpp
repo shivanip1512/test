@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/08/01 22:16:04 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/08/08 23:20:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,7 +223,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDevice *Dev, OUTMESS *OutMessage)
 
     if(ErrorReturnCode && ErrorReturnCode != REQACK)     // Handle non-Sequence & 0x8000 (queued entries)
     {
-        return(!NORMAL);
+        return(ErrorReturnCode);
     }
 
 
