@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:36:07 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/05/09 15:59:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,6 +115,17 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         }
 
                         pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+
+                        if(NewOMess)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
+                            }
+                            delete NewOMess;
+                            NewOMess = 0;
+                        }
                     }
                     else
                     {
@@ -171,6 +182,17 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
+
+                if(NewOMess)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
+                    }
+                    delete NewOMess;
+                    NewOMess = 0;
+                }
             }
         }
     }
@@ -181,6 +203,11 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         dout << RWTime() << " ERROR: Macro Route " << getName() << " has not resolved any sub-routes. " << endl;
     }
 
+    if(OutMessage)
+    {
+        delete OutMessage;
+        OutMessage = 0;
+    }
 
     return nRet;
 }
