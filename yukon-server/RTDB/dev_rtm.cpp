@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/20 16:11:04 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/11/03 19:21:20 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.5  2004/11/03 19:21:20  mfisher
+* finished up protocol stuff, added ACK
+*
 * Revision 1.4  2004/09/20 16:11:04  mfisher
 * implemented comms in generate() and decode()
 *
@@ -47,6 +50,7 @@ CtiDeviceRTM::CtiDeviceRTM() :
 CtiDeviceRTM::~CtiDeviceRTM()
 {
 }
+
 
 INT CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
@@ -437,7 +441,7 @@ int CtiDeviceRTM::generate(CtiXfer &xfer)
             if( _code_len )
             {
                 xfer.setInBuffer(_inbound + 8);
-                xfer.setInCountExpected(_code_len * 2);
+                xfer.setInCountExpected(_code_len);
                 xfer.setInCountActual(&_in_actual);
             }
             else
@@ -449,10 +453,19 @@ int CtiDeviceRTM::generate(CtiXfer &xfer)
 
             break;
         }
+        case State_Ack:
+        {
+            //  the ack was manufactured at the end of the State_Input block below
+            xfer.setOutBuffer(_outbound.Buffer.OutMessage);
+            xfer.setOutCount(4);
+            xfer.setInCountExpected(0);
+
+            break;
+        }
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - unknown state in CtiDeviceRTM::generate() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -472,6 +485,7 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
         switch( _state )
         {
             case State_Output:
+            case State_Ack:
             {
                 _state = State_Input;
 
@@ -483,10 +497,10 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                 {
                     if( _in_actual >= 8 )
                     {
-                        if( !CtiProtocolSA3rdParty::TMSlen(_inbound, &_code_len) )
+                        if( CtiProtocolSA3rdParty::TMSlen(_inbound, &_code_len) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - TMSlen not normal for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " **** Checkpoint - No code length for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else
@@ -500,7 +514,9 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                     X205CMD x205cmd;
                     CtiVerificationReport *report;
 
-                    if( CtiProtocolSA3rdParty::procTMSmsg(_inbound, _code_len + 4, &sacode, &x205cmd) == TMS_CODE )
+                    int tms_result = CtiProtocolSA3rdParty::procTMSmsg(_inbound, _code_len + 8, &sacode, &x205cmd);
+
+                    if( tms_result == TMS_CODE )
                     {
                         _codes_received++;
 
@@ -508,14 +524,29 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
 
                         _verification_objects.push(report);
 
-                        _code_len = 0;
+                        //  this is a bit of a hack based on watching port traces of successful comms
+                        //    the LRC is copied from the last inbound and tagged after an "ACK" message type
+                        _outbound.Buffer.OutMessage[0] = 'B';
+                        _outbound.Buffer.OutMessage[1] = 'F';
+                        _outbound.Buffer.OutMessage[2] = _inbound[_code_len+6];
+                        _outbound.Buffer.OutMessage[3] = _inbound[_code_len+7];
+
+                        _state = State_Ack;
                     }
+                    else // if( tms_result == TMS_EMPTY )
+                    {
+                        _state = State_Complete;
+                    }
+
+                    _code_len = 0;
                 }
+
+                break;
             }
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - unknown state in CtiDeviceRTM::decode() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
