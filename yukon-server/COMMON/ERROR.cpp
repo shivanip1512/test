@@ -207,6 +207,8 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorWctp500Series,   "Protocol Error 500 Series", ERRTYPESYSTEM                , " N/A"},
     { ErrorWctp600Series,   "Protocol Error 600 Series", ERRTYPESYSTEM                , " N/A"},
 
+    { ErrorQueuePurged, "Queue purged to limit memory usage", ERRTYPESYSTEM                , " N/A"},
+
     { CtiInvalidRequest,    "Invalid/Incomplete Request",    ERRTYPESYSTEM                , " N/A"},
     { UnknownError,         "Unknown Error",           ERRTYPESYSTEM                , " N/A"},
 

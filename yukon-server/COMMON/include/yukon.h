@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/01/15 20:40:52 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/02/07 13:58:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -261,6 +261,7 @@ typedef enum
     ErrorWctp500Series,
     ErrorWctp600Series,
 
+    ErrorQueuePurged,           // Queue purged to clean memory.
 
     FinalError
 
