@@ -378,9 +378,9 @@ function confirmDeleteAllCompanies() {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
-	for (int i = 0; i < liteEnergyCompany.getAllSelectionLists().size(); i++) {
-		com.cannontech.common.constants.YukonSelectionList cList =
-				(com.cannontech.common.constants.YukonSelectionList) liteEnergyCompany.getAllSelectionLists().get(i);
+	ArrayList userList = liteEnergyCompany.getAllSelectionLists(user);
+	for (int i = 0; i < userLists.size(); i++) {
+		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
 		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
 		
 		StarsCustSelectionList list = (StarsCustSelectionList) selectionListTable.get( cList.getListName() );
