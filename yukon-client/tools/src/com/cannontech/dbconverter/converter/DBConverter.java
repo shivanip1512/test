@@ -2,7 +2,10 @@ package com.cannontech.dbconverter.converter;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.MCTIEDBase;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.tools.gui.*;
@@ -127,8 +130,8 @@ public void run()
  */
 public static synchronized PtUnitRets[] getAllPointUnitd()
 {
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection( 
-						com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+	java.sql.Connection conn = PoolManager.getInstance().getConnection( 
+						CtiUtilities.getDatabaseAlias() );
 	
 	java.sql.PreparedStatement stat = null;
 	java.sql.ResultSet rs = null;
@@ -223,7 +226,7 @@ private void handleLocalDirectPort( com.cannontech.database.data.port.LocalDirec
 	{
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setModemType("U.S. Robotics");
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setInitializationString(
-			com.cannontech.common.util.CtiUtilities.STRING_NONE);
+			CtiUtilities.STRING_NONE);
 		
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPrefixNumber("9");
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setSuffixNumber("9");
@@ -317,7 +320,7 @@ private void handleTerminalPort( com.cannontech.database.data.port.LocalDirectPo
 	{
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setModemType("U.S. Robotics");
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setInitializationString(
-					com.cannontech.common.util.CtiUtilities.STRING_NONE );
+					CtiUtilities.STRING_NONE );
 		
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setPrefixNumber("9");
 		((com.cannontech.database.data.port.LocalDialupPort)port).getPortDialupModem().setSuffixNumber("9");
@@ -380,7 +383,7 @@ private void handleTerminalPort( com.cannontech.database.data.port.TerminalServe
 	{
 		((com.cannontech.database.data.port.TerminalServerDialupPort)port).getPortDialupModem().setModemType("U.S. Robotics");
 		((com.cannontech.database.data.port.TerminalServerDialupPort)port).getPortDialupModem().setInitializationString(
-					com.cannontech.common.util.CtiUtilities.STRING_NONE);
+					CtiUtilities.STRING_NONE);
 					
 		((com.cannontech.database.data.port.TerminalServerDialupPort)port).getPortDialupModem().setPrefixNumber("9");
 		((com.cannontech.database.data.port.TerminalServerDialupPort)port).getPortDialupModem().setSuffixNumber("9");
@@ -542,11 +545,13 @@ public boolean processAccumulatorPoints()
 		
 		com.cannontech.database.data.point.AccumulatorPoint accumPoint = null;
 			
+        
 		//if pointType
-		if (pointType.equals(new String("DemandAccumulator")))
+		if( PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT).equals(pointType) )
 		{
 			// This is an Demand Accumulator point
-			accumPoint = (com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT);
+			accumPoint = (com.cannontech.database.data.point.AccumulatorPoint)
+                    PointFactory.createPoint(PointTypes.DEMAND_ACCUMULATOR_POINT);
 
 			// default state group ID
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
@@ -554,7 +559,8 @@ public boolean processAccumulatorPoints()
 		else
 		{
 			// This is an Accumulator point
-			accumPoint = (com.cannontech.database.data.point.AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
+			accumPoint = (com.cannontech.database.data.point.AccumulatorPoint)
+                            PointFactory.createPoint(PointTypes.PULSE_ACCUMULATOR_POINT);
 
 			// default state group ID
 			accumPoint.getPoint().setStateGroupID( new Integer(-2) );
@@ -724,17 +730,19 @@ public boolean processAnalogPoints()
 		com.cannontech.database.data.point.ScalarPoint analogPoint = null;
 			
 		//if pointType
-		if (pointType.equals(new String("CalcAnalog")))
+        if( PointTypes.getType(PointTypes.CALCULATED_POINT).equals(pointType) )
 		{
 			// This is a Caclulated Analog point
-			analogPoint = new com.cannontech.database.data.point.CalculatedPoint();
+			analogPoint = (com.cannontech.database.data.point.CalculatedPoint)
+                                PointFactory.createPoint(PointTypes.CALCULATED_POINT);
 		
 			// default state group ID
 			analogPoint.getPoint().setStateGroupID( new Integer(-3) );
 		}
 		else
 		{
-			analogPoint = new com.cannontech.database.data.point.AnalogPoint();
+			analogPoint = (com.cannontech.database.data.point.AnalogPoint)
+			                PointFactory.createPoint(PointTypes.ANALOG_POINT);
 			
 			// default state group ID
 			analogPoint.getPoint().setStateGroupID( new Integer(-1) );
@@ -743,7 +751,6 @@ public boolean processAnalogPoints()
 		//set our unique deviceID
 		analogPoint.setPointID(pointID);
 		
-		analogPoint.getPoint().setPointType(pointType);
 	    analogPoint.getPoint().setPointName( tokenizer.nextElement().toString() );
 
 		Integer deviceID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
@@ -794,7 +801,7 @@ public boolean processAnalogPoints()
 		else 
 			analogPoint.getPointUnit().setUomID( new Integer( 0  ) );
 			
-		if (pointType.equals(new String("CalcAnalog")))
+		if( PointTypes.getType(PointTypes.CALCULATED_POINT).equals(pointType) )
 		{
 			// move the token up 3
 			tokenizer.nextElement().toString();
@@ -999,6 +1006,7 @@ public boolean processLoadGroups()
 		
 	    lmGroupDevice.setPAOName( tokenizer.nextElement().toString() );
 	    
+
 		if (deviceType.equals(new String("EMETCON GROUP")))
 		{
 			// This is an Emetcon Group
@@ -1817,12 +1825,13 @@ public boolean processStatusPoints()
 		
 		String pointType = tokenizer.nextElement().toString();
 		
-		com.cannontech.database.data.point.StatusPoint statusPoint = new com.cannontech.database.data.point.StatusPoint();
+		com.cannontech.database.data.point.StatusPoint statusPoint = 
+                (com.cannontech.database.data.point.StatusPoint)
+                        PointFactory.createPoint(PointTypes.STATUS_POINT);
 				
 		//set our unique deviceID
 		statusPoint.setPointID(pointID);
 		
-		statusPoint.getPoint().setPointType(pointType);
 	    statusPoint.getPoint().setPointName( tokenizer.nextElement().toString() );
 
 		Integer deviceID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
