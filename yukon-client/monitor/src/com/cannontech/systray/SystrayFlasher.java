@@ -42,7 +42,7 @@ public class SystrayFlasher implements Runnable
 					yukonSysTray.setIcon( ISystrayDefines.ALL_ICONS[i] );
 								
 					//we cant be muted, only play the sound once
-					if( i == 0 && !isMuted() )
+					if( i == ISystrayDefines.ICO_ANIME_START && !isMuted() )
 						getAlarmSound().play();
 								
 					Thread.currentThread().sleep(1300);
