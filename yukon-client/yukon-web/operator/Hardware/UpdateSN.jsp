@@ -31,10 +31,10 @@ function updateField(f, checked) {
                 <td width="235" height = "30" valign="middle">&nbsp;</td>
                 <form method="post" action="../Operations.jsp">
                   <td width="58" valign="middle"> 
-                    <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                    <div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
+                    <div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
                 </form>
@@ -72,7 +72,7 @@ function updateField(f, checked) {
 			    <input type="hidden" name="action" value="UpdateSNRange">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
-                    <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Update 
+                    <td align = "left" class = "MainText" bgcolor="#CCCCCC"><b>Update 
                       Serial Number Range</b></td>
                   </tr>
                   <tr> 
