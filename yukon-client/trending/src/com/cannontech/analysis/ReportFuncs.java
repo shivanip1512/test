@@ -8,14 +8,20 @@ package com.cannontech.analysis;
 
 import com.cannontech.analysis.report.DatabaseReport;
 import com.cannontech.analysis.report.DisconnectReport;
+import com.cannontech.analysis.report.EnergyCompanyActivityLogReport;
 import com.cannontech.analysis.report.LGAccountingReport;
-import com.cannontech.analysis.report.LMControlLogReport;
 import com.cannontech.analysis.report.MissedMeterReport;
 import com.cannontech.analysis.report.PowerFailReport;
+import com.cannontech.analysis.report.RouteMacroReport;
 import com.cannontech.analysis.report.StatisticReport;
+import com.cannontech.analysis.report.SystemLogReport;
 import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.tablemodel.DatabaseModel;
+import com.cannontech.analysis.tablemodel.LoadGroupModel;
+import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
+import com.cannontech.clientutils.CTILogger;
 
 /**
  * @author snebben
@@ -27,32 +33,48 @@ public class ReportFuncs
 {
 	public static YukonReportBase createYukonReport(final int reportType)
 	{
-		switch (reportType)
+		ReportModelBase model = ReportTypes.create(reportType);
+		try
 		{
-			case ReportTypes.CARRIER_COMM_DATA:
-				return new StatisticReport(new StatisticModel(reportType));
-			case ReportTypes.COMM_CHANNEL_DATA:
-				return new StatisticReport(new StatisticModel(reportType));
-			case ReportTypes.DEVICE_COMM_DATA:
-				return new StatisticReport(new StatisticModel(reportType));
-			case ReportTypes.TRANS_COMM_DATA:
-				return new StatisticReport(new StatisticModel(reportType));
-			case ReportTypes.SYSTEM_LOG_DATA:
-				return new LMControlLogReport(new SystemLogModel(reportType));
-			case ReportTypes.LM_CONTROL_LOG_DATA:
-				return new LMControlLogReport(new SystemLogModel(reportType));
-			case ReportTypes.LG_ACCOUNTING_DATA:
-				return new LGAccountingReport();
-			case ReportTypes.MISSED_METER_DATA:
-				return new MissedMeterReport();
-			case ReportTypes.CARRIER_DATA:
-				return new DatabaseReport();
-			case ReportTypes.POWER_FAIL_DATA:
-				return new PowerFailReport();
-			case ReportTypes.DISCONNECT_DATA:
-				return new DisconnectReport();
-			default:
-				return null;
-		}		
+			switch (reportType)
+			{
+				case ReportTypes.STATISTIC_DATA:
+					return new StatisticReport((StatisticModel)model);
+				
+				case ReportTypes.SYSTEM_LOG_DATA:
+				case ReportTypes.LM_CONTROL_LOG_DATA:
+					return new SystemLogReport((SystemLogModel)model);
+					
+				case ReportTypes.LG_ACCOUNTING_DATA:
+					return new LGAccountingReport((LoadGroupModel)model);
+					
+				case ReportTypes.MISSED_METER_DATA:
+					return new MissedMeterReport();
+					
+				case ReportTypes.CARRIER_DATA:
+					((DatabaseModel)model).setPaoClass("CARRIER");
+					return new DatabaseReport((DatabaseModel)model);
+					
+				case ReportTypes.POWER_FAIL_DATA:
+					return new PowerFailReport();
+					
+				case ReportTypes.DISCONNECT_DATA:
+					return new DisconnectReport();
+					
+				case ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA:
+					return new EnergyCompanyActivityLogReport();
+					
+				case ReportTypes.CARRIER_ROUTE_MACRO_DATA:
+					return new RouteMacroReport("CARRIER");
+					
+				default:
+					return null;
+			}
+		}
+		catch (ClassCastException e)
+		{
+			CTILogger.info("Invalid model ("+model.getClass().toString() + ") instantiated for Report, Please check the case statement evaluations.");
+			return null;
+		}
 	}
-}
+ }
