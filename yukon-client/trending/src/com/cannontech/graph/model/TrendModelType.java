@@ -27,12 +27,13 @@ public interface TrendModelType
 		// Additional Graph Plotting
 //	public final static int PLOT_YESTERDAY_MASK = 0x0001;
 //	public final static int PLOT_MULTIPLE_DAY_MASK = 0x0002;
+	public final static int GRAPH_MULTIPLIER = 0x0002;
 	public final static int PLOT_MIN_MAX_MASK = 0x0004;
+	
 		// Legend Display
 	public final static int LEGEND_LOAD_FACTOR_MASK = 0x0008;
 	public final static int LEGEND_MIN_MAX_MASK = 0x0010;
 		// Extra stuff.
-	public final static int MULTIPLIER_MASK = 0x0020;
-	public final static int DWELL_LABELS_MASK = 0x0040;
+//	public final static int DWELL_LABELS_MASK = 0x0040;
 	
 }
