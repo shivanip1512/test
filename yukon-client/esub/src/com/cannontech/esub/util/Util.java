@@ -1,7 +1,6 @@
 package com.cannontech.esub.util;
 
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Shape;
@@ -30,11 +29,7 @@ import com.loox.jloox.LxRotatable;
  * @author: alauinger 
  */
 public class Util {
-	
-	public static Cursor DEFAULT_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
-	public static Cursor WAIT_CURSOR = new Cursor(Cursor.WAIT_CURSOR);
-	public static Cursor CROSSHAIR_CURSOR = new Cursor(Cursor.CROSSHAIR_CURSOR);
-	
+
 	// The external name of the default image
 	public static String DEFAULT_IMAGE_NAME = "X.gif";
 	
