@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/10/26 14:54:41 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/11/05 17:26:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1465,7 +1465,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuObserveBusyBit = false;       // Make us go at maximal speed.
         }
 
-        if( gConfigParms.getValueAsString("RIPPLE_EXCLUDE_ALL_INJECTORS") == RWCString("TRUE") )
+        if( !gConfigParms.getValueAsString("RIPPLE_EXCLUDE_ALL_INJECTORS").compareTo("TRUE", RWCString::ignoreCase) ) )
         {
             _excludeAllLCUs = true;
         }
