@@ -13,6 +13,7 @@ import java.sql.ResultSetMetaData;
 import java.util.Vector;
 
 import com.cannontech.database.PoolManager;
+import com.cannontech.tdc.custom.CustomDisplay;
 
 public class DataBaseInteraction 
 {
@@ -103,7 +104,7 @@ public static Object[][] queryResults( String query, Object[] parameters, boolea
 						
 					if ( res == null )
 						newRow.addElement("");
-					else if ( res.toString().equals("**DYNAMIC**") )
+					else if ( res.toString().equals(CustomDisplay.DYNAMIC_ROW) )
 						newRow.addElement("   -----");					
 					else
 						newRow.addElement( res );
