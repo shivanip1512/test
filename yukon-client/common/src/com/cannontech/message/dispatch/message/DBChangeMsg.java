@@ -35,7 +35,9 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_YUKON_IMAGE					= 13;
 	public static final int CHANGE_BASELINE_DB					= 14;
 	public static final int CHANGE_CONFIG_DB					= 15;
-	public static final int CHANGE_TAG_DB					= 16;
+	public static final int CHANGE_TAG_DB						= 16;
+	public static final int CHANGE_LMCONSTRAINT_DB				= 17;
+	public static final int CHANGE_LMSCENARIO_DB				= 18;
 
 
 	
@@ -54,6 +56,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_BASELINE			= "BaseLine";
 	public static final String CAT_CONFIG			= "Config";
 	public static final String CAT_TAG			= "Tag";
+	public static final String CAT_LMCONSTRAINT		= "Load Constraint";
+	public static final String CAT_LMSCENARIO		= "Load Scenario";
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

@@ -181,6 +181,16 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    {
 	  return getCache().getAllConfigs();
    }
+   
+   public synchronized java.util.List getAllLMProgramConstraints()
+   {
+	  return getCache().getAllLMProgramConstraints();
+   }
+   
+   public synchronized java.util.List getAllLMScenarios()
+   {
+	  return getCache().getAllLMScenarios();
+   }
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -552,6 +562,16 @@ public class DatabaseCacheBean implements SessionBean, IDatabaseCache
    public synchronized void releaseAllTags()
    {   
 	  getCache().releaseAllTags();
+   }
+   
+   public synchronized void releaseAllLMProgramConstraints()
+   {   
+	  getCache().releaseAllLMProgramConstraints();
+   }
+   
+   public synchronized void releaseAllLMScenarios()
+   {   
+	  getCache().releaseAllLMScenarios();
    }
    /**
     * @ejb:interface-method

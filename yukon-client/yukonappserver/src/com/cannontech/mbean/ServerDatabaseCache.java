@@ -65,6 +65,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allPointLimits = null;
     private ArrayList allYukonImages = null;
 	private ArrayList allCICustomers = null;
+	private ArrayList allLMProgramConstraints = null;
+	private ArrayList allLMScenarios = null;
 
 	private ArrayList allTags = null;
 	
@@ -487,6 +489,34 @@ public synchronized java.util.List getAllConfigs()
 		ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
 		configLoader.run();
 		return allConfigs;
+	}
+}
+
+public synchronized java.util.List getAllLMProgramConstraints()
+{
+
+	if (allLMProgramConstraints != null)
+		return allLMProgramConstraints;
+	else
+	{
+		allLMProgramConstraints = new java.util.ArrayList();
+		LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
+		lmConstraintsLoader.run();
+		return allLMProgramConstraints;
+	}
+}
+
+public synchronized java.util.List getAllLMScenarios()
+{
+
+	if (allLMScenarios != null)
+		return allLMScenarios;
+	else
+	{
+		allLMScenarios = new java.util.ArrayList();
+		/*LMScenarioLoader lmScenariosLoader = new LMScenarioLoader(allLMScenarios, databaseAlias);
+		lmScenariosLoader.run();*/
+		return allLMScenarios;
 	}
 }
 /**
@@ -1540,6 +1570,14 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	{
 		retLBase = handleTagChange( dbType, id );
 	}
+	else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
+	{
+		retLBase = handleLMProgramConstraintChange( dbType, id );
+	}
+	else if( database == DBChangeMsg.CHANGE_LMSCENARIO_DB )
+	{
+		retLBase = handleLMScenarioChange( dbType, id );
+	}
 	else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB
 				|| database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
@@ -1936,6 +1974,122 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 	}
 
 	return lTag;
+}
+
+private synchronized LiteBase handleLMProgramConstraintChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allLMProgramConstraints == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allLMProgramConstraints.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).getConstraintID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allLMProgramConstraints.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteLMConstraint lh = new com.cannontech.database.data.lite.LiteLMConstraint(id);
+					lh.retrieve(databaseAlias);
+					allLMProgramConstraints.add(lh);
+					lBase = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allLMProgramConstraints.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).getConstraintID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allLMProgramConstraints.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allLMProgramConstraints.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteLMConstraint)allLMProgramConstraints.get(i)).getConstraintID() == id )
+					{
+						lBase = (LiteBase)allLMProgramConstraints.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllLMProgramConstraints();
+				break;
+	}
+
+	return lBase;
+}
+
+private synchronized LiteBase handleLMScenarioChange( int changeType, int id )
+{
+	boolean alreadyAdded = false;
+	LiteBase lBase = null;
+
+	// if the storage is not already loaded, we must not care about it
+	if( allLMScenarios == null )
+		return lBase;
+
+	switch(changeType)
+	{
+		case DBChangeMsg.CHANGE_TYPE_ADD:
+				for(int i=0;i<allLMScenarios.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).getScenarioID() == id )
+					{
+						alreadyAdded = true;
+						lBase = (LiteBase)allLMScenarios.get(i);
+						break;
+					}
+				}
+				if( !alreadyAdded )
+				{
+					com.cannontech.database.data.lite.LiteLMScenario lh = new com.cannontech.database.data.lite.LiteLMScenario(id);
+					lh.retrieve(databaseAlias);
+					allLMScenarios.add(lh);
+					lBase = lh;
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+				for(int i=0;i<allLMScenarios.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).getScenarioID() == id )
+					{
+						((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).retrieve(databaseAlias);
+						lBase = (LiteBase)allLMScenarios.get(i);
+						break;
+					}
+				}
+				break;
+		case DBChangeMsg.CHANGE_TYPE_DELETE:
+				for(int i=0;i<allLMScenarios.size();i++)
+				{
+					if( ((com.cannontech.database.data.lite.LiteLMScenario)allLMScenarios.get(i)).getScenarioID() == id )
+					{
+						lBase = (LiteBase)allLMScenarios.remove(i);
+						break;
+					}
+				}
+				break;
+		default:
+				releaseAllLMScenarios();
+				break;
+	}
+
+	return lBase;
 }
 /**
  * Insert the method's description here.
@@ -2550,6 +2704,16 @@ public synchronized void releaseAllConfigs()
 public synchronized void releaseAllTags()
 {
 	allTags = null;
+}
+
+public synchronized void releaseAllLMProgramConstraints()
+{
+	allLMProgramConstraints = null;
+}
+
+public synchronized void releaseAllLMScenarios()
+{
+	allLMScenarios = null;
 }
 /**
  * Insert the method's description here.

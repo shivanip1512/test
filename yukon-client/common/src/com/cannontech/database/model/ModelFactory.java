@@ -49,6 +49,9 @@ public final class ModelFactory
 	public static final int TWOWAYCONFIG = 34;
 	
 	public static final int TAG = 35;
+	
+	public static final int LMCONSTRAINT = 36;
+	public static final int LMSCENARIO = 37;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -89,7 +92,9 @@ public final class ModelFactory
 		LMGroupExpresscomModel.class,
 		LMGroupsCheckBoxModel.class,
 		ConfigModel.class,
-		TagModel.class
+		TagModel.class,
+		LMConstraintModel.class,
+		LMScenarioModel.class
 	};
 
 /**

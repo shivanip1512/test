@@ -12,6 +12,8 @@ public class LMCreateMenu extends javax.swing.JMenu {
 	public CommandableMenuItem lmProgramMenuItem;
 	public CommandableMenuItem pointMenuItem;
 	public CommandableMenuItem lmControlAreaMenuItem;
+	public CommandableMenuItem lmProgramConstraintMenuItem;
+	public CommandableMenuItem lmControlScenarioMenuItem;
 /**
  * CreateMenu constructor comment.
  */
@@ -37,10 +39,18 @@ private void initialize() {
 	lmControlAreaMenuItem = new CommandableMenuItem("Control Area...");
 	lmControlAreaMenuItem.setFont(font);
 	lmControlAreaMenuItem.setMnemonic('c');
-
+	
+	lmControlScenarioMenuItem = new CommandableMenuItem("Control Scenario...");
+	lmControlScenarioMenuItem.setFont( font );
+	lmControlScenarioMenuItem.setMnemonic('w');
+	
 	pointMenuItem = new CommandableMenuItem("Point...");
 	pointMenuItem.setFont( font );
 	pointMenuItem.setMnemonic('p');
+	
+	lmProgramConstraintMenuItem = new CommandableMenuItem("Program Constraint...");
+	lmProgramConstraintMenuItem.setFont( font );
+	lmProgramConstraintMenuItem.setMnemonic('q');
 	
 	setText("Create");
 	setFont( font );
@@ -49,6 +59,9 @@ private void initialize() {
 	add( lmGroupMenuItem );
 	add( lmProgramMenuItem );
 	add( lmControlAreaMenuItem );
+	add( lmControlScenarioMenuItem );
 	add( pointMenuItem );
+	add( lmProgramConstraintMenuItem );
+
 }
 }

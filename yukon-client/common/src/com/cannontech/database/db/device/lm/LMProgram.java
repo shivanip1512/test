@@ -10,25 +10,12 @@ public class LMProgram extends com.cannontech.database.db.DBPersistent
 {
 	private Integer deviceID = null;
 	private String controlType = null;
-	private String availableSeasons = null;
-	private String availableWeekDays = null;
-	private Integer maxHoursDaily = null;
-	private Integer maxHoursMonthly = null;
-	private Integer maxHoursSeasonal = null;
-	private Integer maxHoursAnnually = null;
-	private Integer minActivateTime = null;
-	private Integer minRestartTime = null;
-
-	private Integer holidaySchedID = new Integer(CtiUtilities.NONE_ID);
-	private Integer seasonSchedID = new Integer(CtiUtilities.NONE_ID);
+	private Integer constraintID = null;
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"ControlType", "AvailableSeasons", "AvailableWeekDays", 
-		"maxHoursDaily", "maxHoursMonthly", "maxHoursSeasonal" ,
-		"maxHoursAnnually", "minActivateTime", "minRestartTime",
-		"HolidayScheduleID", "SeasonScheduleID"
+		"ControlType", "ConstraintID"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -46,10 +33,7 @@ public LMProgram() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getDeviceID(), getControlType(), getAvailableSeasons(), getAvailableWeekDays(), 
-				getMaxHoursDaily(), getMaxHoursMonthly(), getMaxHoursSeasonal(),
-				getMaxHoursAnnually(), getMinActivateTime(), getMinRestartTime(),
-				getHolidaySchedID(), getSeasonSchedID() };
+	Object addValues[] = { getDeviceID(), getControlType(), getConstraintID() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -60,22 +44,7 @@ public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, "DeviceID", getDeviceID() );
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @return java.lang.String
- */
-public java.lang.String getAvailableSeasons() {
-	return availableSeasons;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @return java.lang.String
- */
-public java.lang.String getAvailableWeekDays() {
-	return availableWeekDays;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/16/2001 10:47:47 AM)
@@ -96,48 +65,8 @@ public Integer getDeviceID() {
  * Creation date: (3/16/2001 10:51:39 AM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getMaxHoursAnnually() {
-	return maxHoursAnnually;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursDaily() {
-	return maxHoursDaily;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursMonthly() {
-	return maxHoursMonthly;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMaxHoursSeasonal() {
-	return maxHoursSeasonal;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/8/2001 1:53:54 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMinActivateTime() {
-	return minActivateTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:47:47 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getMinRestartTime() {
-	return minRestartTime;
+public java.lang.Integer getConstraintID() {
+	return constraintID;
 }
 
 /**
@@ -217,37 +146,14 @@ public void retrieve() throws java.sql.SQLException
 	if( results.length == SETTER_COLUMNS.length )
 	{
 		setControlType( (String) results[0] );
-		setAvailableSeasons( (String) results[1] );
-		setAvailableWeekDays( (String) results[2] );
-		setMaxHoursDaily( (Integer) results[3] );
-		setMaxHoursMonthly( (Integer) results[4] );
-		setMaxHoursSeasonal( (Integer) results[5] );
-		setMaxHoursAnnually( (Integer) results[6] );
-		setMinActivateTime( (Integer) results[7] );
-		setMinRestartTime( (Integer) results[8] );		
-		setHolidaySchedID( (Integer) results[9] );
-		setSeasonSchedID( (Integer) results[10] );
+		setConstraintID( (Integer) results[1] );
+
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @param newAvailableSeasons java.lang.String
- */
-public void setAvailableSeasons(java.lang.String newAvailableSeasons) {
-	availableSeasons = newAvailableSeasons;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @param newAvailableWeekDays java.lang.String
- */
-public void setAvailableWeekDays(java.lang.String newAvailableWeekDays) {
-	availableWeekDays = newAvailableWeekDays;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/16/2001 10:47:47 AM)
@@ -268,97 +174,21 @@ public void setDeviceID(Integer newValue) {
  * Creation date: (3/16/2001 10:51:39 AM)
  * @param newMaxHoursAnnually java.lang.Integer
  */
-public void setMaxHoursAnnually(java.lang.Integer newMaxHoursAnnually) {
-	maxHoursAnnually = newMaxHoursAnnually;
+public void setConstraintID(java.lang.Integer newID) {
+	constraintID = newID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @param newMaxHoursDaily java.lang.Integer
- */
-public void setMaxHoursDaily(java.lang.Integer newMaxHoursDaily) {
-	maxHoursDaily = newMaxHoursDaily;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @param newMaxHoursMonthly java.lang.Integer
- */
-public void setMaxHoursMonthly(java.lang.Integer newMaxHoursMonthly) {
-	maxHoursMonthly = newMaxHoursMonthly;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:51:39 AM)
- * @param newMaxHoursSeasonal java.lang.Integer
- */
-public void setMaxHoursSeasonal(java.lang.Integer newMaxHoursSeasonal) {
-	maxHoursSeasonal = newMaxHoursSeasonal;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/8/2001 1:53:54 PM)
- * @param newMinActivateTime java.lang.Integer
- */
-public void setMinActivateTime(java.lang.Integer newMinActivateTime) {
-	minActivateTime = newMinActivateTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 10:47:47 AM)
- * @param newMinRestartTime java.lang.Integer
- */
-public void setMinRestartTime(java.lang.Integer newMinRestartTime) {
-	minRestartTime = newMinRestartTime;
-}
+
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
-	Object setValues[] = { getControlType(), getAvailableSeasons(), getAvailableWeekDays(), 
-				getMaxHoursDaily(), getMaxHoursMonthly(), getMaxHoursSeasonal(),
-				getMaxHoursAnnually(), getMinActivateTime(), getMinRestartTime(),
-				getHolidaySchedID(), getSeasonSchedID() };
+	Object setValues[] = { getControlType(), getConstraintID() };
 
 	Object constraintValues[] = { getDeviceID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
-	/**
-	 * Returns the holidaySchedID.
-	 * @return Integer
-	 */
-	public Integer getHolidaySchedID()
-	{
-		return holidaySchedID;
-	}
-
-	/**
-	 * Returns the seasonSchedID.
-	 * @return Integer
-	 */
-	public Integer getSeasonSchedID()
-	{
-		return seasonSchedID;
-	}
-
-	/**
-	 * Sets the holidaySchedID.
-	 * @param holidaySchedID The holidaySchedID to set
-	 */
-	public void setHolidaySchedID(Integer holidaySchedID)
-	{
-		this.holidaySchedID = holidaySchedID;
-	}
-
-	/**
-	 * Sets the seasonSchedID.
-	 * @param seasonSchedID The seasonSchedID to set
-	 */
-	public void setSeasonSchedID(Integer seasonSchedID)
-	{
-		this.seasonSchedID = seasonSchedID;
-	}
+	
 
 }

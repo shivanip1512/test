@@ -125,13 +125,31 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	}
 
 	/**
-	  * @ejb:interface-method
-	  * tview-type="remote" 
-	 **/
-	 public synchronized java.util.List getAllConfigs()
-	 {
-		  return getDBCache().getAllConfigs();
-	 }
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.List getAllConfigs()
+	{
+		return getDBCache().getAllConfigs();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.List getAllLMProgramConstraints()
+	{
+		return getDBCache().getAllLMProgramConstraints();
+	}
+	
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.List getAllLMScenarios()
+	{
+		return getDBCache().getAllLMScenarios();
+	}
    /**
     * @ejb:interface-method
     * tview-type="remote" 
@@ -455,6 +473,16 @@ public class DefaultDatabaseCache implements IDatabaseCache
    public synchronized void releaseAllConfigs()
    {
 	  getDBCache().releaseAllConfigs();
+   }
+   
+   public synchronized void releaseAllLMProgramConstraints()
+   {
+	  getDBCache().releaseAllLMProgramConstraints();
+   }
+   
+   public synchronized void releaseAllLMScenarios()
+   {
+	  getDBCache().releaseAllLMScenarios();
    }
    /**
     * @ejb:interface-method

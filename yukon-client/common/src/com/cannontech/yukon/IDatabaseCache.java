@@ -36,6 +36,8 @@ public interface IDatabaseCache
    public java.util.List getAllHolidaySchedules();
    public java.util.List getAllBaselines();
    public java.util.List getAllConfigs();
+   public java.util.List getAllLMProgramConstraints();
+   public java.util.List getAllLMScenarios();
    public java.util.List getAllLMPrograms();
    public java.util.List getAllLoadManagement();
    //public java.util.List getAllNotificationGroups();
@@ -123,6 +125,8 @@ public interface IDatabaseCache
    public void releaseAllHolidaySchedules();
    public void releaseAllBaselines();
    public void releaseAllConfigs();
+   public void releaseAllLMProgramConstraints();
+   public void releaseAllLMScenarios();
    public void releaseAllTags();
    public void releaseAllNotificationGroups();
    public void releaseAllContactNotifications();

@@ -113,6 +113,16 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigID(new Integer(((LiteConfig)liteObject).getConfigID()) );
 				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigName( ((LiteConfig)liteObject).getConfigName() );
 				break;
+			case LiteTypes.LMCONSTRAINT:
+				returnObject = new com.cannontech.database.db.device.lm.LMProgramConstraint();
+				((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintID(new Integer(((LiteLMConstraint)liteObject).getConstraintID()));
+				((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintName(((LiteLMConstraint)liteObject).getConstraintName());
+				break;
+			/*case LiteTypes.LMSCENARIO:
+				returnObject = new com.cannontech.database.db.device.lm.LMControlScenarioProgram();
+				((com.cannontech.database.db.device.lm.LMControlScenarioProgram)returnObject).setScenarioID(new Integer(((LiteLMScenario)liteObject).getScenarioID()));
+				((com.cannontech.database.db.device.lm.LMControlScenarioProgram)returnObject).setScenarioName(((LiteLMScenario)liteObject).getScenarioName());
+				break;*/
 			case LiteTypes.TAG:
 				returnObject = new com.cannontech.database.db.tags.Tag();
 				((com.cannontech.database.db.tags.Tag)returnObject).setTagID(new Integer(((LiteTag)liteObject).getTagID()) );
@@ -226,6 +236,18 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((com.cannontech.database.data.config.ConfigTwoWay)val).getConfigName() );
 			
 	}
+	else if( val instanceof com.cannontech.database.db.device.lm.LMProgramConstraint )
+	{
+		returnLite = new LiteLMConstraint(
+			((com.cannontech.database.db.device.lm.LMProgramConstraint)val).getConstraintID().intValue(),
+			((com.cannontech.database.db.device.lm.LMProgramConstraint)val).getConstraintName() );
+	}
+	/*else if( val instanceof com.cannontech.database.db.device.lm.LMControlScenarioProgram )
+	{
+		returnLite = new LiteLMScenario(
+			((com.cannontech.database.db.device.lm.LMControlScenarioProgram)val).getScenarioID().intValue(),
+			((com.cannontech.database.db.device.lm.LMControlScenarioProgram)val).getScenarioName() );
+	}*/
 	else if( val instanceof com.cannontech.database.db.tags.Tag )
 	{
 		boolean temp = (((com.cannontech.database.db.tags.Tag)val).getInhibit().compareTo(new Character('Y')) == 0);

@@ -39,6 +39,7 @@ import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
+import com.cannontech.dbeditor.wizard.device.lmconstraint.LMProgramConstraintPanel;
 import com.cannontech.debug.gui.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.BillingRole;
@@ -117,7 +118,9 @@ public class DatabaseEditor
 			new Integer(ModelFactory.LMGROUPEXPRESSCOM),
 			new Integer(ModelFactory.LMGROUPVERSACOM),
 			new Integer(ModelFactory.LMPROGRAM),
-			new Integer(ModelFactory.LMCONTROLAREA)
+			new Integer(ModelFactory.LMCONTROLAREA),
+			new Integer(ModelFactory.LMCONSTRAINT),
+			new Integer(ModelFactory.LMSCENARIO)
 		};
 	private static final Integer[] CAP_CONTROL_MODELS =
 		{
@@ -551,6 +554,14 @@ private void displayAWizardPanel(JMenuItem item)
 		else //selectedItem == null  will go here
 			showWizardPanel(new com.cannontech.dbeditor.wizard.point.lm.LMPointWizardPanel());
 
+	}
+	else if (item == lmCreateMenu.lmProgramConstraintMenuItem)
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmconstraint.LMConstraintWizardPanel());
+	}
+	else if (item == lmCreateMenu.lmControlScenarioMenuItem)
+	{
+		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioWizardPanel());
 	}
 	else if (item == capControlCreateMenu.capBankMenuItem)
 	{

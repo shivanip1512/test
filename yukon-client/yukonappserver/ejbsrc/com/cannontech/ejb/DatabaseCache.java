@@ -42,6 +42,10 @@ public interface DatabaseCache
    public java.util.List getAllBaselines(  ) throws java.rmi.RemoteException;
    
    public java.util.List getAllConfigs(  ) throws java.rmi.RemoteException;
+   
+   public java.util.List getAllLMProgramConstraints(  ) throws java.rmi.RemoteException;
+   
+   public java.util.List getAllLMScenarios(  ) throws java.rmi.RemoteException;
 
    public java.util.List getAllTags(  ) throws java.rmi.RemoteException;
    
@@ -124,6 +128,10 @@ public interface DatabaseCache
    public void releaseAllConfigs(  ) throws java.rmi.RemoteException;
 
    public void releaseAllTags(  ) throws java.rmi.RemoteException;
+   
+   public void releaseAllLMProgramConstraints(  ) throws java.rmi.RemoteException;
+   
+   public void releaseAllLMScenarios(  ) throws java.rmi.RemoteException;
    
    public void releaseAllNotificationGroups(  ) throws java.rmi.RemoteException;
 
