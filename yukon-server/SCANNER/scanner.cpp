@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2002/06/21 15:40:21 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2002/06/24 21:04:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1455,22 +1455,29 @@ void DatabaseHandlerThread(VOID *Arg)
 
         delta = (RefreshTime.seconds() - TimeNow.seconds()) * 1000;
 
+        if(delta > 900000)      // Every 15 minutes, I want to write the DynamicScanData.
+        {
+            delta = 900000;
+        }
+
         if( WAIT_OBJECT_0 == WaitForSingleObject(hScannerSyncs[S_QUIT_EVENT], delta) )
         {
             ScannerQuit = TRUE;
         }
-
-        TimeNow = RWTime();
-
-        if(TimeNow >= RefreshTime)
+        else
         {
-            // Refresh the scanner in memory database once every 5 minutes.
-            LoadScannableDevices();
+            TimeNow = TimeNow.now();
             RecordDynamicData();
-            // Post the wakup to ensure that the main loop re-examines the devices.
-            SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
 
-            RefreshTime = TimeNow - (TimeNow.seconds() % SCANNER_RELOAD_RATE) + SCANNER_RELOAD_RATE;
+            if(TimeNow >= RefreshTime)
+            {
+                // Refresh the scanner in memory database once every 5 minutes.
+                LoadScannableDevices();
+                // Post the wakup to ensure that the main loop re-examines the devices.
+                SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
+
+                RefreshTime = TimeNow - (TimeNow.seconds() % SCANNER_RELOAD_RATE) + SCANNER_RELOAD_RATE;
+            }
         }
     } /* End of for */
 }
@@ -1600,27 +1607,39 @@ INT RecordDynamicData()
         {
             conn.beginTransaction();
 
-            for(; ++itr_dev ;)
+            try
             {
-                Device = (CtiDevice*) itr_dev.value();
-
-                if( Device->isSingle() )
+                for(; ++itr_dev ;)
                 {
-                    CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device;
+                    Device = (CtiDevice*) itr_dev.value();
 
-                    if(DeviceRecord->getScanData().isDirty())
+                    if( Device->isSingle() )
                     {
+                        CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device;
+
+                        if(DeviceRecord->getScanData().isDirty())
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << "   Updating DynamicDeviceScanData for device " << DeviceRecord->getName() << endl;
+                            }
+                            DeviceRecord->getScanData().Update(conn);
                         }
-                        DeviceRecord->getScanData().Update(conn);
-                        break;                                      // Only do one per iteration.
                     }
                 }
-            }
 
-            conn.commitTransaction();
+                conn.commitTransaction();
+            }
+            catch(...)
+            {
+                conn.commitTransaction();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
+                    dout << " Trying to commit transaction on DynamicDeviceScanData" << endl;
+
+                }
+            }
         }
     }
 
