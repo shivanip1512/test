@@ -57,6 +57,8 @@ public class TagModel extends DBTreeModel
 			for (int i = 0; i < theTags.size(); i++)
 			{
 				DBTreeNode tagNode = new DBTreeNode(theTags.get(i));
+				if(((com.cannontech.database.data.lite.LiteTag)theTags.get(i)).getTagID() < 0)
+					tagNode.setIsSystemReserved(true);
 
 				rootNode.add(tagNode);
 			}
