@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2002/10/09 19:45:46 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2002/12/11 21:53:14 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@
 #include "tbl_pao.h"
 #include "yukon.h"
 #include "queues.h"
+#include "utility.h"
 
 class CtiMessage;
 class CtiReturnMsg;
