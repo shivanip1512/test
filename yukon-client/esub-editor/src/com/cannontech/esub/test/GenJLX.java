@@ -1,12 +1,13 @@
 /*
  * Created on May 9, 2003
-  */
+ * 
+ * Example/Test program to generate a JLoox (.jlx) drawing 
+ */
 package com.cannontech.esub.test;
 
 import java.awt.Color;
 import java.awt.Font;
 
-import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.YukonImageFuncs;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Drawing;
@@ -17,6 +18,7 @@ import com.cannontech.esub.element.DynamicText;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
