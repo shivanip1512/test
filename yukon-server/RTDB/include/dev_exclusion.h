@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/19 14:48:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/20 22:42:30 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.5  2004/05/20 22:42:30  cplender
+* Various exclusion changes
+*
 * Revision 1.4  2004/05/19 14:48:53  cplender
 * Exclusion changes
 *
@@ -69,8 +72,7 @@ protected:
     RWTime              _evalNext;                // Device should be looked at again at this time for exclusion purposes
     RWTime              _executingUntil;          // Device is currently executing until...
     RWTime              _executeGrantExpires;     // Device is may execute until...
-    RWTime              _mustCompleteBy;          // This is the allotted time if this device were allowed to execute now.
-    RWTime              _lastExclusionGrant;      // This is the last time this device was granted execution priviledges.
+    RWTime              _executionGrant;      // This is the last time this device was granted execution priviledges.
 
 private:
 
@@ -110,12 +112,10 @@ public:
 
     RWTime getEvaluateNextAt() const;
     void setEvaluateNextAt(RWTime set);
-    RWTime getMustCompleteBy() const;
-    void setMustCompleteBy(RWTime set);
     RWTime getExecutionGrantExpires() const;
     void setExecutionGrantExpires(RWTime set);
-    RWTime getLastExclusionGrant() const;
-    void setLastExclusionGrant(RWTime set);
+    RWTime getExecutionGrant() const;
+    void setExecutionGrant(RWTime set);
 
     bool isTimeExclusionOpen() const;          // This device has no time slot, or no is in the timeslot.
     bool proximityExcludes(LONG id) const;

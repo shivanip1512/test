@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/05/19 14:48:53 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/05/20 22:42:30 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.5  2004/05/20 22:42:30  cplender
+* Various exclusion changes
+*
 * Revision 1.4  2004/05/19 14:48:53  cplender
 * Exclusion changes
 *
@@ -30,6 +33,7 @@
 
 #pragma warning( disable : 4786)
 
+#include "cparms.h"
 #include "dev_exclusion.h"
 #include "guard.h"
 #include "logger.h"
@@ -434,16 +438,6 @@ void CtiDeviceExclusion::setEvaluateNextAt(RWTime set)
     return;
 }
 
-RWTime CtiDeviceExclusion::getMustCompleteBy() const
-{
-    return _mustCompleteBy;
-}
-void CtiDeviceExclusion::setMustCompleteBy(RWTime set)
-{
-    _mustCompleteBy = set;
-    return;
-}
-
 RWTime CtiDeviceExclusion::getExecutionGrantExpires() const
 {
     return _executeGrantExpires;
@@ -454,13 +448,13 @@ void CtiDeviceExclusion::setExecutionGrantExpires(RWTime set)
     return;
 }
 
-RWTime CtiDeviceExclusion::getLastExclusionGrant() const
+RWTime CtiDeviceExclusion::getExecutionGrant() const
 {
-    return _lastExclusionGrant;
+    return _executionGrant;
 }
-void CtiDeviceExclusion::setLastExclusionGrant(RWTime set)
+void CtiDeviceExclusion::setExecutionGrant(RWTime set)
 {
-    _lastExclusionGrant = set;
+    _executionGrant = set;
     return;
 }
 
@@ -510,6 +504,10 @@ RWTime CtiDeviceExclusion::getNextTimeSlotOpen() const
         RWTime now;
         RWTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
         tm = nextOpen + _cycleTimeExclusion.getCycleOffset();
+    }
+    else
+    {
+        tm = RWTime() + gConfigParms.getValueAsInt("PORTER_SA_REPEAT_DELAY", 300);
     }
 
     return tm;
