@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     7/22/2003 4:53:48 PM                         */
+/* Created on:     8/27/2003 3:09:22 PM                         */
 /*==============================================================*/
 
 
@@ -135,6 +135,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('BaseLine')
+            and   type = 'U')
+   drop table BaseLine
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('BillingFileFormats')
             and   type = 'U')
    drop table BillingFileFormats
@@ -215,6 +223,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CalcPointBaseline')
+            and   type = 'U')
+   drop table CalcPointBaseline
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CapControlFeeder')
             and   type = 'U')
    drop table CapControlFeeder
@@ -274,14 +290,6 @@ if exists (select 1
            where  id = object_id('CustomerAdditionalContact')
             and   type = 'U')
    drop table CustomerAdditionalContact
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerBaseLine')
-            and   type = 'U')
-   drop table CustomerBaseLine
 go
 
 
@@ -570,6 +578,14 @@ if exists (select 1
            where  id = object_id('DynamicPAOStatistics')
             and   type = 'U')
    drop table DynamicPAOStatistics
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DynamicPointAlarming')
+            and   type = 'U')
+   drop table DynamicPointAlarming
 go
 
 
@@ -1167,6 +1183,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('SOELog')
+            and   type = 'U')
+   drop table SOELog
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('STATE')
             and   type = 'U')
    drop table STATE
@@ -1395,6 +1419,37 @@ insert into AlarmCategory values(32,'Category 31',1);
 
 alter table AlarmCategory
    add constraint PK_ALARMCATEGORYID primary key  (AlarmCategoryID)
+go
+
+
+/*==============================================================*/
+/* Table : BaseLine                                             */
+/*==============================================================*/
+create table BaseLine (
+BaselineID           numeric              not null,
+BaselineName         varchar(30)          not null,
+DaysUsed             numeric              not null,
+PercentWindow        numeric              not null,
+CalcDays             numeric              not null,
+ExcludedWeekDays     char(7)              not null,
+HolidaysUsed         numeric              not null
+)
+go
+
+
+insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
+
+alter table BaseLine
+   add constraint PK_BASELINE primary key  (BaselineID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_BASELINE_PK                                      */
+/*==============================================================*/
+create unique  index Indx_BASELINE_PK on BaseLine (
+BaselineID
+)
 go
 
 
@@ -1638,11 +1693,37 @@ Notes                varchar(300)         null
 go
 
 
-insert into CTIDatabase values('2.41', 'Ryan', '29-APR-2003', 'Major changes to roles,groups. Added SeasonSchedule, modified LMProgram,DynamicLMGroup,EnergyCompany');
+insert into CTIDatabase values('2.42', 'Ryan', '1-Aug-2003', ' ');
 
 
 alter table CTIDatabase
    add constraint PK_CTIDATABASE primary key  (Version)
+go
+
+
+/*==============================================================*/
+/* Table : CalcPointBaseline                                    */
+/*==============================================================*/
+create table CalcPointBaseline (
+PointID              numeric              not null,
+BaselineID           numeric              not null
+)
+go
+
+
+insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
+
+alter table CalcPointBaseline
+   add constraint PK_CalcBsPt primary key  (PointID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_CLCPTB_PK                                        */
+/*==============================================================*/
+create unique  index Indx_CLCPTB_PK on CalcPointBaseline (
+BaselineID
+)
 go
 
 
@@ -1811,25 +1892,6 @@ go
 
 alter table CustomerAdditionalContact
    add constraint PK_CUSTOMERADDITIONALCONTACT primary key  (ContactID, CustomerID)
-go
-
-
-/*==============================================================*/
-/* Table : CustomerBaseLine                                     */
-/*==============================================================*/
-create table CustomerBaseLine (
-CustomerID           numeric              not null,
-DaysUsed             numeric              not null,
-PercentWindow        numeric              not null,
-CalcDays             numeric              not null,
-ExcludedWeekDays     char(7)              not null,
-HolidaysUsed         numeric              not null
-)
-go
-
-
-alter table CustomerBaseLine
-   add constraint PK_CUSTOMERBASELINE primary key  (CustomerID)
 go
 
 
@@ -2661,6 +2723,30 @@ go
 
 alter table DynamicPAOStatistics
    add constraint PK_DYNAMICPAOSTATISTICS primary key  (PAOBjectID, StatisticType)
+go
+
+
+/*==============================================================*/
+/* Table : DynamicPointAlarming                                 */
+/*==============================================================*/
+create table DynamicPointAlarming (
+PointID              numeric              not null,
+AlarmCondition       numeric              not null,
+CategoryID           numeric              not null,
+AlarmTime            datetime             not null,
+Action               varchar(60)          not null,
+Description          varchar(120)         not null,
+Tags                 numeric              not null,
+LogID                numeric              not null,
+SOE_TAG              numeric              not null,
+Type                 numeric              not null,
+UserName             varchar(30)          not null
+)
+go
+
+
+alter table DynamicPointAlarming
+   add constraint PK_DYNAMICPOINTALARMING primary key  (PointID, AlarmCondition)
 go
 
 
@@ -4302,6 +4388,52 @@ go
 
 
 /*==============================================================*/
+/* Table : SOELog                                               */
+/*==============================================================*/
+create table SOELog (
+LogID                numeric              not null,
+PointID              numeric              not null,
+SOEDateTime          datetime             not null,
+Millis               numeric              not null,
+Description          varchar(60)          not null,
+AdditionalInfo       varchar(120)         not null
+)
+go
+
+
+alter table SOELog
+   add constraint SYS_SOELog_PK primary key  (LogID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_SYSLG_PtId                                       */
+/*==============================================================*/
+create   index Indx_SYSLG_PtId on SOELog (
+PointID
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_SYSLG_Date                                       */
+/*==============================================================*/
+create   index Indx_SYSLG_Date on SOELog (
+SOEDateTime
+)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_SOELog_PK                                        */
+/*==============================================================*/
+create unique  index Indx_SOELog_PK on SOELog (
+LogID
+)
+go
+
+
+/*==============================================================*/
 /* Table : STATE                                                */
 /*==============================================================*/
 create table STATE (
@@ -4348,7 +4480,7 @@ INSERT INTO State VALUES(-5, 5, 'Priority 5', 8, 6, 0);
 INSERT INTO State VALUES(-5, 6, 'Priority 6', 5, 6, 0);
 INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6, 0);
 INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
-INSERT INTO State VALUES(-5, 9, 'Priority 9', 6, 6, 0);
+INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
 INSERT INTO State VALUES(-5, 10, 'Priority 10', 9, 6, 0);
 
 alter table STATE
@@ -4647,7 +4779,9 @@ insert into YukonGroup values(-1,'yukon','The default system user group that all
 insert into YukonGroup values(-100,'operators', 'The default group of yukon operators');
 insert into yukongroup values(-200,'Esub Users', 'The default group of esubstation users');
 insert into yukongroup values(-201,'Esub Operators', 'The default group of esubstation operators');
-
+insert into yukongroup values (-301,'Web Client Operators','The default group of web client operators');
+insert into yukongroup values (-300,'Residential Customers','The default group of residential customers');
+insert into yukongroup values (-302, 'Web Client Customers', 'The default group of web client customers');
 
 alter table YukonGroup
    add constraint PK_YUKONGROUP primary key  (GroupID)
@@ -4739,6 +4873,139 @@ insert into YukonGroupRole values(350,-201,-206,-20600,'(none)');
 insert into YukonGroupRole values(351,-201,-206,-20601,'true');
 insert into YukonGroupRole values(352,-201,-206,-20602,'false');
 
+/* Web Client Customers Web Client role */
+insert into yukongrouprole values (400, -302, -108, -10800, '/user/CILC/user_trending.jsp');
+insert into yukongrouprole values (401, -302, -108, -10801, '(none)');
+insert into yukongrouprole values (402, -302, -108, -10802, '(none)');
+insert into yukongrouprole values (403, -302, -108, -10803, '(none)');
+insert into yukongrouprole values (404, -302, -108, -10804, '(none)');
+insert into yukongrouprole values (405, -302, -108, -10805, '(none)');
+insert into yukongrouprole values (406, -302, -108, -10806, '(none)');
+
+/* Web Client Customers Direct Load Control role */
+insert into yukongrouprole values (407, -302, -300, -30000, '(none)');
+insert into yukongrouprole values (408, -302, -300, -30001, 'true');
+
+/* Web Client Customers Curtailment role */
+insert into yukongrouprole values (409, -302, -301, -30100, '(none)');
+insert into yukongrouprole values (410, -302, -301, -30101, '(none)');
+
+/* Web Client Customers Energy Buyback role */
+insert into yukongrouprole values (411, -302, -302, -30200, '(none)');
+insert into yukongrouprole values (412, -302, -302, -30200, '(none)');
+
+/* Web Client Customers Commercial Metering role */
+insert into yukongrouprole values (413, -302, -304, -30400, '(none)');
+insert into yukongrouprole values (414, -302, -304, -30401, 'true');
+
+/* Web Client Customers Administrator role */
+insert into yukongrouprole values (415, -302, -305, -30500, 'true');
+
+insert into yukongrouprole values (500,-300,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
+insert into yukongrouprole values (501,-300,-108,-10801,'(none)');
+insert into yukongrouprole values (502,-300,-108,-10802,'(none)');
+insert into yukongrouprole values (503,-300,-108,-10803,'(none)');
+insert into yukongrouprole values (504,-300,-108,-10804,'(none)');
+insert into yukongrouprole values (505,-300,-108,-10805,'DemoHeaderCES.gif');
+insert into yukongrouprole values (506,-300,-108,-10806,'(none)');
+insert into yukongrouprole values (520,-300,-400,-40000,'true');
+insert into yukongrouprole values (521,-300,-400,-40001,'true');
+insert into yukongrouprole values (522,-300,-400,-40002,'false');
+insert into yukongrouprole values (523,-300,-400,-40003,'true');
+insert into yukongrouprole values (524,-300,-400,-40004,'true');
+insert into yukongrouprole values (525,-300,-400,-40005,'true');
+insert into yukongrouprole values (526,-300,-400,-40006,'true');
+insert into yukongrouprole values (527,-300,-400,-40007,'true');
+insert into yukongrouprole values (528,-300,-400,-40008,'true');
+insert into yukongrouprole values (529,-300,-400,-40009,'true');
+insert into yukongrouprole values (550,-300,-400,-40050,'false');
+insert into yukongrouprole values (551,-300,-400,-40051,'false');
+insert into yukongrouprole values (552,-300,-400,-40052,'false');
+insert into yukongrouprole values (553,-300,-400,-40053,'false');
+insert into yukongrouprole values (554,-300,-400,-40054,'false');
+insert into yukongrouprole values (600,-300,-400,-40100,'(none)');
+insert into yukongrouprole values (601,-300,-400,-40101,'(none)');
+insert into yukongrouprole values (610,-300,-400,-40110,'(none)');
+insert into yukongrouprole values (611,-300,-400,-40111,'(none)');
+insert into yukongrouprole values (612,-300,-400,-40112,'(none)');
+insert into yukongrouprole values (613,-300,-400,-40113,'(none)');
+insert into yukongrouprole values (614,-300,-400,-40114,'(none)');
+insert into yukongrouprole values (615,-300,-400,-40115,'(none)');
+insert into yukongrouprole values (616,-300,-400,-40116,'(none)');
+insert into yukongrouprole values (617,-300,-400,-40117,'(none)');
+insert into yukongrouprole values (630,-300,-400,-40130,'(none)');
+insert into yukongrouprole values (631,-300,-400,-40131,'(none)');
+insert into yukongrouprole values (632,-300,-400,-40132,'(none)');
+insert into yukongrouprole values (633,-300,-400,-40133,'(none)');
+insert into yukongrouprole values (634,-300,-400,-40134,'(none)');
+insert into yukongrouprole values (650,-300,-400,-40150,'(none)');
+insert into yukongrouprole values (651,-300,-400,-40151,'(none)');
+insert into yukongrouprole values (652,-300,-400,-40152,'(none)');
+insert into yukongrouprole values (653,-300,-400,-40153,'(none)');
+insert into yukongrouprole values (654,-300,-400,-40154,'(none)');
+insert into yukongrouprole values (655,-300,-400,-40155,'(none)');
+insert into yukongrouprole values (656,-300,-400,-40156,'(none)');
+insert into yukongrouprole values (657,-300,-400,-40157,'(none)');
+insert into yukongrouprole values (658,-300,-400,-40158,'(none)');
+insert into yukongrouprole values (670,-300,-400,-40170,'(none)');
+insert into yukongrouprole values (671,-300,-400,-40171,'(none)');
+insert into yukongrouprole values (680,-300,-400,-40180,'(none)');
+insert into yukongrouprole values (681,-300,-400,-40181,'(none)');
+
+insert into yukongrouprole values (700,-301,-108,-10800,'/operator/Operations.jsp');
+insert into yukongrouprole values (701,-301,-108,-10801,'(none)');
+insert into yukongrouprole values (702,-301,-108,-10802,'(none)');
+insert into yukongrouprole values (703,-301,-108,-10803,'(none)');
+insert into yukongrouprole values (704,-301,-108,-10804,'(none)');
+insert into yukongrouprole values (705,-301,-108,-10805,'(none)');
+insert into yukongrouprole values (706,-301,-108,-10806,'(none)');
+insert into yukongrouprole values (720,-301,-201,-20100,'true');
+insert into yukongrouprole values (721,-301,-201,-20101,'true');
+insert into yukongrouprole values (722,-301,-201,-20102,'true');
+insert into yukongrouprole values (723,-301,-201,-20103,'true');
+insert into yukongrouprole values (724,-301,-201,-20104,'false');
+insert into yukongrouprole values (725,-301,-201,-20105,'false');
+insert into yukongrouprole values (726,-301,-201,-20106,'true');
+insert into yukongrouprole values (727,-301,-201,-20107,'true');
+insert into yukongrouprole values (728,-301,-201,-20108,'true');
+insert into yukongrouprole values (729,-301,-201,-20109,'true');
+insert into yukongrouprole values (730,-301,-201,-20110,'true');
+insert into yukongrouprole values (731,-301,-201,-20111,'true');
+insert into yukongrouprole values (732,-301,-201,-20112,'true');
+insert into yukongrouprole values (733,-301,-201,-20113,'true');
+insert into yukongrouprole values (734,-301,-201,-20114,'true');
+insert into yukongrouprole values (735,-301,-201,-20115,'true');
+insert into yukongrouprole values (736,-301,-201,-20116,'true');
+insert into yukongrouprole values (750,-301,-201,-20150,'true');
+insert into yukongrouprole values (751,-301,-201,-20151,'true');
+insert into yukongrouprole values (752,-301,-201,-20152,'false');
+insert into yukongrouprole values (770,-301,-202,-20200,'(none)');
+insert into yukongrouprole values (775,-301,-203,-20300,'(none)');
+insert into yukongrouprole values (776,-301,-203,-20301,'(none)');
+insert into yukongrouprole values (780,-301,-204,-20400,'(none)');
+insert into yukongrouprole values (785,-301,-205,-20500,'(none)');
+insert into yukongrouprole values (790,-301,-207,-20700,'(none)');
+insert into yukongrouprole values (800,-301,-201,-20800,'(none)');
+insert into yukongrouprole values (810,-301,-201,-20810,'(none)');
+insert into yukongrouprole values (813,-301,-201,-20813,'(none)');
+insert into yukongrouprole values (814,-301,-201,-20814,'(none)');
+insert into yukongrouprole values (815,-301,-201,-20815,'(none)');
+insert into yukongrouprole values (816,-301,-201,-20816,'(none)');
+insert into yukongrouprole values (819,-301,-201,-20819,'(none)');
+insert into yukongrouprole values (820,-301,-201,-20820,'(none)');
+insert into yukongrouprole values (830,-301,-201,-20830,'(none)');
+insert into yukongrouprole values (831,-301,-201,-20831,'(none)');
+insert into yukongrouprole values (832,-301,-201,-20832,'(none)');
+insert into yukongrouprole values (833,-301,-201,-20833,'(none)');
+insert into yukongrouprole values (834,-301,-201,-20834,'(none)');
+insert into yukongrouprole values (850,-301,-201,-20850,'(none)');
+insert into yukongrouprole values (851,-301,-201,-20851,'(none)');
+insert into yukongrouprole values (852,-301,-201,-20852,'(none)');
+insert into yukongrouprole values (853,-301,-201,-20853,'(none)');
+insert into yukongrouprole values (854,-301,-201,-20854,'(none)');
+insert into yukongrouprole values (855,-301,-201,-20855,'(none)');
+insert into yukongrouprole values (856,-301,-201,-20856,'(none)');
+insert into yukongrouprole values (870,-301,-201,-20870,'(none)');
 
 
 alter table YukonGroupRole
@@ -4785,66 +5052,6 @@ insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
 insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
 insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
-
-
-insert into YukonListEntry values (1001,1001,0,'Program',1001);
-insert into YukonListEntry values (1002,1001,0,'Hardware',1002);
-insert into YukonListEntry values (1003,1002,0,'Signup',1101);
-insert into YukonListEntry values (1004,1002,0,'Activation Pending',1102);
-insert into YukonListEntry values (1005,1002,0,'Activation Completed',1103);
-insert into YukonListEntry values (1006,1002,0,'Termination',1104);
-insert into YukonListEntry values (1007,1002,0,'Temp Opt Out',1105);
-insert into YukonListEntry values (1008,1002,0,'Future Activation',1106);
-insert into YukonListEntry values (1009,1002,0,'Install',1107);
-insert into YukonListEntry values (1010,1002,0,'Configure',1108);
-insert into YukonListEntry values (1011,1003,0,'OneWayReceiver',1201);
-insert into YukonListEntry values (1012,1004,0,'120/120',0);
-insert into YukonListEntry values (1013,1005,0,'LCR-5000',0);
-insert into YukonListEntry values (1014,1005,0,'LCR-4000',0);
-insert into YukonListEntry values (1015,1005,0,'LCR-3000',0);
-insert into YukonListEntry values (1016,1005,0,'LCR-2000',0);
-insert into YukonListEntry values (1017,1005,0,'LCR-1000',0);
-insert into YukonListEntry values (1018,1005,0,'Thermostat',1301);
-insert into YukonListEntry values (1019,1007,0,'Air Conditioner',1401);
-insert into YukonListEntry values (1020,1007,0,'Water Heater',1402);
-insert into YukonListEntry values (1021,1007,0,'Heating System',1403);
-insert into YukonListEntry values (1022,1007,0,'Pool Pump',1404);
-insert into YukonListEntry values (1023,1007,0,'Hot Tub',1405);
-insert into YukonListEntry values (1024,1008,0,'General',0);
-insert into YukonListEntry values (1025,1008,0,'Credit',0);
-insert into YukonListEntry values (1026,1009,0,'Service Call',0);
-insert into YukonListEntry values (1027,1009,0,'Install',0);
-insert into YukonListEntry values (1028,1010,0,'Unscheduled',1501);
-insert into YukonListEntry values (1029,1010,0,'Scheduled',1502);
-insert into YukonListEntry values (1030,1010,0,'Completed',1503);
-insert into YukonListEntry values (1031,1011,0,'Acct #',1601);
-insert into YukonListEntry values (1032,1011,0,'Phone #',1602);
-insert into YukonListEntry values (1033,1011,0,'Last name',1603);
-insert into YukonListEntry values (1034,1011,0,'Serial #',1604);
-insert into YukonListEntry values (1035,1006,0,'Available',1701);
-insert into YukonListEntry values (1036,1006,0,'Temp Unavail',1702);
-insert into YukonListEntry values (1037,1006,0,'Unavailable',1703);
-insert into YukonListEntry values (1038,1012,0,'(Unknown);',1801);
-insert into YukonListEntry values (1039,1012,0,'Century',0);
-insert into YukonListEntry values (1040,1012,0,'Universal',0);
-insert into YukonListEntry values (1041,1013,0,'(Unknown);',1901);
-insert into YukonListEntry values (1042,1013,0,'Basement',0);
-insert into YukonListEntry values (1043,1013,0,'North Side',0);
-insert into YukonListEntry values (1044,1014,0,'Likely',2001);
-insert into YukonListEntry values (1045,1014,0,'Unlikely',2002);
-insert into YukonListEntry values (1046,1015,0,'Weekday',2101);
-insert into YukonListEntry values (1047,1015,0,'Weekend',2102);
-insert into YukonListEntry values (1048,1015,0,'Saturday',2103);
-insert into YukonListEntry values (1049,1015,0,'Sunday',2104);
-insert into YukonListEntry values (1050,1016,0,'Signup',2201);
-insert into YukonListEntry values (1051,1016,0,'Exit',2202);
-insert into YukonListEntry values (1052,1017,0,'Selection',2301);
-insert into YukonListEntry values (1053,1017,0,'Free Form',2302);
-insert into YukonListEntry values (1054,1018,0,'Cool',2401);
-insert into YukonListEntry values (1055,1018,0,'Heat',2402);
-insert into YukonListEntry values (1056,1018,0,'Off',2403);
-insert into YukonListEntry values (1057,1019,0,'Auto',2501);
-insert into YukonListEntry values (1058,1019,0,'On',2502);
 
 alter table YukonListEntry
    add constraint PK_YUKONLISTENTRY primary key  (EntryID)
@@ -4940,6 +5147,7 @@ insert into YukonRole values(-301,'Curtailment','CICustomer','Customer access to
 insert into YukonRole values(-302,'Energy Buyback','CICustomer','Customer access to commercial/industrial customer energy buyback');
 insert into YukonRole values(-303,'Esubstation Drawings','CICustomer','Customer access to esubstation drawings');
 insert into YukonRole values(-304,'Commercial Metering','CICustomer','Customer access to commercial metering');
+insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privilages.');
 
 /* Consumer roles */
 insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
@@ -4999,7 +5207,8 @@ insert into YukonRoleProperty values(-1101,-2,'optout_notification_recipients','
 insert into YukonRoleProperty values(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
 insert into YukonRoleProperty values(-1103,-2,'switch_command_file','c:/yukon/switch_command/default_switch.txt','Location of the file to temporarily store the switch commands');
 insert into YukonRoleProperty values(-1104,-2,'optout_command_file','c:/yukon/switch_command/default_optout.txt','Location of the file to temporarily store the opt out commands');
-insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Web Demo Residential Customers','Group name of all the customer logins');
+insert into YukonRoleProperty values(-1105,-2,'customer_group_name','Residential Customers','Group name of all the residential customer logins');
+insert into YukonRoleProperty values(-1106,-2,'operator_group_name','WebClient Operators','Group name of all the web client operator logins');
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','<description>');
@@ -5047,6 +5256,7 @@ insert into yukonroleproperty values (-10802, -108,'style_sheet','CannonStyle.cs
 insert into yukonroleproperty values (-10803, -108,'nav_bullet_selected','Bullet.gif','The bullet used when an item in the nav is selected.');
 insert into yukonroleproperty values (-10804,-108,'nav_bullet','Bullet2.gif','The bullet used when an item in the nav is NOT selected.');
 insert into yukonroleproperty values (-10805,-108,'header_logo','DemoHeader.gif','The main header logo');
+insert into YukonRoleProperty values(-10806,-108,'log_off_url','(none)','The url to take the user after logging off the Yukon web application');
 
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20100,-201,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
@@ -5066,12 +5276,16 @@ insert into YukonRoleProperty values(-20113,-201,'Hardwares Thermostat','true','
 insert into YukonRoleProperty values(-20114,-201,'Work Orders','false','Controls whether to enable the service request feature');
 insert into YukonRoleProperty values(-20115,-201,'Admin Change Login','true','Controls whether to enable the changing customer login feature');
 insert into YukonRoleProperty values(-20116,-201,'Admin FAQ','false','Controls whether to show customer FAQs');
+
 insert into YukonRoleProperty values(-20130,-201,'Super Operator','false','Used for some testing functions (not recommended)');
 insert into YukonRoleProperty values(-20131,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 insert into YukonRoleProperty values(-20132,-201,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
-insert into YukonRoleProperty values(-20150,-201,'Web Link FAQ','FAQ.jsp','The customized FAQ link provided by the energy company');
-insert into YukonRoleProperty values(-20151,-201,'Web Text Control','control','The energy company specific term for control');
-insert into YukonRoleProperty values(-20152,-201,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
+
+/* Operator Consumer Info Role Properties */
+insert into YukonRoleProperty values(-20150,-201,'Super Operator','false','Used for some testing functions (not recommended)');
+insert into YukonRoleProperty values(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
+insert into YukonRoleProperty values(-20152,-201,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
+
 insert into YukonRoleProperty values(-20153,-201,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
 insert into YukonRoleProperty values(-20154,-201,'Program Control History Title','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
 insert into YukonRoleProperty values(-20155,-201,'Program Control Summary Title','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
@@ -5084,6 +5298,10 @@ insert into YukonRoleProperty values(-20161,-201,'Programs Opt Out Label','Opt O
 insert into YukonRoleProperty values(-20162,-201,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
 
 /* Operator Administrator Role Properties */
+insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
+insert into YukonRoleProperty values(-20001,-200,'Create Energy Company','false','Controls whether to allow creating a new energy company');
+insert into YukonRoleProperty values(-20002,-200,'Delete Energy Company','false','Controls whether to allow deleting the energy company');
+
 /* Operator Commercial Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
 
@@ -5097,10 +5315,38 @@ insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Not
 /* Operator Energy Exchange Role Properties */
 insert into YukonRoleProperty values(-20500,-205,'Energy Buyback Label','Energy Buyback','The operator specific name for Energy Buyback');
 
+/* Operator Esubstation Drawings Role Properties */
+insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
+insert into YukonRoleProperty values(-20601,-206,'Edit Limits','false','Controls editing of point limits');
+insert into YukonRoleProperty values(-20602,-206,'Control','false','Controls control from Esubstation drawings');
+
 /* Odds For Control Role Properties */
 insert into YukonRoleProperty values(-20700,-207,'Odds For Control Label','Odds for Control','The operator specific name for odds for control');
 
 /* Operator Hardware Inventory Role Properties */
+insert into YukonRoleProperty values(-20800,-201,'Link FAQ','FAQ.jsp','The customized FAQ link');
+insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
+insert into YukonRoleProperty values(-20813,-201,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
+insert into YukonRoleProperty values(-20814,-201,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
+insert into YukonRoleProperty values(-20815,-201,'Text Opt Out Past','opted out','Past form of the term for opt out');
+insert into YukonRoleProperty values(-20816,-201,'Text Reenable','reenable','Term for reenable');
+insert into YukonRoleProperty values(-20819,-201,'Text Odds for Control','odds for control','Text for odds for control');
+insert into YukonRoleProperty values(-20820,-201,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
+insert into YukonRoleProperty values(-20830,-201,'Label Programs Control History','Control History','Text of the programs control history link');
+insert into YukonRoleProperty values(-20831,-201,'Label Programs Enrollment','Enrollment','Text of the programs enrollment link');
+insert into YukonRoleProperty values(-20832,-201,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
+insert into YukonRoleProperty values(-20833,-201,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
+insert into YukonRoleProperty values(-20834,-201,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
+insert into YukonRoleProperty values(-20850,-201,'Title Programs Control History','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-20851,-201,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+insert into YukonRoleProperty values(-20852,-201,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+insert into YukonRoleProperty values(-20853,-201,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+insert into YukonRoleProperty values(-20854,-201,'Title Programs Opt Out','PROGRAMS - OPT OUT','Title of the programs opt out page');
+insert into YukonRoleProperty values(-20855,-201,'Title Thermostat Schedule','Schedule','Title of the thermostat schedule page');
+insert into YukonRoleProperty values(-20856,-201,'Title Thermostat Manual','Manual','Title of the thermostat manual page');
+insert into YukonRoleProperty values(-20870,-201,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+
+
 
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
@@ -5123,10 +5369,8 @@ insert into YukonRoleProperty values(-30302,-303,'Control','false','Controls con
 insert into YukonRoleProperty values(-30400,-304,'Trending Disclaimer',' ','The disclaimer that appears with trends');
 insert into yukonroleproperty values(-30401, -304, 'Trending Get Data Now Button', 'false', 'Controls access to retrieve meter data on demand');
 
-/* Operator Esubstation Drawings Role Properties */
-insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
-insert into YukonRoleProperty values(-20601,-206,'Edit Limits','false','Controls editing of point limits');
-insert into YukonRoleProperty values(-20602,-206,'Control','false','Controls control from Esubstation drawings');
+/* CICustomer Administrator Role */
+insert into yukonroleproperty values(-30500, -305, 'Contact Information Editable', 'false', 'Contact information is editable by the customer');
 
 /* Residential Customer Role Properties */
 insert into YukonRoleProperty values(-40000,-400,'Not Implemented','false','Controls whether to show the features not implemented yet (not recommended)');
@@ -5143,11 +5387,11 @@ insert into YukonRoleProperty values(-40030,-400,'Notification on General Page',
 insert into YukonRoleProperty values(-40031,-400,'Hide Opt Out Box','true','Controls whether to show the opt out box on the programs opt out page');
 insert into YukonRoleProperty values(-40032,-400,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
 insert into YukonRoleProperty values(-40033,-400,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
-insert into YukonRoleProperty values(-40050,-400,'Web Link FAQ','FAQ.jsp','The customized FAQ link provided by the energy company');
-insert into YukonRoleProperty values(-40051,-400,'Web Link Utility Email','FAQ.jsp','The customized utility email provided by the energy company');
-insert into YukonRoleProperty values(-40052,-400,'Web Text Control','control','The energy company specific term for control');
-insert into YukonRoleProperty values(-40053,-400,'Web Text Controlled','controlled','The energy company specific term for controlled');
-insert into YukonRoleProperty values(-40054,-400,'Web Text Controlling','controlling','The energy company specific term for controlling');
+insert into YukonRoleProperty values(-40050,-400,'Notification on General Page','false','Controls whether to show the notification email box on the general page (useful only when the programs enrollment feature is not selected)');
+insert into YukonRoleProperty values(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
+insert into YukonRoleProperty values(-40052,-400,'Customized FAQ Link','false','Controls whether the FAQ link links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40053,-400,'Customized Utility Email Link','false','Controls whether the utility email links to a customized location provided by the energy company');
+insert into YukonRoleProperty values(-40054,-400,'Disable Program Signup','false','Controls whether to prevent the customers from enrolling in or out of the programs');
 insert into YukonRoleProperty values(-40055,-400,'Recommended Settings Button','Recommended Settings','The energy company specific term for Recommended Settings button on the thermostat schedule page');
 insert into YukonRoleProperty values(-40056,-400,'General Title','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
 insert into YukonRoleProperty values(-40057,-400,'Programs Control History Title','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
@@ -5162,6 +5406,34 @@ insert into YukonRoleProperty values(-40065,-400,'Programs Enrollment Label','En
 insert into YukonRoleProperty values(-40066,-400,'Programs Opt Out Label','Opt Out','Text of the programs opt out link');
 insert into YukonRoleProperty values(-40067,-400,'General Description','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
 insert into YukonRoleProperty values(-40068,-400,'Opt Out Description','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+insert into YukonRoleProperty values(-40100,-400,'Link FAQ','FAQ.jsp','The customized FAQ link');
+insert into YukonRoleProperty values(-40101,-400,'Link Utility Email','FAQ.jsp','The customized utility email');
+insert into YukonRoleProperty values(-40110,-400,'Text Control','control','Term for control');
+insert into YukonRoleProperty values(-40111,-400,'Text Controlled','controlled','Past form of the term for control');
+insert into YukonRoleProperty values(-40112,-400,'Text Controlling','controlling','Present form of the term for control');
+insert into YukonRoleProperty values(-40113,-400,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
+insert into YukonRoleProperty values(-40114,-400,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
+insert into YukonRoleProperty values(-40115,-400,'Text Opt Out Past','opted out','Past form of the term for opt out');
+insert into YukonRoleProperty values(-40116,-400,'Text Odds for Control','odds for control','Text for odds for control');
+insert into YukonRoleProperty values(-40117,-400,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
+insert into YukonRoleProperty values(-40130,-400,'Label Programs Control History','Control History','Text of the programs control history link');
+insert into YukonRoleProperty values(-40131,-400,'Label Programs Enrollment','Enrollment','Text of the programs enrollment link');
+insert into YukonRoleProperty values(-40132,-400,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
+insert into YukonRoleProperty values(-40133,-400,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
+insert into YukonRoleProperty values(-40134,-400,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
+insert into YukonRoleProperty values(-40150,-400,'Title General','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
+insert into YukonRoleProperty values(-40151,-400,'Title Programs Control History','PROGRAMS - CONTROL SUMMARY','Title of the programs control summary page');
+insert into YukonRoleProperty values(-40152,-400,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+insert into YukonRoleProperty values(-40153,-400,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+insert into YukonRoleProperty values(-40154,-400,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+insert into YukonRoleProperty values(-40155,-400,'Title Programs Opt Out','PROGRAMS - OPT OUT','Title of the programs opt out page');
+insert into YukonRoleProperty values(-40156,-400,'Title Utility','QUESTIONS - UTILITY','Title of the utility page');
+insert into YukonRoleProperty values(-40157,-400,'Title Thermostat Schedule','Schedule','Title of the thermostat schedule page');
+insert into YukonRoleProperty values(-40158,-400,'Title Thermostat Manual','Manual','Title of the thermostat manual page');
+insert into YukonRoleProperty values(-40170,-400,'Description General','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
+insert into YukonRoleProperty values(-40171,-400,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame from the drop-down box below, then select Submit.','Description on the programs opt out page');
+insert into YukonRoleProperty values(-40180,-400,'Image Corner','Mom.jpg','Image at the upper-left corner');
+insert into YukonRoleProperty values(-40181,-400,'Image General','Family.jpg','Image on the general page');
 
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key  (RolePropertyID)
@@ -5184,26 +5456,6 @@ go
 
 insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
 insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
-
-insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
-insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N');
-insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
-insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','N');
-insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','N');
-insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection', 'DeviceStatus','N');
-insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
-insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','N');
-insert into YukonSelectionList values (1009,'A','(none)','Service type selection', 'ServiceType','N');
-insert into YukonSelectionList values (1010,'N','(none)','Service request status', 'ServiceStatus','N');
-insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
-insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection', 'Manufacturer','N');
-insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection', 'ApplianceLocation','N');
-insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection', 'ChanceOfControl','N');
-insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection', 'TimeOfWeek','N');
-insert into YukonSelectionList values (1016,'N','(none)','Question type selection', 'QuestionType','N');
-insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
-insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection', 'ThermostatMode','N');
-insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection', 'ThermostatFanState','N');
 
 
 alter table YukonSelectionList
@@ -5802,9 +6054,15 @@ alter table EnergyCompanyCustomerList
 go
 
 
-alter table CustomerBaseLine
-   add constraint FK_CICst_CstBsLne foreign key (CustomerID)
-      references CICustomerBase (CustomerID)
+alter table CalcPointBaseline
+   add constraint FK_CLCBS_BASL foreign key (BaselineID)
+      references BaseLine (BaselineID)
+go
+
+
+alter table CalcPointBaseline
+   add constraint FK_ClcPtBs_ClcBs foreign key (PointID)
+      references CALCBASE (POINTID)
 go
 
 
@@ -5946,6 +6204,18 @@ alter table DynamicCalcHistorical
 go
 
 
+alter table DynamicPointAlarming
+   add constraint FK_DynPtAl_Pt foreign key (PointID)
+      references POINT (POINTID)
+go
+
+
+alter table DynamicPointAlarming
+   add constraint FKf_DynPtAl_SysL foreign key (LogID)
+      references SYSTEMLOG (LOGID)
+go
+
+
 alter table EnergyCompany
    add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)
       references Contact (ContactID)
@@ -6043,8 +6313,8 @@ go
 
 
 alter table LMGroupMCT
-   add constraint FK_LMGrMC_Dev foreign key (DeviceID)
-      references DEVICE (DEVICEID)
+   add constraint FK_LMGrMC_Grp foreign key (DeviceID)
+      references LMGroup (DeviceID)
 go
 
 
@@ -6237,6 +6507,12 @@ go
 alter table LMPROGRAM
    add constraint FK_SesSch_LmPr foreign key (SeasonScheduleID)
       references SeasonSchedule (ScheduleID)
+go
+
+
+alter table SOELog
+   add constraint FK_Soe_Pt foreign key (PointID)
+      references POINT (POINTID)
 go
 
 
