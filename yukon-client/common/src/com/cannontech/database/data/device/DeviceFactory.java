@@ -196,7 +196,26 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType( PAOGroups.STRING_MCT_GROUP[0] );
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
-			
+		case PAOGroups.LM_GROUP_SA305:
+			returnDevice = new com.cannontech.database.data.device.lm.LMGroupSA305();
+			returnDevice.setDeviceType(PAOGroups.STRING_SA305_GROUP[0]);
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+			break;
+		case PAOGroups.LM_GROUP_SA205:
+			returnDevice = new com.cannontech.database.data.device.lm.LMGroupSA205();
+			returnDevice.setDeviceType(PAOGroups.STRING_SA205_GROUP[0]);
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+			break;
+		case PAOGroups.LM_GROUP_SADIGITAL:
+			returnDevice = new com.cannontech.database.data.device.lm.LMGroupSADigital();
+			returnDevice.setDeviceType(PAOGroups.STRING_SADIGITAL_GROUP[0]);
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+			break;
+		case PAOGroups.LM_GROUP_GOLAY:
+			returnDevice = new com.cannontech.database.data.device.lm.LMGroupGolay();
+			returnDevice.setDeviceType(PAOGroups.STRING_GOLAY_GROUP[0]);
+			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+			break;
 		case PAOGroups.MACRO_GROUP:
 			returnDevice = new MacroGroup();
 			returnDevice.setDeviceType(PAOGroups.STRING_MACRO_GROUP[0]);

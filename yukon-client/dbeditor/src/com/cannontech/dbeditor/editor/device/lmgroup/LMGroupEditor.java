@@ -16,7 +16,9 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupBasePanel
 		{ PAOGroups.LM_GROUP_EMETCON, PAOGroups.LM_GROUP_RIPPLE, 
 		  PAOGroups.LM_GROUP_VERSACOM, PAOGroups.MACRO_GROUP, PAOGroups.LM_GROUP_MCT,
-		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM },
+		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM, 
+		  PAOGroups.LM_GROUP_SA305, PAOGroups.LM_GROUP_SA205,
+		  PAOGroups.LM_GROUP_SADIGITAL, PAOGroups.LM_GROUP_GOLAY },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupEmetconPanel
 		{ PAOGroups.LM_GROUP_EMETCON },
@@ -38,6 +40,18 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupMCTEditorPanel
 		{ PAOGroups.LM_GROUP_MCT },
+		
+		//com.cannontech.dbeditor.wizard.device.lmgroup.SA305EditorPanel
+		{ PAOGroups.LM_GROUP_SA305 },
+		
+		//com.cannontech.dbeditor.wizard.device.lmgroup.SA205EditorPanel
+		{ PAOGroups.LM_GROUP_SA205 },
+		
+		//com.cannontech.dbeditor.wizard.device.lmgroup.SADigitalEditorPanel
+		{ PAOGroups.LM_GROUP_SADIGITAL },
+		
+		//com.cannontech.dbeditor.wizard.device.lmgroup.GolayEditorPanel
+		{ PAOGroups.LM_GROUP_GOLAY },
 	};
 
 	
@@ -99,6 +113,26 @@ public Object[] createNewPanel(int panelIndex)
 		case 7:
 			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupMCTEditorPanel();
 			objs[1] = "Addressing";
+			break;
+			
+		case 8:
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.SA305EditorPanel();
+			objs[1] = "Settings";
+			break;
+			
+		case 9:
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.SA205EditorPanel();
+			objs[1] = "Settings";
+			break;
+			
+		case 10:
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.SADigitalEditorPanel();
+			objs[1] = "Settings";
+			break;
+			
+		case 11:
+			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.GolayEditorPanel();
+			objs[1] = "Settings";
 			break;
 	}
 		
