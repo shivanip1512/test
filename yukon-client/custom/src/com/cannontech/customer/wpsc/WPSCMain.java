@@ -36,7 +36,6 @@ public class WPSCMain implements Runnable
 	private java.util.GregorianCalendar now = null;
 	private int currentDate;
 
-	private DispatchConnResponderThread dispatchConnResp = null;
 	private LogWriterThread logWriter = null;
 	private String dataDir= "C:";
 	private String logFilename = "/wpscustom";
@@ -69,45 +68,6 @@ public class WPSCMain implements Runnable
 		}
 	}
 
-	private class DispatchConnResponderThread extends Thread
-	{
-		public void run()
-		{
-			WPSCMain.logMessage("Started conn responder", com.cannontech.common.util.LogWriter.DEBUG);
-			while(true)
-			{
-				synchronized (WPSCMain.class)
-				{
-				
-					if (dispatchConn.isValid())
-					{
-						Object msg = dispatchConn.read(0);
-						if (msg != null)
-						{
-							if (msg instanceof com.cannontech.message.dispatch.message.Command)
-							{
-								if (((com.cannontech.message.dispatch.message.Command) msg).getOperation() 
-									== com.cannontech.message.dispatch.message.Command.ARE_YOU_THERE)
-								{
-									com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
-									WPSCMain.logMessage("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
-									dispatchConn.write(msg);
-								}
-							}
-						}
-					}
-				}
-				try{
-					//Must take a break otherwise we spick CPU to 100% constantly!
-					sleep(2000);
-				}
-				catch(InterruptedException ie)
-				{
-					return;
-				}
-			}
-		}
-	}
 	
 /**
  * WPSCMain constructor comment.
@@ -287,10 +247,6 @@ public void run()
 		logWriter = new LogWriterThread();
 		logWriter.start();
 
-		// Start Are_you_there message (from Dispatch) listener.
-		dispatchConnResp = new DispatchConnResponderThread();
-		dispatchConnResp.start();
-			
 		CFDATAThread = new Thread(CFDATAInstance);
 		CFDATAThread.setDaemon(true);
 		CFDATAThread.start();

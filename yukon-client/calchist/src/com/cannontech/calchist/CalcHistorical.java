@@ -13,8 +13,6 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.message.dispatch.message.Command;
-//import com.cannontech.database.data.point.PointTypes;
 
 public final class CalcHistorical
 {
@@ -914,23 +912,8 @@ public void start()
 					e.printStackTrace();
 				}
 		
-				if (getDispatchConnection().isValid())
-				{
-					Object msg = getDispatchConnection().read(0);
-					if (msg != null)
-					{
-						if (msg instanceof Command)
-						{
-							if (((Command) msg).getOperation() == Command.ARE_YOU_THERE)
-							{
-								com.cannontech.clientutils.CTILogger.info("[" + new java.util.Date() + "]  Echoing -Are You There- message back to Dispatch.");
-								logEvent("Echoing -Are You There- message back to Dispatch.", com.cannontech.common.util.LogWriter.INFO);
-								getDispatchConnection().write(msg);
-							}
-						}
-					}
-				}
-			}while (isService);
+			} while (isService);
+
 		
 			try
 			{
