@@ -370,9 +370,9 @@ public class ServletUtils {
     	if (starsAddr == null) return "";
     	
     	StringBuffer sBuf = new StringBuffer( starsAddr.getStreetAddr1() );
-    	if (starsAddr.getStreetAddr2().length() > 0)
-    		sBuf.append( ", " ).append( starsAddr.getStreetAddr2() );
     	sBuf.append( "<br>" );
+    	if (starsAddr.getStreetAddr2().length() > 0)
+    		sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
     	sBuf.append( starsAddr.getCity() ).append( ", " )
     		.append( starsAddr.getState() ).append( " " )
     		.append( starsAddr.getZip() );

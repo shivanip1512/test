@@ -30,6 +30,8 @@
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	
+	StarsYukonUser user = null;
+	
 	StarsGetEnergyCompanySettingsResponse ecSettings = null;
 	StarsEnergyCompany energyCompany = null;
 	StarsWebConfig ecWebSettings = null;
@@ -37,7 +39,8 @@
 	StarsServiceCompanies companies = null;
 	StarsExitInterviewQuestions exitQuestions = null;
 	StarsDefaultThermostatSettings dftThermoSettings = null;
-	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+	
+	Hashtable selectionListTable = null;
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -57,7 +60,7 @@
 	
 	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, RoleTypes.OPERATOR_CONSUMER_INFO) != null)
 	{
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 		if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
 			user = SOAPServer.getStarsYukonUser( lYukonUser );
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
@@ -82,7 +85,7 @@
 			dftThermoSettings = ecSettings.getStarsDefaultThermostatSettings();
 		}
 		
-		Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+		selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 		
 		accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 		if (accountInfo != null) {

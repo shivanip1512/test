@@ -64,7 +64,7 @@
 	document.getElementById("StyleSheet").href = '../../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_STYLE_SHEET %>"/>';
 </script>
 
-<script langauge = "JavaScript">
+<script language = "JavaScript">
 function updateLayout(hour1, min1, temp1, hour2, min2, temp2, hour3, min3, temp3, hour4, min4, temp4) {
 	moveLayer('MovingLayer1', hour1, min1);
 	moveTempArrow('arrow1', 'div1', temp1);
