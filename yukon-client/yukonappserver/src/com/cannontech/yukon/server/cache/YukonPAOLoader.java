@@ -51,10 +51,9 @@ public class YukonPAOLoader implements Runnable
 		//temp code
 		String sqlString = 
 				"SELECT y.PAObjectID, y.Category, y.PAOName, " +
-				"y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS, dr.ROUTEID " +
+				"y.Type, y.PAOClass, y.Description, d.PORTID, dcs.ADDRESS " +
 				"FROM " + YukonPAObject.TABLE_NAME+ " y left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d " +
 				"on y.paobjectid = d.deviceid " +
-				"left outer join " + DeviceRoutes.TABLE_NAME + " DR ON Y.PAOBJECTID = DR.DEVICEID AND Y.PAOBJECTID = DR.ROUTEID " +				
 				"left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON Y.PAOBJECTID = DCS.DEVICEID " +				
 				"WHERE y.PAObjectID > 0 " +
 				"ORDER BY y.Category, y.PAOClass, y.PAOName";
@@ -86,9 +85,6 @@ public class YukonPAOLoader implements Runnable
 				BigDecimal portID = (BigDecimal)rset.getObject(7);
 				//this column may be null!!
 				BigDecimal address = (BigDecimal)rset.getObject(8);
-				//this column may be null!!
-				BigDecimal routeID = (BigDecimal)rset.getObject(9);
-				
 
 				LiteYukonPAObject pao = new LiteYukonPAObject(
 							paoID, 
@@ -104,12 +100,31 @@ public class YukonPAOLoader implements Runnable
 				if( address != null )
 					pao.setAddress( address.intValue() );
 
-				if( routeID != null )
-					pao.setRouteID( routeID.intValue() );
-
-
 				allPAObjects.add( pao );
 				allPAOsMap.put( new Integer(paoID), pao );
+			}
+			
+			
+			/** Load the routeID - the outer join just wasn't getting us the right information*/
+			if( rset != null )
+				rset.close();
+	
+			sqlString = "SELECT DEVICEID,ROUTEID FROM " + DeviceRoutes.TABLE_NAME+" WHERE DEVICEID > 0 ORDER BY DEVICEID";
+			rset = stmt.executeQuery(sqlString);
+	
+			while (rset.next())
+			{
+				int deviceID = rset.getInt(1);
+				int routeID = rset.getInt(2);
+	
+				for(int i = 0; i < allPAObjects.size(); i++)
+				{
+					if ( ((LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
+					{
+						((LiteYukonPAObject)allPAObjects.get(i)).setRouteID(routeID);
+						break;
+					}
+				}
 			}
 	
 		}
