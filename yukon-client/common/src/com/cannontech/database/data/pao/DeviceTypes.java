@@ -100,7 +100,7 @@ public interface DeviceTypes extends TypeBase
 	
 
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 76;
+	public final static int DEVICE_TYPES_COUNT = 79;
 	
 
 	//all the possible text representation of each device type.
