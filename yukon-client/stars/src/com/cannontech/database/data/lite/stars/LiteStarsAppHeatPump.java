@@ -13,6 +13,7 @@ import com.cannontech.common.util.CtiUtilities;
 public class LiteStarsAppHeatPump extends LiteStarsAppliance {
 
 	private int pumpTypeID = CtiUtilities.NONE_ID;
+	private int pumpSizeID = CtiUtilities.NONE_ID;
 	private int standbySourceID = CtiUtilities.NONE_ID;
 	private int secondsDelayToRestart = 0;
 	
@@ -70,6 +71,20 @@ public class LiteStarsAppHeatPump extends LiteStarsAppliance {
 	 */
 	public void setStandbySourceID(int standbySourceID) {
 		this.standbySourceID = standbySourceID;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPumpSizeID() {
+		return pumpSizeID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setPumpSizeID(int i) {
+		pumpSizeID = i;
 	}
 
 }

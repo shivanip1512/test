@@ -19,9 +19,10 @@ public class ApplianceHeatPump extends DBPersistent {
 	private Integer pumpTypeID = new Integer( CtiUtilities.NONE_ID );
 	private Integer standbySourceID = new Integer( CtiUtilities.NONE_ID );
 	private Integer secondsDelayToRestart = new Integer(0);
+	private Integer pumpSizeID = new Integer( CtiUtilities.NONE_ID );
 	
 	public static final String[] SETTER_COLUMNS = {
-		"PumpTypeID", "StandBySourceID", "SecondsDelayToRestart"
+		"PumpTypeID", "StandBySourceID", "SecondsDelayToRestart", "PumpSizeID"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "ApplianceID" };
@@ -37,7 +38,8 @@ public class ApplianceHeatPump extends DBPersistent {
 	 */
 	public void add() throws SQLException {
 		Object[] addValues = {
-			getApplianceID(), getPumpTypeID(), getStandbySourceID(), getSecondsDelayToRestart()
+			getApplianceID(), getPumpTypeID(), getStandbySourceID(),
+			getSecondsDelayToRestart(), getPumpSizeID()
 		};
 		
 		add( TABLE_NAME, addValues );
@@ -64,6 +66,7 @@ public class ApplianceHeatPump extends DBPersistent {
 			setPumpTypeID( (Integer) results[0] );
 			setStandbySourceID( (Integer) results[1] );
 			setSecondsDelayToRestart( (Integer) results[2] );
+			setPumpSizeID( (Integer) results[3] );
 		}
 		else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -74,7 +77,7 @@ public class ApplianceHeatPump extends DBPersistent {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = {
-			getPumpTypeID(), getStandbySourceID(), getSecondsDelayToRestart()
+			getPumpTypeID(), getStandbySourceID(), getSecondsDelayToRestart(), getPumpSizeID()
 		};
 		Object[] constraintValues = { getApplianceID() };
 		
@@ -82,7 +85,7 @@ public class ApplianceHeatPump extends DBPersistent {
 	}
     
     public static ApplianceHeatPump getApplianceHeatPump(Integer appID) {
-    	String sql = "SELECT ApplianceID, PumpTypeID, StandbySourceID, SecondsDelayToRestart " +
+    	String sql = "SELECT ApplianceID, PumpTypeID, StandbySourceID, SecondsDelayToRestart, PumpSizeID " +
     			"FROM " + TABLE_NAME + " WHERE ApplianceID = " + appID;
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
     			sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -97,6 +100,7 @@ public class ApplianceHeatPump extends DBPersistent {
     		app.setPumpTypeID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
     		app.setStandbySourceID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
     		app.setSecondsDelayToRestart( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
+    		app.setPumpSizeID( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
     		
     		return app;
     	}
@@ -169,6 +173,20 @@ public class ApplianceHeatPump extends DBPersistent {
 	 */
 	public void setApplianceID(Integer applianceID) {
 		this.applianceID = applianceID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getPumpSizeID() {
+		return pumpSizeID;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setPumpSizeID(Integer integer) {
+		pumpSizeID = integer;
 	}
 
 }
