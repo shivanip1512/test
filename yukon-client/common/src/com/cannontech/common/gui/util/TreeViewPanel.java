@@ -10,6 +10,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
+import javax.swing.AbstractAction;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -54,7 +57,7 @@ public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSe
 
 	private static final TreeFindPanel FND_PANEL = new TreeFindPanel();
 	private static OkCancelDialog dialog = null;
-
+	
 
 	private static java.util.Comparator nodeComparator = new java.util.Comparator()
 	{
@@ -69,8 +72,7 @@ public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSe
 			return false;
 		}
 	};
-
-
+	
 /**
  * TreeViewPanel constructor comment.
  */
@@ -277,83 +279,93 @@ private void initConnections()
 	getSortByComboBox().addItemListener(this);
 
 	getTree().addTreeWillExpandListener(this);
-
-/*
-	registerKeyboardAction( this,
-								javax.swing.KeyStroke.getKeyStroke( 
-								java.awt.event.KeyEvent.VK_F,
-								java.awt.event.KeyEvent.CTRL_MASK),
-								WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-	for( int i = java.awt.event.KeyEvent.VK_A; i <= java.awt.event.KeyEvent.VK_Z; i++ )
-	{
-		registerKeyboardAction( this,
-								javax.swing.KeyStroke.getKeyStroke( 
-								i,
-								0),
-								WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-		registerKeyboardAction( this,
-								javax.swing.KeyStroke.getKeyStroke( 
-								i,
-								java.awt.event.KeyEvent.SHIFT_MASK),
-								WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);		
-	}
-*/
-
+	
 	dialog = new OkCancelDialog(
-			CtiUtilities.getParentFrame(TreeViewPanel.this),
-			"Search",
-			true, FND_PANEL );
-
-
-	KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
-		new KeyEventDispatcher()
+		CtiUtilities.getParentFrame(TreeViewPanel.this),
+		"Search",
+		true, FND_PANEL );
+	
+	final AbstractAction searchAction = new AbstractAction()
+	{
+		public void actionPerformed(java.awt.event.ActionEvent e)
 		{
-			public boolean dispatchKeyEvent(KeyEvent e)
+			if( !dialog.isShowing() )
 			{
-				//do the checks of the KeyEvent here
-				if( e.getID() == KeyEvent.KEY_PRESSED && e.getSource() == getTree() )
-				{
-					//do the checks of the keystrokes here
-					if( e.getKeyCode() >= KeyEvent.VK_0
-						 && e.getKeyCode() <= KeyEvent.VK_DIVIDE
-						 && e.getModifiers() == 0
-						 && !dialog.isShowing() )
-					{
-						FND_PANEL.setValue( new Character(e.getKeyChar()) );
+				FND_PANEL.setValue( new Character(e.getActionCommand().charAt(0)));
 						
-						dialog.setSize(250, 120);
-						dialog.setLocationRelativeTo( TreeViewPanel.this );
-						dialog.show();
+				dialog.setSize(250, 120);
+				dialog.setLocationRelativeTo( TreeViewPanel.this );
+				dialog.show();
 		
-						if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
-						{
+				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				{
 			
-							Object value = FND_PANEL.getValue(null);
+					Object value = FND_PANEL.getValue(null);
 							
-							if( value != null )
-							{
-								boolean found = searchFirstLevelString(value.toString());
+					if( value != null )
+					{
+						boolean found = searchFirstLevelString(value.toString());
 	
-								if( !found )
-									javax.swing.JOptionPane.showMessageDialog(
-										TreeViewPanel.this, "Unable to find your selected item", "Item Not Found",
-										javax.swing.JOptionPane.INFORMATION_MESSAGE );
-							}
-						}
-		
-						dialog.setVisible(false);
+						if( !found )
+							javax.swing.JOptionPane.showMessageDialog(
+								TreeViewPanel.this, "Unable to find your selected item", "Item Not Found",
+								javax.swing.JOptionPane.INFORMATION_MESSAGE );
 					}
-	
 				}
-				
-				//its this the last handling of the KeyEvent in this KeyboardFocusManager?
-				return false;
+		
+				dialog.setVisible(false);
 			}
-		});
-	
+		}
+	};
 
+	//do the shift keys
+	for( int i = KeyEvent.VK_0; i <= KeyEvent.VK_DIVIDE; i++ )
+	{
+		KeyStroke stroke = KeyStroke.getKeyStroke(i, InputEvent.SHIFT_DOWN_MASK, true);
+		this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction" + i);
+		this.getActionMap().put("FindAction" + i, searchAction);
+	}
+	
+	//non-shift key regulars	
+	for( int i = KeyEvent.VK_0; i <= KeyEvent.VK_DIVIDE; i++ )
+	{
+		KeyStroke stroke = KeyStroke.getKeyStroke(i, 0, true);
+		this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction" + i);
+		this.getActionMap().put("FindAction" + i, searchAction);
+	}
+	
+	//shift key and symbols
+	for( int i = KeyEvent.VK_AT; i <= KeyEvent.VK_UNDERSCORE; i++ )
+	{
+		KeyStroke stroke = KeyStroke.getKeyStroke(i, InputEvent.SHIFT_DOWN_MASK, true);
+		this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction" + i);
+		this.getActionMap().put("FindAction" + i, searchAction);
+	}
+	
+	//non-shift symbols
+	for( int i = KeyEvent.VK_AT; i <= KeyEvent.VK_UNDERSCORE; i++ )
+	{
+		KeyStroke stroke = KeyStroke.getKeyStroke(i, 0, true);
+		this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction" + i);
+		this.getActionMap().put("FindAction" + i, searchAction);
+	}
+	
+	//another range of shift key symbols
+	for( int i = KeyEvent.VK_AMPERSAND; i <= KeyEvent.VK_BRACERIGHT; i++ )
+	{
+		KeyStroke stroke = KeyStroke.getKeyStroke(i, InputEvent.SHIFT_DOWN_MASK, true);
+		this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction" + i);
+		this.getActionMap().put("FindAction" + i, searchAction);
+	}
+	
+	//another range of non-shift symbols
+	for( int i = KeyEvent.VK_AMPERSAND; i <= KeyEvent.VK_BRACERIGHT; i++ )
+	{
+		KeyStroke stroke = KeyStroke.getKeyStroke(i, 0, true);
+		this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction" + i);
+		this.getActionMap().put("FindAction" + i, searchAction);
+	}		
+		
 }
 
 /**
