@@ -56,7 +56,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     BOOL isOfferWithId(LONG offerid);
     BOOL isOfferRevisionOpen(LONG offerID, LONG revisionNumber);
     CtiLMEnergyExchangeOffer* getOfferWithId(LONG offerid);
-    void restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr);
+    //void restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr);
     void notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg);
     void notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg);
     void restoreDynamicData(RWDBReader& rdr);
@@ -64,10 +64,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
 
     virtual CtiLMProgramBase* replicate() const;
-    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL hasControlHoursAvailable() const;
     virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    virtual BOOL handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
