@@ -2031,7 +2031,7 @@ public class ImportManager extends HttpServlet {
 			liteInv = energyCompany.searchForDevice( categoryID, fields[IDX_DEVICE_NAME] );
 		
 		if (liteInv != null) {
-			if (liteInv.getAccountID() == liteAcctInfo.getAccountID())
+			if (liteAcctInfo != null && liteInv.getAccountID() == liteAcctInfo.getAccountID())
 				throw new WebClientException("Cannot insert duplicate hardware into the customer account");
 			
 			createHw = new StarsCreateLMHardware();
