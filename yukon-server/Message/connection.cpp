@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/08 23:16:22 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/08/20 22:44:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,10 +151,15 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
 
 CtiMessage* CtiConnection::ReadConnQue(UINT Timeout)
 {
-    CtiMessage *Msg = inQueue->getQueue(Timeout);
-    if( Msg != NULL )
+    CtiMessage *Msg = 0;
+
+    if(inQueue)
     {
-        Msg->setConnectionHandle((void*)this);
+        Msg = inQueue->getQueue(Timeout);
+        if( Msg != NULL )
+        {
+            Msg->setConnectionHandle((void*)this);
+        }
     }
     return Msg;
 }
