@@ -509,7 +509,7 @@ bool DecodeWepcoLine( char* line, RWOrdered* results)
 
     if( func == 3 )
     {
-        serviceTempCmd += " service in t";
+        serviceTempCmd += " service in temp";
         serviceTempCmd += GetSelectCustomRouteID(serial_num);
         results->insert(new RWCollectableString(serviceTempCmd));
 
@@ -634,7 +634,7 @@ bool DecodeWepcoServiceLine( char* line, RWOrdered* results )
 
     if( func == 3 )
     {
-        serviceTempCmd += " service in t";
+        serviceTempCmd += " service in temp";
         serviceTempCmd += GetSelectCustomRouteID(serial_num);
         results->insert(new RWCollectableString(serviceTempCmd));
 
