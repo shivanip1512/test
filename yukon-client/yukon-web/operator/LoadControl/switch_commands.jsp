@@ -554,7 +554,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
         <INPUT NAME="routeid" TYPE="hidden" VALUE="-1">
         <INPUT name="groupid" type="hidden" value="0">
         <input name="DATABASEALIAS" type="hidden" value="demo">
-        <input name="nextURL" type="hidden" value="/operator/LoadControl/switch_commands.jsp">
+        <input name="nextURL" type="hidden" value="<%=request.getContextPath()%>/operator/LoadControl/switch_commands.jsp">
     </FORM>
 <%
   } // end if name serial != null

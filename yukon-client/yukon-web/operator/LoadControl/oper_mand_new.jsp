@@ -11,7 +11,7 @@ function confirm_form(f) {
 	return true;
 }
   function goBack() {
-  location = "/operator/LoadControl/oper_mand.jsp"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_mand.jsp"
   }
 </script>
 </head>

@@ -11,10 +11,13 @@
 				dftThermoSettings.getStarsThermostatManualEventCount() - 1);
 		useDefault = true;
 	}
+	
 	StarsThermoModeSettings mode = lastEvent.getThermostatManualOption().getMode();
 	String modeStr = (mode != null) ? mode.toString() : "";
 	StarsThermoFanSettings fan = lastEvent.getThermostatManualOption().getFan();
 	String fanStr = (fan != null) ? fan.toString() : "";
+	
+	boolean runProgram = (lastEvent.getThermostatManualOption().getTemperature() == -1);
 %>
 <html>
 <head>
@@ -89,7 +92,7 @@ function modeChange(mode) {
 	else {
 		document.getElementById(mode).style.visibility = "hidden";
 		document.MForm.mode.value = "";
-		document.MForm.tempField.style.color = "#000000";
+		document.MForm.tempField.style.color = "#003366";
 	}
 }
 
@@ -107,7 +110,7 @@ function fanChange(fan) {
 }
 
 function submitIt() {
- document.MForm.submit();
+	document.MForm.submit();
 }
 
 function validateTemp(e) {
@@ -184,7 +187,7 @@ if (text.length == 2) {
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_THERM_MANUAL_TITLE); %>
+              <% String header = "THERMOSTAT - MANUAL"; %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -214,6 +217,7 @@ if (text.length == 2) {
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp">
 			  <input type="hidden" name="mode" value="">
 			  <input type="hidden" name="fan" value="">
+			  <input type="hidden" name="RunProgram" value="false">
               <div align = "left">
                   <table width="93%" border="0" background="../../../Images/ThermImages/Bkgd.gif" style = "background-repeat:no-repeat" cellspacing = "0" cellpadding = "0" height="246">
                     <tr> 
@@ -225,7 +229,7 @@ if (text.length == 2) {
                               <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                                 <tr> 
                                   <td width="52%" height="53"> 
-                                    <input type="text" name="tempField" maxlength="2" class="tempText1" style.color="#CCCCCC" value="<%= lastEvent.getThermostatManualOption().getTemperature() %>" onkeypress="validateTemp(event)">
+                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= (runProgram)? 72 : lastEvent.getThermostatManualOption().getTemperature() %>" onkeypress="validateTemp(event)">
                                   </td>
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
@@ -250,17 +254,20 @@ if (text.length == 2) {
                             <td width="31%" height="113" valign="bottom"><br>
                               <table width="100" height="80" border="0">
                                 <tr>
-                                  <td class="TableCell" valign="top" bordercolor="#FFFFFF">Last 
-                                    Settings:<br>
-<%
-	if (useDefault) out.write("(None)");
+                                  <td class="TableCell" valign="top" bordercolor="#FFFFFF"><b>Last 
+                                    Settings:</b><br>
+<%	if (useDefault) out.write("(None)");
 	else {
-%>									
-									Temperature: <%= lastEvent.getThermostatManualOption().getTemperature() %>&deg 
-									<% if (lastEvent.getThermostatManualOption().getHold()) out.print("(HOLD)"); %><br>
+%>
+									Date: <%= datePart.format(lastEvent.getEventDateTime()) %><br>
+<%		if (lastEvent.getThermostatManualOption().getTemperature() == -1) { %>
+									Run Program
+<%		} else { %>
+									Temp: <%= lastEvent.getThermostatManualOption().getTemperature() %>&deg 
+									<% if (lastEvent.getThermostatManualOption().getHold()) out.print("(Hold)"); %><br>
                                     Mode: <%= modeStr %><br>
                                     Fan: <%= fanStr %>
-<%
+<%		}
 	}
 %>
 								  </td>
@@ -269,36 +276,38 @@ if (text.length == 2) {
                               
                             </td>
                           </tr>
-                        </table>  <table width="91%" border="0" height="100">
+                        </table>
+                        <table width="91%" border="0" height="100">
                           <tr> 
-                            <td width="42%">&nbsp;</td>
-                            <td width="32%"> 
-                              <table width="106%" border="0" height="56" cellspacing = "0" cellpadding = "0">
+                            <td width="31"></td>
+                            <td width="133" valign="bottom"><img class="Clickable" src="../../../Images/ThermImages/Run.gif" onClick="document.MForm.RunProgram.value='true';submitIt()"></td>
+                            <td width="124"> 
+                              <table width="100%" border="0" height="56" cellspacing = "0" cellpadding = "0">
                                 <tr> 
-                                  <td width="53%"  height="59" valign = "bottom"> 
+                                  <td width="60%"  height="59" valign = "bottom"> 
                                     <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="../../../Images/ThermImages/Cool.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.HEAT.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.HEAT.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="../../../Images/ThermImages/Heat.gif"></td>
                                       </tr>
                                       <tr onClick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="../../../Images/ThermImages/Off.gif"></td>
                                       </tr>
                                     </table>
                                   </td>
-                                  <td width="47%" height="59" valign = "bottom"> 
+                                  <td width="40%" height="59" valign = "bottom"> 
                                     <table width="34%" border="0" cellpadding = "2" cellspacing = "0">
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.AUTO.toString() %>')"> 
-                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td ><img id="<%= StarsThermoFanSettings.AUTO.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="../../../Images/ThermImages/Auto.gif"></td>
                                       </tr>
                                       <tr onClick="fanChange('<%= StarsThermoFanSettings.ON.toString() %>')"> 
-                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="../../../Images/ThermImages/Arrow.gif" style="visibility:hidden"></td>
+                                        <td><img id="<%= StarsThermoFanSettings.ON.toString() %>" src="../../../Images/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="../../../Images/ThermImages/On.gif"></td>
                                       </tr>
                                       <tr> 
@@ -310,11 +319,11 @@ if (text.length == 2) {
                                 </tr>
                               </table>
                             </td>
-                            <td width="26%" valign = "middle" align = "center"> 
+                            <td width="100" valign = "middle" align = "center"> 
                               <div align="left"></div>
                               <table width="84%" border="0" height="45">
                                 <tr> 
-                                  <td><img class="Clickable" src="../../../Images/ThermImages/Submit.gif" width="65" height="40" onClick = "submitIt()"></td>
+                                  <td><img class="Clickable" src="../../../Images/ThermImages/Submit.gif" onClick = "submitIt()"></td>
                                 </tr>
                               </table>
                             </td>
@@ -322,14 +331,16 @@ if (text.length == 2) {
                         </table>
                         <br>
                       </td>
-                      <td width="27%" height="40" class="TableCell"> 
-                        <p>Click the up and down arrows until reaching the temperature 
-                          you would like. This temperature will be set until the 
-                          next schedule change. Check <b>HOLD</b> to maintain 
-                          this setting across schedule changes.</p>
-                        <p>You may also change the <b>MODE</b> and <b>FAN</b> 
-                          settings by clicking the selection.</p>
-                        <p> BE SURE TO CLICK <b>SUBMIT</b> WHEN DONE!!</p>
+                      <td width="27%" height="40" class="TableCell" valign="top"> 
+                        <p><b>1)</b> Select the new temperature to maintain until 
+                          the next program scheduled change. Check <b>HOLD</b> 
+                          to maintain this setting across program changes. <br>
+                          <b>2)</b> Adjust <b>MODE</b> and <b>FAN</b> settings. 
+                          <br>
+                          <b>3)</b> Click <b>SUBMIT</b>.</p>
+                        <p><b><i>or</i></b></p>
+                        <p>Click <b>RUN PROGRAM</b> to revert to your thermostat 
+                          program. </p>
                         <p>&nbsp;</p>
                       </td>
                     </tr>

@@ -1,4 +1,5 @@
-var layerLeftBnd = 200;
+var layerLeftBnd = 8;
+var layerHorDist = 50
 var tenMinEqlLen = 3;
 var layerRightBnd = layerLeftBnd + Math.floor(tenMinEqlLen * (24 * 6 - 1));
 
@@ -20,29 +21,29 @@ else if (navigator.appName.indexOf("Microsoft") != -1)
 function showTimeWake(){
   var s = document.getElementById('MovingLayer1');
   var txt = document.getElementById('time1');
-  showTime(s,txt);
+  showTime(s,txt,0);
 }
 
 function showTimeLeave(){
   var s = document.getElementById('MovingLayer2');
   var txt = document.getElementById('time2');
-  showTime(s,txt);
+  showTime(s,txt,1);
 }
 function showTimeReturn(){
   var s = document.getElementById('MovingLayer3');
   var txt = document.getElementById('time3');
-  showTime(s,txt);
+  showTime(s,txt,2);
 }
 
 function showTimeSleep(){
   var s = document.getElementById('MovingLayer4');
   var txt = document.getElementById('time4');
-  showTime(s,txt);
+  showTime(s,txt,3);
 }
 
-function showTime(s, txt) {
+function showTime(s, txt, offset) {
   var curPos = parseInt(s.style.left, 10);
-  txt.value = timeValToStr(Math.floor((curPos - layerLeftBnd) / tenMinEqlLen) * 10);
+  txt.value = timeValToStr(Math.floor((curPos + offset * layerHorDist - layerLeftBnd) / tenMinEqlLen) * 10);
 }
 
 
@@ -86,9 +87,10 @@ arrow.style.top = pos;
 
 
 function moveLayer(divId, hour, minute) {
+var divNo = parseInt( divId.substr(divId.length-1, 1), 10 );
 var offset = (hour * 6 + Math.floor(minute / 10)) * tenMinEqlLen;
 var layer = document.getElementById(divId);
-layer.style.left = layerLeftBnd + offset;
+layer.style.left = layerLeftBnd + offset - (divNo-1) * layerHorDist;
 }
 
 

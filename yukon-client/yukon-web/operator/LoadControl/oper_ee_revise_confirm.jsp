@@ -9,7 +9,7 @@
   <!-- Hide the script from older browsers
 
    function goBack() {
-  location = "/operator/LoadControl/oper_ee.jsp?tab=revise&prog=<%= progIdStr %>&offer=<%= offerIdStr %>&rev=<%= revNumStr %>&error=false"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_ee.jsp?tab=revise&prog=<%= progIdStr %>&offer=<%= offerIdStr %>&rev=<%= revNumStr %>&error=false"
   }
 
   //End hiding script -->

@@ -144,7 +144,7 @@
       return true;
   }
   function goBack() {
-  location = "/operator/LoadControl/oper_direct.jsp"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_direct.jsp"
   }
 
   //End hiding script -->
@@ -260,7 +260,7 @@
 <INPUT NAME="ID" TYPE="hidden" VALUE="<%= programID %>">
 <INPUT NAME="ACTION" TYPE="hidden" VALUE="STOP">
 <struts:hidden property="STARTAT" value="-1"/> <struts:hidden property="STOPAT" value="0"/> 
-<INPUT NAME="URL" TYPE="hidden" VALUE="/operator/LoadControl/oper_direct.jsp?pending=true">
+<INPUT NAME="URL" TYPE="hidden" VALUE="<%=request.getContextPath()%>/operator/LoadControl/oper_direct.jsp?pending=true">
 </struts:form> 
 
             </td>

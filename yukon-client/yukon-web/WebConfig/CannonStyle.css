@@ -43,3 +43,4 @@ a.Link4:hover {color: #666699; font-size: 9px}
 .SchedText { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #666699 }
 
 .LeftCell { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; background-color: #666699}
+.BGNoRepeat {  background-color: #CCCCCC; background-image: url(colorbar.jpg); background-repeat: no-repeat; background-position: center}

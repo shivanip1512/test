@@ -142,7 +142,7 @@ function changeProgram(radioBtn, index) {
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -184,8 +184,8 @@ function changeProgram(radioBtn, index) {
               <form name="form1" method="post" action="/servlet/SOAPClient">
                 <input type="hidden" name="action" value="ProgramSignUp">
                 <input type="hidden" name="SignUpChanged" value="false">
-                <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
-                <input type="hidden" name="REFERRER" value="/operator/Consumer/Programs.jsp">
+                <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
+                <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
 <% if (request.getParameter("Wizard") != null) { %>
 				<input type="hidden" name="Wizard" value="true">
 <% } %>

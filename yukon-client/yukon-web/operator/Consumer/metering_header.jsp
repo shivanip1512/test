@@ -24,7 +24,7 @@
 	}
 	if (liteYukonUser == null)
 	{
-		response.sendRedirect("/login.jsp"); return;
+		response.sendRedirect(request.getContextPath() + "/login.jsp"); return;
 	}
 
 

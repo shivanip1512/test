@@ -45,7 +45,7 @@ function selectAccount(accountID) {
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -71,7 +71,7 @@ function selectAccount(accountID) {
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %>
-			<% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
+			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
 	if (resp == null || resp.getStarsFailure() != null) {
@@ -89,8 +89,8 @@ function selectAccount(accountID) {
 			<form name="resultForm" method="POST" action="/servlet/SOAPClient">
 		      <input type="hidden" name="action" value="GetCustAccount">
               <input type="hidden" name="AccountID" value="">
-			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Update.jsp">
-			  <input type="hidden" name="REFERRER" value="/operator/Consumer/SearchResults.jsp">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Update.jsp">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/SearchResults.jsp">
 			  
               <table width="615" border="1" cellspacing="0" cellpadding="3" align="center">
               <tr> 

@@ -42,7 +42,7 @@ function validate(form) {
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -73,7 +73,7 @@ function validate(form) {
             <div class = "Main" align="center">
               <% String header = "CREATE NEW HARDWARE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
               <form name="MForm" method="post" action="/servlet/SOAPClient" onsubmit="return validate(this)">
 			    <input type="hidden" name="action" value="CreateLMHardware">

@@ -90,7 +90,7 @@
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
    function goBack() {
-  location = "/operator/LoadControl/oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>"
   }
   //End hiding script -->
 

@@ -104,7 +104,7 @@ function clearPage() {
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -130,7 +130,7 @@ function clearPage() {
           <td width="657" bgcolor="#FFFFFF" valign = "top" align = "center"> 
             <% String header = "NEW SIGNUP"; %>
             <%@ include file="InfoSearchBar2.jsp" %>
-            <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+            <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <form name="form1" method="POST" action="/servlet/SOAPClient" onSubmit="return validate(this)">
               <input type="hidden" name="action" value="NewCustAccount">
 <% if (request.getParameter("Wizard") != null) { %>

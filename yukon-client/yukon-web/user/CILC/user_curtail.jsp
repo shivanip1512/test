@@ -97,7 +97,7 @@
                   <td width="253" valign="middle">&nbsp;</td>
                   <td width="58" valign="middle">&nbsp;</td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -158,7 +158,7 @@
                 <input type="hidden" name="CUSTOMERID" value="<%= customerID %>">
                 <input type="hidden" name="CURTAILID" value="<%= curtailID %>">
                 <input type="hidden" name="ACKTIME" value="<%= System.currentTimeMillis() %>">
-                <input type="hidden" name="redirect" value="/user/CILC/user_curtail.jsp">
+                <input type="hidden" name="redirect" value="<%=request.getContextPath()%>/user/CILC/user_curtail.jsp">
                 <span class="Main"> Initials:</span> 
                 <input type="text" name="initials" size="8">
                 <p> 

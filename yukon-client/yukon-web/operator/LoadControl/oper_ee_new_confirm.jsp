@@ -8,7 +8,7 @@
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
    function goBack() {
-  location = "/operator/LoadControl/oper_ee.jsp?tab=new&error=false"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_ee.jsp?tab=new&error=false"
   }
   //End hiding script -->
 

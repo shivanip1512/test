@@ -11,7 +11,7 @@
 			<%}
 			else 
 			{%>
-				<img src="../Bullet2.gif" width="12" height="12">&nbsp;<a href="/operator/Metering/Metering.jsp?<%= "gdefid=" + gData[i][0]%>" class="Link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
+				<img src="../Bullet2.gif" width="12" height="12">&nbsp;<a href="<%=request.getContextPath()%>/operator/Metering/Metering.jsp?<%= "gdefid=" + gData[i][0]%>" class="Link2"><span class="NavText"><%=gData[i][1] %></span></a><br>
 			<%}
 		}
 	}%>

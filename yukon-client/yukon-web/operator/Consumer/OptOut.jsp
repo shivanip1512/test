@@ -35,7 +35,7 @@
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -65,7 +65,7 @@
             <div align="center">
               <% String header = "PROGRAMS - OPT OUT"; %>
               <%@ include file="InfoSearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="550" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td><div align="center">
@@ -76,9 +76,9 @@
               </table>
 			<form name="form1" method="post" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="OptOutProgram">
-			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
-			  <input type="hidden" name="REDIRECT2" value="/operator/Consumer/OptForm.jsp">
-			  <input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
+			  <input type="hidden" name="REDIRECT2" value="<%=request.getContextPath()%>/operator/Consumer/OptForm.jsp">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
               <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" align="center">
                 <tr> 
                   <td> 
@@ -108,7 +108,6 @@
 	else {
 %>
                           <select name="OptOutPeriod">
-                            <option value="0">&lt;none&gt;</option>
                             <option value="1">One Day</option>
                             <option value="2">Two Days</option>
                             <option value="3">Three Days</option>

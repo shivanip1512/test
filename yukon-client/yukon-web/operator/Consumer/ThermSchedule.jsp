@@ -117,7 +117,7 @@ function prepareSubmit(form) {
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "/operator/Consumer/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=" + day + "&mode=" + mode;
 	location.href = form.REDIRECT.value;
 }
 
@@ -197,7 +197,7 @@ MM_reloadPage(true);
 				  	<div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
 				  </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -230,12 +230,13 @@ MM_reloadPage(true);
               <% String header = "THERMOSTAT - SCHEDULE"; %>
               <%@ include file="InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
+			  
+			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="/operator/Consumer/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -315,116 +316,126 @@ MM_reloadPage(true);
                             <span class="TableCell"><font color="FF0000">Heating</font></span></td>
                         </tr>
                       </table>
-                      <img src="../../Images/ThermImages/TempBG2.gif" width="478" height="186"> 
-                      <div id="MovingLayer1" style="position:absolute; width:30px; height:162px; left:295px; z-index:1; top: 317px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setScheduleChanged()"> 
-                        <table width="100%" border="0">
-                          <tr align="center"> 
-                            <td colspan="2"> 
-                              <div id="temp1" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
-                            </td>
-                            </tr>
-                          <tr> 
-                            <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermW.gif" width="16"> 
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="50%"> 
-                              <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow1C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp1()','vertical','div1C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                <img id="arrow1C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
-                              </div>
-                            </td>
-                            <td width="50%"> 
-                              <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow1H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp1()','vertical','div1H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                <img id="arrow1H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                      </div>
-                      <div id="MovingLayer2" style="position:absolute; width:30px; height:162px; left:340px; z-index:2; top: 317px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3,parseInt(document.getElementById('MovingLayer1').style.left)+3,'showTimeLeave()','horizontal','MovingLayer2');setScheduleChanged()"> 
-                        <table width="100%" border="0">
-                          <tr align="center"> 
-                            <td colspan="2"> 
-                              <div id="temp2" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermL.gif" width="16"> 
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="50%"> 
-                              <div id="div2C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow2C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp2()','vertical','div2C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                <img id="arrow2C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
-                              </div>
-                            </td>
-                            <td width="50%"> 
-                              <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow2H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp2()','vertical','div2H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                <img id="arrow2H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                      </div>
-                      <div id="MovingLayer3" style="position:absolute; width:30px; height:162px; left:493px; z-index:3; top: 317px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3,parseInt(document.getElementById('MovingLayer2').style.left)+3,'showTimeReturn()','horizontal','MovingLayer3');setScheduleChanged()"> 
-                        <table width="100%" border="0">
-                          <tr align="center"> 
-                            <td colspan="2"> 
-                              <div id="temp3" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
-                            </td>
-                            </tr>
-                          <tr> 
-                            <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermR.gif" width="16" height="131"> 
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="50%"> 
-                              <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow3C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp3()','vertical','div3C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                <img id="arrow3C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
-                              </div>
-                            </td>
-                            <td width="50%"> 
-                              <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow3H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp3()','vertical','div3H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                <img id="arrow3H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                      </div>
-                      <div id="MovingLayer4" style="position:absolute; width:30px; height:162px; left:565px; z-index:4; top: 317px" onMouseDown = "beginDrag(event,0,0,layerRightBnd,parseInt(document.getElementById('MovingLayer3').style.left)+3,'showTimeSleep()','horizontal','MovingLayer4');setScheduleChanged()"> 
-                        <table width="100%" border="0">
-                          <tr align="center"> 
-                            <td colspan="2"> 
-                              <div id="temp4" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
-                            </td>
-                            </tr>
-                          <tr> 
-                            <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermS.gif" width="16" height="131"> 
-                            </td>
-                          </tr>
-                          <tr> 
-                            <td width="50%"> 
-                              <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow4C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp4()','vertical','div4C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
-                                <img id="arrow4C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
-                              </div>
-                            </td>
-                            <td width="50%"> 
-                              <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                <img id="arrow4H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onMouseDown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp4()','vertical','div4H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
-                                <img id="arrow4H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
-                              </div>
-                            </td>
-                          </tr>
-                        </table>
-                      </div>
-                      <br><br>
+                      <table width="478" height="186" background="../../Images/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td width="50"> 
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer2').style.left)-3+50,layerLeftBnd,'showTimeWake()','horizontal','MovingLayer1');setScheduleChanged()"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="temp1" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermW.gif" width="16"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow1C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp1()','vertical','div1C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow1C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow1H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp1()','vertical','div1H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow1H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td width="50"> 
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer3').style.left)-3+50,parseInt(document.getElementById('MovingLayer1').style.left)+3-50,'showTimeLeave()','horizontal','MovingLayer2');setScheduleChanged()"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="temp2" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermL.gif" width="16"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div2C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow2C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp2()','vertical','div2C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow2C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow2H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp2()','vertical','div2H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow2H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td width="50"> 
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top: 5px" onMouseDown = "beginDrag(event,0,0,parseInt(document.getElementById('MovingLayer4').style.left)-3+50,parseInt(document.getElementById('MovingLayer2').style.left)+3-50,'showTimeReturn()','horizontal','MovingLayer3');setScheduleChanged()"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="temp3" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermR.gif" width="16" height="131"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow3C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp3()','vertical','div3C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow3C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow3H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp3()','vertical','div3H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow3H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td> 
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top: 5px" onMouseDown = "beginDrag(event,0,0,layerRightBnd-150,parseInt(document.getElementById('MovingLayer3').style.left)+3-50,'showTimeSleep()','horizontal','MovingLayer4');setScheduleChanged()"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="temp4" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="../../Images/ThermImages/ThermS.gif" width="16" height="131"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow4C" src="../../Images/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp4()','vertical','div4C');setScheduleChanged()"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow4C_Gray" src="../../Images/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow4H" src="../../Images/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'showTemp4()','vertical','div4H');setScheduleChanged()"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow4H_Gray" src="../../Images/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
 					
 <script language="JavaScript">
 updateLayout(

@@ -68,10 +68,16 @@ function deleteHardware() {
 	form.submit();
 }
 
+var configChanged = false;
+
+function setConfigChanged() {
+	configChanged = true;
+}
+
 function changeAppSelection(chkBox) {
 	var grpList = document.getElementById('Group_App' + chkBox.value);
 	grpList.disabled = !chkBox.checked;
-	document.invForm.ConfigChanged.value = "true";
+	setConfigChanged();
 }
 
 function validate(form) {
@@ -105,7 +111,7 @@ function validate(form) {
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -134,14 +140,13 @@ function validate(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
               <% String header = "HARDWARE"; %><%@ include file="InfoSearchBar.jsp" %>
-			  <% if (errorMsg != null) out.write("<br><span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
 			  <form name="invForm" method="POST" action="/servlet/SOAPClient" onsubmit="return validate(this)">
                 <input type="hidden" name="action" value="UpdateLMHardware">
                 <input type="hidden" name="InvID" value="<%= hardware.getInventoryID() %>">
-				<input type="hidden" name="REDIRECT" value="/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
-				<input type="hidden" name="REFERRER" value="/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
-				<input type="hidden" name="ConfigChanged" value="false">
+				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
+				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Inventory.jsp?InvNo=<%= invNo %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -301,19 +306,20 @@ function validate(form) {
                             </td>
                         </tr>
                       </table>
-                      <br>
                       <table width="100%" border="0" height="68" >
                         <tr > 
-                          <td class = "TableCell" align = "center">Service Company<br>
+                          <td class = "TableCell" align = "center">
                             <table width="250" border="1" height="86" cellpadding="10" cellspacing = "0">
                               <tr> 
-                                <td valign = "top" align = "center" class = "TableCell"><b> 
+                                  <td valign = "top" align = "center" class = "TableCell"><b>Service 
+                                    Company</b><br>
+                                     
 <% if (company.getCompanyID() == 0) { %>
 								  None
 <% } else { %>
                                   <%= company.getCompanyName() %><br>
                                   <%= ServletUtils.getFormattedAddress( company.getCompanyAddress() ) %><br>
-                                  <%= company.getMainPhoneNumber() %></b> </td>
+                                  <%= company.getMainPhoneNumber() %> </td>
 <% } %>
                               </tr>
                             </table>
@@ -324,17 +330,33 @@ function validate(form) {
                   </td>
                 </tr>
               </table>
-            <table width="610" border="0" cellspacing="0" cellpadding="0" align="center" height="66">
+            <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
               <tr> 
-                  <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
-                    <span class="MainHeader">Select all programs controlled by this 
-                    hardware, and assign groups to them:</span><br>
-                    <table width="300" border="1" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td width="10%" class="HeaderCell">&nbsp; </td>
-                        <td width="40%" class="HeaderCell">Program</td>
-                        <td width="50%" class="HeaderCell">Assigned Group</td>
-                      </tr>
+                  <td width="42%"> 
+                    <div align="right"> 
+                      <input type="submit" name="Submit2" value="Submit">
+                    </div>
+                  </td>
+                  <td width="15%" align = "center"> 
+                    <input type="reset" name="Cancel2" value="Cancel">
+                  </td>
+                  <td width="43%"> 
+                    <div align="left">
+                      <input type="button" name="Submit" value="Delete" onclick="deleteHardware()">
+                    </div>
+                  </td>
+              </tr>
+            </table>
+			    <hr>
+                <table width="610" border="0" cellspacing="0" cellpadding="0" align="center" height="66">
+                  <tr> 
+                    <td width="300" valign="top" class = "TableCell" height="65"> &nbsp;
+                      <table width="300" border="1" cellspacing="0" cellpadding="3">
+                        <tr> 
+                          <td width="10%" class="HeaderCell">&nbsp; </td>
+                          <td width="40%" class="HeaderCell">Program</td>
+                          <td width="50%" class="HeaderCell">Assigned Group</td>
+                        </tr>
 <%
 	for (int i = 0; i < starsApps.length; i++) {
 		StarsLMProgram program = null;
@@ -361,31 +383,31 @@ function validate(form) {
 			}
 		}
 %>
-                      <tr> 
-                        <td width="27" height="2"> 
-                          <input type="checkbox" name="AppID" value="<%= starsApps[i].getApplianceID() %>" checked onClick="changeAppSelection(this)">
-                        </td>
-                        <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                        <td width="89" height="2"> 
-                          <select id="Group_App<%= starsApps[i].getApplianceID() %>" name="GroupID">
+                        <tr> 
+                          <td width="27" height="2"> 
+                            <input type="checkbox" name="AppID" value="<%= starsApps[i].getApplianceID() %>" checked onClick="changeAppSelection(this)">
+                          </td>
+                          <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
+                          <td width="89" height="2"> 
+                            <select id="Group_App<%= starsApps[i].getApplianceID() %>" name="GroupID" onChange="setConfigChanged()">
 <%
 		if (enrProg == null || enrProg.getAddressingGroupCount() == 0) {
 %>
-                            <option value="0">(none)</option>
+                              <option value="0">(none)</option>
 <%
 		} else {
 			for (int j = 0; j < enrProg.getAddressingGroupCount(); j++) {
 				AddressingGroup group = enrProg.getAddressingGroup(j);
 				String selectedStr = (group.getEntryID() == program.getGroupID()) ? "selected" : "";
 %>
-                            <option value="<%= group.getEntryID() %>" <%= selectedStr %>><%= group.getContent() %></option>
+                              <option value="<%= group.getEntryID() %>" <%= selectedStr %>><%= group.getContent() %></option>
 <%
 			}
 		}
 %>
-                          </select>
-                        </td>
-                      </tr>
+                            </select>
+                          </td>
+                        </tr>
 <%
 	}
 %>
@@ -408,96 +430,96 @@ function validate(form) {
 				}
 			}
 %>
-                      <tr> 
-                        <td width="27" height="2"> 
-                          <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onClick="changeAppSelection(this)">
-                        </td>
-                        <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
-                        <td width="89" height="2"> 
-                          <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
+                        <tr> 
+                          <td width="27" height="2"> 
+                            <input type="checkbox" name="AppID" value="<%= appliance.getApplianceID() %>" onClick="changeAppSelection(this)">
+                          </td>
+                          <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
+                          <td width="89" height="2"> 
+                            <select id="Group_App<%= appliance.getApplianceID() %>" name="GroupID" disabled="true">
 <%
 			if (program == null || program.getAddressingGroupCount() == 0) {
 %>
-                            <option value="0">(none)</option>
+                              <option value="0">(none)</option>
 <%
 			} else {
 				for (int j = 0; j < program.getAddressingGroupCount(); j++) {
 					AddressingGroup group = program.getAddressingGroup(j);
 %>
-                            <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
+                              <option value="<%= group.getEntryID() %>"><%= group.getContent() %></option>
 <%
 				}
 			}
 %>
-                          </select>
-                        </td>
-                      </tr>
+                            </select>
+                          </td>
+                        </tr>
 <%
 		}
 	}
 %>
-                    </table>
-                    <br>
-                    <table width="300" border="0" cellspacing="0" cellpadding="0" height="65">
-                    <tr> 
-                        <td valign="top" align = "center" height="33"> 
-                          <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
-                            <tr>
-                              <td>
-                                <table width="150" border="0" cellpadding = "3" cellspacing = "0" height="39" align = "center">
-                                  <tr> 
-                                    <td width="35%" align = "center">
-                                      <input type="button" name="EnableService" value="In Service" onclick="sendCommand(this.name)">
-                                    </td>
-                                    <td width="35%" align = "center"> 
-                                      <input type="button" name="DisableService" value="Out of Service" onclick="sendCommand(this.name)">
-                                    </td>
-									<td width="30%" align = "center">
-									  <input type="button" name="Config" value="Config" onclick="sendCommand(this.name)">
-									</td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                          
-                        </td>
-                    </tr>
-                  </table>
-                  
-                </td>
-                <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
-                  <div align="center">
-<table width="305" border="0" cellspacing="0" cellpadding="0">
-                      <tr> 
-                          <td valign="top" align = "center" class = "TableCell"> 
-                            <span class="MainHeader">Hardware History</span> <br>
-                            <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
+                        <tr align="center"> 
+                          <td colspan="3"> 
+                            <input type="button" name="Config" value="Config" onClick="if (configChanged) sendCommand(this.name)">
+                          </td>
+                        </tr>
+					  </table>
+                      <table width="300" border="0" cellspacing="0" cellpadding="0">
+                        <tr> 
+                          <td valign="top" align = "center" height="33"> <br>
+                            <table width="46%" border="0" height="26" cellpadding = "3" cellspacing = "0">
                               <tr> 
-                                <td width="104" class="HeaderCell">Date</td>
-                                <td width="100" class="HeaderCell">Action</td>
+                                <td> 
+                                  <table width="150" border="0" cellpadding = "3" cellspacing = "0" height="39" align = "center">
+                                    <tr> 
+                                      <td width="35%" align = "center"> 
+                                        <input type="button" name="EnableService" value="In Service" onClick="sendCommand(this.name)">
+                                      </td>
+                                      <td width="35%" align = "center"> 
+                                        <input type="button" name="DisableService" value="Out of Service" onClick="sendCommand(this.name)">
+                                      </td>
+                                      </tr>
+                                  </table>
+                                </td>
                               </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
+                      <div align="center"> 
+                        <table width="305" border="0" cellspacing="0" cellpadding="0">
+                          <tr> 
+                            <td valign="top" align = "center" class = "TableCell"> 
+                              <span class="MainHeader"><b>Hardware History</b></span> 
+                              <br>
+                              <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
+                                <tr> 
+                                  <td width="104" class="HeaderCell">Date</td>
+                                  <td width="100" class="HeaderCell">Action</td>
+                                </tr>
 <%
 	StarsLMHardwareHistory hwHist = hardware.getStarsLMHardwareHistory();
 	for (int i = hwHist.getStarsLMHardwareEventCount() - 1; i >= 0 && i >= hwHist.getStarsLMHardwareEventCount() - 5; i--) {
 		StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
-							  <tr valign="top"> 
-							    <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
-							    <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
-							  </tr>
+                                <tr valign="top"> 
+                                  <td width="104" class="TableCell" bgcolor="#FFFFFF"><%= datePart.format(event.getEventDateTime()) %></td>
+                                  <td width="100" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
+                                </tr>
 <%
 	}
 %>
-                            </table>
+                              </table>
 <%
 	if (hwHist.getStarsLMHardwareEventCount() > 5) {
 %>
                               <table width="250" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
+                                <tr> 
                                   <td> 
-                                    <div align="right">
-                                      <input type="button" name="More" value="More" onclick="location='InventoryHist.jsp?InvNo=<%= invNoStr %>'">
+                                    <div align="right"> 
+                                      <input type="button" name="More" value="More" onClick="location='InventoryHist.jsp?InvNo=<%= invNoStr %>'">
                                     </div>
                                   </td>
                                 </tr>
@@ -506,34 +528,16 @@ function validate(form) {
 	}
 %>
                             </td>
-                      </tr>
-                    </table>
-                  </div>
-                  
-                </td>
-              </tr>
-            </table>
-            <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
-              <tr> 
-                  <td width="42%"> 
-                    <div align="right"> 
-                      <input type="submit" name="Submit2" value="Submit">
-                    </div>
-                  </td>
-                  <td width="15%" align = "center"> 
-                    <input type="reset" name="Cancel2" value="Cancel">
-                  </td>
-                  <td width="43%"> 
-                    <div align="left">
-                      <input type="button" name="Submit" value="Delete" onclick="deleteHardware()">
-                    </div>
-                  </td>
-              </tr>
-            </table>
-			</form>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </form>
             </div>
             <hr>
-            <div align="center"><br>
+            <div align="center">
               <span class="Main"><b>Appliance Summary</b></span><br>
               <table width="350" border="1" cellspacing="0" cellpadding="3">
                 <tr bgcolor="#FFFFFF"> 

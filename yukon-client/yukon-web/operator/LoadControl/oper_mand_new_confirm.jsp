@@ -9,7 +9,7 @@
   <!-- Hide the script from older browsers
   
   function goBack() {
-  location = "/operator/LoadControl/oper_mand.jsp?tab=new&confirmed=false"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_mand.jsp?tab=new&confirmed=false"
   }
 
   //End hiding script -->

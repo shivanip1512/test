@@ -41,7 +41,7 @@ function MM_popupMsg(msg) { //v1.0
                     <div align="center"><span class="Main"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
                   </td>
                   <td width="57" valign="middle"> 
-                    <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                    <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                       Off</a>&nbsp;</span></div>
                   </td>
               </tr>
@@ -77,8 +77,8 @@ function MM_popupMsg(msg) { //v1.0
           
 			<form method="post" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="SendExitAnswers">
-			  <input type="hidden" name="REDIRECT" value="/operator/Consumer/Programs.jsp">
-			  <input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
 <%
 	for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {

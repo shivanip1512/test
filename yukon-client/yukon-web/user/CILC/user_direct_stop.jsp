@@ -166,7 +166,7 @@
                 <td width="253" valign="middle">&nbsp;</td>
                 <td width="58" valign="middle">&nbsp;</td>
                 <td width="57" valign="middle"> 
-                  <div align="left"><span class="Main"><a href="../../login.jsp" class="Link3">Log 
+                  <div align="left"><span class="Main"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log 
                     Off</a>&nbsp;</span></div>
                 </td>
               </tr>
@@ -241,7 +241,7 @@
 <INPUT NAME="ID" TYPE="hidden" VALUE="<%= programID %>">
 <INPUT NAME="ACTION" TYPE="hidden" VALUE="STOP">
 <struts:hidden property="STARTAT" value="-1"/> <struts:hidden property="STOPAT" value="0"/> 
-<INPUT NAME="URL" TYPE="hidden" VALUE="/user/CILC/user_direct.jsp?pending=true">
+<INPUT NAME="URL" TYPE="hidden" VALUE="<%=request.getContextPath()%>/user/CILC/user_direct.jsp?pending=true">
 </struts:form> 
           </td>
 		  
