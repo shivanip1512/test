@@ -183,7 +183,7 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
   {
 %>  
       <FORM name="switchform" METHOD="POST" ACTION="/servlet/SwitchCommand" onSubmit="return validForm(this)">
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#666699" bordercolor="0">
+      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="101" bgcolor="#000000" height="1"></td>
           <td width="1" bgcolor="#000000" height="1"></td>
