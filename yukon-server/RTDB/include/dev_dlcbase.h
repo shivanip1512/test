@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/05/28 18:21:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/08/05 20:42:07 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,7 +73,11 @@ protected:
 
 private:
 
-   public:
+    CtiTableDeviceRoute  getDeviceRoute() const;
+    CtiTableDeviceRoute& getDeviceRoute();
+    CtiDeviceDLCBase& setDeviceRoute(const CtiTableDeviceRoute& aRoute);
+
+public:
 
    typedef set< CtiDLCCommandStore > CTICMDSET;
 
@@ -84,10 +88,6 @@ private:
    virtual ~CtiDeviceDLCBase();
 
    CtiDeviceDLCBase& operator=(const CtiDeviceDLCBase& aRef);
-
-   CtiTableDeviceRoute  getDeviceRoute() const;
-   CtiTableDeviceRoute& getDeviceRoute();
-   CtiDeviceDLCBase& setDeviceRoute(const CtiTableDeviceRoute& aRoute);
 
    CtiTableDeviceCarrier  getCarrierSettings() const;
    CtiTableDeviceCarrier& getCarrierSettings();
