@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/08/06 18:54:24 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/08/20 22:46:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     {
         MsgPtr = VanGoghConnection.ReadConnQue(2000L);
 
-        TimeNow = RWTime();
+        TimeNow = TimeNow.now();
 
         if(MsgPtr != NULL)
         {
@@ -160,7 +160,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
             delete MsgPtr;
         }
 
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
+        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
         {
             bServerClosing = TRUE;
         }

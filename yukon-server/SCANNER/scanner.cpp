@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2002/08/16 13:06:34 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2002/08/20 22:46:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -754,7 +754,7 @@ VOID ResultThread (VOID *Arg)
     {
         /* Release the Lock Semaphore */
         // CTIReleaseMutexSem (LockSem);
-        ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
+        if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
 
         /* Wait for the Nexus to come (?back?) up */
         while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
@@ -775,6 +775,8 @@ VOID ResultThread (VOID *Arg)
         BytesRead = 0;
         memset(&InMessage, 0, sizeof(InMessage));
 
+        dwWait = 0;
+
         /* get a result off the port pipe */
         if(PorterNexus.CTINexusRead (&InMessage, sizeof(InMessage), &BytesRead, CTINEXUS_INFINITE_TIMEOUT) || BytesRead < sizeof(InMessage))     // Make sure we have an InMessage worth!
         {
@@ -782,13 +784,22 @@ VOID ResultThread (VOID *Arg)
             {
                 PorterNexus.CTINexusClose();
             }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            Sleep(500);
             continue;
         }
 
         /* Wait on the request thread if neccessary */
         dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
 
-        switch(dwWait - WAIT_OBJECT_0)
+        dwWait -= WAIT_OBJECT_0;
+
+        switch(dwWait)
         {
         case 0:  // Quit
             {
@@ -1376,6 +1387,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     BOOL           bServerClosing = FALSE;
 
     RWTime         TimeNow;
+    RWTime         LastTime;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1482,6 +1494,25 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
             delete MsgPtr;
         }
+        else
+        {
+            // Should only get in here once every 5 seconds maximum... any faster and we are a CPU pig.
+            TimeNow = TimeNow.now();
+
+            if(TimeNow.seconds() - LastTime.seconds() < 4)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  Scanner's connection queue to dispatch is panicked." << endl;
+                }
+
+                Sleep(2500);
+            }
+
+            LastTime = TimeNow;
+        }
+
     } /* End of for */
 }
 
