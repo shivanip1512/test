@@ -5,6 +5,7 @@ package com.cannontech.webgraph;
  * Creation date: (10/24/2001 11:51:56 AM)
  * @author: 
  */
+import com.klg.jclass.util.swing.encode.*;
 import java.util.GregorianCalendar;
 
 import com.cannontech.graph.Graph;
@@ -12,8 +13,8 @@ import com.cannontech.graph.buffer.html.HTMLBuffer;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
-import com.cannontech.graph.model.GraphModel;
-import com.cannontech.graph.model.GraphModelType;
+import com.cannontech.graph.model.TrendModel;
+import com.cannontech.graph.model.TrendModelType;
 public class WebGraph
 {
 	private GregorianCalendar nextRunTime = null;
@@ -82,10 +83,10 @@ public WebGraph()
  */
 public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinition liteGraphDef)
 {	
-	long gdefid = liteGraphDef.getGraphDefinitionID();
+	int gdefid = liteGraphDef.getGraphDefinitionID();
 	
 	com.cannontech.database.data.graph.GraphDefinition gDef = new com.cannontech.database.data.graph.GraphDefinition();
-	gDef.getGraphDefinition().setGraphDefinitionID( new Long( gdefid ));
+	gDef.getGraphDefinition().setGraphDefinitionID( new Integer( gdefid ));
 
 	if (gDef != null)
 	{		
@@ -122,7 +123,7 @@ public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinit
 		graph.setShowLoadFactor(false);
 		graph.setSeriesType( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 
-		graph.setModelType(GraphModelType.DATA_VIEW_MODEL );
+		graph.setModelType(TrendModelType.LINE_MODEL );
 
 		// Define the peak series....
 		/*
@@ -140,6 +141,7 @@ public void createGDefReports(com.cannontech.database.data.lite.LiteGraphDefinit
 		// Graph .gif file creation
 		String fileName = getFileName( GRAPH_GIF, gDef.getGraphDefinition().getName());
 		graph.setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
+		graph.setUpdateTrend(true);
 		graph.update();
 		writeGIF(fileName);
 
@@ -199,9 +201,11 @@ public void figureNextRunTime()
  * Creation date: (5/17/2001 4:49:15 PM)
  * @return GraphModelInterface [][]
  */
-public GraphModel[][] getCurrentModels()
+//public GraphModel[][] getCurrentModels()
+public TrendModel getTrendModel()
 {
-	return graph.getCurrentModels();
+//	return graph.getCurrentModels();
+	return graph.getTrendModel();
 }
 /**
  * Insert the method's description here.
@@ -275,14 +279,10 @@ private String getHTMLBuffer( String seriesType)
 			htmlData = new TabularHtml();	//default on error(?) to graph_series
 	
 		buf = new StringBuffer("<HTML><CENTER>");
-		GraphModel [][] currentModels = getCurrentModels();
-			
-		for (int i = 0; currentModels != null && i < currentModels.length; i++)
-			for (int j = 0; currentModels[i] != null && j < currentModels[i].length; j++)
-			{
-				htmlData.setModel( currentModels[i][j] );
-				htmlData.getHtml( buf );
-			}
+	
+		TrendModel model = getTrendModel();
+		htmlData.setModel( model);
+		htmlData.getHtml( buf );
 	}
 	catch(Throwable t )
 	{
@@ -433,6 +433,7 @@ private void initConnToDispatch()
  */
 public static void main(String[] args) 
 {
+	System.setProperty("cti.app.name", "WebGraph");
 	WebGraph webGraph= new WebGraph();
 	
 	System.out.println("[" + new java.util.Date() + "]  Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() +VERSION+ "  --   Web Graph Started.");
@@ -485,7 +486,9 @@ public void writeGIF( String fileName )
 	try
 	{
 		java.io.FileOutputStream fOut = new java.io.FileOutputStream(fileName);
-		graph.encodeGif(fOut);
+//		graph.encodeGif(fOut);
+		graph.setSize(700, 500);
+		graph.encodePng(fOut);
 		fOut.close();
 	}
 	catch (java.io.FileNotFoundException fnf)
@@ -528,5 +531,5 @@ private void writeHTML(String outString, String fileName)
 		System.out.println("@@ Text variable is null -> html format");
 	
 
-} 
+}
 }
