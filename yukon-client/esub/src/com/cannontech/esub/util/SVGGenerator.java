@@ -467,7 +467,7 @@ public class SVGGenerator {
 			text.setAttributeNS(null, "devicename", PAOFuncs.getYukonPAOName(table.getDeviceID()));
 	 		text.setAttributeNS(null, "deviceid", Integer.toString(table.getDeviceID())); 
 			text.setAttributeNS(null, "onclick", "acknowledgeAlarm(evt)");
-			Text theText = doc.createTextNode("Clear Alarms");
+			Text theText = doc.createTextNode("Acknowledge Alarms");
 			text.insertBefore(theText,null);
 			retElement.appendChild(text);
 		}

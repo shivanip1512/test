@@ -20,10 +20,9 @@ import com.loox.jloox.LxAbstractRectangle;
 public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement {	
 	
 	private static final String ELEMENT_ID = "alarmsTable";
-
 	private static final int CURRENT_VERSION = 0;
 	
-	private static final String TABLE_TITLE = "Current Alarms";
+	private static final String TABLE_TITLE = "Unacknowledged Alarms";
 	private static final int DEFAULT_WIDTH = 1000;
 	private static final int DEFAULT_HEIGHT = 300;
 
