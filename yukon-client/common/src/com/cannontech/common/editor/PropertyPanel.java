@@ -103,6 +103,38 @@ public void fireCancelButtonPressed()
 	});
 	
 }
+
+public void fireApplyButtonPressed() 
+{
+	javax.swing.SwingUtilities.invokeLater( new Runnable()
+	{
+		public void run()
+		{
+			java.awt.event.ActionEvent newEvent = new java.awt.event.ActionEvent( getPropertyButtonPanel().getApplyJButton(),
+									java.awt.event.ActionEvent.ACTION_PERFORMED,
+									"applyButtonPressed");
+			actionPerformed( newEvent );
+		}	
+		
+	});
+	
+}
+
+public void fireOKButtonPressed() 
+{
+	javax.swing.SwingUtilities.invokeLater( new Runnable()
+	{
+		public void run()
+		{
+			java.awt.event.ActionEvent newEvent = new java.awt.event.ActionEvent( getPropertyButtonPanel().getApplyJButton(),
+									java.awt.event.ActionEvent.ACTION_PERFORMED,
+									"okButtonPressed");
+			actionPerformed( newEvent );
+		}	
+		
+	});
+	
+}
 /**
  * Insert the method's description here.
  * Creation date: (3/15/2001 10:01:29 AM)
@@ -239,6 +271,21 @@ private void initialize() {
 public void inputUpdate( DataInputPanelEvent event) {
 	setChanged(true);
 	
+	//special case events handled below
+	if( event.getEventID() == DataInputPanelEvent.EVENT_FORCE_APPLY)
+	    {
+			fireApplyButtonPressed();
+	    }	
+	    
+	else if( event.getEventID() == DataInputPanelEvent.EVENT_FORCE_CANCEL)
+	    {
+			fireCancelButtonPressed();
+	    }	
+	
+	else if( event.getEventID() == DataInputPanelEvent.EVENT_FORCE_OK)
+	    {
+			fireOKButtonPressed();
+	    }	
 	
 }
 /**

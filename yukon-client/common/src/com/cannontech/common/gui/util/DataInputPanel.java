@@ -40,6 +40,17 @@ public void fireInputUpdate() {
 		((DataInputPanelListener) this.listeners.elementAt(i)).inputUpdate(new DataInputPanelEvent(this));
 	}
 }
+
+public void fireInputDataPanelEvent(DataInputPanelEvent ev)
+
+{
+	for( int i = this.listeners.size()-1; i >= 0; i-- )
+	{
+		((DataInputPanelListener) this.listeners.elementAt(i)).inputUpdate(ev);
+	}
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (9/25/2001 9:54:34 AM)
