@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/08/19 20:55:33 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/08/20 13:53:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1544,47 +1544,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             }
 
 
-            astr = (updated_str + RWCString(" Stat ")  + CtiNumStr(getDeviceSerialNumber()).spad(3) + " " + confirmed_str + RWCString(" Schedule: "));
-
-            if(_schedule[day][period]._hour == 254)
-            {
-                astr += (RWCString("CC:"));
-            }
-            else if(_schedule[day][period]._hour == 255)
-            {
-                astr += (RWCString("UU:"));
-            }
-            else if(_schedule[day][period]._hour < 24)
-            {
-                astr += (RWCString(CtiNumStr(_schedule[day][period]._hour).zpad(2) + ":"));
-            }
-            else
-            {
-                astr += (RWCString("II:"));
-            }
-
-            switch(_schedule[day][period]._minute)
-            {
-            case 0:
-            case 15:
-            case 30:
-            case 45:
-                astr += (RWCString(CtiNumStr(_schedule[day][period]._minute).zpad(2)));
-                break;
-
-            case 254:
-                astr += (RWCString("CC"));
-                break;
-
-            case 255:
-                astr += (RWCString("UU"));
-                break;
-
-            default:
-                astr += (RWCString("II"));
-                break;
-            }
-
+            astr = (updated_str + RWCString(" Stat ")  + CtiNumStr(getDeviceSerialNumber()).spad(3) + " " + confirmed_str + RWCString(" Schedule:"));
 
             switch(day)
             {
@@ -1649,6 +1609,38 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
 
             default:
                 astr += (RWCString(" Invalid"));
+                break;
+            }
+
+            if(_schedule[day][period]._hour == 254)
+            {
+                astr += (RWCString(" Unscheduled"));             // Unscheduled.
+                return astr;
+            }
+            else if(_schedule[day][period]._hour == 255)
+            {
+                astr += (RWCString(" UU:"));
+            }
+            else if(_schedule[day][period]._hour < 24)
+            {
+                astr += (RWCString(CtiNumStr(_schedule[day][period]._hour).zpad(2) + ":"));
+            }
+            else
+            {
+                astr += (RWCString(" II:"));
+            }
+
+            switch(_schedule[day][period]._minute)
+            {
+            case 0:
+            case 15:
+            case 30:
+            case 45:
+                astr += (RWCString(CtiNumStr(_schedule[day][period]._minute).zpad(2)));
+                break;
+
+            default:
+                astr += (RWCString("II"));
                 break;
             }
 
@@ -3758,8 +3750,6 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                             astr = (RWCString("HEAT,(AUTO)"));
                             break;
                         }
-
-                        astr = RWCString(); // Don't change the table!.
                     }
                     else if( _displayedTemp._displayedTemperature > coolsp )
                     {
@@ -4243,23 +4233,31 @@ void CtiDeviceGatewayStat::addOperation(const CtiPendingStatOperation &op)
 bool CtiDeviceGatewayStat::getCompletedOperation( CtiPendingStatOperation &op )
 {
     bool gotone = false;
+    int line = 0;
 
     CtiLockGuard< CtiMutex > gd(_collMux, 1000);
 
     try
     {
+        line = __LINE__;
         if(gd.isAcquired() && !_operations.empty())
         {
             CtiDeviceGatewayStat::OpCol_t::iterator oper_itr;
+            line = __LINE__;
             for( oper_itr = _operations.begin(); oper_itr != _operations.end(); oper_itr++ )
             {
                 OpCol_t::value_type &valtype = *oper_itr;
 
+                line = __LINE__;
                 if(valtype.isConfirmed())
                 {
+                    line = __LINE__;
                     op = valtype;
+                    line = __LINE__;
                     gotone = true;
+                    line = __LINE__;
                     _operations.erase(oper_itr);
+                    line = __LINE__;
                     break;
                 }
             }
@@ -4270,6 +4268,7 @@ bool CtiDeviceGatewayStat::getCompletedOperation( CtiPendingStatOperation &op )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " dumped after line " << line << endl;
         }
     }
 
@@ -4314,7 +4313,7 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " hsp 0x" << CtiNumStr(_schedule[dow][pod]._heatSetpoint).hex().zpad(4) << endl;
+                        dout << " hsp " << _schedule[dow][pod]._heatSetpoint << endl;
                     }
                 }
                 else
@@ -4329,7 +4328,7 @@ int CtiDeviceGatewayStat::processSchedulePeriod(SOCKET msgsock, CtiCommandParser
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " csp 0x" << CtiNumStr(_schedule[dow][pod]._coolSetpoint).hex().zpad(4) << endl;
+                        dout << " csp 0x" << _schedule[dow][pod]._coolSetpoint << endl;
                     }
                     cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
                 }
