@@ -112,8 +112,6 @@ public interface IDatabaseCache
 	//Map<Integer(paoID), LiteYukonPAObject>
 	public java.util.Map getAllPAOsMap();
    
-	public boolean hasLoadedGlobals();
-
    /**
     *  Returns the LiteBase object that was added,deleted or updated, 
     *    else null is returned.

@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
 
+import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -269,9 +270,13 @@ public class ClientSession {
 		{
 			if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
 				// have a session info already lets try it
-				Properties dbProps = LoginSupport.getDBProperties(sessionID, host, port);
-				if(!dbProps.isEmpty()) {
-					PoolManager.setDBProperties(dbProps);
+				Properties props = LoginSupport.getDBProperties(sessionID, host, port);
+				if(!props.isEmpty())
+                {
+                    //load both DB and log properties
+					PoolManager.setDBProperties(props);
+                    CTILogManager.setLogProperties(props);
+                    
 					LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
 					if(u != null) {
 						//score! we found them

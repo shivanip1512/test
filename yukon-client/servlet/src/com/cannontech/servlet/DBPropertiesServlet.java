@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -40,8 +41,8 @@ public class DBPropertiesServlet extends HttpServlet {
 		
 	private void sendDBProps(OutputStream out) {
 
-		InputStream is = null;		
-		try {		
+		InputStream is = null;
+		try {
 			is = PoolManager.getDBInputStream();
 
 			byte[] buf = new byte[4096];
@@ -49,6 +50,17 @@ public class DBPropertiesServlet extends HttpServlet {
 			while((r = is.read(buf, 0, buf.length)) != -1) {
 				out.write(buf, 0, r);
 			}
+            
+            //write out a CR/LF to the file to separate sets of props
+            out.write( System.getProperty("line.separator").getBytes() );
+
+            is = CTILogManager.getLogInputStream();
+            buf = new byte[4096];
+            r = -1;
+            while((r = is.read(buf, 0, buf.length)) != -1) {
+                out.write(buf, 0, r);
+            }
+            
 		}
 		catch(Exception e) {
 			CTILogger.error("Couldn't load " + PoolManager.getPropertyURL(), e);

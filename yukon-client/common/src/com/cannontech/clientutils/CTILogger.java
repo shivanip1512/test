@@ -2,19 +2,12 @@ package com.cannontech.clientutils;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.YukonFileAppender;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.roles.yukon.LoggingRole;
 
 /**
  * @author rneuharth
@@ -33,12 +26,16 @@ import com.cannontech.roles.yukon.LoggingRole;
  *
  *   
  * */
-public class CTILogger
+public class CTILogger //implements ILogging
 {
+    static
+    {
+        //Before we do any logging, let us prepare our logging facilities!
+        CTILogManager.init();
+    }
+    
+    
 	private static boolean isCreated = false;
-
-	private static final Layout DEF_LAYOUT = 
-				new PatternLayout("[%d{MM/dd/yyyy HH:mm:ss}] %-5p [%-11.11t] %m%n");
 	
    //private static Logger logger = null;
    private static String MAX_LOG_FILE_SIZE = "100MB";
@@ -48,27 +45,6 @@ public class CTILogger
  
 	//checks the LoggingRole.GENERAL_LEVEL property for its level 
 	public static final String STANDARD_LOGGER = "StandardLogger";
-
-
-	//a mapping of package objects to their log_level property
-	private static final Object[][] ALL_NAMES = 
-	{
-		{ "com.cannontech.dbeditor", new Integer(LoggingRole.DBEDITOR_LEVEL) },
-		{ "com.cannontech.database", new Integer(LoggingRole.DATABASE_LEVEL) },
-		{ "com.cannontech.tdc", new Integer(LoggingRole.TDC_LEVEL) },
-		{ "com.cannontech.yc", new Integer(LoggingRole.COMMANDER_LEVEL) },
-		{ "com.cannontech.billing", new Integer(LoggingRole.BILLING_LEVEL) },
-		{ "com.cannontech.calchist", new Integer(LoggingRole.CALCHIST_LEVEL) },
-		{ "com.cannontech.cbc", new Integer(LoggingRole.CAPCONTROL_LEVEL) },
-		{ "com.cannontech.esub", new Integer(LoggingRole.ESUB_LEVEL) },
-		{ "com.cannontech.export", new Integer(LoggingRole.EXPORT_LEVEL) },
-		{ "com.cannontech.loadcontrol", new Integer(LoggingRole.LOADCONTROL_LEVEL) },
-		{ "com.cannontech.macs", new Integer(LoggingRole.MACS_LEVEL) },
-		{ "com.cannontech.notif", new Integer(LoggingRole.NOTIFICATION_LEVEL) },
-		{ "com.cannontech.report", new Integer(LoggingRole.REPORTING_LEVEL) },
-		{ "com.cannontech.graph", new Integer(LoggingRole.TRENDING_LEVEL) },
-		{ "com.cannontech.stars", new Integer(LoggingRole.STARS_LEVEL) },
-	};
 
 	private static FileAppender fileAppender = null;
 
@@ -93,92 +69,63 @@ public class CTILogger
    
 		logger.setLevel( Level.ALL );  //default log level
    
-		logger.addAppender( new ConsoleAppender(DEF_LAYOUT, ConsoleAppender.SYSTEM_OUT) );
+		logger.addAppender( new ConsoleAppender(CTILogManager.LOG_LAYOUT, ConsoleAppender.SYSTEM_OUT) );
 	}
 
-   private static Logger getLogger()
+   private synchronized static Logger getLogger()
    {
-   		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-   		synchronized(cache) {
-   			synchronized(CTILogger.class) {
+		if( !isCreated )
+		{
+		    //Init our logger object for the first time
+		    createLogger( STANDARD_LOGGER );
 
-				if( !isCreated )
-				{
-				   //Init our logger object for the first time
-				   createLogger( STANDARD_LOGGER );
-        
-					  //create the extra loggers to keep our web folks sane
-					  for( int i = 0; i < ALL_NAMES.length; i++ )
-						  createLogger( ALL_NAMES[i][0].toString() );				
-
-					  isCreated = true;
-			
-					  //initLoggers();
-				}
+            //create the extra loggers to keep our web folks sane
+            for( int i = 0; i < CTILogManager.ALL_NAMES.length; i++ )
+                createLogger( CTILogManager.ALL_NAMES[i][0] );				
             
-				//by default, use the standard logger
-				Logger log = LogManager.getLogger( STANDARD_LOGGER );
+            isCreated = true;
+            //initLoggers();
+		}
+    
+		//by default, use the standard logger
+		Logger log = LogManager.getLogger( STANDARD_LOGGER );
 
-				// If we are told to use the standard logger and if we
-				// have loaded the global properties
-				if( cache.hasLoadedGlobals() )
-				{
-					  t.fillInStackTrace();
-			
-					  //if( t.getStackTrace().length >= 2 )
-					  for( int i = 0; i < t.getStackTrace().length; i++ )
-					  {
-						  if( t.getStackTrace()[i].getClassName().startsWith(CTILogger.class.getName()) )
-							  continue;
-			
-						  Logger l = LogManager.exists(
-								  t.getStackTrace()[i].getClassName().substring(
-								  0,
-								  t.getStackTrace()[i].getClassName().lastIndexOf(".") ) );
-				
-						  if( l != null )
-							  log = l;
-					
-						  break;
-					  }
+		t.fillInStackTrace();
+
+        for( int i = 0; i < t.getStackTrace().length; i++ )
+        {
+            if( t.getStackTrace()[i].getClassName().startsWith(CTILogger.class.getName()) )
+                continue;
+        
+            Logger l = LogManager.exists(
+        			  t.getStackTrace()[i].getClassName().substring(
+        			  0,
+        			  t.getStackTrace()[i].getClassName().lastIndexOf(".") ) );
+        
+            if( l != null )
+                log = l;
+        
+            break;
+        }
 	  
-				}
-
-				return log;
-   			}
-   		}
+        return log;
    }
 
 
 	private static String getLoggerLevel( Logger logger_ )
 	{	
 		String level = null;	
-		if( !DefaultDatabaseCache.getInstance().hasLoadedGlobals() ) 
-		{
-			return "ALL";	
-		}
 
-		for( int i = 0; i < ALL_NAMES.length; i++ )
-			if( logger_.getName().equalsIgnoreCase(ALL_NAMES[i][0].toString()) )
+		for( int i = 0; i < CTILogManager.ALL_NAMES.length; i++ )
+			if( logger_.getName().equalsIgnoreCase(CTILogManager.ALL_NAMES[i][0]) )
 			{
-				level = RoleFuncs.getGlobalPropertyValue( 
-						((Integer)ALL_NAMES[i][1]).intValue() );
-
-//				level = "ALL";
+				level = CTILogManager.ALL_NAMES[i][1];
 			}
 			
 		//just in case we can not find the name above
 		if( level == null )
 		{			
-			LiteYukonRoleProperty p =
-				AuthFuncs.getRoleProperty( LoggingRole.GENERAL_LEVEL );
-
-
-			//extra special case since we may not be inited yet with out properties
-			if( p != null )
-				level = RoleFuncs.getGlobalPropertyValue( LoggingRole.GENERAL_LEVEL );
-			else
-				level = "ALL";
+			level = CTILogManager.ALL_NAMES[CTILogManager.GENERAL_LOG_LEVEL][1];
 		}				
 
 
@@ -193,20 +140,11 @@ public class CTILogger
     */
    private static final void updateLogSettings()
    {
-		if( !DefaultDatabaseCache.getInstance().hasLoadedGlobals() )
-		{
-			return;
-		}
-   		
   		Logger log = getLogger();
 		setLogLevel( getLoggerLevel(log) );
 
-		LiteYukonRoleProperty lToFile =
-			AuthFuncs.getRoleProperty( LoggingRole.LOG_TO_FILE );
-
-		String writeToFile = "false";
-		if( lToFile != null )
-			writeToFile = RoleFuncs.getGlobalPropertyValue( LoggingRole.LOG_TO_FILE );		
+		//should we write our logging to a log file?
+        String writeToFile = CTILogManager.ALL_NAMES[CTILogManager.LOG_TO_FILE][1];
 
 		if( Boolean.valueOf(writeToFile).booleanValue() )
 		{
@@ -227,12 +165,11 @@ public class CTILogger
 			try
 			{					
 				fileAppender = new YukonFileAppender(
-										DEF_LAYOUT,
+                                        CTILogManager.LOG_LAYOUT,
 										CtiUtilities.getLogDirPath() + System.getProperty("file.separator") +
 										  (CtiUtilities.getApplicationName() == null
 										  ? "webapp"
-										  : CtiUtilities.getApplicationName()) 
-										);						
+										  : CtiUtilities.getApplicationName()) );						
 			}
 			catch( Exception e )
 			{

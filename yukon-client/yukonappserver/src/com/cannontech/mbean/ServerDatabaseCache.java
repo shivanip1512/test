@@ -2880,16 +2880,6 @@ public synchronized void removeDBChangeListener(DBChangeListener listener)
 }
 
 /**
- * Determines if we have access to our global roles or not.
- * We can only use the properties if the global Yukon Group is loaded.
- * @return
- */
-public synchronized boolean hasLoadedGlobals()
-{
-	return allYukonGroups != null && allYukonGroups.size() > 0;
-}
-
-/**
  * Insert the method's description here.
  * Creation date: (2/27/2002 5:36:31 PM)
  * @param loaders java.lang.Runnable[]

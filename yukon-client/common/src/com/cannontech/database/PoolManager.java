@@ -13,14 +13,12 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import com.cannontech.clientutils.CTILogManager;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
 public class PoolManager
 {
-	//Tomcat specific for now
-	private static final String DB_BASE = System.getProperty("catalina.base");
-	
 	public static final String DB_PROPERTIES_FILE = "/db.properties";
 	
 	public static final String DRV_SQLSERVER = "jdbc:microsoft:sqlserver:";
@@ -286,7 +284,7 @@ public String[] getAllPoolsStrings()
    		
 			if( retURL == null )  //not in CLASSPATH, check catalina
 			{
-				File f = new File( DB_BASE + DB_PROPERTIES_FILE );			
+				File f = new File( CTILogManager.FILE_BASE + DB_PROPERTIES_FILE );			
 	   		retURL = f.toURL();
 			}
 
@@ -303,14 +301,14 @@ public String[] getAllPoolsStrings()
 
    static synchronized public Properties loadDBProperties() 
    {
-   	Properties props = null;
-   		
+       if( dbProps == null )
+       {
 		try
 		{
 			InputStream is = getDBInputStream();
 
-			props = new Properties();
-			props.load(is);
+			dbProps = new Properties();
+			dbProps.load(is);
 			
 			is.close();
 		 }
@@ -318,12 +316,12 @@ public String[] getAllPoolsStrings()
 		 {
 		  	CTILogger.error("Can't read the properties file. " +
 		 		"Make sure db.properties is in the CLASSPATH" + 
-		 		(DB_BASE != null ? " or in the directory: " + DB_BASE : "") );
-		 }	
-		 finally 
-		 {
-		 	return props;
+		 		(CTILogManager.FILE_BASE != null ? " or in the directory: " + CTILogManager.FILE_BASE : "") );
 		 }
+       }
+       
+       return dbProps;
+
    }
 
 
@@ -333,11 +331,11 @@ public String[] getAllPoolsStrings()
 
 		if( is == null ) //not in CLASSPATH, check catalina
 		{
-			File f = new File( DB_BASE + DB_PROPERTIES_FILE);
-			is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
+			File f = new File( CTILogManager.FILE_BASE + DB_PROPERTIES_FILE);
+			is = new FileInputStream( CTILogManager.FILE_BASE + DB_PROPERTIES_FILE );
 			
 			CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
-			CTILogger.info( "   catalina.base = " + DB_BASE );
+			CTILogger.info( "   catalina.base = " + CTILogManager.FILE_BASE );
 		}
 		else
 		{
@@ -398,6 +396,7 @@ public String[] getAllPoolsStrings()
 	{
 		release();
 
+        dbProps = null;
 		dbProps = loadDBProperties();
    	  
 		createPools(dbProps);
