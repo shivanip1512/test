@@ -60,7 +60,7 @@ public class AuthDump {
 			System.out.println("");			
 		}
 		
-		Map lookupMap = cache.getAllYukonUserRoleLookupMap();
+		Map lookupMap = cache.getAllYukonUserRoleIDLookupMap();
 		
 	    Iterator i1 = allUsers.iterator();
 	    while(i1.hasNext()) {
@@ -71,7 +71,7 @@ public class AuthDump {
 	    		Map m = (Map) lookupMap.get(user);
 	    		if(m != null) {
 	    			//Pair p = (Pair) m.get(role.getRoleName());
-	    			Pair p = AuthFuncs.checkRole(user,role.getRoleName());
+	    			Pair p = AuthFuncs.checkRole(user,role.getRoleID());
 	    			if(p != null) {
 	    			 	LiteYukonRole r2 = (LiteYukonRole) p.first;
 	    			 	String value = (String) p.second;

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -57,10 +58,10 @@ public class SVGGenerator extends HttpServlet {
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it
 			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&				
-				AuthFuncs.checkRole(user, EsubRoles.VIEW_ROLE) != null  ) {				
+				AuthFuncs.checkRole(user, RoleTypes.ESUBVIEW) != null  ) {				
 				
 				// enable edit functions?
-				Pair editPair = AuthFuncs.checkRole(user, EsubRoles.EDIT_ROLE);			
+				Pair editPair = AuthFuncs.checkRole(user, RoleTypes.ESUBEDIT);			
 				boolean canEdit = (editPair != null);
 
 				com.cannontech.esub.util.SVGGenerator gen = new com.cannontech.esub.util.SVGGenerator();				

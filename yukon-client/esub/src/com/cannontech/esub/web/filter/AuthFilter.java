@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.esub.web.Authenticator;
 import com.cannontech.esub.web.SessionInfo;
@@ -78,7 +79,7 @@ public class AuthFilter implements Filter {
         	String target;
         	SessionInfo info;
             if((info=validateLogin(req, resp)) != null) {
-            	target  = AuthFuncs.getRoleValue(info.getUser(),"HOME_URL");
+            	target  = AuthFuncs.getRoleValue(info.getUser(),RoleTypes.HOME_URL); 
             	CTILogger.info("Authenticated user:  " + info.getUser().getUsername());
             }
             else {
