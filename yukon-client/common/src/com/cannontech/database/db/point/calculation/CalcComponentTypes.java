@@ -20,4 +20,32 @@ public class CalcComponentTypes
 	public static final String MIN_FUNCTION= "Min";
 	public static final String MAX_FUNCTION = "Max";
 	public static final String BASELINE_FUNCTION = "Baseline";
+	
+	public static final String DEMAND_AVG15_FUNCTION = "DemandAvg15";
+	public static final String DEMAND_AVG30_FUNCTION = "DemandAvg30";
+	public static final String DEMAND_AVG60_FUNCTION = "DemandAvg60";
+	public static final String PFACTOR_KW_KVAR_FUNCTION = "P-Factor KW/KVar";
+	public static final String PFACTOR_KW_KQ_FUNCTION = "P-Factor KW/KQ";
+	public static final String PFACTOR_KW_KVA_FUNCTION = "P-Factor KW/KVa";
+	
+	//our operation function strings
+	public static String[] CALC_FUNCTIONS =
+	{
+		MIN_FUNCTION,
+		MAX_FUNCTION,
+		BASELINE_FUNCTION,
+		DEMAND_AVG15_FUNCTION,
+		DEMAND_AVG30_FUNCTION,
+		DEMAND_AVG60_FUNCTION,
+		PFACTOR_KW_KVAR_FUNCTION
+	};
+	//our operation symbols
+	public static String[] CALC_OPERATIONS =
+	{
+		ADDITION_OPERATION,
+		SUBTRACTION_OPERATION,
+		MULTIPLICATION_OPERATION,
+		DIVISION_OPERATION
+	};
+	
 }
