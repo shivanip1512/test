@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2003/04/22 16:30:13 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2003/04/25 15:09:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1099,55 +1099,60 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPE_KV2:
                    {
-                      BYTE  inBuffer[512];
-                      BYTE  outBuffer[300];
-                      ULONG bytesReceived=0;
+                       BYTE  inBuffer[512];
+                       BYTE  outBuffer[300];
+                       ULONG bytesReceived = 0;
 
-                      CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
-                      CtiProtocolANSI &ansi   = kv2dev->getProtocol();
+                       CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device;
+                       CtiProtocolANSI &ansi   = kv2dev->getProtocol();
 
-                      //allocate some space
-                      trx.setInBuffer( inBuffer );
-                      trx.setOutBuffer( outBuffer );
-                      trx.setInCountActual( &bytesReceived );
+                       //allocate some space
+                       trx.setInBuffer( inBuffer );
+                       trx.setOutBuffer( outBuffer );
+                       trx.setInCountActual( &bytesReceived );
 
-                      //unwind the message we made in scanner
-                      if( ansi.recvOutbound( OutMessage ) != 0 )
-                      {
-                         while( !ansi.isTransactionComplete() )
-                         {
-                            //jump in, check for login, build packets, send messages, etc...
-                            ansi.generate( trx );
-
-                            status = Port->outInMess( trx, Device, traceList );
-
-                            if( status != NORMAL )
-                            {
-                               CtiLockGuard<CtiLogger> doubt_guard(dout);
-                               dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
-                            }
-
-                            ansi.decode( trx, status );
-
-                            // Prepare for tracing
-                            if( trx.doTrace( status ) )
-                            {
-                               Port->traceXfer( trx, traceList, Device, status );
-                            }
-
-                            DisplayTraceList( Port, traceList, true );
-                         }
-
-                         {
+                       //unwind the message we made in scanner
+                       if( ansi.recvOutbound( OutMessage ) != 0 )
+                       {
+                          {
                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << RWTime() << " KV2 loop exited ******************************************************************" << endl;
-                         }
-                      }
+                             dout << RWTime() << " KV2 loop entered ******************************************************************" << endl;
+                          }
 
-                      ansi.sendInbound( InMessage );
-                      ansi.setTransactionComplete(false);
-                      //ansi.reinitialize();
-                      break;
+                          while( !ansi.isTransactionComplete() )
+                          {
+                             //jump in, check for login, build packets, send messages, etc...
+                             ansi.generate( trx );
+
+                             status = Port->outInMess( trx, Device, traceList );
+
+                             if( status != NORMAL )
+                             {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                             }
+
+                             ansi.decode( trx, status );
+
+                             // Prepare for tracing
+                             if( trx.doTrace( status ))
+                             {
+                                Port->traceXfer( trx, traceList, Device, status );
+                             }
+
+                             DisplayTraceList( Port, traceList, true );
+                          }
+
+                          {
+                             CtiLockGuard<CtiLogger> doubt_guard(dout);
+                             dout << RWTime() << " KV2 loop exited  ******************************************************************" << endl;
+                          }
+                       }
+                       // return value to tell us if we are successful or not
+                       status = ansi.sendCommResult( InMessage );
+
+                       ansi.reinitialize();
+                       break;
                    }
 
                 case TYPE_SIXNET:
