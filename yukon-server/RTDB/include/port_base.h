@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/02/25 20:16:22 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/03/14 01:20:42 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 
 #include <windows.h>
-#include <set>
+#include <list>
 #include <iostream>
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
@@ -301,7 +301,7 @@ private:
     RWTime                      _lastOMRead;
     RWTime                      _lastOMComplete;
 
-    set< LONG >                _devicesQueued;
+    list< LONG >                _devicesQueued;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 

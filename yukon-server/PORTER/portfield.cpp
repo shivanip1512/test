@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.135 $
-* DATE         :  $Date: 2005/03/10 19:20:00 $
+* REVISION     :  $Revision: 1.136 $
+* DATE         :  $Date: 2005/03/14 01:24:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -252,12 +252,16 @@ VOID PortThread(void *pid)
                 Device->getOutMessage(OutMessage);
                 Device->incQueueProcessed(1, RWTime());
 
-                /*
-                 *  This block is trying to make us go back to normal processing through readQueue.
-                 */
-                if(!Device->hasQueuedWork() && !OutMessage)
+                /*  This block is trying to make us go back to normal processing through readQueue. */
+                if(!OutMessage)
                 {
                     Port->resetDeviceQueued(Device->getID());
+                }
+
+                // There may be retries on this device.
+                if(Device->hasQueuedWork())
+                {
+                    Port->setDeviceQueued(Device->getID());
                 }
             }
         }

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2005/02/25 20:16:22 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2005/03/14 01:20:42 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.52  2005/03/14 01:20:42  cplender
+* Went back to the list.  Don't want to require the Dinkum STL updates.
+*
 * Revision 1.51  2005/02/25 20:16:22  cplender
 * Changed from list to set for queuedDevices.
 *
@@ -1574,13 +1577,13 @@ bool CtiPort::getDeviceQueued() const
 
 CtiPort& CtiPort::setDeviceQueued(LONG id)
 {
-    _devicesQueued.insert( id );
+    _devicesQueued.push_back( id );
     return *this;
 }
 
 CtiPort& CtiPort::resetDeviceQueued(LONG id)
 {
-    _devicesQueued.erase( id );
+    _devicesQueued.remove( id );
     return *this;
 }
 
