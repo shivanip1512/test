@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2002/08/28 14:58:20 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2002/08/29 16:44:20 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -668,6 +668,7 @@ INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
    switch(InMessage->Sequence)
    {
+   case (CtiProtocolEmetcon::Scan_General):
    case (CtiProtocolEmetcon::Command_Loop):
       {
          status = decodeLoopback(InMessage, TimeNow, vgList, retList, outList);
