@@ -1,13 +1,5 @@
 package com.cannontech.export;
 
-/**
- * @author snebben
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class IONEventLogFormat extends ExportFormatBase
 {
 	private final char[] ignoreChars = new char[]{',', ' '};
@@ -20,6 +12,7 @@ public class IONEventLogFormat extends ExportFormatBase
 	public static final String DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
 	private long runTimeIntervalInMillis = 1800000;	//30mins
 
+	//Innerclass for Yukon.SystemLog.Description Column
 	private class IONDescription
 	{
 		private Integer ion_pri = null;
@@ -27,11 +20,13 @@ public class IONEventLogFormat extends ExportFormatBase
 		private String ion_effect = null;
 		private String ion_nlog = null;
 	}
+	
+	//Innerclass for Yukon.SystemLog.Action Column	
 	private class IONAction
 	{
 		private String ion_cause_handle = null;
 		private String ion_effect_handle = null;
-//		private int state = -1;		//NOT CURRENTLY USED   02/17/03 SN
+		//private int state = -1;		//NOT CURRENTLY USED   02/17/03 SN
 		private Integer record = null;
 	}
 
@@ -53,6 +48,15 @@ public class IONEventLogFormat extends ExportFormatBase
 	}
 
 	/**
+	 * Set fileName to export format to.
+	 * @param fileName java.lang.String
+	 */
+	private void setFileName(String fileName)
+	{
+		this.fileName = fileName;
+	}
+	
+	/**
 	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
 	 */
 	public void parseDatFile()
@@ -73,6 +77,10 @@ public class IONEventLogFormat extends ExportFormatBase
 					java.io.File file = new java.io.File( getDirectory() );
 					file.mkdirs();
 				}
+				else if(keys[i].equalsIgnoreCase("FILE"))
+				{
+					setFileName(values[i].toString());
+				}
 				else if(keys[i].equalsIgnoreCase("INT"))
 				{
 					//INT parameter is in MINUTES but we need millis					
@@ -92,10 +100,13 @@ public class IONEventLogFormat extends ExportFormatBase
 		
 	}		
 	
+	/**
+	 * @see com.cannontech.export.ExportFormatBase#buildKeysAndValues()
+	 */
 	public String[][] buildKeysAndValues()
 	{
-		String[] keys = new String[3];
-		String[] values = new String[3];
+		String[] keys = new String[4];
+		String[] values = new String[4];
 		
 		int i = 0; 
 		keys[i] = "FORMAT";
@@ -103,6 +114,9 @@ public class IONEventLogFormat extends ExportFormatBase
 		
 		keys[i] = "DIR";
 		values[i++] = getDirectory();
+
+		keys[i] = "FILE";
+		values[i++] = getFileName();
 		
 		long millisPerMinute = 60L * 1000L;	//60 seconds * 1000millis
 		keys[i] = "INT";
@@ -110,6 +124,7 @@ public class IONEventLogFormat extends ExportFormatBase
 		
 		return new String[][]{keys, values};
 	}
+	
 	/**
 	 * @see com.cannontech.export.ExportFormatBase#retrieveExportData()
 	 */
@@ -167,11 +182,6 @@ public class IONEventLogFormat extends ExportFormatBase
 
 					if (isValid(ionDesc) )
 					{
-						//ONLY continue on if we pass one of the checks:
-						//effect like 'Control%' 
-						//effect_ion like 'Notify%'
-						//priority  == 51
-						
 						int logid = rset.getInt(1);
 						lastLogID = logid;
 						
@@ -218,6 +228,11 @@ public class IONEventLogFormat extends ExportFormatBase
 		logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);
 	}
 
+	/**
+	 * Return the lastLogID used for generating the export format.
+	 * Reads the logId from LASTLOGID_FILENAME.
+	 * @return int
+	 */
 	private int getLastEventLogID()
 	{
 		int lastLogID = -1;
@@ -257,6 +272,10 @@ public class IONEventLogFormat extends ExportFormatBase
 		return lastLogID;
 	}	
 	
+	/**
+	 * Write the greatest logid to file LASTLOGID_FILENAME
+	 * @param maxLogID
+	 */
 	private void writeLastLogIDToFile(int maxLogID)
 	{
 		try
@@ -278,22 +297,37 @@ public class IONEventLogFormat extends ExportFormatBase
 		}
 	}	
 	
+	/**
+	 * Return true when desc parameters pass the validity checks.
+	 * @param desc innerclass.IONDescription
+	 * @return boolean
+	 */
 	private boolean isValid(IONDescription desc)
 	{
+		//ONLY continue on if we pass one of the checks:
+		//effect like 'Control%' OR effect like 'Notify%'
+		//pri == 51
+		
 		if(desc != null)
 		{
 			if (desc.ion_pri == null || desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) != 0)
 				return false;
-	/*		else if (desc.ion_effect == null || (! desc.ion_effect.toLowerCase().startsWith("control")))
+			else if (desc.ion_effect == null ||
+					(!desc.ion_effect.toLowerCase().startsWith("control")  && 
+						!desc.ion_effect.toLowerCase().startsWith("notify") ))
 				return false;
-			else if (desc.ion_cause == null || (! desc.ion_cause.toLowerCase().startsWith("notify")))
-				return false;
-	*/			
+
 			return true;
 		}
 		return false;
 	}
 	
+	/**
+	 * Return a vector of keys and values from valueString.
+	 * Used for IONDescription and IONAction column data strings.
+	 * @param valueString java.lang.String
+	 * @return Vector
+	 */
 	private java.util.Vector getKeysAndValuesVector(String valueString)
 	{
 		java.util.Vector keysAndValues = new java.util.Vector(4);
@@ -335,6 +369,7 @@ public class IONEventLogFormat extends ExportFormatBase
 	/**
 	 * Sets the ionDescription(s).
 	 * @param descString The string from SYSTEM LOG COLUMN
+	 * @return IONDescription
 	 */
 	private IONDescription getIONDescription(String descString)
 	{
@@ -367,6 +402,7 @@ public class IONEventLogFormat extends ExportFormatBase
 	/**
 	 * Sets the ionAction(s).
 	 * @param actionString the string from SYSTEM LOG COLUMN
+	 * @return IONAction
 	 */
 	private IONAction getIONAction(String actionString)
 	{
@@ -394,8 +430,4 @@ public class IONEventLogFormat extends ExportFormatBase
 
 		return ion_action;
 	}
-
-
-	
-
 }

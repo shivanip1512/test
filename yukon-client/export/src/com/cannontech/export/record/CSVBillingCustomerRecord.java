@@ -13,88 +13,141 @@ public class CSVBillingCustomerRecord implements RecordBase
 	private String meterLocation;
 	private Integer baselinePointId;
 	private Integer curtailPointId;
+	
+	/**
+	 * CSVBillingCustomerRecord constructor comment.
+	 */
+	public CSVBillingCustomerRecord() {
+		super();
+	}
+	/**
+	 * CSVBillingCustomerRecord constructor comment.
+	 */
+	public CSVBillingCustomerRecord(String custName, String meterLoc, String engDebt, String engPre, Integer baselinePt, Integer curtailPt)
+	{
+		super();
+		setCustomerName(custName);
+		setMeterLocation(meterLoc);
+		setEnergyDebtor(engDebt);
+		setEnergyPremise(engPre);
+		setBaselinePointId(baselinePt);
+		setCurtailPointId(curtailPt);
+	}
+	/**
+	 * @see com.cannontech.export.record.RecordBase#dataToString()
+	 * This is an extension of CSVBillingRecord, but is does not need to return anything.
+	 * Returns null
+	 */
+	public String dataToString()
+	{
+		return null;
+	}
+	/**
+	 * Returns the baselinePointId.
+	 * @return Integer
+	 */
+	public Integer getBaselinePointId()
+	{
+		return baselinePointId;
+	}
 
-/**
- * CSVBillingCustomerRecord constructor comment.
- */
-public CSVBillingCustomerRecord() {
-	super();
-}
-/**
- * CSVBillingCustomerRecord constructor comment.
- */
-public CSVBillingCustomerRecord(String custName, String meterLoc, String engDebt, String engPre, Integer baselinePt, Integer curtailPt)
-{
-	super();
-	setCustomerName(custName);
-	setMeterLocation(meterLoc);
-	setEnergyDebtor(engDebt);
-	setEnergyPremise(engPre);
-	setBaselinePointId(baselinePt);
-	setCurtailPointId(curtailPt);
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/21/2002 1:11:49 PM)
- * @return java.lang.String
- */
-public String dataToString()
-{
-	//This is an extension of CSVBillingRecord.  It does not explicately return
-	//  any sort of a dataToString value.
-	return null;
-}
-public Integer getBaselinePointId()
-{
-	return baselinePointId;
-}
-public Integer getCurtailPointId()
-{
-	return curtailPointId;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/28/2002 1:35:02 PM)
- * @return java.lang.String
- */
-public String getCustomerName()
-{
-	return customerName;
-}
-public String getMeterLocation()
-{
-	return meterLocation;
-}
-public String getEnergyDebtor()
-{
-	return energyDebtor;
-}
-public String getEnergyPremise()
-{
-	return energyPremise;
-}
-public void setBaselinePointId(Integer newBaselinePt)
-{
-	baselinePointId = newBaselinePt;
-}
-public void setCurtailPointId(Integer newCurtailPt)
-{
-	curtailPointId = newCurtailPt;
-}
-public void setCustomerName(String newCustomerName)
-{
-	customerName = newCustomerName;
-}
-public void setEnergyDebtor(String newEnergyDebtor)
-{
-	energyDebtor = newEnergyDebtor;
-}
-public void setEnergyPremise(String newEnergyPremise)
-{
-	energyPremise = newEnergyPremise;
-}
-public void setMeterLocation(String newMeterLocation)
-{
-	meterLocation = newMeterLocation;
-}
+	/**
+	 * Returns the curtailPointId.
+	 * @return Integer
+	 */
+	public Integer getCurtailPointId()
+	{
+		return curtailPointId;
+	}
+
+	/**
+	 * Returns the customerName.
+	 * @return String
+	 */
+	public String getCustomerName()
+	{
+		return customerName;
+	}
+
+	/**
+	 * Returns the energyDebtor.
+	 * @return String
+	 */
+	public String getEnergyDebtor()
+	{
+		return energyDebtor;
+	}
+
+	/**
+	 * Returns the energyPremise.
+	 * @return String
+	 */
+	public String getEnergyPremise()
+	{
+		return energyPremise;
+	}
+
+	/**
+	 * Returns the meterLocation.
+	 * @return String
+	 */
+	public String getMeterLocation()
+	{
+		return meterLocation;
+	}
+
+	/**
+	 * Sets the baselinePointId.
+	 * @param baselinePointId The baselinePointId to set
+	 */
+	public void setBaselinePointId(Integer baselinePointId)
+	{
+		this.baselinePointId = baselinePointId;
+	}
+
+	/**
+	 * Sets the curtailPointId.
+	 * @param curtailPointId The curtailPointId to set
+	 */
+	public void setCurtailPointId(Integer curtailPointId)
+	{
+		this.curtailPointId = curtailPointId;
+	}
+
+	/**
+	 * Sets the customerName.
+	 * @param customerName The customerName to set
+	 */
+	public void setCustomerName(String customerName)
+	{
+		this.customerName = customerName;
+	}
+
+	/**
+	 * Sets the energyDebtor.
+	 * @param energyDebtor The energyDebtor to set
+	 */
+	public void setEnergyDebtor(String energyDebtor)
+	{
+		this.energyDebtor = energyDebtor;
+	}
+
+	/**
+	 * Sets the energyPremise.
+	 * @param energyPremise The energyPremise to set
+	 */
+	public void setEnergyPremise(String energyPremise)
+	{
+		this.energyPremise = energyPremise;
+	}
+
+	/**
+	 * Sets the meterLocation.
+	 * @param meterLocation The meterLocation to set
+	 */
+	public void setMeterLocation(String meterLocation)
+	{
+		this.meterLocation = meterLocation;
+	}
+
 }

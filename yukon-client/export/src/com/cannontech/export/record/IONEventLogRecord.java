@@ -53,6 +53,9 @@ public class IONEventLogRecord implements RecordBase
 		setEffect_value(effect_value);
 	}
 
+	/**
+	 * @see com.cannontech.export.record.RecordBase#dataToString()
+	 */
 	public String dataToString()
 	{
 		StringBuffer dataString = new StringBuffer();
