@@ -60,6 +60,13 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
     return _instance;
 }
 
+RWTPtrSlist<CtiCCClientConnection>& CtiCCClientListener::getClientConnectionList()
+{
+
+  return _connections;
+}
+
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
@@ -123,6 +130,7 @@ void CtiCCClientListener::stop()
 
 void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 {
+    bool testValid = false;
     if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -132,20 +140,62 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
         for( int i = 0; i < _connections.entries(); i++ )
         {
-            // replicate message makes a deep copy
-            if( _connections[i]->isValid() )
+            try
             {
-                CtiMessage* replicated_msg = msg->replicateMessage();
+                // replicate message makes a deep copy
 
-                if( _CC_DEBUG & CC_DEBUG_CLIENT )
+                try 
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                     testValid = _connections[i]->isValid();
+                } 
+                catch(...)
+                {
+                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-                _connections[i]->write(replicated_msg);
+                if(testValid)
+                {
+                    CtiMessage* replicated_msg = NULL;
+                    try
+                    {
+                        replicated_msg = msg->replicateMessage();
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+
+                    try
+                    { 
+                        if( _CC_DEBUG & CC_DEBUG_CLIENT )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " Broadcasting classID:  " << replicated_msg->isA() << endl;
+                        }
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+                    try
+                    {
+                        _connections[i]->write(replicated_msg);
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+                }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         }
     }
@@ -155,8 +205,6 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
         dout << RWTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
     }
-    delete msg;
-
     if( _CC_DEBUG & CC_DEBUG_CLIENT )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -179,11 +227,6 @@ void CtiCCClientListener::_listen()
     {
         try
         {
-            /*{    
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime()  << " - Listening for clients..." << endl;
-            }*/
-
             {
                 RWPortal portal = (*_socketListener)();
 
@@ -191,33 +234,7 @@ void CtiCCClientListener::_listen()
 
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
                     _connections.insert(conn);
-                }
-
-                ULONG secondsFrom1901 = RWDBDateTime().seconds();
-                CtiCCExecutorFactory f;
-                CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-                    CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(secondsFrom1901)));
-                    try
-                    {
-                        executor->Execute();
-                        delete executor;
-                        executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(secondsFrom1901)));
-                        executor->Execute();
-                        delete executor;
-                        executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(secondsFrom1901)));
-                        executor->Execute();
-                        delete executor;
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
                 }
             }
         }
@@ -251,10 +268,6 @@ void CtiCCClientListener::_listen()
         }
     } while ( !_doquit );
 
-    /*{    
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime()  << " - CtiCCClientListener::_listen() - exiting" << endl;
-    }*/
 }
 
 void CtiCCClientListener::_check()
@@ -293,19 +306,9 @@ void CtiCCClientListener::_check()
     } while ( !_doquit );
 
     {   
+ 
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
-        /*{    
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime()  << " - CtiCCClientListener::_listen() - closing " << _connections.entries() << " connections..." << endl;
-        }*/
-
         _connections.clearAndDestroy();
     }
-
-    /*{    
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime()  << " - CtiClientListener::_check - exiting" << endl;
-    }*/
 }
 

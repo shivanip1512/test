@@ -17,6 +17,7 @@
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"
 #include "ctibase.h"
+#include "capcontroller.h"
 #include "logger.h"
 
 extern ULONG _CC_DEBUG;
@@ -126,7 +127,6 @@ void CtiCCClientConnection::close()
     _queue.write(unblocker);
     _sendrunnable.requestCancellation();
     _recvrunnable.requestCancellation();
-
     _recvrunnable.join();
     _sendrunnable.join();
 
@@ -174,12 +174,28 @@ void CtiCCClientConnection::_sendthr()
             {
                 if( out != NULL )
                 {
-                    if( out->isA()!=__RWCOLLECTABLE )
+                    try
                     {
-                        *oStream << out;
-                        oStream->vflush();
+                        if( out->isA()!=__RWCOLLECTABLE && oStream->good())
+                        {
+                            try
+                            {
+                                *oStream << out;
+                                oStream->vflush();
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+                        delete out;
                     }
-                    delete out;
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
                 }
             }
             catch(...)
@@ -209,10 +225,6 @@ void CtiCCClientConnection::_sendthr()
 
     _valid = FALSE;
 
-    /*{    
-        RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime()  << "exiting _sendthr - conn:  " << this << endl;
-    }*/
 }
 
 
@@ -234,6 +246,7 @@ void CtiCCClientConnection::_recvthr()
         
         do
         {
+            rwRunnable().serviceCancellation();
             //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
 
@@ -241,25 +254,19 @@ void CtiCCClientConnection::_recvthr()
 
             if ( current != NULL )
             {
-                CtiCCExecutor* executor = f.createExecutor( (CtiMessage*) current );
-                try
+               try
                 {
-                    executor->Execute();
+                    if( CtiCapController::getInstance()->getInClientMsgQueueHandle().isOpen() )
+                    {
+                        CtiCapController::getInstance()->getInClientMsgQueueHandle().write(  current );
+                    }   
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-                delete executor;
-            } else
-            {
-                /*CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Why did I get here? in: " << __FILE__ << " at:" << __LINE__ << endl;*/
-
-                //_valid = FALSE;
-            }
-
+            } 
         }
         while ( isValid()  && iStream->good() );
     }
@@ -282,8 +289,4 @@ void CtiCCClientConnection::_recvthr()
 
     _valid = FALSE;
 
-    /*{    
-        RWMutexLock::LockGuard guard(coutMux);
-        cout << RWTime()  << "exiting _recvthr - conn:  " <<  this << endl;
-    }*/
 }

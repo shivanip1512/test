@@ -286,8 +286,12 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substa
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 {
-    _ccSubstationBuses->clearAndDestroy();
-    delete _ccSubstationBuses;
+    if( _ccSubstationBuses != NULL &&
+        _ccSubstationBuses->entries() > 0 )
+    {
+        _ccSubstationBuses->clearAndDestroy();
+        delete _ccSubstationBuses;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -379,8 +383,13 @@ CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(const CtiCCCapBankStatesMsg& ccCapB
 ---------------------------------------------------------------------------*/
 CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
 {
-    _ccCapBankStates->clearAndDestroy();
-    delete _ccCapBankStates;
+    if( _ccCapBankStates != NULL &&
+            _ccCapBankStates->entries() > 0 )
+        {
+            _ccCapBankStates->clearAndDestroy();
+            delete _ccCapBankStates;
+        }
+
 }
 
 /*---------------------------------------------------------------------------
@@ -471,8 +480,12 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiC
 ---------------------------------------------------------------------------*/
 CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 {
-    _ccGeoAreas->clearAndDestroy();
-    delete _ccGeoAreas;
+    if( _ccGeoAreas != NULL &&
+            _ccGeoAreas->entries() > 0 )
+        {
+            _ccGeoAreas->clearAndDestroy();
+            delete _ccGeoAreas;
+        }
 }
 
 /*---------------------------------------------------------------------------

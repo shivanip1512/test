@@ -143,62 +143,94 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Store START dumpAllDynamicData" << endl;
     }*/
-    if( _ccSubstationBuses->entries() > 0 )
+    try
     {
-        RWDBDateTime currentDateTime = RWDBDateTime();
-        RWCString dynamicCapControl("dynamicCapControl");
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        conn.beginTransaction(dynamicCapControl);
-
-        for(LONG i=0;i<_ccSubstationBuses->entries();i++)
+        if( _ccSubstationBuses->entries() > 0 )
         {
-            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
-            if( currentCCSubstationBus->isDirty() )
-            {
-                /*{
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWDBDateTime().second() << "." << clock() << " - Store START Sub Bus dumpDynamicData" << endl;
-                }*/
-                currentCCSubstationBus->dumpDynamicData(conn,currentDateTime);
-            }
+            RWDBDateTime currentDateTime = RWDBDateTime();
+            RWCString dynamicCapControl("dynamicCapControl");
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
 
-            RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
-            if( ccFeeders.entries() > 0 )
+            conn.beginTransaction(dynamicCapControl);
+
+            for(LONG i=0;i<_ccSubstationBuses->entries();i++)
             {
-                for(LONG j=0;j<ccFeeders.entries();j++)
+                CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
+                if( currentCCSubstationBus->isDirty() )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                    if( currentFeeder->isDirty() )
+                    /*{
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWDBDateTime().second() << "." << clock() << " - Store START Sub Bus dumpDynamicData" << endl;
+                    }*/
+                    try
                     {
-                        /*{
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWDBDateTime().second() << "." << clock() << " -     Store START Feeder dumpDynamicData" << endl;
-                        }*/
-                        currentFeeder->dumpDynamicData(conn,currentDateTime);
+                        currentCCSubstationBus->dumpDynamicData(conn,currentDateTime);
                     }
-
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                    if( ccCapBanks.entries() > 0 )
+                    catch(...)
                     {
-                        for(LONG k=0;k<ccCapBanks.entries();k++)
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+                }
+
+                RWOrdered& ccFeeders = currentCCSubstationBus->getCCFeeders();
+                if( ccFeeders.entries() > 0 )
+                {
+                    for(LONG j=0;j<ccFeeders.entries();j++)
+                    {
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+                        if( currentFeeder->isDirty() )
                         {
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                            if( currentCapBank->isDirty() )
+                            /*{
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWDBDateTime().second() << "." << clock() << " -     Store START Feeder dumpDynamicData" << endl;
+                            }*/
+                            try
                             {
-                                /*{
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWDBDateTime().second() << "." << clock() << " -         Store START Cap Bank dumpDynamicData" << endl;
-                                }*/
-                                currentCapBank->dumpDynamicData(conn,currentDateTime);
+                                currentFeeder->dumpDynamicData(conn,currentDateTime);
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+
+                        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                        if( ccCapBanks.entries() > 0 )
+                        {
+                            for(LONG k=0;k<ccCapBanks.entries();k++)
+                            {
+                                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                                if( currentCapBank->isDirty() )
+                                {
+                                    /*{
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWDBDateTime().second() << "." << clock() << " -         Store START Cap Bank dumpDynamicData" << endl;
+                                    }*/
+                                    try
+                                    {
+                                        currentCapBank->dumpDynamicData(conn,currentDateTime);
+                                    }
+                                    catch(...)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+            conn.commitTransaction(dynamicCapControl);
         }
-        conn.commitTransaction(dynamicCapControl);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -331,6 +363,11 @@ void CtiCCSubstationBusStore::reset()
                         selector.orderBy(yukonPAObjectTable["paoname"]);
                         selector.orderBy(pointTable["pointoffset"]);
     
+                        if( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - DataBase Reload Begin - " << endl;
+                        }
                         if( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -693,7 +730,6 @@ void CtiCCSubstationBusStore::reset()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - No Substations in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
-    
                     {
                         if( _ccCapBankStates->entries() > 0 )
                         {
@@ -762,6 +798,11 @@ void CtiCCSubstationBusStore::reset()
                             _ccGeoAreas->insert( areaString );
                         }
                     }
+                    if( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - DataBase Reload End - " << endl;
+                    }
                 }
                 else
                 {
@@ -793,10 +834,10 @@ void CtiCCSubstationBusStore::reset()
         {
             dumpAllDynamicData();
         }
-        /*{
+        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Store START sending messages to clients." << endl;
-        }*/
+        }
         ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
         if( _wassubbusdeletedflag )
         {
@@ -813,10 +854,10 @@ void CtiCCSubstationBusStore::reset()
         executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
         executor->Execute();
         delete executor;
-        /*{
+        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Store DONE sending messages to clients." << endl;
-        }*/
+        }
     }
     catch(...)
     {

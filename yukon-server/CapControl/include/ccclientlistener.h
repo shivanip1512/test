@@ -34,6 +34,11 @@ public:
 
     static CtiCCClientListener* getInstance();
 
+    RWRecursiveLock<RWMutexLock> & getMux() { return _connmutex; };
+
+    RWTPtrSlist<CtiCCClientConnection>& getClientConnectionList();
+
+
 protected:
 
 private:

@@ -37,8 +37,10 @@
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "devicetypes.h"
-#include "resolvers.h"
+#include "resolvers.h" 
 
+#include "ccclientconn.h"
+#include "ccclientlistener.h"
 #include <rw/thr/prodcons.h>
 
 extern ULONG _CC_DEBUG;
@@ -375,27 +377,50 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-
+                /*******************************************************************/
                 try
                 {
                     if( substationBusChanges.entries() > 0 )
                     {
                         //send the substation bus changes to all cap control clients
-                        store->dumpAllDynamicData();
-                        CtiCCExecutorFactory f;
-                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
                         try
                         {
-                            executor->Execute();
+                            store->dumpAllDynamicData();
                         }
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        delete executor;
-
-                        substationBusChanges.clear();
+                        CtiCCExecutorFactory f1;
+                        CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
+                        try
+                        {
+                            executor1->Execute();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        try
+                        {
+                            delete executor1;
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        try
+                        {
+                            substationBusChanges.clear();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
                     }
                 }
                 catch(...)
@@ -403,8 +428,91 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-            }
+                
+                /** JULIE Adding _clientMsgQueue to hopefully solve deadlock issue **/
+                try
+                {
+                    RWTime tempTime;
+                    CtiCCExecutorFactory f;
+                    RWCollectable* clientMsg = NULL;
 
+                    try
+                    {
+                        tempTime.now();
+                        while(_inClientMsgQueue.canRead())
+                        {
+
+                            try
+                            {   
+                                clientMsg = _inClientMsgQueue.read();
+                                try
+                                {
+                                    if( clientMsg != NULL )
+                                    {
+                                        try
+                                        {
+                                            CtiCCExecutor* executor = f.createExecutor( (CtiMessage*) clientMsg );
+                                            try
+                                            {
+                                                executor->Execute();
+                                            }
+                                            catch(...)
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            }
+                                            try
+                                            {
+                                                delete executor;
+                                            }
+                                            catch(...)
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            }
+                                        }
+                                        catch(...)
+                                        {
+                                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                        }
+
+                                        //delete clientMsg;
+                                    }
+                                    if (RWTime::now().seconds() - tempTime.seconds() <= 1) 
+                                    {
+                                        break;
+                                    }
+                                }
+                                catch(...)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                }
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        };
+                        //delete clientMsg;
+
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+            /********************************************************************/
+            }
             try
             {
                 rwRunnable().serviceCancellation();
@@ -899,7 +1007,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
     for(int i=0;i<ccSubstationBuses.entries();i++)
@@ -1171,7 +1279,7 @@ void CtiCapController::porterReturnMsg( long deviceId, RWCString commandString, 
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
     BOOL found = FALSE;
@@ -1373,3 +1481,12 @@ void CtiCapController::confirmCapBankControl( CtiRequestMsg* pilRequest )
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
+RWPCPtrQueue< RWCollectable > &CtiCapController::getInClientMsgQueueHandle()
+{
+    return _inClientMsgQueue;
+} 
+RWPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
+{
+    return _outClientMsgQueue;
+} 

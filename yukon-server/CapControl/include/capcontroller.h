@@ -54,6 +54,8 @@ public:
     void sendMessageToDispatch(CtiMessage* message);
     void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg);
     void confirmCapBankControl(CtiRequestMsg* pilRequest);
+    RWPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
+    RWPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
     
 private:
     
@@ -78,5 +80,9 @@ private:
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;
     mutable RWRecursiveLock<RWMutexLock> _mutex;
+
+    RWPCPtrQueue< RWCollectable > _inClientMsgQueue;
+    RWPCPtrQueue< RWCollectable > _outClientMsgQueue;
+
 };
 #endif

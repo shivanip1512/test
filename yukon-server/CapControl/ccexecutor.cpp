@@ -1159,6 +1159,10 @@ void CtiCCCommandExecutor::SendAllSubstationBuses()
     CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(RWDBDateTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent));
     executor->Execute();
     delete executor;
+    executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(RWDBDateTime().seconds())));
+    executor->Execute();
+    delete executor;
+
 }
 
 /*---------------------------------------------------------------------------

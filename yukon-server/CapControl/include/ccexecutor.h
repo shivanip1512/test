@@ -29,6 +29,7 @@ public:
 
     virtual void Execute() {};
 
+
 protected:
     CtiCCExecutor() {};
     void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, LONG capSwitchingOrder);
@@ -38,7 +39,7 @@ class CtiCCClientMsgExecutor : public CtiCCExecutor
 {
 public:
     CtiCCClientMsgExecutor(CtiMessage* ccMsg) : _ccMsg(ccMsg){};
-    virtual ~CtiCCClientMsgExecutor(){};
+    virtual ~CtiCCClientMsgExecutor(){delete _ccMsg;};
 
     virtual void Execute();
 
@@ -139,6 +140,7 @@ public:
 class CtiCCExecutorFactory
 {
 public:
+    CtiCCExecutorFactory() {};
     CtiCCExecutor* createExecutor(const CtiMessage* message);
 
 };
