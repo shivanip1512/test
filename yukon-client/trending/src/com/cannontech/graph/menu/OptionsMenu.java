@@ -289,7 +289,7 @@ private void initialize() {
 		setText("Options");
 //		add(getMultiplierMenuItem());
 //		add(getDwellMenuItem());
-		add(getPlotYesterdayMenuItem());
+		//add(getPlotYesterdayMenuItem());
 		add(getPlotMinMaxValuesMenuItem());
 		add(getJSeparator1());
 		add(getLegendMenu());
