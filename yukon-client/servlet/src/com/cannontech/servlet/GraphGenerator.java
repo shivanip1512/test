@@ -52,6 +52,37 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 			localBean = (com.cannontech.graph.GraphBean)session.getAttribute("graphBean");
 		}
 
+		{
+			String param;
+			param = req.getParameter("gdefid");
+			if( param != null)
+				localBean.setGdefid(Integer.parseInt( param));
+				
+			param = req.getParameter("start")		;
+			if( param != null)
+				localBean.setStartStr(param);
+	
+			param = req.getParameter("tab");
+			if( param != null)
+				localBean.setTab(param);
+	
+			param = req.getParameter("period");
+			if( param != null)
+				localBean.setPeriod(param);
+	
+			param = req.getParameter("view");
+			if( param != null)
+				localBean.setViewType(Integer.parseInt(param));
+	
+			param = req.getParameter("option");
+			if( param != null)
+				localBean.setOption(Integer.parseInt(param));
+	
+			param = req.getParameter("format");
+			if( param != null)
+				localBean.setFormat(param);
+		}
+		
 		localBean.updateCurrentPane();
 		javax.servlet.ServletOutputStream out = null;
 		try
