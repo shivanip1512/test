@@ -32,7 +32,8 @@ public class SQLStringBuilder
 	}
 
 	public static final String PAO_PAONAME = "YUKONPAOBJECT.PAONAME";
-
+	public static final String PAO_PAOBJECTID = "YUKONPAOBJECT.PAOBJECTID";
+	
 	public static final String RPH_VALUE = "RAWPOINTHISTORY.VALUE";
 	public static final String RPH_TIMESTAMP = "RAWPOINTHISTORY.TIMESTAMP";
 
