@@ -5,6 +5,7 @@ package com.cannontech.common.login;
 
 import com.cannontech.common.util.CtiPreferences;
 import com.cannontech.crypto.CtiCipher;
+import com.cannontech.user.UserUtils;
 
 /**
  * LoginPref stores some stuff via the preferences api  
@@ -24,7 +25,7 @@ class LoginPrefs extends CtiPreferences {
 	}
 	
 	public int getCurrentUserID() {
-		return getInt(CURRENT_USER_ID, -1);
+		return getInt(CURRENT_USER_ID, UserUtils.INVALID_CURRENT_USERID);
 	}
 	
 	public String getCurrentYukonHost() {

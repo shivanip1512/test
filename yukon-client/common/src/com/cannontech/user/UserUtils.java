@@ -17,9 +17,10 @@ public final class UserUtils
 	
 
 	/* Precanned existing users in the system */
-	public static final int USER_ADMIN_ID 			= -1;
-	public static final int USER_YUKON_ID 			= -2;
-	public static final int USER_STARS_DEFAULT_ID	= -9999;
+	public static final int USER_ADMIN_ID = -1;
+	public static final int USER_YUKON_ID = -2;
+	public static final int USER_STARS_DEFAULT_ID = -9999;
+	public static final int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
 	
 	
 
