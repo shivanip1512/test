@@ -336,12 +336,14 @@ insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or I
 insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
 insert into YukonRoleProperty values(-1012,-1,'print_insert_sql','(none)','File name of where to print all SQL insert statements');
 insert into YukonRoleProperty values(-1013,-1,'stars_soap_server','(none)','Where the soap server is running, the default value is the local host');
+insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The logo that is used for the yukon web applications');
 insert into YukonRoleProperty values(-1216,-3,'log_to_file','false','Tells all logging that it needs to go to a file');
 
 insert into YukonGroupRole values(11,-1,-1,-1010,'(none)');
 insert into YukonGroupRole values(12,-1,-1,-1011,'(none)');
 insert into YukonGroupRole values(13,-1,-1,-1012,'(none)');
 insert into YukonGroupRole values(14,-1,-1,-1013,'(none)');
+insert into YukonGroupRole values(15,-1,-1,-1014,'CannonLogo.gif');
 insert into YukonGroupRole values(66,-1,-3,-1216,'(none)');
 
 
