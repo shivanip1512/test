@@ -661,6 +661,19 @@ public final static boolean isTransmitter(int deviceType)
 	}
 }
 
+public final static boolean isVerifiable(int deviceType)
+{
+	switch(deviceType)
+	{
+		case RTC:
+			return true;
+	
+		default:
+			return false;
+	}
+
+}
+
 public final static boolean isVirtualDevice(int deviceType) 
 {
 	switch(deviceType)

@@ -107,6 +107,9 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
 			PAOGroups.REPEATER, PAOGroups.REPEATER_800, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL,
 			PAOGroups.SERIES_5_LMI, PAOGroups.RTC
+		},
+		{	//12 - DeviceVerificationAssignmentPanel
+			PAOGroups.RTM
 		}
 
 };
@@ -215,7 +218,11 @@ public Object[] createNewPanel(int panelIndex)
 			else
 				objs = null;
 			break;
-
+		
+		case 12:
+			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceVerificationAssignmentPanel();
+			objs[1] = "Verification";
+			break;
 	}
 		
 	return objs;
