@@ -162,18 +162,22 @@ public class PointImportUtility
 				analogPoint.getPointUnit().setUomID( new Integer( 10 ) );
 			else if( comparer.compareTo( "DOLLARS" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 11 ) );
-			else if( comparer.compareTo( "$" ) == 0 )
+			else if( comparer.compareTo( "$" ) == 0 || comparer.compareTo( "DOLLAR CHAR" ) == 0)
 				analogPoint.getPointUnit().setUomID( new Integer( 12 ) );
 			else if( comparer.compareTo( "FEET" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 13 ) );
 			else if( comparer.compareTo( "GALLONS" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 14 ) );
-			/*else if( comparer.compareTo(      ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 15 ) );*/
-			/*else if( comparer.compareTo(      ) == 0 )
-				analogPoint.getPointUnit().setUomID( new Integer( 16 ) );*/
+			else if( comparer.compareTo( "GAL/PM"  ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 15 ) );
+			else if( comparer.compareTo( "GAS-CFT" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 16 ) );
 			else if( comparer.compareTo( "HOURS" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 17 ) );
+			else if( comparer.compareTo( "LEVEL") == 0 || comparer.compareTo( "LEVELS") == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 18 ) );
+			else if( comparer.compareTo( "MINUTES") == 0 || comparer.compareTo( "MIN") == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 19 ) );
 			else if( comparer.compareTo( "MW" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 20 ) );
 			else if( comparer.compareTo( "MWH" ) == 0 )
@@ -192,18 +196,58 @@ public class PointImportUtility
 				analogPoint.getPointUnit().setUomID( new Integer( 27 ) );
 			else if( comparer.compareTo( "PERCENT" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 28 ) );
-			else if( comparer.compareTo( "%" ) == 0 )
+			else if( comparer.compareTo( "%" ) == 0 || comparer.compareTo( "PERCENT CHAR" ) == 0)
 				analogPoint.getPointUnit().setUomID( new Integer( 29 ) );
+			else if( comparer.compareTo( "PSI") == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 30 ) );
 			else if( comparer.compareTo( "SECONDS" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 31 ) );
-			else if( comparer.compareTo( "C" ) == 0 || comparer.compareTo( "ºC" ) == 0 )
+			else if( comparer.compareTo( "F" ) == 0 || comparer.compareTo( "TEMP-F" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 32 ) );
+			else if( comparer.compareTo( "C" ) == 0 || comparer.compareTo( "TEMP-C" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 33 ) );
+			else if( comparer.compareTo( "VARS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 34 ) );
 			else if( comparer.compareTo( "VOLTS" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 35 ) );
+			else if( comparer.compareTo( "VOLTAMPS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 36 ) );
+			else if( comparer.compareTo( "VA" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 37 ) );
+			else if( comparer.compareTo( "WATR-CFT" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 38 ) );
+			else if( comparer.compareTo( "WATTS" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 39 ) );
+			else if( comparer.compareTo( "HERTZ" ) == 0 || comparer.compareTo( "HZ" ) == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 40 ) );
+			else if( comparer.compareTo( "VOLTS FROM V2H" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 41 ) );
+			else if( comparer.compareTo( "AMPS FROM V2H" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 42 ) );
+			else if( comparer.compareTo( "LTC TAP POSITION" ) == 0 || comparer.compareTo( "TAP" ) == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 43 ) );
 			else if( comparer.compareTo( "MILES" ) == 0 )
 				analogPoint.getPointUnit().setUomID( new Integer( 44 ) );
-			else if( comparer.compareTo( "MS" ) == 0 )
+			else if( comparer.compareTo( "MS" ) == 0 || comparer.compareTo("MILLISECONDS") == 0)
 				analogPoint.getPointUnit().setUomID( new Integer( 45 ) );
+			else if( comparer.compareTo( "LTC TAP POSITION" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 45 ) );
+			else if( comparer.compareTo( "PARTS PER MILLION" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 46 ) );
+			else if( comparer.compareTo( "MILES PER HOUR" ) == 0 || comparer.compareTo( "MPH" ) == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 47 ) );
+			else if( comparer.compareTo( "INCHES" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 48 ) );
+			else if( comparer.compareTo( "KILOMETERS PER HOUR" ) == 0 || comparer.compareTo( "KPH" ) == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 49 ) );
+			else if( comparer.compareTo( "MILIBARS" ) == 0 || comparer.compareTo( "MILLIBARS" ) == 0)
+				analogPoint.getPointUnit().setUomID( new Integer( 50 ) );
+			else if( comparer.compareTo( "INCHES" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 51 ) );
+			else if( comparer.compareTo( "METERS PER SECOND" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 52 ) );
+			else if( comparer.compareTo( "UNDEFINED" ) == 0 )
+				analogPoint.getPointUnit().setUomID( new Integer( 54 ) );
 			else 
 				analogPoint.getPointUnit().setUomID( new Integer( 0 ) );
 			
@@ -336,9 +380,9 @@ public class PointImportUtility
 			
 			tokenHolder2 = tokenizer.nextElement().toString();
 			tokenCounter++;
-			if(emptyField(tokenHolder2))
+			if(emptyField(tokenHolder2) || tokenHolder2.compareTo("0") == 0)
 			{
-				tokenHolder2 = "0 seconds";
+				tokenHolder2 = "0 second";
 			}
 			analogPoint.getPoint().setArchiveInterval( getArchiveIntervalSeconds(tokenHolder2) );
 			
@@ -365,6 +409,8 @@ public class PointImportUtility
 					{
 						alarmCategory = "(none)";
 					}
+					if(alarmCategory.compareTo("none") == 0)
+						alarmCategory = "(none)";
 										
 					for( int j = 0; j < liteAlarms.size(); j++ )
 					{
