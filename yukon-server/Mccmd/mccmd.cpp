@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/04/19 19:42:11 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/04/23 19:30:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,7 @@ void _MessageThrFunc()
                         {
                             CtiLockGuard< CtiLogger > guard(dout);                            
                             dout << RWTime() << " [" << rwThreadId() <<
-                                "] Received unexpected message for interpreter [" <<
+                                "] Received message for interpreter [" <<
                                 GetThreadIDFromMsgID(msgid) << "]" << endl;
                             DumpReturnMessage(*in);
                         }
@@ -1087,11 +1087,11 @@ int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line)
 
 static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way)
 {
-    bool interrupted = false;
+   bool interrupted = false;
+   bool timed_out = false;
 
    RWSet req_set;
-   RWSet req_set_copy;
-
+   
    //Create a CountedPCPtrQueue and place it into the InQueueStore
    //Be sure to remove it before exiting
    unsigned int msgid = GenMsgID();
@@ -1113,9 +1113,6 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
        CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
        req->setUserMessageId(msgid);
 
-       CtiRequestMsg* req_copy = new CtiRequestMsg(*req);
-       req_set_copy.insert( req_copy );
-
        WriteOutput( (char*) req->CommandString().data() );
        PILConnection->WriteConnQue(req);
    }
@@ -1125,8 +1122,6 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    set< long, less<long> > device_set;
    set< long, less<long> > good_set;
    set< long, less<long> > bad_set;
-
-   bool waiting_for_readings = false;
 
    RWCollectable* msg = NULL;
    RWWaitStatus status;
@@ -1145,83 +1140,52 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
                CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                DumpReturnMessage(*ret_msg);
 
-               if( !waiting_for_readings ) {
-                   if( ret_msg->UserMessageId() == msgid ) {
-                       device_set.insert( ret_msg->DeviceId() );
+               long dev_id = ret_msg->DeviceId();
 
-                       if( !ret_msg->ExpectMore() ) {
-
-                           RWSetIterator req_iter(req_set_copy);
-                           for( ; req_iter(); ) {
-                               req_set_copy.remove( req_iter.key() );
-                               break;
-                           }
-
-                           if( req_set_copy.entries() == 0 ) {
-                               if( two_way ) {
-                                    CtiLockGuard< CtiLogger > guard(dout);                                    
-                                    waiting_for_readings = true;
-                                }
-                                else {
-                                   break;
-                                }
-                           }
-                       }
-                   }
+               if( good_set.find(dev_id) != good_set.end() ) {
+                   RWCString warn("received a message for a device already in the good list, id: ");
+                   warn += CtiNumStr(dev_id);
+                   WriteOutput(warn);
                }
-               else{                   
-                   // Check to see if this message corresponds to a device
-                   // already in the good or bad set, this shouldn't happen
-                   // change this to do a more intelligent search
-                   set< long, less<long> >::iterator s_iter;
-
-                   for( s_iter = good_set.begin();
-                        s_iter != good_set.end();
-                        s_iter++ ) {
-                            if( *s_iter == ret_msg->DeviceId() ) {                            
-                                    RWCString warn("received an extra return message for device id: ");
-                                    warn += CtiNumStr(ret_msg->DeviceId());
-                                    warn += ", exists in good list already";
-                                    WriteOutput(warn);
-                            }
-                   }                   
-
-                   for( s_iter = bad_set.begin();
-                        s_iter != bad_set.end();
-                        s_iter++ ) {
-                       if( *s_iter == ret_msg->DeviceId() ) {                            
-                                    RWCString warn("received an extra return message for device id: ");
-                                    warn += CtiNumStr(ret_msg->DeviceId());
-                                    warn += ", exists in bad list already";
-                                    WriteOutput(warn);
-                            }
-                   }                   
-                    // End search for already finished devices
-
-                   if( !ret_msg->ExpectMore() ) {
-
-                       RWCString dev_name;
-                       GetDeviceName(ret_msg->DeviceId(),dev_name);
-
+               else {
+                   if( ret_msg->ExpectMore() ) {
+                       device_set.insert(dev_id);
+                   }
+                   else {
                        if( ret_msg->Status() == 0 ) {
-                            good_set.insert(ret_msg->DeviceId());                            
+                            if( bad_set.erase(dev_id) > 0 ) {
+                                RWCString warn("moved device from bad list to good list, id: ");
+                                warn += CtiNumStr(dev_id);
+                                WriteOutput(warn);
+                            }
+
+                            device_set.erase(dev_id);
+
+                            if( !good_set.insert(dev_id).second ) {
+                                RWCString warn("device already in good list, id: ");
+                                warn += CtiNumStr(dev_id);
+                                WriteOutput(warn);
+                            }
                        }
                        else {
-                            bad_set.insert(ret_msg->DeviceId());                     
+                            device_set.erase(dev_id);
+                            
+                            if( !bad_set.insert(dev_id).second) {
+                                RWCString warn("device already in bad list, id: ");
+                                warn += CtiNumStr(dev_id);
+                                WriteOutput(warn);
+                            }
                        }
-                       device_set.erase(ret_msg->DeviceId());
-                       
-                       if( device_set.size() == 0 ) {
-                           break;
 
-                       }
+                       // have we received everything expected?
+                       if( device_set.size() == 0 )
+                           break;
                    }
-               }
+               }                             
            }
            else {
                RWCString err("Received unknown message __LINE__, __FILE__");
-               WriteOutput(err.data());
-               //received unknown msg
+               WriteOutput(err.data());               
            }
 
            delete msg;
@@ -1229,15 +1193,21 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
        }
 
        if ( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 ) {
+            Tcl_SetResult( interp, "interrupted", NULL );
             interrupted = true;
             break;
        }
+       
+       if( time(NULL) > start + timeout ) {
+           RWCString info("timed out: ");
+           info += cmd_line;
+           WriteOutput(info);
+           break;
+       }
 
-   } while ( time(NULL) < start + timeout );
+   } while (true);
 
    delete msg;
-
-   req_set_copy.clearAndDestroy();
 
    // set up good and bad tcl lists
    Tcl_Obj* good_list = Tcl_NewListObj(0,NULL);
@@ -1264,7 +1234,7 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    }
 
    // any device id's left in this set must have timed out
-   if( device_set.size() > 0 && two_way ) {
+   if( device_set.size() > 0 ) {
 
         for( s_iter = device_set.begin();
              s_iter != device_set.end();
@@ -1287,7 +1257,6 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
    else {
        return TCL_OK;
    }
-
 }
 
 int StoreQueue(void* queue, int threadid)
