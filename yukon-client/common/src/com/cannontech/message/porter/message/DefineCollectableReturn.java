@@ -80,7 +80,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  
 	Return ret = (Return) obj;
 
-	ret.setDeviceID( vstr.extractLong() );
+	ret.setDeviceID( vstr.extractInt() );
 	ret.setCommandString( (String) vstr.restoreObject(SimpleMappings.CString));
 	ret.setResultString( (String) vstr.restoreObject( SimpleMappings.CString));
 	ret.setStatus( vstr.extractInt() );

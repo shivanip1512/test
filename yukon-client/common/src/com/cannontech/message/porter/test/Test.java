@@ -15,7 +15,7 @@ public static void main(String[] args)
 {
 	try
 	{
-		long deviceID = 1;
+		int deviceID = 1;
 		String command = "GetStatus";
 		com.cannontech.message.porter.ClientConnection conn = new com.cannontech.message.porter.ClientConnection();
 		conn.setHost("10.100.9.230");

@@ -7,9 +7,9 @@ package com.cannontech.message.porter.message;
  */
 public class Request extends com.cannontech.message.util.Message 
 {
-	private long deviceID = 0;
+	private int deviceID = 0;
 	private java.lang.String commandString = "";
-	private long routeID = 0;
+	private int routeID = 0;	
 	private int macroOffset = 0;
 	private int attemptNum = 0;
 	private long transmissionID = 0;
@@ -28,7 +28,7 @@ public Request() {
  * @param commandString java.lang.String
  * @param userMessageID long
  */
-public Request(long deviceID, String commandString, long userMessageID) 
+public Request(int deviceID, String commandString, long userMessageID) 
 {
 	setDeviceID(deviceID);
 	setCommandString(commandString);
@@ -55,7 +55,7 @@ public java.lang.String getCommandString() {
  * Creation date: (5/17/00 1:18:24 PM)
  * @return long
  */
-public long getDeviceID() {
+public int getDeviceID() {
 	return deviceID;
 }
 /**
@@ -79,7 +79,7 @@ public int getOptionsField() {
  * Creation date: (5/17/00 1:19:38 PM)
  * @return long
  */
-public long getRouteID() {
+public int getRouteID() {
 	return routeID;
 }
 /**
@@ -119,7 +119,7 @@ public void setCommandString(java.lang.String newCommandString) {
  * Creation date: (5/17/00 1:18:24 PM)
  * @param newDeviceID long
  */
-public void setDeviceID(long newDeviceID) {
+public void setDeviceID(int newDeviceID) {
 	deviceID = newDeviceID;
 }
 /**
@@ -143,7 +143,7 @@ public void setOptionsField(int newOptionsField) {
  * Creation date: (5/17/00 1:19:38 PM)
  * @param newRouteID long
  */
-public void setRouteID(long newRouteID) {
+public void setRouteID(int newRouteID) {
 	routeID = newRouteID;
 }
 /**

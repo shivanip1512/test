@@ -6,7 +6,7 @@ package com.cannontech.message.porter.message;
  * @author: 
  */
 public class Return extends com.cannontech.message.dispatch.message.Multi {
-	private long deviceID;
+	private int deviceID;
 	private java.lang.String commandString;
 	private java.lang.String resultString;
 	private int status;
@@ -43,7 +43,7 @@ public java.lang.String getCommandString() {
  * Creation date: (5/17/00 1:24:55 PM)
  * @return long
  */
-public long getDeviceID() {
+public int getDeviceID() {
 	return deviceID;
 }
 /**
@@ -123,7 +123,7 @@ public void setCommandString(java.lang.String newCommandString) {
  * Creation date: (5/17/00 1:24:55 PM)
  * @param newDeviceID long
  */
-public void setDeviceID(long newDeviceID) {
+public void setDeviceID(int newDeviceID) {
 	deviceID = newDeviceID;
 }
 /**
