@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     5/10/2004 4:26:41 PM                         */
+/* Created on:     5/19/2004 10:00:21 AM                        */
 /*==============================================================*/
 
 
@@ -2168,7 +2168,8 @@ create table DeviceSeries5RTU  (
    PowerValueMultiplier FLOAT                            not null,
    PowerValueOffset     FLOAT                            not null,
    StartCode            NUMBER                           not null,
-   StopCode             NUMBER                           not null
+   StopCode             NUMBER                           not null,
+   Retries              NUMBER                           not null
 )
 /
 
@@ -2413,7 +2414,8 @@ create table DynamicLMProgramDirect  (
    LastGroupControlled  NUMBER                           not null,
    StartTime            DATE                             not null,
    StopTime             DATE                             not null,
-   TimeStamp            DATE                             not null
+   TimeStamp            DATE                             not null,
+   DailyOps             NUMBER                           not null
 )
 /
 
@@ -2594,6 +2596,7 @@ insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
 
 insert into fdrinterface values(16,'LODESTAR_STD','Receive','f');
 insert into fdrinterface values(17,'LODESTAR_ENH','Receive','f');
+insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
 
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key (InterfaceID)
@@ -2618,7 +2621,7 @@ create table FDRInterfaceOption  (
 insert into FDRInterfaceOption values(1, 'Device', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(1, 'Point', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(1, 'Destination/Source', 3, 'Text', '(none)' );
-insert into FDRInterfaceOption values(2, 'Category', 1, 'Combo', 'PSEUDO,REAL' );
+insert into FDRInterfaceOption values(2, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
 insert into FDRInterfaceOption values(2, 'Remote', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(2, 'Point', 3, 'Text', '(none)' );
 insert into FDRInterfaceOption values(3, 'Point', 1, 'Text', '(none)' );
@@ -2645,6 +2648,8 @@ insert into fdrinterfaceoption values (17,'Customer',1,'Text','(none)');
 insert into fdrinterfaceoption values (17,'Channel',2,'Text','(none)');
 insert into fdrinterfaceoption values (17,'DrivePath',3,'Text','(none)');
 insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
+insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
+insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 
 
 alter table FDRInterfaceOption
@@ -3629,12 +3634,10 @@ alter table LMProgramCurtailment
 
 create table LMProgramDirect  (
    DeviceID             NUMBER                           not null,
-   NotifyInterval       NUMBER                           not null,
+   NotifyOffset         NUMBER                           not null,
    Heading              VARCHAR2(40)                     not null,
    MessageHeader        VARCHAR2(160)                    not null,
-   MessageFooter        VARCHAR2(160)                    not null,
-   CanceledMsg          VARCHAR2(80)                     not null,
-   StoppedEarlyMsg      VARCHAR2(80)                     not null
+   MessageFooter        VARCHAR2(160)                    not null
 )
 /
 
@@ -3668,7 +3671,11 @@ create table LMProgramDirectGear  (
    GroupSelectionMethod VARCHAR2(30)                     not null,
    MethodOptionType     VARCHAR2(30)                     not null,
    MethodOptionMax      NUMBER                           not null,
-   GearID               NUMBER                           not null
+   GearID               NUMBER                           not null,
+   RampInInterval       NUMBER                           not null,
+   RampInPercent        NUMBER                           not null,
+   RampOutInterval      NUMBER                           not null,
+   RampOutPercent       NUMBER                           not null
 )
 /
 

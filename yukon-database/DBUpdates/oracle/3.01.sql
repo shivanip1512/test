@@ -224,7 +224,8 @@ create table DeviceSeries5RTU  (
    PowerValueMultiplier FLOAT                            not null,
    PowerValueOffset     FLOAT                            not null,
    StartCode            NUMBER                           not null,
-   StopCode             NUMBER                           not null
+   StopCode             NUMBER                           not null,
+   Retries              NUMBER                           not null
 );
 alter table DeviceSeries5RTU
    add constraint PK_DEVICESERIES5RTU primary key (DeviceID);
@@ -326,11 +327,28 @@ update DynamicLMProgramDirect set DailyOps = 0;
 alter table DynamicLMProgramDirect modify DailyOps number not null;
 
 
+alter table LMProgramDirectGear add RampInInterval number;
+update LMProgramDirectGear set RampInInterval = 0;
+alter table LMProgramDirectGear modify RampInInterval number not null;
+
+alter table LMProgramDirectGear add RampInPercent number;
+update LMProgramDirectGear set RampInPercent = 0;
+alter table LMProgramDirectGear modify RampInPercent number not null;
+
+alter table LMProgramDirectGear add RampOutInterval number;
+update LMProgramDirectGear set RampOutInterval = 0;
+alter table LMProgramDirectGear modify RampOutInterval number not null;
+
+alter table LMProgramDirectGear add RampOutPercent number;
+update LMProgramDirectGear set RampOutPercent = 0;
+alter table LMProgramDirectGear modify RampOutPercent number not null;
 
 
+alter table LMProgramDirect rename column NotifyInterval to NotifyOffset;
 
+alter table LMProgramDirect drop column CanceledMsg;
 
-
+alter table LMProgramDirect drop column StoppedEarlyMsg;
 
 
 

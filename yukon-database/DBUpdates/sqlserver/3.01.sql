@@ -273,7 +273,8 @@ PowerValueLowLimit   numeric              not null,
 PowerValueMultiplier float                not null,
 PowerValueOffset     float                not null,
 StartCode            numeric              not null,
-StopCode             numeric              not null
+StopCode             numeric              not null,
+Retries              numeric              not null
 );
 go
 alter table DeviceSeries5RTU
@@ -379,6 +380,42 @@ go
 update DynamicLMProgramDirect set DailyOps = 0;
 go
 alter table DynamicLMProgramDirect alter column DailyOps numeric not null;
+go
+
+alter table LMProgramDirectGear add RampInInterval numeric;
+go
+update LMProgramDirectGear set RampInInterval = 0;
+go
+alter table LMProgramDirectGear alter column RampInInterval numeric not null;
+go
+
+alter table LMProgramDirectGear add RampInPercent numeric;
+go
+update LMProgramDirectGear set RampInPercent = 0;
+go
+alter table LMProgramDirectGear alter column RampInPercent numeric not null;
+go
+
+alter table LMProgramDirectGear add RampOutInterval numeric;
+go
+update LMProgramDirectGear set RampOutInterval = 0;
+go
+alter table LMProgramDirectGear alter column RampOutInterval numeric not null;
+go
+
+alter table LMProgramDirectGear add RampOutPercent numeric;
+go
+update LMProgramDirectGear set RampOutPercent = 0;
+go
+alter table LMProgramDirectGear alter column RampOutPercent numeric not null;
+go
+
+
+sp_rename 'LMProgramDirect.NotifyInterval', 'NotifyOffset', 'COLUMN';
+go
+alter table LMProgramDirect drop column CanceledMsg;
+go
+alter table LMProgramDirect drop column StoppedEarlyMsg;
 go
 
 

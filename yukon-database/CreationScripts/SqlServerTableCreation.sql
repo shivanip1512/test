@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     5/10/2004 4:32:48 PM                         */
+/* Created on:     5/19/2004 9:58:46 AM                         */
 /*==============================================================*/
 
 
@@ -2796,7 +2796,8 @@ PowerValueLowLimit   numeric              not null,
 PowerValueMultiplier float                not null,
 PowerValueOffset     float                not null,
 StartCode            numeric              not null,
-StopCode             numeric              not null
+StopCode             numeric              not null,
+Retries              numeric              not null
 )
 go
 
@@ -3021,7 +3022,8 @@ CurrentGearNumber    numeric              not null,
 LastGroupControlled  numeric              not null,
 StartTime            datetime             not null,
 StopTime             datetime             not null,
-TimeStamp            datetime             not null
+TimeStamp            datetime             not null,
+DailyOps             numeric              not null
 )
 go
 
@@ -3188,6 +3190,7 @@ insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
 
 insert into fdrinterface values(16,'LODESTAR_STD','Receive','f');
 insert into fdrinterface values(17,'LODESTAR_ENH','Receive','f');
+insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
 
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
@@ -3210,7 +3213,7 @@ go
 insert into FDRInterfaceOption values(1, 'Device', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(1, 'Point', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(1, 'Destination/Source', 3, 'Text', '(none)' );
-insert into FDRInterfaceOption values(2, 'Category', 1, 'Combo', 'PSEUDO,REAL' );
+insert into FDRInterfaceOption values(2, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
 insert into FDRInterfaceOption values(2, 'Remote', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(2, 'Point', 3, 'Text', '(none)' );
 insert into FDRInterfaceOption values(3, 'Point', 1, 'Text', '(none)' );
@@ -3237,6 +3240,8 @@ insert into fdrinterfaceoption values (17,'Customer',1,'Text','(none)');
 insert into fdrinterfaceoption values (17,'Channel',2,'Text','(none)');
 insert into fdrinterfaceoption values (17,'DrivePath',3,'Text','(none)');
 insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
+insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
+insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
 
 
 alter table FDRInterfaceOption
@@ -4135,12 +4140,10 @@ go
 /*==============================================================*/
 create table LMProgramDirect (
 DeviceID             numeric              not null,
-NotifyInterval       numeric              not null,
+NotifyOffset         numeric              not null,
 Heading              varchar(40)          not null,
 MessageHeader        varchar(160)         not null,
-MessageFooter        varchar(160)         not null,
-CanceledMsg          varchar(80)          not null,
-StoppedEarlyMsg      varchar(80)          not null
+MessageFooter        varchar(160)         not null
 )
 go
 
@@ -4172,7 +4175,11 @@ PercentReduction     numeric              not null,
 GroupSelectionMethod varchar(30)          not null,
 MethodOptionType     varchar(30)          not null,
 MethodOptionMax      numeric              not null,
-GearID               numeric              not null
+GearID               numeric              not null,
+RampInInterval       numeric              not null,
+RampInPercent        numeric              not null,
+RampOutInterval      numeric              not null,
+RampOutPercent       numeric              not null
 )
 go
 
