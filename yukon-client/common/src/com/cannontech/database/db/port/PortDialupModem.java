@@ -7,7 +7,7 @@ package com.cannontech.database.db.port;
  
 public class PortDialupModem extends DBPersistent {
 	private String modemType = null;
-	private String initializationString = "ATH0";
+	private String initializationString = "AT&F";
 	private String prefixNumber = " ";
 	private String suffixNumber = " ";
 	
