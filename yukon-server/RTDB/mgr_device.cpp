@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/11/15 14:08:20 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/12/12 17:36:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "dev_macro.h"
 #include "dev_cbc.h"
 #include "dev_dnp.h"
+#include "dev_ion.h"
 #include "dev_remote.h"
 #include "dev_meter.h"
 #include "dev_idlc.h"
@@ -527,7 +528,7 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
                     }
 
                     // I don't know who the old guy is anymore!
-                    refreshList(Factory, removeFunc, d, paoID);     // This should accomplish a minimal reload, getting the "CTIDBG_new" guy.
+                    refreshList(Factory, removeFunc, d, paoID);     // This should accomplish a minimal reload, getting the "new" guy.
                 }
             }
             else
