@@ -299,7 +299,8 @@ public class Editor extends JPanel {
 			JFileChooser fileChooser =
 				Util.getDrawingJFileChooser();
 			fileChooser.setApproveButtonText("Open");
-
+			fileChooser.setDialogTitle("Open Drawing");
+			
 			String currentDir = EditorPrefs.getPreferences().getWorkingDir();
 
 			fileChooser.setCurrentDirectory(new File(currentDir));
