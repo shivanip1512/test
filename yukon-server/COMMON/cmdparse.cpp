@@ -883,10 +883,6 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
         case ProtocolEmetconType:
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
                 break;
             }
         }
