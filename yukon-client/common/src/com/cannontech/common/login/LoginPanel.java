@@ -66,7 +66,7 @@ class LoginPanel extends JPanel implements CaretListener, ActionListener {
 		this(
 			LoginPrefs.getInstance().getCurrentYukonHost(),
 			LoginPrefs.getInstance().getAvailableYukonHosts(),
-			LoginPrefs.getInstance().getDefaultYukonPort(),
+			LoginPrefs.getInstance().getCurrentYukonPort(),
 			LoginPrefs.getInstance().getDefaultUsername(), 
 			LoginPrefs.getInstance().getDefaultPassword(), 
 			LoginPrefs.getInstance().getDefaultRememberPassword(),

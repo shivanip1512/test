@@ -299,9 +299,9 @@ public class ClientSession {
 	
 	private LoginPanel makeLocalLoginPanel() {
 		LoginPrefs prefs = LoginPrefs.getInstance();
-		return  new LoginPanel(	prefs.getCurrentYukonHost(),
+		return  new LoginPanel(prefs.getCurrentYukonHost(),
 								prefs.getAvailableYukonHosts(),
-								prefs.getDefaultYukonPort(),
+								prefs.getCurrentYukonPort(),
 								prefs.getDefaultUsername(),
 								prefs.getDefaultPassword(),
 								prefs.getDefaultRememberPassword(), true);
@@ -309,9 +309,9 @@ public class ClientSession {
 		
 	private LoginPanel makeRemoteLoginPanel() {
 			LoginPrefs prefs = LoginPrefs.getInstance();
-			return  new LoginPanel(	prefs.getCurrentYukonHost(),
+			return  new LoginPanel(prefs.getCurrentYukonHost(),
 									prefs.getAvailableYukonHosts(),
-									prefs.getDefaultYukonPort(),
+									prefs.getCurrentYukonPort(),
 									prefs.getDefaultUsername(),
 									prefs.getDefaultPassword(),
 									prefs.getDefaultRememberPassword(), false);
