@@ -87,6 +87,6 @@ private void initialize() {
 	add( notificationGroupMenuItem );
 	add( seasonMenuItem );
 	add( tagMenuItem );
-	add( touMenuItem );
+	//add( touMenuItem );
 }
 }
