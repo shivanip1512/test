@@ -151,8 +151,8 @@ void CtiLoadManager::controlLoop()
     try
     {
         CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-        registerForPoints(store);
-        store->setReregisterForPoints(FALSE);
+        registerForPoints(*store->getControlAreas(RWDBDateTime().seconds()));
+        store->setReregisterForPoints(false);
 
         RWDBDateTime currentDateTime;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
@@ -160,6 +160,10 @@ void CtiLoadManager::controlLoop()
         CtiLMControlAreaMsg* controlAreaMsg = new CtiLMControlAreaMsg();
         while(TRUE)
         {
+            currentDateTime.now();
+            ULONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+            ULONG secondsFrom1901 = currentDateTime.seconds();
+
             if(_LM_DEBUG)
             {
                 if( (RWDBDateTime().seconds()%1800) == 0 )
@@ -170,32 +174,15 @@ void CtiLoadManager::controlLoop()
             }
 
             rwRunnable().serviceCancellation();
-            try
-            {
-                if( !store->isValid() )
-                {
-                    store->dumpAllDynamicData();
-                    /*  To send any initial messages to client
 
-                    CtiLMExecutorFactory f;
-                    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > queue = new CtiCountedPCPtrQueue<RWCollectable>();
-                    CtiLMExecutor* executor = f.createExecutor(new CtiCCStateListMsg(store->StateList()));
-                    executor->Execute(queue);
-                    delete executor;*/
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            RWOrdered& controlAreas = *store->getControlAreas(secondsFrom1901);
 
             try
             {
                 if( store->getReregisterForPoints() )
                 {
-                    registerForPoints(store);
-                    store->setReregisterForPoints(FALSE);
+                    registerForPoints(controlAreas);
+                    store->setReregisterForPoints(false);
                 }
             }
             catch(...)
@@ -206,8 +193,8 @@ void CtiLoadManager::controlLoop()
 
             try
             {
-                checkDispatch();
-                checkPIL();
+                checkDispatch(secondsFrom1901);
+                checkPIL(secondsFrom1901);
             }
             catch(...)
             {
@@ -215,11 +202,7 @@ void CtiLoadManager::controlLoop()
                 dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            RWOrdered& controlAreas = *store->getControlAreas();
-
-            RWOrdered &controlAreaChanges = controlAreaMsg->getControlAreas();
-            currentDateTime.now();
-            ULONG nowInSeconds = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+            RWOrdered& controlAreaChanges = controlAreaMsg->getControlAreas();
             BOOL examinedControlAreaForControlNeededFlag = FALSE;
             if( controlAreas.entries() > 0 )
             {
@@ -231,16 +214,16 @@ void CtiLoadManager::controlLoop()
                     {
                         if( currentControlArea->isManualControlReceived() )
                         {
-                            currentControlArea->handleManualControl(multiPilMsg,multiDispatchMsg);
+                            currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg);
                         }
 
-                        if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(nowInSeconds) )
+                        if( !currentControlArea->getDisableFlag() && currentControlArea->isControlTime(secondsFromBeginningOfDay) )
                         {
                             if( ((currentControlArea->getControlInterval() > 0) && (currentControlArea->getNextCheckTime() <= currentDateTime)) ||
                                 ((currentControlArea->getControlInterval() == 0) && (currentControlArea->getNewPointDataReceivedFlag()) ) )
                             {
                                 DOUBLE loadReductionNeeded = currentControlArea->calculateLoadReductionNeeded();
-                                if( loadReductionNeeded > 0.0 && currentControlArea->isPastMinResponseTime(nowInSeconds) )
+                                if( loadReductionNeeded > 0.0 && currentControlArea->isPastMinResponseTime(secondsFrom1901) )
                                 {
                                     if( currentControlArea->getControlAreaState() != CtiLMControlArea::FullyActiveState )
                                     {
@@ -251,14 +234,14 @@ void CtiLoadManager::controlLoop()
                                         if( currentControlArea->getControlInterval() != 0 ||
                                             currentControlArea->isThresholdTriggerTripped() )
                                         {
-                                            currentControlArea->reduceControlAreaLoad(loadReductionNeeded,nowInSeconds,multiPilMsg,multiDispatchMsg);
+                                            currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg);
                                         }
                                         else
                                         {
                                             //Special Case: if only a status trigger is tripped and the control interval is 0,
                                             //then we need make the control area fully active.  If some of the programs are disabled
                                             //or out of their control windows they will not be controlled
-                                            currentControlArea->takeAllAvailableControlAreaLoad(nowInSeconds,multiPilMsg,multiDispatchMsg);
+                                            currentControlArea->takeAllAvailableControlAreaLoad(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg);
                                         }
                                         currentControlArea->setUpdatedFlag(TRUE);
                                     }
@@ -277,7 +260,7 @@ void CtiLoadManager::controlLoop()
                                 }
                                 else
                                 {
-                                    currentControlArea->figureNextCheckTime();
+                                    currentControlArea->figureNextCheckTime(secondsFrom1901);
                                 }
                                 examinedControlAreaForControlNeededFlag = TRUE;
                             }
@@ -289,35 +272,34 @@ void CtiLoadManager::controlLoop()
                                 {
                                     //CtiLockGuard<CtiLogger> logger_guard(dout);
                                     //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                    if( currentControlArea->maintainCurrentControl(nowInSeconds,multiPilMsg,multiDispatchMsg) )
+                                    if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg) )
                                     {
                                         currentControlArea->setUpdatedFlag(TRUE);
                                     }
                                 }
                                 else if( examinedControlAreaForControlNeededFlag &&
-                                         !currentControlArea->isManualControlReceived() &&
-                                         currentControlArea->isPastMinResponseTime(nowInSeconds) )
+                                         currentControlArea->isPastMinResponseTime(secondsFrom1901) )
                                 {
+                                    if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << RWTime() << " - Load reduction no longer needed at this time, stopping all control in control area: " << currentControlArea->getPAOName() << "." << endl;
+                                        currentControlArea->setUpdatedFlag(TRUE);
                                     }
-                                    currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg);
-                                    currentControlArea->setUpdatedFlag(TRUE);
                                 }
                             }
                             examinedControlAreaForControlNeededFlag = FALSE;
                         }
-                        else if( !currentControlArea->isControlTime(nowInSeconds) &&
+                        else if( !currentControlArea->isControlTime(secondsFromBeginningOfDay) &&
                                  (currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                                   currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState) )
                         {
+                            if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg) )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;
+                                currentControlArea->setUpdatedFlag(TRUE);
                             }
-                            currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg);
-                            currentControlArea->setUpdatedFlag(TRUE);
                         }
                     }
                     catch(...)
@@ -649,7 +631,7 @@ CtiConnection* CtiLoadManager::getPILConnection()
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkDispatch()
+void CtiLoadManager::checkDispatch(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     bool done = FALSE;
@@ -659,7 +641,7 @@ void CtiLoadManager::checkDispatch()
 
         if ( in != 0 )
         {
-            parseMessage(in);
+            parseMessage(in,secondsFrom1901);
             delete in;
         }
         else
@@ -673,7 +655,7 @@ void CtiLoadManager::checkDispatch()
 
     Reads off the PIL connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkPIL()
+void CtiLoadManager::checkPIL(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     bool done = FALSE;
@@ -683,7 +665,7 @@ void CtiLoadManager::checkPIL()
 
         if ( in != 0 )
         {
-            parseMessage(in);
+            parseMessage(in,secondsFrom1901);
             delete in;
         }
         else
@@ -697,7 +679,7 @@ void CtiLoadManager::checkPIL()
 
     Registers for all points of the control areas.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::registerForPoints(CtiLMControlAreaStore* store)
+void CtiLoadManager::registerForPoints(const RWOrdered& controlAreas)
 {
     if( _LM_DEBUG )
     {
@@ -705,7 +687,6 @@ void CtiLoadManager::registerForPoints(CtiLMControlAreaStore* store)
         dout << RWTime() << " - Registering for point changes." << endl;
     }
 
-    RWOrdered& controlAreas = (*store->getControlAreas());
     CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
     for(UINT i=0;i<controlAreas.entries();i++)
     {
@@ -740,7 +721,7 @@ void CtiLoadManager::registerForPoints(CtiLMControlAreaStore* store)
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::parseMessage(RWCollectable *message)
+void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
 {
     CtiMultiMsg* msgMulti;
     CtiPointDataMsg* pData;
@@ -761,33 +742,20 @@ void CtiLoadManager::parseMessage(RWCollectable *message)
                       dbChange->getDatabase() == ChangePointDb ||
                       dbChange->getDatabase() == ChangeStateGroupDb ) )
                 {
-                    if( _LM_DEBUG )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Database change.  Setting reload flag." << endl;
-                    }
-
-                    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-                    RWOrdered& controlAreas = *store->getControlAreas();
-                    for(long i=0;i<controlAreas.entries();i++)
-                    {
-                        ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
-                    }
                     CtiLMControlAreaStore::getInstance()->setValid(false);
-                    CtiLMControlAreaStore::getInstance()->setReregisterForPoints(true);
                 }
             }
             break;
         case MSG_POINTDATA:
             {
                 pData = (CtiPointDataMsg*)message;
-                pointDataMsg( pData->getId(), pData->getValue(), pData->getQuality(), pData->getTags(), pData->getTime() );
+                pointDataMsg( pData->getId(), pData->getValue(), pData->getQuality(), pData->getTags(), pData->getTime(), secondsFrom1901 );
             }
             break;
         case MSG_PCRETURN:
             {
                 pcReturn = (CtiReturnMsg*)message;
-                porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString() );
+                porterReturnMsg( pcReturn->DeviceId(), pcReturn->CommandString(), pcReturn->Status(), pcReturn->ResultString(), secondsFrom1901 );
             }
             break;
         case MSG_COMMAND:
@@ -825,14 +793,14 @@ void CtiLoadManager::parseMessage(RWCollectable *message)
                 RWOrdered& temp = msgMulti->getData();
                 for(i=0;i<temp.entries( );i++)
                 {
-                    parseMessage(temp[i]);
+                    parseMessage(temp[i], secondsFrom1901);
                 }
             }
             break;
         case MSG_SIGNAL:
             {
                 signal = (CtiSignalMsg*)message;
-                signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo() );
+                signalMsg( signal->getId(), signal->getTags(), signal->getText(), signal->getAdditionalInfo(), secondsFrom1901 );
             }
             break;
         default:
@@ -852,7 +820,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message)
 
     Handles point data messages and updates strategy point values.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp )
+void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, RWTime& timestamp, ULONG secondsFrom1901 )
 {
     if( _LM_DEBUG )
     {
@@ -860,11 +828,11 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
         RWCString outString = "Point Data, ID:";
         _ltoa(pointID,tempchar,10);
         outString += tempchar;
-        outString += " Value:";
+        outString += " Val:";
         int precision = 3;
         _snprintf(tempchar,80,"%.*f",precision,value);
         outString += tempchar;
-        outString += " Timestamp: ";
+        outString += " Time: ";
         outString += RWDBDateTime(timestamp).asString();
 
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -873,7 +841,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
 
-    RWOrdered& controlAreas = (*store->getControlAreas());
+    RWOrdered& controlAreas = (*store->getControlAreas(secondsFrom1901));
     CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
     for(UINT i=0;i<controlAreas.entries();i++)
     {
@@ -942,7 +910,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
     Handles porter return messages and updates the status of strategy cap
     bank controls.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString )
+void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, int status, RWCString resultString, ULONG secondsFrom1901 )
 {
     /*if( _LM_DEBUG )
     {
@@ -956,7 +924,7 @@ void CtiLoadManager::porterReturnMsg( long deviceId, RWCString commandString, in
 
     Handles signal messages and updates strategy tags.
 ---------------------------------------------------------------------------*/
-void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional )
+void CtiLoadManager::signalMsg( long pointID, unsigned tags, RWCString text, RWCString additional, ULONG secondsFrom1901 )
 {
     /*if( _LM_DEBUG )
     {
