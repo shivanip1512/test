@@ -169,7 +169,6 @@ void CtiCapController::controlLoop()
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
     
-                if(_CC_DEBUG)
                 {
                     if( (secondsFrom1901%900) == 0 && secondsFrom1901 != lastThreadPulse )
                     {//every thirty minutes tell the user if the control thread is still alive
