@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/06/02 20:53:26 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/07/01 16:31:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -315,6 +315,14 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
     if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).isNull() )
     {
+        //  Examples:
+        //
+        //  In a system with portids 15, 49, and 78:
+        //
+        //  YUKON_SIMULATE_PORTS    TRUE            - all ports are simulated           (15, 49, 78)
+        //  YUKON_SIMULATE_PORTS    TRUE,15,78      - the listed ports are simulated    (15, 78)
+        //  YUKON_SIMULATE_PORTS    TRUE,EXCLUDE,15 - all ports EXCEPT 15 are simulated (49, 78)
+
         RWCTokenizer tok(str);
         RWCString id_str;
         long      id;
