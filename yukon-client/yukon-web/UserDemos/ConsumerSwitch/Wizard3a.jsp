@@ -82,6 +82,7 @@
                         <tr> 
                           <td width="80"> 
                             <select name="select2">
+                              <option>None</option>
                               <option>.10</option>
                               <option>.15</option>
                               <option selected>.20</option>
@@ -113,6 +114,7 @@
                         <tr> 
                           <td width="80"> 
                             <select name="select">
+                              <option>None</option>
                               <option>.10</option>
                               <option>.15</option>
                               <option>.20</option>
@@ -144,6 +146,7 @@
                         <tr> 
                           <td width="80"> 
                             <select name="select3">
+                              <option>None</option>
                               <option>.10</option>
                               <option>.15</option>
                               <option>.20</option>
