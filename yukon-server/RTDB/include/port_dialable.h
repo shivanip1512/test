@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/29 13:43:47 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/09/30 22:10:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,7 +62,7 @@ public:
     virtual INT setup(INT trace) = 0;
     virtual INT close(INT trace) = 0;
 
-    virtual INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse);
+    virtual INT waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
     virtual INT disconnect(CtiDevice *Device, INT trace);
 
     CtiTablePortDialup getTablePortDialup() const;
