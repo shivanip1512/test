@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.EsubConstants;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.esub.web.SessionInfo;
 
 /**
@@ -59,6 +60,10 @@ public class SVGGenerator extends HttpServlet {
 			// and also the Esub VIEW role to see it
 			if( AuthFuncs.checkRole(user, metaElem.getRoleID()) != null &&				
 				AuthFuncs.checkRole(user, RoleTypes.ESUBVIEW) != null  ) {				
+				
+				// Update the drawing before sending it out to init all the values
+				DrawingUpdater updater = new DrawingUpdater(d);
+				updater.updateDrawing();
 				
 				// enable edit functions?
 				Pair editPair = AuthFuncs.checkRole(user, RoleTypes.ESUBEDIT);			
