@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct22X.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:12 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/06/27 21:01:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,14 +27,14 @@ protected:
 
     enum
     {
-        MCT22X_MReadAddr    = 0x89,
-        MCT22X_MReadLen     =    3,  //  24 bit most recent (MREAD) copied from CUREAD value on interval boundary
-        MCT22X_DiscAddr     = 0x37,
-        MCT22X_DiscLen      =    3,  //  Gets last latch cmnd recv, reserved byte, LCIMAG
-        MCT22X_PutMReadAddr = 0x86,
-        MCT22X_PutMReadLen  =    9,
-        MCT22X_DemandAddr   = 0x86,
-        MCT22X_DemandLen    =    6
+        MCT22X_MReadPos    = 0x89,
+        MCT22X_MReadLen    =    3,  //  24 bit most recent (MREAD) copied from CUREAD value on interval boundary
+        MCT22X_DiscPos     = 0x37,
+        MCT22X_DiscLen     =    3,  //  Gets last latch cmnd recv, reserved byte, LCIMAG
+        MCT22X_PutMReadPos = 0x86,
+        MCT22X_PutMReadLen =    9,
+        MCT22X_DemandPos   = 0x86,
+        MCT22X_DemandLen   =    6
     };
 
 

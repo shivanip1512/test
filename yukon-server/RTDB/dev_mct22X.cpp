@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/05/20 18:13:22 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/06/27 21:01:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,28 +53,52 @@ bool CtiDeviceMCT22X::initCommandStore()
 
    CtiDLCCommandStore cs;
 
+   cs._cmd     = CtiProtocolEmetcon::GetConfig_GroupAddress;
+   cs._io      = IO_READ;
+   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrPos,
+                            (int)MCT2XX_GroupAddrLen );
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
+   cs._io      = IO_WRITE | Q_ARMC;
+   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrGoldSilverPos,
+                            (int)MCT2XX_GroupAddrGoldSilverLen );
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
+   cs._io      = IO_WRITE | Q_ARMC;
+   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrBronzePos,
+                            (int)MCT2XX_GroupAddrBronzeLen );
+   _commandStore.insert( cs );
+
+   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
+   cs._io      = IO_WRITE | Q_ARMC;
+   cs._funcLen = make_pair( (int)MCT2XX_GroupAddrLeadPos,
+                            (int)MCT2XX_GroupAddrLeadLen );
+   _commandStore.insert( cs );
+
    cs._cmd     = CtiProtocolEmetcon::GetValue_Default;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT22X_MReadAddr,
+   cs._funcLen = make_pair( (int)MCT22X_MReadPos,
                             (int)MCT22X_MReadLen );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Scan_Accum;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT22X_MReadAddr,
+   cs._funcLen = make_pair( (int)MCT22X_MReadPos,
                             (int)MCT22X_MReadLen );
    _commandStore.insert( cs );
 
 //  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value
    cs._cmd     = CtiProtocolEmetcon::GetValue_Demand;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT22X_DemandAddr,
+   cs._funcLen = make_pair( (int)MCT22X_DemandPos,
                             (int)MCT22X_DemandLen );
    _commandStore.insert( cs );
 
    cs._cmd     = CtiProtocolEmetcon::Scan_Integrity;
    cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT22X_DemandAddr,
+   cs._funcLen = make_pair( (int)MCT22X_DemandPos,
                             (int)MCT22X_DemandLen );
    _commandStore.insert( cs );
 
