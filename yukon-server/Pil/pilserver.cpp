@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/14 21:06:44 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/06/18 16:18:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -465,7 +465,6 @@ void CtiPILServer::resultThread()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << TimeNow.now() << " ResThread      : Started as TID " << rwThreadId() << endl;
-        // dout << TimeNow.now() << " ResThread : " << rwThreadId() << " Dispatch to : " << VanGoghMachine << ":" << VANGOGHNEXUS << endl;
     }
 
     /* Give us a tiny attitude */
@@ -560,6 +559,13 @@ void CtiPILServer::resultThread()
 
         if(DeviceRecord != NULL)
         {
+            if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
+                dout << " at priority " << InMessage.Priority << endl;
+            }
+
             /* get the time for use in the decodes */
             TimeNow = RWTime();
 
