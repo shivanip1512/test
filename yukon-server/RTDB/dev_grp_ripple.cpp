@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/03/13 19:35:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/05/23 22:23:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,7 @@
 #pragma warning( disable : 4786)
 
 
+#include "cparms.h"
 #include "dev_grp_ripple.h"
 #include "mgr_route.h"
 #include "msg_lmcontrolhistory.h"
@@ -198,6 +199,8 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
     INT count = getResponsesOnTrxID();
     CtiPoint *pPoint;
 
+    bool erdb = !gConfigParms.getValueAsString("EASTRIVER_DEBUG").compareTo("true", RWCString::ignoreCase);
+
     if( trx == getCurrentTrxID() )
     {
         setResponsesOnTrxID( ++count );
@@ -228,6 +231,22 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
         {
             reportControlStart( _isShed, getRippleTable().getShedTime(), 100, vgList, getLastCommand() );
             setShed( INVALID );   // This keeps me from sending this multiple times for a single control.
+        }
+        else if( erdb )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << getName() << " is probably setShed(INVALID)" << endl;
+            }
+        }
+    }
+    else if(erdb)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  " << getName() << ": TrxID is not equal to the current group TrxID" << endl;
         }
     }
 
