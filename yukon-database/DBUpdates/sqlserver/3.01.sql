@@ -1059,6 +1059,10 @@ update YukonRoleProperty set DefaultValue='(none)' where RolePropertyID=-1101;
 
 insert into lmgroup values( 0, 0 );
 
+insert into UserPaoOwner select operatorloginid, scheduleid from LMMacsscheduleoperatorlist;
+
+drop table LMMacsscheduleoperatorlist;
+
 
 
 

@@ -63,7 +63,10 @@
 	 * Determine which macs schedules we need to display
 	 */
     Class[] types2 = { Integer.class  };
-    Object[][] schedIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT lmmacsscheduleoperatorlist.ScheduleID FROM lmmacsscheduleoperatorlist WHERE lmmacsscheduleoperatorlist.operatorloginid=" + user.getUserID()  + " ORDER BY lmmacsscheduleoperatorlist.ScheduleID", types2 );
+    Object[][] schedIDs = com.cannontech.util.ServletUtil.executeSQL( dbAlias,
+    	"SELECT up.paoid FROM UserPaoOwner up, MACSchedule mac WHERE mac.scheduleid=up.paoid " +
+    	"and up.userid=" + user.getUserID() +
+    	"ORDER BY up.paoid", types2 );
     
     com.cannontech.servlet.MACSConnectionServlet connContainer = (com.cannontech.servlet.MACSConnectionServlet)
         application.getAttribute(com.cannontech.servlet.MACSConnectionServlet.SERVLET_CONTEXT_ID);

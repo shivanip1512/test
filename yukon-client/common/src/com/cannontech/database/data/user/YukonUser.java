@@ -199,10 +199,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			user.setDbConnection( conn );
 			
 			user.delete( "EnergyCompanyOperatorLoginList", "OperatorLoginID", userID );
-			user.delete( "LMDirectOperatorList", "OperatorLoginID", userID );
-			user.delete( "OperatorSerialGroup", "LoginID", userID );
-			user.delete( "LMMACSScheduleOperatorList", "OperatorLoginID", userID );
 			user.delete( "OperatorLoginGraphList", "OperatorLoginID", userID );
+			user.delete( UserPaoOwner.TABLE_NAME, "UserID", userID );
 			user.delete();
 		}
 		catch (java.sql.SQLException e) {
