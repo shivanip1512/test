@@ -11,11 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_two.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/04/22 21:12:54 $
 *
 *    History: 
       $Log: std_ansi_tbl_two_two.cpp,v $
+      Revision 1.4  2004/04/22 21:12:54  dsutton
+      Last known revision DLS
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -129,6 +132,14 @@ unsigned char* CtiAnsiTableTwoTwo::getDemandSelect( void )
 {
    return _demand_select;
 }
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+unsigned char* CtiAnsiTableTwoTwo::getSummationSelect( void )
+{
+   return _summation_select;
+}
+
 
 //=========================================================================================================================================
 //=========================================================================================================================================

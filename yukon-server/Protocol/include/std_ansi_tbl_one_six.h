@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_six.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/04/22 21:12:54 $
 *    History: 
       $Log: std_ansi_tbl_one_six.h,v $
+      Revision 1.4  2004/04/22 21:12:54  dsutton
+      Last known revision DLS
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -31,6 +34,13 @@
 #include "types.h"
 
 #include "std_ansi_tbl_base.h"
+
+#define ANSI_TBL16_UOM_FLAG                     0x01
+#define ANSI_TBL16_DEMAND_CTRL_FLAG             0x02
+#define ANSI_TBL16_DATA_CTRL_FLAG               0x04
+#define ANSI_TBL16_CONSTANTS_FLAG               0x08
+#define ANSI_TBL16_PULSE_ENGR_FLAG              0x10
+#define ANSI_TBL16_CONSTANT_TO_BE_APPLIED_FLAG  0x20
 
 #pragma pack( push, 1)
 
@@ -51,17 +61,19 @@ struct SOURCE_LINK_BFLD
 
 class IM_EX_PROT CtiAnsiTableOneSix : public CtiAnsiTableBase
 {
-protected:
-
-   SOURCE_LINK_BFLD  *_source_link;
-
-private:
-
 public:
 
    CtiAnsiTableOneSix( BYTE *dataBlob, int num_sources );
    virtual ~CtiAnsiTableOneSix();
    CtiAnsiTableOneSix& operator=(const CtiAnsiTableOneSix& aRef);
+
+
+   SOURCE_LINK_BFLD getSourceLink ( int aOffset );
+
+
+private:
+    SOURCE_LINK_BFLD  *_source_link;
+    int _numberOfConstants;
 
 };
 

@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/04/25 15:12:29 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/04/22 21:12:53 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.6  2004/04/22 21:12:53  dsutton
+      Last known revision DLS
+
       Revision 1.5  2003/04/25 15:12:29  dsutton
       This is now base protocol class for every ansi type meter
 
@@ -730,6 +733,56 @@ bool CtiProtocolANSI::isTransactionComplete( void )
 int CtiProtocolANSI::sendCommResult( INMESS *InMessage  )
 {
     int ret = NORMAL;
+/*
+    // if the read failed, don't do any of this and tell the device it 
+    if (getApplicationLayer().isReadFailed())
+    {
+        ret=!NORMAL;
+    }
+    else
+    {
+        // how this works will need to change once we are doing load profile also
+
+        for (i  = 1;
+            i <= OFFSET_HIGHEST_CURRENT_OFFSET;
+            i ++)
+        {
+            // grab the point based on device and offset
+            if ((pNumericPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual(i, AnalogPointType)) != NULL)
+            {
+
+                switch (aOffset)
+                {
+                    case OFFSET_TOTAL_KWH:
+                        {
+                            for (int x=0; x < _tableTwoOne->getNumberSummations(); x++)
+                            {
+                                SOURCE_LINK_BFLD table16 = _tableOneSix->getSourceLink(_tableTwoTwo->getSummationSelect()[x]);
+
+                                // we have to have this set of we don't know what the data represents
+                                if (table16.uom_entry_flag)
+                                {
+                                    if (_tableOneTwo->isCorrectData(_tableTwoTwo->getSummationSelect()[x],CtiAnsiTableOneTwo::uom_watts))
+                                    {
+
+                                    }
+                                }
+                            }
+                        }
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+*/    
+    return ret;
+}
+
+#if 0
+int CtiProtocolANSI::sendCommResult( INMESS *InMessage  )
+{
+    int ret = NORMAL;
 
     // if the read failed, don't do any of this and tell the device it 
     if (getApplicationLayer().isReadFailed())
@@ -869,6 +922,7 @@ int CtiProtocolANSI::sendCommResult( INMESS *InMessage  )
     }
     return ret;
 }
+#endif
 
 void CtiProtocolANSI::receiveCommResult( INMESS *InMessage )
 {

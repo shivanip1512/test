@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/04/25 14:52:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/04/22 21:12:53 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.2  2004/04/22 21:12:53  dsutton
+      Last known revision DLS
+
       Revision 1.1  2003/04/25 14:52:43  dsutton
       Standard and manufacturer table base class. Contains utility functions
       needed for all tables
@@ -53,6 +56,9 @@ CtiAnsiTableBase& CtiAnsiTableBase::operator=(const CtiAnsiTableBase& aRef)
 //=========================================================================================================================================
 //this guy converts raw bytes from the meter to doubles so we have a set size to work with
 //all the tables have access to him
+//
+// NOTE:  Data order from standard table 0 will need to be used in final definition  !!!!
+//
 //=========================================================================================================================================
 
 int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
@@ -64,50 +70,50 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
 
    switch( format )
    {
-   case 0:
+   case ANSI_NI_FORMAT_FLOAT64:
       //float64
       break;
 
-   case 1:
+   case ANSI_NI_FORMAT_FLOAT32:
       //float32
       break;
 
-   case 2:
+   case ANSI_NI_FORMAT_ARRAY12_CHAR:
       //array-12 char
       break;
 
-   case 3:
+   case ANSI_NI_FORMAT_ARRAY6_CHAR:
       //array-6 char
       break;
 
-   case 4:
+   case ANSI_NI_FORMAT_INT32_IMPLIED:
       //int32 w/implied dec. pt. 4<->5th digits
       break;
 
-   case 5:
+   case ANSI_NI_FORMAT_ARRAY6_BCD:
       //array-6-bcd
       break;
 
-   case 6:
+   case ANSI_NI_FORMAT_ARRAY4_BCD:
       //array-4-bcd
       break;
 
-   case 7:
+   case ANSI_NI_FORMAT_INT24:
       //int24
       break;
 
-   case 8:
+   case ANSI_NI_FORMAT_INT32:
       //int32
       memcpy( &tempLong, source, sizeof( long ));
       result = tempLong;
       offset = sizeof( long );
       break;
 
-   case 9:
+   case ANSI_NI_FORMAT_INT40:
       //int40
       break;
 
-   case 10:
+   case ANSI_NI_FORMAT_INT48:
       //NOTE: need to figure out if this order is correct
       //int48
       tempDbl = source[0] * multer;
@@ -131,15 +137,15 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
       offset = sizeof( unsigned char )*6;
       break;
 
-   case 11:
+   case ANSI_NI_FORMAT_INT64:
       //int64
       break;
 
-   case 12:
+   case ANSI_NI_FORMAT_ARRAY8_BCD:
       //array-8-bcd
       break;
 
-   case 13:
+   case ANSI_NI_FORMAT_ARRAY21_CHAR:
       //array-21-char
       break;
 

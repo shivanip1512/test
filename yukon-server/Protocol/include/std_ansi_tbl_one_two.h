@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_two.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/04/22 21:12:54 $
 *    History: 
       $Log: std_ansi_tbl_one_two.h,v $
+      Revision 1.4  2004/04/22 21:12:54  dsutton
+      Last known revision DLS
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -60,31 +63,19 @@ public:
    virtual ~CtiAnsiTableOneTwo();
    CtiAnsiTableOneTwo& operator=(const CtiAnsiTableOneTwo& aRef);
 
-    int getRawIDCode( int aOffset );
-    RWCString getResolvedIDCode( int aOffset );
-    int getRawTimeBase( int aOffset );
-    RWCString getResolvedTimeBase( int aOffset );
-    int getRawMultiplier( int aOffset );
-    DOUBLE getResolvedMultiplier( int aOffset );
-
-
-    void generateResultPiece( BYTE **dataBlob );
-    void decodeResultPiece( BYTE **dataBlob );
-    void printResult( );
-
-    enum
-    {
-        uom_watts = 0,
-        uom_vars,
-        uom_va,
-        uom_rms_volts=8,
-        uom_rms_volts_squared=10,
-        uom_instantaneous_volts,
-        uom_rms_amps,
-        uom_rms_amps_squared=14,
-        uom_instantaneous_amps,
-        uom_not_supported
-    } UNITOFMESASURES_e;
+   enum
+   {
+       uom_watts = 0,
+       uom_vars,
+       uom_va,
+       uom_rms_volts=8,
+       uom_rms_volts_squared=10,
+       uom_instantaneous_volts,
+       uom_rms_amps,
+       uom_rms_amps_squared=14,
+       uom_instantaneous_amps,
+       uom_not_supported
+   } UNITOFMEASURES_e;
 
     static const CHAR * ANSI_UOM_WATTS;
     static const CHAR * ANSI_UOM_VARS;
@@ -132,6 +123,18 @@ public:
         multiplier_10_to_minus_6,
         multiplier_unknown
     } MULTIPLIER_e;
+
+    bool isCorrectData( int aOffset,int aUOM);
+    int getRawIDCode( int aOffset );
+    RWCString getResolvedIDCode( int aOffset );
+    int getRawTimeBase( int aOffset );
+    RWCString getResolvedTimeBase( int aOffset );
+    int getRawMultiplier( int aOffset );
+    DOUBLE getResolvedMultiplier( int aOffset );
+
+    void generateResultPiece( BYTE **dataBlob );
+    void decodeResultPiece( BYTE **dataBlob );
+    void printResult( );
 
 
 private:

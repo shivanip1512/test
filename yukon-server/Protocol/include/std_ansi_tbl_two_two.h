@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_two.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/04/22 21:12:54 $
 *    History: 
       $Log: std_ansi_tbl_two_two.h,v $
+      Revision 1.4  2004/04/22 21:12:54  dsutton
+      Last known revision DLS
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -58,6 +61,7 @@ public:
    int getDemandSelectSize( void );
    int getTotalTableSize( void );
    unsigned char* getDemandSelect( void );
+   unsigned char* getSummationSelect( void );
 
    CtiAnsiTableTwoTwo( BYTE *dataBlob, int num_sums, int num_demands, int num_coins );
    virtual ~CtiAnsiTableTwoTwo();

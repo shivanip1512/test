@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/04/25 15:12:29 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/04/22 21:12:54 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.5  2004/04/22 21:12:54  dsutton
+      Last known revision DLS
+
       Revision 1.4  2003/04/25 15:12:29  dsutton
       This is now base protocol class for every ansi type meter
 
@@ -185,6 +188,10 @@ class IM_EX_PROT CtiProtocolANSI
       // pure virtual functions
     virtual void destroyManufacturerTables( void )=0;
     virtual void convertToManufacturerTable( BYTE *data, int numBytes, int aTableID )=0;
+
+    //bool isReturnMsgMaxSize(void);
+   //void fillReturnMessage(BYTE *aBuffer);
+
 
    protected:
 
