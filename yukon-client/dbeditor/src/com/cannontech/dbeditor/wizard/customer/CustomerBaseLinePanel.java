@@ -297,10 +297,13 @@ private com.cannontech.common.gui.unchanging.JCheckBoxDayChooser getJCheckBoxDay
 
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder2 = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder2.setTitleFont(new java.awt.Font("Arial", 1, 14));
-			ivjLocalBorder2.setTitle("Days Available");
+			ivjLocalBorder2.setTitle("Excluded Days");
 			ivjJCheckBoxDayChooser.setBorder(ivjLocalBorder2);
 			
 			ivjJCheckBoxDayChooser.setHolidayVisible( false );
+			
+			//init our check box fields so Saturday and Sunday are checked
+			ivjJCheckBoxDayChooser.setSelectedCheckBoxes( "YNNNNNYN" );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
