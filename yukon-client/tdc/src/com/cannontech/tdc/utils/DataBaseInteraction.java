@@ -66,9 +66,10 @@ public static Object[][] queryResults( String query, Object[] parameters, boolea
 		//Debug purposes
 		StringBuffer buf = new StringBuffer(query);
 		for( int i = 0; i < parameters.length; i++ )
-			buf.replace( buf.toString().indexOf("?"), 
-							 buf.toString().indexOf("?")+1,
-							 parameters[i].toString() );
+		{
+			int loc = buf.toString().indexOf("?");
+			buf.replace( loc, loc+1, parameters[i].toString() );
+		}
 
 		CTILogger.debug(" TDC Query = " + buf.toString());
 	}
