@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * @author jdayton
  *
@@ -16,8 +18,8 @@ public class LMGroupSA205105 extends com.cannontech.database.db.DBPersistent
 {
 	private Integer groupID;
 	private Integer routeID;
-	private Integer operationalAddress;
-	private String loadNumber;
+	private Integer operationalAddress = new Integer(0);
+	private String loadNumber = CtiUtilities.STRING_NONE;
 
 
 	public static final String SETTER_COLUMNS[] = 
