@@ -84,8 +84,8 @@
         <ant dir="${custom}" target="${dotarget}" />
         <ant dir="${palm}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
-		<ant dir="${servlet}" target="${dotarget}"/>
         <ant dir="${stars}" target="${dotarget}"/>
+		<ant dir="${servlet}" target="${dotarget}"/>
         <ant dir="${notification}" target="${dotarget}"/>
         <ant dir="${resource}" target="${dotarget}"/>
         <ant dir="${services}" target="${dotarget}"/>
