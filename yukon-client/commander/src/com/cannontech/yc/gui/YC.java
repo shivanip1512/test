@@ -1168,66 +1168,68 @@ public class YC extends Observable implements MessageListener
 	private void loadCustomCommandsFromDatabase()
 	{
 		File f = new File(CtiUtilities.getCommandsDirPath()+"custom/");
-		if (!f.exists()) f.mkdirs();
 		
-		String []fileNames = f.list();
+		if (f.exists())
 		{
-			for (int i = 0; i < fileNames.length; i++)
+			String []fileNames = f.list();
 			{
-				System.out.println(fileNames[i]);
-				int extIndex= fileNames[i].lastIndexOf('.');
-				if( extIndex > 0 )
+				for (int i = 0; i < fileNames.length; i++)
 				{
-					String fileName = fileNames[i].substring(0, extIndex);
-					String category = null;
-					
-					if( PAOGroups.getDeviceType(fileName) != PAOGroups.INVALID)
+					System.out.println(fileNames[i]);
+					int extIndex= fileNames[i].lastIndexOf('.');
+					if( extIndex > 0 )
 					{
-					    category = fileName;
+						String fileName = fileNames[i].substring(0, extIndex);
+						String category = null;
+						
+						if( PAOGroups.getDeviceType(fileName) != PAOGroups.INVALID)
+						{
+						    category = fileName;
+						}
+						else if( fileName.equalsIgnoreCase("alpha-base"))
+					        category = CommandCategory.STRING_CMD_ALPHA_BASE;
+						else if( fileName.equalsIgnoreCase("cbc-base"))
+					        category = CommandCategory.STRING_CMD_CBC_BASE;
+						else if( fileName.equalsIgnoreCase("ccu-base"))
+					        category = CommandCategory.STRING_CMD_CCU_BASE;
+						else if( fileName.equalsIgnoreCase("iedbase"))
+					        category = CommandCategory.STRING_CMD_IED_BASE;
+						else if( fileName.equalsIgnoreCase("ion-base"))
+					        category = CommandCategory.STRING_CMD_ION_BASE;
+						else if( fileName.equalsIgnoreCase("lcu-base"))
+					        category = CommandCategory.STRING_CMD_LCU_BASE;
+						else if( fileName.equalsIgnoreCase("lsbase"))
+					        category = CommandCategory.STRING_CMD_LP_BASE;
+						else if( fileName.equalsIgnoreCase("loadgroup-base"))
+					        category = CommandCategory.STRING_CMD_LOAD_GROUP_BASE;
+						else if( fileName.equalsIgnoreCase("mct-base"))
+					        category = CommandCategory.STRING_CMD_MCT_BASE;
+						else if( fileName.equalsIgnoreCase("rtu-base"))
+					        category = CommandCategory.STRING_CMD_RTU_BASE;
+						else if( fileName.equalsIgnoreCase("repeater-base"))
+					        category = CommandCategory.STRING_CMD_REPEATER_BASE;
+						else if( fileName.equalsIgnoreCase("tcu-base"))
+					        category = CommandCategory.STRING_CMD_TCU_BASE;
+						else if( fileName.equalsIgnoreCase("lcrserial"))
+					        category = CommandCategory.STRING_CMD_SERIALNUMBER;
+						else
+						{
+						    CTILogger.info("UNknown filename: " + fileName);
+						}
+	
+						if(category != null)
+						{
+						    parseCommandFile(f.getAbsolutePath()+"/"+fileNames[i], category);
+						}
+					    writeProcessedFile(fileNames[i]);
 					}
-					else if( fileName.equalsIgnoreCase("alpha-base"))
-				        category = CommandCategory.STRING_CMD_ALPHA_BASE;
-					else if( fileName.equalsIgnoreCase("cbc-base"))
-				        category = CommandCategory.STRING_CMD_CBC_BASE;
-					else if( fileName.equalsIgnoreCase("ccu-base"))
-				        category = CommandCategory.STRING_CMD_CCU_BASE;
-					else if( fileName.equalsIgnoreCase("iedbase"))
-				        category = CommandCategory.STRING_CMD_IED_BASE;
-					else if( fileName.equalsIgnoreCase("ion-base"))
-				        category = CommandCategory.STRING_CMD_ION_BASE;
-					else if( fileName.equalsIgnoreCase("lcu-base"))
-				        category = CommandCategory.STRING_CMD_LCU_BASE;
-					else if( fileName.equalsIgnoreCase("lsbase"))
-				        category = CommandCategory.STRING_CMD_LP_BASE;
-					else if( fileName.equalsIgnoreCase("loadgroup-base"))
-				        category = CommandCategory.STRING_CMD_LOAD_GROUP_BASE;
-					else if( fileName.equalsIgnoreCase("mct-base"))
-				        category = CommandCategory.STRING_CMD_MCT_BASE;
-					else if( fileName.equalsIgnoreCase("rtu-base"))
-				        category = CommandCategory.STRING_CMD_RTU_BASE;
-					else if( fileName.equalsIgnoreCase("repeater-base"))
-				        category = CommandCategory.STRING_CMD_REPEATER_BASE;
-					else if( fileName.equalsIgnoreCase("tcu-base"))
-				        category = CommandCategory.STRING_CMD_TCU_BASE;
-					else if( fileName.equalsIgnoreCase("lcrserial"))
-				        category = CommandCategory.STRING_CMD_SERIALNUMBER;
-					else
-					{
-					    CTILogger.info("UNknown filename: " + fileName);
-					}
-
-					if(category != null)
-					{
-					    parseCommandFile(f.getAbsolutePath()+"/"+fileNames[i], category);
-					}
-				    writeProcessedFile(fileNames[i]);
 				}
 			}
+			//Force a reload of all commands and deviceTypeCommands!
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			cache.releaseAllCommands();
+			cache.releaseAllDeviceTypeCommands();
 		}
-		//Force a reload of all commands and deviceTypeCommands!
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		cache.releaseAllCommands();
-		cache.releaseAllDeviceTypeCommands();
 	}
 	
 	/**
