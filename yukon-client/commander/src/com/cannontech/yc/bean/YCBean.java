@@ -17,10 +17,15 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
@@ -42,6 +47,7 @@ import com.cannontech.yc.gui.YC;
  */
 public class YCBean extends YC implements MessageListener, HttpSessionBindingListener
 {
+	private Vector deviceIDs = null;
 	/** Singleton counter for pointRegistration messages sent to dispatch connection */
 	private volatile int pointRegCounter = 0;
 	
@@ -79,6 +85,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		if( deviceID_ != getDeviceID())
 		{
 			super.setDeviceID(deviceID_);
+			setDeviceType(deviceID_);
+			if( !getDeviceIDs().contains(new Integer(deviceID_)))
+				getDeviceIDs().addElement(new Integer(deviceID_));
+			
 			//Remove data from other devices..we don't care about it anymore
 			clearResultText();
 			
@@ -545,5 +555,23 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}			
 		}
 		return pd;
+	}
+	/**
+	 * @return
+	 */
+	public Vector getDeviceIDs()
+	{
+		if( deviceIDs == null)
+			deviceIDs = new Vector();
+			
+		return deviceIDs;
+	}
+		
+	public void setDeviceType(int devID)
+	{
+		LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(devID);
+		deviceType = PAOGroups.getPAOTypeString(lPao.getType());
+		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
+		setLiteDeviceTypeCommandsVector(CommandFuncs.getAllDevTypeCommands(deviceType));
 	}
 }
