@@ -665,12 +665,16 @@ public Object getValue(Object o)
 
 
 	controlArea.setName( getJTextFieldName().getText() );
-	if(((String)getJComboBoxControlInterval().getSelectedItem()).compareTo("(On New Data Only)") != 0)
+	if(((String)getJComboBoxControlInterval().getSelectedItem()).compareTo("(On New Data Only)") == 0)
+		controlArea.getControlArea().setControlInterval(new Integer(0)); 
+	else
 		controlArea.getControlArea().setControlInterval( 
 			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
 
-	if(((String)getJComboBoxMinRespTime().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) != 0)
-	controlArea.getControlArea().setMinResponseTime( 
+	if(((String)getJComboBoxMinRespTime().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
+		controlArea.getControlArea().setMinResponseTime(new Integer(0));
+	else
+		controlArea.getControlArea().setMinResponseTime( 
 			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxMinRespTime()) );
 
 	controlArea.getControlArea().setDefOperationalState(
