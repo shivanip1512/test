@@ -601,7 +601,7 @@ public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.D
 				}
 	
 				java.util.Collections.sort(allPoints, com.cannontech.database.data.lite.LiteComparators.litePointIDComparator);
-				int startingPointID = ((com.cannontech.database.data.lite.LitePoint) allPoints.get(allPoints.size() - 1)).getPointID() + 1;
+				int startingPointID = ((com.cannontech.database.data.lite.LitePoint) allPoints.get(allPoints.size() - 1)).getPointID() + 10;
 				Integer newDeviceID = device.getDevice().getDeviceID();
 	
 				for (int i = 0; i < devicePoints.size(); i++)
