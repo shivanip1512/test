@@ -178,14 +178,7 @@ public class DBDeletionFuncs
 				theWarning.append(CR_LF + "because it is in use by a calculated point.");
 				return STATUS_DISALLOW;
 			}
-//			this is crappy
-			else if(baselineID == com.cannontech.database.data.baseline.Baseline.IDForDefaultBaseline.intValue())
-			{
-				theWarning.delete(0, theWarning.length());
-				theWarning.append(CR_LF + "because the default baseline should not be removed from the database.");
-				return STATUS_DISALLOW;
-			}
-			
+	
 			//this object is deleteable
 			return STATUS_ALLOW;
 		}
@@ -348,10 +341,21 @@ public class DBDeletionFuncs
 		}
 		else if (toDelete instanceof com.cannontech.database.data.baseline.Baseline)
 		{
-			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
-			unableDel.append("You cannot delete the baseline '" + nodeName + "'");
 			anID = ((com.cannontech.database.data.baseline.Baseline) toDelete).getBaseline().getBaselineID().intValue();
-			deletionType = DBDeletionFuncs.BASELINE_TYPE;
+			
+			//this is crappy
+			if(anID == com.cannontech.database.data.baseline.Baseline.IDForDefaultBaseline.intValue())
+			{
+				message.append("This default value was created by the system." + CR_LF + "Are you sure you want to permanently delete '" + nodeName + "'?");
+				unableDel.append("You cannot delete the baseline '" + nodeName + "'");
+				deletionType = DBDeletionFuncs.BASELINE_TYPE;
+			}
+			else
+			{	
+				message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+				unableDel.append("You cannot delete the baseline '" + nodeName + "'");
+				deletionType = DBDeletionFuncs.BASELINE_TYPE;
+			}
 		}	
 		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 		{
