@@ -327,6 +327,23 @@ public class GraphBean implements GraphDefines
 	 */
 	public void encode(java.io.OutputStream out) throws IOException
 	{
-		getGraph().encodePng(out);
+		encode (out, getFormat());
 	}
+	
+	public void encode(java.io.OutputStream out, String format) throws IOException
+	{
+		if( format.equalsIgnoreCase("gif") )								
+			getGraph().encodeGif(out);
+		else if( format.equalsIgnoreCase("png") )
+			getGraph().encodePng(out);
+		else if( format.equalsIgnoreCase("jpg") )
+			getGraph().encodeJpeg(out);
+		else if( format.equalsIgnoreCase("svg") )
+			getGraph().encodeSVG(out);
+//		else if( format.equalsIgnoreCase("csv") )
+//			getGraph().encodeCSV(out);
+		else	//default to png
+			getGraph().encodePng(out);
+	}
+
 }
