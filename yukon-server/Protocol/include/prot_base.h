@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/03/13 19:35:48 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/03/18 19:54:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #define __PROT_BASE_H__
 #pragma warning( disable : 4786)
 
+#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "msg_pdata.h"
