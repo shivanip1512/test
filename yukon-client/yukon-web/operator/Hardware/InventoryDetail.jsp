@@ -1,4 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
+<%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%
 	LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany(user.getEnergyCompanyID());
@@ -316,17 +318,20 @@ function validate(form) {
 	if (liteInv.getAccountID() > 0) {
 		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(), true);
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-		LiteCustomerContact liteContact = liteEC.getCustomerContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+		LiteContact liteContact = liteEC.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
+		
+		String homePhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+		String workPhone = ServerUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = ServerUtils.forceNotNone(liteAcctSite.getSiteNumber());
 %>
                               <tr>
                                 <td class="TableCell">
                                   Account # <%= liteAccount.getAccountNumber() %><br>
                                   <%= ServerUtils.getFormattedName(liteContact) %><br>
-                                  <% if (liteContact.getHomePhone() != null) { %>Home #: <%= liteContact.getHomePhone() %><br><% } %>
-                                  <% if (liteContact.getWorkPhone() != null) { %>Work #: <%= liteContact.getWorkPhone() %><br><% } %>
+                                  <% if (homePhone.length() > 0) { %>Home #: <%= homePhone %><br><% } %>
+                                  <% if (workPhone.length() > 0) { %>Work #: <%= workPhone %><br><% } %>
                                   <%= ServerUtils.getFormattedAddress(liteAddr) %><br>
                                   <% if (mapNo.length() > 0) { %>Map # <%= mapNo %><% } %>
                                 </td>
