@@ -227,18 +227,7 @@ public void setCurrentRow(com.cannontech.loadcontrol.eexchange.datamodels.EExcha
 		return;
 
 	syncButtons();
-
-	//lastly, check for disablement
-	if( getCurrentRow().getCustomer().getDisableFlag().booleanValue() )
-	{
-		getJMenuItemStartStop().setEnabled(false);
-		getJMenuItemDisable().setText("Enable");
-	}
-	else
-	{
-		getJMenuItemDisable().setText("Disable");
-	}
-
+	
 /***** REMOVE THESE LINES WHEN FUCNTIONALITY IS INSERTED *******/
 	getJMenuItemStartStop().setEnabled(false);
 	getJMenuItemDisable().setEnabled(false);

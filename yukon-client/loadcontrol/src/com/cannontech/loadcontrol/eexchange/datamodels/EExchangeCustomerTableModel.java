@@ -210,7 +210,7 @@ public Object getValueAt(int row, int col)
 			switch( col )
 			{
 			 	case CUSTOMER_NAME:
-					return rowValue.getCustomer().getYukonName();
+					return rowValue.getCustomer().getCompanyName();
 
 			 	case ACCEPT:
 					if( rowValue.getOwnerReply() == null )

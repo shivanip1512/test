@@ -1,23 +1,24 @@
 package com.cannontech.loadcontrol.data;
 
+import java.util.Date;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
  * @author: 
  */
-public class LMCurtailCustomer extends LMGroupBase
+public class LMCurtailCustomer extends LMCICustomerBase
 {
 	//possible values for ackStatus
 	public static final String ACK_UNACKNOWLEDGED = "UnAcknowledged";
 	public static final String ACK_ACKNOWLEDGED = "Acknowledged";
 	public static final String ACK_NOT_REQUIRED = "Not Required";
 	public static final String ACK_VERBAL = "Verbal";
-	
-	private String custTimeZone = null;
+		
 	private Boolean requireAck = null;
-	private int curtailRefID = 0;
+	private Long curtailRefID = new Long(0);
 	private String ackStatus = null;
-	private java.util.Date ackDateTime = null;
+	private Date ackDateTime = null;
 	private String ipAddress = null;
 	private String userIDname = null;
 	private String nameOfAckPerson = null;
@@ -58,27 +59,12 @@ public java.lang.String getCurtailmentNotes() {
 /**
  * Insert the method's description here.
  * Creation date: (4/11/2001 2:33:32 PM)
- * @return int
+ * @return Long
  */
-public int getCurtailRefID() {
+public Long getCurtailRefID() {
 	return curtailRefID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/5/2001 10:08:06 AM)
- */
-public Double getCustomerPDL() 
-{
-	return getKwCapacity();
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 1:46:12 PM)
- * @return java.lang.String
- */
-public java.lang.String getCustTimeZone() {
-	return custTimeZone;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/18/2001 8:56:31 AM)
@@ -173,27 +159,12 @@ public void setCurtailmentNotes(java.lang.String newCurtailmentNotes) {
 /**
  * Insert the method's description here.
  * Creation date: (4/11/2001 2:33:32 PM)
- * @param newCurtailRefID int
+ * @param newCurtailRefID Long
  */
-public void setCurtailRefID(int newCurtailRefID) {
+public void setCurtailRefID(Long newCurtailRefID) {
 	curtailRefID = newCurtailRefID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (4/5/2001 10:08:06 AM)
- */
-public void setCustomerPDL( Double value )
-{
-	setKwCapacity( value );
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/3/2001 1:46:12 PM)
- * @param newCustTimeZone java.lang.String
- */
-public void setCustTimeZone(java.lang.String newCustTimeZone) {
-	custTimeZone = newCustTimeZone;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/11/2001 2:33:32 PM)
@@ -226,11 +197,5 @@ public void setRequireAck(java.lang.Boolean newRequireAck) {
 public void setUserIDname(java.lang.String newUserIDname) {
 	userIDname = newUserIDname;
 }
-/**
- * Creation date: (6/3/2001 2:27:44 PM)
- * @return java.lang.String
- */
-public String toString() {
-	return getYukonName();
-}
+
 }

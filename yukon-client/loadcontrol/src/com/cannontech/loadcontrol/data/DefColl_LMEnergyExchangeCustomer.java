@@ -10,7 +10,7 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefColl_LMEnergyExchangeCustomer implements com.roguewave.vsj.DefineCollectable 
+public class DefColl_LMEnergyExchangeCustomer extends DefColl_LMCICustomerBase
 {
 	//The roguewave class id
 	private static int CTILMENERGYEXCHANGECUSTOMER_ID = 615;	
@@ -41,7 +41,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMEnergyExchangeCustomer)x).getYukonID().intValue() - ((LMEnergyExchangeCustomer)y).getYukonID().intValue() );
+			return (int) (((LMEnergyExchangeCustomer)x).getCustomerID().longValue() - ((LMEnergyExchangeCustomer)y).getCustomerID().longValue() );
 		}
 	};
 }
@@ -85,21 +85,11 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
+	super.restoreGuts(obj,vstr,polystr);
+	
 	LMEnergyExchangeCustomer cust = (LMEnergyExchangeCustomer) obj;
-
-	cust.setYukonID( new Integer((int)vstr.extractUnsignedInt()) );
-	cust.setYukonCategory( (String) vstr.restoreObject(SimpleMappings.CString) );
-	cust.setYukonClass( (String) vstr.restoreObject(SimpleMappings.CString) );
-	cust.setYukonName( (String) vstr.restoreObject(SimpleMappings.CString) );
-	cust.setYukonType( new Integer((int)vstr.extractUnsignedInt()) );
-	cust.setYukonDescription( (String) vstr.restoreObject(SimpleMappings.CString) );
-	cust.setDisableFlag( (vstr.extractUnsignedInt() > 0 ? Boolean.TRUE : Boolean.FALSE ) );
-	cust.setCustomerOrder( new Integer((int)vstr.extractUnsignedInt()) );
-	cust.setCustomerTimeZone( (String) vstr.restoreObject(SimpleMappings.CString) );
 	cust.setEnergyExchangeCustomerReplies( (Vector) vstr.restoreObject(polystr) );
-		
 }
-
 
  /**
 	* This method will be called by CollectableStreamer to save the guts,
@@ -114,14 +104,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeCustomer cust = (LMEnergyExchangeCustomer) obj;
-	
-	vstr.insertUnsignedLong( cust.getYukonID().longValue() );
-	vstr.saveObject( cust.getYukonName(), SimpleMappings.CString );
-	vstr.saveObject( cust.getYukonDescription(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( ( cust.getDisableFlag().booleanValue() ? 1 : 0 ) );
-	vstr.insertUnsignedLong( cust.getCustomerOrder().longValue() );
-	vstr.saveObject( cust.getCustomerTimeZone(), SimpleMappings.CString );
-	vstr.saveObject( cust.getEnergyExchangeCustomerReplies(), polystr );
+	Exception e = new Exception(this.getClass().getName() + ".saveGuts() should Never be called");
+	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 }
 }

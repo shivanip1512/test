@@ -307,7 +307,7 @@ public LMProgramEnergyExchange[] getCustomerEnergyExchangePrograms(long custID)
 			while( cIter.hasNext())
 			{
 				LMEnergyExchangeCustomer c = (LMEnergyExchangeCustomer) cIter.next();
-				if( c.getYukonID().longValue() == custID )
+				if( c.getCustomerID().longValue() == custID )
 				{
 					tempProgs.add(p);
 					break;	
@@ -362,7 +362,7 @@ public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(l
 					if( o instanceof LMCurtailCustomer )
 					{
 						LMCurtailCustomer c = (LMCurtailCustomer) o;
-						if( java.util.Arrays.binarySearch(ecCustomers,c.getYukonID().longValue()) >= 0 )
+						if( java.util.Arrays.binarySearch(ecCustomers,c.getCustomerID().longValue()) >= 0 )
 						{
 							tempProgs.add(p);
 							break;
@@ -401,7 +401,7 @@ public synchronized LMProgramEnergyExchange[] getEnergyCompanyEnergyExchangeProg
 				{
 					LMEnergyExchangeCustomer c = (LMEnergyExchangeCustomer) cIter.next();
 
-					if( java.util.Arrays.binarySearch( ecCustomers, c.getYukonID().longValue() ) >= 0 )
+					if( java.util.Arrays.binarySearch( ecCustomers, c.getCustomerID().longValue() ) >= 0 )
 					{
 						tempProgs.add(p);
 						break;	
