@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/06/27 19:25:25 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/07/25 19:12:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1072,9 +1072,16 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                     }
                     else  // This is the good state;
                     {
-                        if(xfer.getInBuffer()[0] == CHAR_RS)
+                        if(!_inStr.contains("<ACK>"))
                         {
-                            status = ErrorPageRS;
+                            if(_inStr.contains("<RS>"))
+                            {
+                                status = ErrorPageRS;
+                            }
+                            else if(_inStr.contains("<NAK>"))
+                            {
+                                status = ErrorPageNAK;
+                            }
                         }
 
                         setCurrentState( StateScanComplete );
