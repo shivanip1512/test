@@ -121,7 +121,7 @@ public static final java.util.Vector getAllSeasonDates(Integer scheduleID, java.
 		+ SETTER_COLUMNS[5] +
 		" FROM " + TABLE_NAME +
 		" WHERE " + CONSTRAINT_COLUMNS[0] + 
-		"=? ORDER BY " + SETTER_COLUMNS[0];
+		"=? ORDER BY " + SETTER_COLUMNS[2];
 
 	try
 	{		
