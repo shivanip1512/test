@@ -223,7 +223,7 @@ public class ReportFactory
 		factory.setDynamicHeight(Boolean.TRUE);
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
-		factory.setNullString("<null>");
+		factory.setNullString("  ---  ");
 		factory.setName(name + NAME_GROUP);
 		factory.setFieldname(name);
 
@@ -237,7 +237,7 @@ public class ReportFactory
 		factory.setDynamicHeight(Boolean.TRUE);
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-		factory.setNullString("<null>");
+		factory.setNullString("  ---  ");
 		factory.setBold(new Boolean(true));
 		factory.setName(name + NAME_GROUP_ELEMENT);
 		factory.setFieldname(name);
