@@ -54,6 +54,11 @@
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
 		userLogin = accountInfo.getStarsUser();
 		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+		
+		TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
+		datePart.setTimeZone(tz);
+		dateFormat.setTimeZone(tz);
+		histDateFormat.setTimeZone(tz);
 	}
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);

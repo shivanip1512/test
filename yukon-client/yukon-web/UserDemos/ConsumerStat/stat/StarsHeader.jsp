@@ -21,11 +21,6 @@
 	
     String dbAlias = user.getDatabaseAlias();	
 	
-	TimeZone tz = ServletUtils.getTimeZone( user.getStarsCustomerBase().getTimeZone() );
-	datePart.setTimeZone(tz);
-	dateFormat.setTimeZone(tz);
-	histDateFormat.setTimeZone(tz);
-	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
     StreetAddress propAddr = null;
@@ -50,6 +45,11 @@
 		thermoSettings = accountInfo.getStarsThermostatSettings();
 		dftThermoSettings = accountInfo.getStarsDefaultThermostatSettings();
 		categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+		
+		TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
+		datePart.setTimeZone(tz);
+		dateFormat.setTimeZone(tz);
+		histDateFormat.setTimeZone(tz);
 	}
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
