@@ -4,6 +4,11 @@ package com.cannontech.common.gui.util;
  * This type was created in VisualAge.
  */
 import javax.swing.JList;
+import com.cannontech.common.util.CtiUtilities;
+import javax.swing.AbstractAction;
+import java.awt.event.KeyEvent;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
 
 public class AddRemovePanel extends javax.swing.JPanel implements com.cannontech.common.gui.dnd.DragAndDropListener, java.awt.event.ActionListener, java.awt.event.MouseListener, java.awt.event.MouseMotionListener, javax.swing.event.ListSelectionListener {
 	private javax.swing.JButton ivjAddButton = null;
@@ -20,6 +25,8 @@ public class AddRemovePanel extends javax.swing.JPanel implements com.cannontech
 	public static final int COPY_MODE = 2;
 	private int mode = TRANSFER_MODE;
 	protected transient com.cannontech.common.gui.util.AddRemovePanelListener fieldAddRemovePanelListenerEventMulticaster = null;
+	private static OkCancelDialog dialog = null;
+	private static final TreeFindPanel FND_PANEL = new TreeFindPanel();
 
 class IvjEventHandler implements java.awt.event.ActionListener, java.awt.event.MouseListener, java.awt.event.MouseMotionListener, javax.swing.event.ListSelectionListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -622,6 +629,8 @@ private javax.swing.JList getLeftList() {
 			ivjLeftList.setName("LeftList");
 			ivjLeftList.setBounds(0, 0, 160, 120);
 			// user code begin {1}
+			ivjLeftList.setToolTipText("Alt-S will search.");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -702,7 +711,7 @@ private com.cannontech.common.gui.dnd.DragAndDropJlist getRightList() {
 			ivjRightList.setBounds(0, 0, 160, 120);
 			// user code begin {1}
 
-			ivjRightList.setToolTipText("Use click-and-drag to reorder the elements in the list.");
+			ivjRightList.setToolTipText("Use click-and-drag to reorder the elements in the list.  Alt-S will search.");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -734,7 +743,7 @@ private javax.swing.JLabel getRightListLabel() {
 			ivjRightListLabel.setText("Assigned:");
 			// user code begin {1}
 
-			ivjRightListLabel.setToolTipText("Use click-and-drag to reorder the elements in the list.");
+			ivjRightListLabel.setToolTipText("Use click-and-drag to reorder the elements in the list.  Alt-S will search.");
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -767,6 +776,133 @@ private void handleException(Throwable exception) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
+	dialog = new OkCancelDialog(
+		CtiUtilities.getParentFrame(this),
+		"Search",
+		true, FND_PANEL );
+	
+	final AbstractAction searchActionLeftList = new AbstractAction()
+	{
+		public void actionPerformed(java.awt.event.ActionEvent e)
+		{
+			if( !dialog.isShowing() )
+			{
+				dialog.setSize(250, 120);
+				dialog.setLocationRelativeTo( AddRemovePanel.this );
+				dialog.show();
+		
+				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				{
+					Object value = FND_PANEL.getValue(null);
+					boolean found = false;
+							
+					if( value != null )
+					{
+						int numberOfRows = getLeftList().getModel().getSize();
+						for(int j = 0; j < numberOfRows; j++)
+						{
+							String objectName = getLeftList().getModel().getElementAt(j).toString();
+							if(objectName.compareTo(value.toString()) == 0)
+							{
+								getLeftList().setSelectedIndex(j);
+								getLeftList().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getLeftList().getHeight() * (j+1) - getLeftList().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+							//in case they don't know the full name and just entered a partial
+							if(objectName.indexOf(value.toString()) > -1 && objectName.indexOf(value.toString()) < 2)
+							{
+								getLeftList().setSelectedIndex(j);
+								getLeftList().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getLeftList().getHeight() * (j+1) - getLeftList().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+						}
+							
+						if( !found )
+							javax.swing.JOptionPane.showMessageDialog(
+								AddRemovePanel.this, "Unable to find your selected item", "Item Not Found",
+								javax.swing.JOptionPane.INFORMATION_MESSAGE );
+					}
+				}
+				dialog.setVisible(false);
+			}
+		}
+	};	
+	
+	final AbstractAction searchActionRightList = new AbstractAction()
+	{
+		public void actionPerformed(java.awt.event.ActionEvent e)
+		{
+			if( !dialog.isShowing() )
+			{
+				dialog.setSize(250, 120);
+				dialog.setLocationRelativeTo( AddRemovePanel.this );
+				dialog.show();
+		
+				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				{
+					Object value = FND_PANEL.getValue(null);
+					boolean found = false;
+							
+					if( value != null )
+					{
+						int numberOfRows = getRightList().getModel().getSize();
+						for(int j = 0; j < numberOfRows; j++)
+						{
+							String objectName = getRightList().getModel().getElementAt(j).toString();
+							if(objectName.compareTo(value.toString()) == 0)
+							{
+								getRightList().setSelectedIndex(j);
+								getRightList().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getRightList().getHeight() * (j+1) - getRightList().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+							//in case they don't know the full name and just entered a partial
+							if(objectName.indexOf(value.toString()) > -1 && objectName.indexOf(value.toString()) < 2)
+							{
+								getRightList().setSelectedIndex(j);
+								getRightList().scrollRectToVisible( new java.awt.Rectangle(
+								0,
+								getRightList().getHeight() * (j+1) - getRightList().getHeight(),  //just an estimate that works!!
+								100,
+								100) );	
+								found = true;
+								break;
+							}
+						}
+							
+						if( !found )
+							javax.swing.JOptionPane.showMessageDialog(
+								AddRemovePanel.this, "Unable to find your selected item", "Item Not Found",
+								javax.swing.JOptionPane.INFORMATION_MESSAGE );
+					}
+				}
+				dialog.setVisible(false);
+			}
+		}
+	};
+	
+	//do the secret magic key combo: ALT + S
+	KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK, true);
+	getLeftList().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
+	getLeftList().getActionMap().put("FindAction", searchActionLeftList);
+	getRightList().getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(stroke, "FindAction");
+	getRightList().getActionMap().put("FindAction", searchActionRightList);
+	
+	
 
 	getRightList().addDragAndDropListener(this);
 
