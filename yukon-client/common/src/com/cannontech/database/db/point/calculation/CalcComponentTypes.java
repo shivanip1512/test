@@ -28,6 +28,14 @@ public class CalcComponentTypes
 	public static final String PFACTOR_KW_KQ_FUNCTION = "P-Factor KW/KQ";
 	public static final String PFACTOR_KW_KVA_FUNCTION = "P-Factor KW/KVa";
 	
+	public static final String KVAR_FROM_KWKQ_FUNCTION = "KVar from KW/KQ";
+	public static final String KVA_FROM_KWKVAR_FUNCTION = "KVa from KW/KVar";
+	public static final String KVA_FROM_KWKQ_FUNCTION = "KVa from KW/KQ";
+	public static final String COS_FROM_PQ_FUNCTION = "COS from P/Q";
+	public static final String SQUARED_FUNCTION = "Squared";
+	public static final String SQUARE_ROOT_FUNCTION = "Square Root";
+	public static final String ARCTAN_FUNCTION = "ArcTan";
+   
    
    public static final String LABEL_KVAR = "KVAR";
    
@@ -36,13 +44,21 @@ public class CalcComponentTypes
 	{
 		MIN_FUNCTION,
 		MAX_FUNCTION,
+		ARCTAN_FUNCTION,
 		BASELINE_FUNCTION,
+		COS_FROM_PQ_FUNCTION,
 		DEMAND_AVG15_FUNCTION,
 		DEMAND_AVG30_FUNCTION,
 		DEMAND_AVG60_FUNCTION,
+
+		KVAR_FROM_KWKQ_FUNCTION,
+		KVA_FROM_KWKVAR_FUNCTION,
+		KVA_FROM_KWKQ_FUNCTION,
 		PFACTOR_KW_KVAR_FUNCTION,
       PFACTOR_KW_KQ_FUNCTION,
-      PFACTOR_KW_KVA_FUNCTION
+      PFACTOR_KW_KVA_FUNCTION,
+      SQUARED_FUNCTION,
+      SQUARE_ROOT_FUNCTION
 	};
 
 
