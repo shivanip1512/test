@@ -6,7 +6,7 @@
 						  {"user_lm_control.jsp", "Auto Control"},
 						  {"user_lm_time.jsp", "Time Based"},
 						  {"switch_commands.jsp", "Switch Command"},
-						  {"user_trending.jsp", "Trending"}
+						  {"user_trending.jsp", "Trending"},
 						  {"user_ee_profile.jsp", "Profile"}
 						 };
 	
@@ -84,7 +84,7 @@
   <tr>
     <td height="20">
       <div align="left"><span class="NavHeader">Administration</span><br>
-        <cti:checkRole roleid="<%=Profile.ROLEID%>">
+        <cti:checkRole roleid="<%=AdministratorRole.ROLEID%>">
 		<%= links.get("user_ee.profile.jsp") %><br>
 		</cti:checkRole>
 	  </div>
