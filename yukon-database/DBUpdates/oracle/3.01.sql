@@ -218,6 +218,7 @@ create table DeviceSeries5RTU  (
    DeviceID             NUMBER                           not null,
    TickTime             NUMBER                           not null,
    TransmitOffset       NUMBER                           not null,
+   SaveHistory          CHAR(1)                          not null,   
    PowerValueHighLimit  NUMBER                           not null,
    PowerValueLowLimit   NUMBER                           not null,
    PowerValueMultiplier FLOAT                            not null,
