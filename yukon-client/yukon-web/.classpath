@@ -9,7 +9,6 @@
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
-    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
     <classpathentry kind="lib" path="/third-party/mail.jar"/>
     <classpathentry kind="var" path="TOMCAT_HOME/server/lib/catalina.jar"/>
     <classpathentry kind="var" path="TOMCAT_HOME/server/lib/commons-logging.jar"/>
@@ -34,6 +33,7 @@
     <classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
     <classpathentry kind="src" path="j2src"/>
     <classpathentry kind="var" path="JDK_TOOLS"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
     <classpathentry kind="var" path="TOMCAT_HOME/bin/bootstrap.jar"/>
     <classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
