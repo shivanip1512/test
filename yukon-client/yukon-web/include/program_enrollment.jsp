@@ -309,7 +309,7 @@ function confirmSubmit(form) {
                         <table width="100%" border="0" cellpadding="0">
 <% if (savingsIconExists) { %>
                           <tr> 
-                            <td width="10%"><img src="<%= request.getContextPath() %>./Images/Icons/$$Sm.gif" ></td>
+                            <td width="10%"><img src="<%= request.getContextPath() %>/Images/Icons/$$Sm.gif" ></td>
                             <td width="90%" class="TableCell">Savings: More dollar 
                               signs means more savings!</td>
                           </tr>
