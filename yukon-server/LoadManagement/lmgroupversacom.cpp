@@ -48,167 +48,6 @@ CtiLMGroupVersacom::~CtiLMGroupVersacom()
 {
 }
 
-/*---------------------------------------------------------------------------
-    getUtilityAddress
-
-    Returns the tility address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupVersacom::getUtilityAddress() const
-{
-
-    return _utilityaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getSectionAddress
-
-    Returns the section address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupVersacom::getSectionAddress() const
-{
-
-    return _sectionaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getClassAddress
-
-    Returns the class address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupVersacom::getClassAddress() const
-{
-
-    return _classaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getDivisionAddress
-
-    Returns the division address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupVersacom::getDivisionAddress() const
-{
-
-    return _divisionaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getAddressUsage
-
-    Returns the address usage of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupVersacom::getAddressUsage() const
-{
-
-    return _addressusage;
-}
-
-/*---------------------------------------------------------------------------
-    getRelayUsage
-
-    Returns the relay usage of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupVersacom::getRelayUsage() const
-{
-
-    return _relayusage;
-}
-
-/*---------------------------------------------------------------------------
-    getRouteId
-
-    Returns the route id of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupVersacom::getRouteId() const
-{
-
-    return _routeid;
-}
-
-/*---------------------------------------------------------------------------
-    setUtilityAddress
-
-    Sets the utility address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setUtilityAddress(ULONG utiladd)
-{
-
-    _utilityaddress = utiladd;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setSectionAddress
-
-    Sets the section address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setSectionAddress(ULONG sectadd)
-{
-
-    _sectionaddress = sectadd;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setClassAddress
-
-    Sets the class address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setClassAddress(ULONG classadd)
-{
-
-    _classaddress = classadd;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setDivisionAddress
-
-    Sets the division address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setDivisionAddress(ULONG divadd)
-{
-
-    _divisionaddress = divadd;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setAddressUsage
-
-    Sets the address usage of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setAddressUsage(const RWCString& adduse)
-{
-
-    _addressusage = adduse;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setRelayUsage
-
-    Sets the relay usage of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setRelayUsage(const RWCString& relayuse)
-{
-
-    _relayusage = relayuse;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setRouteId
-
-    Sets the route id address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupVersacom& CtiLMGroupVersacom::setRouteId(ULONG rteid)
-{
-
-    _routeid = rteid;
-    return *this;
-}
-
 
 /*-------------------------------------------------------------------------
     createTimeRefreshRequestMsg
@@ -301,18 +140,7 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(ULONG offTime, UL
 --------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::restoreGuts(RWvistream& istrm)
 {
-
-
-
     CtiLMGroupBase::restoreGuts( istrm );
-
-    istrm >> _utilityaddress
-          >> _sectionaddress
-          >> _classaddress
-          >> _divisionaddress
-          >> _addressusage
-          >> _relayusage
-          >> _routeid;
 }
 
 /*---------------------------------------------------------------------------
@@ -322,19 +150,7 @@ void CtiLMGroupVersacom::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::saveGuts(RWvostream& ostrm ) const  
 {
-
-
-        
     CtiLMGroupBase::saveGuts( ostrm );
-
-    ostrm << _utilityaddress
-          << _sectionaddress
-          << _classaddress
-          << _divisionaddress
-          << _addressusage
-          << _relayusage
-          << _routeid;
-
     return;
 }
 
@@ -343,18 +159,9 @@ void CtiLMGroupVersacom::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupVersacom& CtiLMGroupVersacom::operator=(const CtiLMGroupVersacom& right)
 {
-
-
     if( this != &right )
     {
         CtiLMGroupBase::operator=(right);
-        _utilityaddress = right._utilityaddress;
-        _sectionaddress = right._sectionaddress;
-        _classaddress = right._classaddress;
-        _divisionaddress = right._divisionaddress;
-        _addressusage = right._addressusage;
-        _relayusage = right._relayusage;
-        _routeid = right._routeid;
     }
 
     return *this;
@@ -395,27 +202,6 @@ CtiLMGroupBase* CtiLMGroupVersacom::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupVersacom::restore(RWDBReader& rdr)
 {
-
-
     CtiLMGroupBase::restore(rdr);
-}
-
-/*---------------------------------------------------------------------------
-    restoreVersacomSpecificDatabaseEntries
-    
-    Restores the database entries for a versacom group that are not contained
-    in the base table.
----------------------------------------------------------------------------*/
-void CtiLMGroupVersacom::restoreVersacomSpecificDatabaseEntries(RWDBReader& rdr)
-{
-
-
-    rdr["utilityaddress"] >> _utilityaddress;
-    rdr["sectionaddress"] >> _sectionaddress;
-    rdr["classaddress"] >> _classaddress;
-    rdr["divisionaddress"] >> _divisionaddress;
-    rdr["addressusage"] >> _addressusage;
-    rdr["relayusage"] >> _relayusage;
-    rdr["routeid"] >> _routeid;
 }
 

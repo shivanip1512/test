@@ -47,122 +47,6 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
 {
 }
 
-/*---------------------------------------------------------------------------
-    getGoldAddress
-
-    Returns the gold address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupEmetcon::getGoldAddress() const
-{
-
-    return _goldaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getSilverAddress
-
-    Returns the silver address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupEmetcon::getSilverAddress() const
-{
-
-    return _silveraddress;
-}
-
-/*---------------------------------------------------------------------------
-    getAddressUsage
-
-    Returns the address usage of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupEmetcon::getAddressUsage() const
-{
-
-    return _addressusage;
-}
-
-/*---------------------------------------------------------------------------
-    getRelayUsage
-
-    Returns the relay usage of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupEmetcon::getRelayUsage() const
-{
-
-    return _relayusage;
-}
-
-/*---------------------------------------------------------------------------
-    getRouteId
-
-    Returns the route id of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupEmetcon::getRouteId() const
-{
-
-    return _routeid;
-}
-
-/*---------------------------------------------------------------------------
-    setGoldAddress
-
-    Sets the gold address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupEmetcon& CtiLMGroupEmetcon::setGoldAddress(ULONG goldadd)
-{
-
-    _goldaddress = goldadd;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setSilverAddress
-
-    Sets the silver address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupEmetcon& CtiLMGroupEmetcon::setSilverAddress(ULONG silveradd)
-{
-
-    _silveraddress = silveradd;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setAddressUsage
-
-    Sets the address usage of the group
----------------------------------------------------------------------------*/
-CtiLMGroupEmetcon& CtiLMGroupEmetcon::setAddressUsage(const RWCString& adduse)
-{
-
-    _addressusage = adduse;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setRelayUsage
-
-    Sets the relay usage of the group
----------------------------------------------------------------------------*/
-CtiLMGroupEmetcon& CtiLMGroupEmetcon::setRelayUsage(const RWCString& relayuse)
-{
-
-    _relayusage = relayuse;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setRouteId
-
-    Sets the route id of the group
----------------------------------------------------------------------------*/
-CtiLMGroupEmetcon& CtiLMGroupEmetcon::setRouteId(ULONG rteid)
-{
-
-    _routeid = rteid;
-    return *this;
-}
-
-
 /*-------------------------------------------------------------------------
     createTimeRefreshRequestMsg
 
@@ -282,16 +166,7 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, UL
 --------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
 {
-
-
-
     CtiLMGroupBase::restoreGuts( istrm );
-
-    istrm >> _goldaddress
-          >> _silveraddress
-          >> _addressusage
-          >> _relayusage
-          >> _routeid;
 }
 
 /*---------------------------------------------------------------------------
@@ -301,17 +176,7 @@ void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const  
 {
-
-
-        
     CtiLMGroupBase::saveGuts( ostrm );
-
-    ostrm << _goldaddress
-          << _silveraddress
-          << _addressusage
-          << _relayusage
-          << _routeid;
-
     return;
 }
 
@@ -320,16 +185,9 @@ void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupEmetcon& CtiLMGroupEmetcon::operator=(const CtiLMGroupEmetcon& right)
 {
-
-
     if( this != &right )
     {
         CtiLMGroupBase::operator=(right);
-        _goldaddress = right._goldaddress;
-        _silveraddress = right._silveraddress;
-        _addressusage = right._addressusage;
-        _relayusage = right._relayusage;
-        _routeid = right._routeid;
         _refreshsent = right._refreshsent;
     }
 
@@ -371,26 +229,7 @@ CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMGroupEmetcon::restore(RWDBReader& rdr)
 {
-
-
     CtiLMGroupBase::restore(rdr);
-}
-
-/*---------------------------------------------------------------------------
-    restoreEmetconSpecificDatabaseEntries
-    
-    Restores the database entries for a emetcon group that are not contained
-    in the base table.
----------------------------------------------------------------------------*/
-void CtiLMGroupEmetcon::restoreEmetconSpecificDatabaseEntries(RWDBReader& rdr)
-{
-
-
-    rdr["goldaddress"] >> _goldaddress;
-    rdr["silveraddress"] >> _silveraddress;
-    rdr["addressusage"] >> _addressusage;
-    rdr["relayusage"] >> _relayusage;
-    rdr["routeid"] >> _routeid;
 
     _refreshsent = FALSE;
 }

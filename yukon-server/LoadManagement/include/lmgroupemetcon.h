@@ -37,20 +37,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
 
     virtual ~CtiLMGroupEmetcon();
     
-    ULONG getGoldAddress() const;
-    ULONG getSilverAddress() const;
-    const RWCString& getAddressUsage() const;
-    const RWCString& getRelayUsage() const;
-    ULONG getRouteId() const;
-
-    CtiLMGroupEmetcon& setGoldAddress(ULONG goldadd);
-    CtiLMGroupEmetcon& setSilverAddress(ULONG silveradd);
-    CtiLMGroupEmetcon& setAddressUsage(const RWCString& adduse);
-    CtiLMGroupEmetcon& setRelayUsage(const RWCString& relayuse);
-    CtiLMGroupEmetcon& setRouteId(ULONG rteid);
-
-    void restoreEmetconSpecificDatabaseEntries(RWDBReader& rdr);
-
     virtual CtiLMGroupBase* replicate() const;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const;
     virtual CtiRequestMsg* createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const;
@@ -72,15 +58,8 @@ RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
 
 private:
 
-    ULONG _goldaddress;
-    ULONG _silveraddress;
-    RWCString _addressusage;
-    RWCString _relayusage;
-    ULONG _routeid;
-
     BOOL _refreshsent;
 
     void restore(RWDBReader& rdr);
 };
 #endif
-
