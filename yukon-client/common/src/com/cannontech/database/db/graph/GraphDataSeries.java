@@ -17,6 +17,8 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	private static final String PEAK_TYPE_STRING = "Peak";
 	private static final String YESTERDAY_TYPE_STRING = "Yesterday Only";
 	
+	public static final String DATE_STRING = "Specific Date";
+	public static final String DATE_TYPE_STRING = "mm/dd/yy";
 	public static final String THRESHOLD_TYPE_STRING = "Threshold";
 	public static final String USAGE_TYPE_STRING = "Usage";
 	public static final String BASIC_GRAPH_TYPE_STRING = "Graph";
@@ -31,13 +33,15 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	public static final int BASIC_TYPE = 0x0008;	//interval/normal point readings
 	public static final int PEAK_TYPE = 0x0010;	//actual peak day data used
 	public static final int YESTERDAY_TYPE = 0x0020;	//yesterday data used
-	public static final int THRESHOLD_TYPE = 0x0040;	//YESTERDAY + GRAPH
+	public static final int THRESHOLD_TYPE = 0x0040;	//
+	public static final int DATE_TYPE = 0x0080;		// 
 	
 	//COMBINATION DATA SERIES TYPES
 	public static final int BASIC_GRAPH_TYPE = 0x0009; //BASIC + GRAPH
 	public static final int USAGE_GRAPH_TYPE = 0x0005;	//USAGE + GRAPH
 	public static final int PEAK_GRAPH_TYPE = 0x0011;	//PEAK + GRAPH
 	public static final int YESTERDAY_GRAPH_TYPE = 0x0021;	//YESTERDAY + GRAPH
+	public static final int DATE_GRAPH_TYPE = 0x0081;	//DATE + GRAPH
 		
 	//VALID TYPES FOR GDS TABLE	
 	public static String[] validTypeStrings = 
@@ -51,7 +55,9 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 		USAGE_GRAPH_TYPE_STRING,
 		PEAK_GRAPH_TYPE_STRING,
 		YESTERDAY_GRAPH_TYPE_STRING, 
-		THRESHOLD_TYPE_STRING
+		THRESHOLD_TYPE_STRING,
+		DATE_STRING,
+		DATE_TYPE_STRING
 	};	
 	public static int[] validTypeInts =
 	{
@@ -64,7 +70,9 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 		USAGE_GRAPH_TYPE,
 		PEAK_GRAPH_TYPE,
 		YESTERDAY_GRAPH_TYPE,
-		THRESHOLD_TYPE
+		THRESHOLD_TYPE,
+		DATE_TYPE,
+		DATE_GRAPH_TYPE
 	}; 	
 	
 	private java.lang.Integer graphDataSeriesID = null;
@@ -75,7 +83,7 @@ public class GraphDataSeries extends com.cannontech.database.db.DBPersistent
 	private java.lang.Character axis = new Character('L');
 	private java.lang.Integer color = null;
 	private Double multiplier = new Double(1.0);
-	
+	private Double moreData = new Double(0.0);
 	public static final String tableName = "GraphDataSeries";
 	
 	//These come from the device and point unit tables
@@ -90,7 +98,12 @@ public static int getTypeInt(String type)
 		if( validTypeStrings[i].equalsIgnoreCase(type) )
 			return validTypeInts[i];
 	}
-	// TYPE NOT FOUND, default to Graph
+//	TYPE FOUND MAY BE OF A DATE.  AN ACTUAL DATE OR THE DATE FORMAT MAYBE FOUND INSTEAD
+	if( com.cannontech.util.ServletUtil.parseDateStringLiberally(type) != null
+		||  type.equalsIgnoreCase("mm/dd/yy"))
+		return DATE_GRAPH_TYPE;
+		
+//	TYPE NOT FOUND, default to Graph		
 	return BASIC_GRAPH_TYPE;
 }
 public static String getType(int type)
@@ -104,6 +117,7 @@ public static String getType(int type)
 		if( validTypeInts[i] == type )
 			return validTypeStrings[i];
 	}
+	
 	// TYPE NOT FOUND, default to Graph
 	return BASIC_GRAPH_TYPE_STRING;
 }
@@ -158,6 +172,14 @@ public static boolean isThresholdType(int type)
 	return false;
 }
 
+public static boolean isDateType(int type)
+{
+	if((type & DATE_TYPE) == DATE_TYPE)
+		return true;
+
+	return false;
+}
+
 /*
 public static boolean isBasicQueryType(int type)
 {
@@ -193,7 +215,8 @@ public void add() throws java.sql.SQLException
 			getAxis(), 
 			getColor(),
 			getType(),
-			getMultiplier()
+			getMultiplier(),
+			getMoreData()
 		};
 		
 		add( tableName, addValues );
@@ -257,7 +280,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 //	String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, pu.UOMID FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p, POINTUNIT pu WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID AND pu.PointID = p.POINTID ORDER BY p.POINTOFFSET";
 	//Remove PointUnit table in order to get Status points visible.  Status points have no pointunit.
 
-		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
+		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME, gds.MULTIPLIER, gds.MOREDATA FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";
 //		String sqlString = "SELECT gds.GRAPHDATASERIESID, gds.TYPE, gds.POINTID, gds.LABEL, gds.AXIS, gds.COLOR, pao.PAONAME FROM GRAPHDATASERIES gds, YUKONPAOBJECT pao, POINT p WHERE gds.GRAPHDEFINITIONID = " + graphDefinitionID.toString() + " AND p.POINTID = GDS.POINTID AND pao.PAOBJECTID = p.PAOBJECTID ORDER BY p.POINTOFFSET";		
 
 	com.cannontech.database.SqlStatement sql = new com.cannontech.database.SqlStatement(sqlString, databaseAlias);
@@ -286,6 +309,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		java.math.BigDecimal color = (java.math.BigDecimal) sql.getRow(i)[5];
 		String deviceName = (String) sql.getRow(i)[6];
 		Number mult = (Number)sql.getRow(i)[7];
+		Number moreData = (Number)sql.getRow(i)[8];
 //		java.math.BigDecimal mult = (java.math.BigDecimal)sql.getRow(i)[7];
 //		java.math.BigDecimal uomid = (java.math.BigDecimal) sql.getRow(i)[7];
 	
@@ -298,6 +322,7 @@ public static GraphDataSeries[] getAllGraphDataSeries(Integer graphDefinitionID,
 		dataSeries.setColor( new Integer( color.intValue() ) );
 		dataSeries.setDeviceName(deviceName);
 		dataSeries.setMultiplier(new Double(mult.doubleValue()));
+		dataSeries.setMoreData(new Double(moreData.doubleValue()));
 //		dataSeries.setUoMId(new Integer (uomid.intValue()) );
 			
 		temp.addElement( dataSeries );
@@ -490,7 +515,8 @@ public void retrieve() throws java.sql.SQLException
 		"Axis", 
 		"Color",
 		"Type",
-		"Multiplier"
+		"Multiplier",
+		"MoreData"
 	};
 	
 	String[] constraintColumns = {"GraphDataSeriesID"};
@@ -508,6 +534,7 @@ public void retrieve() throws java.sql.SQLException
 //		setType( (String) results[5] );
 		setType( (Integer) results[5] );
 		setMultiplier((Double)results[6]);
+		setMoreData((Double)results[7]);
 	}
 }
 /**
@@ -615,7 +642,8 @@ public void update() throws java.sql.SQLException
 		"Axis", 
 		"Color",
 		"Type",
-		"Multiplier"
+		"Multiplier",
+		"MoreData"
 	};
 	
 	Object[] setValues = 
@@ -626,7 +654,8 @@ public void update() throws java.sql.SQLException
 		getAxis(), 
 		getColor(),
 		getType(),
-		getMultiplier()	
+		getMultiplier(),
+		getMoreData()	
 	};
 
 	String[] constraintColumns = { "GraphDataSeriesID" };
@@ -634,4 +663,29 @@ public void update() throws java.sql.SQLException
 
 	update( tableName, setColumns, setValues, constraintColumns, constraintValues );
 }
+	/**
+	 * @return
+	 */
+	public Double getMoreData()
+	{
+		return moreData;
+	}
+	/**
+	 * @param object
+	 */
+	public void setMoreData(Double object)
+	{
+		moreData = object;
+	}
+
+	public java.util.Date getSpecificDate()
+	{
+		java.util.Date date = null;
+		if( isDateType(getType().intValue()))
+		{
+			long ts = getMoreData().longValue();
+			date = new java.util.Date(ts);
+		}
+		return date;
+	}
 }
