@@ -95,15 +95,12 @@ public static boolean deleteAllBaselines(Integer blineID, java.sql.Connection co
 
 	return true;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/24/2003 1:52:15 PM)
- * @param baselineID java.lang.Integer
- * @param dbAlias java.lang.String
- */
-public static final java.util.Vector getAllBaselines(Integer baseID, java.sql.Connection conn)
+   
+   
+/*
+public final java.util.Vector getAllBaselines(java.sql.Connection conn)
 {
-	java.util.Vector returnVector = new java.util.Vector(5);
+	java.util.Vector returnVector = new java.util.Vector();
 	Integer baselineID = null;
 	String 	baselineName = null;
 	Integer percentWindow = null;
@@ -115,15 +112,15 @@ public static final java.util.Vector getAllBaselines(Integer baseID, java.sql.Co
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = "SELECT " + SETTER_COLUMNS[1] +"," 
+	String sql = "SELECT " + SETTER_COLUMNS[0] +"," 
+		+ SETTER_COLUMNS[1] + ","
 		+ SETTER_COLUMNS[2] + "," 
 		+ SETTER_COLUMNS[3] + "," 
 		+ SETTER_COLUMNS[4] + ","
 		+ SETTER_COLUMNS[5] + ","
 		+ SETTER_COLUMNS[6] +
 		" FROM " + TABLE_NAME +
-		" WHERE " + CONSTRAINT_COLUMNS[0] + 
-		"=? ORDER BY " + SETTER_COLUMNS[0];
+		" ORDER BY " + SETTER_COLUMNS[0];
 
 	try
 	{		
@@ -134,13 +131,12 @@ public static final java.util.Vector getAllBaselines(Integer baseID, java.sql.Co
 		else
 		{
 			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setInt( 1, baseID.intValue() );
 			
 			rset = pstmt.executeQuery();
 	
 			while( rset.next() )
 			{
-				baselineID = baseID;
+				baselineID = new Integer( rset.getInt(SETTER_COLUMNS[0]) );
 				baselineName = rset.getString(SETTER_COLUMNS[1]);
 				percentWindow = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
 				daysUsed = new Integer(rset.getInt(SETTER_COLUMNS[3]));
@@ -178,12 +174,22 @@ public static final java.util.Vector getAllBaselines(Integer baseID, java.sql.Co
 	return returnVector;
 }
 
+public java.util.Vector getAllBaselines()
+{
+	java.sql.Connection conn = null;
+	
+	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+
+	return getAllBaselines(conn);
+	 
+	
+}
+*/
 public static synchronized Integer getNextBaselineID( java.sql.Connection conn )
 	{
 		if( conn == null )
 			throw new IllegalStateException("Database connection should not be null.");
 	
-		
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
 		

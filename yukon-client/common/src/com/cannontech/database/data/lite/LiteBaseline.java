@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.db.baseline.Baseline;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 11:08:47 AM)
@@ -110,5 +112,73 @@ public void setBaselineName( String name )
 public String toString() 
 {
 	return getBaselineName();
+}
+
+public final java.util.Vector getAllBaselines(java.sql.Connection conn)
+{
+	java.util.Vector returnVector = new java.util.Vector();
+	Integer baselineID = null;
+	String 	baselineName = null;
+	
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	
+	String sql = "SELECT baselineID, baselineName FROM " +
+	com.cannontech.database.db.baseline.Baseline.TABLE_NAME +
+		" ORDER BY baselineID";
+
+	try
+	{		
+		if( conn == null )
+		{
+			throw new IllegalStateException("Database connection should not be (null).");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+						
+			rset = pstmt.executeQuery();
+	
+			while( rset.next() )
+			{
+				baselineID = new Integer( rset.getInt("baselineID") );
+				baselineName = rset.getString("baselineName");
+				
+				returnVector.addElement( new LiteBaseline(
+						baselineID.intValue(), 
+						baselineName ));				
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+
+	return returnVector;
+}
+
+public java.util.Vector getAllBaselines()
+{
+	java.sql.Connection conn = null;
+	
+	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+
+	return getAllBaselines(conn);
+	 
+	
 }
 }

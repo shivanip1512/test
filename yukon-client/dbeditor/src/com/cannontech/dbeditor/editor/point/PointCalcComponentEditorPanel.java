@@ -248,7 +248,7 @@ public void functionComboBox_ActionPerformed(java.awt.event.ActionEvent actionEv
 
 		for(int i = 0; i < getBasilHolder().size(); i++)
 		{
-			add(getSelectBaselineComboBox(), getBasilHolder().elementAt(i));
+			getSelectBaselineComboBox().addItem(((com.cannontech.database.data.lite.LiteBaseline)getBasilHolder().elementAt(i)).getBaselineName());
 		}
 		getSelectBaselineComboBox().setVisible(true);
 
@@ -1252,12 +1252,11 @@ public void setValue(Object val)
 
 
 
-
 		//fill in the calc components of this point
 		java.util.Vector calcComponents = calcPoint.getCalcComponentVector();
-		/*com.cannontech.database.data.baseline.Baseline temp = new com.cannontech.database.data.baseline.Baseline();
-		basilHolder = temp.getAllBaselines(new Integer(0));
-		*/
+		com.cannontech.database.data.lite.LiteBaseline temp = new com.cannontech.database.data.lite.LiteBaseline();
+		basilHolder = temp.getAllBaselines();
+		
 		String type = null;
 		Object operand = null;
 		LitePoint litePoint = null;
