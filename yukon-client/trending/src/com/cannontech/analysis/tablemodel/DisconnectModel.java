@@ -24,9 +24,10 @@ public class DisconnectModel extends ReportModelBase
 {
 	
 	/** Rawpointhistory.value critera, null results in current disconnect state? */
-	/** valid types are: Current | Open | Closed | History | Current  */
+	/** valid types are:  Disconnected | Connected | History | Current  */
 	private String disconnectType = null;
-
+	private static String disconnectStatus = null;
+	private String title = null;
 	/**
 	 * Constructor class
 	 * @param statType_ DynamicPaoStatistics.StatisticType
@@ -78,8 +79,8 @@ public class DisconnectModel extends ReportModelBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime() ));
+				//pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
+				//pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime() ));
 				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()));
 				com.cannontech.clientutils.CTILogger.info("STOP DATE < " + new java.sql.Timestamp(getStopTime()));
 				rset = pstmt.executeQuery();
@@ -120,11 +121,14 @@ public class DisconnectModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT DMG.COLLECTIONGROUP, PAO.PAOName, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE " +
-				" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH" +
+		StringBuffer sql = new StringBuffer("SELECT DISTINCT DMG.COLLECTIONGROUP, PAO.PAOName, P.POINTNAME, " + 
+		
+			" RPH1.TIMESTAMP, RPH1.VALUE " +
+		
+				" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH1" +
 				" WHERE PAO.PAOBJECTID = DMG.DEVICEID " +
 				" AND PAO.PAOBJECTID = P.PAOBJECTID " +
-				" AND P.POINTID = RPH.POINTID " +
+				" AND P.POINTID = RPH1.POINTID " +
 				" AND P.POINTOFFSET = 1 " +
 				" AND P.POINTTYPE = 'STATUS' ");
 				
@@ -140,10 +144,24 @@ public class DisconnectModel extends ReportModelBase
 		}
 
 		if( getDisconnectType().toString() == "History" )
-			sql.append(" AND RPH.TIMESTAMP > ? AND RPH.TIMESTAMP <= ? ");
-					
+		{
+			sql.append(" AND RPH1.TIMESTAMP > ? AND RPH1.TIMESTAMP <= ? ORDER BY PAO.PAONAME" );
+		}
+		else if (getDisconnectType().toString() != "History")		
+		{
+			if (getDisconnectType().toString() == "Connected")
+			{
+				sql.append(" AND RPH1.VALUE = 1.0 ");
+			}
+			else if (getDisconnectType().toString() == "Disconnected")
+			{
+				sql.append(" AND RPH1.VALUE = 0.0 ");
+			}
+			sql.append(" AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 " + 
+							" WHERE RPH1.POINTID = RPH2.POINTID) " );
+							
+		}
 		
-		sql.append(" ORDER BY PAO.PAOName");
 		return sql;
 		
 	}
@@ -160,8 +178,27 @@ public class DisconnectModel extends ReportModelBase
 			String paoName = rset.getString(2);
 			String pointName = rset.getString(3);					
 			Timestamp timestamp = rset.getTimestamp(4);
-			Float value = new Float(rset.getFloat(5));
-			Disconnect disconnect = new Disconnect(collGrp, paoName, pointName, new java.util.Date(timestamp.getTime()), value);
+			double value = rset.getDouble(5);
+			
+			
+			String valueString = null;
+			if(value == 0)
+				{
+				valueString = "Disconnected";
+				}
+			else if(value == 1)
+				{
+					valueString = "Connected";	
+				}
+			else if(value == 2)
+				{
+					valueString = "Intermediate";	
+				}
+			else if (value == -1)
+				{
+					valueString="Invalid";
+				}
+			Disconnect disconnect = new Disconnect(collGrp, paoName, pointName, new java.util.Date(timestamp.getTime()), valueString);
 
 			getData().add(disconnect);
 		}
@@ -171,19 +208,16 @@ public class DisconnectModel extends ReportModelBase
 		}
 	}
 
-	/**
-	 * Return the statType (DynamicPaoStatistics.statisticType)
-	 * @return String statType
-	 */
+
 	public String getDisconnectType()
 	{
 		return disconnectType;
 	}
 
 	/**
-	 * Set the statType
-	 * Also sets the startTime and stopTime based on the statisticType.
-	 * @param String statType_
+	 * Set the disconnectType
+	 * 
+	 * @param String disconnectType_
 	 */
 	public void setDisconnectType(String disconnectType_)
 	{
@@ -201,4 +235,20 @@ public class DisconnectModel extends ReportModelBase
 		 			(format.format(new java.util.Date(getStopTime()))));
 		 
 	 }
+	/**
+	 * @return
+	 */
+	public static String getDisconnectStatus()
+	{
+		return disconnectStatus;
+	}
+
+	/**
+	 * @param string
+	 */
+	public static void setDisconnectStatus(String string)
+	{
+		disconnectStatus = string;
+	}
+
 }
