@@ -1040,9 +1040,9 @@ private javax.swing.JPanel getGraphTabPanel() {
 			ivjGraphTabPanel.setName("GraphTabPanel");
 			ivjGraphTabPanel.setLayout(new java.awt.BorderLayout());
 			// user code begin {1}
-			com.jrefinery.chart.ChartPanel cPanel = new com.jrefinery.chart.ChartPanel(getFreeChart());
-			cPanel.isVisible();
-			ivjGraphTabPanel.add(cPanel);
+			//com.jrefinery.chart.ChartPanel cPanel = new com.jrefinery.chart.ChartPanel(getChart());
+			//cPanel.isVisible();
+			ivjGraphTabPanel.add(getChart());
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2039,8 +2039,8 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			}
 			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 			getGraph().update();
-			getFreeChart();
-			//getGraph().updateChart();
+			//getFreeChart();
+			getGraph().updateChart();
 			updated = true;
 		}
 			
@@ -2125,8 +2125,8 @@ public void updateCurrentPane()
 		{
 			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);					
 			getGraph().update();
-			getFreeChart();
-			//getGraph().updateChart();
+			//getFreeChart();
+			getGraph().updateChart();
 			updated = true;
 		}
 	}
@@ -2174,8 +2174,8 @@ public void updateCurrentPane()
 			showPopupMessage("Please select a Trend from the List", javax.swing.JOptionPane.WARNING_MESSAGE);
 	}
 
-	//if( updated)
-		//getGraph().setExportArray();
+	if( updated)
+		getGraph().setExportArray();
 	
 	synchronized (com.cannontech.graph.GraphClient.class)
 	{

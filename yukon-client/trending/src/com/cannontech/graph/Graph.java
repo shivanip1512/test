@@ -1401,9 +1401,9 @@ public void update()
 					continue;
 
 				model.setDatabaseAlias(getDatabaseAlias());
-				//model.hitDatabase();
+				model.hitDatabase();
 
-				TestFreeChart.showFreeChart(freeChart, currentGraphDefinition);
+				//TestFreeChart.showFreeChart(freeChart, currentGraphDefinition);
 				//TestFreeChart fChart = new TestFreeChart(currentGraphDefinition);
 				//fChart.setTitle("NEW");
 				//freeChart.getPlot().setDataset(	fChart.getFreeChart().getPlot().getDataset());
