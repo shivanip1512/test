@@ -173,6 +173,11 @@ public final class LiteComparators
 				thisVal = ((LiteCICustomer)o1).getCompanyName();
 				anotherVal = ((LiteCICustomer)o2).getCompanyName();
 			}
+			else if(o1 instanceof LiteEnergyCompany && o2 instanceof LiteEnergyCompany)
+			{
+				thisVal = ((LiteEnergyCompany)o1).getName();
+				anotherVal = ((LiteEnergyCompany)o2).getName();
+			}
 			else if (o1 instanceof LitePoint && o2 instanceof LitePoint)
 			{
 				thisVal = ((LitePoint)o1).getPointName();
@@ -199,39 +204,38 @@ public final class LiteComparators
 					thisVal = ((LiteContact)o1).getContFirstName();
 					anotherVal = ((LiteContact)o2).getContFirstName();
 				}				
-				
 			}
 			else if(o1 instanceof LiteDeviceMeterNumber && o2 instanceof LiteDeviceMeterNumber )
 			{
 				thisVal = ((LiteDeviceMeterNumber)o1).getMeterNumber();
 				anotherVal = ((LiteDeviceMeterNumber)o2).getMeterNumber();
 			}
-			else if(o1 instanceof com.cannontech.database.data.lite.LiteHolidaySchedule && o2 instanceof com.cannontech.database.data.lite.LiteHolidaySchedule)
+			else if(o1 instanceof LiteHolidaySchedule && o2 instanceof LiteHolidaySchedule)
 			{
 				thisVal = ((LiteHolidaySchedule)o1).getHolidayScheduleName();
 				anotherVal = ((LiteHolidaySchedule)o2).getHolidayScheduleName();
 			}
-			else if(o1 instanceof com.cannontech.database.data.lite.LiteSeason && o2 instanceof com.cannontech.database.data.lite.LiteSeason)
+			else if(o1 instanceof LiteSeason && o2 instanceof LiteSeason)
 			{
 				thisVal = ((LiteSeason)o1).getSeasonName();
 				anotherVal = ((LiteSeason)o2).getSeasonName();
 			}
-			else if(o1 instanceof com.cannontech.database.data.lite.LiteBaseline && o2 instanceof com.cannontech.database.data.lite.LiteBaseline)
+			else if(o1 instanceof LiteBaseline && o2 instanceof LiteBaseline)
 			{
 				thisVal = ((LiteBaseline)o1).getBaselineName();
 				anotherVal = ((LiteBaseline)o2).getBaselineName();
 			}
-			else if(o1 instanceof com.cannontech.database.data.lite.LiteConfig && o2 instanceof com.cannontech.database.data.lite.LiteConfig)
+			else if(o1 instanceof LiteConfig && o2 instanceof LiteConfig)
 			{
 				thisVal = ((LiteConfig)o1).getConfigName();
 				anotherVal = ((LiteConfig)o2).getConfigName();
 			}
-			else if(o1 instanceof com.cannontech.database.data.lite.LiteTag && o2 instanceof com.cannontech.database.data.lite.LiteTag)
+			else if(o1 instanceof LiteTag && o2 instanceof LiteTag)
 			{
 				thisVal = ((LiteTag)o1).getTagName();
 				anotherVal = ((LiteTag)o2).getTagName();
 			}
-			else if(o1 instanceof com.cannontech.database.data.lite.LiteLMConstraint && o2 instanceof com.cannontech.database.data.lite.LiteLMConstraint)
+			else if(o1 instanceof LiteLMConstraint && o2 instanceof LiteLMConstraint)
 			{
 				thisVal = ((LiteLMConstraint)o1).getConstraintName();
 				anotherVal = ((LiteLMConstraint)o2).getConstraintName();
