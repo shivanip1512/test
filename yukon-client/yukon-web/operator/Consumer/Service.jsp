@@ -1,7 +1,7 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
 	String orderNumber = "";
-	Integer orderNo = operator.getIncAttribute("NEXT_ORDER_NUMBER");
+	Integer orderNo = user.getIncAttribute("NEXT_ORDER_NUMBER");
 	if (orderNo != null)
 		orderNumber = orderNo.toString();
 %>

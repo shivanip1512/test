@@ -79,7 +79,7 @@ function MM_popupMsg(msg) { //v1.0
 			  <input type="hidden" name="REFERRER" value="/operator/Consumer/OptOut.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">
 <%
-	StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse) operator.getAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS);
+	StarsGetExitInterviewQuestionsResponse questions = (StarsGetExitInterviewQuestionsResponse) user.getAttribute(ServletUtils.ATT_EXIT_INTERVIEW_QUESTIONS);
 	for (int i = 0; i < questions.getStarsExitInterviewQuestionCount(); i++) {
 		StarsExitInterviewQuestion question = questions.getStarsExitInterviewQuestion(i);
 %>

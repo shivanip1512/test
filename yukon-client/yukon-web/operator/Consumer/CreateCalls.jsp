@@ -1,7 +1,7 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
 	String callNumber = "";
-	Integer callNo = operator.getIncAttribute("NEXT_CALL_NUMBER");
+	Integer callNo = user.getIncAttribute("NEXT_CALL_NUMBER");
 	if (callNo != null)
 		callNumber = callNo.toString();
 %>

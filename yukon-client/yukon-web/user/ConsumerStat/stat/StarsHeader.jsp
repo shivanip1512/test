@@ -1,7 +1,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
-<%@ page import="com.cannontech.stars.web.StarsUser" %>
+<%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 
 <%
@@ -10,16 +10,14 @@
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	StarsUser user = null;
+	StarsYukonUser user = null;
 	try {
-		user = (StarsUser) session.getAttribute("USER");
+		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	}
 	catch (IllegalStateException ise) {}
 	if (user == null) {
 		response.sendRedirect("/login.jsp"); return;
 	}
-	
-    String dbAlias = user.getDatabaseAlias();	
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;

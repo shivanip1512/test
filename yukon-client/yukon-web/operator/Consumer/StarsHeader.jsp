@@ -1,6 +1,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
-<%@ page import="com.cannontech.stars.web.StarsOperator" %>
+<%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.graph.model.TrendModelType" %>
 
@@ -10,17 +10,16 @@
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	StarsOperator operator = null;
+	StarsYukonUser user = null;
 	try {
-		operator = (StarsOperator) session.getAttribute("OPERATOR");
+		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	}
 	catch (IllegalStateException ise) {}
-	if (operator == null) {
+	if (user == null) {
 		response.sendRedirect("/login.jsp"); return;
 	}
 	
-    String dbAlias = operator.getDatabaseAlias();	
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
+	Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -38,7 +37,7 @@
 	StarsUser userLogin = null;
 	StarsGetEnrollmentProgramsResponse categories = null;
 	
-	accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+	accountInfo = (StarsCustAccountInformation) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
 		account = accountInfo.getStarsCustomerAccount();
 		propAddr = account.getStreetAddress();
@@ -53,7 +52,7 @@
 		callHist = accountInfo.getStarsCallReportHistory();
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
 		userLogin = accountInfo.getStarsUser();
-		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
+		categories = (StarsGetEnrollmentProgramsResponse) user.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 		
 		TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
 		datePart.setTimeZone(tz);
@@ -67,7 +66,7 @@
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">
 		<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="graphBean" property="viewType" value="<%=TrendModelType.LINE_VIEW%>"/>
-	<jsp:setProperty name="graphBean" property="start" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
+	<jsp:setProperty name="graphBean" property="startStr" value="<%=datePart.format(com.cannontech.util.ServletUtil.getToday())%>"/>
 	<jsp:setProperty name="graphBean" property="tab" value="graph"/>
 	<jsp:setProperty name="graphBean" property="period" value="<%=com.cannontech.util.ServletUtil.historicalPeriods[0]%>"/>
 	<jsp:setProperty name="graphBean" property="gdefid" value="-1"/>	

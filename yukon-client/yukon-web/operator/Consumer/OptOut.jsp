@@ -123,10 +123,10 @@ function confirmSubmit(form) { //v1.0
                   <td class="HeaderCell">Program</td>
                 </tr>
 <%
-	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) operator.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	ServletUtils.ProgramHistory[] progHist = (ServletUtils.ProgramHistory[]) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY);
 	if (progHist == null) {
 		progHist = ServletUtils.createProgramHistory( programs );
-		operator.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_PROGRAM_HISTORY", progHist );
+		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY, progHist);
 	}
 	
 	for (int i = progHist.length - 1; i >= 0; i--) {
