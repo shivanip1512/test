@@ -1881,10 +1881,11 @@ public class ImportManager extends HttpServlet {
 		throws Exception
 	{
 		LiteContact liteContact = energyCompany.getContact( liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo );
-		if (liteContact.getLoginID() == UserUtils.USER_YUKON_ID
+		if ((liteContact.getLoginID() == UserUtils.USER_YUKON_ID ||
+			liteContact.getLoginID() == UserUtils.USER_NONE_ID)
 			&& fields[IDX_USERNAME].trim().length() == 0)
 			return;
-			
+		
 	    StarsUpdateLogin updateLogin = new StarsUpdateLogin();
 	    updateLogin.setUsername( fields[IDX_USERNAME] );
 	    updateLogin.setPassword( fields[IDX_PASSWORD] );
@@ -2854,7 +2855,7 @@ public class ImportManager extends HttpServlet {
 					// Notice: the parsed lines have line# inserted at the beginning
 					Hashtable appIDMap = new Hashtable();
 					
-					for (int i = 0; i < invLines.size(); i++) {
+					for (int i = 0; i < recvrLines.size(); i++) {
 						String[] fields = ((String) invLines.get(i)).split(",");
 						if (fields.length != 5)
 							throw new WebClientException("Invalid format of file '" + invFile.getPath() + "'");
@@ -3265,7 +3266,6 @@ public class ImportManager extends HttpServlet {
 		Hashtable selectionListTable = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 		
 		String listName = req.getParameter("ListName");
-		String newList = req.getParameter("NewList");
 		String[] values = req.getParameterValues("ImportValue");
 		String[] enabled = req.getParameterValues("Enabled");
 		String[] entryIDs = req.getParameterValues("EntryID");
@@ -3289,56 +3289,57 @@ public class ImportManager extends HttpServlet {
 			for (int i = 0; i < assignedValues.size(); i++)
 				valueIDMap.put( assignedValues.get(i), Integer.valueOf(entryIDs[i]) );
 		}
-		else if (Boolean.valueOf(newList).booleanValue()) {
+		else if (entryTexts != null) {
 			java.sql.Connection conn = null;
 			try {
 				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 				
 				if (listName.equals("ServiceCompany")) {
-					// First delete all existing service companies
-					StarsAdmin.deleteAllServiceCompanies( energyCompany, conn );
-					
-					if (entryTexts != null) {
-						for (int i = 0; i < entryTexts.length; i++) {
-							com.cannontech.database.data.stars.report.ServiceCompany company =
-									new com.cannontech.database.data.stars.report.ServiceCompany();
-							com.cannontech.database.db.stars.report.ServiceCompany companyDB = company.getServiceCompany();
-							
-							companyDB.setCompanyName( entryTexts[i] );
-							company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-							company.setDbConnection( conn );
-							company.add();
-							
-							com.cannontech.database.data.customer.Contact contact =
-									new com.cannontech.database.data.customer.Contact();
-							contact.setCustomerContact( company.getPrimaryContact() );
-							LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
-							energyCompany.addContact( liteContact, null );
-							
-							LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
-							energyCompany.addServiceCompany( liteCompany );
-							
-							StarsServiceCompany starsCompany = new StarsServiceCompany();
-							StarsLiteFactory.setStarsServiceCompany( starsCompany, liteCompany, energyCompany );
-							ecSettings.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
-							
-							valueIDMap.put( assignedValues.get(i), companyDB.getCompanyID() );
-						}
+					for (int i = 0; i < entryTexts.length; i++) {
+						com.cannontech.database.data.stars.report.ServiceCompany company =
+								new com.cannontech.database.data.stars.report.ServiceCompany();
+						com.cannontech.database.db.stars.report.ServiceCompany companyDB = company.getServiceCompany();
+						
+						companyDB.setCompanyName( entryTexts[i] );
+						company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+						company.setDbConnection( conn );
+						company.add();
+						
+						com.cannontech.database.data.customer.Contact contact =
+								new com.cannontech.database.data.customer.Contact();
+						contact.setCustomerContact( company.getPrimaryContact() );
+						LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(contact);
+						energyCompany.addContact( liteContact, null );
+						
+						LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
+						energyCompany.addServiceCompany( liteCompany );
+						
+						StarsServiceCompany starsCompany = new StarsServiceCompany();
+						StarsLiteFactory.setStarsServiceCompany( starsCompany, liteCompany, energyCompany );
+						ecSettings.getStarsServiceCompanies().addStarsServiceCompany( starsCompany );
+						
+						valueIDMap.put( assignedValues.get(i), companyDB.getCompanyID() );
 					}
 				}
 				else {
 					YukonSelectionList cList = energyCompany.getYukonSelectionList( listName );
+					ArrayList entries = cList.getYukonListEntries();
 					
-					Object[][] entryData = null;
-					if (entryTexts != null) {
-						entryData = new Object[ entryTexts.length ][];
-						Integer zero = new Integer(0);
-						for (int i = 0; i < entryTexts.length; i++) {
-							entryData[i] = new Object[3];
-							entryData[i][0] = zero;
-							entryData[i][1] = entryTexts[i];
-							entryData[i][2] = zero;
-						}
+					Object[][] entryData = new Object[entries.size() + entryTexts.length][];
+					for (int i = 0; i < entries.size(); i++) {
+						YukonListEntry cEntry = (YukonListEntry) entries.get(i);
+						entryData[i] = new Object[3];
+						entryData[i][0] = new Integer( cEntry.getEntryID() );
+						entryData[i][1] = cEntry.getEntryText();
+						entryData[i][2] = new Integer( cEntry.getYukonDefID() );
+					}
+					
+					Integer zero = new Integer(0);
+					for (int i = 0; i < entryTexts.length; i++) {
+						entryData[entries.size()+i] = new Object[3];
+						entryData[entries.size()+i][0] = zero;
+						entryData[entries.size()+i][1] = entryTexts[i];
+						entryData[entries.size()+i][2] = zero;
 					}
 					
 					StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany, conn );
@@ -3346,9 +3347,14 @@ public class ImportManager extends HttpServlet {
 					StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 					selectionListTable.put( starsList.getListName(), starsList );
 					
-					for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-						int entryID = ((YukonListEntry)cList.getYukonListEntries().get(i)).getEntryID();
-						valueIDMap.put( assignedValues.get(i), new Integer(entryID) );
+					for (int i = 0; i < assignedValues.size(); i++) {
+						for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
+							YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(j);
+							if (cEntry.getEntryText().equals(entryTexts[i]) && cEntry.getYukonDefID() == 0) {
+								valueIDMap.put( assignedValues.get(i), new Integer(cEntry.getEntryID()) );
+								break;
+							}
+						}
 					}
 				}
 			}
