@@ -27,6 +27,7 @@ import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.Graph;
@@ -948,14 +949,19 @@ private Object[][] getAlarmStatesCache()
 		// We want do disclude the EVENT alarmStateId which is 1
 		data = new Object[alarmStates.size()-1][5];
 		long displayNumber = Display.GLOBAL_ALARM_DISPLAY + 1;  // always one after the global display alarm display number
+		int indx = 0;
 
-		for( int i = 0; i < (alarmStates.size() - 1); i++ )
+		for( int i = 0; i < alarmStates.size(); i++ )
 		{
-			data[i][0] = ((com.cannontech.database.data.lite.LiteAlarmCategory)alarmStates.get(i+1)).getCategoryName();
-			data[i][1] = String.valueOf( displayNumber++ );
-			data[i][2] = ((com.cannontech.database.data.lite.LiteAlarmCategory)alarmStates.get(i+1)).getCategoryName();
-			data[i][3] = Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX];
-			data[i][4] = ((com.cannontech.database.data.lite.LiteAlarmCategory)alarmStates.get(i+1)).getCategoryName();
+			LiteAlarmCategory liteAlarm = (LiteAlarmCategory)alarmStates.get(i);
+			if( liteAlarm.getAlarmStateID() == Signal.EVENT_SIGNAL )
+				continue;
+
+			data[indx][0] = liteAlarm.getCategoryName();
+			data[indx][1] = String.valueOf( displayNumber++ );
+			data[indx][2] = liteAlarm.getCategoryName();
+			data[indx][3] = Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX];
+			data[indx++][4] = liteAlarm.getCategoryName();
 		}
 	}
 
@@ -1989,8 +1995,7 @@ public boolean initComboCurrentDisplay()
 			
 			// substitute the data in the alarmState table in for the priority alarms for or displays
 			if( displayNumber > Display.GLOBAL_ALARM_DISPLAY && displayNumber <= Display.LAST_ALARM_DISPLAY )
-				if( alarmIndex < (alarmValues.length-1) )  // make sure we have an alarmState here
-					values[i] = alarmValues[alarmIndex++];   // this is a HACK because the original data in the Display table is not respected.
+				values[i] = alarmValues[alarmIndex++];   // this is a HACK because the original data in the Display table is not respected.
 																		  // I did things this way because the DisplayColumns table has a MANDATORY PARENT constraint with the Display tables.
 																		  // Thus, we couldn't have DisplayCoulmns that did not belong to a display.
 			initDisplays( values, i );
