@@ -13,8 +13,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2002/04/16 15:57:25 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2002/05/28 17:55:22 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -28,18 +28,21 @@ class IM_EX_CTIBASE CtiCounter
 {
 public:
 
-    CtiCounter( )    
+    CtiCounter( )
         { };
 
     void inc( int index );
     void dec( int index );
-    int  get( int index );
+    int  get( int index ) const;
     void reset( int index );
+    void resetAll();
+
+    CtiCounter& operator=(const CtiCounter& aRef);
 
 private:
-    
+
     map< int, int > _counterMap;
-    CtiMutex _counterMapMux;
+    mutable CtiMutex _counterMapMux;
 };
 
 
@@ -57,7 +60,7 @@ public:
         Fail,
         Success
     };
-    
+
     int getTries( void );
     int getSuccesses( void );
     int getFails( void );

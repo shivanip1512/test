@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:     $
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2002/05/21 23:10:42 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2002/05/28 17:55:22 $
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -41,13 +41,13 @@ void CtiCounter::dec( int index )
 
 
 
-int CtiCounter::get( int index )
+int CtiCounter::get( int index ) const
 {
     int retVal;
     CtiLockGuard<CtiMutex> guard(_counterMapMux);
 
     if( _counterMap.find(index) != _counterMap.end() )
-        retVal = _counterMap[index];
+        retVal = (*_counterMap.find(index)).second;       // Use this goofy access to keep the const-ness.
     else
         retVal = 0;
 
@@ -63,6 +63,22 @@ void CtiCounter::reset( int index )
     _counterMap[index] = 0;
 }
 
+void CtiCounter::resetAll()
+{
+    int retVal;
+    CtiLockGuard<CtiMutex> guard(_counterMapMux);
+
+    if(!_counterMap.empty()) _counterMap.clear();
+}
+
+CtiCounter& CtiCounter::operator=(const CtiCounter& aRef)
+{
+    if(this != &aRef)
+    {
+        _counterMap = aRef._counterMap;
+    }
+    return *this;
+}
 
 
 int CtiTXCounter::getTries( void )       {  return get( Try );      };
@@ -78,4 +94,5 @@ void CtiTXCounter::incFail( void )       {  inc( Fail );
 void CtiTXCounter::resetTXCounts( void ) {  reset( Try );
                                             reset( Fail );
                                             reset( Success );  };
+
 
