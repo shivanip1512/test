@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.esub.web.Authenticator;
 import com.cannontech.esub.web.SessionInfo;
@@ -74,14 +75,31 @@ public class AuthFilter implements Filter {
         // Check for a the login field, if set do try to valid them 	
 		String doLogin = hreq.getParameter(FORM_LOGIN);				
         if (doLogin != null) {
-            validateLogin(req, resp, chain);
-            // jump out of this method, shouldn't get here
+        	String target;
+        	SessionInfo info;
+            if((info=validateLogin(req, resp)) != null) {
+            	target  = AuthFuncs.getRoleValue(info.getUser(),"HOME_URL");
+            	CTILogger.info("Authenticated user:  " + info.getUser().getUsername());
+            }
+            else {
+            	target = hreq.getContextPath() + "/" + LOGIN_ERROR_URL;
+            	CTILogger.info("FAILED authentication attempt from: " + hreq.getRemoteAddr());
+            }
+            
+            hres.sendRedirect(target);
+            //shouldn't get here
             return;
         }
         
+        // Check for inline login (only if not logged in)
+        if(!signedOn) {
+        	SessionInfo info = validateLogin(req,resp);
+			if(info != null) {
+				CTILogger.info("authenticated username:  " + info.getUser().getUsername());
+			} //ok if failed, could just be going to login
+        }
+        
         // jump to the resource if signed on
-        // FIXFIXFIX do a check on the target to see if they are allowed
-        // to access this resource!!        
         if (signedOn || 
         	currentURL.equals(hreq.getContextPath() + "/" + LOGIN_FORM_URL)) {
          	chain.doFilter(req,resp);
@@ -104,7 +122,7 @@ public class AuthFilter implements Filter {
 		this.config = null;
 	}
 
-	private void validateLogin(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+	private SessionInfo validateLogin(ServletRequest req, ServletResponse resp) throws IOException, ServletException {
 		// convert to a http servlet request for now
         HttpServletRequest hreq = (HttpServletRequest)req;
         HttpServletResponse hres = (HttpServletResponse)resp;
@@ -113,29 +131,12 @@ public class AuthFilter implements Filter {
         String password = hreq.getParameter(FORM_PASSWORD);
 
 		SessionInfo info = Authenticator.login(username, password);
+		
 		if( info != null ) {
-			//login looks get, set up the session and redirect them 
-			//where they wanted to go
 			hreq.getSession().setAttribute(LOGGED_IN, Boolean.TRUE);
-			hreq.getSession().setAttribute(SessionInfo.SESSION_KEY,info);			
-            //String targetURL = (String)hreq.getSession().getAttribute(ORIGINAL_URL);
-            
-            //if( targetURL == null ) {
-            // 	targetURL = hreq.getRequestURL().toString();             	
-            //}
-            
-            String targetURL = AuthFuncs.getRoleValue(info.getUser(),"HOME_URL");
-            
-			Logger.global.info("redirecting authenticated user to: " + targetURL);
-            hres.sendRedirect(targetURL);
-            return;
+			hreq.getSession().setAttribute(SessionInfo.SESSION_KEY,info);					
 		}
-		else {
-			Logger.global.info("failed login, redirecting user to: " + LOGIN_ERROR_URL);
-			//config.getServletContext().getRequestDispatcher("/" + LOGIN_ERROR_URL).forward(req, resp);
-			hres.sendRedirect(hreq.getContextPath() + "/" + LOGIN_ERROR_URL);
-            return;	
-		}
-	}
 
+		return info;		
+	}
 }
