@@ -96,6 +96,10 @@ public synchronized void service(HttpServletRequest req, HttpServletResponse res
 		if( param != null)
 			localBean.setFormat(param);
 
+		param = req.getParameter("page");
+		if( param != null)
+			localBean.setPage(Integer.parseInt(param));
+				
 		param = req.getParameter("width");
 		param2 = req.getParameter("height");
 		if(param != null && param2 != null) {
