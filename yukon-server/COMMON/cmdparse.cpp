@@ -80,7 +80,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
     RWCTokenizer    tok(CmdStr);
 
 
-    if(!(CmdStr.match(" serial")).isNull())
+    if(CmdStr.contains(" serial"))
     {
         RWCRExpr regexp("serial[= ]+(([0-9]+)|(0x[0-9a-f]+))");
 
@@ -100,7 +100,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
             CmdStr.replace(regexp, "");
         }
     }
-    else if(!(token = CmdStr.match(" address")).isNull())
+    else if(CmdStr.contains(" address"))
     {
         RWCRExpr regexp("address[= ]+[0-9a-f]+");
 
@@ -121,7 +121,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
     }
 
 
-    if(!(CmdStr.match(" select")).isNull())
+    if(CmdStr.contains(" select"))
     {
         RWCRExpr re_name("select[ ]+name[ ]+((\"|')[^\"']+(\"|'))");
         RWCRExpr re_id("select +id +[0-9]+");
@@ -264,7 +264,7 @@ void  CtiCommandParser::doParse(RWCString Cmd)
     resolveProtocolType(CmdStr);
 
 
-    if(!(CmdStr.match(" noqueue")).isNull())
+    if(CmdStr.contains(" noqueue"))
     {
         _cmd["noqueue"] = CtiParseValue("true");
     }
@@ -2443,25 +2443,29 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
      */
     if( isKeyValid("serial") )
     {
-        if(!(token = CmdStr.match("emetcon")).isNull())
+        if(CmdStr.contains("emetcon"))
         {
             _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
         }
-        else if(!(token = CmdStr.match("fp")).isNull())            // Sourcing from CmdStr, which is the entire command string.
+        else if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
         }
-        else if(!(token = CmdStr.match("sa105")).isNull())       // Sourcing from CmdStr, which is the entire command string.
+        else if(CmdStr.contains("sa105"))       // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["type"] = CtiParseValue( "sa105", ProtocolSA105Type );
         }
-        else if(!(token = CmdStr.match("sa205")).isNull())       // Sourcing from CmdStr, which is the entire command string.
+        else if(CmdStr.contains("sa205"))       // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["type"] = CtiParseValue( "sa205", ProtocolSA205Type );
         }
-        else if(!(token = CmdStr.match("sa305")).isNull())       // Sourcing from CmdStr, which is the entire command string.
+        else if(CmdStr.contains("sa305"))       // Sourcing from CmdStr, which is the entire command string.
         {
             _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
+        }
+        else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
+        {
+            _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
         }
         else
         {
@@ -2470,23 +2474,19 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
     }
     else
     {
-#if 0
-        if(!(token = CmdStr.match("ovuv")).isNull() ||
-           !(token = CmdStr.match("prop")).isNull())            // Sourcing from CmdStr, which is the entire command string.
-        {
-            _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
-        }
-#else
         //  check for "emetcon" protocol
-        if(!(token = CmdStr.match("emetcon")).isNull())
+        if(CmdStr.contains("emetcon"))
         {
             _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
+        }
+        else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
+        {
+            _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
         }
         else
         {  //  default to Versacom if nothing found
             _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
         }
-#endif
     }
 }
 
@@ -2607,3 +2607,20 @@ bool CtiCommandParser::isTwoWay() const
 
     return bret;
 }
+
+CtiCommandParser& CtiCommandParser::setValue(const RWCString key, INT val)
+{
+    _cmd[key] = CtiParseValue(val);
+    return *this;
+}
+CtiCommandParser& CtiCommandParser::setValue(const RWCString key, DOUBLE val)
+{
+    _cmd[key] = CtiParseValue(val);
+    return *this;
+}
+CtiCommandParser& CtiCommandParser::setValue(const RWCString key, RWCString val)
+{
+    _cmd[key] = CtiParseValue(val);
+    return *this;
+}
+

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2002/08/06 19:02:00 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2002/10/08 20:14:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@ using namespace std;
 
 #include "desolvers.h"
 #include "dsm2.h"
+#include "expresscom.h"
 #include "rte_xcu.h"
 #include "master.h"
 #include "cmdparse.h"
@@ -40,7 +41,9 @@ using namespace std;
 
 static INT NoQueing = FALSE;
 
-CtiRouteXCU::CtiRouteXCU() {}
+CtiRouteXCU::CtiRouteXCU()
+{
+}
 
 CtiRouteXCU::CtiRouteXCU(const CtiRouteXCU& aRef)
 {
@@ -109,7 +112,11 @@ INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
             // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
             OutMessage->Request.CheckSum = Device->getUniqueIdentifier();
 
-            if(OutMessage->EventCode & VERSACOM)
+            if(parse.isKeyValid("type") && parse.getiValue("type") == ProtocolExpresscomType)
+            {
+                status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(OutMessage->EventCode & VERSACOM)
             {
                 status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
             }
@@ -157,6 +164,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
     INT            status = NORMAL;
     bool           xmore = true;
     RWCString      resultString;
+    RWCString      byteString;
     ULONG          i, j;
     USHORT         Length;
     VSTRUCT        VSt;
@@ -215,6 +223,12 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
                     }
 
                     NewOutMessage->Buffer.TAPSt.Message[i + 1] = 'g';
+
+                    for(i = 0; i < NewOutMessage->OutLength; i++)
+                    {
+                        byteString += (char)NewOutMessage->Buffer.TAPSt.Message[i];
+                    }
+                    byteString += "\n";
 
                     /* Now add it to the collection of outbound messages */
                     outList.insert( NewOutMessage );
@@ -275,7 +289,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
 
     if(Versacom.entries() > 0)
     {
-        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName();
+        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName() + "\n" + byteString;
     }
     else
     {
@@ -511,4 +525,118 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
 
     return status;
 }
+
+INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT            status = NORMAL;
+    bool           xmore = true;
+    RWCString      resultString;
+    RWCString      byteString;
+    ULONG          i, j;
+    USHORT         Length;
+
+    /*
+     * Addressing variables SHALL have been assigned at an earlier level!
+     */
+
+    CtiReturnMsg *retReturn = new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+    OutMessage->DeviceID = Device->getID();
+    OutMessage->Port     = Device->getPortID();
+    OutMessage->Remote   = Device->getAddress();
+    OutMessage->TimeOut  = 2;
+    OutMessage->InLength = -1;
+
+    if(!OutMessage->Retry)  OutMessage->Retry = 2;
+
+    CtiProtocolExpresscom  xcom;
+    xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
+    xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
+
+    OutMessage->EventCode |= ENCODED;               // Make the OM be ignored by porter...
+
+    switch(Device->getType())
+    {
+    case TYPE_WCTP:
+    case TYPE_TAPTERM:
+        {
+            CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)Device;
+
+            OutMessage->OutLength            = xcom.messageSize() * 2 +  2;
+            OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() * 2 +  2;
+
+            /* Build the message */
+            OutMessage->Buffer.TAPSt.Message[0] = xcom.getStartByte();
+
+            for(i = 0; i < xcom.messageSize() * 2; i++)
+            {
+                BYTE curByte = xcom.getByte(i / 2);
+                if(i % 2)
+                {
+                    sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", curByte & 0x0f);
+                }
+                else
+                {
+                    sprintf(&OutMessage->Buffer.TAPSt.Message[i + 1], "%1x", (curByte >> 4) & 0x0f);
+                }
+            }
+            OutMessage->Buffer.TAPSt.Message[i + 1] = xcom.getStopByte();
+
+            for(i = 0; i < OutMessage->OutLength; i++)
+            {
+                byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+            }
+
+
+            /* Now add it to the collection of outbound messages */
+            outList.insert( OutMessage );
+            OutMessage = 0; // It has been used, don't let it be deleted!
+
+
+            break;
+        }
+    default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/Device->getType()/*)*/ << endl;
+            }
+
+            break;
+        }
+    }
+
+    if(xcom.entries() > 0)
+    {
+        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName() + "\n" + byteString;
+    }
+    else
+    {
+        xmore = false;
+        resultString = "Route " + getName() + " did not transmit Expresscom commands";
+
+        RWCString desc, actn;
+
+        desc = "Route: " + getName();
+        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
+
+        vgList.insert(new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+    }
+
+
+    retReturn->setResultString( resultString );
+
+    if(retReturn)
+    {
+        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        retList.insert(retReturn);
+    }
+    else
+    {
+        delete retReturn;
+    }
+
+    return status;
+}
+
 

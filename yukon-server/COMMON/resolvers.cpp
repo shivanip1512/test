@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/10/03 16:04:57 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/10/08 20:14:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -473,6 +473,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "versacom group")
     {
         nRet = TYPE_LMGROUP_VERSACOM;
+    }
+    else if(rwsTemp == "expresscom group")
+    {
+        nRet = TYPE_LMGROUP_EXPRESSCOM;
     }
     else if(rwsTemp == "macro group")
     {
@@ -981,6 +985,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LMGROUP_POINT:
     case TYPE_LMGROUP_RIPPLE:
     case TYPE_LMGROUP_VERSACOM:
+    case TYPE_LMGROUP_EXPRESSCOM:
     case TYPE_MACRO:
         {
             bRet = false;
@@ -1058,24 +1063,14 @@ INT resolveRelayUsage(RWCString str)
 
         RWCString numAsStr;
 
-        for(int i = 0; i < 8; i++)
+        for(int i = 0; i < 10; i++)
         {
-#if 1
             numAsStr = CtiNumStr(i + 1);
 
             if(!str.match(numAsStr).isNull())
             {
                 nRet |= (0x00000001 << i);
             }
-#else
-            if(i < str.mbLength())
-            {
-                if( str(i) != ' ' )
-                {
-                    nRet |= (0x00000001 << i);
-                }
-            }
-#endif
         }
 
         if(nRet == 0)
@@ -1089,44 +1084,43 @@ INT resolveRelayUsage(RWCString str)
     return nRet;
 }
 
-INT resolveAddressUsage(RWCString str)
+INT resolveAddressUsage(RWCString str, int type)
 {
-
     INT nRet = 0;
 
     str.toLower();
-    // 022801 CGP This is stupid... // str = str.strip(RWCString::both);
 
-    #if 1
-    if(!str.match("u").isNull()) nRet |= 0x08;
-    if(!str.match("s").isNull()) nRet |= 0x04;
-    if(!str.match("c").isNull()) nRet |= 0x02;
-    if(!str.match("d").isNull()) nRet |= 0x01;
-
-    #else
-    for(int i = 0; i < 4; i++)
+    switch(type)
     {
-        if(i < str.mbLength())
+    case (versacomAddressUsage):
         {
-            if( str(i) != ' ' )
-            {
-                nRet |= (0x00000001 << str.mbLength() - i - 1);
-            }
+            if(!str.match("u").isNull()) nRet |= 0x08;  // Utility
+            if(!str.match("s").isNull()) nRet |= 0x04;  // Section
+            if(!str.match("c").isNull()) nRet |= 0x02;  // Class
+            if(!str.match("d").isNull()) nRet |= 0x01;  // Division
+
+            break;
         }
-        else
+    case (expresscomAddressUsage):
+        {
+            if(!str.match("s").isNull()) nRet |= 0x80;  // Service Provider Id
+            if(!str.match("g").isNull()) nRet |= 0x40;  // Geo
+            if(!str.match("b").isNull()) nRet |= 0x20;  // Substation
+            if(!str.match("f").isNull()) nRet |= 0x10;  // Feeder
+            if(!str.match("z").isNull()) nRet |= 0x08;  // Zip
+            if(!str.match("u").isNull()) nRet |= 0x04;  // User Defined
+            if(!str.match("p").isNull()) nRet |= 0x02;  // Program
+            if(!str.match("r").isNull()) nRet |= 0x01;  // Splinter
+
+            break;
+        }
+    default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   The database has returned an invalid ADDRESSUSAGE for a versacom address." << endl;
+            dout << "    Invalid address usage type " << str << endl;
+            break;
         }
-    }
-    #endif
-
-    if(nRet == 0)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "    Invalid address usage type " << str << endl;
     }
 
     return nRet;

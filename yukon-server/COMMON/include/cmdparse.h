@@ -97,6 +97,9 @@ public:
    INT      getiValue(const RWCString key) const;
    DOUBLE   getdValue(const RWCString key) const;
    RWCString getsValue(const RWCString key) const;
+   CtiCommandParser& setValue(const RWCString key, INT val);
+   CtiCommandParser& setValue(const RWCString key, DOUBLE val);
+   CtiCommandParser& setValue(const RWCString key, RWCString val);
 
 
    RWTValSlist< RWCString >& getActionItems();

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/resolvers.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:57:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/10/08 20:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,17 @@
 #include "db_entry_defines.h"
 
 class RWCString;
+
+typedef enum
+{
+    invalidAddressUsage = 0,
+    versacomAddressUsage,
+    expresscomAddressUsage,
+
+    maximumAddressUsage
+
+} CtiAddressUsage_t;
+
 
 IM_EX_CTIBASE INT resolvePointType(RWCString rwsTemp);
 IM_EX_CTIBASE INT resolvePointArchiveType(RWCString rwsTemp);
@@ -45,7 +56,7 @@ IM_EX_CTIBASE INT resolveRouteType(RWCString rwsTemp);
 IM_EX_CTIBASE bool resolveIsDeviceTypeSingle(INT Type);
 IM_EX_CTIBASE INT resolveRelayUsage(RWCString rwsTemp);
 IM_EX_CTIBASE INT resolveAWordTime(INT Seconds);
-IM_EX_CTIBASE INT resolveAddressUsage(RWCString str);
+IM_EX_CTIBASE INT resolveAddressUsage(RWCString str, int type);
 IM_EX_CTIBASE RWCString   resolveDBChanged(INT dbnum);
 IM_EX_CTIBASE RWCString   resolveDBChangeType(INT type);
 IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, RWCString str);

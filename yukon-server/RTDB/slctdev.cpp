@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2002/09/09 21:45:15 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2002/10/08 20:14:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@
 #include "dev_tap.h"
 #include "dev_wctp.h"
 #include "dev_grp_emetcon.h"
+#include "dev_grp_expresscom.h"
 #include "dev_grp_ripple.h"
 #include "dev_grp_versacom.h"
 #include "dev_davis.h"
@@ -258,6 +259,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_LMGROUP_VERSACOM:
         {
             Device = (CtiDeviceBase*) new CtiDeviceGroupVersacom;
+            break;
+        }
+    case TYPE_LMGROUP_EXPRESSCOM:
+        {
+            Device = (CtiDeviceBase*) new CtiDeviceGroupExpresscom;
             break;
         }
     case TYPE_MACRO:

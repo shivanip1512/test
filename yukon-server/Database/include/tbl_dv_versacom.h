@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/30 15:03:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/08 20:14:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,7 @@ protected:
 private:
 
 public:
+
    CtiTableVersacomLoadGroup();
 
    CtiTableVersacomLoadGroup(const CtiTableVersacomLoadGroup& aRef);

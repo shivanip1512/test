@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/10/02 19:43:12 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/08 20:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,6 +113,7 @@
 #define TYPE_LMGROUP_VERSACOM                2001
 #define TYPE_LMGROUP_RIPPLE                  2005
 #define TYPE_LMGROUP_POINT                   2010
+#define TYPE_LMGROUP_EXPRESSCOM              2015
 
 #define TYPE_LMPROGRAM_DIRECT                2100  // LM category objects...
 #define TYPE_LMPROGRAM_CURTAILMENT           2101

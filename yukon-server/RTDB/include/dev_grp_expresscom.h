@@ -13,23 +13,28 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/30 14:21:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/08 20:14:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include <rw/tpslist.h>
 
 #include "dev_base.h"
 #include "dev_grp.h"
 #include "tbl_dv_expresscom.h"
 
-class CtiDeviceGroupExpresscom : public CtiDeviceGroupBase
+class IM_EX_DEVDB CtiDeviceGroupExpresscom : public CtiDeviceGroupBase
 {
 protected:
 
     CtiTableExpresscomLoadGroup     _expresscomGroup;
 
 private:
+
+    // This method makes a gripe if any addressing level or load is predefined when submitting a request to a group
+    bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &retList );
+
 
 public:
 
@@ -44,26 +49,14 @@ public:
 
     CtiTableExpresscomLoadGroup   getExpresscomGroup() const;
     CtiTableExpresscomLoadGroup&  getExpresscomGroup();
-
     CtiDeviceGroupExpresscom&     setExpresscomGroup(const CtiTableExpresscomLoadGroup& aRef);
 
     virtual LONG getRouteID();
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
-
-
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
-
-    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
-                               CtiCommandParser               &parse,
-                               OUTMESS                        *&OutMessage,
-                               RWTPtrSlist< CtiMessage >      &vgList,
-                               RWTPtrSlist< CtiMessage >      &retList,
-                               RWTPtrSlist< OUTMESS >         &outList);
-
+    virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     virtual RWCString getPutConfigAssignment(UINT level = UINT_MAX);
-
-
 
 };
 #endif // #ifndef __DEV_GRP_EXPRESSCOM_H__

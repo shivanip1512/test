@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/05/02 17:02:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/10/08 20:14:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,11 +215,12 @@ void CtiTableVersacomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 {
     RWCString rwsTemp;
 
-
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         if(getDebugLevel() & 0x0800) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+
+    rdr["paobjectid"]       >> _deviceID;
 
     rdr["serialaddress"]    >> rwsTemp;
     _serial = atoi(rwsTemp.data());
@@ -231,7 +232,7 @@ void CtiTableVersacomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["addressusage"]     >> rwsTemp;
     rwsTemp.toLower();
-    _addressUsage = resolveAddressUsage(rwsTemp);
+    _addressUsage = resolveAddressUsage(rwsTemp, versacomAddressUsage);
 
     rdr["relayusage"]       >> rwsTemp;
     _relayMask = resolveRelayUsage(rwsTemp);
@@ -239,13 +240,11 @@ void CtiTableVersacomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
 
 LONG CtiTableVersacomLoadGroup::getDeviceID() const
 {
-
     return _deviceID;
 }
 
 CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setDeviceID( const LONG deviceID )
 {
-
     _deviceID = deviceID;
     return *this;
 }

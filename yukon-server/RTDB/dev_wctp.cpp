@@ -626,7 +626,7 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, RWTPtrSlist< CtiMessa
             replaceChars(getPageBuffer(), msgPayload + sendCnt);
 
             CHAR* xmlMsg = buildXMLMessage((const char*)getWctp().getPagerNumber(),
-                                           "yzhihong@cannontech.com",
+                                           "yukonserver@cannontech.com",
                                            msgPayload,
                                            timeStamp);
 

@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/08/16 14:39:08 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/08 20:14:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,10 +67,9 @@ public:
 
 protected:
 
-    bool    _messageStartCRC;               // 'S'-'T' bounded message (false)  or 'U'-'V' bounded message (true).
+    bool    _useProtocolCRC;                        // 'S'-'T' bounded message (false)  or 'U'-'V' bounded message (true).
 
     // Addressing Levels
-    BYTE    _availableAddressLevels;        // Bit field indicating available addressing.
     BYTE    _addressLevel;                  // Bit field indicating addressing TO BE USED.
 
     USHORT  _spidAddress;                   // 1-65534
@@ -83,10 +82,7 @@ protected:
     BYTE    _splinterAddress;               // 1-254 subset of program.
     UINT    _uniqueAddress;                 // 1-4294967295 UID.
 
-    // Message Type
-    BYTE    _messageType;                   // One of CtiExpresscomMessageType_t
-
-
+    BYTE    _loadNumber;                    // Any loadnumber 1-15. 0 is all loads
     // Parameters which affect the construction of the messages.
 
     bool    _celsiusMode;                   // Default to false/no. (Implies Fahrenheit).
@@ -97,29 +93,15 @@ protected:
 private:
 
     vector< BYTE > _message;                // This is the baby...
+    int _messageCount;
 
     void addressMessage();
     void terminateMessage();
-
-public:
-
-    CtiProtocolExpresscom();
-    CtiProtocolExpresscom(const CtiProtocolExpresscom& aRef);
-    virtual ~CtiProtocolExpresscom();
-    CtiProtocolExpresscom& operator=(const CtiProtocolExpresscom& aRef);
+    void resolveAddressLevel();
+    INT assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
     INT sync();
     INT timeSync(RWTime &gmt);
-
-    enum
-    {
-        stCancelProp                    = 0x00,
-        stIncrementProp                 = 0x01,
-        stIncrementPropAndTurnOnLight   = 0x02,
-        stFlashRSSI                     = 0x03,
-        stPing                          = 0x80
-
-    } CtiExpresscomSignalTest;
 
     INT signalTest(BYTE test);
     INT timedLoadControl(BYTE load, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
@@ -141,25 +123,6 @@ public:
      *
      */
     INT thermostatLoadControl(BYTE load, BYTE cyclepercent, BYTE periodminutes, BYTE cyclecount, USHORT delay = 0, INT controltemperature = 0, BYTE limittemperature = 0, BYTE limitfallbackpercent = 0, CHAR maxdeltaperhour = 0, BYTE deltafallbackpercent = 0);
-
-    typedef enum
-    {
-        tspAbsoluteTemps    = 0x4000,
-        tspCelsius          = 0x2000,
-        tspTwoByteTimes     = 0x1000,
-        tspIncMinTemp       = 0x0800,
-        tspIncMaxTemp       = 0x0400,
-        tspHeatMode         = 0x0200,
-        tspCoolMode         = 0x0100,
-        tspMaintainControl  = 0x0080,
-        tspIncRandomTime    = 0x0040,
-        tspIncTimeA         = 0x0020,
-        tspIncTimeB         = 0x0010,
-        tspIncTimeC         = 0x0008,
-        tspIncTimeD         = 0x0004,
-        tspIncTimeE         = 0x0002,
-        tspIncTimeF         = 0x0001
-    } CtiExpresscomTSPControlFlags;
 
     /*  Ok, this really requires the document, but here's some ASCII art too.
      *
@@ -203,6 +166,50 @@ public:
     INT service(BYTE load, bool activate = true);
     INT temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
     INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
+    INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
+
+public:
+
+    CtiProtocolExpresscom();
+    CtiProtocolExpresscom(const CtiProtocolExpresscom& aRef);
+    virtual ~CtiProtocolExpresscom();
+    CtiProtocolExpresscom& operator=(const CtiProtocolExpresscom& aRef);
+
+    /*
+     * This method incorporates all the assigned addressing into the parse object.
+     */
+    void addAddressing( UINT serial = 0, USHORT spid = 0, USHORT geo = 0, USHORT substation = 0, USHORT feeder = 0, UINT zip = 0, USHORT uda = 0, BYTE program = 0, BYTE splinter = 0, BYTE load = 0xff);
+    bool parseAddressing(CtiCommandParser &parse);
+
+    enum
+    {
+        stCancelProp                    = 0x00,
+        stIncrementProp                 = 0x01,
+        stIncrementPropAndTurnOnLight   = 0x02,
+        stFlashRSSI                     = 0x03,
+        stPing                          = 0x80
+
+    } CtiExpresscomSignalTest;
+
+
+    typedef enum
+    {
+        tspAbsoluteTemps    = 0x4000,
+        tspCelsius          = 0x2000,
+        tspTwoByteTimes     = 0x1000,
+        tspIncMinTemp       = 0x0800,
+        tspIncMaxTemp       = 0x0400,
+        tspHeatMode         = 0x0200,
+        tspCoolMode         = 0x0100,
+        tspMaintainControl  = 0x0080,
+        tspIncRandomTime    = 0x0040,
+        tspIncTimeA         = 0x0020,
+        tspIncTimeB         = 0x0010,
+        tspIncTimeC         = 0x0008,
+        tspIncTimeD         = 0x0004,
+        tspIncTimeE         = 0x0002,
+        tspIncTimeF         = 0x0001
+    } CtiExpresscomTSPControlFlags;
 
     typedef enum
     {
@@ -223,7 +230,20 @@ public:
 
     } CtiExpresscomCapControlSubActions;
 
-    INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 
+    INT parseRequest(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+
+    inline int messageSize() const { return _message.size(); }
+    inline BYTE getByte(int pos) const
+    {
+        return _message[pos];
+    }
+    inline INT entries() const
+    {
+       return _messageCount;
+    }
+    void dump() const;
+    BYTE getStartByte() const;
+    BYTE getStopByte() const;
 };
 #endif // #ifndef __EXPRESSCOM_H__

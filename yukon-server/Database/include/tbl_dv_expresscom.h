@@ -13,15 +13,36 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/09/30 14:21:26 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/10/08 20:14:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "dbmemobject.h"
+#include <windows.h>
+using namespace std;
 
-class CtiTableExpresscomLoadGroup : public CtiMemDBObject
+#include <rw/db/select.h>
+#include <rw/db/dbase.h>
+#include <rw/db/table.h>
+#include <rw/db/reader.h>
+#include <rw\cstring.h>
+#include <rw/db/nullind.h>
+#include <rw/db/db.h>
+#include <rw/db/datetime.h>
+#include <rw/rwtime.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
+
+#include "yukon.h"
+#include "vcomdefs.h"
+#include "dlldefs.h"
+#include "dbmemobject.h"
+#include "dllbase.h"
+#include "dbaccess.h"
+#include "resolvers.h"
+
+class IM_EX_CTIYUKONDB CtiTableExpresscomLoadGroup : public CtiMemDBObject
 {
 protected:
 
@@ -38,12 +59,14 @@ protected:
     UCHAR _program;                 // 1 - 65534
     UCHAR _splinter;
 
-    USHORT _addressUsage;           // bit indicators.  LSB is SPID.  No bits set indicates serial.
-    USHORT _loadNumber;             // 0 indicates all loads.  Otherwise, one load per message!
+    BYTE _addressUsage;             // bit indicators.  LSB is SPID.  No bits set indicates serial.
+    USHORT _loads;             // 0 indicates all loads.  Otherwise, one load per message!
 
 private:
 
 public:
+
+    typedef CtiMemDBObject Inherited;
 
     CtiTableExpresscomLoadGroup();
     CtiTableExpresscomLoadGroup(const CtiTableExpresscomLoadGroup& aRef);
@@ -64,20 +87,21 @@ public:
     USHORT getSubstation() const;
     CtiTableExpresscomLoadGroup& setSubstation(USHORT sub);
     USHORT getFeeder() const;
-    CtiTableExpresscomLoadGroup& setFeeder(USHORT spid);
+    CtiTableExpresscomLoadGroup& setFeeder(USHORT feed);
     UINT getZip() const;
     CtiTableExpresscomLoadGroup& setZip(UINT zip);
-    USHORT getUser() const;
-    CtiTableExpresscomLoadGroup& setUser(USHORT user);
+    USHORT getUda() const;
+    CtiTableExpresscomLoadGroup& setUda(USHORT user);
     UCHAR getProgram() const;
     CtiTableExpresscomLoadGroup& setProgram(UCHAR prog);
     UCHAR getSplinter() const;
     CtiTableExpresscomLoadGroup& setSplinter(UCHAR splinter);
 
-    USHORT getAddressUsage() const;
-    CtiTableExpresscomLoadGroup& setAddressUsage(USHORT addrussage);
-    USHORT getLoadNumber() const;
-    CtiTableExpresscomLoadGroup& setLoadNumber(USHORT load);
+    BYTE getAddressUsage() const;
+    CtiTableExpresscomLoadGroup& setAddressUsage(BYTE addrussage);
+    BYTE getLoadMask() const;
+    CtiTableExpresscomLoadGroup& setLoadMask(BYTE load);
+    BOOL useRelay(const INT r) const;
 
     static RWCString getTableName();
 
