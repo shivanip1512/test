@@ -358,6 +358,9 @@ public class NewCustAccountAction implements ActionBase {
 			if (success == null)
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+			user.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
+			
 			if (!SOAPClient.isServerLocal()) {
 				StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
 				StarsCustAccountInformation accountInfo = new StarsCustAccountInformation();
@@ -376,8 +379,6 @@ public class NewCustAccountAction implements ActionBase {
 				accountInfo.setStarsCallReportHistory( new StarsCallReportHistory() );
 				accountInfo.setStarsServiceRequestHistory( new StarsServiceRequestHistory() );
 				
-				StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-				user.removeAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
 				ServletUtils.removeTransientAttributes( user );
 				user.setAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo );
 			}
