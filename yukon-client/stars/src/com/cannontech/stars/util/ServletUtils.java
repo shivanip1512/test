@@ -96,45 +96,6 @@ public class ServletUtils {
 	
 	public static final String IMAGE_NAME_SEPARATOR = ",";
 	public static final int MAX_NUM_IMAGES = 5;
-	
-    public static final String WEB_STYLE_SHEET = "web_style_sheet";
-    public static final String WEB_HEADER = "web_header";
-    public static final String WEB_NAV_BULLET = "web_nav_bullet";
-    public static final String WEB_NAV_BULLET2 = "web_nav_bullet2";
-    public static final String WEB_LINK_FAQ = "web_link_faq";
-    public static final String WEB_LINK_EMAIL = "web_link_email";
-    public static final String WEB_TEXT_CONTROL = "web_text_control";
-    public static final String WEB_TEXT_CONTROLLED = "web_text_controlled";
-    public static final String WEB_TEXT_CONTROLLING = "web_text_controlling";
-    public static final String WEB_TEXT_OPT_OUT_NOUN = "web_text_opt_out_noun";
-    public static final String WEB_TEXT_OPT_OUT_VERB = "web_text_opt_out_verb";
-    public static final String WEB_TEXT_OPT_OUT_PAST = "web_text_opt_out_past";
-    public static final String WEB_TEXT_ODDS_FOR_CONTROL = "web_text_odds_for_control";
-    public static final String WEB_TEXT_REENABLE = "web_text_reenable";
-    public static final String WEB_TEXT_REC_SET_BTN = "web_text_recommended_settings_button";
-    public static final String WEB_TEXT_GENERAL_TITLE = "web_text_general_title";
-    public static final String WEB_TEXT_THERM_SCHED_TITLE = "web_text_thermostat_schedule_title";
-    public static final String WEB_TEXT_THERM_MANUAL_TITLE = "web_text_thermostat_manual_title";
-    public static final String WEB_TEXT_CTRL_HIST_TITLE = "web_text_control_history_title";
-    public static final String WEB_TEXT_PROG_CTRL_HIST_TITLE = "web_text_program_ctrl_hist_title";
-    public static final String WEB_TEXT_PROG_CTRL_SUM_TITLE = "web_text_program_ctrl_sum_title";
-    public static final String WEB_TEXT_ENROLL_TITLE = "web_text_enrollment_title";
-    public static final String WEB_TEXT_OPT_OUT_TITLE = "web_text_opt_out_title";
-    public static final String WEB_TEXT_UTIL_TITLE = "web_text_utility_title";
-    public static final String WEB_TEXT_THERM_SCHED_LINK = "web_text_thermostat_schedule_link";
-    public static final String WEB_TEXT_THERM_MANUAL_LINK = "web_text_thermostat_manual_link";
-    public static final String WEB_TEXT_CTRL_HIST_LINK = "web_text_control_history_link";
-    public static final String WEB_TEXT_ENROLL_LINK = "web_text_enrollment_link";
-    public static final String WEB_TEXT_OPT_OUT_LINK = "web_text_opt_out_link";
-    public static final String WEB_TEXT_OPT_OUT_DESC = "web_text_opt_out_desc";
-    public static final String LOG_OFF_URL = "log_off_url";
-    
-    private static final String DEFAULT_PROPERTY_FILE = "/default.config.properties";
-    
-    private static final String TEXT_FORMAT_UPPER = "upper";
-    private static final String TEXT_FORMAT_LOWER = "lower";
-    private static final String TEXT_FORMAT_CAPITAL = "capital";
-    private static final String TEXT_FORMAT_CAPITAL2 = "capital2";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
@@ -447,80 +408,6 @@ public class ServletUtils {
 		}
 		
 		return null;
-	}
-	
-	private static Properties getECProperties(String propFile) {
-		if (ecPropTable == null) ecPropTable = new Hashtable();
-		Properties props = (Properties) ecPropTable.get( propFile );
-		if (props == null) {
-			InputStream is = ServletUtils.class.getResourceAsStream( propFile );
-			props = new Properties();
-			try
-			{
-				props.load(is);
-				ecPropTable.put( propFile, props );
-			}
-			catch (Exception e)
-			{
-				com.cannontech.clientutils.CTILogger.info("Can't read the properties file. " +
-					"Make sure " + propFile + " is in the CLASSPATH" );
-				props = null;
-			}
-		}
-		
-		return props;
-	}
-	
-	public static String getECProperty(String propFile, String propName) {
-		String value = null;
-		Properties props = getECProperties( propFile );
-		if (props != null)
-			value = (String) props.get( propName );
-			
-		if ((value == null || value.length() == 0) &&
-			!propFile.equalsIgnoreCase( DEFAULT_PROPERTY_FILE ))
-			value = getECProperty( DEFAULT_PROPERTY_FILE, propName );
-			
-		return value;
-	}
-	
-	public static String getECProperty(String propFile, String propName, String format) {
-		String value = getECProperty( propFile, propName );
-		if (value != null) {
-			if (format.equalsIgnoreCase( TEXT_FORMAT_UPPER ))
-				value = value.toUpperCase();
-			else if (format.equalsIgnoreCase( TEXT_FORMAT_LOWER ))
-				value = value.toLowerCase();
-			else if (format.equalsIgnoreCase( TEXT_FORMAT_CAPITAL ))
-				value = capitalize( value );
-			else if (format.equalsIgnoreCase( TEXT_FORMAT_CAPITAL2 ))
-				value = capitalize2( value );
-		}
-		
-		return value;
-	}
-	
-	public static Date getToday(TimeZone tz) {
-		Calendar cal = Calendar.getInstance();
-		if (tz != null) cal.setTimeZone( tz );
-		
-	 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
-		cal.set( java.util.Calendar.MINUTE, 0 );
-		cal.set( java.util.Calendar.SECOND, 0 );
-		
-		return cal.getTime();
-	}
-	
-	public static Date getTomorrow(TimeZone tz) {
-		Calendar cal = Calendar.getInstance();
-		if (tz != null) cal.setTimeZone( tz );
-		
-		cal.set( java.util.Calendar.DAY_OF_YEAR, cal.get( java.util.Calendar.DAY_OF_YEAR ) + 1 );
-	 	cal.set( java.util.Calendar.HOUR_OF_DAY, 0 );
-		cal.set( java.util.Calendar.MINUTE, 0 );
-		cal.set( java.util.Calendar.SECOND, 0 );
-		
-		return cal.getTime();
 	}
 
 }

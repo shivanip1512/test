@@ -47,6 +47,7 @@ import com.cannontech.stars.xml.serialize.StarsProgramOptOutResponse;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -108,7 +109,7 @@ public class ProgramOptOutAction implements ActionBase {
             	if (entryTomorrow != null && period == entryTomorrow.getEntryID() )
             	{
             		java.util.TimeZone tz = java.util.TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
-            		optOut.setStartDateTime( ServletUtils.getTomorrow(tz) );
+            		optOut.setStartDateTime( ServletUtil.getTomorrow(tz) );
             		optOut.setPeriod( 1 );
             	}
             	else if (entryToday != null && period == entryToday.getEntryID() )
@@ -186,13 +187,13 @@ public class ProgramOptOutAction implements ActionBase {
             	resp.setDescription( "The " + energyCompany.getEnergyCompanySetting(EnergyCompanyRole.OPT_OUT_NOUN) + " event has been scheduled" );
             }
             else if (optOut.getPeriod() == OPTOUT_TODAY) {
-            	int offHours = (int)((ServletUtils.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
+            	int offHours = (int)((ServletUtil.getTomorrow(tz).getTime() - new Date().getTime()) * 0.001 / 3600 + 0.5);
 				String[] commands = getOptOutCommands( liteAcctInfo, energyCompany, offHours );
             	for (int i = 0; i < commands.length; i++)
             		ServerUtils.sendCommand( commands[i] );
             	
             	OptOutEventQueue.OptOutEvent event = new OptOutEventQueue.OptOutEvent();
-            	event.setStartDateTime( ServletUtils.getTomorrow(tz).getTime() );
+            	event.setStartDateTime( ServletUtil.getTomorrow(tz).getTime() );
             	event.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
             	event.setAccountID( liteAcctInfo.getCustomerAccount().getAccountID() );
             	
@@ -422,7 +423,7 @@ public class ProgramOptOutAction implements ActionBase {
 	        reenableDate = cal.getTime();
 		}
 		else if (optOut.getPeriod() == OPTOUT_TODAY) {
-			reenableDate = ServletUtils.getTomorrow(tz);
+			reenableDate = ServletUtil.getTomorrow(tz);
 		}
         
         // List of hardware IDs to be disabled

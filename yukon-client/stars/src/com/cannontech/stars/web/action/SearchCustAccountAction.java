@@ -101,7 +101,14 @@ public class SearchCustAccountAction implements ActionBase {
             		
             if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO).getEntryID()) {
             	/* Search by account number */
-            	liteAcctInfo = energyCompany.searchByAccountNumber( searchAccount.getSearchValue() );
+            	if (searchAccount.getSearchValue().indexOf( '*' ) == -1) {
+	            	liteAcctInfo = energyCompany.searchByAccountNumber( searchAccount.getSearchValue() );
+            	}
+	            else {
+	            	accounts = CustomerAccount.searchByAccountNumber( new Integer(energyCompanyID), searchAccount.getSearchValue().replace('*','%') );
+	            	if (accounts != null && accounts.length == 1)
+	            		liteAcctInfo = energyCompany.getCustAccountInformation( accounts[0].getAccountID().intValue(), true );
+	            }
             }
             else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO).getEntryID()) {
             	/* Search by phone number */
@@ -227,15 +234,15 @@ public class SearchCustAccountAction implements ActionBase {
     public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
-			
-			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
-            if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
-			StarsFailure failure = resp.getStarsFailure();
+			StarsFailure failure = operation.getStarsFailure();
 			if (failure != null) {
 				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, failure.getDescription() );
 				return failure.getStatusCode();
 			}
+			
+			StarsSearchCustomerAccountResponse resp = operation.getStarsSearchCustomerAccountResponse();
+            if (resp == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (resp.getStarsCustAccountInformation() != null) {
@@ -243,9 +250,9 @@ public class SearchCustAccountAction implements ActionBase {
             		user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, resp.getStarsCustAccountInformation());
 			}
             else {
-            	/* The return value is a list of results */
+            	/* No customer account, or more than one account found */
             	user.setAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS, resp );
-            	session.setAttribute( ServletUtils.ATT_REDIRECT, "/operator/Consumer/SearchResults.jsp" );
+            	return StarsConstants.FAILURE_CODE_OPERATION_FAILED;
             }
             
             return 0;

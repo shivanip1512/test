@@ -267,7 +267,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 	        reenableDate = cal.getTime();
         }
         else if (optout.getPeriod() == ProgramOptOutAction.OPTOUT_TODAY)
-        	reenableDate = ServletUtils.getTomorrow( tz );
+        	reenableDate = com.cannontech.util.ServletUtil.getTomorrow( tz );
         
         StringBuffer text = new StringBuffer();
         text.append("======================================================\r\n");

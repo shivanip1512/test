@@ -166,32 +166,6 @@ public class CustomerAccount extends DBPersistent {
         setDbConnection(null);
     }
 
-    /**
-     * This function will return at most one customer account for now,
-     * because the search customer account action expect at most one result.
-     * Although the underlying searchByAccountNumber() function supports
-     * wildcard character (*) and may return multiple results, only the
-     * first of the them (if there is any) will be returned.
-     */
-    public static CustomerAccount searchByAccountNumber(Integer energyCompanyID, String accountNumber) {
-        try {
-            com.cannontech.database.db.stars.customer.CustomerAccount[] accounts =
-                        com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( energyCompanyID, accountNumber );
-            if (accounts == null || accounts.length == 0) return null;
-
-            CustomerAccount accountData = new CustomerAccount();
-            accountData.setAccountID( accounts[0].getAccountID() );
-            accountData = (CustomerAccount) Transaction.createTransaction( Transaction.RETRIEVE, accountData ).execute();
-            
-            return accountData;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
     public com.cannontech.database.db.stars.customer.CustomerAccount getCustomerAccount() {
         if (customerAccount == null)
             customerAccount = new com.cannontech.database.db.stars.customer.CustomerAccount();

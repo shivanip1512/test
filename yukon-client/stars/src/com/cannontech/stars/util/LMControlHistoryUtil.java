@@ -30,7 +30,7 @@ public class LMControlHistoryUtil {
     public static Date getPeriodStartTime(StarsCtrlHistPeriod period, TimeZone tz) {
     	Date date = new Date(0);
     	Calendar cal = Calendar.getInstance();
-    	cal.setTime( ServletUtils.getToday(tz) );
+    	cal.setTime( com.cannontech.util.ServletUtil.getToday(tz) );
     	
     	if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
     		date = cal.getTime();

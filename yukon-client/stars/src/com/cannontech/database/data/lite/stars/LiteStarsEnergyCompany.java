@@ -110,7 +110,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	private StarsExitInterviewQuestions starsExitQuestions = null;
 	private StarsDefaultThermostatSettings starsThermSettings = null;
 	private Hashtable starsCustSelLists = null;	// Map String(list name) to StarsSelectionListEntry
-	private Hashtable starsCustSelListsCus = null;
 	private Hashtable starsWebConfigs = null;		// Map Integer(web config ID) to StarsWebConfig
 	private Hashtable starsCustAcctInfos = null;	// Map Integer(account ID) to StarsCustAccountInformation
 	private Hashtable starsLMCtrlHists = null;	// Map Integer(group ID) to StarsLMControlHistory
@@ -317,7 +316,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		starsExitQuestions = null;
 		starsThermSettings = null;
 		starsCustSelLists = null;
-		starsCustSelListsCus = null;
 		starsWebConfigs = null;
 		starsCustAcctInfos = null;
 		starsLMCtrlHists = null;
@@ -1414,19 +1412,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	
 	public LiteStarsCustAccountInformation searchByAccountNumber(String accountNo) {
 		ArrayList custAcctInfoList = getAllCustAccountInformation();
-		
-		LiteStarsCustAccountInformation accountInfo = null;
 		for (int i = 0; i < custAcctInfoList.size(); i++) {
-			accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			LiteStarsCustAccountInformation accountInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
 			if (accountInfo.getCustomerAccount().getAccountNumber().equalsIgnoreCase( accountNo ))
 				return accountInfo;
 		}
 		
-		com.cannontech.database.data.stars.customer.CustomerAccount account =
-				com.cannontech.database.data.stars.customer.CustomerAccount.searchByAccountNumber( getEnergyCompanyID(), accountNo );
-		if (account == null) return null;
+		try {
+			com.cannontech.database.db.stars.customer.CustomerAccount[] accounts =
+					com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( getEnergyCompanyID(), accountNo );
+			if (accounts == null || accounts.length == 0) return null;
+			
+			// If there are more than one account with the same account # (this shouldn't happen), we will only return the first of them
+			com.cannontech.database.data.stars.customer.CustomerAccount account = null;
+			account.setCustomerAccount( accounts[0] );
+			account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+					Transaction.createTransaction( Transaction.RETRIEVE, account ).execute();
+			
+			return addCustAccountInformation( account );
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-		return addCustAccountInformation( account );
+		return null;
 	}
 	
 	
@@ -1438,43 +1447,26 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		return starsEnergyCompany;
 	}
 	
-	private StarsCustSelectionList getStarsCustSelectionList(String listName) {
-		if (starsCustSelLists == null) starsCustSelLists = new Hashtable();
-		StarsCustSelectionList starsList = (StarsCustSelectionList) starsCustSelLists.get( listName );
-		
-		if (starsList == null) {
-			YukonSelectionList yukonList = getYukonSelectionList( listName );
-			if (yukonList != null) {
-				starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
-				starsCustSelLists.put( starsList.getListName(), starsList );
-			}
-		}
-		
-		return starsList;
+	private Hashtable getStarsCustSelectionLists() {
+		if (starsCustSelLists == null)
+			starsCustSelLists = new Hashtable();
+		return starsCustSelLists;
 	}
 	
-	private StarsCustSelectionList getStarsCustSelectionListCus(String listName) {
-		if (starsCustSelListsCus == null) starsCustSelListsCus = new Hashtable();
-		StarsCustSelectionList starsList = (StarsCustSelectionList) starsCustSelListsCus.get( listName );
-		
-		if (starsList == null) {
-			YukonSelectionList yukonList = getYukonSelectionList( listName );
-			if (yukonList != null) {
-				starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
-				if (listName.equals( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD )) {
-					// Consumer side opt out period list shouldn't include "repeat last" entry
-					for (int i = starsList.getStarsSelectionListEntryCount() - 1; i >= 0; i--) {
-						if (starsList.getStarsSelectionListEntry(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_OPTOUT_PERIOD_REPEAT_LAST) {
-							starsList.removeStarsSelectionListEntry(i);
-							break;
-						}
-					}
+	private StarsCustSelectionList getStarsCustSelectionList(String listName) {
+		Hashtable starsCustSelLists = getStarsCustSelectionLists();
+		synchronized (starsCustSelLists) {
+			StarsCustSelectionList starsList = (StarsCustSelectionList) starsCustSelLists.get( listName );
+			if (starsList == null) {
+				YukonSelectionList yukonList = getYukonSelectionList( listName );
+				if (yukonList != null) {
+					starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
+					starsCustSelLists.put( starsList.getListName(), starsList );
 				}
-				starsCustSelListsCus.put( starsList.getListName(), starsList );
 			}
+			
+			return starsList;
 		}
-		
-		return starsList;
 	}
 	
 	public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
@@ -1608,8 +1600,21 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			// Currently the consumer side only need opt out period list and hardware status list
 			if (AuthFuncs.checkRoleProperty( liteUser, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT )
 				&& !AuthFuncs.checkRoleProperty( liteUser, ResidentialCustomerRole.HIDE_OPT_OUT_BOX )) {
-				StarsCustSelectionList list = getStarsCustSelectionListCus(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+				StarsCustSelectionList list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS);
+				if (list == null) {
+					list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
+					if (list != null) {
+						StarsCustSelectionList cusList = new StarsCustSelectionList();
+						cusList.setListID( list.getListID() );
+						cusList.setListName( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS );
+						cusList.setStarsSelectionListEntry( list.getStarsSelectionListEntry() );
+						
+						Hashtable starsCustSelLists = getStarsCustSelectionLists();
+						synchronized (starsCustSelLists) { starsCustSelLists.put(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS, cusList); }
+					}
+				}
 				if (list != null) starsLists.addStarsCustSelectionList( list );
+				
 				starsLists.addStarsCustSelectionList( getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
 			}
 		}
