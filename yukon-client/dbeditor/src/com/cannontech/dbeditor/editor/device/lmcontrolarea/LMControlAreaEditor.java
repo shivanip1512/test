@@ -118,7 +118,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("RouteEditorPanel");
+		setName("LMControlAreaEditorPanel");
 		setPreferredSize(new java.awt.Dimension(400, 350));
 		setLayout(null);
 		setSize(400, 350);
