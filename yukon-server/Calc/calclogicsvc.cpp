@@ -353,22 +353,21 @@ void CtiCalcLogicService::Run( )
                             break;
                         }
                         else
+                        {
+                            if(_lastWasPingNoDataSince)
                             {
-                                if(_lastWasPingNoDataSince)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** INFO **** No data has been recieved since last ping/verify.  Re-registering points." << endl;
-                                    }
-                                    _registerForPoints();                       // re-register if we haven't seen data since last ping.
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** INFO **** No data has been recieved since last ping/verify.  Re-registering points." << endl;
                                 }
-
-                                _dispatchPingedFailed = announceTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
-
-                                CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
-                                pCmd->setUser(CALCLOGICNAME);
-                                if(_conxion) _conxion->WriteConnQue( pCmd );
+                                _registerForPoints();                       // re-register if we haven't seen data since last ping.
                             }
+
+                            _dispatchPingedFailed = announceTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
+
+                            CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
+                            pCmd->setUser(CALCLOGICNAME);
+                            if(_conxion) _conxion->WriteConnQue( pCmd );
                         }
                     }
 
