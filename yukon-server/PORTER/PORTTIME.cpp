@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/09/16 13:49:10 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/09/16 21:50:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -672,8 +672,8 @@ VOID TimeSyncThread (PVOID Arg)
     PortManager.apply(applyPortSendTime, NULL);
 
     HANDLE hTimeSyncArray[] = {
-        hPorterEvents[P_TIMESYNC_EVENT],
-        hPorterEvents[P_QUIT_EVENT]
+        hPorterEvents[P_QUIT_EVENT],
+        hPorterEvents[P_TIMESYNC_EVENT]
     };
 
     /* loop doing time sync at 150 seconds after the hour */
@@ -700,14 +700,14 @@ VOID TimeSyncThread (PVOID Arg)
         {
             switch( dwWait - WAIT_OBJECT_0 )
             {
-            case WAIT_OBJECT_0:     // P_TIMESYNC_EVENT:
-                {
-                    break;
-                }
-            case WAIT_OBJECT_0 + 1: // P_QUIT_EVENT:
+            case WAIT_OBJECT_0: // P_QUIT_EVENT:
                 {
                     PorterQuit = TRUE;
                     continue;            // the for loop
+                }
+            case WAIT_OBJECT_0 + 1:     // P_TIMESYNC_EVENT:
+                {
+                    break;
                 }
             default:
                 {

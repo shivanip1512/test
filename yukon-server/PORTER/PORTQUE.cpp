@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2002/09/12 21:32:35 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2002/09/16 21:50:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,8 +124,8 @@ VOID QueueThread (VOID *Arg)
     }
 
     HANDLE hQueueArray[] = {
-        hPorterEvents[P_QUEUE_EVENT],
-        hPorterEvents[P_QUIT_EVENT]
+        hPorterEvents[P_QUIT_EVENT],
+        hPorterEvents[P_QUEUE_EVENT]
     };
 
     /* make it clear who isn't the boss */
@@ -139,15 +139,15 @@ VOID QueueThread (VOID *Arg)
         {
             switch( dwWait - WAIT_OBJECT_0 )
             {
-            case WAIT_OBJECT_0: // P_QUEUE_EVENT:
-                {
-                    ResetEvent(hPorterEvents[ P_QUEUE_EVENT ]);
-                    break;
-                }
-            case WAIT_OBJECT_0 + 1: // P_QUIT_EVENT:
+            case WAIT_OBJECT_0: // P_QUIT_EVENT:
                 {
                     PorterQuit = TRUE;
                     continue;            // the for loop
+                }
+            case WAIT_OBJECT_0 + 1: // P_QUEUE_EVENT:
+                {
+                    ResetEvent(hPorterEvents[ P_QUEUE_EVENT ]);
+                    break;
                 }
             default:
                 {
