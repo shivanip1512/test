@@ -20,7 +20,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.RadiusRole;
+import com.cannontech.roles.yukon.AuthenticationRole;
 
 /**
  * @author snebben
@@ -45,10 +45,10 @@ public class RadiusLogin
 		RadiusClient rc;
 		try
 		{
-			String radiusAddr = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SERVER_ADDRESS);
-			int authPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_AUTH_PORT)).intValue();
-			int acctPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_ACCT_PORT)).intValue();
-			String secret = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SECRET_KEY);
+			String radiusAddr = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
+			int authPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
+			int acctPort = Integer.valueOf(RoleFuncs.getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
+			String secret = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
 			//TODO any other radius attributes we don't know about yet.
 		
 			rc = new RadiusClient(radiusAddr, authPort, acctPort, secret);
@@ -130,12 +130,12 @@ public class RadiusLogin
 			switch(accessResponse.getPacketType()){
 				case RadiusPacket.ACCESS_ACCEPT:
 					CTILogger.info("User " + userName + " authenticated");
-					printAttributes(accessResponse);
+//					printAttributes(accessResponse);
 					basicAccount(rc,userName);
 					return true;
 				case RadiusPacket.ACCESS_REJECT:
 					CTILogger.info("User " + userName + " NOT authenticated");
-					printAttributes(accessResponse);
+//					printAttributes(accessResponse);
 					return false;
 //				case RadiusPacket.ACCESS_CHALLENGE:
 //					String reply = new String(accessResponse.getAttribute(RadiusAttributeValues.REPLY_MESSAGE).getValue());

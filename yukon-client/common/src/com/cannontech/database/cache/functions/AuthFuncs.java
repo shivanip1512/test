@@ -14,7 +14,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.RadiusRole;
+import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -33,12 +33,15 @@ public class AuthFuncs {
 	 */
 	public static LiteYukonUser login(String username, String password) {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		String radiusAddr = null;
-		//If admin user, skip the radius login attempt (the radiusAddr is null when skipped).
-		if( !isAdminUser(username))
-			radiusAddr = RoleFuncs.getGlobalPropertyValue(RadiusRole.RADIUS_SERVER_ADDRESS);
+		
+		String radiusMethod;
+		//If admin user, skip the radius login attempt (the authentication mode is YUKON when skipped).
+		if( isAdminUser(username))
+			radiusMethod  = AuthenticationRole.YUKON_AUTH_STRING;
+		else
+			radiusMethod = RoleFuncs.getGlobalPropertyValue(AuthenticationRole.AUTHENTICATION_MODE);
 			
-		if(radiusAddr != null && !radiusAddr.equalsIgnoreCase(CtiUtilities.STRING_NONE))	//value is something other than '(none)'
+		if(radiusMethod != null && radiusMethod.equalsIgnoreCase(AuthenticationRole.RADIUS_AUTH_STRING))
 		{
 			CTILogger.info("Attempting a RADIUS login");
 			return RadiusLogin.login(username, password);
