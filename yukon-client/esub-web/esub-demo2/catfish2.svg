@@ -1,7 +1,0 @@
-<?xml version = "1.0" standalone = "no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN" "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd" >
-<svg width="1024.0px" height="768.0px" >
-<rect width="100%" height="100%" color="#000000" />
-<image id="LxAbstractImage" xlink:href="(none)" x="94" y="107" width="30" height="30" />
-<image id="LxAbstractImage" xlink:href="dbEditorIcon.gif" x="290" y="180" width="16" height="16" />
-</svg>
