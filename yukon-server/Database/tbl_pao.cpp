@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/21 15:34:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/06/30 14:39:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,9 @@
 #include "resolvers.h"
 #include "tbl_pao.h"
 
-CtiTblPAO::CtiTblPAO() {}
+CtiTblPAO::CtiTblPAO() :
+_paObjectID(-1)
+{}
 
 CtiTblPAO::CtiTblPAO(const CtiTblPAO& aRef)
 {
