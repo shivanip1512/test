@@ -6,18 +6,14 @@ package com.cannontech.cbc.data;
  * the base class does all the work.
  */
 import com.cannontech.cbc.messages.CBCCommand;
-import com.cannontech.cbc.messages.CBCSubAreaNames;
-import com.cannontech.cbc.messages.CBCSubstationBuses;
 import com.cannontech.cbc.messages.DefineCollectableCBCCommand;
 import com.cannontech.cbc.messages.DefineCollectableCBCMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCStateGroupMessage;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubAreaName;
 import com.cannontech.cbc.messages.DefineCollectableCBCSubstationBuses;
 import com.cannontech.cbc.messages.DefineCollectableCBCTempMoveCapBank;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
@@ -205,43 +201,24 @@ public class CBCClientConnection extends ClientConnection
      * subs we do not have access to.
      * 
      */
-    public void fireMessageEvent(Message msg)
-    {
-        if( msg instanceof CBCSubstationBuses )
-        {
-            //remove any Subs the user should not see
-            CBCSubstationBuses busesMsg = (CBCSubstationBuses)msg;
-            for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
-            {
-                //if the user can not see this sub, let us remove it
-                if( !AuthFuncs.userHasAccessPAO( ClientSession.getInstance().getUser(), busesMsg.getSubBusAt(i).getCcId().intValue() ) )
-                    busesMsg.removeSubBusAt( i );
-            }
-        }
-        else if( msg instanceof CBCSubAreaNames )
-        {
-            //filter based on user and what Areas they can see
-/*
-            CBCSubAreaNames areaMsg = (CBCSubAreaNames)msg;
-            for( int i = (areaMsg.getNumberOfAreas()-1); i >= 0; i-- )
-            {
-                for( int j = 0; j < areaMsg.getAreaSubIDs().size(); j++ )
-                {
-                    int[] subIDs = (int[])areaMsg.getAreaSubIDs().get(j);
-
-                    //if the user can not see this area, let us remove it
-                    if( !AuthFuncs.userHasAccessPAO( ClientSession.getInstance().getUser(), areaMsg.getSubBusAt(i).getCcId().intValue() ) )
-                        busesMsg.removeSubBusAt( i );
-                }
-            }
-*/
-        }
-
-        
-        //let the parent tell everyone its story
-        super.fireMessageEvent( msg );
-    }
-
+//    public void fireMessageEvent(Message msg)
+//    {
+//        if( msg instanceof CBCSubstationBuses )
+//        {
+//            //remove any Subs the user should not see
+//            CBCSubstationBuses busesMsg = (CBCSubstationBuses)msg;
+//            for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- )
+//            {
+//                //if the user can not see this sub, let us remove it
+//                if( !AuthFuncs.userHasAccessPAO( ClientSession.getInstance().getUser(), busesMsg.getSubBusAt(i).getCcId().intValue() ) )
+//                    busesMsg.removeSubBusAt( i );
+//            }
+//        }
+//        
+//        //let the parent tell everyone its story
+//        super.fireMessageEvent( msg );
+//    }
+//
     
 	/**
 	 * 
