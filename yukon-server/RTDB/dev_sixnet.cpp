@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/10 20:26:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -329,7 +329,7 @@ CtiSxlRecord& CtiSxlRecord::setValue(const double& val)
 int CtiDeviceSixnet::assembleSetTail(uint32 tail)
 {
     LockGuard gd(monitor());
-    return getProtocol().DlMOVETAILGenerate(tail);
+    return getSixnetProtocol().DlMOVETAILGenerate(tail);
 }
 
 
@@ -346,7 +346,7 @@ int CtiDeviceSixnet::assembleSetTail(uint32 tail)
 int CtiDeviceSixnet::assembleGetRecords(uint32 first, int n)
 {
     LockGuard gd(monitor());
-    return getProtocol().DlGETRECSGenerate(first, n);
+    return getSixnetProtocol().DlGETRECSGenerate(first, n);
 }
 
 int CtiDeviceSixnet::processGetRecords(int &recProcessed)
@@ -355,14 +355,14 @@ int CtiDeviceSixnet::processGetRecords(int &recProcessed)
     // Someone has record data out there...
 
 
-    recProcessed = getProtocol().getNumRecordsRead();  // return number read
+    recProcessed = getSixnetProtocol().getNumRecordsRead();  // return number read
 
     bool bOk = recProcessed > 0;
 
     if (bOk)
     {
         FIELDCOLLECTION::iterator fit;
-        const vector<uchar> &vecRef = getProtocol().getByteBuffer();
+        const vector<uchar> &vecRef = getSixnetProtocol().getByteBuffer();
 
         for (int i = 0; i < recProcessed; ++i)
         {
@@ -396,13 +396,13 @@ time_t CtiDeviceSixnet::getFirstRecordTime()
     time_t tstamp = 0;
     // Someone has record data out there...
 
-    int numRead = getProtocol().getNumRecordsRead();  // return number read
+    int numRead = getSixnetProtocol().getNumRecordsRead();  // return number read
 
     bool bOk = numRead > 0;
 
     if (bOk)
     {
-        tstamp = (getProtocol().getByteBuffer()[0] << 24) + (getProtocol().getByteBuffer()[1] << 16) + (getProtocol().getByteBuffer()[2] << 8) + getProtocol().getByteBuffer()[3];
+        tstamp = (getSixnetProtocol().getByteBuffer()[0] << 24) + (getSixnetProtocol().getByteBuffer()[1] << 16) + (getSixnetProtocol().getByteBuffer()[2] << 8) + getSixnetProtocol().getByteBuffer()[3];
     }
 
     return tstamp;
@@ -421,13 +421,13 @@ time_t CtiDeviceSixnet::getFirstRecordTime()
 int CtiDeviceSixnet::assembleGetFields()
 {
     LockGuard gd(monitor());
-    return getProtocol().FsREADGenerate(SXL_FIELDS, 8 * _fieldCnt);
+    return getSixnetProtocol().FsREADGenerate(SXL_FIELDS, 8 * _fieldCnt);
 }
 
 int CtiDeviceSixnet::processGetFields()
 {
     LockGuard gd(monitor());
-    bool bOk = ( getProtocol().getByteBuffer().size() == 8 * _fieldCnt );
+    bool bOk = ( getSixnetProtocol().getByteBuffer().size() == 8 * _fieldCnt );
 
     _registerCnt = 0;
     _demAccumCnt = 0;
@@ -441,10 +441,10 @@ int CtiDeviceSixnet::processGetFields()
         {
             CSxlField fld;
 
-            fld.m_eType = (CSxlField::iotypes_t)getProtocol().getfd8(i * 8);
-            fld.m_nNumRegs = getProtocol().getfd8(i * 8 + 1);
-            fld.m_nFirst = getProtocol().getfd16(i * 8 + 2);
-            fld.m_nOffset = getProtocol().getfd32(i * 8 + 4);
+            fld.m_eType = (CSxlField::iotypes_t)getSixnetProtocol().getfd8(i * 8);
+            fld.m_nNumRegs = getSixnetProtocol().getfd8(i * 8 + 1);
+            fld.m_nFirst = getSixnetProtocol().getfd16(i * 8 + 2);
+            fld.m_nOffset = getSixnetProtocol().getfd32(i * 8 + 4);
 
             if (getDebugLevel() & 0x10000000)
             {
@@ -495,7 +495,7 @@ int CtiDeviceSixnet::processGetFields()
 int CtiDeviceSixnet::assembleGetHeaderInfo()
 {
     LockGuard gd(monitor());
-    return getProtocol().FsREADGenerate(SXL_HDR, SXL_HDR_SIZE);
+    return getSixnetProtocol().FsREADGenerate(SXL_HDR, SXL_HDR_SIZE);
 }
 
 
@@ -508,24 +508,24 @@ int CtiDeviceSixnet::processGetHeaderInfo()
     int status = NORMAL;
 
 
-    if (getProtocol().getByteBuffer().size() >= SXL_HDR_SIZE)     // Did we get that which we asked for??
+    if (getSixnetProtocol().getByteBuffer().size() >= SXL_HDR_SIZE)     // Did we get that which we asked for??
     {
         bool bOk = true;
 
         // first make sure the header is for file format I recognize
         if (bOk)
         {
-            if (getProtocol().getfd8(SXL_MAJOR_VERS) != 1
-                || getProtocol().getfd8(SXL_MINOR_VERS) != 0
-                || getProtocol().getfd8(SXL_RELEASE) != 0
-                || getProtocol().getfd8(SXL_REVISION) != 1)
+            if (getSixnetProtocol().getfd8(SXL_MAJOR_VERS) != 1
+                || getSixnetProtocol().getfd8(SXL_MINOR_VERS) != 0
+                || getSixnetProtocol().getfd8(SXL_RELEASE) != 0
+                || getSixnetProtocol().getfd8(SXL_REVISION) != 1)
                 bOk = false;      // don't recognize header, give up
         }
 
         // make sure configuration loaded OK
         if (bOk)
         {
-            if (getProtocol().getfd8(SXL_ERROR) != 0)
+            if (getSixnetProtocol().getfd8(SXL_ERROR) != 0)
             {
                 status = !NORMAL;
                 bOk = false;      // configuration has errors, give up
@@ -535,11 +535,11 @@ int CtiDeviceSixnet::processGetHeaderInfo()
         if (bOk)
         {
             // process data
-            _fieldCnt = getProtocol().getfd16(SXL_NFIELDS);         // number of I/O fields in record
-            _records = getProtocol().getfd32(SXL_NRECORDS);         // maximum records in file
-            _recSize = getProtocol().getfd32(SXL_RECSIZE);          // bytes in each record
-            _timeFormat = getProtocol().getfd8(SXL_MISC) & 0x7;     // time format
-            _logRate =  (getProtocol().getfd32(SXL_MSINTERVAL) / 1000);      // seconds per log
+            _fieldCnt = getSixnetProtocol().getfd16(SXL_NFIELDS);         // number of I/O fields in record
+            _records = getSixnetProtocol().getfd32(SXL_NRECORDS);         // maximum records in file
+            _recSize = getSixnetProtocol().getfd32(SXL_RECSIZE);          // bytes in each record
+            _timeFormat = getSixnetProtocol().getfd8(SXL_MISC) & 0x7;     // time format
+            _logRate =  (getSixnetProtocol().getfd32(SXL_MSINTERVAL) / 1000);      // seconds per log
         }
     }
     else
@@ -565,13 +565,13 @@ int CtiDeviceSixnet::processGetHeaderInfo()
 int CtiDeviceSixnet::assembleGetHeadTail()
 {
     LockGuard gd(monitor());
-    return getProtocol().FsREADGenerate(SXL_HEAD, 8);
+    return getSixnetProtocol().FsREADGenerate(SXL_HEAD, 8);
 }
 
 int CtiDeviceSixnet::processGetHeadTail()
 {
     LockGuard gd(monitor());
-    bool bOk = getProtocol().getByteBuffer().size() == 8;
+    bool bOk = getSixnetProtocol().getByteBuffer().size() == 8;
 
     // first make sure the header is for file format I recognize
     /*
@@ -583,8 +583,8 @@ int CtiDeviceSixnet::processGetHeadTail()
      */
     if (bOk)
     {
-        _head = getProtocol().getfd32(SXL_HEAD-SXL_HEAD);   // get head record number
-        _tail = getProtocol().getfd32(SXL_TAIL-SXL_HEAD);   // get tail record number
+        _head = getSixnetProtocol().getfd32(SXL_HEAD-SXL_HEAD);   // get head record number
+        _tail = getSixnetProtocol().getfd32(SXL_TAIL-SXL_HEAD);   // get tail record number
     }
 
     int cnt;
@@ -629,7 +629,7 @@ int CtiDeviceSixnet::assembleGetAlias()
     if (_recordData.size()) _recordData.clear();
 
     // Fill out the request message and return the number of bytes to be sent into the world.
-    return getProtocol().FsGetAliasGenerate(_logfileName.data());
+    return getSixnetProtocol().FsGetAliasGenerate(_logfileName.data());
 }
 
 bool CtiDeviceSixnet::processGetAlias()
@@ -637,7 +637,7 @@ bool CtiDeviceSixnet::processGetAlias()
     LockGuard gd(monitor());
     // Return value is zero for success.
 
-    return getProtocol().validAlias();
+    return getSixnetProtocol().validAlias();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -687,7 +687,7 @@ CtiDeviceSixnet& CtiDeviceSixnet::operator=(const CtiDeviceSixnet& aRef)
 }
 
 
-CtiProtocolSixnet& CtiDeviceSixnet::getProtocol()
+CtiProtocolSixnet& CtiDeviceSixnet::getSixnetProtocol()
 {
     LockGuard gd(monitor());
     if (_protocol == NULL)
@@ -1500,7 +1500,7 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
 
 int CtiDeviceSixnet::analyzeReadBytes(int bytesread)
 {
-    return getProtocol().disassemble( bytesread );
+    return getSixnetProtocol().disassemble( bytesread );
 }
 
 
@@ -1606,7 +1606,7 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
     }
     else
     {
-        UINT bytesleft = getProtocol().getBytesLeftInRead();
+        UINT bytesleft = getSixnetProtocol().getBytesLeftInRead();
 
         // We are not timed out, but are in an intermediate state and need MORE data from the port
         {
@@ -1834,8 +1834,8 @@ void CtiDeviceSixnet::DecodeDatabaseReader(RWDBReader &rdr)
     _targetStationNum = getIED().getSlaveAddress();    // Lie to me baby
     _logfileName = getIED().getPassword();             // Lie to me baby
 
-    getProtocol().setStationNumber(_msStationNum);        // Update the nonsense
-    getProtocol().setDestination(_targetStationNum);      // Update the nonsense
+    getSixnetProtocol().setStationNumber(_msStationNum);        // Update the nonsense
+    getSixnetProtocol().setDestination(_targetStationNum);      // Update the nonsense
 }
 
 
