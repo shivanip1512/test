@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:36 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2003/10/31 21:15:41 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.4  2003/10/31 21:15:41  dsutton
+      Updated to allow us to send and receive accumlator points to other systems.
+      Oversite from the original implementation
+
       Revision 1.3  2002/04/16 15:58:36  softwarebuild
       20020416_1031_2_16
 
@@ -312,6 +316,8 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
         {
             case AnalogPointType:
             case CalculatedPointType:
+            case PulseAccumulatorPointType:
+            case DemandAccumulatorPointType:
                 {
                     ptr->function = htonl (SINGLE_SOCKET_VALUE);
                     strcpy (ptr->value.translation,aPoint.getTranslateName(getLayer()->getName()));
@@ -636,7 +642,7 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
                 pData = new CtiPointDataMsg(point.getPointID(), 
                                             value, 
                                             quality, 
-                                            AnalogPointType);
+                                            point.getPointType());
 
                 pData->setTime(timestamp);
 

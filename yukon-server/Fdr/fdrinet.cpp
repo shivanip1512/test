@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2003/06/04 21:18:51 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2003/10/31 21:15:41 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,8 +23,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
-      Revision 1.7  2003/06/04 21:18:51  dsutton
-      Interface wasn't applying the multiplier or offset to the incoming points
+      Revision 1.8  2003/10/31 21:15:41  dsutton
+      Updated to allow us to send and receive accumlator points to other systems.
+      Oversite from the original implementation
 
       Revision 1.6  2002/10/14 21:10:54  dsutton
       In the database translation routines, if we failed to hit the database
@@ -1676,7 +1677,7 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
                         pData = new CtiPointDataMsg(point.getPointID(), 
                                                     value, 
                                                     quality, 
-                                                    AnalogPointType);
+                                                    point.getPointType());
 
                         pData->setTime(timestamp);
                         // consumes a delete memory

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:30 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2003/10/31 21:15:40 $
 *
 *
 *    AUTHOR: David Sutton
@@ -24,6 +24,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.4  2003/10/31 21:15:40  dsutton
+      Updated to allow us to send and receive accumlator points to other systems.
+      Oversite from the original implementation
+
       Revision 1.3  2002/04/16 15:58:30  softwarebuild
       20020416_1031_2_16
 
@@ -415,6 +419,8 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
         {
             case AnalogPointType:
             case CalculatedPointType:
+            case PulseAccumulatorPointType:
+            case DemandAccumulatorPointType:
                 {
                     ptr->Function = htons (SINGLE_SOCKET_VALUE);
                     YukonToForeignId (aPoint.getTranslateName(RWCString(FDR_ACS)),
@@ -637,7 +643,7 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
             pData = new CtiPointDataMsg(point.getPointID(), 
                                         value, 
                                         quality, 
-                                        AnalogPointType);
+                                        point.getPointType());
 
             pData->setTime(timestamp);
 
