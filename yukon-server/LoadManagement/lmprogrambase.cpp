@@ -24,6 +24,7 @@
 #include "loadmanager.h"
 #include "resolvers.h"
 #include "mgr_holiday.h"
+#include "mgr_season.h"
 
 extern BOOL _LM_DEBUG;
 
@@ -281,6 +282,26 @@ LONG CtiLMProgramBase::getMinRestartTime() const
 {
 
     return _minrestarttime;
+}
+
+/*---------------------------------------------------------------------------
+    getHolidayScheduleId
+
+    Returns the id of the holiday schedule used by the program
+---------------------------------------------------------------------------*/
+LONG CtiLMProgramBase::getHolidayScheduleId() const
+{
+    return _holidayscheduleid;
+}
+
+/*---------------------------------------------------------------------------
+    getSeasonScheduleId
+
+    Returns the id of the season schedule used by the program
+---------------------------------------------------------------------------*/
+LONG CtiLMProgramBase::getSeasonScheduleId() const
+{
+    return _seasonscheduleid;
 }
 
 /*---------------------------------------------------------------------------
@@ -615,6 +636,30 @@ CtiLMProgramBase& CtiLMProgramBase::setMinRestartTime(LONG restart)
 }
 
 /*---------------------------------------------------------------------------
+    setHolidayScheduleId
+
+    Sets the id of the holiday schedule used by the program
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramBase::setHolidayScheduleId(LONG schdid)
+{
+    _holidayscheduleid = schdid;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setSeasonScheduleId
+
+    Sets the id of the season schedule used by the program
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramBase::setSeasonScheduleId(LONG schdid)
+{
+    _seasonscheduleid = schdid;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setProgramStatusPointId
 
     Sets the status point id for the program
@@ -714,19 +759,22 @@ CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualrece
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isAvailableToday()
 {
-
+    BOOL returnBool = TRUE;
 
     RWTime now;
     struct tm start_tm;
 
     now.extract(&start_tm);
 
-    if( _availableweekdays(start_tm.tm_wday) == 'Y' &&
-        ( _availableweekdays(7) == 'Y' ||
-          !CtiHolidayManager::getInstance().isHoliday() ) )
-        return TRUE;
-    else
-        return FALSE;
+    long currentSeason = CtiSeasonManager::getInstance().getCurrentSeason(RWDate(), getSeasonScheduleId());
+    if( _availableweekdays(start_tm.tm_wday) == 'N' ||
+        ( _availableweekdays(7) == 'N' && CtiHolidayManager::getInstance().isHoliday(getHolidayScheduleId()) ) ||
+        _availableseasons(currentSeason) == 'N' )
+    {
+        returnBool = FALSE;
+    }
+
+    return returnBool;
 }
 
 /*---------------------------------------------------------------------------
@@ -736,8 +784,6 @@ BOOL CtiLMProgramBase::isAvailableToday()
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay)
 {
-
-
     BOOL returnBoolean = FALSE;
     if( _lmprogramcontrolwindows.entries() > 0 )
     {
@@ -759,6 +805,17 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay
     return returnBoolean;
 }
 
+/*---------------------------------------------------------------------------
+    isPastMinRestartTime
+
+    Returns a BOOLean if the control area can be controlled more because the
+    time since the last control is at least as long as the min response time.
+---------------------------------------------------------------------------*/
+BOOL CtiLMProgramBase::isPastMinRestartTime(ULONG secondsFrom1901)
+{
+    return TRUE;
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -766,9 +823,6 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay
 --------------------------------------------------------------------------*/
 void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
 {
-
-
-
     RWCollectable::restoreGuts( istrm );
 
     RWTime tempTime1;
@@ -791,7 +845,9 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     >> _maxhoursseasonal
     >> _maxhoursannually
     >> _minactivatetime
-    >> _minrestarttime
+    >> _minrestarttime/*
+    >> _holidayscheduleid
+    >> _seasonscheduleid*/
     >> _programstatuspointid
     >> _programstate
     >> _reductionanalogpointid
@@ -835,7 +891,9 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
     << _maxhoursseasonal
     << _maxhoursannually
     << _minactivatetime
-    << _minrestarttime
+    << _minrestarttime/*
+    << _holidayscheduleid
+    << _seasonscheduleid*/
     << _programstatuspointid
     << _programstate
     << _reductionanalogpointid
@@ -876,6 +934,8 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _maxhoursannually = right._maxhoursannually;
         _minactivatetime = right._minactivatetime;
         _minrestarttime = right._minrestarttime;
+        _holidayscheduleid = right._holidayscheduleid;
+        _seasonscheduleid = right._seasonscheduleid;
         _programstatuspointid = right._programstatuspointid;
         _programstate = right._programstate;
         _reductionanalogpointid = right._reductionanalogpointid;
@@ -1032,6 +1092,8 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     rdr["maxhoursannually"] >> _maxhoursannually;
     rdr["minactivatetime"] >> _minactivatetime;
     rdr["minrestarttime"] >> _minrestarttime;
+    rdr["holidayscheduleid"] >> _holidayscheduleid;
+    rdr["seasonscheduleid"] >> _seasonscheduleid;
 
     rdr["programstate"] >> isNull;
     if( !isNull )
