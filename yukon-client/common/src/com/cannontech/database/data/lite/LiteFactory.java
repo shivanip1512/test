@@ -5,6 +5,7 @@ import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.user.YukonGroup;
 
 /**
  * This type was created in VisualAge.
@@ -116,7 +117,16 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setUsername( ((LiteYukonUser)liteObject).getUsername() );
 		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setPassword( ((LiteYukonUser)liteObject).getPassword() );
 		 		break;
-	/* TODO add SystemRole,YukonGroup,YukonRoleProperty */		 		
+			case LiteTypes.YUKON_GROUP:
+				returnObject = new com.cannontech.database.db.user.YukonGroup(
+						new Integer( ((LiteYukonGroup)liteObject).getGroupID() ),
+						((LiteYukonGroup)liteObject).getGroupName() );
+
+				((com.cannontech.database.db.user.YukonGroup)returnObject).setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
+				break;
+
+
+	/* TODO add SystemRole,YukonRoleProperty */		 		
 		 	case LiteTypes.ENERGY_COMPANY:
 		 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
 		 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
@@ -222,7 +232,15 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((YukonUser)val).getYukonUser().getPassword(),
 			((YukonUser)val).getYukonUser().getStatus() );
 	}
-	/* TODO add SystemRole,YukonGroup,YukonRoleProperty */
+	else if( val instanceof YukonGroup )
+	{
+		returnLite = new LiteYukonGroup(
+			((YukonGroup)val).getGroupID().intValue(),
+			((YukonGroup)val).getGroupName() );
+		
+		((LiteYukonGroup)returnLite).setGroupDescription( ((YukonGroup)val).getGroupDescription() );
+	}	
+	/* TODO add SystemRole,YukonRoleProperty */
 	else if( val instanceof com.cannontech.database.data.pao.YukonPAObject )
 	{
 		returnLite = new LiteYukonPAObject( 
