@@ -65,7 +65,10 @@ public class ConnectionPool
 			 checkedOut--;
 			 notifyAll();
 	  
-			 CTILogger.debug("Returned/Added connection to pool");
+			 CTILogger.debug(
+				"Returned/Added connection to pool (conn= 0x" +
+			 	Integer.toHexString(conn.hashCode()) + ")" );
+			 
 			 CTILogger.debug( getStats() );
 		}
 	}
@@ -145,7 +148,10 @@ public class ConnectionPool
 			else
 			{
 				checkedOut++;
-				CTILogger.debug( "Delivered connection from pool" );
+				CTILogger.debug(
+					"Delivered connection from pool (conn= 0x" +
+					Integer.toHexString(conn.hashCode()) + ")" );
+				
 				CTILogger.debug( getStats() );
 			  
 			
