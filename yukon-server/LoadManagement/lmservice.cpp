@@ -234,7 +234,7 @@ void CtiLMService::Run()
                 Sleep(1000);
 
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-            RWOrdered* controlAreas = store->getControlAreas();
+            RWOrdered* controlAreas = store->getControlAreas(RWDBDateTime().seconds());
 
             if ( !store->isValid() )
             {
