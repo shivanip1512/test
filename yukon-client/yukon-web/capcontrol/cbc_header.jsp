@@ -10,12 +10,11 @@
 <%@ page import="com.cannontech.cbc.web.CapControlWebAnnex" %>
 <%@ page import="com.cannontech.cbc.messages.CBCCommand" %>
 <%@ page import="com.cannontech.servlet.CBCConnServlet" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 
-<jsp:useBean 
-	id="cbcAnnex" scope="session"
+<jsp:useBean id="cbcAnnex" scope="session"
 	class="com.cannontech.cbc.web.CapControlWebAnnex"
-/>
-
+/>	
 <jsp:useBean 
 	id="cbcSession" scope="session" 
 	class="com.cannontech.cbc.web.CBCSessionInfo"
@@ -27,11 +26,15 @@
 <%  
     CBCConnServlet connServlet = (CBCConnServlet)
         application.getAttribute(CBCConnServlet.SERVLET_CONTEXT_ID);
-   
-   
+
+	if( cbcAnnex.getYukonUser() == null )
+		cbcAnnex.setYukonUser( (LiteYukonUser)session.getAttribute("YUKON_USER") );
+
+
    if( !cbcAnnex.hasValidConn() )
 		cbcAnnex.setConnection( connServlet.getConnection() );
 	
+
 	/**
 	* Remember this, every client session has its own set of table
 	* models in it. So, each session has its own copy of the blob.
@@ -52,13 +55,7 @@
 		if( subBusMdl.getAreaNames().size() > 0 && cbcSession.getLastArea() == null)
 			cbcSession.setLastArea( subBusMdl.getAreaNames().get(0).toString() );	
 	}
-	
-	
-	cbcAnnex.setUserName( 
-		(session.getAttribute("YUKON_USER") == null 
-		 ? "(null)"
-		 : session.getAttribute("YUKON_USER").toString()) );
-	
+		
 	
 	//set the filter to the one we want
 	subBusMdl.setFilter( cbcSession.getLastArea() );
