@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:36:12 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/05/19 16:33:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,12 +84,15 @@ public:
     virtual RWTime adjustNextScanTime( const INT scanType=ScanRateGeneral );
     // RWTime setNextInterval(RWTime &aTime, ULONG scanrate);
 
+    //  scanner-side functions
     //  to be overridden by the 24x, 310, and 318
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual ULONG calcNextLPScanTime( void );
     ULONG         getNextLPScanTime( void );
     void          sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     int           checkLoadProfileQuality( unsigned long &pulses, PointQuality_t &quality, int &badData );
+    //  porter-side functions
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     RWCString getDescription( const CtiCommandParser &parse ) const;
 

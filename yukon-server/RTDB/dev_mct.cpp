@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2003/03/13 19:35:56 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2003/05/19 16:33:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1308,9 +1308,19 @@ INT CtiDeviceMCT::executeScan(CtiRequestMsg                  *pReq,
         }
         case ScanRateLoadProfile:
         {
+            //  outmess needs to be filled in by another function, just check if it's there
             function = CtiProtocolEmetcon::Scan_LoadProfile;
-            //  don't overwrite the outmess stuff - it's been filled in in scanner
             found = getOperation(CtiProtocolEmetcon::Scan_LoadProfile, stub, stub, stub);
+
+            if( found )
+            {
+                //  make sure to define this function for all load profile devices!
+                if( !calcLPRequestLocation(parse, OutMessage) )
+                {
+                    found = false;
+                }
+            }
+
             break;
         }
         default:
@@ -3525,5 +3535,14 @@ INT CtiDeviceMCT::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< OUT
 }
 
 
+bool CtiDeviceMCT::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Default load profile request location handler - request deleted" << endl;
+    }
 
+    return false;
+}
 

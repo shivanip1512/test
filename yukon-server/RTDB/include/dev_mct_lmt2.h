@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:36:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/05/19 16:33:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,42 +25,45 @@ class CtiDeviceMCT_LMT2 : public CtiDeviceMCT22X
 {
 protected:
 
+    enum
+    {
+        MCT_LMT2_LPStatusAddr   = 0x95,
+        MCT_LMT2_LPStatusLen    =    5,
+
+        MCT_LMT2_LPIntervalAddr = 0x97,
+        MCT_LMT2_LPIntervalLen  =    1
+    };
+
 private:
 
    static CTICMDSET _commandStore;
+   RWTime _lastLPRequestAttempt, _lastLPRequestBlockStart;
 
 public:
 
    typedef CtiDeviceMCT22X Inherited;
 
-    CtiDeviceMCT_LMT2();// {}
+    CtiDeviceMCT_LMT2();
+    CtiDeviceMCT_LMT2( const CtiDeviceMCT_LMT2 &aRef );
+    virtual ~CtiDeviceMCT_LMT2();
 
-    CtiDeviceMCT_LMT2(const CtiDeviceMCT_LMT2& aRef);/*
-    {
-        *this = aRef;
-    }                                                  */
+    CtiDeviceMCT_LMT2& operator=(const CtiDeviceMCT_LMT2& aRef);
 
-    virtual ~CtiDeviceMCT_LMT2();// {}
+    static  bool initCommandStore( );
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
-    CtiDeviceMCT_LMT2& operator=(const CtiDeviceMCT_LMT2& aRef);/*
-    {
-        if(this != &aRef)
-        {
-           Inherited::operator=(aRef);
-        }
-        return *this;
-    }                                                             */
+    ULONG calcNextLPScanTime( void );
+    INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
+    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-    virtual INT ResultDecode(INMESS*, RWTime&, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
+    INT decodeScanLoadProfile     ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeAccumScan(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT decodeDemandScan(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     INT decodeGetValueDefault(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-
-    static bool initCommandStore();
-    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+    INT decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 
     INT decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-
 };
 #endif // #ifndef __DEV_MCT_LMT2_H__

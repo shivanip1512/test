@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/03/13 19:35:57 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/05/19 16:33:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,6 +324,7 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                   lpMidnightOffset;
     RWTime        lpBlockStartTime;
     RWTime        Now;
+    RWCString     lpDescriptorString;
 
     lpBlockStartTime = getLastLPTime();
     lpDemandRate     = getLoadProfile().getLoadProfileDemandRate();
@@ -337,55 +338,63 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     }
     else
     {
-        //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
-        if( lpDemandRate == 3600 )
-            lpMaxBlocks = 4;
-        else
-            lpMaxBlocks = 8;
-
-        lpBlocksToCollect = (Now.seconds() - lpBlockStartTime.seconds()) / lpBlockSize;
-
-        //  make sure we only ask for what remains in memory
-        if( lpBlocksToCollect > (lpMaxBlocks - 1) )
+        if( useScanFlags() )
         {
-            //  start with everything but the current block
-            lpBlockStartTime = Now.seconds() - (lpBlockSize * (lpMaxBlocks - 1));
-        }
+            //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+            if( lpDemandRate == 3600 )
+                lpMaxBlocks = 4;
+            else
+                lpMaxBlocks = 8;
 
-        //  figure out seconds from midnight
-        lpMidnightOffset  = lpBlockStartTime.hour() * 3600;
-        lpMidnightOffset += lpBlockStartTime.minute() * 60;
-        lpMidnightOffset += lpBlockStartTime.second();
+            lpBlocksToCollect = (Now.seconds() - lpBlockStartTime.seconds()) / lpBlockSize;
 
-        //  make sure our reported "start time" is at the beginning of a block
-        lpBlockStartTime -= lpMidnightOffset % lpBlockSize;
-        lpMidnightOffset -= lpMidnightOffset % lpBlockSize;
-
-        if( getNextLPScanTime() <= Now )
-        {
-            _lastLPRequestBlockStart = lpBlockStartTime;
-            _lastLPRequestAttempt    = Now;
-
-            //  adjust for wraparound
-            lpBlockAddress = lpMidnightOffset % (lpBlockSize * lpMaxBlocks);
-
-            lpBlockAddress /= lpBlockSize;
-            lpBlockAddress += 0x50;
-
-            OutMessage->Buffer.BSt.Function = lpBlockAddress;
-            OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval
-            OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
-
-            outList.append(OutMessage);
-
-            OutMessage = NULL;
-        }
-        else
-        {
+            //  make sure we only ask for what remains in memory
+            if( lpBlocksToCollect > (lpMaxBlocks - 1) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "LP scan too early." << endl;
+                //  start with everything but the current block
+                lpBlockStartTime = Now.seconds() - (lpBlockSize * (lpMaxBlocks - 1));
+            }
+
+            //  figure out seconds from midnight
+            lpMidnightOffset  = lpBlockStartTime.hour() * 3600;
+            lpMidnightOffset += lpBlockStartTime.minute() * 60;
+            lpMidnightOffset += lpBlockStartTime.second();
+
+            //  make sure our reported "start time" is at the beginning of a block
+            lpBlockStartTime -= lpMidnightOffset % lpBlockSize;
+            lpMidnightOffset -= lpMidnightOffset % lpBlockSize;
+
+            if( getNextLPScanTime() <= Now )
+            {
+                _lastLPRequestBlockStart = lpBlockStartTime;
+                _lastLPRequestAttempt    = Now;
+
+                //  adjust for wraparound
+                lpBlockAddress = lpMidnightOffset % (lpBlockSize * lpMaxBlocks);
+
+                lpBlockAddress /= lpBlockSize;
+
+                lpDescriptorString = RWCString(" block ") + CtiNumStr(lpBlockAddress+1);
+
+                strncat( OutMessage->Request.CommandStr,
+                         lpDescriptorString.data(),
+                         sizeof(OutMessage->Request.CommandStr) - strlen(OutMessage->Request.CommandStr));
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "\"" << OutMessage->Request.CommandStr << "\"" << endl;
+                }
+
+                outList.insert(OutMessage);
+                OutMessage = NULL;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "LP scan too early." << endl;
+                }
             }
         }
     }
@@ -397,6 +406,44 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     }
 
     return nRet;
+}
+
+
+bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+{
+    bool retVal = false;
+    int lpBlockAddress;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
+    }
+
+    if( lpBlockAddress = parse.getiValue("scan_loadprofile_block", 0) )
+    {
+        lpBlockAddress--;  //  adjust to be a zero-based offset
+
+        lpBlockAddress += 0x50;
+
+        OutMessage->Buffer.BSt.Function = lpBlockAddress;
+        OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and a status byte to boot
+        OutMessage->Buffer.BSt.IO       = IO_FCT_READ;
+
+        retVal = true;
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
+        }
+
+        retVal = false;
+    }
+
+    return retVal;
 }
 
 
