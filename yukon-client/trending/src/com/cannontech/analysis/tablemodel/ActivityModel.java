@@ -1,8 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
-
-
-import java.util.Date;
+import java.util.HashMap;
 
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.data.activity.ActivityLog;
@@ -24,9 +22,7 @@ import com.cannontech.analysis.data.activity.ActivityLog;
 public class ActivityModel extends ReportModelBase
 {
 	/** Class fields */
-	private int energyCompanyID = -1;
-	private int userID = -1;
-	private int customerID = -1;
+	private Integer energyCompanyID = null;
 	
 	/**
 	 * Constructor class
@@ -48,13 +44,22 @@ public class ActivityModel extends ReportModelBase
 		setReportType(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA);		
 	}
 
+	/**
+	 * Constructor class
+	 * @param statType_ DynamicPaoStatistics.StatisticType
+	 */
+	public ActivityModel(int energyCompanyID_)
+	{
+		this();//default type
+		setEnergyCompanyID(energyCompanyID);
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.data.ReportModelBase#collectData()
 	 */
 	public void collectData()
 	{
 		int rowCount = 0;
-			
 		StringBuffer sql = buildSQLStatement();
 		
 		java.sql.Connection conn = null;
@@ -84,13 +89,16 @@ public class ActivityModel extends ReportModelBase
 				while( rset.next())
 				{
 					addDataRow(rset);
-				}
+				}				
 			}
 		}
 				
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error(" DB : Standard SQL Builder did not work, trying with a non SQL-92 query");
+			//try using a nonw SQL-92 method, will be slower
+			//  Oracle 8.1.X and less will use this
+			runNonSQL92Statement();
 		}
 		finally
 		{
@@ -116,24 +124,111 @@ public class ActivityModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, AL.CUSTOMERID, " + 
-		" AL.USERID, AL.ACCOUNTID, AL.PAOID, AL.TIMESTAMP, AL.ACTION, AL.DESCRIPTION " +
-		" FROM ACTIVITYLOG AL " +
+		StringBuffer sql = new StringBuffer("SELECT AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, " + 
+		" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " + 
+		" FROM ACTIVITYLOG AL LEFT OUTER JOIN CUSTOMERACCOUNT CA " +
+		" ON CA.ACCOUNTID = AL.ACCOUNTID " + 
 		" WHERE AL.TIMESTAMP >= ? ");
-		if( getEnergyCompanyID() > -1 )
+		if( getEnergyCompanyID() != null )
 			sql.append(" AND AL.ENERGYCOMPANYID = " + getEnergyCompanyID());
 		
-		if( getCustomerID() > -1)
-			sql.append(" AND AL.CUSTOMERID = " + getCustomerID());
-			
-		if( getUserID() > -1 )
-			sql.append(" AND AL.USERID = " + getUserID());
-		
-		sql.append(" ORDER BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.USERID, AL.ACCOUNTID, AL.TIMESTAMP");
+		sql.append(" GROUP BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION " +
+					" ORDER BY AL.ENERGYCOMPANYID, AL.CUSTOMERID, CA.ACCOUNTNUMBER, ACTION");
 		return sql;
 		
 	}
+	/**
+	 * Build the SQL statement to retrieve <StatisticDeviceDataBase> data.
+	 * @return StringBuffer  an sqlstatement
+	 */
+	public void runNonSQL92Statement()
+	{
+		
+		int rowCount = 0;
+			
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
 
+		try
+		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+
+			if( conn == null )
+			{
+				com.cannontech.clientutils.CTILogger.error(getClass() + ":  Error getting database connection.");
+				return;
+			}
+			else
+			{
+				StringBuffer sql = new StringBuffer("SELECT DISTINCT ACCOUNTID, ACCOUNTNUMBER FROM CUSTOMERACCOUNT");
+				pstmt = conn.prepareStatement(sql.toString());
+				rset = pstmt.executeQuery();
+				HashMap acctNumHash = new HashMap();
+				while( rset.next())
+				{
+					Integer acctID = new Integer(rset.getInt(1));
+					String acctNum = rset.getString(2);
+					acctNumHash.put(acctID, acctNum);
+				}
+					
+				sql = new StringBuffer("SELECT ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION, " + 
+					" COUNT(ACTIVITYLOGID) AS ACTIONCOUNT " +
+					" FROM ACTIVITYLOG " +
+					" WHERE TIMESTAMP >= ? ");
+				if( getEnergyCompanyID() != null)
+					sql.append(" AND ENERGYCOMPANYID = " + getEnergyCompanyID());
+
+				sql.append(" GROUP BY ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION " +
+							" ORDER BY ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION");
+				
+				pstmt = conn.prepareStatement(sql.toString());
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartTime() ));
+				//pstmt.setTimestamp(2, new java.sql.Timestamp( getStopTime()));
+				com.cannontech.clientutils.CTILogger.info("START DATE > " + new java.sql.Timestamp(getStartTime()) + "  -  STOP DATE <= " + new java.sql.Timestamp(getStopTime()));
+				/*java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
+				tempCal.add(java.util.Calendar.DATE, -90);
+				stmt.setTimestamp(1, new java.sql.Timestamp(tempCal.getTime().getTime()));
+				System.out.println( "DATE > "+ tempCal.getTime());*/
+				rset = pstmt.executeQuery();
+				while( rset.next())
+				{
+					Integer ecID = new Integer(rset.getInt(1));
+					Integer custID = new Integer(rset.getInt(2));
+					Integer acctID = new Integer(rset.getInt(3));
+					String action = rset.getString(4);
+					Integer count = new Integer(rset.getInt(5));
+					//ENERGYCOMPANYID, CUSTOMERID, ACCOUNTID, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT 
+
+					String acctNum = (String)acctNumHash.get(acctID);
+
+					ActivityLog al = new ActivityLog(ecID, custID, acctNum, count, action);
+					getData().add(al); 
+				}
+			}
+		}
+		
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null )
+					pstmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		return;
+	}
+	
 	/**
 	 * Add <innerClass> objects to data, retrieved from rset.
 	 * @param ResultSet rset
@@ -144,25 +239,14 @@ public class ActivityModel extends ReportModelBase
 		{
 			Integer ecID = new Integer(rset.getInt(1));
 			Integer custID = new Integer(rset.getInt(2));
-			Integer userID = new Integer(rset.getInt(3));
-			Integer acctID = new Integer(rset.getInt(4));
-			Integer paoID = new Integer(rset.getInt(5));
-			java.sql.Timestamp time  = rset.getTimestamp(6);
-			String action = rset.getString(7);
-			String desc = rset.getString(8);
-			
-			ActivityLog actData = (ActivityLog)ReportTypes.create(getReportType());
-			
-			actData.setEnergyCompanyID(ecID);
-			actData.setCustomerID(custID);
-			actData.setUserID(userID);
-			actData.setAccountID(acctID);
-			actData.setPaoID(paoID);
-			actData.setTimestamp(new Date(time.getTime()));
-			actData.setAction(action);
-			actData.setDescription(desc);
-
-			getData().add(actData);
+			Integer acctID = new Integer(rset.getInt(3));
+			String acctNum = rset.getString(4);
+			String action = rset.getString(5);
+			Integer count = new Integer(rset.getInt(6));
+			//AL.ENERGYCOMPANYID, AL.CUSTOMERID, AL.ACCOUNTID, CA.ACCOUNTNUMBER, ACTION, COUNT(ACTIVITYLOGID) AS ACTIONCOUNT
+	
+			ActivityLog al = new ActivityLog(ecID, custID, acctNum, count, action);
+			getData().add(al);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -173,39 +257,7 @@ public class ActivityModel extends ReportModelBase
 	/**
 	 * @return
 	 */
-	public int getCustomerID()
-	{
-		return customerID;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getUserID()
-	{
-		return userID;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setCustomerID(int i)
-	{
-		customerID = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setUserID(int i)
-	{
-		userID = i;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getEnergyCompanyID()
+	public Integer getEnergyCompanyID()
 	{
 		return energyCompanyID;
 	}
@@ -213,9 +265,9 @@ public class ActivityModel extends ReportModelBase
 	/**
 	 * @param i
 	 */
-	public void setEnergyCompanyID(int i)
+	public void setEnergyCompanyID(Integer ecID)
 	{
-		energyCompanyID = i;
+		energyCompanyID = ecID;
 	}
 
 }
