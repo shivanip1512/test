@@ -93,9 +93,12 @@ public class RequestPword
 
 		try
 		{
-			//do the search with everything we got
-			if( email != null )  //unique system wide
+			//unique system wide email address
+			if( email != null )
 			{
+				//we may continue after this, remove all the stored data
+				foundData.clear();
+				
 				LiteContact lc = ContactFuncs.getContactByEmailNotif( email );
 				if( lc == null )
 					setState( RET_FAILED, "Email not found, try again" );
@@ -109,8 +112,12 @@ public class RequestPword
 				}
 			}
 				
-			if( state != RET_SUCCESS && userName != null )  //unique system wide
+			//unique system wide user name
+			if( state != RET_SUCCESS && userName != null )
 			{
+				//we may continue after this, remove all the stored data
+				foundData.clear();
+				
 				LiteYukonUser user = YukonUserFuncs.getLiteYukonUser( userName );
 				if( user == null )
 					setState( RET_FAILED, "User Name not found, try again" );
@@ -132,6 +139,9 @@ public class RequestPword
 			//uses STARS functionality
 			if( state != RET_SUCCESS && accNum != null )
 			{
+				//we may continue after this, remove all the stored data
+				foundData.clear();
+				
 				List engrComps = SOAPServer.getAllEnergyCompanies();
 				LiteStarsEnergyCompany eComp = null;
 				ArrayList allCustAccts = new ArrayList(8);
@@ -164,9 +174,6 @@ public class RequestPword
 					
 					foundData.add( " User Name: " + user.getUsername() );					
 					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
-					//foundData.add( " Customer Name: " + lCust.get() );					
-					foundData.add( " Energy Company Name: " + eComp.getName() );
-					
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
 					LiteEnergyCompany lEnrgy =
@@ -200,6 +207,9 @@ public class RequestPword
 				
 			if( state != RET_SUCCESS && fName != null )
 			{
+				//we may continue after this, remove all the stored data
+				foundData.clear();
+				
 				LiteContact[] lConts = ContactFuncs.getContactsByFName( fName );
 				if( lConts.length == 1 )
 				{
@@ -225,7 +235,7 @@ public class RequestPword
 								foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );					
 								foundData.add( " User Name: " + YukonUserFuncs.getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
 								
-								LiteEnergyCompany[] cmps = processContact( lConts[i] );					
+								LiteEnergyCompany[] cmps = processContact( lConts[i] );
 								processEnergyCompanies( cmps );									
 							}
 						}
@@ -249,6 +259,9 @@ public class RequestPword
 				
 			if( state != RET_SUCCESS && lName != null )
 			{
+				//we may continue after this, remove all the stored data
+				foundData.clear();
+				
 				LiteContact[] lConts = ContactFuncs.getContactsByLName( lName );
 				if( lConts.length == 1 )
 				{
@@ -315,6 +328,17 @@ public class RequestPword
 	{
 		LiteCICustomer lCust = ContactFuncs.getCICustomer( lCont_.getContactID() );
 
+		//no customer found, we have some issues
+		if( lCust == null )
+		{
+			CTILogger.error(
+				" Unable to find a customer parent for the following contact: " 
+				+ lCont_.getContFirstName() + " " + lCont_.getContLastName() );
+						
+			return null;
+		}
+
+
 		foundData.add( " Customer Name: " + lCust.getCompanyName() );					
 
 		LiteEnergyCompany[] cmp = 
@@ -334,15 +358,10 @@ public class RequestPword
 	private void processEnergyCompanies( LiteEnergyCompany[] comps_ )
 	{
 
-		if( comps_ == null )
+		if( comps_ == null || comps_.length <= 0 )
 		{
 			//do something here, dont know what for now
-			setState( RET_FAILED, "No energy company found for the entered data" );
-		}
-		else if( comps_.length <= 0 )
-		{
-			//do something here, dont know what for now
-			setState( RET_FAILED, "No energy company found for the entered data" );
+			setState( RET_FAILED, "No energy company OR customer found for the entered data" );
 		}			
 		else if( comps_.length == 1 )
 		{			
