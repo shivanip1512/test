@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.user;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.user.UserUtils;
+import com.cannontech.common.login.ClientSession;
 
 //import com.cannontech.database.db.user.YukonUser;
 
@@ -743,12 +744,22 @@ public void setValue(Object o)
 	getJTextFieldUserID().setText( login.getYukonUser().getUsername() );
 	getJPasswordFieldPassword().setText( login.getYukonUser().getPassword() );
 	getJPasswordFieldRetypePassword().setText( login.getYukonUser().getPassword() );
-
+	
 	if(((YukonUser)o).getUserID().intValue() == UserUtils.USER_ADMIN_ID)
 	{
 		getJTextFieldUserID().setEnabled(false);
 		getJCheckBoxEnableLogin().setEnabled(false);
 		getJCheckBoxEnableLogin().setSelected(true);
+		if(ClientSession.getInstance().getUser().getUserID() == UserUtils.USER_ADMIN_ID)
+		{
+			getJPasswordFieldPassword().setEnabled(true);
+			getJPasswordFieldRetypePassword().setEnabled(true);
+		}
+		else
+		{
+			getJPasswordFieldPassword().setEnabled(false);
+			getJPasswordFieldRetypePassword().setEnabled(false);
+		}
 	}
 	//set some dynamic data, for the sake of curiosity!+
 	getJLabelLastLogin().setText(
