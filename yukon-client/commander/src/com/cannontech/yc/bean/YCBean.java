@@ -6,10 +6,13 @@
  */
 package com.cannontech.yc.bean;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.servlet.http.HttpSessionBindingEvent;
@@ -17,12 +20,11 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -58,6 +60,9 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 
 	/** Contains Integer(pointID), Object(PointData) values */
 	private Map pointIDToRecentReadMap = null;
+	
+	/** Contains Integer(pointID), Object(Map of Timestamp to Double(value) values)*/
+	private Map energyPtToPrevTSMapToValueMap = new TreeMap();
 	
 	/** Contains String(name from returnMessage parse), Object(PointData, made up one though) values */
 	private Map returnNameToRecentReadMap = null;
@@ -157,11 +162,22 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	{
 		Message in = e.getMessage();
 		if( in instanceof PointData )
-		{           
+		{   
 			PointData point = (PointData) in;
-			Integer x = new Integer(point.getId());
-			getPointIDToRPHMap().put(x, point);
-			CTILogger.info("Put (pointIDToRPHMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+point.getPointDataTimeStamp());
+			if( point.getPointDataTimeStamp().after(CtiUtilities.get1990GregCalendar().getTime()) )
+			{
+				Integer x = new Integer(point.getId());
+				getPointIDToRPHMap().put(x, point);
+				
+				if( isEnergyPoint(point.getId()))
+				{
+					TreeMap tempTSToValueMap = (TreeMap)getPrevMonthTSToValueMap(point.getId());
+					tempTSToValueMap.put(point.getPointDataTimeStamp(), new Double(point.getValue()));
+					//This is the newest point, set it as the selected value
+					CTILogger.info("Updated the TS to Value Map for PointID: " + point.getId());
+				}
+				CTILogger.info("Put (pointIDToRPHMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+ point.getPointDataTimeStamp());
+			}
 			pointRegCounter--;
 		}
 		else if( in instanceof Return)
@@ -259,10 +275,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						//The Timestamp is the value after the colon sign to the 'for' string
 						Date date = null;
 						//The duration is the value after 'for' string to the end
-						Double value = null;						
-						int forIdx = tempResult.indexOf("for")+3;
+						Double value = new Double(-1);						
+						int forIdx = tempResult.indexOf("for");
 						if(forIdx > 0)
 						{
+						    forIdx = forIdx + 3;
 							date = ServletUtil.parseDateStringLiberally(tempResult.substring(colon+1, forIdx).trim());
 							
 							String durStr = tempResult.substring(forIdx+1).trim();
@@ -273,10 +290,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 								double ss = Long.valueOf(durStr.substring(6, 8)).doubleValue();
 								value = new Double(HH + mm + ss);
 								System.out.println(tempResult.substring(colon+1, forIdx).trim()+ ": TIME:"+date+":");
-							}
-							else
-							{
-								value = new Double(-1);
 							}
 						}
 						
@@ -574,4 +587,122 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
 		setLiteDeviceTypeCommandsVector(CommandFuncs.getAllDevTypeCommands(deviceType));
 	}
+	
+	/** Previous month's RPH timestamp to value map for some pointID, determined
+	 * by deviceID, pointOffset, pointType*/
+	public TreeMap getPrevMonthTSToValueMap(int pointID)
+	{
+	    if( energyPtToPrevTSMapToValueMap.get(new Integer(pointID)) == null )
+	    {
+	        TreeMap tsToValMap = retrieveMonthlyRPHVector(pointID);
+	        if( tsToValMap != null)
+	            energyPtToPrevTSMapToValueMap.put(new Integer(pointID), tsToValMap);
+	    }
+	    return (TreeMap)energyPtToPrevTSMapToValueMap.get(new Integer(pointID));
+	}
+	
+	private TreeMap retrieveMonthlyRPHVector(int pointID)
+	{
+	    TreeMap timestampToValueMap = new TreeMap();
+	    String sql = "SELECT POINTID, TIMESTAMP, VALUE FROM RAWPOINTHISTORY WHERE POINTID = " + pointID +
+	    			" AND TIMESTAMP > ? ORDER BY TIMESTAMP ASC";
+	    CTILogger.info(sql.toString());	
+		
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		try
+		{
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+			if( conn == null )
+			{
+				CTILogger.error(getClass() + ":  Error getting database connection.");
+				return null;
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql);
+				GregorianCalendar monthAgo = new GregorianCalendar();
+				monthAgo.add(Calendar.MONTH, -1);
+				pstmt.setTimestamp(1, new java.sql.Timestamp( monthAgo.getTimeInMillis()));
+				rset = pstmt.executeQuery();
+				while( rset.next())
+				{
+					java.sql.Timestamp ts = rset.getTimestamp(2);
+					GregorianCalendar tempCal = new GregorianCalendar();
+					tempCal.setTimeInMillis(ts.getTime());
+					Double val = new Double(rset.getDouble(3));
+				    timestampToValueMap.put(tempCal.getTime(), val );
+				    CTILogger.info(tempCal.getTime() + " " + val);
+				}
+			}
+		}
+			
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null )
+					pstmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		return timestampToValueMap;
+	}
+	
+	public static int getPointID(int deviceID, int pointOffset, int pointType)
+	{
+	    return PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
+	}
+	
+	public void test(int pointid)
+	{
+	    TreeMap tempMap = getPrevMonthTSToValueMap(pointid);
+	    if( tempMap != null)
+	    {
+			java.util.Set keySet = tempMap.keySet();
+			java.util.Date[] keyArray = new java.util.Date[keySet.size()];
+			keySet.toArray(keyArray);
+	        
+	        for (int i = 0; i < keyArray.length; i++)
+	        {
+	            CTILogger.info(keyArray[i] + "  " + tempMap.get(keyArray[i]));
+	        }
+	    }
+	}
+
+	public Date[] getPrevDateArray(int pointID) 
+	{
+		java.util.TreeMap tempMap = getPrevMonthTSToValueMap(pointID);
+		if( tempMap != null)
+		{
+			test(pointID);
+			java.util.Set keySet = tempMap.keySet();
+			java.util.Date[] keyArray = new java.util.Date[keySet.size()];
+			keySet.toArray(keyArray);
+			return keyArray;
+		}
+		return null;
+	}
+	
+	public boolean isEnergyPoint(int pointID)
+	{
+		LitePoint lp = PointFuncs.getLitePoint(pointID);
+	    if( lp.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH &&
+	            lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+	        return true;
+	    return false;
+	}
 }
+
