@@ -15,6 +15,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceTypePanel deviceTypePanel;
 	private DeviceCommChannelPanel deviceCommChannelPanel;
 	private DeviceTapTerminalPanel deviceTapTerminalPanel;
+	private DeviceTapVerizonPanel deviceTapVerizonPanel;
 	private DeviceIEDNamePanel deviceIEDNamePanel;
 	private DeviceVirtualNamePanel deviceVirtualNamePanel;
 	private DeviceMeterNumberPanel deviceMeterNumberPanel;
@@ -144,6 +145,13 @@ protected DeviceTapTerminalPanel getDeviceTapTerminalPanel() {
 	return deviceTapTerminalPanel;
 }
 
+protected DeviceTapVerizonPanel getDeviceTapVerizonPanel() {
+	if( deviceTapVerizonPanel == null )
+		deviceTapVerizonPanel = new DeviceTapVerizonPanel();
+		
+	return deviceTapVerizonPanel;
+}
+
 
 /**
  * This method was created in VisualAge.
@@ -226,10 +234,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		int devType = getDeviceTypePanel().getDeviceType();
 		
-		if( devType == PAOGroups.TAPTERMINAL
-			 || devType == PAOGroups.WCTP_TERMINAL )
+		if( devType == PAOGroups.TAPTERMINAL)
 		{
 			return getDeviceTapTerminalPanel();
+		}
+		else if( devType == PAOGroups.WCTP_TERMINAL )
+		{
+			return getDeviceTapVerizonPanel();
 		}
 		else if( (DeviceTypesFuncs.isMeter(devType)
 					  && !DeviceTypesFuncs.isIon(devType))
@@ -317,7 +328,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		getDeviceCommChannelPanel().setValue(null);
 		return getDeviceCommChannelPanel();
 	}
-	else if (currentInputPanel == getDeviceTapTerminalPanel())
+	else if (currentInputPanel == getDeviceTapTerminalPanel() || currentInputPanel == getDeviceTapVerizonPanel())
 	{
 		getDeviceCommChannelPanel().setValue(null);
 		return getDeviceCommChannelPanel();

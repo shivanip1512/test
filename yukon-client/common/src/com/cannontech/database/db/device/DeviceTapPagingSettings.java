@@ -1,12 +1,16 @@
 package com.cannontech.database.db.device;
 
+import com.cannontech.common.util.CtiUtilities;
 /**
  * This type was created in VisualAge.
  */
 public class DeviceTapPagingSettings extends com.cannontech.database.db.DBPersistent {
 	private Integer deviceID = null;
 	private String pagerNumber = null;
-
+	private String sender = CtiUtilities.STRING_NONE;
+	private String securityCode = CtiUtilities.STRING_NONE;
+	private String postPath = CtiUtilities.STRING_NONE;
+	
 	private String tableName = "DeviceTapPagingSettings";
 /**
  * DeviceTwoWayFlags constructor comment.
@@ -33,7 +37,8 @@ public DeviceTapPagingSettings(Integer deviceID, String pagerNumber ) {
  * add method comment.
  */
 public void add() throws java.sql.SQLException {
-	Object[] addValues = { getDeviceID(), getPagerNumber() };
+	Object[] addValues = { getDeviceID(), getPagerNumber(), getSender(),
+							getSecurityCode(), getPOSTPath() };
 
 	add( this.tableName, addValues );
 }
@@ -59,6 +64,18 @@ public Integer getDeviceID() {
 public String getPagerNumber() {
 	return pagerNumber;
 }
+
+public String getSender() {
+	return sender;
+}
+
+public String getSecurityCode() {
+	return securityCode;
+}
+
+public String getPOSTPath() {
+	return postPath;
+}
 /**
  * This method was created in VisualAge.
  * @param deviceID java.lang.Integer
@@ -81,7 +98,7 @@ public void initialize( Integer deviceID, String pagerNumber ) {
  */
 public void retrieve() throws java.sql.SQLException {
 
-	String selectColumns[] = { "PagerNumber" };
+	String selectColumns[] = { "PagerNumber", "Sender", "SecurityCode", "POSTPath" };
 	String constraintColumns[] = { "DeviceID" };
 	Object constraintValues[] = { getDeviceID() };
 
@@ -90,6 +107,9 @@ public void retrieve() throws java.sql.SQLException {
 	if( results.length == selectColumns.length )
 	{
 		setPagerNumber( (String) results[0] );
+		setSender( (String) results[1] );
+		setSecurityCode( (String) results[2] );
+		setPOSTPath( (String) results[3] );
 	}
 }
 /**
@@ -106,13 +126,25 @@ public void setDeviceID(Integer newValue) {
 public void setPagerNumber(String newValue) {
 	this.pagerNumber = newValue;
 }
+
+public void setSender(String newValue) {
+	this.sender = newValue;
+}
+
+public void setSecurityCode(String newValue) {
+	this.securityCode = newValue;
+}
+
+public void setPOSTPath(String newValue) {
+	this.postPath = newValue;
+}
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
 
-	String setColumns[] = { "PagerNumber" };
-	Object setValues[]= { getPagerNumber() };
+	String setColumns[] = { "PagerNumber", "Sender", "SecurityCode", "POSTPath" };
+	Object setValues[]= { getPagerNumber(), getSender(), getSecurityCode(), getPOSTPath() };
 
 	String constraintColumns[] = { "DeviceID" };
 	Object constraintValues[] = { getDeviceID() };
