@@ -4,7 +4,7 @@
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
-    <classpathentry kind="lib" path="/third-party/mail.jar"/>
+    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="src" path="/third-party"/>
     <classpathentry kind="output" path="bin"/>
