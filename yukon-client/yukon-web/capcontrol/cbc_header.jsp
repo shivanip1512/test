@@ -1,6 +1,6 @@
 <%@ page language="java" %>
 
-<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+<%@ taglib uri="../WEB-INF/cti.tld" prefix="cti" %>
 
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.cbc.gui.SubBusTableModel" %>
