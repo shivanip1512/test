@@ -63,6 +63,7 @@
 #define TAG_DISABLE_CONTROL_BY_DEVICE        0x00000040        // point/device cannot be controled.
 #define TAG_INVALID_LODESTAR_READING         0x00000080        // Lodestar Reading Invalid **000009**
 
+#define TAG_POINT_DO_NOT_ROUTE               0x00000200        // This point data message will not be routed to clinets of dispatch
 #define TAG_POINT_MOA_REPORT                 0x00000400        // This point data message is the result of a registration
 #define TAG_POINT_DELAYED_UPDATE             0x00000800        // Dispatch delay this point data until the time specified in the message!
 
@@ -85,7 +86,7 @@
 #define TAG_ACTIVE_ALARM                     0x80000000        // Alarm State is active now.
 
 // Masks
-#define MASK_RESETTABLE_TAGS                 0x0003FC00        // Tags which are reset upon any setPoint operation
+#define MASK_RESETTABLE_TAGS                 0x0003FE00        // Tags which are reset upon any setPoint operation
 
 #define MASK_ANY_ALARM                       0xC0000000        // Get any alarm
 #define MASK_ANY_CONTROL                     0x000C0000
