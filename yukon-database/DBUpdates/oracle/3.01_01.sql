@@ -957,9 +957,13 @@ create index Indx_DYNV_TIME on DynamicVerification (
    TimeArrival ASC
 );
 
-insert into LMGroupExpressComAddress select distinct SplinterAddress + 1000, 'SPLINTER', SplinterAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set SplinterAddress = SplinterAddress + 1000;
-insert into LMGroupExpressComAddress select distinct UdAddress + 2000, 'USER', UdAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set UdAddress = UdAddress + 2000;
-insert into LMGroupExpressComAddress select distinct ZipCodeAddress + 3000, 'ZIP', ZipCodeAddress,'(none)' from LMGroupExpressCom; update LMGroupExpressCom set ZipCodeAddress = ZipCodeAddress + 3000;
+insert into LMGroupExpressComAddress select distinct SplinterAddress + 1000, 'SPLINTER', SplinterAddress,'(none)' from LMGroupExpressCom;
+update LMGroupExpressCom set SplinterAddress = SplinterAddress + 1000;
+insert into LMGroupExpressComAddress select distinct UdAddress + 2000, 'USER', UdAddress,'(none)' from LMGroupExpressCom;
+update LMGroupExpressCom set UdAddress = UdAddress + 2000;
+insert into LMGroupExpressComAddress select distinct ZipCodeAddress + 3000, 'ZIP', ZipCodeAddress,'(none)' from LMGroupExpressCom;
+update LMGroupExpressCom set ZipCodeAddress = ZipCodeAddress + 3000;
+
 
 alter table LMGroupExpressCom rename column SplinterAddress to SplinterID;
 alter table LMGroupExpressCom rename column UdAddress to UserID;
@@ -977,6 +981,22 @@ alter table LMGroupExpressCom
 
 insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of certain emails sent by the energy company, e.g., odds for control and opt out notification.');
 
+create or replace view "ExpressComAddress_View" as
+select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
+g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
+z.Address as ZipCodeAddress, us.Address as UDAddress, p.Address as programaddress, sp.Address as SplinterAddress, x.AddressUsage, x.RelayUsage
+from LMGroupExpressCom x, LMGroupExpressComAddress s, 
+LMGroupExpressComAddress g, LMGroupExpressComAddress b, LMGroupExpressComAddress f,
+LMGroupExpressComAddress p,
+LMGroupExpressComAddress sp, LMGroupExpressComAddress us, LMGroupExpressComAddress z
+where ( x.ServiceProviderID = s.AddressID and ( s.AddressType = 'SERVICE' or s.AddressID = 0 ) )
+and ( x.FeederID = f.AddressID and ( f.AddressType = 'FEEDER' or f.AddressID = 0 ) )
+and ( x.GeoID = g.AddressID and ( g.AddressType = 'GEO' or g.AddressID = 0 ) )
+and ( x.ProgramID = p.AddressID and ( p.AddressType = 'PROGRAM' or p.AddressID = 0 ) )
+and ( x.SubstationID = b.AddressID and ( b.AddressType = 'SUBSTATION' or b.AddressID = 0 ) )
+and ( x.SplinterID = sp.AddressID and ( sp.AddressType = 'SPLINTER' or sp.AddressID = 0 ) )
+and ( x.UserID = us.AddressID and ( us.AddressType = 'USER' or us.AddressID = 0 ) )
+and ( x.ZipID = z.AddressID and ( z.AddressType = 'ZIP' or z.AddressID = 0 ) );
 
 
 
