@@ -633,6 +633,7 @@ private javax.swing.JTextField getKhTextField() {
 			ivjKhTextField.setText("   -----");
 			ivjKhTextField.setEnabled(false);
 			// user code begin {1}
+			ivjKeTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -655,6 +656,7 @@ private javax.swing.JTextField getKhTextField2() {
 			ivjKhTextField2.setText("   -----");
 			ivjKhTextField2.setEnabled(false);
 			// user code begin {1}
+			ivjKeTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -677,6 +679,7 @@ private javax.swing.JTextField getKhTextField3() {
 			ivjKhTextField3.setText("   -----");
 			ivjKhTextField3.setEnabled(false);
 			// user code begin {1}
+			ivjKeTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1404,7 +1407,7 @@ public java.lang.Object getValue(java.lang.Object o) {
 	else
 		conMan.setMCTWire1(ConfigTwoWay.THREEWIRE);
 	
-	conMan.setKe1(new Integer( Integer.parseInt(getKeTextField().getText())) );
+	conMan.setKe1(new Double( Double.parseDouble(getKeTextField().getText())) );
 	
 	//second channel
 	if(getKY2WireButton2().isSelected())
@@ -1412,7 +1415,7 @@ public java.lang.Object getValue(java.lang.Object o) {
 		else
 			conMan.setMCTWire2(ConfigTwoWay.THREEWIRE);
 	
-	conMan.setKe2(new Integer( Integer.parseInt(getKeTextField2().getText())) );
+	conMan.setKe2(new Double( Double.parseDouble(getKeTextField2().getText())) );
 		
 	//third channel
 	if(getKY2WireButton3().isSelected())
@@ -1420,7 +1423,7 @@ public java.lang.Object getValue(java.lang.Object o) {
 		else
 			conMan.setMCTWire3(ConfigTwoWay.THREEWIRE);
 	
-	conMan.setKe3(new Integer( Integer.parseInt(getKeTextField3().getText())) );
+	conMan.setKe3(new Double(Double.parseDouble(getKeTextField3().getText())) );
 		
 	return conMan;
 }
@@ -1654,51 +1657,51 @@ public void setValue(Object val ) {
 	Integer temp = conMan.getMCTWire1();
 	if( temp != null )
 	{
-		if(temp == ConfigTwoWay.TWOWIRE)
+		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
 			getKY2WireButton().setSelected(true);
 		else
 			getKYZ3WireButton().setSelected(true);
 		temp = null;
 	}		
 	
-	temp = conMan.getKe1();
-	if( temp != null )
+	Double temp2 = conMan.getKe1();
+	if( temp2 != null )
 	{
-		getKeTextField().setText( temp.toString() );
+		getKeTextField().setText( temp2.toString() );
 	}
 	
 	//channel 2
 	temp = conMan.getMCTWire2();
 	if( temp != null )
 	{
-		if(temp == ConfigTwoWay.TWOWIRE)
+		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
 			getKY2WireButton2().setSelected(true);
 		else
 			getKYZ3WireButton2().setSelected(true);
 		temp = null;
 	}		
 	
-	temp = conMan.getKe2();
-	if( temp != null )
+	temp2 = conMan.getKe2();
+	if( temp2 != null )
 	{
-		getKeTextField2().setText( temp.toString() );
+		getKeTextField2().setText( temp2.toString() );
 	}
 	  
 	//channel 3
 	temp = conMan.getMCTWire3();
 	if( temp != null )
 	{
-		if(temp == ConfigTwoWay.TWOWIRE)
+		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
 			  getKY2WireButton3().setSelected(true);
 		else
 			  getKYZ3WireButton3().setSelected(true);
 		temp = null;
 	}		
 	
-	temp = conMan.getKe3();
-	if( temp != null )
+	temp2 = conMan.getKe3();
+	if( temp2 != null )
 	{
-		getKeTextField3().setText( temp.toString() );
+		getKeTextField3().setText( temp2.toString() );
 	}
 	
 	return;

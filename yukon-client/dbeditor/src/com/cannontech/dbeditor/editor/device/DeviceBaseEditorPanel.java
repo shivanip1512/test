@@ -3,18 +3,8 @@ package com.cannontech.dbeditor.editor.device;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.device.CarrierBase;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.IEDBase;
-import com.cannontech.database.data.device.PagingTapTerminal;
-import com.cannontech.database.data.device.DNPBase;
-import com.cannontech.database.data.device.RemoteBase;
-import com.cannontech.database.data.device.Repeater900;
-import com.cannontech.database.data.device.Schlumberger;
-import com.cannontech.database.data.device.Sixnet;
+import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
@@ -1894,12 +1884,23 @@ private void setNonRemBaseValue( Object base )
 		java.util.List routes = cache.getAllRoutes();
 		java.util.List configs = cache.getAllConfigs();
 		
-		int mctSeriesType = 3;
+		Integer mctSeriesType = ConfigTwoWay.SERIES_300_TYPE;;
 		if(base instanceof MCTBase)
 		{					
 			for(int j = 0; j < configs.size(); j++)
 			{
-				getConfigComboBox().addItem( configs.get(j) );
+				//this is a tad disgusting
+				if(base instanceof MCT210 || base instanceof MCT213 ||
+					base instanceof MCT240 || base instanceof MCT248 ||
+					base instanceof MCT250)
+						mctSeriesType = ConfigTwoWay.SERIES_200_TYPE;
+						
+				if(base instanceof MCT410_KWH_Only)
+						mctSeriesType = ConfigTwoWay.SERIES_400_TYPE;
+				
+				if(mctSeriesType.compareTo(((com.cannontech.database.data.lite.LiteConfig)configs.get(j)).getConfigType()) == 0)
+					getConfigComboBox().addItem( configs.get(j) );
+				
 				if(((MCTBase) base).hasMappedConfig())
 				{
 					assignedConfigID = ((MCTBase) base).getConfigID().intValue();

@@ -219,6 +219,7 @@ private javax.swing.JTextField getKeTextField() {
 		try {
 			ivjKeTextField = new javax.swing.JTextField();
 			ivjKeTextField.setName("KeTextField");
+			ivjKeTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -553,7 +554,7 @@ public Object getValue(Object o)
 	else
 		conMan.setMCTWire1(ConfigTwoWay.THREEWIRE);
 	
-	conMan.setKe1(new Integer( Integer.parseInt(getKeTextField().getText())) );
+	conMan.setKe1(new Double( Double.parseDouble(getKeTextField().getText())) );
 		
 	return conMan;
 }
@@ -698,17 +699,17 @@ public void setValue(Object val ) {
 	Integer temp = conMan.getMCTWire1();
 	if( temp != null )
 	{
-		if(temp == ConfigTwoWay.TWOWIRE)
+		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
 			getKY2WireButton().setSelected(true);
 		else
 			getKYZ3WireButton().setSelected(true);
 		temp = null;
 	}		
 	
-	temp = conMan.getKe1();
-	if( temp != null )
+	Double temp2 = conMan.getKe1();
+	if( temp2 != null )
 	{
-		getKeTextField().setText( temp.toString() );
+		getKeTextField().setText( temp2.toString() );
 	}
 	
 	return;
