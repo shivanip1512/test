@@ -92,10 +92,13 @@ public class TrendSerie
 	
 	public double getLoadFactor()
 	{
-		if (getMaxArea() != 0.0)
-			return getAreaOfSet() / getMaxArea();
-		else
-			return 0.0;
+		if(getDataPairArray() != null)
+		{
+			if (getMaxArea() != 0.0 )
+				return getAreaOfSet() / getMaxArea();
+		}
+
+		return -1;
 	}
 	
 	public double getMaxArea()
