@@ -183,6 +183,8 @@ try
 catch( Throwable t ) {}
 
 
+LiteYukonUser admin = null;
+
 if( isValidConn )
 {
 	LiteYukonRoleProperty[] props = 
@@ -210,7 +212,7 @@ if( isValidConn )
 <%
 	}
 	
-	LiteYukonUser admin = YukonUserFuncs.getLiteYukonUser( UserUtils.USER_YUKON_ID );
+	admin = YukonUserFuncs.getLiteYukonUser( UserUtils.USER_YUKON_ID );
 	if( admin != null )
 	{
 %>
@@ -226,7 +228,8 @@ if( isValidConn )
 <%
 	}
 }
-else
+
+if( !isValidConn )
 {
 %>
             <tr> 
@@ -242,7 +245,24 @@ else
 				</tr>
 <%
 }
+else if( admin == null )
+{
 %>
+            <tr> 
+                  <td width="200" class = "ErrorMsg" align="right" 
+					  onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
+					  onMouseOut="dispStatusMsg('');return document.statVal">
+				  NO ADMIN </td>
+                  <td width="435" valign="bottom" class="ErrorMsg"
+					  onMouseOver="dispStatusMsg('No ADMIN user found in the database configuration above');return document.statVal" 
+					  onMouseOut="dispStatusMsg('');return document.statVal">                  
+				  USER FOUND IN DATABASE
+                  </td>
+				</tr>
+<%
+}
+%>
+
                 <tr> 
                   <td width="200">&nbsp;</td>
                   <td width="435">
