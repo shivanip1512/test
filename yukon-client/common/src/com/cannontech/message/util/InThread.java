@@ -67,27 +67,30 @@ public void processMsg( Object o )
 		for( int i = 0; i < mpc.getVector().size(); i++ )
 			processMsg( mpc.getVector().get(i) );
 	}
-	else if( conn.isQueueMessages() )
-	{  
-		// Add this message to the in queue so it can be 'read'
-		synchronized( in )
-		{
-			in.add( o );								
-			in.notifyAll();
-		}			
-	}
-			
-	if(o instanceof Message)
-	{	
-		// Tell out listeners about this message
-		try 
-		{
-			// protect against misbehaved listeners											
-			conn.fireMessageEvent((Message) o);
+	else
+	{
+		if( conn.isQueueMessages() )
+		{  
+			// Add this message to the in queue so it can be 'read'
+			synchronized( in )
+			{
+				in.add( o );								
+				in.notifyAll();
+			}			
 		}
-		catch(Throwable t) 
-		{
-			CTILogger.error(getClass(), t);
+			
+		if(o instanceof Message)
+		{	
+			// Tell out listeners about this message
+			try 
+			{
+				// protect against misbehaved listeners											
+				conn.fireMessageEvent((Message) o);
+			}
+			catch(Throwable t) 
+			{
+				CTILogger.error(getClass(), t);
+			}
 		}
 	}
 

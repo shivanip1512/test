@@ -174,15 +174,6 @@ public void disconnect() throws java.io.IOException
 	isValid = false;
 }
 /**
- * This method will be called if handleMessage returns true.  message will be the same
- * message which was passed to handleMessage, but a new Thread will have been created
- * to actually handle the message.
- * @param message java.lang.Object
- */
-public void doHandleMessage(Object message) {
-	return;
-}
-/**
  * This method was created in VisualAge.
  * @return boolean
  */

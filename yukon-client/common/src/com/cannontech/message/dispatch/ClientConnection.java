@@ -3,9 +3,12 @@ package com.cannontech.message.dispatch;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.message.dispatch.message.Command;
+import com.cannontech.message.util.Message;
 import com.roguewave.vsj.CollectableStreamer;
 
-public class ClientConnection extends com.cannontech.message.util.ClientConnection {
+public class ClientConnection extends com.cannontech.message.util.ClientConnection 
+{
 /**
  * ClientConnection constructor comment.
  */
@@ -20,29 +23,22 @@ public ClientConnection() {
 public ClientConnection(String host, int port) {
 	super(host, port);
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/10/00 9:59:56 AM)
- * @param o java.lang.Object
- */
-public void doHandleMessage(Object o)
+
+protected void fireMessageEvent(Message msg) 
 {
-	// Only instances of com.cannontech.message.dispatch.message.Command should
-	// get here and it should have a ARE_YOU_THERE operation ... see handleMessage
-	// echo it back so vangogh doesn't time out on us
-	write(o);
+	if( msg instanceof Command
+		 && ((Command)msg).getOperation() == Command.ARE_YOU_THERE )
+	{
+		// Only instances of com.cannontech.message.dispatch.message.Command should
+		// get here and it should have a ARE_YOU_THERE operation
+		// echo it back so vangogh doesn't time out on us
+
+		write( msg );
+	}
+
+	super.fireMessageEvent( msg );
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/10/00 9:59:09 AM)
- * @return boolean
- * @param o java.lang.Object
- */
-public boolean handleMessage(Object o) {
-   return ( o instanceof com.cannontech.message.dispatch.message.Command &&
-	      ((com.cannontech.message.dispatch.message.Command) o).getOperation() 
-	      					== com.cannontech.message.dispatch.message.Command.ARE_YOU_THERE );
-}
+
 /**
  * This method was created in VisualAge.
  */
