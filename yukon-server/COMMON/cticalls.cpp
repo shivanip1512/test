@@ -662,9 +662,7 @@ APIRET IM_EX_CTIBASE CTIOpen (
                              )
 {
 #if __OS2__
-   return(DosOpen( pszFileName,
-                   pHf,
-                   pAction
+   return(DosOpen( pszFileName,  pHf, pAction
                    cbFile,
                    ulAttrib,
                    Flags,
@@ -689,24 +687,12 @@ APIRET IM_EX_CTIBASE CTIOpen (
    dwCreate    |= OPEN_EXISTING;
 
    // Set the creation flags
-   if(Flags & OPEN_ACTION_FAIL_IF_EXISTS)
-   {
-      dwCreate    |= CREATE_NEW;
-   }
-   else if(Flags & OPEN_ACTION_CREATE_IF_NEW)
-   {
-      dwCreate    |= OPEN_ALWAYS;
-   }
-   else if(Flags & OPEN_ACTION_REPLACE_IF_EXISTS)
-   {
-      dwCreate    |= CREATE_ALWAYS;
-   }
-   else if((Flags & OPEN_ACTION_OPEN_IF_EXISTS) || (Flags & OPEN_ACTION_FAIL_IF_NEW))
-   {
-      dwCreate    |= OPEN_EXISTING;
-   }
-   // This is the tricky one.... First lets Get the sharing attributes
+   if(Flags & OPEN_ACTION_FAIL_IF_EXISTS) dwCreate    |= CREATE_NEW;
+   else if(Flags & OPEN_ACTION_CREATE_IF_NEW) dwCreate    |= OPEN_ALWAYS;
+   else if(Flags & OPEN_ACTION_REPLACE_IF_EXISTS) dwCreate    |= CREATE_ALWAYS;
+   else if((Flags & OPEN_ACTION_OPEN_IF_EXISTS) || (Flags & OPEN_ACTION_FAIL_IF_NEW)) dwCreate    |= OPEN_EXISTING;
 
+   // This is the tricky one.... First lets Get the sharing attributes
    if(Mode & OPEN_SHARE_DENYNONE)              dwShare = (FILE_SHARE_READ | FILE_SHARE_WRITE);
    if(Mode & OPEN_SHARE_DENYWRITE)             dwShare = (FILE_SHARE_READ);
    if(Mode & OPEN_SHARE_DENYREAD)              dwShare = (FILE_SHARE_WRITE);
@@ -719,14 +705,15 @@ APIRET IM_EX_CTIBASE CTIOpen (
 
    // OS2 Mode also contains these elements... which are in Win32s AttrandFlags member
 
-//   if (Mode & OPEN_FLAGS_NOINHERIT)             dwAttFlags |= FILE_FLAG_;
-//   if (Mode & OPEN_FLAGS_NO_LOCALITY)           dwAttFlags |= FILE_FLAG_;
    if(Mode & OPEN_FLAGS_SEQUENTIAL)            dwAttFlags |= FILE_FLAG_SEQUENTIAL_SCAN;
    if(Mode & OPEN_FLAGS_RANDOM)                dwAttFlags |= FILE_FLAG_RANDOM_ACCESS;
-//   if (Mode & OPEN_FLAGS_RANDOMSEQUENTIAL)      dwAttFlags |= FILE_FLAG_;
    if(Mode & OPEN_FLAGS_NO_CACHE)              dwAttFlags |= FILE_FLAG_WRITE_THROUGH;
-//   if (Mode & OPEN_FLAGS_FAIL_ON_ERROR)         dwAttFlags |= FILE_FLAG_;
    if(Mode & OPEN_FLAGS_WRITE_THROUGH)         dwAttFlags |= FILE_FLAG_WRITE_THROUGH;
+
+//   if (Mode & OPEN_FLAGS_NOINHERIT)             dwAttFlags |= FILE_FLAG_;
+//   if (Mode & OPEN_FLAGS_NO_LOCALITY)           dwAttFlags |= FILE_FLAG_;
+//   if (Mode & OPEN_FLAGS_RANDOMSEQUENTIAL)      dwAttFlags |= FILE_FLAG_;
+//   if (Mode & OPEN_FLAGS_FAIL_ON_ERROR)         dwAttFlags |= FILE_FLAG_;
 //   if (Mode & OPEN_FLAGS_DASD)                  dwAttFlags |= FILE_FLAG_;
 
    /*
@@ -745,18 +732,7 @@ APIRET IM_EX_CTIBASE CTIOpen (
       strncpy(portname, pszFileName, 80);
    }
 
-   *pHf = CreateFile(
-                    portname,
-                    dwAccess,
-                    dwShare,
-                    NULL,          // Default Security
-                    dwCreate,
-                    dwAttFlags,
-                    NULL
-                    );
-
-//   fprintf(stderr,"*** DEBUG: CTIOpen File Handle %8d\n",*pHf);
-
+   *pHf = CreateFile( portname, dwAccess, dwShare, NULL, dwCreate, dwAttFlags, NULL );
 
    if(*pHf == INVALID_HANDLE_VALUE)
    {
@@ -783,16 +759,7 @@ APIRET IM_EX_CTIBASE CTIOpen (
                          );
 
             // Display the string.
-            //MessageBox( NULL, lpMsgBuf, "GetLastError", MB_OK|MB_ICONINFORMATION );
-
-   #if 1
             DisplayError(err, __LINE__, __FILE__, "CTIOpen");
-   #else
-            {
-               RWMutexLock::LockGuard guard(coutMux);
-               printf("Error in CTIOpen (Win32 CreateFile):(%s) %5d\n\t%s", pszFileName,err, lpMsgBuf);
-            }
-   #endif
             // Free the buffer.
             LocalFree( lpMsgBuf );
          }
@@ -807,7 +774,6 @@ APIRET IM_EX_CTIBASE CTIOpen (
       return(APIRET)0;    // We have the file handle now!
    }
 #endif
-
 }
 
 APIRET IM_EX_CTIBASE CTIAllocSharedMem      (
