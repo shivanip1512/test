@@ -11,106 +11,193 @@ public class YukonPAOLoader implements Runnable
 {
 	private java.util.ArrayList allPAObjects = null;
 	private String databaseAlias = null;
-/**
- * DeviceLoader constructor comment.
- */
-public YukonPAOLoader(java.util.ArrayList pAObjectArray, String alias) 
-{
-	super();
-	this.allPAObjects = pAObjectArray;
-	this.databaseAlias = alias;
-}
-/**
- * run method comment.
- */
-public void run() 
-{
 	
-//temp code
-java.util.Date timerStart = null;
-java.util.Date timerStop = null;
-//temp code
-
-//temp code
-timerStart = new java.util.Date();
-//temp code
-	String sqlString = 
-			"SELECT y.PAObjectID, y.Category, y.PAOName, " +
-			"y.Type, y.PAOClass, y.Description, d.PORTID " +
-			"FROM YukonPAObject y left outer join DEVICEDIRECTCOMMSETTINGS d " +
-			"on y.paobjectid = d.deviceid " +
-			"WHERE y.PAObjectID > 0 " +
-			"ORDER BY y.Category, y.PAOClass, y.PAOName";
-
-/*"SELECT PAObjectID, Category, PAOName, " +
-			"Type, PAOClass, Description " +
-			"FROM YukonPAObject WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
-*/
-
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	try
+	
+	/**
+	 * YukonPAOLoader constructor comment.
+	 */
+	public YukonPAOLoader(java.util.ArrayList pAObjectArray, String alias) 
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
-
-		while (rset.next())
-		{
-			int paoID = rset.getInt(1);
-			String paoCategory = rset.getString(2).trim();
-			String paoName = rset.getString(3).trim();
-			String paoType = rset.getString(4).trim();
-			String paoClass = rset.getString(5).trim();
-			String paoDescription = rset.getString(6).trim();
-			
-			//this column may be null!!
-			BigDecimal portID = (BigDecimal)rset.getObject(7);
-			
-			com.cannontech.database.data.lite.LiteYukonPAObject pao =
-				new com.cannontech.database.data.lite.LiteYukonPAObject(
-						paoID, 
-						paoName, 
-						com.cannontech.database.data.pao.PAOGroups.getCategory(paoCategory),
-						com.cannontech.database.data.pao.PAOGroups.getPAOType(paoCategory, paoType),
-						com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
-						paoDescription );
-
-			if( portID != null )
-				pao.setPortID( portID.intValue() );
-
-			allPAObjects.add( pao );
-		}
-
+		super();
+		this.allPAObjects = pAObjectArray;
+		this.databaseAlias = alias;
 	}
-	catch( java.sql.SQLException e )
+
+	/**
+	 * run method comment.
+	 */
+	public void run() 
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
+		//temp code
+		java.util.Date timerStart = null;
+		java.util.Date timerStop = null;
+		//temp code
+		
+		//temp code
+		timerStart = new java.util.Date();
+		//temp code
+		String sqlString = 
+				"SELECT y.PAObjectID, y.Category, y.PAOName, " +
+				"y.Type, y.PAOClass, y.Description, d.PORTID " +
+				"FROM YukonPAObject y left outer join DEVICEDIRECTCOMMSETTINGS d " +
+				"on y.paobjectid = d.deviceid " +
+				"WHERE y.PAObjectID > 0 " +
+				"ORDER BY y.Category, y.PAOClass, y.PAOName";
+	
+	/*"SELECT PAObjectID, Category, PAOName, " +
+				"Type, PAOClass, Description " +
+				"FROM YukonPAObject WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
+	*/
+	
+		java.sql.Connection conn = null;
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
 		try
 		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(sqlString);
+	
+			while (rset.next())
+			{
+				int paoID = rset.getInt(1);
+				String paoCategory = rset.getString(2).trim();
+				String paoName = rset.getString(3).trim();
+				String paoType = rset.getString(4).trim();
+				String paoClass = rset.getString(5).trim();
+				String paoDescription = rset.getString(6).trim();
+				
+				//this column may be null!!
+				BigDecimal portID = (BigDecimal)rset.getObject(7);
+				
+				com.cannontech.database.data.lite.LiteYukonPAObject pao =
+					new com.cannontech.database.data.lite.LiteYukonPAObject(
+							paoID, 
+							paoName, 
+							com.cannontech.database.data.pao.PAOGroups.getCategory(paoCategory),
+							com.cannontech.database.data.pao.PAOGroups.getPAOType(paoCategory, paoType),
+							com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
+							paoDescription );
+	
+				if( portID != null )
+					pao.setPortID( portID.intValue() );
+	
+				allPAObjects.add( pao );
+			}
+	
+		}
+		catch( java.sql.SQLException e )
+		{
+	      com.cannontech.clientutils.CTILogger.error(" DB : YukonPAOLoader query did not work, trying Query with a non SQL-92 query");
+	      //try using a nonw SQL-92 method, will be slower
+	      //  Oracle 8.1.X and less will use this
+	 		executeNonSQL92Query();
+		}
+		finally
+		{
+			try
+			{
+				if( rset != null )
+					rset.close();
+				if( stmt != null )
+					stmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			}
+	//temp code
+	timerStop = new java.util.Date();
+	
+	com.cannontech.clientutils.CTILogger.info( 
+	    (timerStop.getTime() - timerStart.getTime())*.001 + 
+	      " Secs for YukonPAObjectLoader (" + allPAObjects.size() + " loaded)" );
+	
+	//temp code
+		}
+	}
+	
+	
+	private void executeNonSQL92Query()
+	{
+		String sqlString = 
+				"SELECT PAObjectID, Category, PAOName, " +
+				"Type, PAOClass, Description " +
+				"FROM YukonPAObject WHERE PAObjectID > 0 ORDER BY Category, PAOClass, PAOName";
+	
+		java.sql.Connection conn = null;
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+		try
+		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(sqlString);
+	
+			while (rset.next())
+			{
+				int paoID = rset.getInt(1);
+				String paoCategory = rset.getString(2).trim();
+				String paoName = rset.getString(3).trim();
+				String paoType = rset.getString(4).trim();
+				String paoClass = rset.getString(5).trim();
+				String paoDescription = rset.getString(6).trim();
+	
+				com.cannontech.database.data.lite.LiteYukonPAObject pao =
+					new com.cannontech.database.data.lite.LiteYukonPAObject(
+							paoID, 
+							paoName, 
+							com.cannontech.database.data.pao.PAOGroups.getCategory(paoCategory),
+							com.cannontech.database.data.pao.PAOGroups.getPAOType(paoCategory, paoType),
+							com.cannontech.database.data.pao.PAOGroups.getPAOClass(paoCategory, paoClass),
+							paoDescription );
+	
+				allPAObjects.add( pao );
+			}
+	
 			if( rset != null )
 				rset.close();
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
+	
+			sqlString = "SELECT DEVICEID,PORTID FROM DEVICEDIRECTCOMMSETTINGS WHERE DEVICEID > 0 ORDER BY DEVICEID";
+			rset = stmt.executeQuery(sqlString);
+	
+			while (rset.next())
+			{
+				int deviceID = rset.getInt(1);
+				int portID = rset.getInt(2);
+	
+				for(int i = 0; i < allPAObjects.size(); i++)
+				{
+					if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)allPAObjects.get(i)).getYukonID() == deviceID )
+					{
+						((com.cannontech.database.data.lite.LiteYukonPAObject)allPAObjects.get(i)).setPortID(portID);
+						break;
+					}
+				}
+			}
+	
 		}
 		catch( java.sql.SQLException e )
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
-//temp code
-timerStop = new java.util.Date();
-
-com.cannontech.clientutils.CTILogger.info( 
-    (timerStop.getTime() - timerStart.getTime())*.001 + 
-      " Secs for YukonPAObjectLoader (" + allPAObjects.size() + " loaded)" );
-
-//temp code
+		finally
+		{
+			try
+			{
+				if( stmt != null )
+					stmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			}
+		}
+	
 	}
-}
+
 }

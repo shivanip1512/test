@@ -116,6 +116,68 @@ public int getStateGroupID() {
 public long getTags() {
 	return tags;
 }
+
+private synchronized void loadPointTags( String databaseAlias )
+{
+	String sqlString = "SELECT UM.FORMULA " +
+		"FROM POINTUNIT PU , UNITMEASURE UM WHERE PU.UOMID = UM.UOMID " + 
+		"AND PU.POINTID = " + getPointID();
+	
+ 	com.cannontech.database.SqlStatement stmt =
+ 		new com.cannontech.database.SqlStatement(
+         sqlString,
+         databaseAlias );
+
+	try
+	{
+ 		stmt.execute();
+		String formula = (String) stmt.getRow(0)[0];
+
+		// tags may need to be changed here if there are more tags added to this bit field
+		long tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH;      //default value of tags for now.
+
+		if( "usage".equalsIgnoreCase(formula) )
+			tags = com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE;
+
+		setTags( tags );
+	}
+	catch( Exception e )
+	{
+	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+}
+
+private void executeNonSQL92Retrieve( String databaseAlias )
+{
+   
+   String sqlString = 
+      "SELECT POINTNAME,POINTTYPE,PAOBJECTID, " +
+      "POINTOFFSET,STATEGROUPID FROM POINT " +
+		"WHERE POINTID = " + getPointID() + " "  +       
+      "ORDER BY PAObjectID, POINTOFFSET";
+
+ 	com.cannontech.database.SqlStatement stmt =
+ 		new com.cannontech.database.SqlStatement(
+         sqlString,
+         databaseAlias );
+   
+   try
+   {
+ 		stmt.execute();
+		setPointName( ((String) stmt.getRow(0)[0]) );
+		setPointType( com.cannontech.database.data.point.PointTypes.getType(((String) stmt.getRow(0)[1])) );
+		setPaobjectID( ((java.math.BigDecimal) stmt.getRow(0)[2]).intValue() );
+		setPointOffset( ((java.math.BigDecimal) stmt.getRow(0)[3]).intValue() );
+		setStateGroupID( ((java.math.BigDecimal) stmt.getRow(0)[4]).intValue() );
+   }
+   catch( Exception e )
+   {
+      com.cannontech.clientutils.CTILogger.error( e.getMessage(), e);
+   }
+
+   loadPointTags( databaseAlias );   
+}
+
 /**
  * retrieve method comment.
  */
@@ -152,7 +214,10 @@ public void retrieve(String databaseAlias)
  	}
  	catch( Exception e )
  	{
- 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+      com.cannontech.clientutils.CTILogger.error(" DB : LitePoint.retrieve() query did not work, trying Query with a non SQL-92 query");
+      //try using a nonw SQL-92 method, will be slower
+      //  Oracle 8.1.X and less will use this
+ 		executeNonSQL92Retrieve( databaseAlias );
  	}
 }
 /**
