@@ -210,11 +210,11 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setLiteLMCustomerEvent(LiteLMCustomerEvent liteEvent, com.cannontech.database.db.stars.event.LMCustomerEventBase event) {
-        liteEvent.setEventID( event.getEventID().intValue() );
-        liteEvent.setActionID( event.getActionID().intValue() );
-        liteEvent.setEventDateTime( event.getEventDateTime().getTime() );
-        liteEvent.setEventTypeID( event.getEventTypeID().intValue() );
-        liteEvent.setNotes( event.getNotes() );
+		liteEvent.setEventID( event.getEventID().intValue() );
+		liteEvent.setActionID( event.getActionID().intValue() );
+		liteEvent.setEventDateTime( event.getEventDateTime().getTime() );
+		liteEvent.setEventTypeID( event.getEventTypeID().intValue() );
+		liteEvent.setNotes( event.getNotes() );
 	}
 	
 	public static void setLiteLMHardwareEvent(LiteLMHardwareEvent liteEvent, com.cannontech.database.data.stars.event.LMHardwareEvent event) {
@@ -442,69 +442,69 @@ public class StarsLiteFactory {
 	public static LiteStarsAppliance createLiteStarsAppliance(com.cannontech.database.data.stars.appliance.ApplianceBase appliance, LiteStarsEnergyCompany energyCompany) {
 		LiteStarsAppliance liteApp = null;
 		
-        LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( appliance.getApplianceBase().getApplianceCategoryID().intValue() );
-        if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
-        	liteApp = new LiteStarsAppAirConditioner();
-        	com.cannontech.database.db.stars.appliance.ApplianceAirConditioner app =
-        			com.cannontech.database.db.stars.appliance.ApplianceAirConditioner.getApplianceAirConditioner( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
-        	liteApp = new LiteStarsAppWaterHeater();
-        	com.cannontech.database.db.stars.appliance.ApplianceWaterHeater app =
-        			com.cannontech.database.db.stars.appliance.ApplianceWaterHeater.getApplianceWaterHeater( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
-        	liteApp = new LiteStarsAppDualFuel();
-        	com.cannontech.database.db.stars.appliance.ApplianceDualFuel app =
-        			com.cannontech.database.db.stars.appliance.ApplianceDualFuel.getApplianceDualFuel( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
-        	liteApp = new LiteStarsAppGenerator();
-        	com.cannontech.database.db.stars.appliance.ApplianceGenerator app =
-        			com.cannontech.database.db.stars.appliance.ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
-        	liteApp = new LiteStarsAppGrainDryer();
-        	com.cannontech.database.db.stars.appliance.ApplianceGrainDryer app =
-        			com.cannontech.database.db.stars.appliance.ApplianceGrainDryer.getApplianceGrainDryer( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
-        	liteApp = new LiteStarsAppStorageHeat();
-        	com.cannontech.database.db.stars.appliance.ApplianceStorageHeat app =
-        			com.cannontech.database.db.stars.appliance.ApplianceStorageHeat.getApplianceStorageHeat( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
-        	liteApp = new LiteStarsAppHeatPump();
-        	com.cannontech.database.db.stars.appliance.ApplianceHeatPump app =
-        			com.cannontech.database.db.stars.appliance.ApplianceHeatPump.getApplianceHeatPump( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, app );
-        }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
-        	liteApp = new LiteStarsAppIrrigation();
-        	com.cannontech.database.db.stars.appliance.ApplianceIrrigation app =
-        			com.cannontech.database.db.stars.appliance.ApplianceIrrigation.getApplianceIrrigation( appliance.getApplianceBase().getApplianceID() );
-        	if (app != null)
-            	StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, app );
-        }
-        else {
-        	liteApp = new LiteStarsAppliance();
-        }
+		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( appliance.getApplianceBase().getApplianceCategoryID().intValue() );
+		if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
+			liteApp = new LiteStarsAppAirConditioner();
+			com.cannontech.database.db.stars.appliance.ApplianceAirConditioner app =
+					com.cannontech.database.db.stars.appliance.ApplianceAirConditioner.getApplianceAirConditioner( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppAirConditioner( (LiteStarsAppAirConditioner) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+			liteApp = new LiteStarsAppWaterHeater();
+			com.cannontech.database.db.stars.appliance.ApplianceWaterHeater app =
+					com.cannontech.database.db.stars.appliance.ApplianceWaterHeater.getApplianceWaterHeater( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppWaterHeater( (LiteStarsAppWaterHeater) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
+			liteApp = new LiteStarsAppDualFuel();
+			com.cannontech.database.db.stars.appliance.ApplianceDualFuel app =
+					com.cannontech.database.db.stars.appliance.ApplianceDualFuel.getApplianceDualFuel( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppDualFuel( (LiteStarsAppDualFuel) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+			liteApp = new LiteStarsAppGenerator();
+			com.cannontech.database.db.stars.appliance.ApplianceGenerator app =
+					com.cannontech.database.db.stars.appliance.ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppGenerator( (LiteStarsAppGenerator) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
+			liteApp = new LiteStarsAppGrainDryer();
+			com.cannontech.database.db.stars.appliance.ApplianceGrainDryer app =
+					com.cannontech.database.db.stars.appliance.ApplianceGrainDryer.getApplianceGrainDryer( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppGrainDryer( (LiteStarsAppGrainDryer) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
+			liteApp = new LiteStarsAppStorageHeat();
+			com.cannontech.database.db.stars.appliance.ApplianceStorageHeat app =
+					com.cannontech.database.db.stars.appliance.ApplianceStorageHeat.getApplianceStorageHeat( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppStorageHeat( (LiteStarsAppStorageHeat) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
+			liteApp = new LiteStarsAppHeatPump();
+			com.cannontech.database.db.stars.appliance.ApplianceHeatPump app =
+					com.cannontech.database.db.stars.appliance.ApplianceHeatPump.getApplianceHeatPump( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppHeatPump( (LiteStarsAppHeatPump) liteApp, app );
+		}
+		else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
+			liteApp = new LiteStarsAppIrrigation();
+			com.cannontech.database.db.stars.appliance.ApplianceIrrigation app =
+					com.cannontech.database.db.stars.appliance.ApplianceIrrigation.getApplianceIrrigation( appliance.getApplianceBase().getApplianceID() );
+			if (app != null)
+				StarsLiteFactory.setLiteAppIrrigation( (LiteStarsAppIrrigation) liteApp, app );
+		}
+		else {
+			liteApp = new LiteStarsAppliance();
+		}
         
-        setLiteStarsAppliance( liteApp, appliance );
-        return liteApp;
+		setLiteStarsAppliance( liteApp, appliance );
+		return liteApp;
 	}
 	
 	public static void setLiteApplianceCategory(LiteApplianceCategory liteAppCat, com.cannontech.database.db.stars.appliance.ApplianceCategory appCat) {
@@ -515,13 +515,13 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setLiteServiceCompany(LiteServiceCompany liteCompany, com.cannontech.database.db.stars.report.ServiceCompany company) {
-    	liteCompany.setCompanyID( company.getCompanyID().intValue() );
-    	liteCompany.setCompanyName( company.getCompanyName() );
-    	liteCompany.setAddressID( company.getAddressID().intValue() );
-    	liteCompany.setMainPhoneNumber( company.getMainPhoneNumber() );
-    	liteCompany.setMainFaxNumber( company.getMainFaxNumber() );
-    	liteCompany.setPrimaryContactID( company.getPrimaryContactID().intValue() );
-    	liteCompany.setHiType( company.getHIType() );
+		liteCompany.setCompanyID( company.getCompanyID().intValue() );
+		liteCompany.setCompanyName( company.getCompanyName() );
+		liteCompany.setAddressID( company.getAddressID().intValue() );
+		liteCompany.setMainPhoneNumber( company.getMainPhoneNumber() );
+		liteCompany.setMainFaxNumber( company.getMainFaxNumber() );
+		liteCompany.setPrimaryContactID( company.getPrimaryContactID().intValue() );
+		liteCompany.setHiType( company.getHIType() );
 	}
 	
 	public static void setLiteCustomerFAQ(LiteCustomerFAQ liteFAQ, com.cannontech.database.db.stars.CustomerFAQ faq) {
@@ -1289,12 +1289,12 @@ public class StarsLiteFactory {
 				starsInvs.addStarsInventory( (StarsInventory)list.get(i) );
 		}
 		
-        if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
-        	liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID)
-        {
-	        LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
+		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_STARS_DEFAULT_ID &&
+			liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID)
+		{
+			LiteYukonUser liteUser = com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser( liteContact.getLoginID() );
 			starsAcctInfo.setStarsUser( createStarsUser(liteUser, energyCompany) );
-        }
+		}
 		
 		if (isOperator) {
 			ArrayList liteApps = liteAcctInfo.getAppliances();
@@ -1343,98 +1343,98 @@ public class StarsLiteFactory {
 	
 	public static void setStarsLMControlHistory(StarsLMControlHistory starsCtrlHist, LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
 		starsCtrlHist.removeAllControlHistory();
-        starsCtrlHist.setBeingControlled( false );
+		starsCtrlHist.setBeingControlled( false );
         
-        if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
-	        int startIndex = 0;
-	        if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentDayStartIndex();
-	        else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentWeekStartIndex();
-	        else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentMonthStartIndex();
-	        else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
-	        	startIndex = liteCtrlHist.getCurrentYearStartIndex();
+		if (period.getType() != StarsCtrlHistPeriod.NONE_TYPE) {
+			int startIndex = 0;
+			if (period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE)
+				startIndex = liteCtrlHist.getCurrentDayStartIndex();
+			else if (period.getType() == StarsCtrlHistPeriod.PASTWEEK_TYPE)
+				startIndex = liteCtrlHist.getCurrentWeekStartIndex();
+			else if (period.getType() == StarsCtrlHistPeriod.PASTMONTH_TYPE)
+				startIndex = liteCtrlHist.getCurrentMonthStartIndex();
+			else if (period.getType() == StarsCtrlHistPeriod.PASTYEAR_TYPE)
+				startIndex = liteCtrlHist.getCurrentYearStartIndex();
 	        
-        	ControlHistory hist = null;
-        	long lastStartTime = 0;
-        	long lastStopTime = 0;
-	        for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
-	        	LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+			ControlHistory hist = null;
+			long lastStartTime = 0;
+			long lastStopTime = 0;
+			for (int i = startIndex; i < liteCtrlHist.getLmControlHistory().size(); i++) {
+				LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
 
-                /*
-                 * ActiveRestore is defined as below:
-                 * N - This is the first entry for any new control.
-                 * C - Previous command was repeated extending the current control interval.
-                 * T - Control terminated based on time set in load group.
-                 * M - Control terminated because of an active restore or terminate command being sent.
-                 * O - Control terminated because a new command of a different nature was sent to this group.
-                 * L - Time log
-                 */
-                if (lmCtrlHist.getActiveRestore().equals("N")) {
-                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) > 1000) {
-                		// This is a new control
-	                	lastStartTime = lmCtrlHist.getStartDateTime();
-	                	lastStopTime = lmCtrlHist.getStopDateTime();
+				/*
+				 * ActiveRestore is defined as below:
+				 * N - This is the first entry for any new control.
+				 * C - Previous command was repeated extending the current control interval.
+				 * T - Control terminated based on time set in load group.
+				 * M - Control terminated because of an active restore or terminate command being sent.
+				 * O - Control terminated because a new command of a different nature was sent to this group.
+				 * L - Time log
+				 */
+				if (lmCtrlHist.getActiveRestore().equals("N")) {
+					if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) > 1000) {
+						// This is a new control
+						lastStartTime = lmCtrlHist.getStartDateTime();
+						lastStopTime = lmCtrlHist.getStopDateTime();
 	                	
-	                	hist = new ControlHistory();
-	                	hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
-			            hist.setControlDuration( 0 );
-	                	starsCtrlHist.addControlHistory( hist );
-                	}
-                	else {	// This is the continuation of the last control
-                		lastStopTime = lmCtrlHist.getStopDateTime();
-                	}
-                }
-                else if (lmCtrlHist.getActiveRestore().equals("C")
-                		|| lmCtrlHist.getActiveRestore().equals("L"))
-                {
-                	if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-                		if (hist != null)
-	                		hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
-                	}
-                }
-	        	else if (lmCtrlHist.getActiveRestore().equals("M")
-	        			|| lmCtrlHist.getActiveRestore().equals("T")
-	        			|| lmCtrlHist.getActiveRestore().equals("O"))
-	        	{
-	        		if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
-	        			lastStopTime = lmCtrlHist.getStopDateTime();
-	        			if (hist != null)
-				            hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
-	        		}
-		            hist = null;
-	        	}
-	        }
+						hist = new ControlHistory();
+						hist.setStartDateTime( new Date(lmCtrlHist.getStartDateTime()) );
+						hist.setControlDuration( 0 );
+						starsCtrlHist.addControlHistory( hist );
+					}
+					else {	// This is the continuation of the last control
+						lastStopTime = lmCtrlHist.getStopDateTime();
+					}
+				}
+				else if (lmCtrlHist.getActiveRestore().equals("C")
+						|| lmCtrlHist.getActiveRestore().equals("L"))
+				{
+					if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
+						if (hist != null)
+							hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
+					}
+				}
+				else if (lmCtrlHist.getActiveRestore().equals("M")
+						|| lmCtrlHist.getActiveRestore().equals("T")
+						|| lmCtrlHist.getActiveRestore().equals("O"))
+				{
+					if (Math.abs(lmCtrlHist.getStartDateTime() - lastStartTime) < 1000) {
+						lastStopTime = lmCtrlHist.getStopDateTime();
+						if (hist != null)
+							hist.setControlDuration( (int)(lmCtrlHist.getStopDateTime() - lastStartTime) / 1000 );
+					}
+					hist = null;
+				}
+			}
 	        
-	        starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
-        }
+			starsCtrlHist.setBeingControlled( new Date().getTime() < lastStopTime );
+		}
         
-        /* This is wrong!!!
-         * Now the summary is computed at run time from the control history 
-         */
-        if (getSummary) {
-            ControlSummary summary = new ControlSummary();
-            int dailyTime = 0;
-            int monthlyTime = 0;
-            int seasonalTime = 0;
-            int annualTime = 0;
+		/* This is wrong!!!
+		 * Now the summary is computed at run time from the control history 
+		 */
+		if (getSummary) {
+			ControlSummary summary = new ControlSummary();
+			int dailyTime = 0;
+			int monthlyTime = 0;
+			int seasonalTime = 0;
+			int annualTime = 0;
             
-            int size = liteCtrlHist.getLmControlHistory().size();
-            if (size > 0) {
-            	LiteLMControlHistory lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(size - 1);
-            	dailyTime = (int) lastCtrlHist.getCurrentDailyTime();
-            	monthlyTime = (int) lastCtrlHist.getCurrentMonthlyTime();
-            	seasonalTime = (int) lastCtrlHist.getCurrentSeasonalTime();
-            	annualTime = (int) lastCtrlHist.getCurrentAnnualTime();
-            }
+			int size = liteCtrlHist.getLmControlHistory().size();
+			if (size > 0) {
+				LiteLMControlHistory lastCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(size - 1);
+				dailyTime = (int) lastCtrlHist.getCurrentDailyTime();
+				monthlyTime = (int) lastCtrlHist.getCurrentMonthlyTime();
+				seasonalTime = (int) lastCtrlHist.getCurrentSeasonalTime();
+				annualTime = (int) lastCtrlHist.getCurrentAnnualTime();
+			}
             
-            summary.setDailyTime( dailyTime );
-            summary.setMonthlyTime( monthlyTime );
-            summary.setSeasonalTime( seasonalTime );
-            summary.setAnnualTime( annualTime );
-            starsCtrlHist.setControlSummary( summary );
-        }
+			summary.setDailyTime( dailyTime );
+			summary.setMonthlyTime( monthlyTime );
+			summary.setSeasonalTime( seasonalTime );
+			summary.setAnnualTime( annualTime );
+			starsCtrlHist.setControlSummary( summary );
+		}
 	}
 	
 	public static void setStarsEnergyCompany(StarsEnergyCompany starsCompany, LiteStarsEnergyCompany liteCompany) {
@@ -1652,9 +1652,9 @@ public class StarsLiteFactory {
 	}
 	
 	public static StarsLMControlHistory createStarsLMControlHistory(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, boolean getSummary) {
-        StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
-        setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, period, getSummary );
-        return starsCtrlHist;
+		StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
+		setStarsLMControlHistory( starsCtrlHist, liteCtrlHist, period, getSummary );
+		return starsCtrlHist;
 	}
 	
 	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsEnergyCompany energyCompany) {
@@ -1676,7 +1676,7 @@ public class StarsLiteFactory {
 		
 		// AlternativeDisplayName field: (program alias),(short name used in enrollment page)
 		StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteProg.getLmProgram().getWebSettingsID() );
-		String[] dispNames = starsConfig.getAlternateDisplayName().split(",");
+		String[] dispNames = ServerUtils.splitString( starsConfig.getAlternateDisplayName(), "," );
 		if (dispNames.length > 0 && dispNames[0].length() > 0)
 			starsProg.setProgramName( dispNames[0] );
 		
@@ -1794,11 +1794,11 @@ public class StarsLiteFactory {
 				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
 				
 				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-	    			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
-	    			AddressingGroup group = new AddressingGroup();
-	    			group.setEntryID( liteProg.getGroupIDs()[j] );
-	    			group.setContent( groupName );
-	    			starsProg.addAddressingGroup( group );
+					String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
+					AddressingGroup group = new AddressingGroup();
+					group.setEntryID( liteProg.getGroupIDs()[j] );
+					group.setContent( groupName );
+					starsProg.addAddressingGroup( group );
 				}
 				
 				if (liteProg.getChanceOfControlID() != 0) {
@@ -1917,206 +1917,206 @@ public class StarsLiteFactory {
 	}
 	
 	public static StarsAppliance createStarsAppliance(LiteStarsAppliance liteApp, LiteStarsEnergyCompany energyCompany) {
-        StarsAppliance starsApp = new StarsAppliance();
+		StarsAppliance starsApp = new StarsAppliance();
         
-        starsApp.setApplianceID( liteApp.getApplianceID() );
-        starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
-    	starsApp.setInventoryID( liteApp.getInventoryID() );
-    	starsApp.setLmProgramID( liteApp.getLmProgramID() );
-        starsApp.setNotes( ServerUtils.forceNotNull(liteApp.getNotes()) );
-        starsApp.setModelNumber( ServerUtils.forceNotNull(liteApp.getModelNumber()) );
+		starsApp.setApplianceID( liteApp.getApplianceID() );
+		starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
+		starsApp.setInventoryID( liteApp.getInventoryID() );
+		starsApp.setLmProgramID( liteApp.getLmProgramID() );
+		starsApp.setNotes( ServerUtils.forceNotNull(liteApp.getNotes()) );
+		starsApp.setModelNumber( ServerUtils.forceNotNull(liteApp.getModelNumber()) );
         
-        if (liteApp.getKWCapacity() >= 0)
-	        starsApp.setKWCapacity( liteApp.getKWCapacity() );
-	    if (liteApp.getEfficiencyRating() >= 0)
-	        starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
+		if (liteApp.getKWCapacity() >= 0)
+			starsApp.setKWCapacity( liteApp.getKWCapacity() );
+		if (liteApp.getEfficiencyRating() >= 0)
+			starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
         
-        if (liteApp.getYearManufactured() > 0)
-        	starsApp.setYearManufactured( String.valueOf(liteApp.getYearManufactured()) );
-        else
-        	starsApp.setYearManufactured( "" );
+		if (liteApp.getYearManufactured() > 0)
+			starsApp.setYearManufactured( String.valueOf(liteApp.getYearManufactured()) );
+		else
+			starsApp.setYearManufactured( "" );
        	
-       	Manufacturer manu = new Manufacturer();
-       	setStarsCustListEntry( manu, YukonListFuncs.getYukonListEntry(liteApp.getManufacturerID()) );
-       	starsApp.setManufacturer( manu );
+		Manufacturer manu = new Manufacturer();
+		setStarsCustListEntry( manu, YukonListFuncs.getYukonListEntry(liteApp.getManufacturerID()) );
+		starsApp.setManufacturer( manu );
         
-        Location loc = new Location();
-        setStarsCustListEntry( loc, YukonListFuncs.getYukonListEntry(liteApp.getLocationID()) );
-        starsApp.setLocation( loc );
+		Location loc = new Location();
+		setStarsCustListEntry( loc, YukonListFuncs.getYukonListEntry(liteApp.getLocationID()) );
+		starsApp.setLocation( loc );
         
-        starsApp.setServiceCompany( new ServiceCompany() );
+		starsApp.setServiceCompany( new ServiceCompany() );
         
-        LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( liteApp.getApplianceCategoryID() );
-        if (liteAppCat != null)
-	        starsApp.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
-	    else
-	    	starsApp.setDescription( "(Unknown)" );
+		LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( liteApp.getApplianceCategoryID() );
+		if (liteAppCat != null)
+			starsApp.setDescription( ServerUtils.forceNotNull(liteAppCat.getDescription()) );
+		else
+			starsApp.setDescription( "(Unknown)" );
 	    
-	    if (liteApp instanceof LiteStarsAppAirConditioner) {
-	    	AirConditioner ac = new AirConditioner();
-	    	ac.setTonnage(
-	    		(Tonnage) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppAirConditioner) liteApp).getTonnageID() ),
-	    			Tonnage.class)
-	    	);
-	    	ac.setACType(
-	    		(ACType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppAirConditioner) liteApp).getTypeID() ),
-	    			ACType.class)
-	    	);
-	    	starsApp.setAirConditioner( ac );
-	    }
-	    else if (liteApp instanceof LiteStarsAppWaterHeater) {
-	    	WaterHeater wh = new WaterHeater();
-	    	wh.setNumberOfGallons(
-	    		(NumberOfGallons) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppWaterHeater) liteApp).getNumberOfGallonsID() ),
-	    			NumberOfGallons.class)
-	    	);
-	    	wh.setEnergySource(
-	    		(EnergySource) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppWaterHeater) liteApp).getEnergySourceID() ),
-	    			EnergySource.class)
-	    	);
-	    	if (((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() >= 0)
-		    	wh.setNumberOfElements( ((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() );
-	    	starsApp.setWaterHeater( wh );
-	    }
-	    else if (liteApp instanceof LiteStarsAppDualFuel) {
-	    	DualFuel df = new DualFuel();
-	    	df.setSwitchOverType(
-	    		(SwitchOverType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppDualFuel) liteApp).getSwitchOverTypeID() ),
-	    			SwitchOverType.class)
-	    	);
-	    	if (((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() >= 0)
-		    	df.setSecondaryKWCapacity( ((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() );
-	    	df.setSecondaryEnergySource(
-	    		(SecondaryEnergySource) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppDualFuel) liteApp).getSecondaryEnergySourceID() ),
-	    			SecondaryEnergySource.class)
-	    	);
-	    	starsApp.setDualFuel( df );
-	    }
-	    else if (liteApp instanceof LiteStarsAppGenerator) {
-	    	Generator gen = new Generator();
-	    	gen.setTransferSwitchType(
-	    		(TransferSwitchType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGenerator) liteApp).getTransferSwitchTypeID() ),
-	    			TransferSwitchType.class)
-	    	);
-	    	gen.setTransferSwitchManufacturer(
-	    		(TransferSwitchManufacturer) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGenerator) liteApp).getTransferSwitchMfgID() ),
-	    			TransferSwitchManufacturer.class)
-	    	);
-	    	if (((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() >= 0)
-	    		gen.setPeakKWCapacity( ((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() );
-	    	if (((LiteStarsAppGenerator) liteApp).getFuelCapGallons() >= 0)
-	    		gen.setFuelCapGallons( ((LiteStarsAppGenerator) liteApp).getFuelCapGallons() );
-	    	if (((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() >= 0)
-	    		gen.setStartDelaySeconds( ((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() );
-	    	starsApp.setGenerator( gen );
-	    }
-	    else if (liteApp instanceof LiteStarsAppGrainDryer) {
-	    	GrainDryer gd = new GrainDryer();
-	    	gd.setDryerType(
-	    		(DryerType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getDryerTypeID() ),
-	    			DryerType.class)
-	    	);
-	    	gd.setBinSize(
-	    		(BinSize) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBinSizeID() ),
-	    			BinSize.class)
-	    	);
-	    	gd.setBlowerEnergySource(
-	    		(BlowerEnergySource) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBlowerEnergySourceID() ),
-	    			BlowerEnergySource.class)
-	    	);
-	    	gd.setBlowerHorsePower(
-	    		(BlowerHorsePower) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBlowerHorsePowerID() ),
-	    			BlowerHorsePower.class)
-	    	);
-	    	gd.setBlowerHeatSource(
-	    		(BlowerHeatSource) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBlowerHeatSourceID() ),
-	    			BlowerHeatSource.class)
-	    	);
-	    	starsApp.setGrainDryer( gd );
-	    }
-	    else if (liteApp instanceof LiteStarsAppStorageHeat) {
-	    	StorageHeat sh = new StorageHeat();
-	    	sh.setStorageType(
-	    		(StorageType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppStorageHeat) liteApp).getStorageTypeID() ),
-	    			StorageType.class)
-	    	);
-	    	if (((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() >= 0)
-	    		sh.setPeakKWCapacity( ((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() );
-	    	if (((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() >= 0)
-	    		sh.setHoursToRecharge( ((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() );
-	    	starsApp.setStorageHeat( sh );
-	    }
-	    else if (liteApp instanceof LiteStarsAppHeatPump) {
-	    	HeatPump hp = new HeatPump();
-	    	hp.setPumpType(
-	    		(PumpType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getPumpTypeID() ),
-	    			PumpType.class)
-	    	);
-	    	hp.setPumpSize(
-	    		(PumpSize) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getPumpSizeID() ),
-	    			PumpSize.class)
-	    	);
-	    	hp.setStandbySource(
-	    		(StandbySource) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getStandbySourceID() ),
-	    			StandbySource.class)
-	    	);
-	    	if (((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() >= 0)
-	    		hp.setRestartDelaySeconds( ((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() );
-	    	starsApp.setHeatPump( hp );
-	    }
-	    else if (liteApp instanceof LiteStarsAppIrrigation) {
-	    	Irrigation irr = new Irrigation();
-	    	irr.setIrrigationType(
-	    		(IrrigationType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getIrrigationTypeID() ),
-	    			IrrigationType.class)
-	    	);
-	    	irr.setHorsePower(
-	    		(HorsePower) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getHorsePowerID() ),
-	    			HorsePower.class)
-	    	);
-	    	irr.setEnergySource(
-	    		(EnergySource) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getEnergySourceID() ),
-	    			EnergySource.class)
-	    	);
-	    	irr.setSoilType(
-	    		(SoilType) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getSoilTypeID() ),
-	    			SoilType.class)
-	    	);
-	    	irr.setMeterLocation(
-	    		(MeterLocation) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getMeterLocationID() ),
-	    			MeterLocation.class)
-	    	);
-	    	irr.setMeterVoltage(
-	    		(MeterVoltage) StarsFactory.newStarsCustListEntry(
-	    			YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getMeterVoltageID() ),
-	    			MeterVoltage.class)
-	    	);
-	    	starsApp.setIrrigation( irr );
-	    }
+		if (liteApp instanceof LiteStarsAppAirConditioner) {
+			AirConditioner ac = new AirConditioner();
+			ac.setTonnage(
+				(Tonnage) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppAirConditioner) liteApp).getTonnageID() ),
+					Tonnage.class)
+			);
+			ac.setACType(
+				(ACType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppAirConditioner) liteApp).getTypeID() ),
+					ACType.class)
+			);
+			starsApp.setAirConditioner( ac );
+		}
+		else if (liteApp instanceof LiteStarsAppWaterHeater) {
+			WaterHeater wh = new WaterHeater();
+			wh.setNumberOfGallons(
+				(NumberOfGallons) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppWaterHeater) liteApp).getNumberOfGallonsID() ),
+					NumberOfGallons.class)
+			);
+			wh.setEnergySource(
+				(EnergySource) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppWaterHeater) liteApp).getEnergySourceID() ),
+					EnergySource.class)
+			);
+			if (((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() >= 0)
+				wh.setNumberOfElements( ((LiteStarsAppWaterHeater) liteApp).getNumberOfElements() );
+			starsApp.setWaterHeater( wh );
+		}
+		else if (liteApp instanceof LiteStarsAppDualFuel) {
+			DualFuel df = new DualFuel();
+			df.setSwitchOverType(
+				(SwitchOverType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppDualFuel) liteApp).getSwitchOverTypeID() ),
+					SwitchOverType.class)
+			);
+			if (((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() >= 0)
+				df.setSecondaryKWCapacity( ((LiteStarsAppDualFuel) liteApp).getSecondaryKWCapacity() );
+			df.setSecondaryEnergySource(
+				(SecondaryEnergySource) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppDualFuel) liteApp).getSecondaryEnergySourceID() ),
+					SecondaryEnergySource.class)
+			);
+			starsApp.setDualFuel( df );
+		}
+		else if (liteApp instanceof LiteStarsAppGenerator) {
+			Generator gen = new Generator();
+			gen.setTransferSwitchType(
+				(TransferSwitchType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGenerator) liteApp).getTransferSwitchTypeID() ),
+					TransferSwitchType.class)
+			);
+			gen.setTransferSwitchManufacturer(
+				(TransferSwitchManufacturer) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGenerator) liteApp).getTransferSwitchMfgID() ),
+					TransferSwitchManufacturer.class)
+			);
+			if (((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() >= 0)
+				gen.setPeakKWCapacity( ((LiteStarsAppGenerator) liteApp).getPeakKWCapacity() );
+			if (((LiteStarsAppGenerator) liteApp).getFuelCapGallons() >= 0)
+				gen.setFuelCapGallons( ((LiteStarsAppGenerator) liteApp).getFuelCapGallons() );
+			if (((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() >= 0)
+				gen.setStartDelaySeconds( ((LiteStarsAppGenerator) liteApp).getStartDelaySeconds() );
+			starsApp.setGenerator( gen );
+		}
+		else if (liteApp instanceof LiteStarsAppGrainDryer) {
+			GrainDryer gd = new GrainDryer();
+			gd.setDryerType(
+				(DryerType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getDryerTypeID() ),
+					DryerType.class)
+			);
+			gd.setBinSize(
+				(BinSize) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBinSizeID() ),
+					BinSize.class)
+			);
+			gd.setBlowerEnergySource(
+				(BlowerEnergySource) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBlowerEnergySourceID() ),
+					BlowerEnergySource.class)
+			);
+			gd.setBlowerHorsePower(
+				(BlowerHorsePower) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBlowerHorsePowerID() ),
+					BlowerHorsePower.class)
+			);
+			gd.setBlowerHeatSource(
+				(BlowerHeatSource) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppGrainDryer) liteApp).getBlowerHeatSourceID() ),
+					BlowerHeatSource.class)
+			);
+			starsApp.setGrainDryer( gd );
+		}
+		else if (liteApp instanceof LiteStarsAppStorageHeat) {
+			StorageHeat sh = new StorageHeat();
+			sh.setStorageType(
+				(StorageType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppStorageHeat) liteApp).getStorageTypeID() ),
+					StorageType.class)
+			);
+			if (((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() >= 0)
+				sh.setPeakKWCapacity( ((LiteStarsAppStorageHeat) liteApp).getPeakKWCapacity() );
+			if (((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() >= 0)
+				sh.setHoursToRecharge( ((LiteStarsAppStorageHeat) liteApp).getHoursToRecharge() );
+			starsApp.setStorageHeat( sh );
+		}
+		else if (liteApp instanceof LiteStarsAppHeatPump) {
+			HeatPump hp = new HeatPump();
+			hp.setPumpType(
+				(PumpType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getPumpTypeID() ),
+					PumpType.class)
+			);
+			hp.setPumpSize(
+				(PumpSize) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getPumpSizeID() ),
+					PumpSize.class)
+			);
+			hp.setStandbySource(
+				(StandbySource) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppHeatPump) liteApp).getStandbySourceID() ),
+					StandbySource.class)
+			);
+			if (((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() >= 0)
+				hp.setRestartDelaySeconds( ((LiteStarsAppHeatPump) liteApp).getSecondsDelayToRestart() );
+			starsApp.setHeatPump( hp );
+		}
+		else if (liteApp instanceof LiteStarsAppIrrigation) {
+			Irrigation irr = new Irrigation();
+			irr.setIrrigationType(
+				(IrrigationType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getIrrigationTypeID() ),
+					IrrigationType.class)
+			);
+			irr.setHorsePower(
+				(HorsePower) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getHorsePowerID() ),
+					HorsePower.class)
+			);
+			irr.setEnergySource(
+				(EnergySource) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getEnergySourceID() ),
+					EnergySource.class)
+			);
+			irr.setSoilType(
+				(SoilType) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getSoilTypeID() ),
+					SoilType.class)
+			);
+			irr.setMeterLocation(
+				(MeterLocation) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getMeterLocationID() ),
+					MeterLocation.class)
+			);
+			irr.setMeterVoltage(
+				(MeterVoltage) StarsFactory.newStarsCustListEntry(
+					YukonListFuncs.getYukonListEntry( ((LiteStarsAppIrrigation) liteApp).getMeterVoltageID() ),
+					MeterVoltage.class)
+			);
+			starsApp.setIrrigation( irr );
+		}
         
-        return starsApp;
+		return starsApp;
 	}
 	
 	public static StarsCustSelectionList createStarsCustSelectionList(YukonSelectionList yukonList) {
@@ -2146,52 +2146,52 @@ public class StarsLiteFactory {
 	
 	public static StarsCustomerSelectionLists createStarsCustomerSelectionLists(ArrayList selectionLists) {
 		StarsCustomerSelectionLists starsCustSelLists = new StarsCustomerSelectionLists();
-        for (int i = 0; i < selectionLists.size(); i++) {
-        	YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
-        	starsCustSelLists.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
-        }
+		for (int i = 0; i < selectionLists.size(); i++) {
+			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
+			starsCustSelLists.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
+		}
         
-        return starsCustSelLists;
+		return starsCustSelLists;
 	}
 	
 	public static StarsEnrollmentPrograms createStarsEnrollmentPrograms(ArrayList liteAppCats, LiteStarsEnergyCompany energyCompany) {
 		StarsEnrollmentPrograms starsEnrPrograms = new StarsEnrollmentPrograms();
         	
-        for (int i = 0; i < liteAppCats.size(); i++) {
-        	LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-    		starsEnrPrograms.addStarsApplianceCategory(
-    			StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
-        }
+		for (int i = 0; i < liteAppCats.size(); i++) {
+			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
+			starsEnrPrograms.addStarsApplianceCategory(
+				StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
+		}
         
-        return starsEnrPrograms;
+		return starsEnrPrograms;
 	}
 	
 	public static StarsCustomerFAQs createStarsCustomerFAQs(ArrayList liteFAQs) {
 		StarsCustomerFAQs starsCustFAQs = new StarsCustomerFAQs();
 		
-        int lastSubjectID = CtiUtilities.NONE_ID;
-        StarsCustomerFAQGroup lastGroup = null;
+		int lastSubjectID = CtiUtilities.NONE_ID;
+		StarsCustomerFAQGroup lastGroup = null;
         
-        // Group the FAQs by their subjects
-        for (int i = 0; i < liteFAQs.size(); i++) {
-        	LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(i);
+		// Group the FAQs by their subjects
+		for (int i = 0; i < liteFAQs.size(); i++) {
+			LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(i);
         	
-        	if (liteFAQ.getSubjectID() != lastSubjectID) {
-        		lastSubjectID = liteFAQ.getSubjectID();
-        		lastGroup = new StarsCustomerFAQGroup();
-        		lastGroup.setSubjectID( lastSubjectID );
-        		lastGroup.setSubject( YukonListFuncs.getYukonListEntry(lastSubjectID).getEntryText() );
-        		starsCustFAQs.addStarsCustomerFAQGroup( lastGroup );
-        	}
+			if (liteFAQ.getSubjectID() != lastSubjectID) {
+				lastSubjectID = liteFAQ.getSubjectID();
+				lastGroup = new StarsCustomerFAQGroup();
+				lastGroup.setSubjectID( lastSubjectID );
+				lastGroup.setSubject( YukonListFuncs.getYukonListEntry(lastSubjectID).getEntryText() );
+				starsCustFAQs.addStarsCustomerFAQGroup( lastGroup );
+			}
         	
 			StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
 			starsFAQ.setQuestionID( liteFAQ.getQuestionID() );
 			starsFAQ.setQuestion( liteFAQ.getQuestion() );
 			starsFAQ.setAnswer( liteFAQ.getAnswer() );
-        	lastGroup.addStarsCustomerFAQ( starsFAQ );
-        }
+			lastGroup.addStarsCustomerFAQ( starsFAQ );
+		}
         
-        return starsCustFAQs;
+		return starsCustFAQs;
 	}
 	
 	public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, ArrayList liteProgs, LiteStarsEnergyCompany energyCompany) {
