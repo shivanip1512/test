@@ -10,8 +10,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2002/12/23 21:28:12 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/01/09 18:10:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,7 +100,7 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         OutMessage->Sequence              = 0;
         OutMessage->Retry                 = 3;
 
-        OutMessage->Buffer.OutMessage[9]  = getFreezeNumber();
+        OutMessage->Buffer.OutMessage[9]  = setFreezeNumber((BYTE)getLastFreezeNumber()).getFreezeNumber();
         EstablishOutMessagePriority( OutMessage, (MAXPRIORITY - 3) );
 
         setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
@@ -287,7 +287,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     break;
                 }
 
-#if 0
+                if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -302,7 +302,6 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     dout << RWTime() << " Ilex Data Complete" << endl;
                     dout.fill(oldfill);
                 }
-#endif
 
                 // !!! FALL THROUGH FALL THROUGH FALL THROUGH !!!
             }
@@ -422,7 +421,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     {
                         StartStatus = InMessage->Buffer.InMessage[Offset] * 16;
 
-#if 1
+                        if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             char oldfill = dout.fill('0');
@@ -437,7 +436,6 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                             dout.fill(oldfill);
                         }
-#endif
 
                         for(j = 1; j <= 16; j++)
                         {
@@ -540,62 +538,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                             dout << " " << getName() << " A.C.H. Bad freeze number!" << endl;
                         }
 #else
-                        /* loop through the demand accums for this Remote */
-                        memcpy (PointRecord.DeviceName, DeviceRecord->DeviceName, STANDNAMLEN);
-                        PointRecord.PointType = DEMANDACCUMPOINT;
-                        if(!(PointGetDeviceTypeFirst (&PointRecord)))
-                        {
-                            do
-                            {
-                                PointLock (&PointRecord);
-
-                                /* BDW - The line below was moved above checkdatastatquality because that function updates the database. */
-                                /* Move the pulse count */
-                                PointRecord.PreviousPulses = PointRecord.PresentPulses;
-
-                                CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
-
-                                /* Send the point to feedback */
-                                memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
-                                memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
-                                DRPValue.Quality = PointRecord.CurrentQuality;
-                                DRPValue.AlarmState = PointRecord.AlarmStatus;
-                                DRPValue.Value = PointRecord.CurrentValue;
-                                DRPValue.TimeStamp = PointRecord.CurrentTime;
-                                DRPValue.Type = DRPTYPEVALUE;
-
-                                SendDRPPoint (&DRPValue);
-                            } while(!(PointGetDeviceTypeNext (&PointRecord)));
-                        }
-
-                        /* loop through the accums for this Remote */
-                        memcpy (PointRecord.DeviceName, DeviceRecord->DeviceName, STANDNAMLEN);
-                        PointRecord.PointType = ACCUMULATORPOINT;
-                        if(!(PointGetDeviceTypeFirst (&PointRecord)))
-                        {
-                            do
-                            {
-                                PointLock (&PointRecord);
-
-                                /* BDW - The line below was moved above checkdatastatquality
-                                         because that function updates the database. */
-                                /* Move the pulse count */
-                                PointRecord.PreviousPulses = PointRecord.PresentPulses;
-
-                                CheckDataStateQuality (DeviceRecord, &PointRecord, &PValue, NORMAL, TimeB->time, TimeB->dstflag, DATAFREEZEFAIL, LogFlag);
-
-                                /* Send the point to feedback */
-                                memcpy (DRPValue.DeviceName, PointRecord.DeviceName, STANDNAMLEN);
-                                memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
-                                DRPValue.Quality = PointRecord.CurrentQuality;
-                                DRPValue.AlarmState = PointRecord.AlarmStatus;
-                                DRPValue.Value = PointRecord.CurrentValue;
-                                DRPValue.TimeStamp = PointRecord.CurrentTime;
-                                DRPValue.Type = DRPTYPEVALUE;
-
-                                SendDRPPoint (&DRPValue);
-                            } while(!(PointGetDeviceTypeNext (&PointRecord)));
-                        }
+                        // See DSM/2 for behaviour here....
 #endif
                     }
                     else
@@ -619,7 +562,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Deciding accumulators from " << (int)(StartAccum + 1) << " to " << EndAccum << endl;
+                            dout << "  Decoding accumulators from " << (int)(StartAccum + 1) << " to " << EndAccum << endl;
                         }
                         for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
                         {
@@ -637,10 +580,13 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << RWTime() << " " << getName() << " doesn't appear to have had two demand accumulator scans. Waiting for a second scan." << endl;
                                     }
                                 }
                                 else
                                 {
+                                    try
+                                    {
                                     /* Calculate the number of pulses */
                                     if(pAccumPoint->getPointHistory().getPresentPulseCount() < pAccumPoint->getPointHistory().getPreviousPulseCount())
                                         UValue = 0xffff - pAccumPoint->getPointHistory().getPreviousPulseCount() + pAccumPoint->getPointHistory().getPresentPulseCount();  /* Rollover */
@@ -655,6 +601,16 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                     /* Apply offset */
                                     PValue += pAccumPoint->getDataOffset();
 
+                                        if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Demand Accum offset " << AIPointOffset << " = " << PValue << endl;
+                                            dout << " UValue = " << UValue << endl;
+                                            dout << " PartHour = " << PartHour << endl;
+                                            dout << " PrevPulse = " << pAccumPoint->getPointHistory().getPreviousPulseCount() << endl;
+                                            dout << " CurrPulse = " << pAccumPoint->getPointHistory().getPresentPulseCount() << endl;
+                                        }
+
                                     _snprintf(tStr, 127, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
                                     pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
@@ -663,6 +619,21 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                         ReturnMsg->PointData().insert(pData);
                                         pData = NULL;  // We just put it on the list...
                                     }
+                                }
+                                    catch(...)
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " No point for DACC offset " << AIPointOffset << endl;
                                 }
                             }
 
@@ -684,6 +655,12 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                 /* Apply offset */
                                 PValue += pAccumPoint->getDataOffset();
 
+                                if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Pulse Accum offset " << AIPointOffset << " = " << PValue << endl;
+                                }
+
                                 _snprintf(tStr, 127, "%s point %s = %f", getName(), pAccumPoint->getName(), PValue);
 
                                 pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, PulseAccumulatorPointType, tStr);
@@ -694,10 +671,18 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                     pData = NULL;  // We just put it on the list...
                                 }
                             }
+                            else
+                            {
+                                if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << " No point for PACC offset " << AIPointOffset << endl;
+                                }
+                            }
 
                             Offset += 2;
                         }
-
                     }
                     resetScanFrozen();
                     resetScanFreezeFailed();
@@ -711,6 +696,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                 if(NumAnalogs)
                 {
+                    if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -734,6 +720,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         Value = Value / 16;
 
 
+                        if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " AI offset " << AIPointOffset << " = " << Value << endl;
@@ -780,6 +767,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         setIlexSequenceNumber( 1 );
                         if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NORMAL)
                         {
+                            if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -804,7 +792,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     /* put a something fishy message here */
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** ACH. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 break;
@@ -901,7 +889,7 @@ INT CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
             // FIX FIX FIX 092999
             retList.insert( CTIDBG_new CtiReturnMsg(getID(),
                                                     RWCString(OutMessage->Request.CommandStr),
-                                                    RWCString("Welco Devices do not support this command (yet?)"),
+                                                    RWCString("Ilex Devices do not support this command (yet?)"),
                                                     status,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
@@ -1078,7 +1066,13 @@ BYTE CtiDeviceILEX::getFreezeNumber() const
 
 CtiDeviceILEX& CtiDeviceILEX::setFreezeNumber(BYTE number)
 {
-    _freezeNumber = number;
+    _freezeNumber = number + 1;
+
+    if(!_freezeNumber)
+    {
+        _freezeNumber = 1;
+    }
+
     return *this;
 }
 
@@ -1120,4 +1114,3 @@ INT CtiDeviceILEX::exceptionScan(OUTMESS *&OutMessage, INT ScanPriority, RWTPtrS
 
     return status;
 }
-
