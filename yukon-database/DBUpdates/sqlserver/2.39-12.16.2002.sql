@@ -322,7 +322,7 @@ go
 
 /**** Add some constraints onto the YukonUser tables (Mainly ensures that these ****/
 /**** constraints are present)   ****/
-alter table Contact
+alter table CustomerContact
    add constraint FK_RefCstLg_CustCont foreign key (LogInID)
       references YukonUser (UserID)
 go

@@ -303,7 +303,7 @@ delete graphdataseries where type = 2;
 
 
 /**** Add some constraints onto the YukonUser tables ****/
-alter table Contact
+alter table CustomerContact
    add constraint FK_RefCstLg_CustCont foreign key (LogInID)
       references YukonUser (UserID);
 alter table CustomerLoginSerialGroup
