@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2003/09/22 15:38:21 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2003/09/29 16:05:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -189,6 +189,7 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
+extern void commFail(CtiDeviceBase *Device, INT state);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -347,38 +348,87 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
         {
             CtiDeviceBase *RemoteDevice = itr_dev.value();
 
-            if(RemoteDevice->getType() == TYPE_CCU711 && ptPort->getPortID() == RemoteDevice->getPortID())
+            if(ptPort->getPortID() == RemoteDevice->getPortID())
             {
-                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-                if(pInfo != NULL)
+                bool commsuccess = false;
+                if(RemoteDevice->adjustCommCounts( commsuccess, false ))
                 {
-                    QueryQueue(pInfo->QueueHandle, &QueEntCnt);
-                    if(QueEntCnt)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
-                        }
-                        CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                        // PurgeQueue(pInfo->QueueHandle);
-                    }
+                    commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
+                }
 
-                    QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
-                    if(QueEntCnt)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
-                        }
-                        CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
-                        //PurgeQueue(pInfo->ActinQueueHandle);
-                    }
+                if(RemoteDevice->getType() == TYPE_CCU711)
+                {
+                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
 
-                    //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
-                    if(pInfo->GetStatus(INLGRPQ))
+                    if(pInfo != NULL)
                     {
-                        pInfo->ClearStatus(INLGRPQ);
+                        QueryQueue(pInfo->QueueHandle, &QueEntCnt);
+                        if(QueEntCnt)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
+                            }
+                            CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                            // PurgeQueue(pInfo->QueueHandle);
+                        }
+
+                        QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
+                        if(QueEntCnt)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
+                            }
+                            CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
+                            //PurgeQueue(pInfo->ActinQueueHandle);
+                        }
+
+                        //  make sure we clear out the pending bits - otherwise the device will refuse any new queued requests
+                        if(pInfo->GetStatus(INLGRPQ))
+                        {
+                            pInfo->ClearStatus(INLGRPQ);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
+{
+    LONG id = (LONG)unusedPtr;
+
+    if( (id != 0 && ptPort->getPortID() != id) )
+    {
+        // Skip it!
+        return;
+    }
+
+    if(!ptPort->isInhibited())
+    {
+        if(PorterDebugLevel & PORTER_DEBUG_COMMFAIL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " comm failing all attached comm status points" << endl;
+        }
+
+        RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
+
+        if(dev_guard.isAcquired())
+        {
+            CtiRTDB<CtiDeviceBase>::CtiRTDBIterator itr_dev(DeviceManager.getMap());
+            /* Do the remotes on this port */
+            for(; ++itr_dev ;)
+            {
+                CtiDeviceBase *RemoteDevice = itr_dev.value();
+                if(ptPort->getPortID() == RemoteDevice->getPortID())
+                {
+                    bool commsuccess = false;
+                    if(RemoteDevice->adjustCommCounts( commsuccess, false ))
+                    {
+                        commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
                     }
                 }
             }

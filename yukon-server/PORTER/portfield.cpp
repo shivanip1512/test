@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2003/09/22 15:39:03 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2003/09/29 16:05:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,6 +143,7 @@ void my_other_echo( char ch )
  */
 static ULONG   gQueSlot = 0;
 
+extern void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
@@ -232,6 +233,10 @@ VOID PortThread(void *pid)
                 }
 
                 PortManager.apply( applyPortQueuePurge, (void*)Port->getPortID() );
+            }
+            else
+            {
+                PortManager.apply( applyPortInitFail, (void*)Port->getPortID() );
             }
 
             {
