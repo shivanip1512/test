@@ -28,9 +28,8 @@ public class PersistDrawingMetaElement extends BasePersistElement {
 	 */
 	public void readFromJLX(DrawingElement drawingElem, InputStream in, int version)
 		throws IOException {
-			
 			DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
-			
+
 			switch(version) {
 				
 				case 1: {

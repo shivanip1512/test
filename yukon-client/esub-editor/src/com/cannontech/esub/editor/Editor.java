@@ -39,6 +39,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.esub.*;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
+import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.DrawingUpdater;
 import com.cannontech.roles.application.EsubEditorRole;
@@ -326,7 +327,15 @@ public class Editor extends JPanel {
 		}
 	}
 	public void newDrawing() {
-		getDrawing().clear();	
+		Drawing d = getDrawing();
+		
+		d.clear();	
+		
+		//set the size of the new drawing, since we cleared the old one
+		DrawingMetaElement dme = d.getMetaElement();
+		EditorPrefs prefs = EditorPrefs.getPreferences();		
+		dme.setDrawingWidth(prefs.getDefaultDrawingWidth());
+		dme.setDrawingHeight(prefs.getDefaultDrawingHeight());
 		//getUndoManager().discardAllEdits();  
 		setFrameTitle("Untitled");
 	}
@@ -357,6 +366,12 @@ public class Editor extends JPanel {
 		
 		} 
 		finally {
+				
+			int currentWidth = getDrawing().getMetaElement().getDrawingWidth();
+			int currentHeight = getDrawing().getMetaElement().getDrawingHeight();
+			EditorPrefs.getPreferences().setDefaultDrawingWidth(currentWidth);
+			EditorPrefs.getPreferences().setDefaultDrawingHeight(currentHeight);
+			
 			getUndoManager().discardAllEdits();
 			setCursor(Cursor.getDefaultCursor());
 		}
