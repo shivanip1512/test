@@ -1,5 +1,6 @@
 package com.cannontech.yukon.concrete;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.yukon.IYukon;
 
 /**
@@ -30,7 +31,7 @@ public class ResourceFactory
       }
       catch( Exception e )
       {
-         com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+         CTILogger.getStandardLog().error( e.getMessage(), e );
       }
       
       if( o != null && (o instanceof IYukon) )
