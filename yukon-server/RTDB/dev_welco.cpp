@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2003/03/14 03:08:13 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2003/05/15 13:52:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include <windows.h>
 
 #include "dsm2.h"
+#include "dllyukon.h"
 #include "porter.h"
 
 #include "device.h"
@@ -339,7 +340,6 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
     return status;
 }
-
 
 INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
@@ -861,12 +861,11 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
 
 #if (DEBUG_PRINT_DECODE > 0)
-                        if(PValue == (FLOAT)CLOSED)
-                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  CLOSED" << endl; }
-                        else
-                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is  OPENED" << endl; }
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
+                        }
 #endif
-
                         /*
                          *  If this next bit is too confusing, you haven't read the protocol document.
                          *
@@ -882,15 +881,14 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
-                            if(PValue == (FLOAT)CLOSED)
-                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was CLOSED" << endl; }
-                            else
-                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was OPENED" << endl; }
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
+                            }
 #endif
                         }
 
-
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
                         if(pData != NULL)
@@ -905,7 +903,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
 
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, tStr);
 
@@ -945,10 +943,10 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
 
 #if (DEBUG_PRINT_DECODE > 0)
-                        if(PValue == (FLOAT)CLOSED)
-                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Status " << PointOffset << " is  CLOSED" << endl; }
-                        else
-                            { CtiLockGuard<CtiLogger> doubt_guard(dout);  dout << RWTime() << " Status " << PointOffset << " is  OPENED" << endl; }
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
+                        }
 #endif
 
                         /* Check if this is "changed" */
@@ -956,14 +954,11 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
 #if (DEBUG_PRINT_DECODE > 0)
-                            if(PValue == (FLOAT)CLOSED)
-                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Status " << PointOffset << " was CLOSED" << endl; }
-                            else
-                                { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " Status " << PointOffset << " was OPENED" << endl; }
+                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << RWTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
 #endif
                         }
 
-                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                        _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
 
                         pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                     PValue,
@@ -980,7 +975,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
                             PValue = ( (PValue == CLOSED) ? OPENED : CLOSED );
-                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ((PValue == OPENED) ? "OPENED" : "CLOSED") );
+                            _snprintf(tStr, 126, "%s point %s = %s", getName(), PointRecord->getName(), ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)).data() );
                             pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                                         PValue,
                                                         NormalQuality,
@@ -1219,6 +1214,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     return(NORMAL);
 }
+
 
 
 
@@ -1509,26 +1505,15 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                         }
                         else
                         {
-                            if(Point->getMultiplier() > 0.0)
+                            double absmult = fabs(Point->getMultiplier());
+
+                            if((Point->getDeadband() / absmult) > 255)
                             {
-                                if((Point->getDeadband() / Point->getMultiplier()) > 255)
-                                {
-                                    MyOutMessage->Buffer.OutMessage[ByteCount + 9] = 255;
-                                }
-                                else
-                                {
-                                    MyOutMessage->Buffer.OutMessage[ByteCount + 9] = (UCHAR)(Point->getDeadband() / Point->getMultiplier());
-                                }
+                                MyOutMessage->Buffer.OutMessage[ByteCount + 9] = 255;
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** DB Configuration Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << RWTime() << " " << Point->getName() << " multiplier must be >= 0" << endl;
-                                }
-
-                                MyOutMessage->Buffer.OutMessage[ByteCount + 9] = 255;
+                                MyOutMessage->Buffer.OutMessage[ByteCount + 9] = (UCHAR)(Point->getDeadband() / absmult);
                             }
                         }
                     }
