@@ -148,7 +148,7 @@
 									    revisionList.add(revision);
                                                      
 									    if( revision.getOfferExpirationDateTime().compareTo(new java.util.Date()) >= 0 )
-                                        {       System.out.println("LOLO");                                                     
+                                        {       //System.out.println("LOLO");                                                     
 										    numNewOffers++;
 										    newOfferList.add(Boolean.TRUE);
                                         }
@@ -274,9 +274,11 @@
 		{
 			try {
 				if( newAmountStrs[i].length() == 0)
+				{
 					newAmountStrs[i] = "0";
+					}
 				double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();
-				if (amountVal < 0)	//'0' is a defined curtail amount so we must check for our default -999 value instead.
+				if (amountVal == -999)	//'0' is a defined curtail amount so we must check for our default -999 value instead.
 					amountStrs[i] = "----";
 				else
 					amountStrs[i] = numberFormat.format(amountVal);
@@ -302,8 +304,10 @@
 					for (int i = 0; i < 24; i++)
 					{
 						double amountVal = numberFormat.parse(newAmountStrs[i]).doubleValue();                       
-						if (amountVal == 0 || amountVal == -999)	//-999 is our init value.
+						if (amountVal == -999)	//-999 is our init value.
 							amountStrs[i] = "----";
+						else if( amountVal == 0)
+							amountStrs[i] = "0";
 						else {
 							if( amountVal < 500) {
 								isTooSmall = true;

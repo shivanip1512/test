@@ -125,7 +125,7 @@ function decline_form()
                       <%
 				if (amountStrs[i].equals("----")) {
 			%>
-                              <input type=hidden name="amount" value="0">
+                              <input type=hidden name="amount" value="-999">
                       ---- 
                       <%
 				}
@@ -178,7 +178,7 @@ function decline_form()
                       <%
 				if (amountStrs[i].equals("----")) {
 				%>
-                              <input type=hidden name="amount" value="0">
+                              <input type=hidden name="amount" value="-999">
                       ---- 
                       <%
 				}
