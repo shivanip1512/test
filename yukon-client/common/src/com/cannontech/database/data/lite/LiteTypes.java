@@ -18,4 +18,5 @@ public final class LiteTypes
 	public final static int CUSTOMER_CONTACT = 14;
 	public final static int DEVICE_METERNUMBER = 15;
 	public final static int YUKON_PAOBJECT= 16;
+	public final static int POINT_UNIT = 17;
 }
