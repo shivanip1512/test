@@ -26,8 +26,15 @@ public class PowerFailPointCreate
 	 */
 	public static void main(String[] args) 
 	{
+		java.util.Date timerStart = new java.util.Date();
+	
 		PowerFailPointCreate creater = new PowerFailPointCreate();
 		creater.createPowerFailPoints();
+
+
+		java.util.Date timerStop = new java.util.Date();
+		com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
+				" Secs for PowerFailPointCreate to complete" );
 		System.exit(0);
 	}
 
@@ -94,7 +101,6 @@ public class PowerFailPointCreate
 			java.util.List points = cache.getAllPoints();
 			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
 			
-			com.cannontech.clientutils.CTILogger.info("Adding POWER FAIL points to the following devices:");
 			for (int i = 0; i < devices.size(); i++)
 			{
 				com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i));
@@ -106,7 +112,6 @@ public class PowerFailPointCreate
 					if( addPowerFailPointToDevice( points, deviceDevID ))
 					{
 						powerFailPointDevices.addElement(litePaobject);
-						com.cannontech.clientutils.CTILogger.info("\t"+litePaobject.getPaoName());
 					}
 				}
 			}
@@ -135,20 +140,22 @@ public class PowerFailPointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
+		int pointID = com.cannontech.database.db.point.Point.getNextPointID();
 		for( int i = 0; i < powerFailDevices.size(); i++)
 		{
 			com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)powerFailDevices.get(i);
-	
-			Integer pointID = new Integer( com.cannontech.database.db.point.Point.getNextPointID() );
+
 			String pointType = "PulseAccumulator";
+
+			com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device " + litePaobject.getPaoName());
 	
 			// This is an Accumulator point		
 			AccumulatorPoint accumPoint = (AccumulatorPoint)com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
-			accumPoint.setPointID(pointID);
+			accumPoint.setPointID(new Integer(pointID));
 			
 			// set default settings for BASE point
-			accumPoint.getPoint().setPointID(pointID);
+			accumPoint.getPoint().setPointID(new Integer(pointID));
 		    accumPoint.getPoint().setPointName("POWER FAIL");
 	
 			Integer deviceID = new Integer( litePaobject.getLiteID());
@@ -163,7 +170,7 @@ public class PowerFailPointCreate
 			accumPoint.getPoint().setArchiveInterval(new Integer(1));
 			
 			// set default settings for point POINTALARMING
-			accumPoint.getPointAlarming().setPointID(pointID);
+			accumPoint.getPointAlarming().setPointID(new Integer(pointID));
 			accumPoint.getPointAlarming().setAlarmStates( accumPoint.getPointAlarming().DEFAULT_ALARM_STATES );
 			accumPoint.getPointAlarming().setExcludeNotifyStates( accumPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
 			accumPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
@@ -171,7 +178,7 @@ public class PowerFailPointCreate
 			accumPoint.getPointAlarming().setRecipientID(new Integer(accumPoint.getPointAlarming().NONE_LOCATIONID));
 	
 			// set default settings for point POINTUNIT
-			accumPoint.getPointUnit().setPointID(pointID);
+			accumPoint.getPointUnit().setPointID(new Integer(pointID));
 			accumPoint.getPointUnit().setUomID(new Integer(com.cannontech.database.data.point.PointUnits.UOMID_PF));
 			accumPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 			
@@ -182,6 +189,7 @@ public class PowerFailPointCreate
 			multi.getDBPersistentVector().add( accumPoint );
 			
 			++addCount;
+			pointID++;
 		}
 	
 		boolean success = writeToSQLDatabase(multi);
@@ -207,6 +215,7 @@ public class PowerFailPointCreate
 		//write all the collected data to the SQL database
 		try
 		{
+		  com.cannontech.clientutils.CTILogger.info("Creating Transaction to insert multi");
 	      multi = (com.cannontech.database.data.multi.MultiDBPersistent)com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, multi).execute();
 	
 			return true;
