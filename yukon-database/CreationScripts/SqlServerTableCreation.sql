@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/21/2002 11:39:27 AM                       */
+/* Created on:     12/16/2002 3:47:20 PM                        */
 /*==============================================================*/
 
 
@@ -134,30 +134,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CALCBASE')
-            and   name  = 'Indx_ClcBaseUpdTyp'
-            and   indid > 0
-            and   indid < 255)
-   drop index CALCBASE.Indx_ClcBaseUpdTyp
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('CALCBASE')
             and   type = 'U')
    drop table CALCBASE
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CALCCOMPONENT')
-            and   name  = 'Indx_CalcCmpCmpType'
-            and   indid > 0
-            and   indid < 255)
-   drop index CALCCOMPONENT.Indx_CalcCmpCmpType
 go
 
 
@@ -402,30 +382,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('DISPLAY')
-            and   name  = 'Indx_DISPLAYNAME'
-            and   indid > 0
-            and   indid < 255)
-   drop index DISPLAY.Indx_DISPLAYNAME
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('DISPLAY')
             and   type = 'U')
    drop table DISPLAY
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('DISPLAY2WAYDATA')
-            and   name  = 'Index_DisNum'
-            and   indid > 0
-            and   indid < 255)
-   drop index DISPLAY2WAYDATA.Index_DisNum
 go
 
 
@@ -598,16 +558,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('EnergyCompany')
-            and   name  = 'Indx_EnCmpName'
-            and   indid > 0
-            and   indid < 255)
-   drop index EnergyCompany.Indx_EnCmpName
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('EnergyCompany')
             and   type = 'U')
@@ -648,26 +598,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('FDRTRANSLATION')
-            and   name  = 'Indx_FdrTransIntTyp'
-            and   indid > 0
-            and   indid < 255)
-   drop index FDRTRANSLATION.Indx_FdrTransIntTyp
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('FDRTRANSLATION')
-            and   name  = 'Indx_FdrTrnsIntTypDir'
-            and   indid > 0
-            and   indid < 255)
-   drop index FDRTRANSLATION.Indx_FdrTrnsIntTypDir
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('FDRTRANSLATION')
             and   type = 'U')
@@ -684,30 +614,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('GRAPHDATASERIES')
-            and   name  = 'Indx_GrpDSerPtID'
-            and   indid > 0
-            and   indid < 255)
-   drop index GRAPHDATASERIES.Indx_GrpDSerPtID
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('GRAPHDATASERIES')
             and   type = 'U')
    drop table GRAPHDATASERIES
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('GRAPHDEFINITION')
-            and   name  = 'Indx_GrNam'
-            and   indid > 0
-            and   indid < 255)
-   drop index GRAPHDEFINITION.Indx_GrNam
 go
 
 
@@ -732,16 +642,6 @@ if exists (select 1
            where  id = object_id('GraphCustomerList')
             and   type = 'U')
    drop table GraphCustomerList
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('HolidaySchedule')
-            and   name  = 'Indx_HolSchName'
-            and   indid > 0
-            and   indid < 255)
-   drop index HolidaySchedule.Indx_HolSchName
 go
 
 
@@ -778,16 +678,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMControlHistory')
-            and   name  = 'Indx_Start'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMControlHistory.Indx_Start
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('LMControlHistory')
             and   type = 'U')
@@ -796,40 +686,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMCurtailCustomerActivity')
-            and   name  = 'Index_LMCrtCstActID'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMCurtailCustomerActivity.Index_LMCrtCstActID
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMCurtailCustomerActivity')
-            and   name  = 'Index_LMCrtCstAckSt'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMCurtailCustomerActivity.Index_LMCrtCstAckSt
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('LMCurtailCustomerActivity')
             and   type = 'U')
    drop table LMCurtailCustomerActivity
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMCurtailProgramActivity')
-            and   name  = 'Indx_LMCrtPrgActStTime'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMCurtailProgramActivity.Indx_LMCrtPrgActStTime
 go
 
 
@@ -1018,16 +878,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('LMProgramDirectGear')
-            and   name  = 'Indx_LMPrgDiGear_N_DevID'
-            and   indid > 0
-            and   indid < 255)
-   drop index LMProgramDirectGear.Indx_LMPrgDiGear_N_DevID
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('LMProgramDirectGear')
             and   type = 'U')
@@ -1108,16 +958,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('NotificationGroup')
-            and   name  = 'Indx_NOTIFGRPNme'
-            and   indid > 0
-            and   indid < 255)
-   drop index NotificationGroup.Indx_NOTIFGRPNme
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('NotificationGroup')
             and   type = 'U')
@@ -1154,26 +994,6 @@ if exists (select 1
            where  id = object_id('PAOowner')
             and   type = 'U')
    drop table PAOowner
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('POINT')
-            and   name  = 'Indx_PTNM_YUKPAOID'
-            and   indid > 0
-            and   indid < 255)
-   drop index POINT.Indx_PTNM_YUKPAOID
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('POINT')
-            and   name  = 'Indx_PointStGrpID'
-            and   indid > 0
-            and   indid < 255)
-   drop index POINT.Indx_PointStGrpID
 go
 
 
@@ -1275,6 +1095,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('PortDialBack')
+            and   type = 'U')
+   drop table PortDialBack
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('PortStatistics')
             and   type = 'U')
    drop table PortStatistics
@@ -1286,36 +1114,6 @@ if exists (select 1
            where  id = object_id('PortTiming')
             and   type = 'U')
    drop table PortTiming
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('RAWPOINTHISTORY')
-            and   name  = 'Index_PointID'
-            and   indid > 0
-            and   indid < 255)
-   drop index RAWPOINTHISTORY.Index_PointID
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('RAWPOINTHISTORY')
-            and   name  = 'Indx_TimeStamp'
-            and   indid > 0
-            and   indid < 255)
-   drop index RAWPOINTHISTORY.Indx_TimeStamp
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('RAWPOINTHISTORY')
-            and   name  = 'Indx_RwPtHisPtIDTst'
-            and   indid > 0
-            and   indid < 255)
-   drop index RAWPOINTHISTORY.Indx_RwPtHisPtIDTst
 go
 
 
@@ -1336,30 +1134,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('Route')
-            and   name  = 'Indx_RouteDevID'
-            and   indid > 0
-            and   indid < 255)
-   drop index Route.Indx_RouteDevID
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('Route')
             and   type = 'U')
    drop table Route
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('STATE')
-            and   name  = 'Indx_StateRaw'
-            and   indid > 0
-            and   indid < 255)
-   drop index STATE.Indx_StateRaw
 go
 
 
@@ -1372,50 +1150,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('STATEGROUP')
-            and   name  = 'Indx_STATEGRP_Nme'
-            and   indid > 0
-            and   indid < 255)
-   drop index STATEGROUP.Indx_STATEGRP_Nme
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('STATEGROUP')
             and   type = 'U')
    drop table STATEGROUP
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('SYSTEMLOG')
-            and   name  = 'Indx_SYSLG_PtId'
-            and   indid > 0
-            and   indid < 255)
-   drop index SYSTEMLOG.Indx_SYSLG_PtId
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('SYSTEMLOG')
-            and   name  = 'Indx_SYSLG_Date'
-            and   indid > 0
-            and   indid < 255)
-   drop index SYSTEMLOG.Indx_SYSLG_Date
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('SYSTEMLOG')
-            and   name  = 'Indx_SYSLG_PtIdDt'
-            and   indid > 0
-            and   indid < 255)
-   drop index SYSTEMLOG.Indx_SYSLG_PtIdDt
 go
 
 
@@ -1484,16 +1222,6 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonPAObject')
-            and   name  = 'Indx_PAO'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonPAObject.Indx_PAO
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('YukonPAObject')
             and   type = 'U')
@@ -1502,30 +1230,10 @@ go
 
 
 if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonRole')
-            and   name  = 'Indx_YukRol_Nm'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonRole.Indx_YukRol_Nm
-go
-
-
-if exists (select 1
             from  sysobjects
            where  id = object_id('YukonRole')
             and   type = 'U')
    drop table YukonRole
-go
-
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('YukonUser')
-            and   name  = 'Indx_YkUsIDNm'
-            and   indid > 0
-            and   indid < 255)
-   drop index YukonUser.Indx_YkUsIDNm
 go
 
 
@@ -1859,7 +1567,7 @@ insert into CTIDatabase values('2.36', 'Ryan', '9-SEP-2002', 'Changed loadprofil
 
 insert into CTIDatabase values('2.37', 'Ryan', '24-OCT-2002', 'Added ExpressCom views');
 
-insert into CTIDatabase values('2.38', 'Ryan', '2002-NOV-6', 'Added a column to DynamicLMGroup and a Windows Service row to display');
+insert into CTIDatabase values('2.38', 'Ryan', '6-NOV-2002', 'Added a column to DynamicLMGroup and a Windows Service row to display');
 
 /*==============================================================*/
 /* Table : CapControlFeeder                                     */
@@ -2175,8 +1883,8 @@ constraint SYS_C0013412 primary key  (DISPLAYNUM)
 go
 
 
+insert into display values(-4, 'Yukon Server', 'Static Displays', 'Yukon Servers', 'com.cannontech.tdc.windows.WinServicePanel');
 insert into display values(-1, 'All Categories', 'Scheduler Client', 'Metering And Control Scheduler', 'com.cannontech.macs.gui.Scheduler');
-insert into display values(-4, 'Yukon Server', 'Static Displays', 'Yukon Servers', 'com.comopt.windows.WinServicePanel');
 
 /**insert into display values(-2, 'All Areas', 'Cap Control Client', 'Cap Control', 'com.cannontech.cbc.gui.StrategyReceiver');**/
 /**insert into display values(-3, 'All Control Areas', 'Load Management Client', 'Load Management', 'com.cannontech.loadcontrol.gui.LoadControlMainPanel');**/
@@ -2641,7 +2349,8 @@ create table EnergyCompany (
 EnergyCompanyID      numeric              not null,
 Name                 varchar(60)          not null,
 RouteID              numeric              not null,
-constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID)
+constraint PK_ENERGYCOMPANY primary key  (EnergyCompanyID),
+constraint AK_CK_CNCMPNM_ENERGYCO2 unique ()
 )
 go
 
@@ -2710,7 +2419,8 @@ OptionLabel          varchar(20)          not null,
 Ordering             numeric              not null,
 OptionType           varchar(8)           not null,
 OptionValues         varchar(150)         not null,
-constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
+constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering),
+constraint AK_KEY_FDRLAB_FDRINTER unique (OptionLabel)
 )
 go
 
@@ -2823,16 +2533,8 @@ LeftMax              float                not null,
 RightMin             float                not null,
 RightMax             float                not null,
 Type                 char(1)              not null,
-constraint SYS_C0015109 primary key  (GRAPHDEFINITIONID)
-)
-go
-
-
-/*==============================================================*/
-/* Index: Indx_GrNam                                            */
-/*==============================================================*/
-create unique  index Indx_GrNam on GRAPHDEFINITION (
-NAME
+constraint SYS_C0015109 primary key  (GRAPHDEFINITIONID),
+constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
 )
 go
 
@@ -2979,7 +2681,8 @@ UserIDName           varchar(40)          not null,
 NameOfAckPerson      varchar(40)          not null,
 CurtailmentNotes     varchar(120)         not null,
 CurrentPDL           float                not null,
-AckLateFlag          char(1)              not null
+AckLateFlag          char(1)              not null,
+constraint AK_KEY_LMCRCSAC_LMCURTAI unique ()
 )
 go
 
@@ -3321,8 +3024,8 @@ Heading              varchar(40)          not null,
 MessageHeader        varchar(160)         not null,
 MessageFooter        varchar(160)         not null,
 AckTimeLimit         numeric              not null,
-CanceledMsg          varchar(80)          not null default 'THIS CURTAILMENT HAS BEEN CANCELED, PLEASE DISREGARD.',
-StoppedEarlyMsg      varchar(80)          not null default 'THIS CURTAILMENT HAS STOPPED EARLY, YOU MAY RESUME NORMAL OPERATIONS.',
+CanceledMsg          varchar(80)          not null,
+StoppedEarlyMsg      varchar(80)          not null,
 constraint PK_LMPROGRAMCURTAILMENT primary key  (DeviceID)
 )
 go
@@ -3361,7 +3064,8 @@ GroupSelectionMethod varchar(30)          not null,
 MethodOptionType     varchar(30)          not null,
 MethodOptionMax      numeric              not null,
 GearID               numeric              not null,
-constraint PK_LMPROGRAMDIRECTGEAR primary key  (GearID)
+constraint PK_LMPROGRAMDIRECTGEAR primary key  (GearID),
+constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
 )
 go
 
@@ -3611,7 +3315,8 @@ PSEUDOFLAG           varchar(1)           not null,
 POINTOFFSET          numeric              not null,
 ARCHIVETYPE          varchar(12)          not null,
 ARCHIVEINTERVAL      numeric              not null,
-constraint Key_PT_PTID primary key  (POINTID)
+constraint Key_PT_PTID primary key  (POINTID),
+constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
 )
 go
 
@@ -3623,16 +3328,6 @@ INSERT into point  values (-3,  'System', 'Dispatch', 0, 'Default', 0, 'N', 'N',
 INSERT into point  values (-4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S', 4  ,'None', 0);
 INSERT into point  values (-5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
 INSERT into point  values (-10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-
-/*==============================================================*/
-/* Index: Indx_PTNM_YUKPAOID                                    */
-/*==============================================================*/
-create unique  index Indx_PTNM_YUKPAOID on POINT (
-POINTNAME,
-PAObjectID
-)
-go
-
 
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
@@ -3801,6 +3496,18 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
+
+/*==============================================================*/
+/* Table : PortDialBack                                         */
+/*==============================================================*/
+create table PortDialBack (
+PortID               numeric              not null,
+ModemType            varchar(30)          not null,
+InitializationString varchar(50)          not null,
+constraint PK_PORTDIALBACK primary key  (PortID)
+)
+go
+
 
 /*==============================================================*/
 /* Table : PortStatistics                                       */
@@ -4187,6 +3894,9 @@ go
 
 
 insert into YukonGroup values(-1,'default users');
+insert into YukonGroup values(-2,'web users');
+insert into YukonGroup values(-3,'web operators');
+
 
 /*==============================================================*/
 /* Table : YukonGroupRole                                       */
@@ -4234,6 +3944,10 @@ insert into YukonGroupRole values(-1,-31,'false');
 insert into YukonGroupRole values(-1,-32,'c:\yukon\client\bin\BillingIn.txt');
 insert into YukonGroupRole values(-1,-33,'INFO');
 insert into YukonGroupRole values(-1,-34,'false');
+insert into YukonGroupRole values(-2,-101,'(none)');
+insert into YukonGroupRole values(-3,-102,'(none)');
+insert into YukonGroupRole values(-2,-100,'/user/user_trending.jsp?tab=graph');
+insert into YukonGroupRole values(-3,-100,'/operator/oper_trending.jsp?tab=graph');
 
 /*==============================================================*/
 /* Table : YukonImage                                           */
@@ -4329,8 +4043,9 @@ insert into YukonRole values(-32,'billing_input_file','Client','c:\yukon\client\
 insert into YukonRole values(-33,'client_log_level','Client','INFO');
 insert into YukonRole values(-34,'client_log_file','Client','false');
 
-insert into YukonRole values(-100,'WEB_USER','WebClient','(none)');
-insert into YukonRole values(-101,'WEB_OPERATOR','WebClient','(none)');
+insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp');
+insert into YukonRole values(-101,'WEB_USER','WebClient','(none)');
+insert into YukonRole values(-102,'WEB_OPERATOR','WebClient','(none)');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
@@ -4357,6 +4072,9 @@ go
 
 
 insert into YukonUser values(-1,'yukon','yukon',0,'01-JAN-00','Enabled');
+insert into YukonUser values(-2,'webuser','webuser',0,'01-JAN-00','Enabled');
+insert into YukonUser values(-3,'weboper','weboper',0,'01-JAN-00','Enabled');
+
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
@@ -4379,6 +4097,9 @@ go
 
 
 insert into YukonUserGroup values(-1,-1);
+insert into YukonUserGroup values(-2,-2);
+insert into YukonUserGroup values(-3,-3);
+
 
 /*==============================================================*/
 /* Table : YukonUserRole                                        */
@@ -4921,6 +4642,12 @@ go
 alter table CustomerBaseLine
    add constraint FK_CICst_CstBsLne foreign key (CustomerID)
       references CICustomerBase (DeviceID)
+go
+
+
+alter table PortDialBack
+   add constraint FK_CmPrt_PrtDBk foreign key (PortID)
+      references CommPort (PORTID)
 go
 
 

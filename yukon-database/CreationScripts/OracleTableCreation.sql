@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI Oracle 8.1.5                             */
-/* Created on:     11/25/2002 9:59:48 AM                        */
+/* Created on:     12/16/2002 3:46:41 PM                        */
 /*==============================================================*/
 
 
@@ -61,7 +61,67 @@ drop view SubstationAddress_View
 /
 
 
+drop table CCFeederBankList cascade constraints
+/
+
+
+drop table CarrierRoute cascade constraints
+/
+
+
+drop table VersacomRoute cascade constraints
+/
+
+
 drop table LMGroupExpressCom cascade constraints
+/
+
+
+drop table EnergyCompanyCustomerList cascade constraints
+/
+
+
+drop table EnergyCompanyOperatorLoginList cascade constraints
+/
+
+
+drop table EnergyCompany cascade constraints
+/
+
+
+drop table DynamicLMControlAreaTrigger cascade constraints
+/
+
+
+drop table DeviceRoutes cascade constraints
+/
+
+
+drop table LMGroupRipple cascade constraints
+/
+
+
+drop table RepeaterRoute cascade constraints
+/
+
+
+drop table LMEnergyExchangeHourlyCustomer cascade constraints
+/
+
+
+drop table DeviceCBC cascade constraints
+/
+
+
+drop table DynamicCCCapBank cascade constraints
+/
+
+
+drop table LMEnergyExchangeHourlyOffer cascade constraints
+/
+
+
+drop table LMCONTROLAREATRIGGER cascade constraints
 /
 
 
@@ -77,70 +137,6 @@ drop table MACROROUTE cascade constraints
 /
 
 
-drop table EnergyCompanyCustomerList cascade constraints
-/
-
-
-drop table EnergyCompanyOperatorLoginList cascade constraints
-/
-
-
-drop table RepeaterRoute cascade constraints
-/
-
-
-drop table DeviceCBC cascade constraints
-/
-
-
-drop index Indx_EnCmpName
-/
-
-
-drop table EnergyCompany cascade constraints
-/
-
-
-drop table CarrierRoute cascade constraints
-/
-
-
-drop table LMEnergyExchangeHourlyOffer cascade constraints
-/
-
-
-drop table VersacomRoute cascade constraints
-/
-
-
-drop table DeviceRoutes cascade constraints
-/
-
-
-drop table DynamicCCCapBank cascade constraints
-/
-
-
-drop table CCFeederBankList cascade constraints
-/
-
-
-drop table LMGroupRipple cascade constraints
-/
-
-
-drop table LMEnergyExchangeHourlyCustomer cascade constraints
-/
-
-
-drop index Indx_RouteDevID
-/
-
-
-drop table Route cascade constraints
-/
-
-
 drop table LMEnergyExchangeCustomerReply cascade constraints
 /
 
@@ -149,7 +145,23 @@ drop table LMEnergyExchangeOfferRevision cascade constraints
 /
 
 
+drop table DEVICEIDLCREMOTE cascade constraints
+/
+
+
 drop table LMEnergyExchangeProgramOffer cascade constraints
+/
+
+
+drop table Route cascade constraints
+/
+
+
+drop table LMEnergyExchangeCustomerList cascade constraints
+/
+
+
+drop table DEVICEMETERGROUP cascade constraints
 /
 
 
@@ -161,31 +173,11 @@ drop table DEVICELOADPROFILE cascade constraints
 /
 
 
-drop table DEVICESCANRATE cascade constraints
-/
-
-
-drop table DEVICETAPPAGINGSETTINGS cascade constraints
-/
-
-
-drop index Indx_GrpDSerPtID
-/
-
-
-drop table GRAPHDATASERIES cascade constraints
-/
-
-
 drop table CustomerLoginSerialGroup cascade constraints
 /
 
 
-drop table CAPBANK cascade constraints
-/
-
-
-drop table DynamicLMGroup cascade constraints
+drop table DEVICESCANRATE cascade constraints
 /
 
 
@@ -193,7 +185,7 @@ drop table LMGroupPoint cascade constraints
 /
 
 
-drop table PORTTERMINALSERVER cascade constraints
+drop table DynamicLMGroup cascade constraints
 /
 
 
@@ -201,19 +193,15 @@ drop table OperatorSerialGroup cascade constraints
 /
 
 
-drop table DYNAMICDEVICESCANDATA cascade constraints
+drop table PORTTERMINALSERVER cascade constraints
 /
 
 
-drop table CCFeederSubAssignment cascade constraints
+drop table DEVICETAPPAGINGSETTINGS cascade constraints
 /
 
 
-drop index Index_LMCrtCstActID
-/
-
-
-drop index Index_LMCrtCstAckSt
+drop table CAPBANK cascade constraints
 /
 
 
@@ -225,15 +213,23 @@ drop table CICustContact cascade constraints
 /
 
 
+drop table DYNAMICDEVICESCANDATA cascade constraints
+/
+
+
+drop table CCFeederSubAssignment cascade constraints
+/
+
+
 drop table DEVICE2WAYFLAGS cascade constraints
 /
 
 
-drop table DEVICECARRIERSETTINGS cascade constraints
+drop table LMProgramDirectGroup cascade constraints
 /
 
 
-drop table LMProgramDirectGroup cascade constraints
+drop table DEVICECARRIERSETTINGS cascade constraints
 /
 
 
@@ -245,35 +241,23 @@ drop table DEVICEDIALUPSETTINGS cascade constraints
 /
 
 
-drop table DEVICEIED cascade constraints
-/
-
-
 drop table LMCONTROLAREAPROGRAM cascade constraints
 /
 
 
-drop table DEVICEIDLCREMOTE cascade constraints
+drop table DEVICEIED cascade constraints
 /
 
 
-drop table DynamicLMControlAreaTrigger cascade constraints
-/
-
-
-drop table LMCONTROLAREATRIGGER cascade constraints
-/
-
-
-drop table LMProgramControlWindow cascade constraints
-/
-
-
-drop table DEVICEMETERGROUP cascade constraints
+drop table GRAPHDATASERIES cascade constraints
 /
 
 
 drop table LMGroup cascade constraints
+/
+
+
+drop table PortDialBack cascade constraints
 /
 
 
@@ -282,10 +266,6 @@ drop table POINTANALOG cascade constraints
 
 
 drop table POINTACCUMULATOR cascade constraints
-/
-
-
-drop table POINTLIMITS cascade constraints
 /
 
 
@@ -301,11 +281,7 @@ drop table DeviceDNP cascade constraints
 /
 
 
-drop table POINTUNIT cascade constraints
-/
-
-
-drop table MCTBroadCastMapping cascade constraints
+drop table POINTLIMITS cascade constraints
 /
 
 
@@ -317,15 +293,15 @@ drop table LMThermoStatGear cascade constraints
 /
 
 
+drop table POINTUNIT cascade constraints
+/
+
+
 drop table POINTSTATUS cascade constraints
 /
 
 
-drop table PORTRADIOSETTINGS cascade constraints
-/
-
-
-drop table LMDirectOperatorList cascade constraints
+drop table MCTBroadCastMapping cascade constraints
 /
 
 
@@ -334,6 +310,14 @@ drop table DynamicCalcHistorical cascade constraints
 
 
 drop table CustomerBaseLinePoint cascade constraints
+/
+
+
+drop table PORTRADIOSETTINGS cascade constraints
+/
+
+
+drop table LMDirectOperatorList cascade constraints
 /
 
 
@@ -346,10 +330,6 @@ drop table PORTLOCALSERIAL cascade constraints
 
 
 drop table PORTDIALUPMODEM cascade constraints
-/
-
-
-drop table DynamicCCFeeder cascade constraints
 /
 
 
@@ -369,27 +349,11 @@ drop table DYNAMICPOINTDISPATCH cascade constraints
 /
 
 
-drop index Indx_Start
-/
-
-
 drop table LMControlHistory cascade constraints
 /
 
 
 drop table CustomerBaseLine cascade constraints
-/
-
-
-drop index Index_PointID
-/
-
-
-drop index Indx_TimeStamp
-/
-
-
-drop index Indx_RwPtHisPtIDTst
 /
 
 
@@ -409,15 +373,7 @@ drop table LMMACSScheduleOperatorList cascade constraints
 /
 
 
-drop index Indx_CalcCmpCmpType
-/
-
-
 drop table CALCCOMPONENT cascade constraints
-/
-
-
-drop table LMEnergyExchangeCustomerList cascade constraints
 /
 
 
@@ -434,10 +390,6 @@ drop table CommPort cascade constraints
 
 
 drop table FDRInterfaceOption cascade constraints
-/
-
-
-drop table LMMacsScheduleCustomerList cascade constraints
 /
 
 
@@ -461,6 +413,10 @@ drop table DynamicLMControlArea cascade constraints
 /
 
 
+drop table LMMacsScheduleCustomerList cascade constraints
+/
+
+
 drop table DEVICE cascade constraints
 /
 
@@ -477,10 +433,6 @@ drop table CustomerContact cascade constraints
 /
 
 
-drop index Indx_LMCrtPrgActStTime
-/
-
-
 drop table LMCurtailProgramActivity cascade constraints
 /
 
@@ -489,15 +441,15 @@ drop table LMProgramCurtailment cascade constraints
 /
 
 
-drop index Indx_LMPrgDiGear_N_DevID
-/
-
-
 drop table LMProgramDirectGear cascade constraints
 /
 
 
 drop table LMProgramDirect cascade constraints
+/
+
+
+drop table LMProgramControlWindow cascade constraints
 /
 
 
@@ -517,18 +469,6 @@ drop table NotificationDestination cascade constraints
 /
 
 
-drop index Indx_SYSLG_PtId
-/
-
-
-drop index Indx_SYSLG_Date
-/
-
-
-drop index Indx_SYSLG_PtIdDt
-/
-
-
 drop table SYSTEMLOG cascade constraints
 /
 
@@ -541,19 +481,7 @@ drop table MACSchedule cascade constraints
 /
 
 
-drop index Indx_FdrTransIntTyp
-/
-
-
-drop index Indx_FdrTrnsIntTypDir
-/
-
-
 drop table FDRTRANSLATION cascade constraints
-/
-
-
-drop index Indx_ClcBaseUpdTyp
 /
 
 
@@ -565,10 +493,6 @@ drop table CAPCONTROLSUBSTATIONBUS cascade constraints
 /
 
 
-drop index Indx_StateRaw
-/
-
-
 drop table STATE cascade constraints
 /
 
@@ -577,23 +501,11 @@ drop table TEMPLATECOLUMNS cascade constraints
 /
 
 
-drop index Index_DisNum
-/
-
-
 drop table DISPLAY2WAYDATA cascade constraints
 /
 
 
 drop table DYNAMICACCUMULATOR cascade constraints
-/
-
-
-drop index Indx_PTNM_YUKPAOID
-/
-
-
-drop index Indx_PointStGrpID
 /
 
 
@@ -621,10 +533,6 @@ drop table LOGIC cascade constraints
 /
 
 
-drop index Indx_YukRol_Nm
-/
-
-
 drop table YukonRole cascade constraints
 /
 
@@ -645,6 +553,10 @@ drop table LMGroupExpressComAddress cascade constraints
 /
 
 
+drop table DynamicCCFeeder cascade constraints
+/
+
+
 drop table CapControlFeeder cascade constraints
 /
 
@@ -661,15 +573,7 @@ drop table CommErrorHistory cascade constraints
 /
 
 
-drop index Indx_PAO
-/
-
-
 drop table YukonPAObject cascade constraints
-/
-
-
-drop index Indx_HolSchName
 /
 
 
@@ -682,10 +586,6 @@ drop table OperatorLoginGraphList cascade constraints
 
 
 drop table FDRInterface cascade constraints
-/
-
-
-drop index Indx_YkUsIDNm
 /
 
 
@@ -705,10 +605,6 @@ drop table NotificationRecipient cascade constraints
 /
 
 
-drop index Indx_NOTIFGRPNme
-/
-
-
 drop table NotificationGroup cascade constraints
 /
 
@@ -717,23 +613,11 @@ drop table DISPLAYCOLUMNS cascade constraints
 /
 
 
-drop index Indx_DISPLAYNAME
-/
-
-
 drop table DISPLAY cascade constraints
 /
 
 
-drop index Indx_GrNam
-/
-
-
 drop table GRAPHDEFINITION cascade constraints
-/
-
-
-drop index Indx_STATEGRP_Nme
 /
 
 
@@ -845,16 +729,8 @@ create table GRAPHDEFINITION  (
    RightMin             FLOAT                            not null,
    RightMax             FLOAT                            not null,
    Type                 CHAR(1)                          not null,
-   constraint SYS_C0015109 primary key (GRAPHDEFINITIONID)
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_GrNam                                            */
-/*==============================================================*/
-create unique index Indx_GrNam on GRAPHDEFINITION (
-   NAME ASC
+   constraint SYS_C0015109 primary key (GRAPHDEFINITIONID),
+   constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
 )
 /
 
@@ -1145,6 +1021,9 @@ create table YukonUser  (
 
 
 insert into YukonUser values(-1,'yukon','yukon',0,'01-JAN-00','Enabled');
+insert into YukonUser values(-2,'webuser','webuser',0,'01-JAN-00','Enabled');
+insert into YukonUser values(-3,'weboper','weboper',0,'01-JAN-00','Enabled');
+
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
@@ -1385,6 +1264,37 @@ create table CapControlFeeder  (
 
 
 /*==============================================================*/
+/* Table : DynamicCCFeeder                                      */
+/*==============================================================*/
+
+
+create table DynamicCCFeeder  (
+   FeederID             NUMBER                           not null,
+   CurrentVarPointValue FLOAT                            not null,
+   CurrentWattPointValue FLOAT                            not null,
+   NewPointDataReceivedFlag CHAR(1)                          not null,
+   LastCurrentVarUpdateTime DATE                             not null,
+   EstimatedVarPointValue FLOAT                            not null,
+   CurrentDailyOperations NUMBER                           not null,
+   RecentlyControlledFlag CHAR(1)                          not null,
+   LastOperationTime    DATE                             not null,
+   VarValueBeforeControl FLOAT                            not null,
+   LastCapBankDeviceID  NUMBER                           not null,
+   BusOptimizedVarCategory NUMBER                           not null,
+   BusOptimizedVarOffset FLOAT                            not null,
+   CTITimeStamp         DATE                             not null,
+   PowerFactorValue     FLOAT                            not null,
+   KvarSolution         FLOAT                            not null,
+   EstimatedPFValue     FLOAT                            not null,
+   CurrentVarPointQuality NUMBER                           not null,
+   constraint PK_DYNAMICCCFEEDER primary key (FeederID),
+   constraint FK_CCFeed_DyFeed foreign key (FeederID)
+         references CapControlFeeder (FeederID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMGroupExpressComAddress                             */
 /*==============================================================*/
 
@@ -1455,6 +1365,9 @@ create table YukonGroup  (
 
 
 insert into YukonGroup values(-1,'default users');
+insert into YukonGroup values(-2,'web users');
+insert into YukonGroup values(-3,'web operators');
+
 
 /*==============================================================*/
 /* Table : YukonRole                                            */
@@ -1506,8 +1419,9 @@ insert into YukonRole values(-32,'billing_input_file','Client','c:\yukon\client\
 insert into YukonRole values(-33,'client_log_level','Client','INFO');
 insert into YukonRole values(-34,'client_log_file','Client','false');
 
-insert into YukonRole values(-100,'WEB_USER','WebClient','(none)');
-insert into YukonRole values(-101,'WEB_OPERATOR','WebClient','(none)');
+insert into YukonRole values(-100,'HOME_URL','WebClient','default.jsp');
+insert into YukonRole values(-101,'WEB_USER','WebClient','(none)');
+insert into YukonRole values(-102,'WEB_OPERATOR','WebClient','(none)');
 
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
@@ -1678,6 +1592,7 @@ create table POINT  (
    ARCHIVETYPE          VARCHAR2(12)                     not null,
    ARCHIVEINTERVAL      NUMBER                           not null,
    constraint Key_PT_PTID primary key (POINTID),
+   constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID),
    constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
          references STATEGROUP (STATEGROUPID),
    constraint FK_Pt_YukPAO foreign key (PAObjectID)
@@ -1693,16 +1608,6 @@ INSERT into point  values (-3,  'System', 'Dispatch', 0, 'Default', 0, 'N', 'N',
 INSERT into point  values (-4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S', 4  ,'None', 0);
 INSERT into point  values (-5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
 INSERT into point  values (-10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-
-/*==============================================================*/
-/* Index: Indx_PTNM_YUKPAOID                                    */
-/*==============================================================*/
-create unique index Indx_PTNM_YUKPAOID on POINT (
-   POINTNAME ASC,
-   PAObjectID ASC
-)
-/
-
 
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
@@ -2146,6 +2051,23 @@ create table LMPROGRAM  (
 
 
 /*==============================================================*/
+/* Table : LMProgramControlWindow                               */
+/*==============================================================*/
+
+
+create table LMProgramControlWindow  (
+   DeviceID             NUMBER                           not null,
+   WindowNumber         NUMBER                           not null,
+   AvailableStartTime   NUMBER                           not null,
+   AvailableStopTime    NUMBER                           not null,
+   constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID),
+   constraint FK_LMPrg_LMPrgCntWind foreign key (DeviceID)
+         references LMPROGRAM (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMProgramDirect                                      */
 /*==============================================================*/
 
@@ -2185,6 +2107,7 @@ create table LMProgramDirectGear  (
    MethodOptionMax      NUMBER                           not null,
    GearID               NUMBER                           not null,
    constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID),
+   constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber),
    constraint FK_LMProgD_LMProgDGr foreign key (DeviceID)
          references LMProgramDirect (DeviceID)
 )
@@ -2213,8 +2136,8 @@ create table LMProgramCurtailment  (
    MessageHeader        VARCHAR2(160)                    not null,
    MessageFooter        VARCHAR2(160)                    not null,
    AckTimeLimit         NUMBER                           not null,
-   CanceledMsg          VARCHAR2(80)                   default 'THIS CURTAILMENT HAS BEEN CANCELED, PLEASE DISREGARD.'  not null,
-   StoppedEarlyMsg      VARCHAR2(80)                   default 'THIS CURTAILMENT HAS STOPPED EARLY, YOU MAY RESUME NORMAL OPERATIONS.'  not null,
+   CanceledMsg          VARCHAR2(80)                     not null,
+   StoppedEarlyMsg      VARCHAR2(80)                     not null,
    constraint PK_LMPROGRAMCURTAILMENT primary key (DeviceID),
    constraint FK_LMPrg_LMPrgCurt foreign key (DeviceID)
          references LMPROGRAM (DEVICEID)
@@ -2340,6 +2263,24 @@ create table DEVICE  (
 INSERT into device values (0, 'N', 'N');
 
 /*==============================================================*/
+/* Table : LMMacsScheduleCustomerList                           */
+/*==============================================================*/
+
+
+create table LMMacsScheduleCustomerList  (
+   ScheduleID           NUMBER                           not null,
+   LMCustomerDeviceID   NUMBER                           not null,
+   CustomerOrder        NUMBER                           not null,
+   constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID),
+   constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
+         references CICustomerBase (DeviceID),
+   constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
+         references MACSchedule (ScheduleID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : DynamicLMControlArea                                 */
 /*==============================================================*/
 
@@ -2436,24 +2377,6 @@ create table GraphCustomerList  (
 
 
 /*==============================================================*/
-/* Table : LMMacsScheduleCustomerList                           */
-/*==============================================================*/
-
-
-create table LMMacsScheduleCustomerList  (
-   ScheduleID           NUMBER                           not null,
-   LMCustomerDeviceID   NUMBER                           not null,
-   CustomerOrder        NUMBER                           not null,
-   constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID),
-   constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
-         references CICustomerBase (DeviceID),
-   constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
-         references MACSchedule (ScheduleID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : FDRInterfaceOption                                   */
 /*==============================================================*/
 
@@ -2465,6 +2388,7 @@ create table FDRInterfaceOption  (
    OptionType           VARCHAR2(8)                      not null,
    OptionValues         VARCHAR2(150)                    not null,
    constraint PK_FDRINTERFACEOPTION primary key (InterfaceID, Ordering),
+   constraint AK_KEY_FDRLAB_FDRINTER unique (OptionLabel),
    constraint FK_FDRINTER_REFERENCE_FDRINTER foreign key (InterfaceID)
          references FDRInterface (InterfaceID)
 )
@@ -2547,24 +2471,6 @@ create table PortTiming  (
    constraint PK_PORTTIMING primary key (PORTID),
    constraint SYS_C0013163 foreign key (PORTID)
          references CommPort (PORTID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMEnergyExchangeCustomerList                         */
-/*==============================================================*/
-
-
-create table LMEnergyExchangeCustomerList  (
-   DeviceID             NUMBER                           not null,
-   LMCustomerDeviceID   NUMBER                           not null,
-   CustomerOrder        NUMBER                           not null,
-   constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key (DeviceID, LMCustomerDeviceID),
-   constraint FK_ExCsLs_PrEx foreign key (DeviceID)
-         references LMProgramEnergyExchange (DeviceID),
-   constraint FK_ExCsLs_CstBs foreign key (LMCustomerDeviceID)
-         references CICustomerBase (DeviceID)
 )
 /
 
@@ -2827,37 +2733,6 @@ create table PortStatistics  (
 
 
 /*==============================================================*/
-/* Table : DynamicCCFeeder                                      */
-/*==============================================================*/
-
-
-create table DynamicCCFeeder  (
-   FeederID             NUMBER                           not null,
-   CurrentVarPointValue FLOAT                            not null,
-   CurrentWattPointValue FLOAT                            not null,
-   NewPointDataReceivedFlag CHAR(1)                          not null,
-   LastCurrentVarUpdateTime DATE                             not null,
-   EstimatedVarPointValue FLOAT                            not null,
-   CurrentDailyOperations NUMBER                           not null,
-   RecentlyControlledFlag CHAR(1)                          not null,
-   LastOperationTime    DATE                             not null,
-   VarValueBeforeControl FLOAT                            not null,
-   LastCapBankDeviceID  NUMBER                           not null,
-   BusOptimizedVarCategory NUMBER                           not null,
-   BusOptimizedVarOffset FLOAT                            not null,
-   CTITimeStamp         DATE                             not null,
-   PowerFactorValue     FLOAT                            not null,
-   KvarSolution         FLOAT                            not null,
-   EstimatedPFValue     FLOAT                            not null,
-   CurrentVarPointQuality NUMBER                           not null,
-   constraint PK_DYNAMICCCFEEDER primary key (FeederID),
-   constraint FK_CCFeed_DyFeed foreign key (FeederID)
-         references CapControlFeeder (FeederID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : PORTDIALUPMODEM                                      */
 /*==============================================================*/
 
@@ -2924,38 +2799,6 @@ create table DynamicCCSubstationBus  (
 
 
 /*==============================================================*/
-/* Table : CustomerBaseLinePoint                                */
-/*==============================================================*/
-
-
-create table CustomerBaseLinePoint  (
-   CustomerID           NUMBER                           not null,
-   PointID              NUMBER                           not null,
-   constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID),
-   constraint FK_CstBseLn_CICust foreign key (CustomerID)
-         references CICustomerBase (DeviceID),
-   constraint FK_CstBseLn_ClcBse foreign key (PointID)
-         references CALCBASE (POINTID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : DynamicCalcHistorical                                */
-/*==============================================================*/
-
-
-create table DynamicCalcHistorical  (
-   PointID              NUMBER                           not null,
-   LastUpdate           DATE                             not null,
-   constraint PK_DYNAMICCALCHISTORICAL primary key (PointID),
-   constraint FK_DynClc_ClcB foreign key (PointID)
-         references CALCBASE (POINTID)
-)
-/
-
-
-/*==============================================================*/
 /* Table : LMDirectOperatorList                                 */
 /*==============================================================*/
 
@@ -2991,6 +2834,56 @@ create table PORTRADIOSETTINGS  (
 
 
 /*==============================================================*/
+/* Table : CustomerBaseLinePoint                                */
+/*==============================================================*/
+
+
+create table CustomerBaseLinePoint  (
+   CustomerID           NUMBER                           not null,
+   PointID              NUMBER                           not null,
+   constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID),
+   constraint FK_CstBseLn_CICust foreign key (CustomerID)
+         references CICustomerBase (DeviceID),
+   constraint FK_CstBseLn_ClcBse foreign key (PointID)
+         references CALCBASE (POINTID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DynamicCalcHistorical                                */
+/*==============================================================*/
+
+
+create table DynamicCalcHistorical  (
+   PointID              NUMBER                           not null,
+   LastUpdate           DATE                             not null,
+   constraint PK_DYNAMICCALCHISTORICAL primary key (PointID),
+   constraint FK_DynClc_ClcB foreign key (PointID)
+         references CALCBASE (POINTID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : MCTBroadCastMapping                                  */
+/*==============================================================*/
+
+
+create table MCTBroadCastMapping  (
+   MCTBroadCastID       NUMBER                           not null,
+   MctID                NUMBER                           not null,
+   Ordering             NUMBER                           not null,
+   constraint PK_MCTBROADCASTMAPPING primary key (MCTBroadCastID, MctID),
+   constraint FK_MCTB_MAPMCT foreign key (MctID)
+         references DEVICE (DEVICEID),
+   constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
+         references DEVICE (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : POINTSTATUS                                          */
 /*==============================================================*/
 
@@ -3009,6 +2902,26 @@ create table POINTSTATUS  (
    constraint PK_PtStatus primary key (POINTID),
    constraint Ref_ptstatus_pt foreign key (POINTID)
          references POINT (POINTID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : POINTUNIT                                            */
+/*==============================================================*/
+
+
+create table POINTUNIT  (
+   POINTID              NUMBER                           not null,
+   UOMID                NUMBER                           not null,
+   DECIMALPLACES        NUMBER                           not null,
+   HighReasonabilityLimit FLOAT                            not null,
+   LowReasonabilityLimit FLOAT                            not null,
+   constraint PK_POINTUNITID primary key (POINTID),
+   constraint Ref_ptunit_point foreign key (POINTID)
+         references POINT (POINTID),
+   constraint FK_PtUnit_UoM foreign key (UOMID)
+         references UNITMEASURE (UOMID)
 )
 /
 
@@ -3092,41 +3005,25 @@ insert into YukonGroupRole values(-1,-31,'false');
 insert into YukonGroupRole values(-1,-32,'c:\yukon\client\bin\BillingIn.txt');
 insert into YukonGroupRole values(-1,-33,'INFO');
 insert into YukonGroupRole values(-1,-34,'false');
+insert into YukonGroupRole values(-2,-101,'(none)');
+insert into YukonGroupRole values(-3,-102,'(none)');
+insert into YukonGroupRole values(-2,-100,'/user/user_trending.jsp?tab=graph');
+insert into YukonGroupRole values(-3,-100,'/operator/oper_trending.jsp?tab=graph');
 
 /*==============================================================*/
-/* Table : MCTBroadCastMapping                                  */
-/*==============================================================*/
-
-
-create table MCTBroadCastMapping  (
-   MCTBroadCastID       NUMBER                           not null,
-   MctID                NUMBER                           not null,
-   Ordering             NUMBER                           not null,
-   constraint PK_MCTBROADCASTMAPPING primary key (MCTBroadCastID, MctID),
-   constraint FK_MCTB_MAPMCT foreign key (MctID)
-         references DEVICE (DEVICEID),
-   constraint FK_MCTB_MAPDEV foreign key (MCTBroadCastID)
-         references DEVICE (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : POINTUNIT                                            */
+/* Table : POINTLIMITS                                          */
 /*==============================================================*/
 
 
-create table POINTUNIT  (
+create table POINTLIMITS  (
    POINTID              NUMBER                           not null,
-   UOMID                NUMBER                           not null,
-   DECIMALPLACES        NUMBER                           not null,
-   HighReasonabilityLimit FLOAT                            not null,
-   LowReasonabilityLimit FLOAT                            not null,
-   constraint PK_POINTUNITID primary key (POINTID),
-   constraint Ref_ptunit_point foreign key (POINTID)
-         references POINT (POINTID),
-   constraint FK_PtUnit_UoM foreign key (UOMID)
-         references UNITMEASURE (UOMID)
+   LIMITNUMBER          NUMBER                           not null,
+   HIGHLIMIT            FLOAT                            not null,
+   LOWLIMIT             FLOAT                            not null,
+   LIMITDURATION        NUMBER                           not null,
+   constraint PK_POINTLIMITS primary key (POINTID),
+   constraint SYS_C0013289 foreign key (POINTID)
+         references POINT (POINTID)
 )
 /
 
@@ -3184,23 +3081,8 @@ create table YukonUserGroup  (
 
 
 insert into YukonUserGroup values(-1,-1);
-
-/*==============================================================*/
-/* Table : POINTLIMITS                                          */
-/*==============================================================*/
-
-
-create table POINTLIMITS  (
-   POINTID              NUMBER                           not null,
-   LIMITNUMBER          NUMBER                           not null,
-   HIGHLIMIT            FLOAT                            not null,
-   LOWLIMIT             FLOAT                            not null,
-   LIMITDURATION        NUMBER                           not null,
-   constraint PK_POINTLIMITS primary key (POINTID),
-   constraint SYS_C0013289 foreign key (POINTID)
-         references POINT (POINTID)
-)
-/
+insert into YukonUserGroup values(-2,-2);
+insert into YukonUserGroup values(-3,-3);
 
 
 /*==============================================================*/
@@ -3238,6 +3120,22 @@ create table POINTANALOG  (
 
 
 /*==============================================================*/
+/* Table : PortDialBack                                         */
+/*==============================================================*/
+
+
+create table PortDialBack  (
+   PortID               NUMBER                           not null,
+   ModemType            VARCHAR2(30)                     not null,
+   InitializationString VARCHAR2(50)                     not null,
+   constraint PK_PORTDIALBACK primary key (PortID),
+   constraint FK_CmPrt_PrtDBk foreign key (PortID)
+         references CommPort (PORTID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMGroup                                              */
 /*==============================================================*/
 
@@ -3253,100 +3151,48 @@ create table LMGroup  (
 
 
 /*==============================================================*/
-/* Table : DEVICEMETERGROUP                                     */
+/* Table : GRAPHDATASERIES                                      */
 /*==============================================================*/
 
 
-create table DEVICEMETERGROUP  (
-   DEVICEID             NUMBER                           not null,
-   CollectionGroup      VARCHAR2(20)                     not null,
-   TestCollectionGroup  VARCHAR2(20)                     not null,
-   METERNUMBER          VARCHAR2(15)                     not null,
-   BillingGroup         VARCHAR2(20)                     not null,
-   constraint PK_DEVICEMETERGROUP primary key (DEVICEID),
-   constraint SYS_C0013213 foreign key (DEVICEID)
-         references DEVICE (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMProgramControlWindow                               */
-/*==============================================================*/
-
-
-create table LMProgramControlWindow  (
-   DeviceID             NUMBER                           not null,
-   WindowNumber         NUMBER                           not null,
-   AvailableStartTime   NUMBER                           not null,
-   AvailableStopTime    NUMBER                           not null,
-   constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID),
-   constraint FK_LMPrg_LMPrgCntWind foreign key (DeviceID)
-         references LMPROGRAM (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMCONTROLAREATRIGGER                                 */
-/*==============================================================*/
-
-
-create table LMCONTROLAREATRIGGER  (
-   DEVICEID             NUMBER                           not null,
-   TRIGGERNUMBER        NUMBER                           not null,
-   TRIGGERTYPE          VARCHAR2(20)                     not null,
+create table GRAPHDATASERIES  (
+   GRAPHDATASERIESID    NUMBER                           not null,
+   GRAPHDEFINITIONID    NUMBER                           not null,
    POINTID              NUMBER                           not null,
-   NORMALSTATE          NUMBER                           not null,
-   THRESHOLD            FLOAT                            not null,
-   PROJECTIONTYPE       VARCHAR2(14)                     not null,
-   PROJECTIONPOINTS     NUMBER                           not null,
-   PROJECTAHEADDURATION NUMBER                           not null,
-   THRESHOLDKICKPERCENT NUMBER                           not null,
-   MINRESTOREOFFSET     FLOAT                            not null,
-   PEAKPOINTID          NUMBER                           not null,
-   constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER),
-   constraint FK_Point_LMCntlArTrig foreign key (POINTID)
-         references POINT (POINTID),
-   constraint FK_Point_LMCtrlArTrigPk foreign key (PEAKPOINTID)
-         references POINT (POINTID),
-   constraint FK_LMCntlArea_LMCntlArTrig foreign key (DEVICEID)
-         references LMControlArea (DEVICEID)
+   Label                VARCHAR2(40)                     not null,
+   Axis                 CHAR(1)                          not null,
+   Color                NUMBER                           not null,
+   Type                 VARCHAR2(12)                     not null,
+   Multiplier           FLOAT                            not null,
+   constraint SYS_GrphDserID primary key (GRAPHDATASERIESID),
+   constraint GrphDSeri_GrphDefID foreign key (GRAPHDEFINITIONID)
+         references GRAPHDEFINITION (GRAPHDEFINITIONID),
+   constraint GrphDSeris_ptID foreign key (POINTID)
+         references POINT (POINTID)
 )
 /
 
 
 /*==============================================================*/
-/* Table : DynamicLMControlAreaTrigger                          */
+/* Index: Indx_GrpDSerPtID                                      */
 /*==============================================================*/
-
-
-create table DynamicLMControlAreaTrigger  (
-   DeviceID             NUMBER                           not null,
-   TriggerNumber        NUMBER                           not null,
-   PointValue           FLOAT                            not null,
-   LastPointValueTimeStamp DATE                             not null,
-   PeakPointValue       FLOAT                            not null,
-   LastPeakPointValueTimeStamp DATE                             not null,
-   constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key (DeviceID, TriggerNumber),
-   constraint FK_LMCntArTr_DyLMCnArTr foreign key (DeviceID, TriggerNumber)
-         references LMCONTROLAREATRIGGER (DEVICEID, TRIGGERNUMBER)
+create index Indx_GrpDSerPtID on GRAPHDATASERIES (
+   POINTID ASC
 )
 /
 
 
 /*==============================================================*/
-/* Table : DEVICEIDLCREMOTE                                     */
+/* Table : DEVICEIED                                            */
 /*==============================================================*/
 
 
-create table DEVICEIDLCREMOTE  (
+create table DEVICEIED  (
    DEVICEID             NUMBER                           not null,
-   ADDRESS              NUMBER                           not null,
-   POSTCOMMWAIT         NUMBER                           not null,
-   CCUAmpUseType        VARCHAR2(20)                     not null,
-   constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID),
-   constraint SYS_C0013241 foreign key (DEVICEID)
+   PASSWORD             VARCHAR2(20)                     not null,
+   SLAVEADDRESS         VARCHAR2(20)                     not null,
+   constraint PK_DEVICEIED primary key (DEVICEID),
+   constraint SYS_C0013245 foreign key (DEVICEID)
          references DEVICE (DEVICEID)
 )
 /
@@ -3368,22 +3214,6 @@ create table LMCONTROLAREAPROGRAM  (
          references LMControlArea (DEVICEID),
    constraint FK_LMPrg_LMCntlArProg foreign key (LMPROGRAMDEVICEID)
          references LMPROGRAM (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : DEVICEIED                                            */
-/*==============================================================*/
-
-
-create table DEVICEIED  (
-   DEVICEID             NUMBER                           not null,
-   PASSWORD             VARCHAR2(20)                     not null,
-   SLAVEADDRESS         VARCHAR2(20)                     not null,
-   constraint PK_DEVICEIED primary key (DEVICEID),
-   constraint SYS_C0013245 foreign key (DEVICEID)
-         references DEVICE (DEVICEID)
 )
 /
 
@@ -3425,6 +3255,21 @@ create table DeviceDirectCommSettings  (
 
 
 /*==============================================================*/
+/* Table : DEVICECARRIERSETTINGS                                */
+/*==============================================================*/
+
+
+create table DEVICECARRIERSETTINGS  (
+   DEVICEID             NUMBER                           not null,
+   ADDRESS              NUMBER                           not null,
+   constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID),
+   constraint SYS_C0013216 foreign key (DEVICEID)
+         references DEVICE (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMProgramDirectGroup                                 */
 /*==============================================================*/
 
@@ -3438,21 +3283,6 @@ create table LMProgramDirectGroup  (
          references LMProgramDirect (DeviceID),
    constraint FK_LMGrp_LMPrgDGrp foreign key (LMGroupDeviceID)
          references LMGroup (DeviceID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : DEVICECARRIERSETTINGS                                */
-/*==============================================================*/
-
-
-create table DEVICECARRIERSETTINGS  (
-   DEVICEID             NUMBER                           not null,
-   ADDRESS              NUMBER                           not null,
-   constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID),
-   constraint SYS_C0013216 foreign key (DEVICEID)
-         references DEVICE (DEVICEID)
 )
 /
 
@@ -3474,65 +3304,6 @@ create table DEVICE2WAYFLAGS  (
    constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID),
    constraint SYS_C0013208 foreign key (DEVICEID)
          references DEVICE (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : CICustContact                                        */
-/*==============================================================*/
-
-
-create table CICustContact  (
-   DeviceID             NUMBER                           not null,
-   ContactID            NUMBER                           not null,
-   constraint PK_CICUSTCONTACT primary key (ContactID, DeviceID),
-   constraint FK_CstCont_CICstCont foreign key (ContactID)
-         references CustomerContact (ContactID),
-   constraint FK_CICstBase_CICstCont foreign key (DeviceID)
-         references CICustomerBase (DeviceID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMCurtailCustomerActivity                            */
-/*==============================================================*/
-
-
-create table LMCurtailCustomerActivity  (
-   CustomerID           NUMBER                           not null,
-   CurtailReferenceID   NUMBER                           not null,
-   AcknowledgeStatus    VARCHAR2(30)                     not null,
-   AckDateTime          DATE                             not null,
-   IPAddressOfAckUser   VARCHAR2(15)                     not null,
-   UserIDName           VARCHAR2(40)                     not null,
-   NameOfAckPerson      VARCHAR2(40)                     not null,
-   CurtailmentNotes     VARCHAR2(120)                    not null,
-   CurrentPDL           FLOAT                            not null,
-   AckLateFlag          CHAR(1)                          not null,
-   constraint FK_CICBas_LMCrtCstAct foreign key (CustomerID)
-         references CICustomerBase (DeviceID),
-   constraint FK_LMC_REFL_LMC foreign key (CurtailReferenceID)
-         references LMCurtailProgramActivity (CurtailReferenceID)
-)
-/
-
-
-/*==============================================================*/
-/* Index: Index_LMCrtCstActID                                   */
-/*==============================================================*/
-create index Index_LMCrtCstActID on LMCurtailCustomerActivity (
-   CustomerID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Index: Index_LMCrtCstAckSt                                   */
-/*==============================================================*/
-create index Index_LMCrtCstAckSt on LMCurtailCustomerActivity (
-   AcknowledgeStatus ASC
 )
 /
 
@@ -3579,79 +3350,61 @@ create table DYNAMICDEVICESCANDATA  (
 
 
 /*==============================================================*/
-/* Table : OperatorSerialGroup                                  */
+/* Table : CICustContact                                        */
 /*==============================================================*/
 
 
-create table OperatorSerialGroup  (
-   LoginID              NUMBER                           not null,
-   LMGroupID            NUMBER                           not null,
-   constraint PK_OpSerGrp primary key (LoginID),
-   constraint FK_OpSGrp_OpLg foreign key (LoginID)
-         references YukonUser (UserID),
-   constraint FK_OpSGrp_LmGrp foreign key (LMGroupID)
-         references LMGroup (DeviceID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : PORTTERMINALSERVER                                   */
-/*==============================================================*/
-
-
-create table PORTTERMINALSERVER  (
-   PORTID               NUMBER                           not null,
-   IPADDRESS            VARCHAR2(16)                     not null,
-   SOCKETPORTNUMBER     NUMBER                           not null,
-   constraint PK_PORTTERMINALSERVER primary key (PORTID),
-   constraint SYS_C0013151 foreign key (PORTID)
-         references CommPort (PORTID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMGroupPoint                                         */
-/*==============================================================*/
-
-
-create table LMGroupPoint  (
-   DEVICEID             NUMBER                           not null,
-   DeviceIDUsage        NUMBER                           not null,
-   PointIDUsage         NUMBER                           not null,
-   StartControlRawState NUMBER                           not null,
-   constraint PK_LMGROUPPOINT primary key (DEVICEID),
-   constraint FK_LMGrpPt_Dev foreign key (DeviceIDUsage)
-         references DEVICE (DEVICEID),
-   constraint FK_LMGrpPt_LMGrp foreign key (DEVICEID)
-         references LMGroup (DeviceID),
-   constraint FK_LMGrpPt_Pt foreign key (PointIDUsage)
-         references POINT (POINTID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : DynamicLMGroup                                       */
-/*==============================================================*/
-
-
-create table DynamicLMGroup  (
+create table CICustContact  (
    DeviceID             NUMBER                           not null,
-   GroupControlState    NUMBER                           not null,
-   CurrentHoursDaily    NUMBER                           not null,
-   CurrentHoursMonthly  NUMBER                           not null,
-   CurrentHoursSeasonal NUMBER                           not null,
-   CurrentHoursAnnually NUMBER                           not null,
-   LastControlSent      DATE                             not null,
-   TimeStamp            DATE                             not null,
-   LMProgramID          NUMBER                           not null,
-   constraint PK_DYNAMICLMGROUP primary key (DeviceID, LMProgramID),
-   constraint FK_LMGrp_DynLmGrp foreign key (DeviceID)
-         references LMGroup (DeviceID),
-   constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
-         references LMProgramDirect (DeviceID)
+   ContactID            NUMBER                           not null,
+   constraint PK_CICUSTCONTACT primary key (ContactID, DeviceID),
+   constraint FK_CstCont_CICstCont foreign key (ContactID)
+         references CustomerContact (ContactID),
+   constraint FK_CICstBase_CICstCont foreign key (DeviceID)
+         references CICustomerBase (DeviceID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMCurtailCustomerActivity                            */
+/*==============================================================*/
+
+
+create table LMCurtailCustomerActivity  (
+   CustomerID           NUMBER                           not null,
+   CurtailReferenceID   NUMBER                           not null,
+   AcknowledgeStatus    VARCHAR2(30)                     not null,
+   AckDateTime          DATE                             not null,
+   IPAddressOfAckUser   VARCHAR2(15)                     not null,
+   UserIDName           VARCHAR2(40)                     not null,
+   NameOfAckPerson      VARCHAR2(40)                     not null,
+   CurtailmentNotes     VARCHAR2(120)                    not null,
+   CurrentPDL           FLOAT                            not null,
+   AckLateFlag          CHAR(1)                          not null,
+   constraint AK_KEY_LMCRCSAC_LMCURTAI unique (),
+   constraint FK_CICBas_LMCrtCstAct foreign key (CustomerID)
+         references CICustomerBase (DeviceID),
+   constraint FK_LMC_REFL_LMC foreign key (CurtailReferenceID)
+         references LMCurtailProgramActivity (CurtailReferenceID)
+)
+/
+
+
+/*==============================================================*/
+/* Index: Index_LMCrtCstActID                                   */
+/*==============================================================*/
+create index Index_LMCrtCstActID on LMCurtailCustomerActivity (
+   CustomerID ASC
+)
+/
+
+
+/*==============================================================*/
+/* Index: Index_LMCrtCstAckSt                                   */
+/*==============================================================*/
+create index Index_LMCrtCstAckSt on LMCurtailCustomerActivity (
+   AcknowledgeStatus ASC
 )
 /
 
@@ -3683,55 +3436,6 @@ create table CAPBANK  (
 
 
 /*==============================================================*/
-/* Table : CustomerLoginSerialGroup                             */
-/*==============================================================*/
-
-
-create table CustomerLoginSerialGroup  (
-   LoginID              NUMBER                           not null,
-   LMGroupID            NUMBER                           not null,
-   constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID),
-   constraint FK_CsLgSG_CsL foreign key (LoginID)
-         references YukonUser (UserID),
-   constraint FK_CsLgSG_LMG foreign key (LMGroupID)
-         references LMGroup (DeviceID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : GRAPHDATASERIES                                      */
-/*==============================================================*/
-
-
-create table GRAPHDATASERIES  (
-   GRAPHDATASERIESID    NUMBER                           not null,
-   GRAPHDEFINITIONID    NUMBER                           not null,
-   POINTID              NUMBER                           not null,
-   Label                VARCHAR2(40)                     not null,
-   Axis                 CHAR(1)                          not null,
-   Color                NUMBER                           not null,
-   Type                 VARCHAR2(12)                     not null,
-   Multiplier           FLOAT                            not null,
-   constraint SYS_GrphDserID primary key (GRAPHDATASERIESID),
-   constraint GrphDSeri_GrphDefID foreign key (GRAPHDEFINITIONID)
-         references GRAPHDEFINITION (GRAPHDEFINITIONID),
-   constraint GrphDSeris_ptID foreign key (POINTID)
-         references POINT (POINTID)
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_GrpDSerPtID                                      */
-/*==============================================================*/
-create index Indx_GrpDSerPtID on GRAPHDATASERIES (
-   POINTID ASC
-)
-/
-
-
-/*==============================================================*/
 /* Table : DEVICETAPPAGINGSETTINGS                              */
 /*==============================================================*/
 
@@ -3742,6 +3446,84 @@ create table DEVICETAPPAGINGSETTINGS  (
    constraint PK_DEVICETAPPAGINGSETTINGS primary key (DEVICEID),
    constraint SYS_C0013237 foreign key (DEVICEID)
          references DEVICE (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : PORTTERMINALSERVER                                   */
+/*==============================================================*/
+
+
+create table PORTTERMINALSERVER  (
+   PORTID               NUMBER                           not null,
+   IPADDRESS            VARCHAR2(16)                     not null,
+   SOCKETPORTNUMBER     NUMBER                           not null,
+   constraint PK_PORTTERMINALSERVER primary key (PORTID),
+   constraint SYS_C0013151 foreign key (PORTID)
+         references CommPort (PORTID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : OperatorSerialGroup                                  */
+/*==============================================================*/
+
+
+create table OperatorSerialGroup  (
+   LoginID              NUMBER                           not null,
+   LMGroupID            NUMBER                           not null,
+   constraint PK_OpSerGrp primary key (LoginID),
+   constraint FK_OpSGrp_OpLg foreign key (LoginID)
+         references YukonUser (UserID),
+   constraint FK_OpSGrp_LmGrp foreign key (LMGroupID)
+         references LMGroup (DeviceID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DynamicLMGroup                                       */
+/*==============================================================*/
+
+
+create table DynamicLMGroup  (
+   DeviceID             NUMBER                           not null,
+   GroupControlState    NUMBER                           not null,
+   CurrentHoursDaily    NUMBER                           not null,
+   CurrentHoursMonthly  NUMBER                           not null,
+   CurrentHoursSeasonal NUMBER                           not null,
+   CurrentHoursAnnually NUMBER                           not null,
+   LastControlSent      DATE                             not null,
+   TimeStamp            DATE                             not null,
+   LMProgramID          NUMBER                           not null,
+   constraint PK_DYNAMICLMGROUP primary key (DeviceID, LMProgramID),
+   constraint FK_LMGrp_DynLmGrp foreign key (DeviceID)
+         references LMGroup (DeviceID),
+   constraint FK_DyLmGr_LmPrDGr foreign key (LMProgramID)
+         references LMProgramDirect (DeviceID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMGroupPoint                                         */
+/*==============================================================*/
+
+
+create table LMGroupPoint  (
+   DEVICEID             NUMBER                           not null,
+   DeviceIDUsage        NUMBER                           not null,
+   PointIDUsage         NUMBER                           not null,
+   StartControlRawState NUMBER                           not null,
+   constraint PK_LMGROUPPOINT primary key (DEVICEID),
+   constraint FK_LMGrpPt_Dev foreign key (DeviceIDUsage)
+         references DEVICE (DEVICEID),
+   constraint FK_LMGrpPt_LMGrp foreign key (DEVICEID)
+         references LMGroup (DeviceID),
+   constraint FK_LMGrpPt_Pt foreign key (PointIDUsage)
+         references POINT (POINTID)
 )
 /
 
@@ -3760,6 +3542,23 @@ create table DEVICESCANRATE  (
    constraint PK_DEVICESCANRATE primary key (DEVICEID, SCANTYPE),
    constraint SYS_C0013198 foreign key (DEVICEID)
          references DEVICE (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : CustomerLoginSerialGroup                             */
+/*==============================================================*/
+
+
+create table CustomerLoginSerialGroup  (
+   LoginID              NUMBER                           not null,
+   LMGroupID            NUMBER                           not null,
+   constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID),
+   constraint FK_CsLgSG_CsL foreign key (LoginID)
+         references YukonUser (UserID),
+   constraint FK_CsLgSG_LMG foreign key (LMGroupID)
+         references LMGroup (DeviceID)
 )
 /
 
@@ -3802,6 +3601,70 @@ create table DEVICEMCTIEDPORT  (
 
 
 /*==============================================================*/
+/* Table : DEVICEMETERGROUP                                     */
+/*==============================================================*/
+
+
+create table DEVICEMETERGROUP  (
+   DEVICEID             NUMBER                           not null,
+   CollectionGroup      VARCHAR2(20)                     not null,
+   TestCollectionGroup  VARCHAR2(20)                     not null,
+   METERNUMBER          VARCHAR2(15)                     not null,
+   BillingGroup         VARCHAR2(20)                     not null,
+   constraint PK_DEVICEMETERGROUP primary key (DEVICEID),
+   constraint SYS_C0013213 foreign key (DEVICEID)
+         references DEVICE (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMEnergyExchangeCustomerList                         */
+/*==============================================================*/
+
+
+create table LMEnergyExchangeCustomerList  (
+   DeviceID             NUMBER                           not null,
+   LMCustomerDeviceID   NUMBER                           not null,
+   CustomerOrder        NUMBER                           not null,
+   constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key (DeviceID, LMCustomerDeviceID),
+   constraint FK_ExCsLs_PrEx foreign key (DeviceID)
+         references LMProgramEnergyExchange (DeviceID),
+   constraint FK_ExCsLs_CstBs foreign key (LMCustomerDeviceID)
+         references CICustomerBase (DeviceID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : Route                                                */
+/*==============================================================*/
+
+
+create table Route  (
+   RouteID              NUMBER                           not null,
+   DeviceID             NUMBER                           not null,
+   DefaultRoute         CHAR(1)                          not null,
+   constraint SYS_RoutePK primary key (RouteID),
+   constraint FK_Route_DevID foreign key (DeviceID)
+         references DEVICE (DEVICEID),
+   constraint FK_Route_YukPAO foreign key (RouteID)
+         references YukonPAObject (PAObjectID)
+)
+/
+
+
+/*==============================================================*/
+/* Index: Indx_RouteDevID                                       */
+/*==============================================================*/
+create unique index Indx_RouteDevID on Route (
+   DeviceID DESC,
+   RouteID ASC
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMEnergyExchangeProgramOffer                         */
 /*==============================================================*/
 
@@ -3814,6 +3677,23 @@ create table LMEnergyExchangeProgramOffer  (
    constraint PK_LMENERGYEXCHANGEPROGRAMOFFE primary key (OfferID),
    constraint FK_EnExOff_PrgEnEx foreign key (DeviceID)
          references LMProgramEnergyExchange (DeviceID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DEVICEIDLCREMOTE                                     */
+/*==============================================================*/
+
+
+create table DEVICEIDLCREMOTE  (
+   DEVICEID             NUMBER                           not null,
+   ADDRESS              NUMBER                           not null,
+   POSTCOMMWAIT         NUMBER                           not null,
+   CCUAmpUseType        VARCHAR2(20)                     not null,
+   constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID),
+   constraint SYS_C0013241 foreign key (DEVICEID)
+         references DEVICE (DEVICEID)
 )
 /
 
@@ -3858,280 +3738,6 @@ create table LMEnergyExchangeCustomerReply  (
    constraint FK_LME_REFE_LME foreign key (OfferID, RevisionNumber)
          references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
          on delete cascade
-)
-/
-
-
-/*==============================================================*/
-/* Table : Route                                                */
-/*==============================================================*/
-
-
-create table Route  (
-   RouteID              NUMBER                           not null,
-   DeviceID             NUMBER                           not null,
-   DefaultRoute         CHAR(1)                          not null,
-   constraint SYS_RoutePK primary key (RouteID),
-   constraint FK_Route_DevID foreign key (DeviceID)
-         references DEVICE (DEVICEID),
-   constraint FK_Route_YukPAO foreign key (RouteID)
-         references YukonPAObject (PAObjectID)
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_RouteDevID                                       */
-/*==============================================================*/
-create unique index Indx_RouteDevID on Route (
-   DeviceID DESC,
-   RouteID ASC
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMEnergyExchangeHourlyCustomer                       */
-/*==============================================================*/
-
-
-create table LMEnergyExchangeHourlyCustomer  (
-   CustomerID           NUMBER                           not null,
-   OfferID              NUMBER                           not null,
-   RevisionNumber       NUMBER                           not null,
-   Hour                 NUMBER                           not null,
-   AmountCommitted      FLOAT                            not null,
-   constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key (CustomerID, OfferID, RevisionNumber, Hour),
-   constraint FK_ExHrCs_ExCsRp foreign key (CustomerID, OfferID, RevisionNumber)
-         references LMEnergyExchangeCustomerReply (CustomerID, OfferID, RevisionNumber)
-         on delete cascade
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMGroupRipple                                        */
-/*==============================================================*/
-
-
-create table LMGroupRipple  (
-   DeviceID             NUMBER                           not null,
-   RouteID              NUMBER                           not null,
-   ShedTime             NUMBER                           not null,
-   ControlValue         CHAR(50)                         not null,
-   RestoreValue         CHAR(50)                         not null,
-   constraint PK_LMGROUPRIPPLE primary key (DeviceID),
-   constraint FK_LmGr_LmGrpRip foreign key (DeviceID)
-         references LMGroup (DeviceID),
-   constraint FK_LmGrpRip_Rout foreign key (RouteID)
-         references Route (RouteID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : CCFeederBankList                                     */
-/*==============================================================*/
-
-
-create table CCFeederBankList  (
-   FeederID             NUMBER                           not null,
-   DeviceID             NUMBER                           not null,
-   ControlOrder         NUMBER                           not null,
-   constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID),
-   constraint FK_CCFeed_CCBnk foreign key (FeederID)
-         references CapControlFeeder (FeederID),
-   constraint FK_CB_CCFeedLst foreign key (DeviceID)
-         references CAPBANK (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : DynamicCCCapBank                                     */
-/*==============================================================*/
-
-
-create table DynamicCCCapBank  (
-   CapBankID            NUMBER                           not null,
-   ControlStatus        NUMBER                           not null,
-   CurrentDailyOperations NUMBER                           not null,
-   LastStatusChangeTime DATE                             not null,
-   TagsControlStatus    NUMBER                           not null,
-   CTITimeStamp         DATE                             not null,
-   OriginalFeederID     NUMBER                           not null,
-   OriginalSwitchingOrder NUMBER                           not null,
-   constraint PK_DYNAMICCCCAPBANK primary key (CapBankID),
-   constraint FK_CpBnk_DynCpBnk foreign key (CapBankID)
-         references CAPBANK (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : DeviceRoutes                                         */
-/*==============================================================*/
-
-
-create table DeviceRoutes  (
-   DEVICEID             NUMBER                           not null,
-   ROUTEID              NUMBER                           not null,
-   constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID),
-   constraint SYS_C0013219 foreign key (DEVICEID)
-         references DEVICE (DEVICEID),
-   constraint SYS_C0013220 foreign key (ROUTEID)
-         references Route (RouteID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : VersacomRoute                                        */
-/*==============================================================*/
-
-
-create table VersacomRoute  (
-   ROUTEID              NUMBER                           not null,
-   UTILITYID            NUMBER                           not null,
-   SECTIONADDRESS       NUMBER                           not null,
-   CLASSADDRESS         NUMBER                           not null,
-   DIVISIONADDRESS      NUMBER                           not null,
-   BUSNUMBER            NUMBER                           not null,
-   AMPCARDSET           NUMBER                           not null,
-   constraint PK_VERSACOMROUTE primary key (ROUTEID),
-   constraint FK_VER_ROUT_ROU foreign key (ROUTEID)
-         references Route (RouteID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : LMEnergyExchangeHourlyOffer                          */
-/*==============================================================*/
-
-
-create table LMEnergyExchangeHourlyOffer  (
-   OfferID              NUMBER                           not null,
-   RevisionNumber       NUMBER                           not null,
-   Hour                 NUMBER                           not null,
-   Price                NUMBER                           not null,
-   AmountRequested      FLOAT                            not null,
-   constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key (OfferID, RevisionNumber, Hour),
-   constraint FK_ExHrOff_ExOffRv foreign key (OfferID, RevisionNumber)
-         references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
-)
-/
-
-
-/*==============================================================*/
-/* Table : CarrierRoute                                         */
-/*==============================================================*/
-
-
-create table CarrierRoute  (
-   ROUTEID              NUMBER                           not null,
-   BUSNUMBER            NUMBER                           not null,
-   CCUFIXBITS           NUMBER                           not null,
-   CCUVARIABLEBITS      NUMBER                           not null,
-   UserLocked           CHAR(1)                          not null,
-   ResetRptSettings     CHAR(1)                          not null,
-   constraint PK_CARRIERROUTE primary key (ROUTEID),
-   constraint SYS_C0013264 foreign key (ROUTEID)
-         references Route (RouteID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : EnergyCompany                                        */
-/*==============================================================*/
-
-
-create table EnergyCompany  (
-   EnergyCompanyID      NUMBER                           not null,
-   Name                 VARCHAR2(60)                     not null,
-   RouteID              NUMBER                           not null,
-   constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID),
-   constraint FK_EnCmpRt foreign key (RouteID)
-         references Route (RouteID)
-)
-/
-
-
-/*==============================================================*/
-/* Index: Indx_EnCmpName                                        */
-/*==============================================================*/
-create unique index Indx_EnCmpName on EnergyCompany (
-   Name ASC
-)
-/
-
-
-/*==============================================================*/
-/* Table : DeviceCBC                                            */
-/*==============================================================*/
-
-
-create table DeviceCBC  (
-   DEVICEID             NUMBER                           not null,
-   SERIALNUMBER         NUMBER                           not null,
-   ROUTEID              NUMBER                           not null,
-   constraint PK_DEVICECBC primary key (DEVICEID),
-   constraint SYS_C0013459 foreign key (DEVICEID)
-         references DEVICE (DEVICEID),
-   constraint SYS_C0013460 foreign key (ROUTEID)
-         references Route (RouteID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : RepeaterRoute                                        */
-/*==============================================================*/
-
-
-create table RepeaterRoute  (
-   ROUTEID              NUMBER                           not null,
-   DEVICEID             NUMBER                           not null,
-   VARIABLEBITS         NUMBER                           not null,
-   REPEATERORDER        NUMBER                           not null,
-   constraint PK_REPEATERROUTE primary key (ROUTEID, DEVICEID),
-   constraint SYS_C0013269 foreign key (ROUTEID)
-         references Route (RouteID),
-   constraint SYS_C0013270 foreign key (DEVICEID)
-         references DEVICE (DEVICEID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : EnergyCompanyOperatorLoginList                       */
-/*==============================================================*/
-
-
-create table EnergyCompanyOperatorLoginList  (
-   EnergyCompanyID      NUMBER,
-   OperatorLoginID      NUMBER,
-   constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
-         references YukonUser (UserID),
-   constraint FK_EnCmpEnCmpOpLs foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID)
-)
-/
-
-
-/*==============================================================*/
-/* Table : EnergyCompanyCustomerList                            */
-/*==============================================================*/
-
-
-create table EnergyCompanyCustomerList  (
-   EnergyCompanyID      NUMBER,
-   CustomerID           NUMBER,
-   constraint FK_EnCmpEnCmpCsLs foreign key (EnergyCompanyID)
-         references EnergyCompany (EnergyCompanyID),
-   constraint FK_CICstBsEnCmpCsLs foreign key (CustomerID)
-         references CICustomerBase (DeviceID)
 )
 /
 
@@ -4200,6 +3806,244 @@ create table LMGroupVersacom  (
 
 
 /*==============================================================*/
+/* Table : LMCONTROLAREATRIGGER                                 */
+/*==============================================================*/
+
+
+create table LMCONTROLAREATRIGGER  (
+   DEVICEID             NUMBER                           not null,
+   TRIGGERNUMBER        NUMBER                           not null,
+   TRIGGERTYPE          VARCHAR2(20)                     not null,
+   POINTID              NUMBER                           not null,
+   NORMALSTATE          NUMBER                           not null,
+   THRESHOLD            FLOAT                            not null,
+   PROJECTIONTYPE       VARCHAR2(14)                     not null,
+   PROJECTIONPOINTS     NUMBER                           not null,
+   PROJECTAHEADDURATION NUMBER                           not null,
+   THRESHOLDKICKPERCENT NUMBER                           not null,
+   MINRESTOREOFFSET     FLOAT                            not null,
+   PEAKPOINTID          NUMBER                           not null,
+   constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER),
+   constraint FK_Point_LMCntlArTrig foreign key (POINTID)
+         references POINT (POINTID),
+   constraint FK_Point_LMCtrlArTrigPk foreign key (PEAKPOINTID)
+         references POINT (POINTID),
+   constraint FK_LMCntlArea_LMCntlArTrig foreign key (DEVICEID)
+         references LMControlArea (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMEnergyExchangeHourlyOffer                          */
+/*==============================================================*/
+
+
+create table LMEnergyExchangeHourlyOffer  (
+   OfferID              NUMBER                           not null,
+   RevisionNumber       NUMBER                           not null,
+   Hour                 NUMBER                           not null,
+   Price                NUMBER                           not null,
+   AmountRequested      FLOAT                            not null,
+   constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key (OfferID, RevisionNumber, Hour),
+   constraint FK_ExHrOff_ExOffRv foreign key (OfferID, RevisionNumber)
+         references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DynamicCCCapBank                                     */
+/*==============================================================*/
+
+
+create table DynamicCCCapBank  (
+   CapBankID            NUMBER                           not null,
+   ControlStatus        NUMBER                           not null,
+   CurrentDailyOperations NUMBER                           not null,
+   LastStatusChangeTime DATE                             not null,
+   TagsControlStatus    NUMBER                           not null,
+   CTITimeStamp         DATE                             not null,
+   OriginalFeederID     NUMBER                           not null,
+   OriginalSwitchingOrder NUMBER                           not null,
+   constraint PK_DYNAMICCCCAPBANK primary key (CapBankID),
+   constraint FK_CpBnk_DynCpBnk foreign key (CapBankID)
+         references CAPBANK (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DeviceCBC                                            */
+/*==============================================================*/
+
+
+create table DeviceCBC  (
+   DEVICEID             NUMBER                           not null,
+   SERIALNUMBER         NUMBER                           not null,
+   ROUTEID              NUMBER                           not null,
+   constraint PK_DEVICECBC primary key (DEVICEID),
+   constraint SYS_C0013459 foreign key (DEVICEID)
+         references DEVICE (DEVICEID),
+   constraint SYS_C0013460 foreign key (ROUTEID)
+         references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMEnergyExchangeHourlyCustomer                       */
+/*==============================================================*/
+
+
+create table LMEnergyExchangeHourlyCustomer  (
+   CustomerID           NUMBER                           not null,
+   OfferID              NUMBER                           not null,
+   RevisionNumber       NUMBER                           not null,
+   Hour                 NUMBER                           not null,
+   AmountCommitted      FLOAT                            not null,
+   constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key (CustomerID, OfferID, RevisionNumber, Hour),
+   constraint FK_ExHrCs_ExCsRp foreign key (CustomerID, OfferID, RevisionNumber)
+         references LMEnergyExchangeCustomerReply (CustomerID, OfferID, RevisionNumber)
+         on delete cascade
+)
+/
+
+
+/*==============================================================*/
+/* Table : RepeaterRoute                                        */
+/*==============================================================*/
+
+
+create table RepeaterRoute  (
+   ROUTEID              NUMBER                           not null,
+   DEVICEID             NUMBER                           not null,
+   VARIABLEBITS         NUMBER                           not null,
+   REPEATERORDER        NUMBER                           not null,
+   constraint PK_REPEATERROUTE primary key (ROUTEID, DEVICEID),
+   constraint SYS_C0013269 foreign key (ROUTEID)
+         references Route (RouteID),
+   constraint SYS_C0013270 foreign key (DEVICEID)
+         references DEVICE (DEVICEID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : LMGroupRipple                                        */
+/*==============================================================*/
+
+
+create table LMGroupRipple  (
+   DeviceID             NUMBER                           not null,
+   RouteID              NUMBER                           not null,
+   ShedTime             NUMBER                           not null,
+   ControlValue         CHAR(50)                         not null,
+   RestoreValue         CHAR(50)                         not null,
+   constraint PK_LMGROUPRIPPLE primary key (DeviceID),
+   constraint FK_LmGr_LmGrpRip foreign key (DeviceID)
+         references LMGroup (DeviceID),
+   constraint FK_LmGrpRip_Rout foreign key (RouteID)
+         references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DeviceRoutes                                         */
+/*==============================================================*/
+
+
+create table DeviceRoutes  (
+   DEVICEID             NUMBER                           not null,
+   ROUTEID              NUMBER                           not null,
+   constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID),
+   constraint SYS_C0013219 foreign key (DEVICEID)
+         references DEVICE (DEVICEID),
+   constraint SYS_C0013220 foreign key (ROUTEID)
+         references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : DynamicLMControlAreaTrigger                          */
+/*==============================================================*/
+
+
+create table DynamicLMControlAreaTrigger  (
+   DeviceID             NUMBER                           not null,
+   TriggerNumber        NUMBER                           not null,
+   PointValue           FLOAT                            not null,
+   LastPointValueTimeStamp DATE                             not null,
+   PeakPointValue       FLOAT                            not null,
+   LastPeakPointValueTimeStamp DATE                             not null,
+   constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key (DeviceID, TriggerNumber),
+   constraint FK_LMCntArTr_DyLMCnArTr foreign key (DeviceID, TriggerNumber)
+         references LMCONTROLAREATRIGGER (DEVICEID, TRIGGERNUMBER)
+)
+/
+
+
+/*==============================================================*/
+/* Table : EnergyCompany                                        */
+/*==============================================================*/
+
+
+create table EnergyCompany  (
+   EnergyCompanyID      NUMBER                           not null,
+   Name                 VARCHAR2(60)                     not null,
+   RouteID              NUMBER                           not null,
+   constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID),
+   constraint AK_CK_CNCMPNM_ENERGYCO2 unique (),
+   constraint FK_EnCmpRt foreign key (RouteID)
+         references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Index: Indx_EnCmpName                                        */
+/*==============================================================*/
+create unique index Indx_EnCmpName on EnergyCompany (
+   Name ASC
+)
+/
+
+
+/*==============================================================*/
+/* Table : EnergyCompanyOperatorLoginList                       */
+/*==============================================================*/
+
+
+create table EnergyCompanyOperatorLoginList  (
+   EnergyCompanyID      NUMBER,
+   OperatorLoginID      NUMBER,
+   constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
+         references YukonUser (UserID),
+   constraint FK_EnCmpEnCmpOpLs foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : EnergyCompanyCustomerList                            */
+/*==============================================================*/
+
+
+create table EnergyCompanyCustomerList  (
+   EnergyCompanyID      NUMBER,
+   CustomerID           NUMBER,
+   constraint FK_EnCmpEnCmpCsLs foreign key (EnergyCompanyID)
+         references EnergyCompany (EnergyCompanyID),
+   constraint FK_CICstBsEnCmpCsLs foreign key (CustomerID)
+         references CICustomerBase (DeviceID)
+)
+/
+
+
+/*==============================================================*/
 /* Table : LMGroupExpressCom                                    */
 /*==============================================================*/
 
@@ -4233,6 +4077,63 @@ create table LMGroupExpressCom  (
          references LMGroup (DeviceID),
    constraint FK_LGrEx_Rt foreign key (RouteID)
          references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : VersacomRoute                                        */
+/*==============================================================*/
+
+
+create table VersacomRoute  (
+   ROUTEID              NUMBER                           not null,
+   UTILITYID            NUMBER                           not null,
+   SECTIONADDRESS       NUMBER                           not null,
+   CLASSADDRESS         NUMBER                           not null,
+   DIVISIONADDRESS      NUMBER                           not null,
+   BUSNUMBER            NUMBER                           not null,
+   AMPCARDSET           NUMBER                           not null,
+   constraint PK_VERSACOMROUTE primary key (ROUTEID),
+   constraint FK_VER_ROUT_ROU foreign key (ROUTEID)
+         references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : CarrierRoute                                         */
+/*==============================================================*/
+
+
+create table CarrierRoute  (
+   ROUTEID              NUMBER                           not null,
+   BUSNUMBER            NUMBER                           not null,
+   CCUFIXBITS           NUMBER                           not null,
+   CCUVARIABLEBITS      NUMBER                           not null,
+   UserLocked           CHAR(1)                          not null,
+   ResetRptSettings     CHAR(1)                          not null,
+   constraint PK_CARRIERROUTE primary key (ROUTEID),
+   constraint SYS_C0013264 foreign key (ROUTEID)
+         references Route (RouteID)
+)
+/
+
+
+/*==============================================================*/
+/* Table : CCFeederBankList                                     */
+/*==============================================================*/
+
+
+create table CCFeederBankList  (
+   FeederID             NUMBER                           not null,
+   DeviceID             NUMBER                           not null,
+   ControlOrder         NUMBER                           not null,
+   constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID),
+   constraint FK_CCFeed_CCBnk foreign key (FeederID)
+         references CapControlFeeder (FeederID),
+   constraint FK_CB_CCFeedLst foreign key (DeviceID)
+         references CAPBANK (DEVICEID)
 )
 /
 

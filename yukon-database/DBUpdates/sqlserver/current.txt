@@ -1,9 +1,13 @@
 /******************************************************************************/
 /* VERSION INFO                                                               */
 /******************************************************************************/
+insert into CTIDatabase values('2.39', 'Ryan', '16-DEC-2002', 'Added two columns to DynamicCCCapBank, YukonUser, PortDialback');
 
-insert into CTIDatabase values('2.39', 'Ryan', '6-NOV-2002', 'Added two columns to DynamicCCCapBank');
 
+insert into columntype values ( 14, 'PointImage' );
+go
+update graphdataseries set type = 'peakinterval' where type = 'peakvalue';
+go
 
 create view Peakpointhistory_View  as
 select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp

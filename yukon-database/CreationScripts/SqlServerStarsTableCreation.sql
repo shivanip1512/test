@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  STARS                                        */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     11/26/2002 3:49:51 PM                        */
+/* Created on:     12/16/2002 3:52:32 PM                        */
 /*==============================================================*/
 
 
@@ -159,6 +159,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('InterviewQuestion')
+            and   type = 'U')
+   drop table InterviewQuestion
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('InventoryBase')
             and   type = 'U')
    drop table InventoryBase
@@ -284,6 +292,15 @@ go
 
 
 /*==============================================================*/
+/* Index: CstSrvCstProp_FK                                      */
+/*==============================================================*/
+create   index CstSrvCstProp_FK on AccountSite (
+SiteInformationID
+)
+go
+
+
+/*==============================================================*/
 /* Table : ApplianceAirConditioner                              */
 /*==============================================================*/
 create table ApplianceAirConditioner (
@@ -310,6 +327,24 @@ KWCapacity           numeric              null,
 EfficiencyRating     numeric              null,
 Notes                varchar(100)         null,
 constraint PK_APPLIANCEBASE primary key  (ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Index: CstAcc_CstLdInfo_FK                                   */
+/*==============================================================*/
+create   index CstAcc_CstLdInfo_FK on ApplianceBase (
+AccountID
+)
+go
+
+
+/*==============================================================*/
+/* Index: CstLdTy_CstLdInf_FK                                   */
+/*==============================================================*/
+create   index CstLdTy_CstLdInf_FK on ApplianceBase (
+ApplianceCategoryID
 )
 go
 
@@ -367,6 +402,15 @@ CustomerID           numeric              not null,
 BillingAddressID     numeric              null,
 AccountNotes         varchar(200)         null,
 constraint PK_CUSTOMERACCOUNT primary key  (AccountID)
+)
+go
+
+
+/*==============================================================*/
+/* Index: CstAccCstPro_FK                                       */
+/*==============================================================*/
+create   index CstAccCstPro_FK on CustomerAccount (
+AccountSiteID
 )
 go
 
@@ -520,6 +564,22 @@ go
 
 
 /*==============================================================*/
+/* Table : InterviewQuestion                                    */
+/*==============================================================*/
+create table InterviewQuestion (
+QuestionID           numeric              not null,
+QuestionType         numeric              null,
+Question             varchar(200)         null,
+Mandatory            varchar(1)           null,
+DisplayOrder         numeric              null,
+AnswerType           numeric              null,
+ExpectedAnswer       numeric              null,
+constraint PK_INTERVIEWQUESTION primary key  (QuestionID)
+)
+go
+
+
+/*==============================================================*/
 /* Table : InventoryBase                                        */
 /*==============================================================*/
 create table InventoryBase (
@@ -535,6 +595,24 @@ VoltageID            numeric              null,
 Notes                varchar(100)         null,
 DEVICEID             numeric              null,
 constraint PK_INVENTORYBASE primary key  (InventoryID)
+)
+go
+
+
+/*==============================================================*/
+/* Index: CstAccCstHrdB_FK                                      */
+/*==============================================================*/
+create   index CstAccCstHrdB_FK on InventoryBase (
+AccountID
+)
+go
+
+
+/*==============================================================*/
+/* Index: HrdInst_CstHrdBs_FK                                   */
+/*==============================================================*/
+create   index HrdInst_CstHrdBs_FK on InventoryBase (
+InstallationCompanyID
 )
 go
 
@@ -574,6 +652,24 @@ InventoryID          numeric              not null,
 ApplianceID          numeric              not null,
 AddressingGroupID    numeric              null,
 constraint PK_LMHARDWARECONFIGURATION primary key  (InventoryID, ApplianceID)
+)
+go
+
+
+/*==============================================================*/
+/* Index: LmHrd_LmHrdCfg_FK                                     */
+/*==============================================================*/
+create   index LmHrd_LmHrdCfg_FK on LMHardwareConfiguration (
+InventoryID
+)
+go
+
+
+/*==============================================================*/
+/* Index: CstLdIn_LMHrdCfg_FK                                   */
+/*==============================================================*/
+create   index CstLdIn_LMHrdCfg_FK on LMHardwareConfiguration (
+ApplianceID
 )
 go
 
@@ -769,13 +865,13 @@ go
 
 alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (StreetAddressID)
-      references CustomerAddress (AddressID)
+      references  ()
 go
 
 
 alter table ApplianceBase
    add constraint FK_AppBs_LMPr foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references  ()
 go
 
 
@@ -793,13 +889,13 @@ go
 
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
-      references CustomerContact (ContactID)
+      references  ()
 go
 
 
 alter table CustomerAdditionalContact
    add constraint FK_CsCnt_CsAdCn foreign key (ContactID)
-      references CustomerContact (ContactID)
+      references  ()
 go
 
 
@@ -907,7 +1003,13 @@ go
 
 alter table ServiceCompany
    add constraint FK_CstAdd_SrC foreign key (AddressID)
-      references CustomerAddress (AddressID)
+      references  ()
+go
+
+
+alter table CallReportBase
+   add constraint FK_CstB_CllR foreign key ()
+      references CustomerBase (CustomerID)
 go
 
 
@@ -919,13 +1021,13 @@ go
 
 alter table CustomerBase
    add constraint FK_CstBs_CstCnt foreign key (PrimaryContactID)
-      references CustomerContact (ContactID)
+      references  ()
 go
 
 
 alter table ServiceCompany
    add constraint FK_CstCnt_SrvC foreign key (PrimaryContactID)
-      references CustomerContact (ContactID)
+      references  ()
 go
 
 
@@ -955,7 +1057,7 @@ go
 
 alter table InventoryBase
    add constraint FK_Dev_InvB foreign key (DEVICEID)
-      references DEVICE (DEVICEID)
+      references  ()
 go
 
 
@@ -967,19 +1069,19 @@ go
 
 alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
 alter table ECToGenericMapping
    add constraint FK_ECTGn_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
 alter table ECToInventoryMapping
    add constraint FK_ECTInv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
@@ -997,13 +1099,13 @@ go
 
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Enc foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
 go
 
 
@@ -1015,7 +1117,25 @@ go
 
 alter table ECToLMCustomerEventMapping
    add constraint FK_EnCm_ECLmCs foreign key (EnergyCompanyID)
-      references EnergyCompany (EnergyCompanyID)
+      references  ()
+go
+
+
+alter table InterviewQuestion
+   add constraint FK_IntQ_CsLsEn foreign key (QuestionType)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table InterviewQuestion
+   add constraint FK_IntQ_CsLsEn2 foreign key (AnswerType)
+      references CustomerListEntry (EntryID)
+go
+
+
+alter table InterviewQuestion
+   add constraint FK_IntQ_CsLsEn3 foreign key (ExpectedAnswer)
+      references CustomerListEntry (EntryID)
 go
 
 
@@ -1039,7 +1159,7 @@ go
 
 alter table LMHardwareConfiguration
    add constraint FK_LMHrd_LMGr foreign key (AddressingGroupID)
-      references LMGroup (DeviceID)
+      references  ()
 go
 
 
@@ -1051,7 +1171,7 @@ go
 
 alter table LMProgramEvent
    add constraint FK_LMPrg_LMPrEv foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references  ()
 go
 
 
@@ -1063,13 +1183,19 @@ go
 
 alter table LMProgramWebPublishing
    add constraint FK_LMprApp_LMPrg foreign key (LMProgramID)
-      references LMPROGRAM (DEVICEID)
+      references  ()
+go
+
+
+alter table LMThermostatSeasonEntry
+   add constraint FK_LThSe_LThSEn foreign key (SeasonID)
+      references LMThermostatSeason (SeasonID)
 go
 
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (RouteID)
-      references Route (RouteID)
+      references  ()
 go
 
 
