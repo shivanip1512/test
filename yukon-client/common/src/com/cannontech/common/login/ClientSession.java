@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
@@ -116,9 +117,11 @@ public class ClientSession {
 		
 		boolean success = false;
 		if(dbProps != null && !dbProps.isEmpty()) {
+			CTILogger.getStandardLog().error("Attempting local load of database properties...");
 			localLogin = (success = doLocalLogin(parent, dbProps));
 		}
 		else {
+			CTILogger.getStandardLog().error("Attempting remote load of database properties...");
 			localLogin = !(success = doRemoteLogin(parent));
 		}			
 		
@@ -186,20 +189,29 @@ public class ClientSession {
 		String host = prefs.getCurrentYukonHost();
 		int port = prefs.getCurrentYukonPort();
 		
-		if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
-			// have a session info already lets try it
-			Properties dbProps = LoginSupport.getDBProperties(sessionID, host, port);
-			if(!dbProps.isEmpty()) {
-				PoolManager.setDBProperties(dbProps);
-				LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
-				if(u != null) {
-					//score! we found them
-					setSessionInfo(u, sessionID, host, port);
-					return true;
+		try
+		{
+			if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
+				// have a session info already lets try it
+				Properties dbProps = LoginSupport.getDBProperties(sessionID, host, port);
+				if(!dbProps.isEmpty()) {
+					PoolManager.setDBProperties(dbProps);
+					LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+					if(u != null) {
+						//score! we found them
+						setSessionInfo(u, sessionID, host, port);
+						return true;
+					}
 				}
-			}
-		}  // current session didn't work out, lets try to establish a new one
+			}  // current session didn't work out, lets try to establish a new one
+		}
+		catch( Exception ex ) //did not work for whatever reason, force them to login again
+		{
+			CTILogger.getStandardLog().error("Unable to use old credentials, forcing login process");
+		}
 		
+		
+				
 		LoginPanel lp = makeRemoteLoginPanel();
 		while(collectInfo(lp)) {
 			try {
