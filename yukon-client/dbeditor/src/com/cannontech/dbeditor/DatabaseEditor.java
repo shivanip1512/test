@@ -142,6 +142,17 @@ public class DatabaseEditor
 			new Integer(ModelFactory.BASELINE),
 			new Integer(ModelFactory.TAG)
 		};
+	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
+		{
+			new Integer(ModelFactory.CICUSTOMER),
+			new Integer(ModelFactory.CONTACT),
+			new Integer(ModelFactory.NOTIFICATION_GROUP),
+			new Integer(ModelFactory.ALARM_STATES),
+			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
+			new Integer(ModelFactory.BASELINE),
+			new Integer(ModelFactory.TAG)
+		};	
+	
 
 	private Vector messageListeners = new Vector();
 
@@ -157,6 +168,8 @@ public class DatabaseEditor
 
 	//Flag whether billing option should be present in create (core) menu
 	private boolean activateBilling;
+	private static boolean isSuperuser = false;
+	private boolean accessOfLoginNotAllowed = false;
 /**
  * DatabaseEditor constructor comment.
  */
@@ -2102,8 +2115,9 @@ public static void main(String[] args) {
 	  	JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
 		System.exit(-1);				
 	  }
-
-
+			  
+	  if(session.getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID)
+	  	isSuperuser = true;	
       /* Cache loads as needed, do not load it all here!! --RWN */
 		//com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();
 	
@@ -2318,6 +2332,23 @@ private void readConfigParameters()
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 
+	//check whether the user should be able to see anything regarding logins in the dbeditor
+	try
+	{
+		accessOfLoginNotAllowed = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.PERMIT_LOGIN_EDIT, "TRUE").trim().equalsIgnoreCase("FALSE");
+	}
+	catch( Exception e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	
+	//shouldn't be allowed to see login stuff
+	if( accessOfLoginNotAllowed && !isSuperuser)
+	{
+		systemCreateMenu.remove( systemCreateMenu.loginGrpMenuItem );
+		systemCreateMenu.remove( systemCreateMenu.loginMenuItem );
+	}
 	
 	if( !showCore )
 		viewMenu.remove( viewMenu.coreRadioButtonMenuItem );
@@ -2330,6 +2361,7 @@ private void readConfigParameters()
 
 	if( !showSystem )
 		viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
+		
 
 }
 /**
@@ -2666,8 +2698,17 @@ public void setDatabase(int whichDatabase)
 		case DatabaseTypes.SYSTEM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.systemRadioButtonMenuItem.setSelected(true);
+				
+				//check to see if user is allowed to see login stuff information at all
+				if( accessOfLoginNotAllowed && !isSuperuser)
+				{
+					models = NONLOGIN_SYSTEM_MODELS;
+					break;
+				}
+				
 				models = SYSTEM_MODELS;
 				break;
+
 	}	
 	
 	if( models == null )

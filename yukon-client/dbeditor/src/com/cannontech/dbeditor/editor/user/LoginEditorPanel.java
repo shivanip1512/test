@@ -2,6 +2,10 @@ package com.cannontech.dbeditor.editor.user;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.user.UserUtils;
+import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.common.login.ClientSession;
 
 /**
  * This type was created in VisualAge.
@@ -153,14 +157,29 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		
 		DataInputPanel tempPanel;	
 
-	 	for( int i = 0; i < PANEL_COUNT; i++ )
-	 	{
+		for( int i = 0; i < PANEL_COUNT; i++ )
+		{
 			Object[] panelTabs = createNewPanel(i);
-	
 			tempPanel = (DataInputPanel)panelTabs[0];
 			panels.addElement( tempPanel );
 			tabs.addElement( panelTabs[1] );
-	 	}
+			
+			//make sure that regular logins do not have a individual role editor panel
+			//unless the property is checked.
+			boolean allowRoles = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.ALLOW_USER_ROLES, "FALSE").trim().equalsIgnoreCase("TRUE");
+			if(((YukonUser)val).getUserID().intValue() != UserUtils.USER_ADMIN_ID && tempPanel instanceof UserGroupRoleEditorPanel)
+			{
+				i++;
+			}
+
+			//make sure that the superuser doesn't get a role group editor panel
+			else if(((YukonUser)val).getUserID().intValue() == UserUtils.USER_ADMIN_ID && tempPanel instanceof UserLoginBasePanel)
+				i++;
+
+			
+				
+		}
  		
 		this.inputPanels = new DataInputPanel[panels.size()];
 		panels.copyInto( this.inputPanels );
@@ -174,6 +193,12 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		
 		//special init code to Disable the user roles tab
 		int rolePanelIndx = getUserRolePanelIndx();
+		
+		//make sure superuser has the role panel active
+		if(((YukonUser)val).getUserID().intValue() == UserUtils.USER_ADMIN_ID)
+			rolePanelIndx = UserUtils.USER_ADMIN_ID;
+		
+				
 		if( rolePanelIndx >= 0 )
 		{
 			getTabbedPane().setEnabledAt(

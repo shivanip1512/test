@@ -46,7 +46,6 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	private javax.swing.JScrollPane ivjJScrollPaneTextPane = null;
 	private javax.swing.JTextPane ivjJTextPaneDescription = null;
 	
-	private JCheckBox jCheckBoxUserRoles = null;
 	private JPopupMenu jPopupMenu = null;
 	private JMenuItem jMenuItemRoles = null;
 	private JMenuItem jMenuItemConflicts = null;
@@ -104,11 +103,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if( e.getSource() == getJCheckBoxUserRoles() )
-		{
-			fireInputUpdate();
-		}
-
+		
 		if( e.getSource() == getJMenuItemRoles() )
 		{
 			int row = getJTableRoleGroup().getSelectedRow();
@@ -203,32 +198,10 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		return ivjJScrollPaneRoleGroup;
 	}
 
-	private JCheckBox getJCheckBoxUserRoles() 
-	{
-		if( jCheckBoxUserRoles == null ) 
-		{
-			try 
-			{
-				jCheckBoxUserRoles = new JCheckBox();
-				jCheckBoxUserRoles.setName("JScrollPaneRoleGroup");
-				jCheckBoxUserRoles.setText("Advanced: Enable User Roles");
-				jCheckBoxUserRoles.setHorizontalAlignment(JCheckBox.TRAILING);
-				jCheckBoxUserRoles.setHorizontalTextPosition(JCheckBox.LEFT);
-				jCheckBoxUserRoles.setToolTipText(
-					"Only use this option if necessary. Role attachment is prefered via a Role Group" );
-			}
-			catch (java.lang.Throwable ivjExc)
-			{
-				handleException(ivjExc);
-			}
-		}
-		
-		return jCheckBoxUserRoles;
-	}
-
+	
 	public boolean isShowingUserRoles()
 	{
-		return getJCheckBoxUserRoles().isSelected();
+		return true;
 	}
 
 	/**
@@ -482,7 +455,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	 */
 	private void initConnections() 
 	{
-		getJCheckBoxUserRoles().addActionListener( this );
+
 		getJMenuItemRoles().addActionListener( this );
 		getJMenuItemConflicts().addActionListener( this );
 
@@ -539,13 +512,6 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		setName("UserGroupRoleEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(384, 366);
-
-		java.awt.GridBagConstraints constJCheckBoxUserRoles = new java.awt.GridBagConstraints();
-		constJCheckBoxUserRoles.gridx = 0; constJCheckBoxUserRoles.gridy = 0;
-		constJCheckBoxUserRoles.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constJCheckBoxUserRoles.anchor = java.awt.GridBagConstraints.EAST;
-		constJCheckBoxUserRoles.insets = new java.awt.Insets(2, 7, 1, 5);
-		add(getJCheckBoxUserRoles(), constJCheckBoxUserRoles);
 
 		java.awt.GridBagConstraints constraintsJScrollPaneRoleGroup = new java.awt.GridBagConstraints();
 		constraintsJScrollPaneRoleGroup.gridx = 0; constraintsJScrollPaneRoleGroup.gridy = 1;
@@ -815,21 +781,6 @@ public static void main(java.lang.String[] args) {
 		//special case if we are the admin (yukon user)
 		if( login.getYukonUser().getUserID().intValue() == UserUtils.USER_YUKON_ID )
 		{
-			Font f = new Font( 
-				getJCheckBoxUserRoles().getFont().getName(),
-				Font.BOLD | Font.ITALIC,
-				getJCheckBoxUserRoles().getFont().getSize() );
-
-			getJCheckBoxUserRoles().setFont( f );
-			getJCheckBoxUserRoles().setForeground( Color.RED );
-			
-			getJCheckBoxUserRoles().setText(
-				"**ADMIN USERS CAN NOT BELONG TO ROLE GROUPS**"
-				+ "  User Roles: " );
-
-			getJCheckBoxUserRoles().setToolTipText(
-				"Click this option to change the roles of the admin user");
-
 			getJTableRoleGroup().setEnabled( false );
 		}
 		

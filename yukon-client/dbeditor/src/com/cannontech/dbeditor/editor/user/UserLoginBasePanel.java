@@ -736,7 +736,7 @@ public void setValue(Object o)
 		return;
 
 	YukonUser login = (YukonUser)o;
-
+	
 	if( !login.getYukonUser().getStatus().equalsIgnoreCase(UserUtils.STATUS_DISABLED) )
 		getJCheckBoxEnableLogin().doClick();
 
@@ -744,8 +744,13 @@ public void setValue(Object o)
 	getJPasswordFieldPassword().setText( login.getYukonUser().getPassword() );
 	getJPasswordFieldRetypePassword().setText( login.getYukonUser().getPassword() );
 
-
-	//set some dynamic data, for the sake of curiosity!
+	if(((YukonUser)o).getUserID().intValue() == UserUtils.USER_ADMIN_ID)
+	{
+		getJTextFieldUserID().setEnabled(false);
+		getJCheckBoxEnableLogin().setEnabled(false);
+		getJCheckBoxEnableLogin().setSelected(true);
+	}
+	//set some dynamic data, for the sake of curiosity!+
 	getJLabelLastLogin().setText(
 		"Last Login:   " +
 		new ModifiedDate(login.getYukonUser().getLastLogin().getTime()).toString() );

@@ -889,6 +889,11 @@ public static void main(java.lang.String[] args) {
 
 
 		}
+		if(o instanceof YukonUser)
+		{
+			if(((YukonUser)o).getUserID().intValue() == UserUtils.USER_ADMIN_ID)
+				setRoleTabledEnabled(false);
+		}
 
 		getJTreeModel().reload();							
 		

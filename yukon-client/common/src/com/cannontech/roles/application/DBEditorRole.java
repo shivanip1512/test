@@ -17,4 +17,6 @@ public interface DBEditorRole {
 	public static final int UTILITY_ID_RANGE = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 5;
 //	public static final int LOG_LEVEL = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 6;
 	public static final int TRANS_EXCLUSION = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 7;
+	public static final int PERMIT_LOGIN_EDIT = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 8;
+	public static final int ALLOW_USER_ROLES = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 9;
 }
