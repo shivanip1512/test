@@ -579,7 +579,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState, int prio
     if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Sending latch command, LM Group: " << getPAOName() << endl;
+        dout << RWTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
     }
     return returnCommandMsg;
 }
