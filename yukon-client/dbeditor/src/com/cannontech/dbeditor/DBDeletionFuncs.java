@@ -33,6 +33,7 @@ public class DBDeletionFuncs
 	public static final int LOGIN_GRP_TYPE			= 11;
 	public static final int BASELINE_TYPE			= 12;
 	public static final int CONFIG_TYPE				= 13;
+	public static final int TAG_TYPE				= 14;
 
 
    //the return types of each possible delete
@@ -186,20 +187,29 @@ public class DBDeletionFuncs
 		}
 		
 	private static byte createDeleteStringForConfig(int conID) throws java.sql.SQLException
-			{
-				Integer theID = new Integer( conID );
+	{
+		Integer theID = new Integer( conID );
 	
-				if( ConfigTwoWay.inUseByMCT(
-						theID, CtiUtilities.getDatabaseAlias() ) )
-				{
-					theWarning.delete(0, theWarning.length());
-					theWarning.append(CR_LF + "because it is in use by an MCT.");
-					return STATUS_DISALLOW;
-				}
+		if( ConfigTwoWay.inUseByMCT(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			theWarning.delete(0, theWarning.length());
+			theWarning.append(CR_LF + "because it is in use by an MCT.");
+			return STATUS_DISALLOW;
+		}
 	
-				//this object is deleteable
-				return STATUS_ALLOW;
-			}
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+			
+	private static byte createDeleteStringForTag(int tagID) throws java.sql.SQLException
+	{
+		theWarning.delete(0, theWarning.length());
+		theWarning.append(CR_LF + "This tag and ALL references to it in the system will be removed.");
+		return STATUS_CONFIRM;
+	 
+	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (5/31/2001 2:36:20 PM)
@@ -382,7 +392,15 @@ public class DBDeletionFuncs
 			unableDel.append("You cannot delete the two-way config '" + nodeName + "'");
 			anID = ((ConfigTwoWay) toDelete).getConfigID().intValue();
 			deletionType = DBDeletionFuncs.CONFIG_TYPE;
-		}	
+		}
+		
+		else if (toDelete instanceof com.cannontech.database.db.tags.Tag)
+		{
+			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			unableDel.append("You cannot delete the tag '" + nodeName + "'");
+			anID = ((com.cannontech.database.db.tags.Tag) toDelete).getTagID().intValue();
+			deletionType = DBDeletionFuncs.TAG_TYPE;
+		}		
 		
 		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
 		{
@@ -482,6 +500,9 @@ public class DBDeletionFuncs
 	
 			else if(type == CONFIG_TYPE)
 					return createDeleteStringForConfig(anID);
+					
+			else if(type == TAG_TYPE)
+				return createDeleteStringForTag(anID);
 			
 			else if(type == LOGIN_TYPE)
 				return createDeleteStringForLogin(anID);
