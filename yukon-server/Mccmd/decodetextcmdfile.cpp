@@ -47,7 +47,10 @@ Function #  Comment in the file, will get moved to the exported file if needed
 ****************************
 */
 
-int decodeTextCommandFile(const RWCString& fileName, int aCommandsToPerform, RWOrdered* commandList)
+int decodeTextCommandFile(const RWCString& fileName, 
+                                int aCommandsToPerform,
+                                int aProtocolFlag, 
+                                RWOrdered* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -61,7 +64,7 @@ int decodeTextCommandFile(const RWCString& fileName, int aCommandsToPerform, RWO
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime() << " Invalid use of command decodeTextCommandFile"<< endl;
-        dout << "             second parameter commandList cannont be NULL " << endl;
+        dout << "             second parameter commandList cannot be NULL " << endl;
         retVal = TEXT_CMD_FILE_COMMAND_LIST_INVALID;
     }
     else
@@ -115,7 +118,7 @@ int decodeTextCommandFile(const RWCString& fileName, int aCommandsToPerform, RWO
                     */
                     RWCollectableString* decodedCommand = new RWCollectableString();
 
-                    if( true == validateAndDecodeLine( commandVector[lineCnt], decodedCommand ))
+                    if( true == validateAndDecodeLine( commandVector[lineCnt], aProtocolFlag, decodedCommand ))
                     {
                         totalCommands++;
                         {
@@ -337,7 +340,7 @@ bool outputCommandFile (const RWCString &aFileName, int aLineCnt, vector<RWCStri
 
 
 
-bool validateAndDecodeLine( RWCString &input, RWCollectableString* programming)
+bool validateAndDecodeLine( RWCString &input, int aProtocolFlag, RWCollectableString* programming)
 {
 	RWCString serialNum;
 	bool retCode = true;
@@ -360,6 +363,9 @@ bool validateAndDecodeLine( RWCString &input, RWCollectableString* programming)
                         /****************************
                         * line is configuration command specifying group name
                         * format: 1,serial #,group name
+                        *
+                        * this function works for both expresscom and versacom
+                        * porter handles which is which based on the group
                         *****************************
                         */
                         if (!(tempString1 = cmdLine(",\r\n")).isNull())
@@ -407,15 +413,26 @@ bool validateAndDecodeLine( RWCString &input, RWCollectableString* programming)
 
                             if (!(tempString1 = cmdLine(",\r\n")).isNull())
                             {
-                                if (tempString1.contains("in"))
+                                if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL)
+                                {
+                                    *programming = RWCString ("PutConfig serial ");
+                                }
+                                else if (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_EXPRESSCOM)
+                                {
+                                    *programming = RWCString ("PutConfig xcom serial ");
+                                }
+                                else
                                 {
                                     *programming = RWCString ("PutConfig versacom serial ");
+                                }
+
+                                if (tempString1.contains("in"))
+                                {
                                     *programming += serialNum;
                                     *programming += " service in";
                                 }
                                 else if (tempString1.contains("out"))
                                 {
-                                    *programming = RWCString ("PutConfig versacom serial ");
                                     *programming += serialNum;
                                     *programming += " service out";
                                 }
@@ -440,101 +457,112 @@ bool validateAndDecodeLine( RWCString &input, RWCollectableString* programming)
                         /****************************
                         * line is a configuration command specifing section,class,division
                         * format:  3,serial #,s1,.. sn, c1,c2..cn, d1,d2,... dn
+                        *
+                        * function is only valid for versacom so it works with only
+                        * versacom or no protocol specified flags
                         *****************************
                         */
-                        RWCString utilityAddr;
-                        RWCString sectionAddr;
-                        RWCString classAddr("class ");
-                        RWCString divisionAddr("division ");
-                        bool haveUtility=false, haveSection=false,firstClass=true,firstDivision=true;
-
-                        if (!(tempString1 = cmdLine(",\r\n")).isNull())
+                        if ((aProtocolFlag == TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL) ||
+                            (aProtocolFlag == TEXT_CMD_FILE_SPECIFY_VERSACOM))
                         {
-                            serialNum = tempString1;
-
+                            RWCString utilityAddr;
+                            RWCString sectionAddr;
+                            RWCString classAddr("class ");
+                            RWCString divisionAddr("division ");
+                            bool haveUtility=false, haveSection=false,firstClass=true,firstDivision=true;
+    
                             if (!(tempString1 = cmdLine(",\r\n")).isNull())
                             {
-                                bool continueFlag = true;
-                                while (continueFlag)
+                                serialNum = tempString1;
+    
+                                if (!(tempString1 = cmdLine(",\r\n")).isNull())
                                 {
-                                    if (tempString1.contains("u"))
+                                    bool continueFlag = true;
+                                    while (continueFlag)
                                     {
-                                        haveUtility = true;
-                                        tempString1 = tempString1.strip (RWCString::leading,'u');
-                                        utilityAddr = RWCString ("utility ");
-                                        utilityAddr += tempString1;
-                                    }
-                                    else if (tempString1.contains("s"))
-                                    {
-                                        haveSection = true;
-                                        tempString1 = tempString1.strip (RWCString::leading,'s');
-                                        sectionAddr = RWCString ("section ");
-                                        sectionAddr += tempString1;
-                                    }
-                                    else if (tempString1.contains ("c"))
-                                    {
-                                        // we have a class address
-                                        if (firstClass)
-                                        {   
-                                            // first time thru, we won't need a comma
-                                            firstClass = false;
-                                        }
-                                        else
+                                        if (tempString1.contains("u"))
                                         {
-                                            classAddr += RWCString (",");
+                                            haveUtility = true;
+                                            tempString1 = tempString1.strip (RWCString::leading,'u');
+                                            utilityAddr = RWCString ("utility ");
+                                            utilityAddr += tempString1;
                                         }
-                                        tempString1 = tempString1.strip (RWCString::leading,'c');
-                                        classAddr += tempString1;
-
-                                    }
-                                    else if (tempString1.contains ("d"))
-                                    {
-                                        // we have a division address
-                                        if (firstDivision)
-                                        {   
-                                            // first time thru, we won't need a comma
-                                            firstDivision = false;
-                                        }
-                                        else
+                                        else if (tempString1.contains("s"))
                                         {
-                                            divisionAddr += RWCString (",");
+                                            haveSection = true;
+                                            tempString1 = tempString1.strip (RWCString::leading,'s');
+                                            sectionAddr = RWCString ("section ");
+                                            sectionAddr += tempString1;
                                         }
-                                        tempString1 = tempString1.strip (RWCString::leading,'d');
-                                        divisionAddr += tempString1;
+                                        else if (tempString1.contains ("c"))
+                                        {
+                                            // we have a class address
+                                            if (firstClass)
+                                            {   
+                                                // first time thru, we won't need a comma
+                                                firstClass = false;
+                                            }
+                                            else
+                                            {
+                                                classAddr += RWCString (",");
+                                            }
+                                            tempString1 = tempString1.strip (RWCString::leading,'c');
+                                            classAddr += tempString1;
+    
+                                        }
+                                        else if (tempString1.contains ("d"))
+                                        {
+                                            // we have a division address
+                                            if (firstDivision)
+                                            {   
+                                                // first time thru, we won't need a comma
+                                                firstDivision = false;
+                                            }
+                                            else
+                                            {
+                                                divisionAddr += RWCString (",");
+                                            }
+                                            tempString1 = tempString1.strip (RWCString::leading,'d');
+                                            divisionAddr += tempString1;
+                                        }
+    
+                                        if ((tempString1 = cmdLine(",\r\n")).isNull())
+                                            continueFlag = false;
                                     }
-
-                                    if ((tempString1 = cmdLine(",\r\n")).isNull())
-                                        continueFlag = false;
-                                }
-
-                                // make sure we found something
-                                if ((!firstDivision) || (!firstClass) || (haveSection) || (haveUtility))
-                                {
-                                    *programming = "PutConfig versacom serial ";
-                                    *programming +=serialNum;
-
-                                    if (haveUtility)
+    
+                                    // make sure we found something
+                                    if ((!firstDivision) || (!firstClass) || (haveSection) || (haveUtility))
                                     {
-                                        *programming += " ";
-                                        *programming += utilityAddr;
+                                        *programming = "PutConfig versacom serial ";
+                                        *programming +=serialNum;
+    
+                                        if (haveUtility)
+                                        {
+                                            *programming += " ";
+                                            *programming += utilityAddr;
+                                        }
+    
+                                        if (haveSection)
+                                        {
+                                            *programming += " ";
+                                            *programming += sectionAddr;
+                                        }
+    
+                                        if (!firstClass)
+                                        {
+                                            *programming += " ";
+                                            *programming += classAddr;
+                                        }
+    
+                                        if (!firstDivision)
+                                        {
+                                            *programming += " ";
+                                            *programming += divisionAddr;
+                                        }
                                     }
-
-                                    if (haveSection)
+                                    else
                                     {
-                                        *programming += " ";
-                                        *programming += sectionAddr;
-                                    }
-
-                                    if (!firstClass)
-                                    {
-                                        *programming += " ";
-                                        *programming += classAddr;
-                                    }
-
-                                    if (!firstDivision)
-                                    {
-                                        *programming += " ";
-                                        *programming += divisionAddr;
+                                        retCode = false;
                                     }
                                 }
                                 else
