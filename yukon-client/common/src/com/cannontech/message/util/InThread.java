@@ -41,6 +41,10 @@ public void run() {
 			Object o = istrm.restoreObject( streamer );
 			
 			processMsg( o );
+			
+			//force the InputStream to clear its message buffer, allowing
+			// the GC to clear out the message
+			istrm.getRestoreContext().endContext();
 
 			if( this.isInterrupted() )
 			{

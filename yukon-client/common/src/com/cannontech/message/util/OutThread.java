@@ -50,8 +50,13 @@ public void run() {
 					for(int i = 0; i < size; i++) {
 						ostrm.saveObject( out.get(i), streamer );
 					}
-				
+
 					ostrm.flush();
+
+					//force the OutputStream to clear its message buffer, allowing
+					// the GC to clear out the message
+					ostrm.getSaveContext().endContext();
+
 					out.clear();
 				}
 
