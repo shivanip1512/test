@@ -23,6 +23,7 @@ public abstract class LMProgramBase implements ILMProgramMessageCreation, ILMDat
 	public static final int STATUS_STOPPING = 6;
 	public static final int STATUS_CNTRL_ATTEMPT = 7;	
 	public static final int STATUS_NON_CNTRL = 8;
+	public static final int STATUS_TIMED_ACTIVE = 9;
 	
 	private Integer yukonID = null;
 	private String yukonCategory = null;
@@ -243,6 +244,9 @@ public static String getProgramStatusString(int status)
 		
 		case STATUS_STOPPING:
 		return "Stopping";
+		
+		case STATUS_TIMED_ACTIVE:
+		return "Timed Active";
 		
 		default:
 		throw new RuntimeException("*** Unknown status(" + status + ") in getProgramStatusString(int) in : " + LMProgramBase.class.getName() );

@@ -499,6 +499,7 @@ public class LCUtils
 			case LMProgramBase.STATUS_NOTIFIED:
 			case LMProgramBase.STATUS_SCHEDULED:
 			case LMProgramBase.STATUS_CNTRL_ATTEMPT:
+			case LMProgramBase.STATUS_TIMED_ACTIVE:
 				return "Stop...";
 		
 			case LMProgramBase.STATUS_INACTIVE:

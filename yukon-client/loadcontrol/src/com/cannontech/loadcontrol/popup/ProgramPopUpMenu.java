@@ -384,6 +384,7 @@ private void syncButtons()
 	switch( getLoadControlProgram().getProgramStatus().intValue() )
 	{
 		case LMProgramBase.STATUS_ACTIVE:
+		case LMProgramBase.STATUS_TIMED_ACTIVE:
 			getJMenuItemStartStop().setEnabled(false);
 			getJMenuItemDisable().setEnabled(true);
 			break;
