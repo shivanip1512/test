@@ -355,7 +355,7 @@ public class InventoryBean {
             	LiteCustomerContact liteCont = getEnergyCompany().getCustomerContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
             	LiteAddress liteAddr = getEnergyCompany().getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
-            	htmlBuf.append("<a href='#' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
+            	htmlBuf.append("<a href='' class='Link1' onclick='selectAccount(").append(liteAcctInfo.getAccountID()).append("); return false;'>");
             	htmlBuf.append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
             	htmlBuf.append(" ").append(ServerUtils.getFormattedName(liteCont));
             	htmlBuf.append(", ").append(ServerUtils.getOneLineAddress(liteAddr));
