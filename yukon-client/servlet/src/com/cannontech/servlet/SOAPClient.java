@@ -30,7 +30,6 @@ import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
-import com.cannontech.stars.web.action.ReloadCustAccountAction;
 import com.cannontech.stars.web.action.SaveThermostatScheduleAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
@@ -247,9 +246,6 @@ public class SOAPClient extends HttpServlet {
 			clientAction = new UpdateContactsAction();
 			if (destURL == null) destURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
 			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
-		}
-		else if (action.equalsIgnoreCase("ReloadCustAccount")) {
-			clientAction = new ReloadCustAccountAction();
 		}
 		else if (action.equalsIgnoreCase("DeleteCustAccount")) {
 			clientAction = new DeleteCustAccountAction();
