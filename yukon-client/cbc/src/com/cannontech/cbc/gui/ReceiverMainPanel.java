@@ -946,22 +946,22 @@ public javax.swing.JTable getSubBusTable()
 		
 					try
 					{
-						if( getSubBusTableModel().getRowAt(prevSelectedSubRow) == null )
-							return;
-
 						//store the last selected rows id!
-						int sID = getSubBusTableModel().getRowAt(prevSelectedSubRow).getCcId().intValue();
+						SubBus sub = getSubBusTableModel().getRowAt(prevSelectedSubRow);
 
-                  s.sort( mc );
+                  s.sort( mc );                  
 
 						//Set the last selected row selected
-						for( int i = 0 ; i < getSubBusTableModel().getRowCount(); i++ )
-							if( getSubBusTableModel().getRowAt(i).getCcId().intValue() == sID )
-							{
-								getSubBusTable().getSelectionModel().setSelectionInterval( i, i );
-								prevSelectedSubRow = i;
-								break;
-							}
+						if( sub != null )
+						{
+							for( int i = 0 ; i < getSubBusTableModel().getRowCount(); i++ )
+								if( getSubBusTableModel().getRowAt(i).equals(sub) )
+								{
+									getSubBusTable().getSelectionModel().setSelectionInterval( i, i );
+									prevSelectedSubRow = i;
+									break;
+								}
+						}
 						
 						getSubBusTable().repaint();
 					}
