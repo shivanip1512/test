@@ -483,38 +483,22 @@ INT CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCount, bool 
 
         pos++;
 
-        if( suppressEcho || suppressStutter )
+        //  check byte-by-byte against output to make sure it's not an echo
+        while( matching && pos < out_count && status == NORMAL )
         {
-            //  check byte-by-byte against output to make sure it's not an echo
-            do
+            if((status = CTIRead(getHandle(), in_buf + pos, 1, &bytes_read)) == NORMAL)
             {
-                if((status = CTIRead(getHandle(), in_buf + pos, 1, &bytes_read)) == NORMAL)
+                if( bytes_read == 1 )
                 {
-                    if( bytes_read == 1 )
-                    {
-                        if( suppressStutter && pos == 1 )
-                        {
-                            if( in_buf[0] == in_buf[1] )
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - IDLC stutter detected and removed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                    matching &= (in_buf[pos] == out_buf[pos]);
 
-                                pos = 0;
-                            }
-                        }
-
-                        matching &= (in_buf[pos] == out_buf[pos]);
-
-                        pos++;
-                    }
-                    else
-                    {
-                        status = READTIMEOUT;
-                    }
+                    pos++;
                 }
-            } while( matching && pos < out_count && status == NORMAL );
+                else
+                {
+                    status = READTIMEOUT;
+                }
+            }
         }
 
         if( matching && pos == out_count )
