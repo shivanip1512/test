@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/10/08 20:53:03 $
 *
 *
 * Notes:
@@ -18,29 +18,15 @@
 *
 * Copyright (c) 2003
 *-----------------------------------------------------------------------------*/
-#include <iostream.h>
-#include <stdlib.h> 
-#include <stdio.h>
-#include <math.h>
-#include <memory.h>
-#include <string.h>
-
 #pragma warning( disable : 4786)
 #ifndef __PROTOCOL_SA_H__
 #define __PROTOCOL_SA_H__
 
-typedef char CHAR;
-typedef unsigned char BYTE;
-typedef int INT;
-typedef unsigned int UINT;
-typedef short int SHORT;
-typedef unsigned short int USHORT;
-
 typedef struct schedCode
-{  
+{
    CHAR code[7];
-   SHORT function;	/* The DCU function to be activated */
-   USHORT type;		/* Type of DCU defined below */
+   SHORT function;  /* The DCU function to be activated */
+   USHORT type;     /* Type of DCU defined below */
    USHORT swTime;       /* desired (virtual) switch timeout in minutes */
    USHORT cycleTime;    /* cycle time  in minutes */
    SHORT repeats;       /* number repeats to effect virtual timeout */
@@ -49,10 +35,10 @@ typedef struct schedCode
 
 /*--------------------------------------------------------------------------*/
 /* The X205CMD (xmit 205 command) structure describes a particular 205 setup*/
-/* command.								    */
+/* command.                                 */
 /*--------------------------------------------------------------------------*/
 
-typedef struct xmit205Cmd	/* 48 bytes per cmd */
+typedef struct xmit205Cmd   /* 48 bytes per cmd */
 {
    char serialNum[33];
    USHORT type;
@@ -83,7 +69,7 @@ X205CMD;
 #define CLPU_ACT_FUNC 12
 
 /* MAX databuffer len */
-#define MAX_XBUF	32
+#define MAX_XBUF    32
 
 #define SHED 1
 #define REST 0
@@ -135,12 +121,12 @@ X205CMD;
  *              message stored in buf.
  *
  * code -  Input: valid input format is "xyz" or "xy-z".
-	where x,y,z could be the same digit. "xy-z" will be converted to an 
-	integer value = 8*xy+z.
+    where x,y,z could be the same digit. "xy-z" will be converted to an
+    integer value = 8*xy+z.
         In both cases, the maximum integer value of the code is 255.
  *
  * xmitter_addr - Input: Transmitter address
- * 
+ *
  * markIndex - Input: Mark Index
  *
  * spareIndex - Input: Spare Index
@@ -149,7 +135,7 @@ X205CMD;
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[], 
+INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
                       USHORT xmitter_addr,USHORT markIndex,
                       USHORT spareIndex );
 
@@ -168,40 +154,20 @@ INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
  *
  * xmitter_addr - Input: Transmitter address
  *
- * Notes:
- *	If invalid swTime/cycleTime is passed in by scode, error 
- *	PROTSA_FAIL_INVALID_SW_CYCLE_TIME will be returned.
- *	
- *	Valid swTime/cycleTime for SA105/205 are listed below(column = 1 SA205 only):
+ * row    - Input: SA105/205 timeout matrix row index (cycletime)
  *
- *		{ 900,  900, 0}
- *       	{1800, 1800, 0}
- *       	{3600, 3600, 0}
- *       	{ 450,  450, 1}
- *       	{ 450, 1800, 0}
- *       	{ 600, 1800, 0}
- *       	{ 450,  900, 0}
- *       	{ 600,  900, 0}
- *       	{ 660,  900, 0}
- *       	{ 720,  900, 0}
- *       	{ 900, 1800, 1}
- *       	{1350, 1800, 1}
- *       	{ 750, 1800, 1}
- *       	{ 450, 3600, 0}
- *       	{ 900, 3600, 0}
- *       	{1350, 3600, 0}
- *       	{1800, 3600, 0}
- *       	{2250, 3600, 0}
- *       	{2700, 3600, 0}
- *       	{3150, 3600, 0}
- *       	{1200, 3600, 1}
- *       	{2400, 3600, 1}
+ * column - Input: SA105/205 timeout matrix column index (timeout)
  *
+ *
+ * Notes: There is no validation for swtime/ctime pairs. The calling function is responsible
+ *        for that.
+
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr);
+INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr,
+                    INT row, INT column);
 
 /*----------------------------------------------------------------------------*
  * Function: controlGolay
@@ -214,7 +180,7 @@ INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr)
  *              message stored in buf.
  *
  * code     - 6-digit operational code.
- * 
+ *
  * function - DCU function.
  *
  * xmitter_addr - Transmitter address
@@ -253,7 +219,7 @@ INT controlGolay( BYTE *buf, INT *buflen, CHAR code[], SHORT function, USHORT xm
  *
  *----------------------------------------------------------------------------*/
 INT config205( BYTE *buf, INT *buflen, CHAR serialNum[],
-	       USHORT address_slot, CHAR new_code[], USHORT xmitter_addr);
+           USHORT address_slot, CHAR new_code[], USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*
  * Function: tempOutOfService205
@@ -283,7 +249,7 @@ INT config205( BYTE *buf, INT *buflen, CHAR serialNum[],
 INT tempOutOfService205( BYTE *buf, INT *buflen, CHAR serialNum[], INT hours_out, USHORT xmitter_addr );
 
 /*----------------------------------------------------------------------------*
- * Function:tamperDetect205 
+ * Function:tamperDetect205
  *
  * buf      - output buffer. A fully formed control command is built and placed
  *              in this buffer on successful completion of the function.
@@ -303,20 +269,20 @@ INT tempOutOfService205( BYTE *buf, INT *buflen, CHAR serialNum[], INT hours_out
  *
  *
  * Notes:
- *      If tdCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      If tdCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM
  *      returned.
- *      If tdCount < 0, 0 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      If tdCount < 0, 0 will be used and PROTSA_SUCCESS_MODIFIED_PARAM
  *      returned.
  *
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
+INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
                       USHORT relay, INT tdCount, USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*
- * Function:coldLoadPickup205 
+ * Function:coldLoadPickup205
  *
  * buf      - output buffer. A fully formed control command is built and placed
  *              in this buffer on successful completion of the function.
@@ -327,8 +293,8 @@ INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
  *
  * serialNum  - Input: SA205 DCU serial number.
  *
- * relay - Input: valid entries are 1, 2, 3 or 4 only. Invalid input will 
- *	      result in returning PROTSAERROR_BAD_PARAMETER.
+ * relay - Input: valid entries are 1, 2, 3 or 4 only. Invalid input will
+ *        result in returning PROTSAERROR_BAD_PARAMETER.
  *
  * clpCount - Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
  *
@@ -336,14 +302,14 @@ INT tamperDetect205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
  *
  *
  * Notes:
- *      If clpCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM 
+ *      If clpCount > 255, 255 will be used and PROTSA_SUCCESS_MODIFIED_PARAM
  *      returned.
  *
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT coldLoadPickup205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[], 
+INT coldLoadPickup205(BYTE *codeBuf, INT *codeIndex, CHAR serialNum[],
                       USHORT relay, INT clpCount, USHORT xmitter_addr);
 
 /*----------------------------------------------------------------------------*

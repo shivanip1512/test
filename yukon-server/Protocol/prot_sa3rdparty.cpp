@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/09/20 16:11:51 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/10/08 20:53:19 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.10  2004/10/08 20:53:19  cplender
+* Telvent altered the control105_205 to accept matrix coordinates.
+*
 * Revision 1.9  2004/09/20 16:11:51  mfisher
 * changed RTM functions to be static - we don't need to keep state
 *
@@ -223,10 +226,25 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
 {
     INT status = NORMAL;
 
+    RWCString   token;
+    RWCString   temp, temp2;
+    RWCString   strnum;
+    RWCString   str = parse.getCommandStr();
+
+    #if 0
+    if(!(token = str.match(" assign" \
+                                             " +[0-9]+, *[0-9]+" \
+                                             "( *, *[0-9]+, *[0-9]+)?" \
+                                             "( *, *[0-9]+, *[0-9]+)?" \
+                                             "( *, *[0-9]+, *[0-9]+)?" \
+                                             "( *, *[0-9]+, *[0-9]+)?" \
+                                             "( *, *[0-9]+, *[0-9]+)?" \
+                                             )).isNull())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
     }
+    #endif
+
 
     return status;
 }
@@ -268,7 +286,7 @@ INT CtiProtocolSA3rdParty::loadControl()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress);
+                retCode = control105_205(_sa._buffer, &_sa._bufferLen, &scode, _sa._transmitterAddress, _sTime, _cTime);
             }
             break;
         }
@@ -666,7 +684,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Unknown command check syntax. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/04/29 19:58:50 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2004/10/08 20:53:04 $
 *
 *
 * Notes:
@@ -18,26 +18,9 @@
 *
 * Copyright (c) 2003
 *-----------------------------------------------------------------------------*/
-
 #pragma warning( disable : 4786)
 #ifndef __PROTOCOL_SA_H__
 #define __PROTOCOL_SA_H__
-
-/*
-#include <iostream.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <memory.h>
-#include <string.h>
-
-typedef char CHAR;
-typedef unsigned char BYTE;
-typedef int INT;
-typedef unsigned int UINT;
-typedef short int SHORT;
-typedef unsigned short int USHORT;
-*/
 
 typedef struct schedCode
 {
@@ -171,40 +154,20 @@ INT controlSADigital( BYTE *buf, INT *buflen,  CHAR code[],
  *
  * xmitter_addr - Input: Transmitter address
  *
- * Notes:
- *  If invalid swTime/cycleTime is passed in by scode, error
- *  PROTSA_FAIL_INVALID_SW_CYCLE_TIME will be returned.
- *  
- *  Valid swTime/cycleTime for SA105/205 are listed below (column = 1 SA205 only):
+ * row    - Input: SA105/205 timeout matrix row index (cycletime)
  *
- *          { 900,  900, 0}
- *          {1800, 1800, 0}
- *          {3600, 3600, 0}
- *          { 450,  450, 1}
- *          { 450, 1800, 0}
- *          { 600, 1800, 0}
- *          { 450,  900, 0}
- *          { 600,  900, 0}
- *          { 660,  900, 0}
- *          { 720,  900, 0}
- *          { 900, 1800, 1}
- *          {1350, 1800, 1}
- *          { 750, 1800, 1}
- *          { 450, 3600, 0}
- *          { 900, 3600, 0}
- *          {1350, 3600, 0}
- *          {1800, 3600, 0}
- *          {2250, 3600, 0}
- *          {2700, 3600, 0}
- *          {3150, 3600, 0}
- *          {1200, 3600, 1}
- *          {2400, 3600, 1}
+ * column - Input: SA105/205 timeout matrix column index (timeout)
  *
+ *
+ * Notes: There is no validation for swtime/ctime pairs. The calling function is responsible
+ *        for that.
+
  * Returns:
  *          - A valid return code from above.
  *
  *----------------------------------------------------------------------------*/
-INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr);
+INT control105_205( BYTE *buf, INT *buflen, SA_CODE *scode, USHORT xmitter_addr,
+                    INT row, INT column);
 
 /*----------------------------------------------------------------------------*
  * Function: controlGolay
