@@ -123,10 +123,16 @@ void CtiCCClientListener::stop()
 
 void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+    /*if( _CC_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " BroadcastMessage() called." << endl;
+    }*/
 
     try
     {
+        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+
         for( int i = 0; i < _connections.entries(); i++ )
         {
             // replicate message makes a deep copy
@@ -150,6 +156,12 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
              ")  An unknown exception has occurred." << endl;
     }
     delete msg;
+
+    /*if( _CC_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " BroadcastMessage() finished." << endl;
+    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -209,8 +221,8 @@ void CtiCCClientListener::_listen()
         {
             if( msg.errorNumber() == 10004 )
             {    
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiCCClientListener thread interupted" << endl;
+                /*CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "CtiCCClientListener thread interupted" << endl;*/
                 break;
             }
             else
@@ -254,13 +266,15 @@ void CtiCCClientListener::_check()
                 {
                     if ( !_connections[i]->isValid() )
                     {
-                        /*{    
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime()  << " - CtiCCListener::check - deleting connection addr:  " << _connections[i] << endl;
-                        }*/
-
-                        CtiCCClientConnection* toDelete = _connections.removeAt(i);
-                        delete toDelete;
+                        {
+                            CtiCCClientConnection* toDelete = _connections.removeAt(i);
+							if( _CC_DEBUG )
+							{    
+								CtiLockGuard<CtiLogger> logger_guard(dout);
+								dout << RWTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
+							}
+                            delete toDelete;
+                        }
                         break;
                     }
                 }
