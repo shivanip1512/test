@@ -5,7 +5,6 @@
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.device.CarrierBase"%>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes"%>

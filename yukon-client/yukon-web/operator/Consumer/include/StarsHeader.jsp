@@ -13,6 +13,7 @@
 <%@ page import="com.cannontech.database.cache.functions.EnergyCompanyFuncs" %>
 <%@ page import="com.cannontech.database.data.device.DeviceTypesFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteGraphDefinition"%>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.db.graph.GraphCustomerList" %>
@@ -25,6 +26,7 @@
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 <%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
 <%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
+<%@ page import="com.cannontech.stars.util.ECUtils" %> 
 <%@ page import="com.cannontech.stars.util.ServerUtils" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
@@ -36,8 +38,6 @@
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %> 
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <cti:checklogin/>
  
 <%

@@ -1,5 +1,4 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%
 	Properties savedReq = null;
 	if (request.getParameter("failed") != null)

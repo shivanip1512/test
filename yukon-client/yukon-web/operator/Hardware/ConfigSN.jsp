@@ -1,7 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
-<%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.web.servlet.InventoryManager" %>
 <%
