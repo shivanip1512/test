@@ -4,9 +4,9 @@ package com.cannontech.dbeditor.editor.point;
  */
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.point.PointTypes;
 
-public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener {
+public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener 
+{
 	private javax.swing.JComboBox ivjUnitOfMeasureComboBox = null;
 	private javax.swing.JLabel ivjUnitOfMeasureLabel = null;
 	private javax.swing.JComboBox ivjArchiveIntervalComboBox = null;
@@ -15,12 +15,7 @@ public class AccumulatorBasePanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JLabel ivjArchiveTypeLabel = null;
 	private com.klg.jclass.field.JCSpinField ivjDecimalPlacesSpinner = null;
 	private javax.swing.JLabel ivjJLabelDecimalPositons = null;
-	private javax.swing.ButtonGroup ivjButtonGroup1 = null;
-	private javax.swing.JRadioButton ivjDemandReadingRadioButton = null;
-	private javax.swing.JRadioButton ivjDialReadingRadioButton = null;
-	private javax.swing.JPanel ivjReadingPanel = null;
 	private javax.swing.JPanel ivjJPanelArchive = null;
-	private javax.swing.JPanel ivjJPanelHolder = null;
 
 /**
  * Constructor
@@ -46,10 +41,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC3(e);
 	if (e.getSource() == getArchiveIntervalComboBox()) 
 		connEtoC4(e);
-	if (e.getSource() == getDialReadingRadioButton()) 
-		connEtoC1(e);
-	if (e.getSource() == getDemandReadingRadioButton()) 
-		connEtoC5(e);
 	// user code begin {2}
 	// user code end
 }
@@ -322,27 +313,6 @@ private static void getBuilderData() {
 }
 
 /**
- * Return the ButtonGroup1 property value.
- * @return javax.swing.ButtonGroup
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.ButtonGroup getButtonGroup1() {
-	if (ivjButtonGroup1 == null) {
-		try {
-			ivjButtonGroup1 = new javax.swing.ButtonGroup();
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjButtonGroup1;
-}
-
-
-/**
  * Return the DecimalPlacesSpinner property value.
  * @return com.klg.jclass.field.JCSpinField
  */
@@ -367,58 +337,6 @@ private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
 		}
 	}
 	return ivjDecimalPlacesSpinner;
-}
-
-
-/**
- * Return the JRadioButton2 property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getDemandReadingRadioButton() {
-	if (ivjDemandReadingRadioButton == null) {
-		try {
-			ivjDemandReadingRadioButton = new javax.swing.JRadioButton();
-			ivjDemandReadingRadioButton.setName("DemandReadingRadioButton");
-			ivjDemandReadingRadioButton.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjDemandReadingRadioButton.setText("Demand");
-			ivjDemandReadingRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-			ivjDemandReadingRadioButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-			// user code begin {1}
-				getButtonGroup1().add(ivjDemandReadingRadioButton);
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjDemandReadingRadioButton;
-}
-
-
-/**
- * Return the JRadioButton1 property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getDialReadingRadioButton() {
-	if (ivjDialReadingRadioButton == null) {
-		try {
-			ivjDialReadingRadioButton = new javax.swing.JRadioButton();
-			ivjDialReadingRadioButton.setName("DialReadingRadioButton");
-			ivjDialReadingRadioButton.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjDialReadingRadioButton.setText("Dial");
-			// user code begin {1}
-			getButtonGroup1().add(ivjDialReadingRadioButton);
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjDialReadingRadioButton;
 }
 
 
@@ -508,98 +426,6 @@ private javax.swing.JPanel getJPanelArchive() {
 }
 
 /**
- * Return the JPanelHolder property value.
- * @return javax.swing.JPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanelHolder() {
-	if (ivjJPanelHolder == null) {
-		try {
-			ivjJPanelHolder = new javax.swing.JPanel();
-			ivjJPanelHolder.setName("JPanelHolder");
-			ivjJPanelHolder.setLayout(new java.awt.GridBagLayout());
-			ivjJPanelHolder.setMaximumSize(new java.awt.Dimension(180, 24));
-
-			java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
-			constraintsDecimalPlacesSpinner.gridx = 3; constraintsDecimalPlacesSpinner.gridy = 1;
-			constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsDecimalPlacesSpinner.ipadx = 3;
-			constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(14, 3, 17, 6);
-			getJPanelHolder().add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
-
-			java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
-			constraintsJLabelDecimalPositons.gridx = 2; constraintsJLabelDecimalPositons.gridy = 1;
-			constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelDecimalPositons.insets = new java.awt.Insets(16, 2, 18, 3);
-			getJPanelHolder().add(getJLabelDecimalPositons(), constraintsJLabelDecimalPositons);
-
-			java.awt.GridBagConstraints constraintsReadingPanel = new java.awt.GridBagConstraints();
-			constraintsReadingPanel.gridx = 1; constraintsReadingPanel.gridy = 1;
-			constraintsReadingPanel.fill = java.awt.GridBagConstraints.BOTH;
-			constraintsReadingPanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsReadingPanel.weightx = 1.0;
-			constraintsReadingPanel.weighty = 1.0;
-			constraintsReadingPanel.ipadx = 41;
-			constraintsReadingPanel.ipady = 16;
-			constraintsReadingPanel.insets = new java.awt.Insets(1, 0, 2, 1);
-			getJPanelHolder().add(getReadingPanel(), constraintsReadingPanel);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJPanelHolder;
-}
-
-/**
- * Return the JPanel1 property value.
- * @return javax.swing.JPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getReadingPanel() {
-	if (ivjReadingPanel == null) {
-		try {
-			ivjReadingPanel = new javax.swing.JPanel();
-			ivjReadingPanel.setName("ReadingPanel");
-			ivjReadingPanel.setLayout(new java.awt.GridBagLayout());
-			ivjReadingPanel.setFont(new java.awt.Font("dialog", 0, 12));
-
-			java.awt.GridBagConstraints constraintsDialReadingRadioButton = new java.awt.GridBagConstraints();
-			constraintsDialReadingRadioButton.gridx = 1; constraintsDialReadingRadioButton.gridy = 1;
-			constraintsDialReadingRadioButton.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsDialReadingRadioButton.ipadx = 26;
-			constraintsDialReadingRadioButton.insets = new java.awt.Insets(3, 6, 5, 1);
-			getReadingPanel().add(getDialReadingRadioButton(), constraintsDialReadingRadioButton);
-
-			java.awt.GridBagConstraints constraintsDemandReadingRadioButton = new java.awt.GridBagConstraints();
-			constraintsDemandReadingRadioButton.gridx = 2; constraintsDemandReadingRadioButton.gridy = 1;
-			constraintsDemandReadingRadioButton.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsDemandReadingRadioButton.ipadx = 21;
-			constraintsDemandReadingRadioButton.insets = new java.awt.Insets(3, 1, 5, 1);
-			getReadingPanel().add(getDemandReadingRadioButton(), constraintsDemandReadingRadioButton);
-			// user code begin {1}
-
-			
-			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
-			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 14));
-			ivjLocalBorder1.setTitle("Reading Type");
-			ivjReadingPanel.setBorder(ivjLocalBorder1);
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjReadingPanel;
-}
-
-/**
  * Return the UnitOfMeasureComboBox property value.
  * @return javax.swing.JComboBox
  */
@@ -661,14 +487,6 @@ public Object getValue(Object val)
 	//Assuming that commonObject is an instance of com.cannontech.database.data.point.AccumulatorPoint
 	com.cannontech.database.data.point.AccumulatorPoint point = (com.cannontech.database.data.point.AccumulatorPoint) val;
 
-
-	//START SPECIAL CASE-- change the accumulator point type to the correct type
-	if( getDemandReadingRadioButton().isSelected())
-		point.getPoint().setPointType(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
-	else
-		point.getPoint().setPointType(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
-	//END SPECIAL CASE-- change the accumulator point type to the correct type
-
 	int uOfMeasureID =
 		((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 
@@ -708,8 +526,6 @@ private void initConnections() throws java.lang.Exception {
 	getUnitOfMeasureComboBox().addActionListener(this);
 	getArchiveTypeComboBox().addActionListener(this);
 	getArchiveIntervalComboBox().addActionListener(this);
-	getDialReadingRadioButton().addActionListener(this);
-	getDemandReadingRadioButton().addActionListener(this);
 }
 
 
@@ -726,6 +542,23 @@ private void initialize() {
 		setLayout(new java.awt.GridBagLayout());
 		setSize(371, 177);
 		setMinimumSize(new java.awt.Dimension(0, 0));
+
+
+
+		java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
+		constraintsJLabelDecimalPositons.gridx = 1; constraintsJLabelDecimalPositons.gridy = 1;
+		constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJLabelDecimalPositons.insets = new java.awt.Insets(6, 5, 9, 4);
+		constraintsJLabelDecimalPositons.ipadx = 11;
+		add(getJLabelDecimalPositons(), constraintsJLabelDecimalPositons);
+
+		java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
+		constraintsDecimalPlacesSpinner.gridx = 2; constraintsDecimalPlacesSpinner.gridy = 1;
+		constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsDecimalPlacesSpinner.weightx = 1.0;
+		constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2, 5, 5, 80);
+		add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
+
 
 		java.awt.GridBagConstraints constraintsUnitOfMeasureLabel = new java.awt.GridBagConstraints();
 		constraintsUnitOfMeasureLabel.gridx = 1; constraintsUnitOfMeasureLabel.gridy = 2;
@@ -755,15 +588,6 @@ private void initialize() {
 		constraintsJPanelArchive.insets = new java.awt.Insets(5, 6, 14, 6);
 		add(getJPanelArchive(), constraintsJPanelArchive);
 
-		java.awt.GridBagConstraints constraintsJPanelHolder = new java.awt.GridBagConstraints();
-		constraintsJPanelHolder.gridx = 1; constraintsJPanelHolder.gridy = 1;
-		constraintsJPanelHolder.gridwidth = 2;
-		constraintsJPanelHolder.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanelHolder.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJPanelHolder.weightx = 1.0;
-		constraintsJPanelHolder.weighty = 1.0;
-		constraintsJPanelHolder.insets = new java.awt.Insets(3, 6, 1, 6);
-		add(getJPanelHolder(), constraintsJPanelHolder);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -824,32 +648,6 @@ public boolean isInputValid() {
 	return true;
 }
 
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		java.awt.Frame frame;
-		try {
-			Class aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
-			frame = (java.awt.Frame)aFrameClass.newInstance();
-		} catch (java.lang.Throwable ivjExc) {
-			frame = new java.awt.Frame();
-		}
-		AccumulatorBasePanel aAccumulatorBasePanel;
-		aAccumulatorBasePanel = new AccumulatorBasePanel();
-		frame.add("Center", aAccumulatorBasePanel);
-		frame.setSize(aAccumulatorBasePanel.getSize());
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.common.gui.util.DataInputPanel");
-		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-	}
-}
-
-
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -864,10 +662,10 @@ public void setValue(Object val)
 	String archiveType = point.getPoint().getArchiveType();
 	Integer archiveInteger = point.getPoint().getArchiveInterval();
 
-	if (com.cannontech.database.data.point.PointTypes.getType(pointType) == PointTypes.DEMAND_ACCUMULATOR_POINT)
-		getDemandReadingRadioButton().setSelected(true);
-	else
-		getDialReadingRadioButton().setSelected(true);
+//	if (com.cannontech.database.data.point.PointTypes.getType(pointType) == PointTypes.DEMAND_ACCUMULATOR_POINT)
+//		getDemandReadingRadioButton().setSelected(true);
+//	else
+//		getDialReadingRadioButton().setSelected(true);
 
 	getDecimalPlacesSpinner().setValue(point.getPointUnit().getDecimalPlaces());
 	getArchiveIntervalLabel().setEnabled(false);
