@@ -68,15 +68,15 @@ public class CentMaineDBConverter extends MessageFrameAdaptor
 
 	private int PORTID_OFFSET = 2000;
 
-	private int DEMAND_POINT_ID = 16000;		// I made this
-	private int PULSE_POINT_ID = 18000;			// I made this
+	private int DEMAND_POINT_ID = 16000;
+	private int PULSE_POINT_ID = 18000;
 	
-	private int CCUID_OFFSET = 4000; 			// I made this
-	private int RPTID_OFFSET = 5000; 			// I made this
-	private int ROUTE_ID = 10000;   		 	// I made this
-	private int MACRO_ROUTE_ID = 12000; 		// I made this
-	private int MCT_ID = 14000;					// I made this
-	private int MACRO_ROUTE_ID_OFFSET = 6000;  	// I made this
+	private int CCUID_OFFSET = 4000;
+	private int RPTID_OFFSET = 5000;
+	private int ROUTE_ID = 10000;
+	private int MACRO_ROUTE_ID = 12000;
+	private int MCT_ID = 14000;
+	private int MACRO_ROUTE_ID_OFFSET = 6000;
 	private static final int MAX_DSM2_MACRO_COUNT = 30;
 
 	/* ______________________________________________________________________________
@@ -92,6 +92,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor
 	private String mctFileName = "device by id.txt";
 	
 	private StringTokenizer ts;
+	private StringTokenizer ts2;
 
 
 /**
@@ -408,9 +409,9 @@ public boolean processTransmitterFile()
 		Integer deviceID = new Integer(pInt((idNum).substring(0,3)).intValue()+CCUID_OFFSET);
 		
 		if(idNum.equalsIgnoreCase("TESTCCU")){
-			deviceID = new Integer(998);
+			deviceID = new Integer(CCUID_OFFSET);
 		}else if(idNum.equalsIgnoreCase("TESTCTT")){
-			deviceID = new Integer(999);
+			deviceID = new Integer(CCUID_OFFSET+1);
 		}
 		
 		String deviceType = DeviceTypes.STRING_CCU_711[0];
@@ -566,12 +567,13 @@ public boolean processRepeaterFile()
 		
 		device = (Repeater900)DeviceFactory.createDevice( PAOGroups.getDeviceType( deviceType ) );
 		device.setDeviceID(deviceID);
-		
+		device.getDeviceRoutes().setRouteID(new Integer(0));
 		//replace all blanks with a single space
 		String name = idNum;
 		device.setPAOName(name);
 		// assign address of zero, manually entered later
 		device.assignAddress(new Integer(0));
+		multi.getDBPersistentVector().add( device );
 	}
 	
 	boolean success = writeToSQLDatabase(multi);
@@ -620,6 +622,7 @@ public boolean processRouteFile()
 		String routeType = RouteTypes.STRING_CCU;
 		CCURoute route = null;
 		Integer deviceID = new Integer(pInt((ccuID).substring(0,3)).intValue()+CCUID_OFFSET);
+		System.out.println("route line deviceID: "+deviceID);
 		route = (CCURoute)com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.PAOGroups.getRouteType( routeType ));
 		route.setDeviceID(deviceID);
 		
@@ -638,6 +641,7 @@ public boolean processRouteFile()
 		route.getCarrierRoute().setBusNumber(busNum);
 		route.setDefaultRoute("Y");
 		
+		multi.getDBPersistentVector().add( route );
 		routeIDsMap.put( route.getRouteName(), route.getRouteID() );
 	}
 	
@@ -645,11 +649,11 @@ public boolean processRouteFile()
 
 	if( success )
 	{
-		CTILogger.info(" Repeater file processed and inserted Successfully");
-		getIMessageFrame().addOutput(" Repeater file processed and inserted Successfully");
+		CTILogger.info(" Route file processed and inserted Successfully");
+		getIMessageFrame().addOutput(" Route file processed and inserted Successfully");
 	}
 	else
-		getIMessageFrame().addOutput(" Repeater file failed insertion");
+		getIMessageFrame().addOutput(" Route file failed insertion");
 
 	return success;
 }
@@ -676,10 +680,10 @@ public boolean processRouteMacrosFile()
 		ts = new StringTokenizer(lines.get(i).toString(), "|");
 		//ignore title lines and route list lines
 
-		if( i <= 5 || ts.nextToken() == null)
+		if( i <= 5 || ts.nextToken().trim() == null)
 			continue;
 			
-		CTILogger.info("ROUTE line: " + lines.get(i).toString());
+		CTILogger.info("MACRO ROUTE line: " + lines.get(i).toString());
 		
 		String routeType = RouteTypes.STRING_MACRO;
 
@@ -692,6 +696,7 @@ public boolean processRouteMacrosFile()
 		route.setRouteName(name);
 		Integer routeID = new Integer(MACRO_ROUTE_ID);
 		route.setRouteID(routeID);
+		System.out.println("RouteID " +routeID);
 		MACRO_ROUTE_ID++;
 		//route.setDeviceID( new Integer(0) );
 		route.setDefaultRoute(new String("N"));
@@ -703,15 +708,20 @@ public boolean processRouteMacrosFile()
 
 		// set our list of routes
 		for(int count = 0; count < MAX_DSM2_MACRO_COUNT; count++)
-		{   	
-			StringTokenizer ts2 = new StringTokenizer(lines.get(i+1+count).toString(),"|");
-
-			ts2.nextToken();
-			ts2.nextToken();
-			ts2.nextToken();
-			ts2.nextToken();
+		{   
+			try{
+				ts2 = new StringTokenizer(lines.get(i+1+count).toString(),"|");	
+			}catch (Exception e){
+				// no more lines
+				break;
+			}
+			for(int j= 0; j<6;j++){
+				ts2.nextToken();
+			}
 			String rteID = ts2.nextToken().trim();
-			if (rteID ==  null)
+			System.out.println("rteID :"+ rteID);
+			
+			if (rteID.equalsIgnoreCase(""))
 			{
 				// no more route ids in list
 				break;
@@ -722,9 +732,11 @@ public boolean processRouteMacrosFile()
 		
 			MacroRoute.setRouteID(routeID);
 			MacroRoute.setSingleRouteID((Integer) myRouteID );
+			System.out.println("MyRouteID: "+myRouteID+"|");
 			MacroRoute.setRouteOrder(new Integer( count + 1 ) );
 
 			RouteMacroVector.addElement( MacroRoute );
+			
 		}
 
 		// stuff the repeaters into the CCU Route
