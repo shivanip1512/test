@@ -7,7 +7,7 @@ function refresh(evt)
 	dynImages = SVGDoc.getElementsByTagName('image');
 	dynSVG = SVGDoc.documentElement.getElementsByTagName('svg');
 	setInterval('doRefresh()', 30000);  //set to every minute 
-	setInterval('changeSVGGraph()', 300000); //every five minutes
+	setInterval('changeSVGGraph()', 30000); //every five minutes
 	root = evt.getTarget();
 	
 }
