@@ -257,9 +257,10 @@ void CtiCapController::controlLoop()
                                 try
                                 {
                                     if( currentSubstationBus->isAlreadyControlled() ||
-                                        currentSubstationBus->isPastResponseTime(currentDateTime) )
+                                        currentSubstationBus->isPastMaxConfirmTime(currentDateTime) )
                                     {
-                                        if( _SEND_TRIES > 1 &&
+                                        if( (_SEND_TRIES > 1 ||
+                                             currentSubstationBus->getControlSendRetries() > 0) &&
                                             !currentSubstationBus->isAlreadyControlled() &&
                                             currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, pilMessages) )
                                         {
@@ -272,7 +273,9 @@ void CtiCapController::controlLoop()
                                     }
                                     else if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
                                     {
-                                        if( !currentSubstationBus->getDisableFlag() )
+                                        if( !currentSubstationBus->getDisableFlag() &&
+                                            !currentSubstationBus->getWaiveControlFlag() &&
+                                            currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )//intentionally left the ! off
                                         {
                                             currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
                                         }
@@ -288,7 +291,9 @@ void CtiCapController::controlLoop()
                             {//not recently controlled and var check needed
                                 try
                                 {
-                                    if( !currentSubstationBus->getDisableFlag() )
+                                    if( !currentSubstationBus->getDisableFlag() &&
+                                        !currentSubstationBus->getWaiveControlFlag() &&
+                                        currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::ManualOnlyControlMethod,RWCString::ignoreCase) )//intentionally left the ! off
                                     {
                                         currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, pilMessages);
                                     }
@@ -1075,7 +1080,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         if( currentCapBank->getStatusPointId() == pointID )
                         {
                             if( timestamp > currentCapBank->getLastStatusChangeTime() ||
-                                currentCapBank->getControlStatus() != (LONG)value )
+                                currentCapBank->getControlStatus() != (LONG)value ||
+                                currentCapBank->getTagsControlStatus() != (LONG)tags )
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
