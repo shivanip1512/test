@@ -10,6 +10,7 @@ import javax.ejb.SessionContext;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.IConnectionBase;
 import com.cannontech.message.macs.message.MACSCategoryChange;
+import com.cannontech.message.util.Message;
 import com.cannontech.yukon.connections.ServerMACSConnection;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.macs.message.OverrideRequest;
@@ -64,6 +65,15 @@ public class MACSConnectionBean /*extends ClientConnection*/ implements SessionB
 
 	}
 
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+	public void writeMsg( Message msg ) throws java.io.IOException
+	{
+		getMACSConnection().writeMsg( msg );
+	}
+	
    /**
     * @ejb:interface-method
     * tview-type="remote" 

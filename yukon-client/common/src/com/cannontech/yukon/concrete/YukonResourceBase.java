@@ -35,6 +35,7 @@ import java.sql.Connection;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.message.util.Message;
 
 
 /**
@@ -176,6 +177,10 @@ public abstract class YukonResourceBase implements IYukon
 
 	public void sendUpdateSchedule(Schedule sched ) throws java.io.IOException { 
 		getMACSConnection().sendUpdateSchedule( sched);
+	}
+
+	public void writeMsg( Message msg ) throws java.io.IOException {
+		getMACSConnection().writeMsg( msg );
 	}
 
 //	public IConnectionBase getMACSConnBase() {

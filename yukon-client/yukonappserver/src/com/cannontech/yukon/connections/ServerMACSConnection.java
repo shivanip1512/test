@@ -12,6 +12,7 @@ import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.message.macs.message.OverrideRequest;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.message.util.ClientConnection;
+import com.cannontech.message.util.Message;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.cannontech.message.macs.message.MACSCategoryChange;
@@ -669,6 +670,11 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	public IConnectionBase getMACSConnBase() 
 	{
 		return this;
+	}
+
+	public void writeMsg( Message msg ) throws java.io.IOException
+	{
+		write( msg );
 	}
 
 }
