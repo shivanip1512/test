@@ -152,7 +152,7 @@ public class BillingFileDefaults
 	 */
 	public java.util.Date getDemandStartDate()
 	{
-		if( demandStartDate == null)
+//		if( demandStartDate == null)
 		{
 			demandStartDate = new java.util.Date();
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
@@ -192,7 +192,7 @@ public class BillingFileDefaults
 	 */	
 	public java.util.Date getEnergyStartDate()
 	{
-		if( energyStartDate == null)
+//		if( energyStartDate == null)
 		{
 			energyStartDate = new java.util.Date();
 			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
@@ -612,6 +612,33 @@ public class BillingFileDefaults
 	public void setAppendToFile(boolean appendToFile)
 	{
 		this.appendToFile = appendToFile;
+	}
+
+	/**
+	 * Returns the validBillGroupTypeDisplayStrings.
+	 * @return String[]
+	 */
+	public static String[] getValidBillGroupTypeDisplayStrings()
+	{
+		return validBillGroupTypeDisplayStrings;
+	}
+
+	/**
+	 * Returns the validBillGroupTypeIDs.
+	 * @return int[]
+	 */
+	public static int[] getValidBillGroupTypeIDs()
+	{
+		return validBillGroupTypeIDs;
+	}
+
+	/**
+	 * Returns the validBillGroupTypeStrings.
+	 * @return String[]
+	 */
+	public static String[] getValidBillGroupTypeStrings()
+	{
+		return validBillGroupTypeStrings;
 	}
 
 }

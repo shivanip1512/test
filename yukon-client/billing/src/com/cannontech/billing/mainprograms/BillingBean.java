@@ -29,6 +29,8 @@ public class BillingBean implements java.util.Observer
 	private boolean appendToFile = false;
 	private Date endDate  = com.cannontech.util.ServletUtil.getToday();
 	private String endDateStr = null;
+
+	private Date demandStartDate = null;
 	
 	private int timer = 0;
 	private String timerString = "";
@@ -174,6 +176,18 @@ public int getDemandDaysPrev()
 {
 	return demandDaysPrev;
 }
+/**
+ * Returns the demandStartDate.
+ * The minimum date (according to getDemandDaysPrev() and endDate) for valid demand readings.
+ * @return java.util.Date
+ */
+public java.util.Date getDemandStartDate()
+{
+	return getBillingDefaults().getDemandStartDate();
+}
+	
+
+
 public void setDemandDaysPrev(int newDemandDaysPrev)
 {
 	demandDaysPrev = newDemandDaysPrev;
