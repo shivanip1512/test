@@ -23,6 +23,7 @@ using namespace std;
 #include "port_direct.h"
 #include "portsup.h"
 
+//  you want a comment?
 CtiTablePortLocalSerial CtiPortDirect::getLocalSerial() const
 {
     return _localSerial;
