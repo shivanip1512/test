@@ -26,7 +26,6 @@ package com.cannontech.servlet;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.graph.GraphDefines;
 
 public class GraphGenerator extends javax.servlet.http.HttpServlet {
 	
