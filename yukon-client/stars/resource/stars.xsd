@@ -868,8 +868,11 @@
 	</xs:element>
 	<xs:element name="stars-DeleteLMHardware">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DeleteFromInventory" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="RemoveDate" type="xs:dateTime" minOccurs="0"/>
+			</xs:sequence>
 			<xs:attribute name="inventoryID" type="xs:int"/>
-			<xs:attribute name="deleteFromInventory" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ThermostatSchedule">
@@ -963,6 +966,7 @@
 			<xs:complexContent>
 				<xs:extension base="stars-ThermoManOpt">
 					<xs:attribute name="inventoryID" type="xs:int"/>
+					<xs:attribute name="inventoryIDs" type="xs:string"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -972,7 +976,6 @@
 			<xs:sequence>
 				<xs:element ref="stars-ThermostatManualEvent"/>
 			</xs:sequence>
-			<xs:attribute name="inventoryID" type="xs:int"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-ProgramOptOut">

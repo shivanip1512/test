@@ -32,13 +32,6 @@ public class StarsUpdateThermostatManualOptionResponse implements java.io.Serial
      //- Class/Member Variables -/
     //--------------------------/
 
-    private int _inventoryID;
-
-    /**
-     * keeps track of state for field: _inventoryID
-    **/
-    private boolean _has_inventoryID;
-
     private StarsThermostatManualEvent _starsThermostatManualEvent;
 
 
@@ -56,23 +49,6 @@ public class StarsUpdateThermostatManualOptionResponse implements java.io.Serial
     //-----------/
 
     /**
-    **/
-    public void deleteInventoryID()
-    {
-        this._has_inventoryID= false;
-    } //-- void deleteInventoryID() 
-
-    /**
-     * Returns the value of field 'inventoryID'.
-     * 
-     * @return the value of field 'inventoryID'.
-    **/
-    public int getInventoryID()
-    {
-        return this._inventoryID;
-    } //-- int getInventoryID() 
-
-    /**
      * Returns the value of field 'starsThermostatManualEvent'.
      * 
      * @return the value of field 'starsThermostatManualEvent'.
@@ -81,13 +57,6 @@ public class StarsUpdateThermostatManualOptionResponse implements java.io.Serial
     {
         return this._starsThermostatManualEvent;
     } //-- StarsThermostatManualEvent getStarsThermostatManualEvent() 
-
-    /**
-    **/
-    public boolean hasInventoryID()
-    {
-        return this._has_inventoryID;
-    } //-- boolean hasInventoryID() 
 
     /**
     **/
@@ -125,17 +94,6 @@ public class StarsUpdateThermostatManualOptionResponse implements java.io.Serial
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'inventoryID'.
-     * 
-     * @param inventoryID the value of field 'inventoryID'.
-    **/
-    public void setInventoryID(int inventoryID)
-    {
-        this._inventoryID = inventoryID;
-        this._has_inventoryID = true;
-    } //-- void setInventoryID(int) 
 
     /**
      * Sets the value of field 'starsThermostatManualEvent'.

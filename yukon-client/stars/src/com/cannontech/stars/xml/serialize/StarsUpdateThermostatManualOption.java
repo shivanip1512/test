@@ -41,6 +41,8 @@ implements java.io.Serializable
     **/
     private boolean _has_inventoryID;
 
+    private java.lang.String _inventoryIDs;
+
 
       //----------------/
      //- Constructors -/
@@ -71,6 +73,16 @@ implements java.io.Serializable
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'inventoryIDs'.
+     * 
+     * @return the value of field 'inventoryIDs'.
+    **/
+    public java.lang.String getInventoryIDs()
+    {
+        return this._inventoryIDs;
+    } //-- java.lang.String getInventoryIDs() 
 
     /**
     **/
@@ -126,6 +138,16 @@ implements java.io.Serializable
         this._inventoryID = inventoryID;
         this._has_inventoryID = true;
     } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'inventoryIDs'.
+     * 
+     * @param inventoryIDs the value of field 'inventoryIDs'.
+    **/
+    public void setInventoryIDs(java.lang.String inventoryIDs)
+    {
+        this._inventoryIDs = inventoryIDs;
+    } //-- void setInventoryIDs(java.lang.String) 
 
     /**
      * 

@@ -100,6 +100,43 @@ public class StarsUpdateThermostatScheduleDescriptor extends org.exolab.castor.x
         }
         desc.setValidator(fieldValidator);
         
+        //-- _inventoryIDs
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_inventoryIDs", "inventoryIDs", NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsUpdateThermostatSchedule target = (StarsUpdateThermostatSchedule) object;
+                return target.getInventoryIDs();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsUpdateThermostatSchedule target = (StarsUpdateThermostatSchedule) object;
+                    target.setInventoryIDs( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _inventoryIDs
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _starsThermostatSeasonList

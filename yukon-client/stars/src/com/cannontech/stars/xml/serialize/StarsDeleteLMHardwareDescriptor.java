@@ -53,6 +53,9 @@ public class StarsDeleteLMHardwareDescriptor extends org.exolab.castor.xml.util.
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- _inventoryID
@@ -97,8 +100,10 @@ public class StarsDeleteLMHardwareDescriptor extends org.exolab.castor.xml.util.
         }
         desc.setValidator(fieldValidator);
         
+        //-- initialize element descriptors
+        
         //-- _deleteFromInventory
-        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_deleteFromInventory", "deleteFromInventory", NodeType.Attribute);
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_deleteFromInventory", "DeleteFromInventory", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -129,6 +134,7 @@ public class StarsDeleteLMHardwareDescriptor extends org.exolab.castor.xml.util.
             }
         } );
         desc.setHandler(handler);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _deleteFromInventory
@@ -139,7 +145,38 @@ public class StarsDeleteLMHardwareDescriptor extends org.exolab.castor.xml.util.
         }
         desc.setValidator(fieldValidator);
         
-        //-- initialize element descriptors
+        //-- _removeDate
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_removeDate", "RemoveDate", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsDeleteLMHardware target = (StarsDeleteLMHardware) object;
+                return target.getRemoveDate();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsDeleteLMHardware target = (StarsDeleteLMHardware) object;
+                    target.setRemoveDate( (java.util.Date) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new java.util.Date();
+            }
+        } );
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _removeDate
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
         
     } //-- com.cannontech.stars.xml.serialize.StarsDeleteLMHardwareDescriptor()
 

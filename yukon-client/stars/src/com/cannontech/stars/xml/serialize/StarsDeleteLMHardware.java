@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Date;
 import org.exolab.castor.xml.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -45,6 +46,8 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
      * keeps track of state for field: _deleteFromInventory
     **/
     private boolean _has_deleteFromInventory;
+
+    private java.util.Date _removeDate;
 
 
       //----------------/
@@ -93,6 +96,16 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
     {
         return this._inventoryID;
     } //-- int getInventoryID() 
+
+    /**
+     * Returns the value of field 'removeDate'.
+     * 
+     * @return the value of field 'removeDate'.
+    **/
+    public java.util.Date getRemoveDate()
+    {
+        return this._removeDate;
+    } //-- java.util.Date getRemoveDate() 
 
     /**
     **/
@@ -167,6 +180,16 @@ public class StarsDeleteLMHardware implements java.io.Serializable {
         this._inventoryID = inventoryID;
         this._has_inventoryID = true;
     } //-- void setInventoryID(int) 
+
+    /**
+     * Sets the value of field 'removeDate'.
+     * 
+     * @param removeDate the value of field 'removeDate'.
+    **/
+    public void setRemoveDate(java.util.Date removeDate)
+    {
+        this._removeDate = removeDate;
+    } //-- void setRemoveDate(java.util.Date) 
 
     /**
      * 

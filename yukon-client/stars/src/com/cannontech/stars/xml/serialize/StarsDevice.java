@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsDevice.java,v 1.1 2003/11/13 21:24:01 zyao Exp $
+ * $Id: StarsDevice.java,v 1.2 2003/12/02 18:02:13 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.1 $ $Date: 2003/11/13 21:24:01 $
+ * @version $Revision: 1.2 $ $Date: 2003/12/02 18:02:13 $
 **/
 public abstract class StarsDevice extends com.cannontech.stars.xml.serialize.StarsInventory 
 implements java.io.Serializable
