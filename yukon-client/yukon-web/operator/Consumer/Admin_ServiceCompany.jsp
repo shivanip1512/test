@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	StarsServiceCompany company = null;
@@ -6,17 +7,51 @@
 	if (compIdx < companies.getStarsServiceCompanyCount())
 		company = companies.getStarsServiceCompany(compIdx);
 	else {
-		company = new StarsServiceCompany();
-		company.setCompanyID(-1);
-		company.setCompanyName("");
-		company.setMainPhoneNumber("");
-		company.setMainFaxNumber("");
-		CompanyAddress addr = (CompanyAddress) session.getAttribute("NEW_ADDRESS");
-		if (addr == null)
-			addr = (CompanyAddress)com.cannontech.stars.xml.StarsFactory.newStarsCustomerAddress(CompanyAddress.class);
-		company.setCompanyAddress( addr );
-		company.setPrimaryContact( (PrimaryContact)com.cannontech.stars.xml.StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
+		company = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+		if (company == null) {
+			company = new StarsServiceCompany();
+			company.setCompanyID(-1);
+			company.setCompanyName("");
+			company.setMainPhoneNumber("");
+			company.setMainFaxNumber("");
+			company.setCompanyAddress( (CompanyAddress)StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+			company.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
+			session.setAttribute(StarsAdmin.SERVICE_COMPANY_TEMP, company);
+		}
 	}
+	
+	String action = request.getParameter("action");
+	if (action == null) action = "";
+	
+	if (action.equalsIgnoreCase("init")) {
+		session.removeAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+	}
+	else if (action.equalsIgnoreCase("EditAddress")) {
+		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+		if (scTemp == null) {
+			scTemp = new StarsServiceCompany();
+			if (company.getCompanyAddress().getAddressID() == 0)
+				scTemp.setCompanyAddress( (CompanyAddress)StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+			else
+				scTemp.setCompanyAddress( company.getCompanyAddress() );
+			if (company.getPrimaryContact().getContactID() == 0)
+				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
+			else
+				scTemp.setPrimaryContact( (PrimaryContact)StarsFactory.newStarsCustomerContact(company.getPrimaryContact(), PrimaryContact.class) );
+			session.setAttribute(StarsAdmin.SERVICE_COMPANY_TEMP, scTemp);
+		}
+		scTemp.setCompanyName( request.getParameter("CompanyName") );
+		scTemp.setMainPhoneNumber( request.getParameter("PhoneNo") );
+		scTemp.setMainFaxNumber( request.getParameter("FaxNo") );
+		scTemp.getPrimaryContact().setLastName( request.getParameter("ContactLastName") );
+		scTemp.getPrimaryContact().setFirstName( request.getParameter("ContactFirstName") );
+		
+		response.sendRedirect("Admin_Address.jsp?referer=Admin_ServiceCompany.jsp&Company=" + compIdx);
+		return;
+	}
+	
+	StarsServiceCompany sc = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+	if (sc == null) sc = company;
 %>
 <html>
 <head>
@@ -24,6 +59,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<script language="JavaScript">
+function editAddress(form) {
+	form.attributes["action"].value = "";
+	form.action.value = "EditAddress";
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -93,21 +135,21 @@
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="CompanyName" value="<%= company.getCompanyName() %>">
+                          <input type="text" name="CompanyName" value="<%= sc.getCompanyName() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="PhoneNo" value="<%= company.getMainPhoneNumber() %>">
+                          <input type="text" name="PhoneNo" value="<%= sc.getMainPhoneNumber() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="FaxNo" value="<%= company.getMainFaxNumber() %>">
+                          <input type="text" name="FaxNo" value="<%= sc.getMainFaxNumber() %>">
                         </td>
                       </tr>
                       <tr> 
@@ -117,10 +159,10 @@
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
                               <td>Last Name: 
-                                <input type="text" name="ContactLastName" value="<%= company.getPrimaryContact().getLastName() %>" size=14>
+                                <input type="text" name="ContactLastName" value="<%= sc.getPrimaryContact().getLastName() %>" size=14>
                               </td>
                               <td>First Name: 
-                                <input type="text" name="ContactFirstName" value="<%= company.getPrimaryContact().getFirstName() %>" size=14>
+                                <input type="text" name="ContactFirstName" value="<%= sc.getPrimaryContact().getFirstName() %>" size=14>
                               </td>
                             </tr>
                           </table>
@@ -132,9 +174,9 @@
                         <td width="75%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
-                              <td width="75%"><%= ServletUtils.getOneLineAddress(company.getCompanyAddress()) %></td>
+                              <td width="75%"><%= ServletUtils.getOneLineAddress(sc.getCompanyAddress()) %></td>
                               <td width="25%"> 
-                                <input type="button" name="EditAddress" value="Edit" onClick="location.href='Admin_Address.jsp?referer=Admin_ServiceCompany.jsp&Company=<%= compIdx %>'">
+                                <input type="button" name="EditAddress" value="Edit" onClick="editAddress(this.form)">
                               </td>
                             </tr>
                           </table>

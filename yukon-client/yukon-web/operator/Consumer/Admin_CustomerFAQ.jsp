@@ -1,16 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
 <% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
-<%
-	StarsCustomerFAQGroup group = null;
-	int grpIdx = Integer.parseInt( request.getParameter("Subject") );
-	if (grpIdx < customerFAQs.getStarsCustomerFAQGroupCount())
-		group = customerFAQs.getStarsCustomerFAQGroup(grpIdx);
-	else {
-		group = new StarsCustomerFAQGroup();
-		group.setSubjectID(-1);
-		group.setSubject("");
-	}
-%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -18,98 +7,76 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
-var questions = new Array();
-var answers = new Array();
+
+var subjectIDs = new Array();
 <%
-	for (int i = 0; i < group.getStarsCustomerFAQCount(); i++) {
-		StarsCustomerFAQ faq = group.getStarsCustomerFAQ(i);
+	for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
+		StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
-	questions[<%= i %>] = "<%= faq.getQuestion().replaceAll("\"", "'") %>";
-	answers[<%= i %>] = "<%= faq.getAnswer().replaceAll("\"", "'") %>";
+	subjectIDs[<%= i %>] = <%= faqGroup.getSubjectID() %>;
 <%	} %>
 
-function getFAQString(idx) {
-	if (questions[idx] == null) return "";
-	var qStr = (questions[idx].length <= 25) ? questions[idx] : questions[idx].substr(0,22).concat("...");
-	var aStr = (answers[idx].length <= 25) ? answers[idx] : answers[idx].substr(0,22).concat("...");
-	return "Q: " + qStr + " A: " + aStr;
-}
-
-var curIdx = questions.length;
-
-function showFAQ(form) {
-	var faqs = form.CustomerFAQs;
-	if (faqs.selectedIndex < 0 || faqs.value == -1) {
-		curIdx = questions.length;
-		form.Question.value = "";
-		form.Answer.value = "";
-	}
-	else {
-		curIdx = faqs.selectedIndex;
-		form.Question.value = questions[curIdx];
-		form.Answer.value = answers[curIdx];
-	}
-}
-
 function moveUp(form) {
-	var faqs = form.CustomerFAQs;
-	var idx = faqs.selectedIndex;
-	if (idx >= 0 && faqs.value != -1) {
-		if (idx > 0) {
-			var oOption = faqs.options[idx];
-			faqs.options.remove(idx);
-			faqs.options.add(oOption, idx-1);
-			var value = questions[idx];
-			questions[idx] = questions[idx-1];
-			questions[idx-1] = value;
-			value = answers[idx];
-			answers[idx] = answers[idx-1];
-			answers[idx-1] = value;
-			showFAQ(form);
-		}
+	var subjects = form.FAQSubjects;
+	var idx = subjects.selectedIndex;
+	if (idx > 0) {
+		var oOption = subjects[idx];
+		subjects.options.remove(idx);
+		subjects.options.add(oOption, idx-1);
 	}
 }
 
 function moveDown(form) {
-	var faqs = form.CustomerFAQs;
-	var idx = faqs.selectedIndex;
-	if (idx >= 0 && faqs.value != -1) {
-		if (idx < faqs.options.length - 2) {
-			var oOption = faqs.options[idx];
-			faqs.options.remove(idx);
-			faqs.options.add(oOption, idx+1);
-			var value = questions[idx];
-			questions[idx] = questions[idx+1];
-			questions[idx+1] = value;
-			value = answers[idx];
-			answers[idx] = answers[idx+1];
-			answers[idx+1] = value;
-			showFAQ(form);
+	var subjects = form.FAQSubjects;
+	var idx = subjects.selectedIndex;
+	if (idx >= 0 && idx < subjects.options.length - 1) {
+		var oOption = subjects[idx];
+		subjects.options.remove(idx);
+		subjects.options.add(oOption, idx+1);
+	}
+}
+
+function submitFAQSubjects(form) {
+	var subjects = form.FAQSubjects;
+	if (subjects.options[0].value >= 0) {
+		form.action.value = "UpdateFAQSubjects";
+		for (i = 0; i < subjects.options.length; i++) {
+			var html = "<input type='hidden' name='SubjectIDs' value='" + subjectIDs[subjects.options[i].value] + "'>";
+			form.insertAdjacentHTML("beforeEnd", html);
 		}
+		form.submit();
 	}
 }
 
-function deleteFAQ(form) {
-	var faqs = form.CustomerFAQs;
-	var idx = faqs.selectedIndex;
-	if (idx >= 0 && faqs.value != -1) {
-		faqs.options.remove(idx);
-		questions.splice(idx, 1);
-		answers.splice(idx, 1);
-		showFAQ(form);
+function editFAQSubject(form) {
+	var subjects = form.FAQSubjects;
+	if (subjects.selectedIndex >= 0)
+		location.href = "Admin_FAQSubject.jsp?Subject=" + subjects.value;
+}
+
+function deleteFAQSubject(form) {
+	var subjects = form.FAQSubjects;
+	if (subjects.selectedIndex >= 0) {
+		if (!confirm("Are you sure you want to delete the FAQ subject?")) return;
+		form.action.value = "DeleteFAQSubject";
+		form.SubjectID.value = subjectIDs[subjects.value];
+		form.submit();
 	}
 }
 
-function saveFAQ(form) {
-	questions[curIdx] = form.Question.value;
-	answers[curIdx] = form.Answer.value;
-	var faqs = form.CustomerFAQs;
-	if (curIdx == faqs.options.length - 1) {
-		var oOption = document.createElement("OPTION");
-		faqs.options.add(oOption, curIdx);
-		faqs.selectedIndex = curIdx;
+function deleteAllFAQSubjects(form) {
+	var subjects = form.FAQSubjects;
+	if (subjects.options[0].value >= 0) {
+		if (!confirm("Are you sure you want to delete all FAQ subjects?")) return;
+		form.action.value = "DeleteFAQSubject";
+		form.SubjectID.value = -1;
+		form.submit();
 	}
-	faqs.options[curIdx].innerText = getFAQString(curIdx);
+}
+
+function newFAQSubject(form) {
+	var subjects = form.FAQSubjects;
+	location.href = "Admin_FAQSubject.jsp?Subject=" + subjects.options.length;
 }
 </script>
 </head>
@@ -160,97 +127,116 @@ function saveFAQ(form) {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
               
-            <div align="center">
+            <div align="center"> 
               <% String header = "ADMINISTRATION - CUSTOMER FAQS"; %>
               <%@ include file="InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-            </div>
-			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
-              <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
-                <tr> 
-                  <td class="HeaderCell">Edit Customer FAQs</td>
-                </tr>
-                <tr> 
-                  <td height="67"> 
-                    <table width="100%" border="0" cellspacing="0" cellpadding="5">
-                      <input type="hidden" name="action" value="UpdateCustomerFAQ">
-                      <input type="hidden" name="SubjectID" value="<%= group.getSubjectID() %>">
-                      <tr> 
-                        <td width="15%" align="right" class="TableCell">Subject:</td>
-                        <td width="85%" class="TableCell" colspan="2"> 
-                          <input type="text" name="Subject" value="<%= group.getSubject() %>">
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td width="15%" align="right" class="TableCell">FAQs:</td>
-                        <td width="85%" class="TableCell" colspan="2"> 
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                            <tr> 
-                              <td width="75%" colspan="2"> 
-                                <select name="CustomerFAQs" size="5" style="width:350" onchange="showFAQ(this.form)">
+              <form name="form5" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
+                <table width="600" border="1" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td>
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
+                              <input type="hidden" name="action" value="UpdateFAQLink">
 <%
-	for (int i = 0; i < group.getStarsCustomerFAQCount(); i++) {
-		StarsCustomerFAQ faq = group.getStarsCustomerFAQ(i);
-		String qStr = (faq.getQuestion().length() <= 25) ? faq.getQuestion() : faq.getQuestion().substring(0,22).concat("...");
-		String aStr = (faq.getAnswer().length() <= 25) ? faq.getAnswer() : faq.getAnswer().substring(0,22).concat("...");
-		String faqStr = "Q: " + qStr + " A: " + aStr;
+	boolean customizedFAQ = AuthFuncs.checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.CUSTOMIZED_FAQ_LINK);
+	String checkedStr = (customizedFAQ) ? "checked" : "";
+	String disabledStr = (customizedFAQ) ? "" : "disabled";
 %>
-                                  <option><%= faqStr %></option>
-<%	} %>
-                                  <option value="-1">&lt;New Customer FAQ&gt;</option>
-                                </select>
-                              </td>
-                              <td width="25%"> 
-                                <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
-                                <br>
-                                <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
-                                <br>
-                                <input type="button" name="Delete" value="Delete" onclick="deleteFAQ(this.form)">
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td colspan="3" class="TableCell"> 
-                          <hr>
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td width="15%" class="TableCell" align="right">Question:</td>
-                        <td width="65%" class="TableCell"> 
-                          <input type="text" name="Question" size="55">
-                        </td>
-                        <td rowspan="2" class="TableCell" width="20%"> 
-                          <input type="button" name="Save" value="Save" onClick="saveFAQ(this.form)">
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td width="15%" class="TableCell" align="right">Answer:</td>
-                        <td width="65%" class="TableCell"> 
-                          <input type="text" name="Answer" size="55">
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-              <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
-                <tr>
-                  <td width="290" align="right"> 
-                    <input type="submit" name="Submit" value="Submit">
-                  </td>
-                  <td width="205"> 
-                    <input type="reset" name="Cancel" value="Cancel">
-                  </td>
-                  <td width="75" align="right"> 
-                    <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">
-                  </td>
-                </tr>
-              </table>
-            </form>
+                              <tr> 
+                                <td width="75%"> 
+                                  <input type="checkbox" name="CustomizedFAQ" value="true" onClick="this.form.FAQLink.disabled = !this.checked" <%= checkedStr %>>
+                                  Use a link to your company's website: 
+                                  <input type="text" name="FAQLink" size="30" value='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>' <%= disabledStr %>>
+                                </td>
+                                <td width="25%"> 
+                                  <input type="submit" name="SubmitFAQLink" value="Submit">
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="3">
+							  <input type="hidden" name="SubjectID" value="0">
+                              <tr>
+                                <td class="HeaderCell">Edit FAQ Subjects</td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                                    <tr valign="middle"> 
+                                      <td class="TableCell" width="10%">FAQ Subjects:</td>
+                                      <td class="TableCell" width="65%"> 
+                                        <select name="FAQSubjects" size="5" style="width:200">
+<%
+	if (customerFAQs.getStarsCustomerFAQGroupCount() == 0) {
+%>
+                                          <option value="-1"><no FAQ Subjects></option>
+<%	}
+	else {
+		for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
+			StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
+%>
+                                          <option value="<%= i %>"><%= faqGroup.getSubject() %></option>
+<%		}
+	}
+%>
+                                        </select>
+                                      </td>
+                                      <td class="TableCell" width="25%"> 
+                                        <input type="button" name="MoveUp" value="Move Up" onClick="moveUp(this.form)">
+                                        <br>
+                                        <input type="button" name="MoveDown" value="Move Down" onClick="moveDown(this.form)">
+                                        <br>
+                                        <input type="button" name="Save" value="Save" onClick="submitFAQSubjects(this.form)">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+                                    <tr> 
+                                      <td width="15%"> 
+                                        <input type="button" name="Edit" value="Edit" onClick="editFAQSubject(this.form)">
+                                      </td>
+                                      <td width="15%"> 
+                                        <input type="button" name="New" value="New" onClick="newFAQSubject(this.form)">
+                                      </td>
+                                      <td width="15%"> 
+                                        <input type="button" name="Delete" value="Delete" onClick="deleteFAQSubject(this.form)">
+                                      </td>
+                                      <td width="55%"> 
+                                        <input type="button" name="DeleteAll" value="Delete All" onClick="deleteAllFAQSubjects(this.form)">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+                  <tr> 
+                    <td width="290" align="right">&nbsp; </td>
+                    <td width="205">&nbsp; </td>
+                    <td width="75" align="right"> 
+                      <input type="button" name="Done" value="Done" onClick="location.href='AdminTest.jsp'">
+                    </td>
+                  </tr>
+                </table>
+              </form>
+            </div>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>

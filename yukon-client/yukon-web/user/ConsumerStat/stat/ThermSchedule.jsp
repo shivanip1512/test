@@ -222,7 +222,7 @@ MM_reloadPage(true);
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center">
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerInfo.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -249,25 +249,25 @@ MM_reloadPage(true);
                     <td align = "center"  valign = "bottom" class = "Background"> 
                       <table width="478" border="0" height="8" valign = "bottom" >
                         <tr> 
-                          <td class = "TableCell2" align = "left" width="54%"> 
+                          <td class = "TableCell1" align = "left" width="54%"> 
                             <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() )) { %>
-                            <b><span class="NavHeader">Weekday</span></b> 
+                            <b><span class="Header2">Weekday</span></b> 
                             <% } else { %>
-                            <a class="Link2" href="javascript:switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeStr %>')">Weekday</a> 
+                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeStr %>')">Weekday</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SATURDAY.toString() )) { %>
-                            <b><span class="NavHeader">Saturday</span> </b>
+                            <b><span class="Header2">Saturday</span> </b>
                             <% } else { %>
-                            <a class="Link2" href="javascript:switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>')">Saturday</a> 
+                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeStr %>')">Saturday</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (dayStr.equalsIgnoreCase( StarsThermoDaySettings.SUNDAY.toString() )) { %>
-                            <b><span class="NavHeader">Sunday</span></b> 
+                            <b><span class="Header2">Sunday</span></b> 
                             <% } else { %>
-                            <a class="Link2" href="javascript:switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sunday</a> 
+                            <span class="Clickable" onclick="switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeStr %>')">Sunday</span> 
                             <% } %>
-                          <td class = "TableCell2" align = "right" width="46%"> 
+                          <td class = "Background" align = "right" width="46%"> 
 <%
 	String visibleStr = dayStr.equalsIgnoreCase( StarsThermoDaySettings.WEEKDAY.toString() ) ? "visible" : "hidden";
 	String checkStr = (String) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
@@ -275,7 +275,8 @@ MM_reloadPage(true);
 %>
                             <span style="visibility:<%= visibleStr %>"> 
                             <input type="checkbox" name="ApplyToWeekend" value="true" <%= checkStr %>>
-                            Apply settings to Saturday and Sunday </span> 
+                            <span class="TableCell1">Apply settings to Saturday 
+                            and Sunday </span></span> 
                         </tr>
                       </table>
                     </td>
@@ -325,7 +326,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp1" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
+                                    <div id="temp1" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature1() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -354,7 +355,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp2" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
+                                    <div id="temp2" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature2() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -383,7 +384,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp3" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
+                                    <div id="temp3" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature3() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -412,7 +413,7 @@ MM_reloadPage(true);
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp4" class="TableCell3" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
+                                    <div id="temp4" class="TableCell2" onChange="setScheduleChanged()"><%= schedule.getTemperature4() %>&deg</div>
                                   </td>
                                 </tr>
                                 <tr> 

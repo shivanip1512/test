@@ -7,6 +7,12 @@
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 <script language="JavaScript">
+function confirmDeleteAccount(form) {
+	if (form.AcctNo.value == "*")
+		return confirm("Are you sure you want to delete all customer accounts?");
+	return true;
+}
+
 function changeCategory(checkBox, index) {
 	var programs, catIDs, progIDs, defProgIDs;
 	
@@ -51,71 +57,18 @@ function confirmDeleteAllAppCats() {
 	return confirm("Are you sure you want to delete all appliance categories, programs, and customer appliances under these categories?");
 }
 
+function editServiceCompany(form, compIdx) {
+	form.attributes["action"].value = 'Admin_ServiceCompany.jsp?Company=' + compIdx;
+	form.action.value = "init";
+	form.submit();
+}
+
 function confirmDeleteCompany() {
 	return confirm("Are you sure you want to delete the service company?");
 }
 
 function confirmDeleteAllCompanies() {
 	return confirm("Are you sure you want to delete all service companies?");
-}
-
-var subjectIDs = new Array();
-<%
-	for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
-		StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
-%>
-	subjectIDs[<%= i %>] = <%= faqGroup.getSubjectID() %>;
-<%	} %>
-
-function moveUp(form) {
-	var subjects = form.FAQSubjects;
-	var idx = subjects.selectedIndex;
-	if (idx > 0) {
-		var oOption = subjects[idx];
-		subjects.options.remove(idx);
-		subjects.options.add(oOption, idx-1);
-	}
-}
-
-function moveDown(form) {
-	var subjects = form.FAQSubjects;
-	var idx = subjects.selectedIndex;
-	if (idx >= 0 && idx < subjects.options.length - 1) {
-		var oOption = subjects[idx];
-		subjects.options.remove(idx);
-		subjects.options.add(oOption, idx+1);
-	}
-}
-
-function submitFAQSubjects(form) {
-	var subjects = form.FAQSubjects;
-	if (subjects.options[0].value > 0) {
-		form.action.value = "UpdateFAQSubjects";
-		for (i = 0; i < subjects.options.length; i++) {
-			var html = "<input type='hidden' name='SubjectIDs' value='" + subjects.options[i].value + "'>";
-			form.insertAdjacentHTML("beforeEnd", html);
-		}
-		form.submit();
-	}
-}
-
-function editFAQSubject(form) {
-	var subjects = form.FAQSubjects;
-	if (subjects.selectedIndex >= 0)
-		location.href = "Admin_CustomerFAQ.jsp?Subject=" + subjects.selectedIndex;
-}
-
-function deleteFAQSubject(form) {
-	var subjects = form.FAQSubjects;
-	if (subjects.selectedIndex >= 0) {
-		form.SubjectID.value = subjectIDs[subjects.value];
-		form.submit();
-	}
-}
-
-function newFAQSubject(form) {
-	var subjects = form.FAQSubjects;
-	location.href = "Admin_CustomerFAQ.jsp?Subject=" + subjects.options.length;
 }
 </script>
 </head>
@@ -188,7 +141,7 @@ function newFAQSubject(form) {
                           <input type="text" name="AcctNo" maxlength="40" size="14">
                         </td>
                         <td width="25%">
-                          <input type="submit" name="Submit" value="Submit">
+                          <input type="submit" name="Submit" value="Submit" onclick="return confirmDelteAccount(this.form)">
                         </td>
                       </tr>
                     </table>
@@ -293,16 +246,20 @@ function newFAQSubject(form) {
                 <td height="118"> 
                   <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
                     <tr> 
-                      <td><b><font color="#0000FF">Energy Company:</font></b> 
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-                          <tr> 
-                            <td width="5%">&nbsp;</td>
-                            <td width="70%"><%= energyCompany.getCompanyName() %></td>
-                            <td width="25%"> 
-                              <input type="Button" name="EditEnergyCompany" value="Edit" onClick="location.href='Admin_EnergyCompany.jsp'">
-                            </td>
-                          </tr>
-                        </table>
+                      <td> 
+                        <form name="form6" method="post" action="Admin_EnergyCompany.jsp">
+                          <input type="hidden" name="action" value="init">
+                          <b><font color="#0000FF">Energy Company:</font></b> 
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                            <tr> 
+                              <td width="5%">&nbsp;</td>
+                              <td width="70%"><%= energyCompany.getCompanyName() %></td>
+                              <td width="25%"> 
+                                <input type="submit" name="Edit" value="Edit">
+                              </td>
+                            </tr>
+                          </table>
+                        </form>
                       </td>
                     </tr>
                     <tr> 
@@ -312,7 +269,7 @@ function newFAQSubject(form) {
                           <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
                               <td> 
-                                <table width="100%" border="0" cellspacing="0" cellpadding="5">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="3">
                                   <input type="hidden" name="action" value="DeleteApplianceCategory">
                                   <input type="hidden" name="AppCatID" value="0">
                                   <%
@@ -379,7 +336,7 @@ function newFAQSubject(form) {
                                     <td class="TableCell" width="5%">&nbsp;</td>
                                     <td class="TableCell" width="70%"><%= company.getCompanyName() %></td>
                                     <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onClick="location.href='Admin_ServiceCompany.jsp?Company=<%= i %>'">
+                                      <input type="button" name="Edit" value="Edit" onClick="editServiceCompany(this.form, <%= i %>)">
                                     </td>
                                     <td width="15%" class="TableCell"> 
                                       <input type="submit" name="Delete" value="Delete" onClick="this.form.CompanyID.value=<%= company.getCompanyID() %>; return confirmDeleteCompany();">
@@ -411,49 +368,27 @@ function newFAQSubject(form) {
                             <tr> 
                               <td> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                  <input type="hidden" name="action" value="DeleteFAQSubject">
-                                  <input type="hidden" name="SubjectID" value="0">
-                                  <tr valign="middle"> 
-                                    <td class="TableCell" width="10%">FAQ Subjects:</td>
-                                    <td class="TableCell" width="65%"> 
-                                      <select name="FAQSubjects" size="5" style="width:200">
-<%
-	if (customerFAQs.getStarsCustomerFAQGroupCount() == 0) {
+                                  <tr> 
+                                    <td class="TableCell" width="15%"> <cti:checkProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
+                                      FAQ Link: </cti:checkProperty> <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
+                                      FAQ Subjects: </cti:checkNoProperty> </td>
+                                    <td class="TableCell" width="60%"> <cti:checkProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
+                                      <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/> 
+                                      </cti:checkProperty> <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>"> 
+                                      <ul>
+                                        <%
+	for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
+		StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
 %>
-                                        <option value="0"><No FAQ Subjects></option>
-<%	}
-	else {
-		for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++) {
-			StarsCustomerFAQGroup faqGroup = customerFAQs.getStarsCustomerFAQGroup(i);
-%>
-                                        <option value="<%= i %>"><%= faqGroup.getSubject() %></option>
-<%		}
-	}
-%>
-                                      </select>
-                                    </td>
-                                    <td class="TableCell" width="25%">
-                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)">
-                                      <br>
-                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)">
-                                      <br>
-                                      <input type="button" name="Save" value="Save" onClick="submitFAQSubjects(this.form)">
+                                        <li><%= faqGroup.getSubject() %></li>
+                                        <%	} %>
+                                      </ul>
+                                      </cti:checkNoProperty> </td>
+                                    <td width="25%" class="TableCell"> 
+                                      <input type="button" name="Edit" value="Edit" onClick="location.href='Admin_CustomerFAQ.jsp'">
                                     </td>
                                   </tr>
                                 </table>
-                              </td>
-                            </tr>
-                          </table>
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-                            <tr> 
-                              <td width="15%"> 
-                                <input type="button" name="Edit" value="Edit" onClick="editFAQSubject(this.form)">
-                              </td>
-                              <td width="15%"> 
-                                <input type="submit" name="Delete" value="Delete" onClick="deleteFAQSubject(this.form)">
-                              </td>
-                              <td width="70%"> 
-                                <input type="button" name="New" value="New" onClick="newFAQSubject(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -461,13 +396,81 @@ function newFAQSubject(form) {
                       </td>
                     </tr>
                     <tr> 
-                      <td>&nbsp;</td>
+                      <td> <b><font color="#0000FF">Interview Questions:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                          <tr> 
+                            <td> 
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr> 
+                                  <td class="TableCell" width="15%">Exit Interview:</td>
+                                  <td class="TableCell" width="60%"> 
+                                    <ul>
+                                      <%
+	for (int i = 0; i < exitQuestions.getStarsExitInterviewQuestionCount(); i++) {
+		StarsExitInterviewQuestion question = exitQuestions.getStarsExitInterviewQuestion(i);
+		String qStr = (question.getQuestion().length() <= 50) ? question.getQuestion() : question.getQuestion().substring(0,47).concat("...");
+%>
+                                      <li><%= qStr %></li>
+                                      <%	} %>
+                                    </ul>
+                                  </td>
+                                  <td width="25%" class="TableCell"> 
+                                    <input type="button" name="Edit" value="Edit" onClick="location.href='Admin_InterviewQuestion.jsp?Type=Exit'">
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
                     </tr>
-                    <tr> 
-                      <td>&nbsp;</td>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
+                    <tr>
+                      <td><b><font color="#0000FF">Default Thermostat Settings: 
+                        </font></b> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+                          <tr> 
+                            <td width="5%">&nbsp;</td>
+                            <td width="70%">Default Thermostat Schedule</td>
+                            <td width="25%"> 
+                              <input type="button" name="Edit" value="Edit" onclick="location.href = 'Admin_ThermSchedule.jsp'">
+                            </td>
+                          </tr>
+                        </table>
+                        </td>
                     </tr>
+</cti:checkProperty>
                     <tr> 
-                      <td>&nbsp;</td>
+                      <td><b><font color="#0000FF">Customer Selection Lists:</font></b> 
+                        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+                          <tr> 
+                            <td> 
+                              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <%
+	ArrayList selectionLists = new ArrayList();
+	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE) );
+	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
+	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_MANUFACTURER) );
+	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
+	selectionLists.add( selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD) );
+
+	for (int i = 0; i < selectionLists.size(); i++) {
+		StarsCustSelectionList list = (StarsCustSelectionList) selectionLists.get(i);
+		if (list == null) continue;
+%>
+                                <tr> 
+                                  <td class="TableCell" width="5%">&nbsp;</td>
+                                  <td class="TableCell" width="70%"><%= list.getListName() %></td>
+                                  <td class="TableCell"> 
+                                    <input type="button" name="Edit" value="Edit" onClick="location.href='Admin_SelectionList.jsp?List=<%= list.getListName() %>'">
+                                  </td>
+                                </tr>
+                                <%	} %>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
                     </tr>
                   </table>
                 </td>

@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	String referer = request.getParameter("referer");
@@ -7,18 +8,14 @@
 	}
 	
 	StarsCustomerAddress address = null;
-	if (referer.equalsIgnoreCase("Admin_EnergyCompany.jsp"))
-		address = energyCompany.getCompanyAddress();
+	if (referer.equalsIgnoreCase("Admin_EnergyCompany.jsp")) {
+		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		address = ecTemp.getCompanyAddress();
+	}
 	else if (referer.equalsIgnoreCase("Admin_ServiceCompany.jsp")) {
+		StarsServiceCompany scTemp = (StarsServiceCompany) session.getAttribute(StarsAdmin.SERVICE_COMPANY_TEMP);
+		address = scTemp.getCompanyAddress();
 		int compIdx = Integer.parseInt( request.getParameter("Company") );
-		if (compIdx < companies.getStarsServiceCompanyCount())
-			address = companies.getStarsServiceCompany(compIdx).getCompanyAddress();
-		else {
-			address = (CompanyAddress) session.getAttribute("NEW_ADDRESS");
-			if (address == null)
-				address = com.cannontech.stars.xml.StarsFactory.newStarsCustomerAddress(CompanyAddress.class);
-			address.setAddressID(-1);
-		}
 		referer += "?Company=" + compIdx;
 	}
 	if (address.getCounty() == null) address.setCounty("");
@@ -94,6 +91,7 @@
                     <table width="100%" border="0" cellspacing="0" cellpadding="5">
 					  <input type="hidden" name="action" value="UpdateAddress">
 					  <input type="hidden" name="REFERER" value="<%= referer %>">
+					  <input type="hidden" name="REDIRECT" value="/operator/Consumer/<%= referer %>">
 					  <input type="hidden" name="AddressID" value="<%= address.getAddressID() %>">
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Street 

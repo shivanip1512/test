@@ -278,7 +278,7 @@
   </tr>
 </cti:checkRole> 
 
-<cti:checkRole roleid="<%= Integer.MAX_VALUE %>"> <% /* TODO This is the administration section, todate there are no properties for this */ %>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.SUPER_OPERATOR %>">
   <tr>
     <td width="102" bgcolor="#000000" height="102" background="Admin/AdminImage.jpg">&nbsp;</td>
     <td bgcolor="#FFFFFF" height="102" valign="top"><img src="AdminHeader.gif" width="129" height="15"><br>
@@ -293,7 +293,10 @@
               <div align = "center" style = "border:solid 1px #666999;"><a href = "Admin/Privileges.jsp" class = "Link1" style = "text-decoration:none;">Privileges 
                 </a></div>
             </td>
-            <td align = "center" class = "Main">&nbsp;</td>
+            <td align = "center" class = "Main">
+              <div align = "center" style = "border:solid 1px #666999;"><a href = "Consumer/AdminTest.jsp" class = "Link1" style = "text-decoration:none;">Energy 
+                Company Configuration</a></div>
+            </td>
           </form>
         </tr>
       </table>
@@ -305,7 +308,7 @@
     <td width="555" bgcolor="#000000" height="1"><img src="../Images/Icons/VerticalRule.gif"></td>
     <td width="1" background="../Images/Icons/VerticalRule.gif" height="1"></td>
   </tr>
-</cti:checkRole>
+</cti:checkProperty>
   </table>
 <div align="center"></div>
 </body>

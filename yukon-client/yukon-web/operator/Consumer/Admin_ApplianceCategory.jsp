@@ -115,7 +115,13 @@ function removeProgram() {
 	}
 }
 
+function setSameAsProgName(form, checked) {
+	form.SameAsProgName.checked = checked;
+	form.ProgDispName.disabled = checked;
+}
+
 var progID = new Array();
+var progName = new Array();
 var dispName = new Array();
 var shortName = new Array();
 var description = new Array();
@@ -130,12 +136,11 @@ var idx = 0;
 	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
 		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
 		StarsWebConfig cfg = program.getStarsWebConfig();
-		String dispName = cfg.getURL();
-		if (dispName.equals("")) dispName = program.getProgramName();
 		String[] imgNames = ServletUtils.getImageNames( cfg.getLogoLocation() );
 %>
 	progID[idx] = <%= program.getProgramID() %>;
-	dispName[idx] = "<%= dispName %>";
+	progName[idx] = "<%= program.getProgramName() %>";
+	dispName[idx] = "<%= cfg.getURL() %>";
 	shortName[idx] = "<%= cfg.getAlternateDisplayName() %>";
 	description[idx] = "<%= cfg.getDescription().replaceAll("<br>", "\r\n") %>";
 	ctrlOdds[idx] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
@@ -150,7 +155,8 @@ var idx = 0;
 		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
 %>
 	progID[idx] = <%= program.getYukonID() %>;
-	dispName[idx] = "<%= program.getYukonName() %>";
+	progName[idx] = "<%= program.getYukonName() %>";
+	dispName[idx] = "";
 	shortName[idx] = "<%= program.getYukonName() %>";
 	description[idx] = "<%= com.cannontech.stars.util.ServerUtils.forceNotNone(program.getYukonDescription()) %>";
 	ctrlOdds[idx] = 0;
@@ -167,9 +173,12 @@ function saveProgramConfig(form) {
 	if (curProgID > 0) {
 		for (idx = 0; idx < progID.length; idx++)
 			if (progID[idx] == curProgID) break;
-			
-		progID[idx] = curProgID;
-		dispName[idx] = form.ProgDispName.value;
+		if (idx >= progID.length) return;
+		
+		if (form.SameAsProgName.checked)
+			dispName[idx] = "";
+		else
+			dispName[idx] = form.ProgDispName.value;
 		shortName[idx] = form.ProgShortName.value;
 		description[idx] = form.ProgDescription.value;
 		ctrlOdds[idx] = form.ProgCtrlOdds.value;
@@ -181,7 +190,9 @@ function saveProgramConfig(form) {
 }
 
 function clearProgramConfig(form) {
+	document.getElementById("ProgName").innerText = "";
 	form.ProgDispName.value = "";
+	setSameAsProgName(form, false);
 	form.ProgShortName.value = "";
 	form.ProgDescription.value = "";
 	form.ProgCtrlOdds.selectedIndex = 0;
@@ -206,7 +217,9 @@ function showProgramConfig(form) {
 		for (idx = 0; idx < progID.length; idx++)
 			if (progID[idx] == curProgID) break;
 		if (idx < progID.length) {
+			document.getElementById("ProgName").innerText = progName[idx];
 			form.ProgDispName.value = dispName[idx];
+			setSameAsProgName(form, dispName[idx] == "");
 			form.ProgShortName.value = shortName[idx];
 			form.ProgDescription.value = description[idx];
 			form.ProgCtrlOdds.value = ctrlOdds[idx];
@@ -425,10 +438,15 @@ function prepareSubmit(form) {
                         <td width="82%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
+                              <td width="16%">Program Name:</td>
+                              <td width="84%"><span id="ProgName">&nbsp;</span></td>
+                            </tr>
+                            <tr> 
                               <td width="16%">Display Name:</td>
                               <td width="84%"> 
                                 <input type="text" name="ProgDispName" size="20">
-                              </td>
+                                <input type="checkbox" name="SameAsProgName" value="true" onclick="setSameAsProgName(this.form, this.checked)">
+                                Same as program name</td>
                             </tr>
                             <tr> 
                               <td width="16%">Short Name:</td>
@@ -444,21 +462,21 @@ function prepareSubmit(form) {
                             </tr>
                             <tr> 
                               <td width="16%">Chance of Control:</td>
-                              <td width="84%">
+                              <td width="84%"> 
                                 <select name="ProgCtrlOdds">
-<%
+                                  <%
 	StarsCustSelectionList ctrlOddsList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );
 	if (ctrlOddsList == null || ctrlOddsList.getStarsSelectionListEntry(0).getEntryID() > 0) {
 %>
-								  <option value="0">(none)</option>
-<%
+                                  <option value="0">(none)</option>
+                                  <%
 	}
 	if (ctrlOddsList != null) {
 		for (int i = 0; i < ctrlOddsList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = ctrlOddsList.getStarsSelectionListEntry(i);
 %>
                                   <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%		}
+                                  <%		}
 	}
 %>
                                 </select>

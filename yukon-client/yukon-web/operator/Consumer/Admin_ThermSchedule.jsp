@@ -1,9 +1,8 @@
 <%@ include file="StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	int invNo = Integer.parseInt(request.getParameter("InvNo"));
-	StarsLMHardware hardware = inventories.getStarsLMHardware(invNo);
-	StarsThermostatSettings thermoSettings = hardware.getStarsThermostatSettings();
+	StarsDefaultThermostatSettings thermoSettings = dftThermoSettings;
+	dftThermoSettings = SOAPServer.getDefaultEnergyCompany().getStarsDefaultThermostatSettings();
 
 	String dayStr = request.getParameter("day");
 	if (dayStr == null) dayStr = StarsThermoDaySettings.WEEKDAY.toString();
@@ -13,6 +12,7 @@
 	boolean isCooling = modeStr.equalsIgnoreCase( StarsThermoModeSettings.COOL.toString() );
 	String visibleC = isCooling ? "visible" : "hidden";
 	String visibleH = isCooling ? "hidden" : "visible";
+	String tempUnit = "F";
 	
 	String seasonStr = null;
 	StarsThermostatSchedule coolSched = null;
@@ -72,14 +72,6 @@
 		}
 		if (schedule == null) schedule = dftSchedule;
 	}
-	
-	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
-	char tempUnit = 'F';
-	
-	if (curSettings != null) {
-		if (curSettings.getDisplayedTempUnit() != null)
-			tempUnit = curSettings.getDisplayedTempUnit().charAt(0);
-	}
 %>
 <html>
 <head>
@@ -96,20 +88,6 @@
 // Set global variable in thermostat2.js
 thermMode = '<%= isCooling ? "C" : "H" %>';
 tempUnit = '<%= tempUnit %>';
-<%
-	if (curSettings != null) {
-		if (curSettings.getLowerCoolSetpointLimit() > 0) {
-%>
-	lowerLimit = <%= curSettings.getLowerCoolSetpointLimit() %>;
-<%
-		}
-		if (curSettings.getUpperHeatSetpointLimit() > 0) {
-%>
-	upperLimit = <%= curSettings.getUpperHeatSetpointLimit() %>;
-<%
-		}
-	}
-%>
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
 	moveLayer('MovingLayer1', hour1, min1);
@@ -134,9 +112,6 @@ var schedChanged = false;
 
 function setScheduleChanged() {
 	schedChanged = true;
-<%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
-	disableRefresh();
-<%	} %>
 }
 
 function prepareSubmit(form) {
@@ -145,14 +120,11 @@ function prepareSubmit(form) {
 	form.tempval3.value = document.getElementById('temp3').innerHTML.substr(0,2);
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
 	schedChanged = false;
-<%	if (curSettings != null) { %>
-	document.getElementById("PromptMsg").innerText = "Sending command to gateway, please wait...";
-<%	} %>
 }
 
 function switchSettings(day, mode) {
 	var form = document.form1;
-	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=" + day + "&mode=" + mode;
+	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=" + day + "&mode=" + mode;
 	location.href = form.REDIRECT.value;
 }
 
@@ -198,16 +170,6 @@ function confirmExit() {
 	}
 }
 
-var timeoutId = -1;
-
-function disableRefresh() {
-	if (timeoutId != -1) {
-		clearTimeout(timeoutId);
-		timeoutId = -1;
-		document.getElementById("PromptMsg").innerText = "Schedule changed. Refresh the page to view current schedule.";
-	}
-}
-
 function init() {
 	updateLayout(
 		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
@@ -215,9 +177,6 @@ function init() {
 		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
 		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
 	);
-<%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
-	timeoutId = setTimeout("location.reload()", 60000);
-<%	} %>
 }
 </script>
 
@@ -275,27 +234,24 @@ MM_reloadPage(true);
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-		  <% String pageName = "ThermSchedule.jsp?InvNo=" + invNo; %>
-          <%@ include file="Nav.jsp" %>
-		  </td>
+          <td  valign="top" width="101">&nbsp; </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center">
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
-              <%@ include file="InfoSearchBar.jsp" %>
+              <% String header = "ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE"; %>
+              <%@ include file="InfoSearchBar2.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
-			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
+			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/StarsAdmin" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
-			  <input type="hidden" name="invID" value="<%= hardware.getInventoryID() %>">
+			  <input type="hidden" name="invID" value="<%= thermoSettings.getInventoryID() %>">
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/ThermSchedule.jsp?InvNo=<%= invNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/Admin_ThermSchedule.jsp?day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
@@ -339,22 +295,6 @@ MM_reloadPage(true);
                 </tr>
                 <tr> 
                     <td align = "center"> 
-                      <table width="478" border="0">
-                        <tr> 
-                          <td class = "TableCell" width="71%" height="4" align="left"> 
-                            1) Select Cooling or Heating.<br>
-                            2) Slide thermometers to change start times.<br>
-                            3) Adjust your cooling or heating temperatures.<br>
-                            <a class="Link1" href="Instructions.jsp">Click for 
-                            hints and details</a>. <br>
-                          </td>
-                          <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
-                            <i>Make temporary adjustments to your heating and 
-                            cooling system<a class="Link1" href="Thermostat.jsp"> 
-                            here</a>.</i> </td>
-                        </tr>
-                      </table>
-					  <div id="PromptMsg" class="ConfirmMsg">&nbsp;</div>
                       <table width="175" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="68"> 
@@ -577,13 +517,16 @@ MM_reloadPage(true);
                   </td>
                 </tr>
               </table><br>
-              <table width="75%" border="0">
+              <table width="80%" border="0">
                 <tr>
-                    <td width="36%" align = "right" class = "TableCell" > 
-                      <input type="submit" name="Submit" value="Submit">
+                  <td width="35%" align = "right" class = "TableCell"> 
+                    <input type="submit" name="Submit" value="Submit">
                   </td>
-                    <td width="64%" align = "left" class = "TableCell"> 
-                      <input type="button" id="Default" value="<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>" onclick="setToDefault()">
+                  <td width="50%" align = "left" class = "TableCell"> 
+                    <input type="button" id="Default" value='<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>' onclick="setToDefault()">
+                  </td>
+                  <td width="15%" align = "right" class = "TableCell"> 
+                    <input type="button" name="Done" value="Done" onclick="location.href='AdminTest.jsp'">
                   </td>
                 </tr>
               </table>

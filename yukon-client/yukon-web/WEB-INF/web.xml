@@ -148,6 +148,13 @@
     <servlet-class>
     com.cannontech.stars.web.servlet.UpdateThermostat</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>StarsAdmin</servlet-name>
+    <display-name>StarsAdmin</display-name>
+    <description>Administration functions for consumer information.</description>
+    <servlet-class>
+    com.cannontech.stars.web.servlet.StarsAdmin</servlet-class>
+  </servlet>
   <!-- esub specific servlets -->
   <servlet>
     <servlet-name>svgGenerator</servlet-name>

@@ -1,11 +1,65 @@
 <%@ include file="StarsHeader.jsp" %>
+<%@ page import="com.cannontech.stars.web.servlet.StarsAdmin" %>
 <% if (!AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.SUPER_OPERATOR)) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
+	String action = request.getParameter("action");
+	if (action == null) action = "";
+	
+	if (action.equalsIgnoreCase("init")) {
+		session.removeAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+	}
+	else if (action.equalsIgnoreCase("EditAddress")) {
+		StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+		if (ecTemp == null) {
+			ecTemp = new StarsEnergyCompany();
+			if (energyCompany.getCompanyAddress().getAddressID() == 0)
+				ecTemp.setCompanyAddress( (CompanyAddress)StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
+			else
+				ecTemp.setCompanyAddress( energyCompany.getCompanyAddress() );
+			session.setAttribute(StarsAdmin.ENERGY_COMPANY_TEMP, ecTemp);
+		}
+		ecTemp.setCompanyName( request.getParameter("CompanyName") );
+		ecTemp.setMainPhoneNumber( request.getParameter("PhoneNo") );
+		ecTemp.setMainFaxNumber( request.getParameter("FaxNo") );
+		ecTemp.setEmail( request.getParameter("Email") + "," + request.getParameter("CustomizedEmail") );
+		ecTemp.setTimeZone( request.getParameter("TimeZone") );
+		
+		response.sendRedirect("Admin_Address.jsp?referer=Admin_EnergyCompany.jsp");
+		return;
+	}
+	
+	String email = "";
+	String checkedStr = "";
+	StarsEnergyCompany ec = (StarsEnergyCompany) session.getAttribute(StarsAdmin.ENERGY_COMPANY_TEMP);
+	if (ec != null) {
+		StringTokenizer st = new StringTokenizer(ec.getEmail(), ",");
+		email = st.nextToken();
+		if (Boolean.valueOf(st.nextToken()).booleanValue())
+			checkedStr = "checked";
+	}
+	else {
+		ec = energyCompany;
+		com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany liteEC = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		String propVal = AuthFuncs.getRolePropValueGroup(liteEC.getResidentialCustomerGroup(),
+				com.cannontech.roles.consumer.ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK, "(none)");
+		email = ec.getEmail();
+		if (com.cannontech.common.util.CtiUtilities.isTrue(propVal))
+			checkedStr = "checked";
+	}
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<script language="JavaScript">
+function editAddress(form) {
+	form.attributes["action"].value = "";
+	form.action.value = "EditAddress";
+	form.submit();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -74,28 +128,28 @@
                         <td width="25%" align="right" class="TableCell">Company 
                           Name:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="CompanyName" value="<%= energyCompany.getCompanyName() %>">
+                          <input type="text" name="CompanyName" value="<%= ec.getCompanyName() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Phone 
                           #:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="PhoneNo" value="<%= energyCompany.getMainPhoneNumber() %>">
+                          <input type="text" name="PhoneNo" value="<%= ec.getMainPhoneNumber() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Main Fax 
                           #:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="FaxNo" value="<%= energyCompany.getMainFaxNumber() %>">
+                          <input type="text" name="FaxNo" value="<%= ec.getMainFaxNumber() %>">
                         </td>
                       </tr>
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Email:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="Email" value="<%= energyCompany.getEmail() %>">
-                          <input type="checkbox" name="CustomizedEmail" value="true">
+                          <input type="text" name="Email" value="<%= email %>">
+                          <input type="checkbox" name="CustomizedEmail" value="true" <%= checkedStr %>>
                           Use a link to your company's website</td>
                       </tr>
                       <tr> 
@@ -104,9 +158,9 @@
                         <td width="75%" class="TableCell">
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr>
-                              <td width="75%"><%= ServletUtils.getOneLineAddress(energyCompany.getCompanyAddress()) %></td>
+                              <td width="75%"><%= ServletUtils.getOneLineAddress(ec.getCompanyAddress()) %></td>
                               <td width="25%">
-                                <input type="button" name="EditAddress" value="Edit" onclick="location.href='Admin_Address.jsp?referer=Admin_EnergyCompany.jsp'">
+                                <input type="button" name="EditAddress" value="Edit" onclick="editAddress(this.form)">
                               </td>
                             </tr>
                           </table>
@@ -115,7 +169,7 @@
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Time Zone:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="TimeZone" value="<%= energyCompany.getTimeZone() %>">
+                          <input type="text" name="TimeZone" value="<%= ec.getTimeZone() %>">
                         </td>
                       </tr>
                     </table>

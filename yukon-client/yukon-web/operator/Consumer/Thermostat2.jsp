@@ -318,7 +318,7 @@ function prepareSubmit() {
                     <table width="91%" border="0" height="100">
                       <tr> 
                         <td width="38%" height="113">&nbsp;</td>
-                        <td width="31%" height="113" align = "center" valign="bottom"> 
+                        <td width="27%" height="113" align = "center" valign="bottom"> 
                           <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                             <tr> 
                               <td width="52%" height="53"> 
@@ -344,12 +344,12 @@ function prepareSubmit() {
                             </tr>
                           </table>
                         </td>
-                        <td width="31%" height="113" valign="bottom"><br>
-                          <table width="110" height="80" border="0">
+                        <td width="35%" height="113" valign="bottom"><br>
+                          <table width="130" height="80" border="0">
                             <tr> 
                               <td class="TableCell" valign="top" bordercolor="#FFFFFF"> 
                                 <div id="CurrentSettings" style="display:none"> 
-                                  <b>Current Settings:</b><br>
+                                  
 <%
 	String unit = "Fahrenheit";
 	if (curSettings.getDisplayedTempUnit() != null)

@@ -1,6 +1,6 @@
 <%
-	// Map of page name / link text
-	String linkMap[][] = {{"General.jsp", "General"},
+	// Pairs of page name / link text
+	String linkPairs[][] = {{"General.jsp", "General"},
 						  {"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTROL_HISTORY, "Control History")},
 						  {"Util.jsp", "Contact Us"},
@@ -13,11 +13,11 @@
 						 };
 						   
 	Hashtable links = new Hashtable();
-	for (int i = 0; i < linkMap.length; i++) {
-		if (linkMap[i][0].equalsIgnoreCase(pageName))
-			links.put(linkMap[i][0], "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='12' height='12'><span class='Nav'>" + linkMap[i][1] + "</span>");
+	for (int i = 0; i < linkPairs.length; i++) {
+		if (linkPairs[i][0].equalsIgnoreCase(pageName))
+			links.put(linkPairs[i][0], "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='12' height='12'><span class='Nav'>" + linkPairs[i][1] + "</span>");
 		else
-			links.put(linkMap[i][0], "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET) + "' width='12' height='12'><a href='" + linkMap[i][0] + "' class='Link2'><span class='NavText'>" + linkMap[i][1] + "</span></a>");
+			links.put(linkPairs[i][0], "<img src='../../../WebConfig/" + AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET) + "' width='12' height='12'><a href='" + linkPairs[i][0] + "' class='Link2'><span class='NavText'>" + linkPairs[i][1] + "</span></a>");
 	}
 %>
 

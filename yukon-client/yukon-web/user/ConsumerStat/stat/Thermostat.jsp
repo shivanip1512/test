@@ -187,7 +187,7 @@ if (text.length == 2) {
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerInfo.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 

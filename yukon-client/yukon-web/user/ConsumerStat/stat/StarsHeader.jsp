@@ -83,7 +83,17 @@
 		primContact = account.getPrimaryContact();
 		
 		programs = accountInfo.getStarsLMPrograms();
-		thermoSettings = accountInfo.getStarsThermostatSettings();
+		
+		StarsInventories inventories = accountInfo.getStarsInventories();
+		if (inventories != null) {
+			for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
+				StarsLMHardware hardware = inventories.getStarsLMHardware(i);
+				if (hardware.getStarsThermostatSettings() != null) {
+					thermoSettings = hardware.getStarsThermostatSettings();
+					break;
+				}
+			}
+		}
 		
 		userLogin = accountInfo.getStarsUser();
 		if (userLogin == null) {
