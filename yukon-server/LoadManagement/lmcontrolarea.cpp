@@ -994,7 +994,7 @@ bool CtiLMControlArea::shouldReduceControl()
         CtiLMControlAreaTrigger* lm_trigger = (CtiLMControlAreaTrigger*) _lmcontrolareatriggers[i];
         if(lm_trigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType)
         {
-            if( lm_trigger->getPointValue() > lm_trigger->getMinRestoreOffset() ||
+            if( lm_trigger->getPointValue() > (lm_trigger->getThreshold() - lm_trigger->getMinRestoreOffset()) ||
                 lm_trigger->getPointValue() + cur_load_reduction > lm_trigger->getThreshold() )
             {
                 return false;
@@ -1764,7 +1764,8 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
     else if( numberOfActivePrograms == 0 )
     {
         setControlAreaState(CtiLMControlArea::InactiveState);
-        if( previousControlAreaState != CtiLMControlArea::InactiveState )
+        if( previousControlAreaState != CtiLMControlArea::InactiveState &&
+            previousControlAreaState != CtiLMControlArea::AttemptingControlState ) 
         {
             RWCString text = RWCString("Timed Stop, LMControl Area: ");
             text += getPAOName();
