@@ -187,7 +187,7 @@ void CtiCCService::Run()
             Sleep(1000);
 
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses();
+        RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(RWDBDateTime().seconds());
 
         if ( !store->isValid() )
         {
