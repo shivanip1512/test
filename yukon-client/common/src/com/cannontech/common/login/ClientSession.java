@@ -307,7 +307,8 @@ public class ClientSession {
 			Properties dbProps = LoginSupport.getDBProperties(sessionID, lp.getYukonHost(), lp.getYukonPort());
 			if(!dbProps.isEmpty()) {
 				PoolManager.setDBProperties(dbProps);
-				LiteYukonUser u = AuthFuncs.login(lp.getUsername(), lp.getPassword());
+				//Do not log in the user again
+				LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(lp.getUsername());
 				if(u != null) {
 					//score! we found them
 				  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
