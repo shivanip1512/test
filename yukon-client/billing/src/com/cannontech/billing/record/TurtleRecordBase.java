@@ -22,26 +22,29 @@ public class TurtleRecordBase implements BillingRecordBase
 	
 	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("yy/MM/dd");
 	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
+	//***THIS FORMAT TRUNCATES THE VALUE (FROM THE LEFT) TO MAX 5 NUMBERS SO MOST SIGNIFICANT DIGITS MAY BE LOST!!!
 	private static java.text.DecimalFormat KWH_FORMAT_NODECIMAL = new java.text.DecimalFormat("#####");
 	private static java.text.DecimalFormat KW_FORMAT_3v3 = new java.text.DecimalFormat("##0.000");
 	private static int KW_FIELD_SIZE = 7;
 
 	/**
-	 * SEDCRecord constructor comment.
+	 * BaseRecord constructor comment.
 	 */
 	public TurtleRecordBase() {
 		super();
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
-	 * SEDCRecord constructor comment.
+	 * BaseRecord constructor comment.
 	 */
 	public TurtleRecordBase(String newMeterNumber)
 	{
 		super();
 		setMeterNumber(newMeterNumber);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
-	 * SEDCRecord constructor comment.
+	 * BaseRecord constructor comment.
 	 */
 	public TurtleRecordBase(String newMeterNumber, double reading, java.sql.Timestamp newTimestamp)
 	{
@@ -50,6 +53,7 @@ public class TurtleRecordBase implements BillingRecordBase
 		setReadingKWH(reading);
 		setDate(newTimestamp);
 		setTime(newTimestamp);
+		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
 	 * SEDCRecord constructor comment.
