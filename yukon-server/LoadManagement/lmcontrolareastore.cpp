@@ -71,6 +71,7 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
     if( _resetthr.isValid() )
     {
         _resetthr.requestCancellation();
+        _resetthr.join();
     }
 
     shutdown();
@@ -519,6 +520,7 @@ void CtiLMControlAreaStore::reset()
                                 {
                                     RWDBTable lmGroupMacroExpanderView = db.table("lmgroupmacroexpander_view");
                                     RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
+                                    RWDBTable pointTable = db.table("point");
     
                                     RWDBSelector selector = db.selector();
                                     selector.distinct();
@@ -540,10 +542,14 @@ void CtiLMControlAreaStore::reset()
                                     << dynamicLMGroupTable["currenthoursseasonal"]
                                     << dynamicLMGroupTable["currenthoursannually"]
                                     << dynamicLMGroupTable["lastcontrolsent"]
-                                    << dynamicLMGroupTable["timestamp"];
+                                    << dynamicLMGroupTable["timestamp"]
+                                    << pointTable["pointid"]
+                                    << pointTable["pointoffset"]
+                                    << pointTable["pointtype"];
     
                                     selector.from(lmGroupMacroExpanderView);
                                     selector.from(dynamicLMGroupTable);
+                                    selector.from(pointTable);
     
                                     if( !cplHack )
                                     {//original where clause
@@ -552,7 +558,13 @@ void CtiLMControlAreaStore::reset()
                                                           ( !lmGroupMacroExpanderView["childid"].isNull() &&
                                                             lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) );
+                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
+                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) &&
+                                                        ( pointTable["pointoffset"]==DAILYCONTROLHISTOFFSET ||
+                                                          pointTable["pointoffset"]==MONTHLYCONTROLHISTOFFSET ||
+                                                          pointTable["pointoffset"]==SEASONALCONTROLHISTOFFSET ||
+                                                          pointTable["pointoffset"]==ANNUALCONTROLHISTOFFSET ) );
+
                                         /*if( _LM_DEBUG )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -564,7 +576,12 @@ void CtiLMControlAreaStore::reset()
                                         selector.where( lmGroupMacroExpanderView["childid"].isNull() &&
                                                         lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) );
+                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
+                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) &&
+                                                        ( pointTable["pointoffset"]==DAILYCONTROLHISTOFFSET ||
+                                                          pointTable["pointoffset"]==MONTHLYCONTROLHISTOFFSET ||
+                                                          pointTable["pointoffset"]==SEASONALCONTROLHISTOFFSET ||
+                                                          pointTable["pointoffset"]==ANNUALCONTROLHISTOFFSET ) );
                                         /*if( _LM_DEBUG )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -583,35 +600,97 @@ void CtiLMControlAreaStore::reset()
     
                                     RWOrdered& lmProgramDirectGroupList = currentLMProgramDirect->getLMProgramDirectGroups();
                                     RWDBReader rdr = selector.reader(conn);
-                                    while( rdr() )
+
+                                    CtiLMGroupBase* currentLMGroupBase = NULL;
+                                    RWDBNullIndicator isNull;
+                                    while ( rdr() )
                                     {
+                                        ULONG tempPAObjectId = 0;
                                         RWCString tempPAOCategory;
                                         RWCString tempPAOType;
                                         rdr["category"] >> tempPAOCategory;
                                         rdr["type"] >> tempPAOType;
-                                        if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_VERSACOM )
+                                        rdr["paobjectid"] >> tempPAObjectId;
+
+                                        if( currentLMGroupBase != NULL &&
+                                            tempPAObjectId == currentLMGroupBase->getPAOId() )
                                         {
-                                            lmProgramDirectGroupList.insert(new CtiLMGroupVersacom(rdr));
-                                        }
-                                        else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_EMETCON )
-                                        {
-                                            lmProgramDirectGroupList.insert(new CtiLMGroupEmetcon(rdr));
-                                        }
-                                        else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_RIPPLE )
-                                        {
-                                            lmProgramDirectGroupList.insert(new CtiLMGroupRipple(rdr));
-                                        }
-                                        else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_POINT )
-                                        {
-                                            lmProgramDirectGroupList.insert(new CtiLMGroupPoint(rdr));
+                                            rdr["pointid"] >> isNull;
+                                            if( !isNull )
+                                            {
+                                                LONG tempPointId = -1000;
+                                                LONG tempPointOffset = -1000;
+                                                RWCString tempPointType = "(none)";
+                                                rdr["pointid"] >> tempPointId;
+                                                rdr["pointoffset"] >> tempPointOffset;
+                                                rdr["pointtype"] >> tempPointType;
+
+                                                if( resolvePointType(tempPointType) == AnalogPointType )
+                                                {
+                                                    if( tempPointOffset == DAILYCONTROLHISTOFFSET )
+                                                    {
+                                                        currentLMGroupBase->setHoursDailyPointId(tempPointId);
+                                                    }
+                                                    else if( tempPointOffset == MONTHLYCONTROLHISTOFFSET )
+                                                    {
+                                                        currentLMGroupBase->setHoursMonthlyPointId(tempPointId);
+                                                    }
+                                                    else if( tempPointOffset == SEASONALCONTROLHISTOFFSET )
+                                                    {
+                                                        currentLMGroupBase->setHoursSeasonalPointId(tempPointId);
+                                                    }
+                                                    else if( tempPointOffset == ANNUALCONTROLHISTOFFSET )
+                                                    {
+                                                        currentLMGroupBase->setHoursAnnuallyPointId(tempPointId);
+                                                    }
+                                                    /*else
+                                                    {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                                    }*/
+                                                }
+                                                /*else( resolvePointType(tempPointType) != StatusPointType )
+                                                {//undefined group point
+                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                    dout << RWTime() << " - Undefined Group point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                                }*/
+                                            }
                                         }
                                         else
                                         {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << RWTime() << " - Group device type = " << tempPAOType << " not supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            RWCString tempPAOCategory;
+                                            RWCString tempPAOType;
+                                            rdr["category"] >> tempPAOCategory;
+                                            rdr["type"] >> tempPAOType;
+                                            if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_VERSACOM )
+                                            {
+                                                currentLMGroupBase = new CtiLMGroupVersacom(rdr);
+                                            }
+                                            else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_EMETCON )
+                                            {
+                                                currentLMGroupBase = new CtiLMGroupEmetcon(rdr);
+                                            }
+                                            else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_RIPPLE )
+                                            {
+                                                currentLMGroupBase = new CtiLMGroupRipple(rdr);
+                                            }
+                                            else if( resolvePAOType(tempPAOCategory,tempPAOType) == TYPE_LMGROUP_POINT )
+                                            {
+                                                currentLMGroupBase = new CtiLMGroupPoint(rdr);
+                                            }
+                                            else
+                                            {
+                                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                dout << RWTime() << " - Group device type = " << tempPAOType << " not supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            }
+
+                                            if( currentLMGroupBase != NULL )
+                                            {
+                                                lmProgramDirectGroupList.insert(currentLMGroupBase);
+                                            }
                                         }
                                     }
-    
+
                                     for(int z=0;z<lmProgramDirectGroupList.entries();z++)
                                     {
                                         CtiLMGroupBase* currentLMGroupBase = (CtiLMGroupBase*)lmProgramDirectGroupList[z];
@@ -1175,12 +1254,6 @@ void CtiLMControlAreaStore::shutdown()
     }*/
     _controlAreas->clearAndDestroy();
     delete _controlAreas;
-
-    if( _LM_DEBUG )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - done shutting down the control area store" << endl;
-    }
 }
 
 /*---------------------------------------------------------------------------

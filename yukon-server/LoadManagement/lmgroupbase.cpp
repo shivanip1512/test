@@ -237,12 +237,56 @@ ULONG CtiLMGroupBase::getCurrentHoursAnnually() const
 /*---------------------------------------------------------------------------
     getLastControlSent
 
-    Returns the time of the last control sent for the program
+    Returns the time of the last control sent for the group
 ---------------------------------------------------------------------------*/
 const RWDBDateTime& CtiLMGroupBase::getLastControlSent() const
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
     return _lastcontrolsent;
+}
+
+/*---------------------------------------------------------------------------
+    getHoursDailyPointId
+
+    Returns the point id of the daily control hours point for the group
+---------------------------------------------------------------------------*/
+ULONG CtiLMGroupBase::getHoursDailyPointId() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _hoursdailypointid;
+}
+
+/*---------------------------------------------------------------------------
+    getHoursMonthlyPointId
+
+    Returns the point id of the monthly control hours point for the group
+---------------------------------------------------------------------------*/
+ULONG CtiLMGroupBase::getHoursMonthlyPointId() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _hoursmonthlypointid;
+}
+
+/*---------------------------------------------------------------------------
+    getHoursSeasonalPointId
+
+    Returns the point id of the seasonal control hours point for the group
+---------------------------------------------------------------------------*/
+ULONG CtiLMGroupBase::getHoursSeasonalPointId() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _hoursseasonalpointid;
+}
+
+/*---------------------------------------------------------------------------
+    getHoursAnnuallyPointId
+
+    Returns the point id of the annual control hours point for the group
+---------------------------------------------------------------------------*/
+ULONG CtiLMGroupBase::getHoursAnnuallyPointId() const
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    return _hoursannuallypointid;
 }
 
 /*---------------------------------------------------------------------------
@@ -459,6 +503,54 @@ CtiLMGroupBase& CtiLMGroupBase::setLastControlSent(const RWDBDateTime& controlse
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     _lastcontrolsent = controlsent;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setHoursDailyPointId
+
+    Sets the point id of the point that tracks daily control hours for the group
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setHoursDailyPointId(ULONG dailyid)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _hoursdailypointid = dailyid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setHoursMonthlyPointId
+
+    Sets the point id of the point that tracks monthly control hours for the group
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setHoursMonthlyPointId(ULONG monthlyid)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _hoursmonthlypointid = monthlyid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setHoursSeasonalPointId
+
+    Sets the point id of the point that tracks seasonal control hours for the group
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setHoursSeasonalPointId(ULONG seasonalid)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _hoursseasonalpointid = seasonalid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setHoursAnnuallyPointId
+
+    Sets the point id of the point that tracks annually control hours for the group
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setHoursAnnuallyPointId(ULONG annuallyid)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    _hoursannuallypointid = annuallyid;
     return *this;
 }
 
@@ -726,6 +818,52 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setLastControlSent(RWDBDateTime(1990,1,1,0,0,0,0));
 
         _insertDynamicDataFlag = TRUE;
+    }
+
+    setHoursDailyPointId(0);
+    setHoursMonthlyPointId(0);
+    setHoursSeasonalPointId(0);
+    setHoursAnnuallyPointId(0);
+
+    rdr["pointid"] >> isNull;
+    if( !isNull )
+    {
+        LONG tempPointId = -1000;
+        LONG tempPointOffset = -1000;
+        RWCString tempPointType = "(none)";
+        rdr["pointid"] >> tempPointId;
+        rdr["pointoffset"] >> tempPointOffset;
+        rdr["pointtype"] >> tempPointType;
+
+        if( resolvePointType(tempPointType) == AnalogPointType )
+        {
+            if( tempPointOffset == DAILYCONTROLHISTOFFSET )
+            {
+                _hoursdailypointid = tempPointId;
+            }
+            else if( tempPointOffset == MONTHLYCONTROLHISTOFFSET )
+            {
+                _hoursmonthlypointid = tempPointId;
+            }
+            else if( tempPointOffset == SEASONALCONTROLHISTOFFSET )
+            {
+                _hoursseasonalpointid = tempPointId;
+            }
+            else if( tempPointOffset == ANNUALCONTROLHISTOFFSET )
+            {
+                _hoursannuallypointid = tempPointId;
+            }
+            /*else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }*/
+        }
+        /*else( resolvePointType(tempPointType) != StatusPointType )
+        {//undefined group point
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Undefined Group point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }*/
     }
 
     /*if( getPAOId() == 4181 || getPAOId() == 4195 || getPAOId() == 4154 )

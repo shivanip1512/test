@@ -54,6 +54,10 @@ public:
     ULONG getCurrentHoursSeasonal() const;
     ULONG getCurrentHoursAnnually() const;
     const RWDBDateTime& getLastControlSent() const;
+    ULONG getHoursDailyPointId() const;
+    ULONG getHoursMonthlyPointId() const;
+    ULONG getHoursSeasonalPointId() const;
+    ULONG getHoursAnnuallyPointId() const;
 
     CtiLMGroupBase& setPAOId(ULONG id);
     CtiLMGroupBase& setPAOCategory(const RWCString& category);
@@ -73,6 +77,10 @@ public:
     CtiLMGroupBase& setCurrentHoursSeasonal(ULONG seasonal);
     CtiLMGroupBase& setCurrentHoursAnnually(ULONG annually);
     CtiLMGroupBase& setLastControlSent(const RWDBDateTime& controlsent);
+    CtiLMGroupBase& setHoursDailyPointId(ULONG dailyid);
+    CtiLMGroupBase& setHoursMonthlyPointId(ULONG monthlyid);
+    CtiLMGroupBase& setHoursSeasonalPointId(ULONG seasonalid);
+    CtiLMGroupBase& setHoursAnnuallyPointId(ULONG annuallyid);
 
     virtual void dumpDynamicData();
     virtual CtiCommandMsg* createLatchingRequestMsg(ULONG rawState, int priority) const;
@@ -130,6 +138,10 @@ private:
     ULONG _currenthoursseasonal;
     ULONG _currenthoursannually;
     RWDBDateTime _lastcontrolsent;
+    ULONG _hoursdailypointid;
+    ULONG _hoursmonthlypointid;
+    ULONG _hoursseasonalpointid;
+    ULONG _hoursannuallypointid;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
