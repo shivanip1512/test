@@ -7,19 +7,21 @@
 <%@ page import="com.cannontech.database.data.device.CarrierBase"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 
-
 <jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
 <%-- Grab the search criteria --%>
+<jsp:setProperty name="commandDeviceBean" property="page" param="page"/>
 <jsp:setProperty name="commandDeviceBean" property="filterBy" param="FilterBy"/>
 <jsp:setProperty name="commandDeviceBean" property="sortBy" param="SortBy"/>
 <jsp:setProperty name="commandDeviceBean" property="sortOrder" param="SortOrder"/>
 <jsp:setProperty name="commandDeviceBean" property="deviceClass" param="DeviceClass"/>
 <jsp:setProperty name="commandDeviceBean" property="collGroup" param="CollGroup"/>
-<%
-int page_ = 1;
-if( request.getParameter("page_") != null)
-	page_ = Integer.valueOf(request.getParameter("page_")).intValue();
-	%>
+<jsp:setProperty name="commandDeviceBean" property="searchBy" param="SearchBy"/>
+<jsp:setProperty name="commandDeviceBean" property="searchValue" param="SearchValue"/>
+<jsp:setProperty name="commandDeviceBean" property="clear" param="Clear"/>
+
+<%if( request.getParameter("SearchValue") != null && request.getParameter("SearchValue").length() <= 0)
+	commandDeviceBean.setSearchValue("");
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -38,10 +40,9 @@ function init() {
 }
 
 function showAll(form) {
-	form.FilterBy.value = 0;
+	form.Clear.value = "true";
 	form.submit();
 }
-
 
 </script>
 </head>
@@ -92,11 +93,32 @@ function showAll(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
           <div align="center"> 
               <% String header = "COMMAND - DEVICE SELECTION"; %>
-              <br>
-<%--    TODO          <%@ include file="../operator/Hardware/include/SearchBar.jsp" %>--%>
-              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <table width="100%" border="0" cellpadding = "5">
+                <tr> 
+                  <td width="50%" valign = "top" align = "left">&nbsp;</td>
+                  <td align = "right" width="50%">
+				  <form name="SearchForm" method="POST" action="">
+				  <span class="TitleHeader">
+					<select name="SearchBy">
+					  <% for (int i = 0; i < CommandDeviceBean.searchByStrings.length; i++){%>
+					  <option value="<%=i%>"  <% if (commandDeviceBean.getSearchBy() == i) out.print("selected"); %>><%=CommandDeviceBean.searchByStrings[i]%></option>
+					  <%}%>
+					</select>
+					<input type="text" name="SearchValue" size = "14" value="<%=commandDeviceBean.getSearchValue()%>">
+					<input type="submit" name="Submit" value="Search" >
+					</span>
+            		</form>					
+				  </td>
+                </tr>
+              </table>
+              <table width="100%" border="0" cellspacing="0" cellpadding="3">
+                <tr> 
+                  <td align="center" class="TitleHeader"><%= header %></td>
+                </tr>
+              </table>
               <form name="MForm" method="post" action="">
 			    <input type="hidden" name="page" value="1">
+			    <input type="hidden" name="Clear" value="false">
 			    
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">
                   <tr>
@@ -169,103 +191,32 @@ function showAll(form) {
                     </td>
                     <td width="25%"> 
                       <input type="submit" name="Submit" value="Show">
-						<% if (true) { %>
+                      <% if (true) { %>
                       <input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
-						<% } %>
+                      <% } %>
                     </td>
                   </tr>
                 </table>
               </form>
-			  <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
+<!--			  <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
                 <tr>
                   <td align="center">Click on an item to select it for sending commands.</td>
                 </tr>
               </table>
-			  <br>          
-              <table width="100%" border="0" cellspacing="0" cellpadding="3">
-                <tr> 
-                  <td align="center" class="TitleHeader"><%= header %></td>
-                </tr>
-              </table>
-              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+-->
+			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <br>
               <form name='DeviceForm' method='post' action="<%= request.getContextPath() %>/servlet/CommanderServlet">
 		        <input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
         		<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <input type='hidden' name='action' value='SelectDevice'>
                 
-                <table width='95%' border='0' cellspacing='0' cellpadding='3'>
-                <%
-				  	java.util.List allDevices =	commandDeviceBean.getDeviceList();
-
-				    int displaySize = 25;
-				    int endIndex = (page_ * displaySize);
-				    int startIndex = endIndex - displaySize;
-				    int maxPageNo = (int)Math.ceil(allDevices.size() * 1.0 / displaySize);
-				    if( endIndex > allDevices.size())
-				    	endIndex = allDevices.size();
-        		  %>
-                  <tr> 
-                    <td> 
-                      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
-                        <tr> 
-                          <td><%=startIndex+1%>-<%=endIndex%>&nbsp;of&nbsp;<%=allDevices.size()%>
-                            |
-							<%if (page_ == 1){%><font color='#CCCCCC'>First</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=1'>First</a><%}%>
-                  			|
-							<%if (page_ == 1){%><font color='#CCCCCC'>Previous</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=<%=page_-1%>'>Previous</a><%}%>
-							|
-							<%if (page_ == maxPageNo){%><font color='#CCCCCC'>Next</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=<%=page_+1%>'>Next</a><%}%>
-							|
-							<%if (page_ == maxPageNo){%><font color='#CCCCCC'>Last</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=<%=maxPageNo%>'>Last</a><%}%>
-					     </td>
-                         <td align='right'>Page(<%=page_%>-<%=maxPageNo%>): 
-                            <input type='text' id='GoPage' style='border:1px solid #666699; font:11px' size='1' value='<%=page_%>'>
-                            <input type='button' style='font:11px; margin-bottom:-1px' value='Go' onclick='location.href="SelectDevice.jsp?page_=" + document.getElementById("GoPage").value;'>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td>
-                    	<%=commandDeviceBean.getDeviceTableHTML(startIndex, endIndex)%>
-					</td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
-                        <tr> 
-                          <td><%=startIndex+1%>-<%=endIndex%>&nbsp;of&nbsp;<%=allDevices.size()%>
-                            |
-							<%if (page_ == 1){%><font color='#CCCCCC'>First</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=1'>First</a><%}%>
-                  			|
-							<%if (page_ == 1){%><font color='#CCCCCC'>Previous</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=<%=page_-1%>'>Previous</a><%}%>
-							|
-							<%if (page_ == maxPageNo){%><font color='#CCCCCC'>Next</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=<%=page_+1%>'>Next</a><%}%>
-							|
-							<%if (page_ == maxPageNo){%><font color='#CCCCCC'>Last</font><%}
-							else{%><a class='Link1' href='<%=pageName%>?page_=<%=maxPageNo%>'>Last</a><%}%>
-					     </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
+                <%=commandDeviceBean.getDeviceTableHTML()%>
+				
                 <br>
                 <table width='200' border='0' cellspacing='0' cellpadding='3'>
                   <tr> 
-                    <td align='right'> 
-                      <input type='submit' name='Submit' value='Select'>
-                    </td>
-                    <td> 
+                    <td align='center'>
                       <input type='button' name='Cancel' value='Cancel' onclick='location.href="../operator/Operations.jsp"'>
                     </td>
                   </tr>
