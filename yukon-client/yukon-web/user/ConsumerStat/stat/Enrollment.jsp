@@ -7,51 +7,53 @@
 <link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-function changeCategory(checkbox, index) {
-	form = checkbox.form;
-	if (checkbox.checked) {
-		radioBtns = eval("form.Program" + index);
-		if (radioBtns != null)
-			radioBtns[0].checked = true;
-		if (eval("form.CatID[index]") != null) {
-			form.CatID[index].value = checkbox.value;
-			form.ProgID[index].value = form.DefProgID[index].value;
-		}
-		else {	// There is only one appliance category
-			form.CatID.value = checkbox.value;
-			form.ProgID.value = form.DefProgID.value;
-		}
+var signUpChanged = false;
+function setSignUpChanged() {
+	signUpChanged = true;
+}
+
+function changeCategory(checkBox, index) {
+	var programs, catIDs, progIDs, defProgIDs;
+	
+	if (checkBox.checked) {
+		programs = document.getElementsByName("Program" + index);
+		if (programs.length > 0)
+			programs[0].checked = true;
+		catIDs = document.getElementsByName("CatID");
+		progIDs = document.getElementsByName("ProgID");
+		defProgIDs = document.getElementsByName("DefProgID");
+		catIDs[index].value = checkBox.value;
+		progIDs[index].value = defProgIDs[index].value;
 	}
 	else {
-		radioBtns = eval("form.Program" + index);
-		if (radioBtns != null)
-			for (i = 0; i < radioBtns.length; i++)
-				radioBtns[i].checked = false;
-		if (eval("form.CatID[index]") != null) {
-			form.CatID[index].value = "";
-			form.ProgID[index].value = "";
-		}
-		else {
-			form.CatID.value = "";
-			form.ProgID.value = "";
-		}
+		programs = document.getElementsByName("Program" + index);
+		for (i = 0; i < programs.length; i++)
+			programs[i].checked = false;
+		catIDs = document.getElementsByName("CatID");
+		progIDs = document.getElementsByName("ProgID");
+		catIDs[index].value = "";
+		progIDs[index].value = "";
 	}
-	form.SignUpChanged.value = "true";
+	
+	setSignUpChanged();
 }
 
 function changeProgram(radioBtn, index) {
-	form = radioBtn.form;
-	if (eval("form.CatID[index]") != null) {
-		form.AppCat[index].checked = true;
-		form.CatID[index].value = form.AppCat[index].value;
-		form.ProgID[index].value = radioBtn.value;
-	}
-	else {
-		form.AppCat.checked = true;
-		form.CatID.value = form.AppCat.value;
-		form.ProgID.value = radioBtn.value;
-	}
-	form.SignUpChanged.value = "true";
+	var categories = document.getElementsByName("AppCat");
+	var catIDs = document.getElementsByName("CatID");
+	var progIDs = document.getElementsByName("ProgID");
+	
+	if (progIDs[index].value == radioBtn.value) return;	// Nothing is changed
+	
+	categories[index].checked = true;
+	catIDs[index].value = categories[index].value;
+	progIDs[index].value = radioBtn.value;
+	setSignUpChanged();
+}
+
+function confirmSubmit(form) {
+	if (!signUpChanged) return false;
+	return confirm('Are you sure you would like to modify these program options?');
 }
 </script>
 </head>
@@ -101,7 +103,7 @@ function changeProgram(radioBtn, index) {
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_ENROLLMENT_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_ENROLLMENT, "PROGRAMS - ENROLLMENT"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -111,6 +113,7 @@ function changeProgram(radioBtn, index) {
                 </tr>
               </table>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               
               </div>
             <table width="90%" border="0" align = "center">
@@ -151,23 +154,33 @@ function changeProgram(radioBtn, index) {
 				break;
 			}
 		}
+		
+		String checkBoxDisabled = "";
+		String radioBtnDisabled = "";
+		if (AuthFuncs.checkRoleProperty( lYukonUser, ResidentialCustomerRole.DISABLE_PROGRAM_SIGNUP )) {
+			checkBoxDisabled = "disabled";
+			if (program == null) radioBtnDisabled = "disabled";
+		}
 %>
                         <tr> 
-                          <td width="175"><table width="185" border="0" cellspacing="0" cellpadding="0">
+                        <td width="175">
+						  <table width="185" border="0" cellspacing="0" cellpadding="0">
                             <tr>
                               <td><img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"></td>
-                              <td><table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+                              <td>
+                                <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
+                                  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
+                                  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
+                                  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
                                   <tr> 
-                                    <td width="23"> <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
-								  onclick="changeCategory(this, <%= idx %>)" <% if (program != null) out.print("checked"); %>> 
-                                      <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>"> 
-                                      <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>"> 
-                                      <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>"> 
+                                    <td width="23"> 
+                                      <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>" <%= checkBoxDisabled %>
+								      onclick="changeCategory(this, <%= idx %>)" <% if (program != null) out.print("checked"); %>>
                                     </td>
-                                    <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
+                                    <td class="TableCell" nowrap><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
                                   </tr>
                                 </table>
-                                <%
+<%
 		if (category.getStarsEnrLMProgramCount() > 1) {
 			/* If more than one program under this category, show the program list */
 %>
@@ -181,10 +194,13 @@ function changeProgram(radioBtn, index) {
 				/* Each row is a program in this category */
 %>
                                   <tr> 
-                                    <td width="37"> <div align="right"> 
-                                        <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= idx %>)" <%= checkStr %>>
-                                      </div></td>
-                                    <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
+                                    <td width="37">
+									  <div align="right">
+                                        <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" <%= radioBtnDisabled %>
+									    onclick="changeProgram(this, <%= idx %>)" <%= checkStr %>>
+									  </div>
+                                    </td>
+                                    <td class="TableCell" nowrap><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
                                   </tr>
 <%
 			}	// End of program
@@ -208,6 +224,18 @@ function changeProgram(radioBtn, index) {
 %>
                   </table>
                     <p></p>
+                    <table width="50%" border="0">
+                      <tr>
+                        <td align = "right"> 
+                          <input type="submit" name="Submit" value="Submit" onClick="return confirmSubmit(this.form)">
+                        </td>
+                        <td>
+                          <input type="button" name="Cancel" value="Cancel">
+                        </td>
+                      </tr>
+                    </table>
+                  </form>
+				  <p></p>
 <cti:checkNoProperty propertyid="<%= ResidentialCustomerRole.NOTIFICATION_ON_GENERAL_PAGE %>">
 <%
 	boolean showNotification = false;
@@ -230,34 +258,32 @@ function changeProgram(radioBtn, index) {
 
 	if (showNotification) {
 %> 
-                     <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >   
-                       <tr>    
-                         <td height="58"> <p align="center" class="TableCell1">    
-                             <input type="checkbox" name="NotifyControl" value="true"
+                  <form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient">
+                    <input type="hidden" name="action" value="UpdateCtrlNotification">
+                    <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
+                    <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Enrollment.jsp">
+                    <table width="328" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
+                      <tr>    
+                        <td height="58"> 
+                          <p align="center" class="TableCell1"> 
+                            <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                             <span class="TableCell2"> I would like to be notified 
-                             by e-mail the day of control.<br>   
+                            <span class="TableCell3">
+                            I would like to be notified by e-mail of the 
+                            <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/>.<br>
                              My e-mail address is:<br>   
-                             <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
-                             </span></p></td>   
+                            <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
+                            <input type="submit" name="Submit2" value="Submit">
+                            </span></p>
+                        </td>   
                        </tr>   
                      </table>
+				  </form>
 <%
 	}
 %>
 </cti:checkNoProperty>
-					<p>
-                    <table width="50%" border="0">
-                    <tr>
-                      <td align = "right">
-                        <input type="submit" name="Submit" value="Submit">
-                      </td>
-                      <td>
-                        <input type="button" name="Cancel" value="Cancel">
-                      </td>
-                    </tr>
-                  </table>
-              </form>
+				  <p>
                 </td>
               </tr>
             </table>

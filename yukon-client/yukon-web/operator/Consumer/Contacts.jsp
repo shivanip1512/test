@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	AdditionalContact[] contacts = new AdditionalContact[3];
 	for (int i = 0; i < 3; i++) {
@@ -35,7 +36,7 @@ function saveChanges() {
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0" onunload="saveChanges()">
+<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -45,7 +46,7 @@ function saveChanges() {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -83,9 +84,10 @@ function saveChanges() {
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
-            <div align="center"><% String header = "ACCOUNT - CONTACTS"; %><%@ include file="InfoSearchBar.jsp" %> 
+            <div align="center"><% String header = "ACCOUNT - CONTACTS"; %>
+			<%@ include file="InfoSearchBar.jsp" %> 
+			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
               
-              <br>
 			<form name="form1" method="POST" action="/servlet/UpdateContacts">
 <%
 	for (int i = 0; i < 3; i++) {
@@ -287,7 +289,21 @@ function saveChanges() {
                     </td>
                 </tr>
               </table>
-            </form> </div>
+              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
+                <tr> 
+                  <td width="50%"> 
+                    <div align="right"> 
+                      <input type="submit" name="Save" value="Save">
+                    </div>
+                  </td>
+                  <td width="50%"> 
+                    <div align="left"> 
+                      <input type="reset" name="Cancel" value="Cancel">
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </form> 
             <p>&nbsp;</p>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>

@@ -60,7 +60,7 @@
                       <tr> 
                         <td valign="bottom" class="Main">
                           <div align="center"><strong><br>
-                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_GENERAL_TITLE %>"/></strong> <br>
+                            <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TITLE_GENERAL %>"/></strong> <br>
                             <br>
                             <br>
                           </div>
@@ -69,13 +69,13 @@
                       <tr> 
                         <td>
 				          <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-						  <table width="400" border="0" cellspacing="0" cellpadding="5">
-                          <tr> 
-                            <td valign="top">
-							  <p class="Main"><%= ecWebSettings.getDescription() %></p>
-							</td>
-                            <td valign="top"> 
-                              <div align="center" class="MainHeader"><b>Your Enrolled Programs</b></div>
+                          <table width="400" border="0" cellspacing="0" cellpadding="5">
+                            <tr> 
+                              <td valign="top">
+								<p class="Main"><cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_GENERAL %>"/></p></td>
+                              <td valign="top"> 
+                                <div align="center" class="MainHeader"><b>Your 
+                                  Enrolled Programs</b> </div>
                                 <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
                                     <td colspan="3" background="../../../Images/Icons/dot.gif" height="8"></td>
@@ -85,7 +85,7 @@
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
 		String ctrlOdds = null;
-		StarsLMControlHistory todayCtrlHist = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+		StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), StarsCtrlHistPeriod.PASTDAY, tz );
 		
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
@@ -115,7 +115,7 @@
                                     <td width="128" class="Main"> 
                                       <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
                                         <tr height="50"> 
-                                          <td> <div align="center">
+                                          <td> <div align="center"><b>
 <%		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { %>
                                             Out of Service 
 <%		} else if (todayCtrlHist.getBeingControlled()) { %>
@@ -128,19 +128,17 @@
                                               You have not<br>
                                               been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>"/> since midnight
 <%		} %>
-                                            </div>
+                                            </b></div>
                                           </td>
                                         </tr>
-                                        <tr> 
-                                          <td>
 <%		if (ctrlOdds != null) { %>
-                                            <div align="center">Control odds:<br>
+                                        <tr height="30"> 
+                                          <td>
+                                            <div align="center"><cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="capital"/>:<br>
                                               <b><i><%= ctrlOdds %></i></b> </div>
-<%
-		}
-%>
-                                          &nbsp;</td>
+                                          </td>
                                         </tr>
+<%		} %>
                                       </table>
                                     </td>
                                   </tr>
@@ -185,17 +183,19 @@
                       <input type="hidden" name="action" value="UpdateCtrlNotification">
                       <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
                       <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
-                      <table width="295" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
+                      <table width="328" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td height="58"> 
                             <p align="center" class="TableCell1"> 
                               <input type="checkbox" name="NotifyControl" value="true"
 							   <% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                              <span class="TableCell2"> I would like to be notified 
-                              by e-mail<br> of the chance for control:<br>
+                              <span class="TableCell3"> 
+                              I would like to be notified by e-mail of the 
+                              <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/>.<br>
+                              My e-mail address is:</span><br>
                               <input type="text" name="Email" maxlength="50" size="30" value="<%= primContact.getEmail().getNotification() %>">
                               <input type="submit" name="Submit" value="Submit">
-                              </span></p>
+                              </p>
                           </td>
                         </tr>
                       </table>

@@ -19,7 +19,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   
@@ -56,12 +56,13 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "PROGRAMS - ODDS FOR CONTROL"; %>
+              <% String header = "PROGRAMS - " + AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL, "ODDS FOR CONTROL"); %>
               <%@ include file="InfoSearchBar2.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <div align="center"><span class="Main">Check the appropriate 
-                odds for control for each program.</span><br>
+                <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/> 
+				for each program.</span><br>
               </div>
 			  <form name="form1" method="post" action="/servlet/SOAPClient">
 			  	<input type="hidden" name="action" value="SendControlOdds">
@@ -71,7 +72,7 @@
                       <div align="center">Program Enrollment</div>
                     </td>
                     <td width="104" class="HeaderCell"> 
-                      <div align="center">Odds for Control</div>
+                      <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" format="all_capital"/></div>
                     </td>
                   </tr>
                   

@@ -2,10 +2,12 @@
 <%
 	String referrer = request.getParameter("REFERRER");
 	
+	int progNo = 0;
 	String progNoStr = request.getParameter("prog");
-	int progNo = Integer.parseInt( progNoStr );
+	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
+	ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -15,8 +17,6 @@
 			break;
 		}
 	}
-	
-	ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 %>
 <html>
 <head>
@@ -70,7 +70,7 @@
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_PROGRAM_CTRL_SUM_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_PROGRAM_CTRL_SUM, "PROGRAM - CONTROL SUMMARY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -117,9 +117,7 @@
               <%
 	if (referrer == null) {
 %>
-              <form name="form1" method="get" action="ProgramHist.jsp">
-                <input type="submit" name="Back" value="Back">
-              </form>
+              <input type="button" name="Back" value="Back" onclick="history.back()">
               <%
 	}
 	else {
@@ -129,6 +127,7 @@
 	}
 %>
             </div>
+			<p>&nbsp;</p>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
         </tr>
@@ -137,7 +136,5 @@
   </tr>
 </table>
 <br>
-<p align="center" class="TableCell2">&nbsp;</p>
-<div align="center"></div>
 </body>
 </html>

@@ -187,7 +187,7 @@ if (text.length == 2) {
           
 		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
             <div align="center"><br>
-              <% String header = "THERMOSTAT - MANUAL"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerInfo.WEB_TITLE_THERM_MANUAL, "THERMOSTAT - MANUAL"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -196,7 +196,10 @@ if (text.length == 2) {
                   </td>
                 </tr>
               </table>
-              <span class="TableCell"> </span><div align = "left">
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+			  
+              <div align = "left">
                 <table width="632" border="0" height="47">
                   <tr>
                     <td width="25">&nbsp;</td>
@@ -209,8 +212,6 @@ if (text.length == 2) {
                   </tr>
                 </table>
               </div>
-              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-			  
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp">

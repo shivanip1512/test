@@ -222,7 +222,7 @@ MM_reloadPage(true);
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center">
-              <% String header = "THERMOSTAT - SCHEDULE"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerInfo.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -232,6 +232,7 @@ MM_reloadPage(true);
                 </tr>
               </table>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
 			<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">

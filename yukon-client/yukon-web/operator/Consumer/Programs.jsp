@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -66,56 +67,86 @@ function getTopCoordinate() {
 }
 
 
-function doReenable(form) {
-	form.action.value = "EnableService";
-	form.submit();
+var numEnrolledProg = 0;
+
+var signUpChanged = false;
+function setSignUpChanged() {
+	signUpChanged = true;
 }
 
-function changeCategory(checkbox, index) {
-	form = checkbox.form;
-	if (checkbox.checked) {
-		radioBtns = eval("form.Program" + index);
-		if (radioBtns != null)
-			radioBtns[0].checked = true;
-		if (eval("form.CatID[index]") != null) {
-			form.CatID[index].value = checkbox.value;
-			form.ProgID[index].value = form.DefProgID[index].value;
-		}
-		else {	// There is only one appliance category
-			form.CatID.value = checkbox.value;
-			form.ProgID.value = form.DefProgID.value;
-		}
+function changeCategory(checkBox, index) {
+	var programs, catIDs, progIDs, defProgIDs;
+	
+	if (checkBox.checked) {
+		programs = document.getElementsByName("Program" + index);
+		if (programs.length > 0)
+			programs[0].checked = true;
+		catIDs = document.getElementsByName("CatID");
+		progIDs = document.getElementsByName("ProgID");
+		defProgIDs = document.getElementsByName("DefProgID");
+		catIDs[index].value = checkBox.value;
+		progIDs[index].value = defProgIDs[index].value;
+		
+		if (numEnrolledProg == 0)
+			document.getElementById("NotEnrolled").checked = false;
+		numEnrolledProg++;
 	}
 	else {
-		radioBtns = eval("form.Program" + index);
-		if (radioBtns != null)
-			for (i = 0; i < radioBtns.length; i++)
-				radioBtns[i].checked = false;
-		if (eval("form.CatID[index]") != null) {
-			form.CatID[index].value = "";
-			form.ProgID[index].value = "";
-		}
-		else {
-			form.CatID.value = "";
-			form.ProgID.value = "";
-		}
+		programs = document.getElementsByName("Program" + index);
+		for (i = 0; i < programs.length; i++)
+			programs[i].checked = false;
+		catIDs = document.getElementsByName("CatID");
+		progIDs = document.getElementsByName("ProgID");
+		catIDs[index].value = "";
+		progIDs[index].value = "";
+		
+		numEnrolledProg--;
+		if (numEnrolledProg == 0) setNotEnrolled(false);
 	}
-	form.SignUpChanged.value = "true";
+	
+	setSignUpChanged();
 }
 
 function changeProgram(radioBtn, index) {
-	form = radioBtn.form;
-	if (eval("form.CatID[index]") != null) {
-		form.AppCat[index].checked = true;
-		form.CatID[index].value = form.AppCat[index].value;
-		form.ProgID[index].value = radioBtn.value;
+	var categories = document.getElementsByName("AppCat");
+	var catIDs = document.getElementsByName("CatID");
+	var progIDs = document.getElementsByName("ProgID");
+	
+	if (progIDs[index].value == radioBtn.value) return;	// Nothing is changed
+	
+	if (!categories[index].checked) {
+		if (numEnrolledProg == 0)
+			document.getElementById("NotEnrolled").checked = false;
+		numEnrolledProg++;
 	}
-	else {
-		form.AppCat.checked = true;
-		form.CatID.value = form.AppCat.value;
-		form.ProgID.value = radioBtn.value;
+	
+	categories[index].checked = true;
+	catIDs[index].value = categories[index].value;
+	progIDs[index].value = radioBtn.value;
+	setSignUpChanged();
+}
+
+function setNotEnrolled(userAction) {
+	if (userAction) {
+		var categories = document.getElementsByName("AppCat");
+		for (i = 0; i < categories.length; i++)
+			if (categories[i].checked) {
+				categories[i].checked = false;
+				changeCategory(categories[i], i);
+			}
 	}
-	form.SignUpChanged.value = "true";
+	document.getElementById("NotEnrolled").checked = true;
+}
+
+function confirmSubmit() {
+	if (!signUpChanged) return false;
+	return confirm('Are you sure you would like to modify these program options?');
+}
+
+function resendNotEnrolled(form) {
+	setNotEnrolled(true);
+	form.NotEnrolled.value = "Resend";
+	form.submit();
 }
 </script>
 </head>
@@ -131,7 +162,7 @@ function changeProgram(radioBtn, index) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -172,10 +203,11 @@ function changeProgram(radioBtn, index) {
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = "PROGRAMS - ENROLLMENT"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_ENROLLMENT, "PROGRAMS - ENROLLMENT"); %>
               <%@ include file="InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+			  
               <div align="center"><span class="TableCell">Select the check boxes 
                 and corresponding radio button of the programs this customer would 
                 like to be enrolled in. </span><br>
@@ -189,18 +221,21 @@ function changeProgram(radioBtn, index) {
 <% if (request.getParameter("Wizard") != null) { %>
 				<input type="hidden" name="Wizard" value="true">
 <% } %>
-                <table border="1" cellspacing="0" cellpadding="3" width="366">
+                <table border="1" cellspacing="0" cellpadding="2" width="366">
                   <tr> 
-                    <td width="83" class="HeaderCell" align = "center">Description</td>
-                    <td width="132" class="HeaderCell"> 
+                    <td width="81" class="HeaderCell" align = "center">Description</td>
+                    <td width="155" class="HeaderCell"> 
                       <div align="center">Program Enrollment</div>
                     </td>
-                    <td width="125" class="HeaderCell"> 
+                    <td width="110" class="HeaderCell"> 
                       <div align="center">Status</div>
                     </td>
                   </tr>
 <%
-	for (int i = 0, idx = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+	int numProgCat = 0;
+	int numEnrolledProg = 0;
+	
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		if (category.getStarsEnrLMProgramCount() == 0) continue;
 		
@@ -212,24 +247,25 @@ function changeProgram(radioBtn, index) {
 			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
 				program = prog;
 				programStatus = program.getStatus();
+				numEnrolledProg++;
 				break;
 			}
 		}
 %>
                   <tr> 
-                    <td width="83" align = "center"><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
+                    <td width="81" align = "center"><img id="<%= i %>" src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" onClick = "toolTipAppear(event, 'tool', <%= i %>, 350, text)"><br>
                       <span class = "TableCell">Click for description</span></td>
-                    <td width="132" align = "center"> 
-                      <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+                    <td width="155" align = "center"> 
+                      <table width="110" border="0" cellspacing="0" cellpadding="1" align="center">
+						<input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
+						<input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
+						<input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
                         <tr> 
                           <td width="23"> 
                             <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
-						  onclick="changeCategory(this, <%= idx %>)" <% if (program != null) out.print("checked"); %>>
-                            <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
-                            <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
-                            <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrLMProgram(0).getProgramID() %>">
+						  onclick="changeCategory(this, <%= numProgCat %>)" <% if (program != null) out.print("checked"); %>>
                           </td>
-                          <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
+                          <td class="TableCell" nowrap><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
                         </tr>
                       </table>
 <%
@@ -240,16 +276,19 @@ function changeProgram(radioBtn, index) {
 <%
 			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
+				String checkStr = "";
+				if (program != null && prog.getProgramID() == program.getProgramID())
+					checkStr = "checked";
 				/* Each row is a program in this category */
 %>
                         <tr> 
                           <td width="37"> 
                             <div align="right"> 
-                              <input type="radio" name="Program<%= idx %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= idx %>)"
-							<% if (program != null && prog.getProgramID() == program.getProgramID()) out.print("checked"); %>>
+                              <input type="radio" name="Program<%= numProgCat %>" value="<%= prog.getProgramID() %>"
+							  onclick="changeProgram(this, <%= numProgCat %>)" <%= checkStr %>>
                             </div>
                           </td>
-                          <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
+                          <td class="TableCell" nowrap><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
                         </tr>
 <%
 			}	// End of program
@@ -259,29 +298,59 @@ function changeProgram(radioBtn, index) {
 		}	// End of program list
 %>
                     </td>
-                    <td width="125" valign="middle" class="TableCell"> 
+                    <td width="110" valign="middle" class="TableCell"> 
                       <div align="center"><%= programStatus %></div>
                     </td>
                   </tr>
 <%
-		idx++;
+		numProgCat++;
+	}
+	
+	if (numProgCat > 0) {
+%>
+                  <tr> 
+                    <td width="81" align = "center">&nbsp;</td>
+                    <td width="155" align = "center"> 
+                      <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+                        <tr> 
+                          <td width="23"> 
+                            <input type="checkbox" id="NotEnrolled" name="NotEnrolled" value="true" onclick="setNotEnrolled(true)"
+						    <% if (numEnrolledProg == 0) out.print("checked"); %>>
+                          </td>
+                          <td width="84" class="TableCell">Not Enrolled</td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="110" valign="middle" class="TableCell"> 
+                      <div align="center">
+					    <input type="button" id="Resend" value="Resend" onclick="resendNotEnrolled(this.form)"
+						<% if (numEnrolledProg > 0) out.print("disabled=\"true\""); %>>
+					  </div>
+                    </td>
+                  </tr>
+<%
 	}
 %>
                 </table>
+<script language="JavaScript">numEnrolledProg = <%= numEnrolledProg %>;</script>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
                     <td width="186"> 
                       <div align="right"> 
 <% if (request.getParameter("Wizard") == null) { %>
-                        <input type="submit" name="Submit" value="Submit" onClick="return confirm('Are you sure you would like to modify these program options?')">
+                        <input type="submit" name="Submit" value="Submit" onClick="return confirmSubmit()">
 <% } else { %>
-                        <input type="submit" name="Next" value="Next">
+                        <input type="submit" name="Done" value="Done">
 <% } %>
                       </div>
                     </td>
                     <td width="194"> 
                       <div align="left"> 
+<% if (request.getParameter("Wizard") == null) { %>
                         <input type="reset" name="Cancel" value="Cancel">
+<% } else { %>
+                        <input type="button" name="Cancel" value="Cancel" onclick="location.href = '../Operations.jsp'">
+<% } %>
                       </div>
                     </td>
                   </tr>

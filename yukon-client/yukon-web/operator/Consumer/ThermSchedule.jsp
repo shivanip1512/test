@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	String dayStr = request.getParameter("day");
 	if (dayStr == null) dayStr = StarsThermoDaySettings.WEEKDAY.toString();
@@ -186,7 +187,7 @@ MM_reloadPage(true);
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
 				  
@@ -227,9 +228,10 @@ MM_reloadPage(true);
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center">
-              <% String header = "THERMOSTAT - SCHEDULE"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_SCHED, "THERMOSTAT - SCHEDULE"); %>
               <%@ include file="InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
 			<form name="form1" method="POST" action="/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">

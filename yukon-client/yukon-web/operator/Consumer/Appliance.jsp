@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	if (appliances.getStarsApplianceCount() == 0) {
 		response.sendRedirect("CreateAppliances.jsp"); return;
@@ -83,7 +84,7 @@ function deleteAppliance(form) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -756,10 +757,8 @@ function deleteAppliance(form) {
 <%
 	if (program != null) {
 %>
-				    <form name="form7" method="POST" action="/servlet/SOAPClient">
-					  <input type="hidden" name="action" value="GetLMCtrlHist">
-					  <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ContHist.jsp?prog=<%= progNo %>">
+				    <form name="form7" method="POST" action="ContHist.jsp">
+					  <input type="hidden" name="prog" value="<%= progNo %>">
                       <table width="250" border="1" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="109" class="HeaderCell"> 
@@ -768,7 +767,7 @@ function deleteAppliance(form) {
                             </div>
                           </td>
                           <td width="151" class="HeaderCell"> 
-                            <div align="center">Control 
+                            <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> 
                               History</div>
                           </td>
                         </tr>
@@ -783,9 +782,9 @@ function deleteAppliance(form) {
                               <tr> 
                                 <td width="180" valign="top" align="center"> 
                                   <select name="Period">
-                                    <option value="PastWeek">Past Week</option>
-                                    <option value="PastMonth">Past Month </option>
-                                    <option value="All">All</option>
+                                    <option value="<%= StarsCtrlHistPeriod.PASTWEEK.toString() %>">Past Week</option>
+                                    <option value="<%= StarsCtrlHistPeriod.PASTMONTH.toString() %>">Past Month </option>
+                                    <option value="<%= StarsCtrlHistPeriod.ALL.toString() %>">All</option>
                                   </select>
                                   <br>
                                 </td>

@@ -52,28 +52,8 @@
 		    <td width="657" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"><br>
-              <table width="600" border="0" cellspacing="0">
-                <tr> 
-                  <td width="202"> 
-                    <table width="200" border="0" cellspacing="0" cellpadding="3">
-                      <tr> 
-                        <td><span class="Main"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
-                          <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
-                          <!--<%= account.getCompany() %><br> -->
-                          <%= propAddr.getStreetAddr1() %>, <%= propAddr.getStreetAddr2() %><br>
-                          <%= propAddr.getCity() %>, <%= propAddr.getState() %> <%= propAddr.getZip() %><br>
-                          <%= primContact.getHomePhone() %></span></td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="187" valign="top"> 
-                    <div align="center"><b><span class="Main">PROGRAM DETAILS</span></b></div>
-                  </td>
-                  <td valign="top" width="205" align = "right"> <%@ include file="Notice.jsp" %>
-                    
-                  </td>
-                </tr>
-              </table>
+              <% String header = "PROGRAM - DETAILS"; %>
+              <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
                   <td> 

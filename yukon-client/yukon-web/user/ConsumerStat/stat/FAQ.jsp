@@ -51,7 +51,7 @@
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, WEB_TEXT_FAQ_TITLE); %>
+              <% String header = "QUESTIONS - FAQ"; %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -106,8 +106,6 @@
 	}
 %>
                     </td>
-                  </form>
-                  <form name="form1" method="get" action="">
                   </form>
                 </tr>
               </table>

@@ -7,11 +7,11 @@
 <link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
 
 <script language="JavaScript">
-function setRedirect(form, progNo) {
-	if (form.Period.value == 'None')
-		form.REDIRECT.value = '/user/ConsumerStat/stat/Summary.jsp?prog=' + progNo;
+function setRedirect(form) {
+	if (form.Period.value == '<%= StarsCtrlHistPeriod.NONE.toString() %>')
+		form.action = 'Summary.jsp';
 	else
-		form.REDIRECT.value = '/user/ConsumerStat/stat/ContHist.jsp?prog=' + progNo;
+		form.action = 'ContHist.jsp';
 }
 </script>
 </head>
@@ -60,7 +60,7 @@ function setRedirect(form, progNo) {
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_CONTROL_HISTORY_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_CONTROL_HISTORY, "PROGRAMS - CONTROL HISTORY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -77,11 +77,11 @@ function setRedirect(form, progNo) {
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="302" class="HeaderCell"> 
-                    <div align="center">Recent <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capitalized"/> History <br>
+                    <div align="center">Recent <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/> History <br>
                       (since midnight)</div>
                   </td>
                   <td width="180" class="HeaderCell"> 
-                    <div align="center">Complete <cti:getProperty propertyid="<%= ResidentialCustomerROle.WEB_TEXT_CONTROL %>" format="capitalized"/> History</div>
+                    <div align="center">Complete <cti:getProperty propertyid="<%= ResidentialCustomerROle.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
                 </tr>
 <%
@@ -121,11 +121,11 @@ function setRedirect(form, progNo) {
                         <td width="60" class="TableCell">Duration</td>
                       </tr>
 <%
-			StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), StarsCtrlHistPeriod.PASTDAY, tz );
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capitalized"/></td>
+                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROL %>" format="capital"/></td>
                         <td width="61" class="TableCell"></td>
                         <td width="60" class="TableCell">----</td>
                       </tr>
@@ -176,18 +176,16 @@ function setRedirect(form, progNo) {
 		ControlSummary summary = program.getStarsLMControlHistory().getControlSummary();
 %>
                   <td width="180"> 
-                    <form method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="setRedirect(this, <%= i %>)">
-                      <input type="hidden" name="action" value="GetLMCtrlHist">
-                      <input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-                      <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ContHist.jsp?prog=<%= i %>">
+                    <form method="POST" action="ContHist.jsp">
+                      <input type="hidden" name="prog" value="<%= i %>">
                       <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                         <tr> 
                           <td width="180" valign="top" align="center"> 
-                            <select name="Period">
-                              <option value="PastWeek">Past Week</option>
-                              <option value="PastMonth">Past Month </option>
-							  <option value="All">All</option>
-                              <option value="None">Summary</option>
+                            <select name="Period" onchange="setRedirect(this.form)">
+							  <option value="<%= StarsCtrlHistPeriod.PASTWEEK.toString() %>">Past Week</option>
+							  <option value="<%= StarsCtrlHistPeriod.PASTMONTH.toString() %>">Past Month </option>
+							  <option value="<%= StarsCtrlHistPeriod.ALL.toString() %>">All</option>
+                              <option value="<%= StarsCtrlHistPeriod.NONE.toString() %>">Summary</option>
                             </select>
                           </td>
                         </tr>

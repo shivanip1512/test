@@ -17,13 +17,18 @@
 
 <cti:checkLogin/>
 <%
-	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
+	{
+		// User login no longer valid
+		response.sendRedirect("/login.jsp"); return;
+	}
 	
-    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
-    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
-    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
+	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
+	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
-    java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
+	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
 	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
@@ -31,8 +36,9 @@
 	session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
 	
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (user == null || user.getYukonUser().getUserID() != liteYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
-		user = SOAPServer.getStarsYukonUser( liteYukonUser );
+	if (user == null || user.getYukonUser() != lYukonUser) {
+		// This is logged in using the normal LoginController, not the StarsLoginController
+		user = SOAPServer.getStarsYukonUser( lYukonUser );
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
 		MultiAction actions = new MultiAction();
@@ -85,12 +91,18 @@
 			userLogin.setUsername( "" );
 			userLogin.setPassword( "" );
 		}
-		
-		if (account.getTimeZone() != null && !account.getTimeZone().equals("") && !account.getTimeZone().equals("(none)")) {
-			TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
-			datePart.setTimeZone(tz);
-			dateFormat.setTimeZone(tz);
-			histDateFormat.setTimeZone(tz);
-		}
 	}
+	
+	TimeZone tz = TimeZone.getDefault(); 
+	if(energyCompany != null)
+		tz = TimeZone.getTimeZone( energyCompany.getTimeZone() );
+		
+	timePart.setTimeZone(tz);
+	datePart.setTimeZone(tz);
+	dateFormat.setTimeZone(tz);
+	histDateFormat.setTimeZone(tz);
+	
+	String logOffUrl = "";
+	if (ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.LOG_OFF_URL ) != null)
+		logOffUrl = "&REDIRECT=" + ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.LOG_OFF_URL );
 %>

@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	if (inventories.getStarsLMHardwareCount() == 0) {
 		response.sendRedirect("CreateHardware.jsp"); return;
@@ -68,16 +69,9 @@ function deleteHardware() {
 	form.submit();
 }
 
-var configChanged = false;
-
-function setConfigChanged() {
-	configChanged = true;
-}
-
 function changeAppSelection(chkBox) {
 	var grpList = document.getElementById('Group_App' + chkBox.value);
 	grpList.disabled = !chkBox.checked;
-	setConfigChanged();
 }
 
 function validate(form) {
@@ -100,7 +94,7 @@ function validate(form) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -208,18 +202,7 @@ function validate(form) {
                                   <div align="right">Status: </div>
                                 </td>
                                 <td width="200"> 
-                                  <select name="Status">
-<%
-	StarsCustSelectionList statusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS );
-	for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
-		String selectedStr = (entry.getEntryID() == hardware.getDeviceStatus().getEntryID()) ? "selected" : "";
-%>
-                                    <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
-<%
-	}
-%>
-                                  </select>
+                                  <input type="text" name="Status" maxlength="30" size="24" value="<%= hardware.getDeviceStatus().getContent() %>">
                                 </td>
                               </tr>
                               <tr> 
@@ -268,8 +251,9 @@ function validate(form) {
 <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
+		String selectedStr = (servCompany.equals(company)) ? "selected" : "";
 %>
-                              		  <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
+                              		  <option value="<%= servCompany.getCompanyID() %>" <%= selectedStr %>><%= servCompany.getCompanyName() %></option>
 <%
 	}
 %>
@@ -314,7 +298,7 @@ function validate(form) {
                                   <td valign = "top" align = "center" class = "TableCell"><b>Service 
                                     Company</b><br>
                                      
-<% if (company.getCompanyID() == 0) { %>
+<% if (company == null || company.getCompanyID() == 0) { %>
 								  None
 <% } else { %>
                                   <%= company.getCompanyName() %><br>
@@ -389,7 +373,7 @@ function validate(form) {
                           </td>
                           <td width="73" class="TableCell" height="2"><%= program.getProgramName() %></td>
                           <td width="89" height="2"> 
-                            <select id="Group_App<%= starsApps[i].getApplianceID() %>" name="GroupID" onChange="setConfigChanged()">
+                            <select id="Group_App<%= starsApps[i].getApplianceID() %>" name="GroupID">
 <%
 		if (enrProg == null || enrProg.getAddressingGroupCount() == 0) {
 %>
@@ -460,10 +444,11 @@ function validate(form) {
 %>
                         <tr align="center"> 
                           <td colspan="3"> 
-                            <input type="button" name="Config" value="Config" onClick="if (configChanged) sendCommand(this.name)">
+                            <input type="button" name="UpdateLMHardwareConfig" value="Config" onClick="sendCommand(this.name)">
                           </td>
                         </tr>
 					  </table>
+<!--
                       <table width="300" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td valign="top" align = "center" height="33"> <br>
@@ -486,6 +471,7 @@ function validate(form) {
                           </td>
                         </tr>
                       </table>
+-->
                     </td>
                     <td width="300" valign="top" bgcolor="#FFFFFF" height="65"> 
                       <div align="center"> 

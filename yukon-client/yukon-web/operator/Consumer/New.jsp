@@ -1,11 +1,21 @@
 <%@ include file="StarsHeader.jsp" %>
 <%
 	StarsNewCustomerAccount newAccount = (StarsNewCustomerAccount)
-			user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
+			user.getAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT );
 	if (newAccount != null)
 		account = newAccount.getStarsCustomerAccount();
 	else
 		account = StarsFactory.newStarsCustomerAccount();
+	
+	userLogin = new StarsUser();
+	if (newAccount != null && newAccount.getStarsUpdateLogin() != null) {
+		userLogin.setUsername( newAccount.getStarsUpdateLogin().getUsername() );
+		userLogin.setPassword( newAccount.getStarsUpdateLogin().getPassword() );
+	}
+	else {
+		userLogin.setUsername( "" );
+		userLogin.setPassword( "" );
+	}
 	
 	AdditionalContact[] contacts = new AdditionalContact[3];
 	for (int i = 0; i < 3; i++) {
@@ -93,7 +103,7 @@ function clearPage() {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -207,12 +217,14 @@ function clearPage() {
                           <input type="text" name="Email" maxlength="50" size="24" value="<%= account.getPrimaryContact().getEmail().getNotification() %>">
                         </td>
                       </tr>
+<cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLE_ID %>">
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
                         <td width="210"> 
                           <input type="checkbox" name="NotifyControl" value="true" <% if (account.getPrimaryContact().getEmail().getEnabled()) { %>checked<% } %>>
-                          <span class="TableCell">Notify day of control</span></td>
+                          <span class="TableCell">Notify <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/></span></td>
                       </tr>
+</cti:checkRole>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
@@ -506,7 +518,7 @@ function clearPage() {
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Username" maxlength="20" size="20">
+                    <input type="text" name="Username" maxlength="20" size="20" value="<%= userLogin.getUsername() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -514,7 +526,7 @@ function clearPage() {
                     <div align="right">Password:</div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Password" maxlength="20" size="20">
+                    <input type="text" name="Password" maxlength="20" size="20" value="<%= userLogin.getPassword() %>">
                   </td>
                 </tr>
                 <tr> 
@@ -541,7 +553,7 @@ function clearPage() {
                   </td>
                   <td width="190"> 
                     <div align="left"> 
-                      <input type="button" name="Cancel" value="Cancel" onclick="clearPage()">
+                      <input type="button" name="Cancel" value="Clear" onclick="clearPage()">
                     </div>
                   </td>
                 </tr>

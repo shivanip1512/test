@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	StarsLMHardwareHistory hwHist = null;
 	if (inventories.getStarsLMHardwareCount() > 0) {
@@ -24,7 +25,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -63,7 +64,7 @@
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "PROGRAMS - OPT OUT"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT"); %>
               <%@ include file="InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <table width="550" border="0" cellspacing="0" cellpadding="0">
@@ -83,44 +84,45 @@
                 <tr> 
                   <td> 
                     <div align="center"> 
-                      <p class="HeaderCell">Temporarily opt out of all programs 
-                      </p>
+                      <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>"/> 
+					  all programs</p>
                     </div>
                     <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="180" align="center"> 
+                          <select name="OptOutPeriod">
 <%
 	StarsCustSelectionList periodList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
 	if (periodList != null) {
-%>
-                          <select name="OptOutDate">
-<%
 		for (int i = 0; i < periodList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = periodList.getStarsSelectionListEntry(i);
+			if (entry.getYukonDefID() > 0) {	// This is a special entry, e.g. "Today"
 %>
 							<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
 <%
-		}
+			}
+			else {	// If entry.getYukonDefID() = x (<=0), then -x is the number of days to be opted out
 %>
-                          </select>
+							<option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
 <%
+			}
+		}
 	}
 	else {
 %>
-                          <select name="OptOutPeriod">
-                            <option value="1">One Day</option>
-                            <option value="2">Two Days</option>
-                            <option value="3">Three Days</option>
-                            <option value="7">One Week</option>
-                            <option value="14">Two Weeks</option>
-                          </select>
+                            <option value="-1">One Day</option>
+                            <option value="-2">Two Days</option>
+                            <option value="-3">Three Days</option>
+                            <option value="-7">One Week</option>
+                            <option value="-14">Two Weeks</option>
 <%
 	}
 %>
+                          </select>
                         </td>
                         <td width="180" align="center"> 
                          
-                            <input type="submit" name="Submit" value="Submit">
+                            <input type="submit" name="Submit" value="Submit" <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
                           
                         </td>
                       </tr>
@@ -132,7 +134,8 @@
               <table width="150" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td align="center">
-                    <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'">
+                    <input type="submit" value="Re-enable" onclick="this.form.action.value='ReenableProgram'"
+					 <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
                   </td>
                 </tr>
               </table>

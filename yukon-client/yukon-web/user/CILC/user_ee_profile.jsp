@@ -1,39 +1,11 @@
-<%@ include file="user_ee.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-<script language="JavaScript">
 
-function confirm_form()
-{
-    checker.submitted.value = "true";
-	return true;
-}
-
-function decline_form()
-{
-	checker.submitted.value = "false";
-	checker.submit();
-}
-</script>
 </head>
-<%
-  //Look up the customer curtailable amount, use this as the default amount
-//  Object[][] gData2 = com.cannontech.util.ServletUtil.executeSQL( session, "select curtailamount from cicustomerbase where customerid=" +  customerID);  
-//  String curtailAmount = gData2[0][0].toString();
-
-  // Grab the 24 customers baseline values
-  double[] baseLineValues = cache.getCustomerBaseLine( customerID);
-
-  // If we couldn't find a baseline create an empty
-  // array so below doesn't bomb
-  if( baseLineValues == null )
-    baseLineValues = new double[24];
-
-%>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -80,752 +52,170 @@ function decline_form()
               <table width="657" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
                 <td width="650" class="Main" valign="top"> 
-                  <p align="center"><b><br>
-                    ADMINISTRATION - PROFILE </b><br>
-                    There must be a Primary Contact. Any number of additional 
-                    contacts may also be included.
-                  <div align="center"></div>
-                  <form name="form1" method="POST" action="/servlet/UpdateContacts">
-                    <%
-	for (int i = 0; i < 3; i++) {
-%>
-                    <input type="hidden" name="ContactID<%= i+2 %>" value="<%= contacts[i].getContactID() %>">
-                    <%
-	}
-%>
-                    <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="300" valign="top" bgcolor="#FFFFFF"><span class="MainHeader"><b>CONTACT 
-                          (Primary) </b></span> 
-                          <hr>
-                          <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Last Name:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="LastName" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">First Name:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="FirstName" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">e-mail Address:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Phone 1:</div>
-                              </td>
-                              <td width="210">
-                                <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Phone 2:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Pager:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="Pager" maxlength="14" size="14" value="<%=%>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">User Name:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="UserName" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Password:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="Password" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-							<tr>
-							<td height="35"></td>
-							</tr>
-                          </table>
-                          <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                            <tr> 
-                              <td><br>
-                                <span class="MainHeader"><b>CONTACT 2</b></span> 
-                                <hr>
-                                <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Last Name:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="LastName22" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">First Name:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="FirstName22" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">e-mail Address:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="Email22" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Phone 1:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="HomePhone22" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Phone 2:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="WorkPhone22" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Pager:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="Pager2" maxlength="14" size="14" value="<%=%>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">User Name:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="UserName2" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Password:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="Password2" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right"></div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="submit" name="Delete2" value="Delete">
-                                    </td>
-                                  </tr>
-                                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Last Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="LastName3" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">First Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="FirstName3" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">e-mail Address:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="Email3" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 1:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 2:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Pager:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">User Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Password:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                  </table>
-                                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Last Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="LastName3" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">First Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="FirstName3" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">e-mail Address:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="Email3" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 1:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="HomePhone3" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 2:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Pager:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">User Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Password:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone3" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td width="300" valign="top" bgcolor="#FFFFFF"> <span class="MainHeader"><b>CONTACT 
-                          2 </b></span> 
-                          <hr>
-                          <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Last Name:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="LastName2" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">First Name:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="FirstName2" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">e-mail Address:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="Email2" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Phone 1:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="HomePhone2" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Phone 2:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="WorkPhone2" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Pager:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="Pager" maxlength="14" size="14" value="<%=%>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">User Name:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="UserName" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right">Password:</div>
-                              </td>
-                              <td width="210"> 
-                                <input type="text" name="Password" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                              </td>
-                            </tr>
-                            <tr> 
-                              <td width="90" class="TableCell"> 
-                                <div align="right"></div>
-                              </td>
-                              <td width="210"> 
-                                <input type="submit" name="Delete" value="Delete">
-                              </td>
-                            </tr>
-                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Last Name:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="LastName" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">First Name:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="FirstName" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">e-mail Address:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Phone 1:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Phone 2:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Pager:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">User Name:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Password:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                            </table>
-                            <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Last Name:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="LastName" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">First Name:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="FirstName" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">e-mail Address:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Phone 1:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="HomePhone" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Phone 2:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Pager:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">User Name:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td width="90" class="TableCell"> 
-                                  <div align="right">Password:</div>
-                                </td>
-                                <td width="210"> 
-                                  <input type="text" name="WorkPhone" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                </td>
-                              </tr>
-                            </table>
-                          </table>
-                          <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                            <tr> 
-                              <td><br>
-                                <span class="MainHeader"><b>CONTACT 4</b></span> 
-                                <hr>
-                                <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Last Name:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="LastName23" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">First Name:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="FirstName23" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">e-mail Address:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="Email23" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Phone 1:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="HomePhone23" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Phone 2:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="WorkPhone23" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Pager:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="Pager3" maxlength="14" size="14" value="<%=%>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">User Name:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="UserName3" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right">Password:</div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="text" name="Password3" maxlength="14" size="14" value="<%=  %>" onChange="setChanged()">
-                                    </td>
-                                  </tr>
-                                  <tr> 
-                                    <td width="90" class="TableCell"> 
-                                      <div align="right"></div>
-                                    </td>
-                                    <td width="210"> 
-                                      <input type="submit" name="Delete3" value="Delete">
-                                    </td>
-                                  </tr>
-                                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Last Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="LastName4" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">First Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="FirstName4" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">e-mail Address:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="Email4" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 1:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="HomePhone4" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 2:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Pager:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">User Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Password:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                  </table>
-                                  <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Last Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="LastName4" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">First Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="FirstName4" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">e-mail Address:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="Email4" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 1:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="HomePhone4" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Phone 2:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Pager:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">User Name:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                    <tr> 
-                                      <td width="90" class="TableCell"> 
-                                        <div align="right">Password:</div>
-                                      </td>
-                                      <td width="210"> 
-                                        <input type="text" name="WorkPhone4" maxlength="14" size="14" value="<%= primContact.getWorkPhone() %>" onChange="setChanged()">
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                    <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
-                      <tr> 
-                        <td width="50%"> 
-                          <div align="right"> 
-                            <input type="submit" name="Save" value="Save">
-                          </div>
-                        </td>
-                        <td width="50%"> 
-                          <div align="left"> 
-                            <input type="reset" name="Cancel" value="Cancel">
-                          </div>
-                        </td>
-                      </tr>
-                    </table>
-                  </form>
-                  <p>&nbsp;</p>
                   
-                </td>
+                    <struts:form name="checker" type="com.cannontech.validate.PageBean" scope="session" action="user_ee.jsp?tab=accept"></struts:form>
+                  <center>
+                      <table width="650" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                        <td width="605" class="Main" > 
+                          <p align="center"><b><br>
+                            ADMINISTRATION - CUSTOMER PROFILE</b><br>
+                            There must be a Primary Contact. Any number of additional 
+                            contacts may also be included. 
+                        </td>
+                          
+                        <td width="45"> 
+                          <input type="submit" name="Add" value="Add">
+                        </td>
+                        </tr>
+                      </table>
+                    <br>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr>
+                        <td>
+                          <hr>
+                          <span class="Main"><b>CONTACT (PRIMARY)</b></span></td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td class="TableCell" width="60">First Name:</td>
+                        <td class="TableCell" width="132"> 
+                          <input type="text" name="textfield">
+                        </td>
+                        <td class="TableCell" width="69"> 
+                          <div align="right">Last Name:</div>
+                        </td>
+                        <td class="TableCell" width="277"> 
+                          <input type="text" name="textfield2">
+                        </td>
+                        <td class="TableCell" width="62"> 
+                          <input type="submit" name="Delete" value="Delete">
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td width="31" class="TableCell">Email:</td>
+                        <td width="90" class="TableCell"> 
+                          <input type="text" name="textfield3" size="12">
+                        </td>
+                        <td width="71" class="TableCell"> 
+                          <div align="right">Phone 1:</div>
+                        </td>
+                        <td width="88" class="TableCell"> 
+                          <input type="text" name="textfield32" size="12">
+                        </td>
+                        <td width="67" class="TableCell"> 
+                          <div align="right">Phone 2:</div>
+                        </td>
+                        <td width="75" class="TableCell"> 
+                          <input type="text" name="textfield33" size="12">
+                        </td>
+                        <td width="61" class="TableCell"> 
+                          <div align="right">Pager:</div>
+                        </td>
+                        <td width="85" class="TableCell"> 
+                          <input type="text" name="textfield34" size="12">
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td class="TableCell" width="58">User Name:</td>
+                        <td class="TableCell" width="144"> 
+                          <input type="text" name="textfield4">
+                        </td>
+                        <td class="TableCell" width="61"> 
+                          <div align="right">Password:</div>
+                        </td>
+                        <td class="TableCell" width="321"> 
+                          <input type="text" name="textfield5">
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td> 
+                          <hr>
+                          <span class="Main"><b>CONTACT 2</b></span></td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td class="TableCell" width="60">First Name:</td>
+                        <td class="TableCell" width="132"> 
+                          <input type="text" name="textfield6">
+                        </td>
+                        <td class="TableCell" width="69"> 
+                          <div align="right">Last Name:</div>
+                        </td>
+                        <td class="TableCell" width="277"> 
+                          <input type="text" name="textfield22">
+                        </td>
+                        <td class="TableCell" width="62"> 
+                          <input type="submit" name="Delete2" value="Delete">
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td width="31" class="TableCell">Email:</td>
+                        <td width="90" class="TableCell"> 
+                          <input type="text" name="textfield35" size="12">
+                        </td>
+                        <td width="71" class="TableCell"> 
+                          <div align="right">Phone 1:</div>
+                        </td>
+                        <td width="88" class="TableCell"> 
+                          <input type="text" name="textfield322" size="12">
+                        </td>
+                        <td width="67" class="TableCell"> 
+                          <div align="right">Phone 2:</div>
+                        </td>
+                        <td width="75" class="TableCell"> 
+                          <input type="text" name="textfield332" size="12">
+                        </td>
+                        <td width="61" class="TableCell"> 
+                          <div align="right">Pager:</div>
+                        </td>
+                        <td width="85" class="TableCell"> 
+                          <input type="text" name="textfield342" size="12">
+                        </td>
+                      </tr>
+                    </table>
+                    <table width="600" border="0" cellspacing="0" cellpadding="2">
+                      <tr> 
+                        <td class="TableCell" width="58">User Name:</td>
+                        <td class="TableCell" width="144"> 
+                          <input type="text" name="textfield42">
+                        </td>
+                        <td class="TableCell" width="61"> 
+                          <div align="right">Password:</div>
+                        </td>
+                        <td class="TableCell" width="321"> 
+                          <input type="text" name="textfield52">
+                        </td>
+                      </tr>
+                    </table>
+                    <br>
+                    <table width="200" border="0" cellspacing="0" cellpadding="2">
+                      <tr>
+                        <td> 
+                          <div align="right">
+                            <input type="submit" name="Submit" value="Submit">
+                          </div>
+                        </td>
+                        <td>
+                          <input type="submit" name="Cancel" value="Cancel">
+                        </td>
+                      </tr>
+                    </table>
+                  <p>&nbsp;</p></center>
+
+
+   </td>
   </tr>
 </table>
 
@@ -837,7 +227,6 @@ function decline_form()
     </td>
 	</tr>
 </table>
-<input type="text" name="HomePhone5" maxlength="14" size="14" value="<%= primContact.getHomePhone() %>" onChange="setChanged()">
 <br>
 </body>
 </html>

@@ -54,7 +54,7 @@
               <br>
               
             <div align="center" class="Main">
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_UTILITY_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_UTILITY, "QUESTIONS - UTILITY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -68,17 +68,17 @@
               <%= ecWebSettings.getAlternateDisplayName() %><br>
 			  <%= ServletUtils.getFormattedAddress( energyCompany.getCompanyAddress() ) %><br>
               <br>
-<% if (energyCompany.getMainPhoneNumber().length() > 0) { %>
+<% if (energyCompany.getMainPhoneNumber().trim().length() > 0) { %>
               Ph: <%= energyCompany.getMainPhoneNumber() %><br>
 <% } %>
-<% if (energyCompany.getMainFaxNumber().length() > 0) { %>
+<% if (energyCompany.getMainFaxNumber().trim().length() > 0) { %>
               Fax: <%= energyCompany.getMainFaxNumber() %><br>
 <% } %>
 <cti:checkProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
-			  <a href="<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL%>"/>" class="Link1" target="new">Click here for trouble shooting</a>
+			  <a href="<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL%>"/>" class="Link1" target="new">Click here for trouble shooting</a><br>
 </cti:checkProperty>
 <cti:checkNoProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
-<% if (energyCompany.getEmail().length() > 0) { %>
+<% if (energyCompany.getEmail().trim().length() > 0) { %>
               <a href="mailto: <%= energyCompany.getEmail() %>" class = "Link1">Email: <%= energyCompany.getEmail() %></a><br>
 <% } %>
 </cti:checkNoProperty>

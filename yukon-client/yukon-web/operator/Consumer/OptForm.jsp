@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -30,7 +31,7 @@ function MM_popupMsg(msg) { //v1.0
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -68,7 +69,7 @@ function MM_popupMsg(msg) { //v1.0
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
-      		  <% String header = "OPT OUT"; %>
+      		  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "OPT OUT"); %>
               <%@ include file="InfoSearchBar.jsp" %> 
           
             <p><span class="Main">Please complete the following form to opt out 
@@ -76,7 +77,7 @@ function MM_popupMsg(msg) { //v1.0
             <hr width = "90%">
           
 			<form method="post" action="/servlet/SOAPClient">
-			  <input type="hidden" name="action" value="SendExitAnswers">
+			  <input type="hidden" name="action" value="SendOptOutNotification">
 			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Programs.jsp">
 			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/operator/Consumer/OptOut.jsp">
                 <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">

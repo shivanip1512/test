@@ -7,6 +7,7 @@
 						  {"user_lm_time.jsp", "Time Based"},
 						  {"switch_commands.jsp", "Switch Command"},
 						  {"user_trending.jsp", "Trending"}
+						  {"user_ee_profile.jsp", "Profile"}
 						 };
 	
 	Hashtable links = new Hashtable();
@@ -59,7 +60,7 @@
   <cti:checkProperty propertyid="<%=CommercialMeteringRole.TRENDING_GET_DATA_NOW_BUTTON%>">
   <tr>
     <td height="30" valign="bottom">
-      <div align="left"><span class="NavHeader">Admin</span><br>
+      <div align="left"><span class="NavHeader">Display</span><br>
         <img src='../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.NAV_BULLET%>"/>' width="12" height="12"><a href="<%=request.getContextPath()%>/user/CILC/user_trending.jsp?update=now" class="link2"><span class="NavText">Get Data Now</span></a><br>
       </div>
     </td>
@@ -78,6 +79,15 @@
 		<%= links.get("user_curtail.jsp") %><br>
 		</cti:checkRole>
       </div>
+    </td>
+  </tr>
+  <tr>
+    <td height="20">
+      <div align="left"><span class="NavHeader">Administration</span><br>
+        <cti:checkRole roleid="<%=Profile.ROLEID%>">
+		<%= links.get("user_ee.profile.jsp") %><br>
+		</cti:checkRole>
+	  </div>
     </td>
   </tr>
   </cti:checkMultiRole>

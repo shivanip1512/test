@@ -10,7 +10,7 @@
 <!--
 function confirmSubmit(form) { //v1.0
   if (form.OptOutPeriod.value == 0) return false;
-  return confirm('Are you sure you would like to temporarily opt out of all programs?');
+  return confirm('Are you sure you would like to temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/> all programs?');
 }
 //-->
 </script>
@@ -59,7 +59,7 @@ function confirmSubmit(form) { //v1.0
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_OPT_OUT_TITLE);%>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT");%>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr>
@@ -73,7 +73,7 @@ function confirmSubmit(form) { //v1.0
               <p><table width="500" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="Main">
-				    <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_OPT_OUT_DESC%>"/>
+				    <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_DESC_OPT_OUT %>"/>
 				  </td>
                 </tr>
               </table>
@@ -90,41 +90,43 @@ function confirmSubmit(form) { //v1.0
                       <table width="200" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC" >
                         <tr> 
                           <td align = "center"> 
-                              <p class="HeaderCell">Temporarily opt out of all programs </p>
+                              <p class="HeaderCell">Temporarily <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/> 
+							  all programs </p>
                             <table width="180" border="0" cellspacing="0" cellpadding="0" align="center">
                               <tr> 
                                 <td width="180" align="center"> 
+                          		  <select name="OptOutPeriod">
 <%
-	StarsCustSelectionList periodList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD );
+	StarsCustSelectionList periodList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD_CUS );
 	if (periodList != null) {
-%>
-		                          <select name="OptOutDate">
-<%
 		for (int i = 0; i < periodList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = periodList.getStarsSelectionListEntry(i);
+			if (entry.getYukonDefID() > 0) {	// This is a special entry, e.g. "Today"
 %>
 									<option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
 <%
-		}
+			}
+			else {	// If entry.getYukonDefID() = x (<=0), then -x is the number of days to be opted out
 %>
-		                          </select>
+									<option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
 <%
+			}
+		}
 	}
 	else {
 %>
-                                  <select name="OptOutPeriod">
-									<option value="1">One Day</option>
-									<option value="2">Two Days</option>
-									<option value="3">Three Days</option>
-									<option value="7">One Week</option>
-									<option value="14">Two Weeks</option>
-                                  </select>
+									<option value="-1">One Day</option>
+									<option value="-2">Two Days</option>
+									<option value="-3">Three Days</option>
+									<option value="-7">One Week</option>
+									<option value="-14">Two Weeks</option>
 <%
 	}
 %>
+                          		  </select>
                                 </td>
                                 <td width="180" align="center"> 
-                                  <input type="submit" name="Submit" value="Submit" >
+                                  <input type="submit" name="Submit" value="Submit" <% if (programs.getStarsLMProgramCount() == 0) out.print("disabled"); %>>
                                 </td>
                               </tr>
                             </table>

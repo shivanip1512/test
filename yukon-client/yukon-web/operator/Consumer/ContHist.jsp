@@ -1,11 +1,19 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	String referrer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
 	
+	int progNo = 0;
 	String progNoStr = request.getParameter("prog");
-	int progNo = Integer.parseInt( progNoStr );
+	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
+	
+	StarsCtrlHistPeriod period = StarsCtrlHistPeriod.ALL;
+	String periodStr = request.getParameter("Period");
+	if (periodStr != null) period = StarsCtrlHistPeriod.valueOf( periodStr );
+	
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), period, tz );
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -15,8 +23,6 @@
 			break;
 		}
 	}
-	
-	StarsLMControlHistory ctrlHist = program.getStarsLMControlHistory();
 %>
 <html>
 <head>
@@ -36,7 +42,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="265" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Customer 
@@ -73,7 +79,9 @@
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "PROGRAMS - CONTROL HISTORY"; %><%@ include file="InfoSearchBar.jsp" %>
+            <div align="center">
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CONTROL_HISTORY, "PROGRAMS - CONTROL HISTORY"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
              
               <br>
             </div>
@@ -137,9 +145,7 @@
 <%
 	if (referrer == null) {
 %>
-              <form name="form1" method="get" action="ProgramHist.jsp">
-                <input type="submit" name="Back" value="Back">
-              </form>
+              <input type="button" name="Back" value="Back" onclick="history.back()">
 <%
 	}
 	else {

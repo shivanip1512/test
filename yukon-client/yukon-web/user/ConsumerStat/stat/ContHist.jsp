@@ -2,10 +2,17 @@
 <%
 	String referrer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
 	
+	int progNo = 0;
 	String progNoStr = request.getParameter("prog");
-	int progNo = Integer.parseInt( progNoStr );
+	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
+	
+	StarsCtrlHistPeriod period = StarsCtrlHistPeriod.ALL;
+	String periodStr = request.getParameter("Period");
+	if (periodStr != null) period = StarsCtrlHistPeriod.valueOf( periodStr );
+	
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), period, tz );
 	
 	StarsApplianceCategory category = null;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
@@ -15,8 +22,6 @@
 			break;
 		}
 	}
-	
-	StarsLMControlHistory ctrlHist = program.getStarsLMControlHistory();
 %>
 <html>
 <head>
@@ -71,7 +76,7 @@
           <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_PROGRAM_CTRL_HIST_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_PROGRAM_CTRL_HIST, "PROGRAM - CONTROL HISTORY"); %>
               <%@ include file="InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 
@@ -142,9 +147,7 @@
 <%
 	if (referrer == null) {
 %>
-              <form name="form1" method="get" action="ProgramHist.jsp">
-                <input type="submit" name="Back" value="Back">
-              </form>
+              <input type="button" name="Back" value="Back" onclick="history.back()">
 <%
 	}
 	else {

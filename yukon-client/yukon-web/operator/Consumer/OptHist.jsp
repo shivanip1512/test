@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	StarsLMHardwareHistory hwHist = null;
 	if (inventories.getStarsLMHardwareCount() > 0) {
@@ -33,7 +34,7 @@ function confirmSubmit(form) { //v1.0
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -72,10 +73,10 @@ function confirmSubmit(form) { //v1.0
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "PROGRAMS - OPT OUT HISTORY"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT") + " HISTORY"; %>
               <%@ include file="InfoSearchBar.jsp" %>
 			  
-              <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
+              <table width="360" border="1" cellspacing="0" align="center" cellpadding="3">
                   <tr> 
                     <td class="HeaderCell" width="100">Date</td>
                     <td class="HeaderCell" width="154">Type - Duration</td>

@@ -34,7 +34,7 @@ function selectAccount(accountID) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -74,14 +74,15 @@ function selectAccount(accountID) {
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %></div>
 <%
 	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) user.getAttribute(ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS);
-	if (resp == null || resp.getStarsFailure() != null) {
+	if (resp != null) {
+		if (resp.getStarsFailure() != null) {
 %>
             <div align="center">
               <span class="Main">No customer accounts matching the search criteria.</span> 
             </div>
 <%
-	}
-	else {
+		}
+		else {
 %>
             <div align="center">
               <span class="Main">The following search results were found:</span> 
@@ -99,8 +100,8 @@ function selectAccount(accountID) {
                 <td width="112" class="HeaderCell">Phone#</td>
               </tr>
 <%
-		for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
-			StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
+			for (int i = 0; i < resp.getStarsCustAccountBriefCount(); i++) {
+				StarsCustAccountBrief acctBrief = resp.getStarsCustAccountBrief(i);
 %>
               <tr valign="top"> 
                 <td width="187" class="TableCell">
@@ -110,13 +111,16 @@ function selectAccount(accountID) {
                 <td width="112" class="TableCell"><%= acctBrief.getContPhoneNumber() %></td>
               </tr>
 <%
-		}
-	}
+			}
 %>
               </table>
 			</form>
-              <p>&nbsp;</p>
-                </td>
+<%
+		}
+	}
+%>
+            <p>&nbsp;</p>
+          </td>
         <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>

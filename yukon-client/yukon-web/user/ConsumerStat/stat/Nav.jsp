@@ -1,14 +1,14 @@
 <%
 	// Map of page name / link text
-	String linkMap[][] = {{"General.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_GENERAL_LINK)},
+	String linkMap[][] = {{"General.jsp", "General"},
 						  {"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_CTRL_HIST_LINK)},
 						  {"Util.jsp", "Contact Us"},
 						  {"FAQ.jsp", "FAQ"},
 						  {"Enrollment.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_ENROLL_LINK)},
 						  {"OptOut.jsp", ServletUtils.getECProperty(ecWebSettings.getURL(), ServletUtils.WEB_TEXT_OPT_OUT_LINK)},
-						  {"Thermostat.jsp", "Manual"},
-						  {"ThermSchedule.jsp", "Schedule"},
+						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual")},
+						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule")},
 						  {"Password.jsp", "Change Login"}
 						 };
 						   

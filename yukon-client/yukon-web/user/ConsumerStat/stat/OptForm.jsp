@@ -61,7 +61,7 @@ function MM_popupMsg(msg) { //v1.0
             <div align="center"> 
               <br>
               <div align="center"> 
-              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TEXT_OPT_OUT_TITLE); %>
+              <% String header = AuthFuncs.getRolePropertyValue(liteYukonUser, ResidentialCustomerRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT"); %>
               <%@ include file="InfoBar.jsp" %>
                 <table width="600" border="0" cellpadding="0" cellspacing="0">
                   <tr> 
@@ -70,9 +70,10 @@ function MM_popupMsg(msg) { //v1.0
                     </td>
                   </tr>
                 </table>
-                <p class="Main">Please complete the following form to opt out of your program:</p>
+                <p class="Main">Please complete the following form to <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_OPT_OUT_VERB %>"/> 
+				your program:</p>
                   <form method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
-					<input type="hidden" name="action" value="SendExitAnswers">
+					<input type="hidden" name="action" value="SendOptOutNotification">
 					<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/General.jsp">
 					<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/OptOut.jsp">
                   <table width="500" border="0" cellspacing="0" cellpadding="3" valign="top">

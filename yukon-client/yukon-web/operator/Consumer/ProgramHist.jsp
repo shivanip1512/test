@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -17,7 +18,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -55,7 +56,9 @@
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"><% String header = "PROGRAMS - CONTROL HISTORY"; %><%@ include file="InfoSearchBar.jsp" %>
+            <div align="center">
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_PROGRAM_CTRL_HIST, "PROGRAM - CONTROL HISTORY"); %>
+              <%@ include file="InfoSearchBar.jsp" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
               <br>
@@ -65,14 +68,14 @@
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="332" class="HeaderCell"> 
-                    <div align="center">Recent Control History <br>
+                    <div align="center">Recent <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History <br>
                       (since midnight yesterday)</div>
                   </td>
                   <td width="332" class="HeaderCell"> 
-                    <div align="center">Control History Summary</div>
+                    <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History Summary</div>
                   </td>
                   <td width="332" class="HeaderCell">
-                    <div align="center">Complete Control History</div>
+                    <div align="center">Complete <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/> History</div>
                   </td>
                 </tr>
 <%
@@ -109,11 +112,11 @@
                         <td width="93" class="TableCell"> Duration </td>
                       </tr>
 <%
-			StarsLMControlHistory ctrlHistToday = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
+			StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program.getStarsLMControlHistory(), StarsCtrlHistPeriod.PASTDAY, tz );
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="219" class="TableCell">No Control </td>
+                        <td width="219" class="TableCell">No <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" format="capital"/></td>
                         <td width="94" class="TableCell">---- </td>
                       </tr>
                       <tr> 
@@ -177,17 +180,15 @@
                     </table>
                   </td>
                   <td width="332"> 
-					<form method="POST" action="/servlet/SOAPClient">
-					<input type="hidden" name="action" value="GetLMCtrlHist">
-					<input type="hidden" name="Group" value="<%= program.getGroupID() %>">
-					<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/ContHist.jsp?prog=<%= i %>">
+					<form method="POST" action="ContHist.jsp">
+					<input type="hidden" name="prog" value="<%= i %>">
                     <table width="100" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
 					    <td width="180" valign="top" align="center"> 
 						  <select name="Period">
-							<option value="PastWeek">Past Week</option>
-							<option value="PastMonth">Past Month </option>
-							<option value="All">All</option>
+							<option value="<%= StarsCtrlHistPeriod.PASTWEEK.toString() %>">Past Week</option>
+							<option value="<%= StarsCtrlHistPeriod.PASTMONTH.toString() %>">Past Month </option>
+							<option value="<%= StarsCtrlHistPeriod.ALL.toString() %>">All</option>
 						  </select>
 						</td>
                       </tr>

@@ -1,9 +1,13 @@
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ page import="java.util.*" %>
+<%@ page import="javax.xml.soap.SOAPMessage" %>
+
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
+<%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 
 <%@ page import="com.cannontech.stars.xml.StarsFactory" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
@@ -14,18 +18,21 @@
 <%@ page import="com.cannontech.stars.web.servlet.SOAPServer" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 
-<%@ page import="javax.xml.soap.SOAPMessage" %>
-
 <cti:checklogin/>
  
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-
-    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
-    java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
-    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
+	{
+		// User login no longer valid
+		response.sendRedirect("/servlet/LoginController?ACTION=LOGOUT"); return;
+	}
+	
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
+	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
+	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
-    java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
+	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
 	String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
@@ -61,10 +68,11 @@
 	StarsThermostatSettings thermoSettings = null;
 	StarsUser userLogin = null;
 
-	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, com.cannontech.roles.operator.ConsumerInfoRole.ROLEID) != null)
+	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, ConsumerInfoRole.ROLEID) != null)
 	{
 		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-		if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
+		if (user == null || user.getYukonUser() != lYukonUser) {
+			// This is logged in using the normal LoginController, not the StarsLoginController
 			user = SOAPServer.getStarsYukonUser( lYukonUser );
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 			
@@ -112,13 +120,15 @@
 				userLogin.setUsername( "" );
 				userLogin.setPassword( "" );
 			}
-			
-			if (account.getTimeZone() != null && !account.getTimeZone().equals("") && !account.getTimeZone().equals("(none)")) {
-				TimeZone tz = TimeZone.getTimeZone( account.getTimeZone() );
-				datePart.setTimeZone(tz);
-				dateFormat.setTimeZone(tz);
-				histDateFormat.setTimeZone(tz);
-			}
 		}
 	}
+	
+	TimeZone tz = TimeZone.getDefault(); 
+	if(energyCompany != null)
+		tz = TimeZone.getTimeZone( energyCompany.getTimeZone() );
+		
+	timePart.setTimeZone(tz);
+	datePart.setTimeZone(tz);
+	dateFormat.setTimeZone(tz);
+	histDateFormat.setTimeZone(tz);
 %>

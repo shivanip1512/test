@@ -1,4 +1,5 @@
 <%@ include file="StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -36,6 +37,13 @@ function validate(form) {
 	}
 	return true;
 }
+
+function deleteAccount(form) {
+	if (confirm("Are you sure you want to delete this account?")) {
+		form.action.value='DeleteCustAccount';
+		form.submit();
+	}
+}
 </script>
 </head>
 
@@ -49,7 +57,7 @@ function validate(form) {
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_HEADER %>"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>"/>">&nbsp;</td>
               </tr>
               <tr> 
                   <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Customer 
@@ -163,6 +171,7 @@ function validate(form) {
                           <input type="text" name="Email" maxlength="50" size="24" value="<%= primContact.getEmail().getNotification() %>">
                         </td>
                       </tr>
+<cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLE_ID %>">
 					  <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right"></div>
@@ -170,8 +179,9 @@ function validate(form) {
                         <td width="210"> 
                           <input type="checkbox" name="NotifyControl" value="true"
 						  	<% if (primContact.getEmail().getEnabled()) out.print("checked"); %>>
-                          <span class="TableCell">Notify day of control</span></td>
+                          <span class="TableCell">Notify <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/></span></td>
                       </tr>
+</cti:checkRole>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Notes:</div>
@@ -371,18 +381,23 @@ function validate(form) {
               </tr>
             </table>
             <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
-              <tr> 
-                  <td width="186"> 
+                <tr> 
+                  <td width="42%"> 
                     <div align="right"> 
-                      <input type="submit" name="Save2" value="Save">
+                      <input type="submit" name="Save" value="Save">
                     </div>
                   </td>
-                  <td width="194"> 
+                  <td width="15%"> 
+                    <div align="center"> 
+                      <input type="reset" name="Cancel" value="Cancel">
+                    </div>
+                  </td>
+                  <td width="43%">
                     <div align="left"> 
-                      <input type="reset" name="Cancel2" value="Cancel">
+                      <input type="button" name="Delete" value="Delete" onclick="deleteAccount(this.form)">
                     </div>
-                  </td>
-              </tr>
+				  </td>
+                </tr>
             </table>
 			</form>
             <p align="center">&nbsp;</p>

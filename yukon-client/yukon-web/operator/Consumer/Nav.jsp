@@ -6,9 +6,9 @@
 						  {"Calls.jsp", "Call Tracking"},
 						  {"Metering.jsp", "Interval Data"},
 						  {"Usage.jsp", "Usage"},
-						  {"ProgramHist.jsp", "Control History"},
-						  {"Programs.jsp", "Enrollment"},
-						  {"OptOut.jsp", "Opt Out"},
+						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTROL_HISTORY, "Control History")},
+						  {"Programs.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_ENROLLMENT, "Enrollment")},
+						  {"OptOut.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_OPT_OUT, "Opt Out")},
 						  {"CreateCalls.jsp", "Create Call"},
 						  {"Service.jsp", "Service Request"},
 						  {"ServiceSummary.jsp", "Service History"},
@@ -19,8 +19,8 @@
 						  {"FAQ.jsp", "FAQ"},
 						  {"CreateAppliances.jsp", "New"},
 						  {"CreateHardware.jsp", "New"},
-						  {"ThermSchedule.jsp", "Schedule"},
-						  {"Thermostat.jsp", "Manual"}
+						  {"ThermSchedule.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule")},
+						  {"Thermostat.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL, "Manual")}
 						 };
 						   
 	String bulletImg = ServletUtils.getECProperty( ecWebSettings.getURL(), ServletUtils.WEB_NAV_BULLET );
@@ -84,60 +84,61 @@
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT %>">
+<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Account</span><br>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_GENERAL %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL %>">
         <%= links.get("Update.jsp") %><br>
         <%= links.get("Contacts.jsp") %><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_RESIDENCE %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE %>">
 		<%= links.get("Residence.jsp") %><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ACCOUNT_CALL_TRACKING %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING %>">
 		<%= links.get("Calls.jsp") %><br>
 		<%= links.get("CreateCalls.jsp") %><br>
-</cti:checkRole>
+</cti:checkProperty>
       </div>
     </td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING %>">
+</cti:checkMultiProperty>
+<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Metering</span><br>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING_INTERVAL_DATA %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>">
         <%= links.get("Metering.jsp") %><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_METERING_USAGE %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>">
         <%= links.get("Usage.jsp") %><br>
-</cti:checkRole>
+</cti:checkProperty>
       </div>
     </td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS %>">
+</cti:checkMultiProperty>
+<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Programs</span><br>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_CONTROL_HISTORY %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>">
         <%= links.get("ProgramHist.jsp") %><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_ENROLLMENT %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT %>">
 		<%= links.get("Programs.jsp") %><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_PROGRAMS_OPTOUT %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPTOUT %>">
         <%= links.get("OptOut.jsp") %><br>
-</cti:checkRole>
+</cti:checkProperty>
       </div>
     </td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_APPLIANCES %>">
+</cti:checkMultiProperty>
+<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Appliances</span><br>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>">
 <%
 		for (int i = 0; i < appLinks.length; i++) {
 %>
@@ -145,26 +146,28 @@
 <%
 		}
 %>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_APPLIANCES_CREATE %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE %>">
         <%= links.get("CreateAppliances.jsp") %><br>
-</cti:checkRole>
+</cti:checkProperty>
 	  </div>
     </td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_HARDWARES %>">
+</cti:checkMultiProperty>
+<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_HARDWARES) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Hardware</span><br>
-        <%
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>">
+<%
 		for (int i = 0; i < invLinks.length; i++) {
 %>
         <%= invLinks[i] %><br>
 <%
-			if (thermoSettings != null &&
-				inventories.getStarsLMHardware(i).getInventoryID() == thermoSettings.getInventoryID()) {
+			if (thermoSettings != null
+				&& inventories.getStarsLMHardware(i).getInventoryID() == thermoSettings.getInventoryID()
+				&& AuthFuncs.checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)) {
 %>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_THERMOSTAT %>">
 	    <table width="90" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="12">&nbsp;</td>
@@ -174,19 +177,19 @@
 			</td>
           </tr>
         </table>
-</cti:checkRole>
 <%
 			}
 		}
 %>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_HARDWARES_CREATE %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>">
 		<%= links.get("CreateHardware.jsp") %><br>
-</cti:checkRole>
+</cti:checkProperty>
       </div>
     </td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_WORKORDERS %>">
+</cti:checkMultiProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_WORK_ORDERS %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Work Orders</span><br>
@@ -195,28 +198,28 @@
 	  </div>
     </td>
   </tr>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN %>">
+</cti:checkProperty>
+<cti:checkMultiProperty propertyid="<%= String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN) + "," + String.valueOf(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
   <tr> 
     <td> 
       <div align="left"><span class="PageHeader">Administration</span><br>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_ADMIN_CHANGE_LOGIN %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
         <%= links.get("Password.jsp") %><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_NOT_IMPLEMENTED %>">
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ %>">
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>">
+		<img src="../<%= bulletImg2 %>" width="12" height="12"><a href="<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LINK_FAQ %>"/>" class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
+</cti:checkProperty>
+<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CUSTOMIZED_FAQ_LINK %>">
+        <%= links.get("FAQ.jsp") %><br>
+</cti:checkNoProperty>
+</cti:checkProperty>
+<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_NOT_IMPLEMENTED %>">
         <%= links.get("Privileges.jsp")%><br>
 		<%= links.get("PrintExport.jsp")%><br>
-</cti:checkRole>
-<cti:checkRole roleid="<%= RoleTypes.CONSUMERINFO_QUESTIONS_FAQ %>">
-<cti:checkRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
-		<img src="../<%= bulletImg2 %>" width="12" height="12"><a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_FAQ %>"/>' class="Link2" target="new"><span class="NavText">FAQ</span></a><br>
-</cti:checkRole>
-<cti:checkNoRole roleid="<%= RoleTypes.CUSTOMIZED_FAQ_LINK %>">
-        <%= links.get("FAQ.jsp") %><br>
-</cti:checkNoRole>
-</cti:checkRole>
+</cti:checkProperty>
 	  </div>
     </td>
   </tr>
-</cti:checkRole>
+</cti:checkMultiProperty>
 </table>

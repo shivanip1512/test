@@ -75,11 +75,13 @@
             <td  class = "Main" width="250" align = "right"> 
               <select name="SearchBy">
 <%
+	Integer lastOption = (Integer) user.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
 	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
 	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+		String selectedStr = (lastOption != null && entry.getEntryID() == lastOption.intValue()) ? "selected" : "";
 %>
-                <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
+                <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
 	}
 %>
