@@ -3,6 +3,7 @@ package com.cannontech.common.gui.tree;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.*;
@@ -35,8 +36,10 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
     setLayout(null);
     add(check = new JCheckBox());
     add(label = new TreeLabel());
-    check.setBackground(UIManager.getColor("Tree.textBackground"));
-    label.setForeground(UIManager.getColor("Tree.textForeground"));
+    
+    
+    check.setBackground(java.awt.Color.white);
+    label.setForeground(java.awt.Color.black);
   }
 
   public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -44,7 +47,7 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
                boolean leaf, int row, boolean hasFocus) 
   {
 
-	if( !(value instanceof CheckNode) )  	
+	if( !(value instanceof CheckNode) )
 		return defaultRenderer.getTreeCellRendererComponent( 
 					  tree,
 					  value,
@@ -53,7 +56,7 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
                  leaf,
                  row,
                  hasFocus);
-  	
+	
     String  stringValue = tree.convertValueToText(value, isSelected,
 			expanded, leaf, row, hasFocus);
 
@@ -113,8 +116,9 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
     		d_label.width,
     		d_label.height);    
   }
-   
   
+   
+
   public void setBackground(Color color) 
   {
     if (color instanceof ColorUIResource)
@@ -146,23 +150,31 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer
       {
         if (0 < str.length()) 
         {
+        	Color fg = null, bg = null;
+        	 
         	
           if (isSelected) 
           {
-            g.setColor(UIManager.getColor("Tree.selectionBackground"));
+            bg = java.awt.Color.blue;
+            fg = java.awt.Color.white;
           } 
           else 
           {
-            g.setColor(UIManager.getColor("Tree.textBackground"));
+            bg = java.awt.Color.white;
+            fg = java.awt.Color.black;
           }
           
           Dimension d = getPreferredSize();
 
 
 	    g.setFont(getFont());
-//	    g.setColor(background);
+	    
+	    //bg stuff
+	    g.setColor(bg);
 	    g.fillRect(0, 0, d.width, d.height);
-	    g.setColor(getForeground());
+	    
+	    //fg stuff
+	    g.setColor(fg);
 	    g.drawString(str, 3, d.height - 5);
 
 /*

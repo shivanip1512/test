@@ -69,21 +69,13 @@ System.out.println();
          
 			selectNode( node, doSelect, row );
 
-			for( int i = 0; i < node.getChildCount(); i++ )
-			{
-				if( node.getChildAt(i) instanceof CheckNode )
-					selectNode( 
-						(CheckNode)node.getChildAt(i),
-						doSelect,
-						row );
-			}
-
 			// I need revalidate if node is root.  but why?
 			if (row == 0) 
 			{
 			  tree.revalidate();
 			  tree.repaint();
-			}        
+			}
+        
       }
       else
       	super.mouseClicked( e );

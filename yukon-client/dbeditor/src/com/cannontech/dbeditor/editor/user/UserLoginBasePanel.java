@@ -531,15 +531,15 @@ public Object getValue(Object o)
 		login = (YukonUser)o;
 
 	if( getJTextFieldUserID().getText() != null && getJTextFieldUserID().getText().length() > 0 )
-		login.setUsername( getJTextFieldUserID().getText() );
+		login.getYukonUser().setUsername( getJTextFieldUserID().getText() );
 
 	if( getJPasswordFieldPassword().getPassword() != null && getJPasswordFieldPassword().getPassword().length > 0 )
-		login.setPassword( new String(getJPasswordFieldPassword().getPassword()) );
+		login.getYukonUser().setPassword( new String(getJPasswordFieldPassword().getPassword()) );
 
 	if( getJCheckBoxEnableLogin().isSelected() )
-		login.setStatus( UserUtils.STATUS_ENABLED );
+		login.getYukonUser().setStatus( UserUtils.STATUS_ENABLED );
 	else
-		login.setStatus( UserUtils.STATUS_DISABLED );
+		login.getYukonUser().setStatus( UserUtils.STATUS_DISABLED );
 
 	return login;
 }
@@ -722,22 +722,22 @@ public void setValue(Object o)
 
 	YukonUser login = (YukonUser)o;
 
-	if( !login.getStatus().equalsIgnoreCase(UserUtils.STATUS_DISABLED) )
+	if( !login.getYukonUser().getStatus().equalsIgnoreCase(UserUtils.STATUS_DISABLED) )
 		getJCheckBoxEnableLogin().doClick();
 
-	getJTextFieldUserID().setText( login.getUsername() );
-	getJPasswordFieldPassword().setText( login.getPassword() );
-	getJPasswordFieldRetypePassword().setText( login.getPassword() );
+	getJTextFieldUserID().setText( login.getYukonUser().getUsername() );
+	getJPasswordFieldPassword().setText( login.getYukonUser().getPassword() );
+	getJPasswordFieldRetypePassword().setText( login.getYukonUser().getPassword() );
 
 
 	//set some dynamic data, for the sake of curiosity!
 	getJLabelLastLogin().setText(
 		"Last Login:   " +
-		new ModifiedDate(login.getLastLogin().getTime()).toString() );
+		new ModifiedDate(login.getYukonUser().getLastLogin().getTime()).toString() );
 		
 	getJLabelLoginCount().setText( 
 		"Login Count:  " +
-		login.getLoginCount().toString() );
+		login.getYukonUser().getLoginCount().toString() );
 
 }
 }
