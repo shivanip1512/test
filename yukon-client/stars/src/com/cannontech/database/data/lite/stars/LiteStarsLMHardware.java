@@ -4,6 +4,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.stars.hardware.LMConfigurationBase;
 
 /**
  * @author yao
@@ -111,6 +112,11 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	}
 	
 	public LiteLMConfiguration getLMConfiguration() {
+		if (lmConfig_ == null && getConfigurationID() > 0) {
+			LMConfigurationBase config = LMConfigurationBase.getLMConfiguration( getConfigurationID(), getLmHardwareTypeID() );
+			lmConfig_ = new LiteLMConfiguration();
+			StarsLiteFactory.setLiteLMConfiguration( lmConfig_, config );
+		}
 		return lmConfig_;
 	}
 	

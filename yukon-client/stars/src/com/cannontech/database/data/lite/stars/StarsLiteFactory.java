@@ -29,7 +29,6 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.stars.hardware.LMConfigurationBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -261,13 +260,6 @@ public class StarsLiteFactory {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
 			if (liteHw.isThermostat())
 				liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
-			
-			if (liteHw.getConfigurationID() > 0) {
-				LMConfigurationBase config = LMConfigurationBase.getLMConfiguration( liteHw.getConfigurationID(), liteHw.getLmHardwareTypeID() );
-				LiteLMConfiguration liteCfg = new LiteLMConfiguration();
-				setLiteLMConfiguration( liteCfg, config );
-				liteHw.setLMConfiguration( liteCfg );
-			}
 		}
 		
 		liteInv.setExtended( true );

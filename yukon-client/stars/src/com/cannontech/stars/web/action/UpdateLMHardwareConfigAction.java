@@ -282,10 +282,6 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 			else {
 				config.setConfigurationID( new Integer(liteHw.getConfigurationID()) );
 				
-				// Get the hardware configuration if it is not retrived yet
-				if (!liteHw.isExtended())
-					StarsLiteFactory.extendLiteInventoryBase( liteHw, energyCompany );
-				
 				// Check to see if the configuration is in both the parent and the child table
 				if (config.getSA205() != null && liteHw.getLMConfiguration().getSA205() == null) {
 					Transaction.createTransaction( Transaction.INSERT, config.getSA205() ).execute();

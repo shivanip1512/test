@@ -168,6 +168,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 			if (hardwareSet.size() > 0)
 				session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
 			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
+			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_REFERRER2));
 		}
 	}
 

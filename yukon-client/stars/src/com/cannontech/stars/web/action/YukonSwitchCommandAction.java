@@ -396,17 +396,18 @@ public class YukonSwitchCommandAction implements ActionBase {
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 		
-		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		final String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing, optGroupID );
+		if (cfgCmds.length == 0)
+			throw new WebClientException("Failed to build config command for serial #" + liteHw.getManufacturerSerialNumber() + ".");
+		
 		if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
 		{
 			// Send an in service command first
 			sendEnableCommand( energyCompany, liteHw, optRouteID );
 			
-			final String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing, optGroupID );
-			if (cfgCmds == null || cfgCmds.length == 0) return;
+			// Send the config command a while later
 			final int routeID2 = routeID;
 			
-			// Send the config command a while later
 			TimerTask sendCfgTask = new TimerTask() {
 				public void run() {
 					try {
@@ -423,9 +424,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 		else {
 			// Only send the config command
-			String[] cfgCmds = getConfigCommands( liteHw, energyCompany, useHardwareAddressing, optGroupID );
-			if (cfgCmds == null) return;
-			
 			for (int i = 0; i < cfgCmds.length; i++)
 				ServerUtils.sendSerialCommand( cfgCmds[i], routeID );
 		}
@@ -453,12 +451,14 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 	}
 	
-	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, boolean useHardwareAddressing, Integer groupID) {
+	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, boolean useHardwareAddressing, Integer groupID)
+		throws WebClientException
+	{
 		ArrayList commands = new ArrayList();
 		
 		if (useHardwareAddressing) {
 			if (liteHw.getLMConfiguration() == null)
-				return null;
+				throw new WebClientException("There is no configuration saved for serial #" + liteHw.getManufacturerSerialNumber() + ".");
 			
 			if (liteHw.getLMConfiguration().getExpressCom() != null) {
 				String program = null;
@@ -531,7 +531,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				commands.add( cmd );
 			}
 			else {
-				return null;
+				throw new WebClientException("Unsupported configuration type for serial #" + liteHw.getManufacturerSerialNumber() + ".");
 			}
 		}
 		else if (groupID != null) {
@@ -552,8 +552,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 			}
 		}
-		
-		if (commands.size() == 0) return null;
 		
 		String[] cfgCmds = new String[ commands.size() ];
 		commands.toArray( cfgCmds );

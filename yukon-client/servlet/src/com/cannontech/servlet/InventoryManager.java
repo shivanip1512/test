@@ -97,7 +97,7 @@ public class InventoryManager extends HttpServlet {
 		if (req.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-			redirect = req.getContextPath() + "/operator/Admin/Message.jsp";
+			redirect = referer = req.getContextPath() + "/operator/Admin/Message.jsp";
 		}
 		
 		action = req.getParameter( "action" );
@@ -855,13 +855,13 @@ public class InventoryManager extends HttpServlet {
 			if (task.getStatus() == AddSNRangeTask.STATUS_ERROR) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
 				ProgressChecker.removeTask( id );
-				if (redir != null) redirect = redir;
+				redirect = referer;
 				return;
 			}
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -955,13 +955,13 @@ public class InventoryManager extends HttpServlet {
 			if (task.getStatus() == UpdateSNRangeTask.STATUS_ERROR) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
 				ProgressChecker.removeTask( id );
-				if (redir != null) redirect = redir;
+				redirect = referer;
 				return;
 			}
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -1028,13 +1028,13 @@ public class InventoryManager extends HttpServlet {
 			if (task.getStatus() == DeleteSNRangeTask.STATUS_ERROR) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
 				ProgressChecker.removeTask( id );
-				if (redir != null) redirect = redir;
+				redirect = referer;
 				return;
 			}
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
@@ -1071,13 +1071,13 @@ public class InventoryManager extends HttpServlet {
 			if (task.getStatus() == ConfigSNRangeTask.STATUS_ERROR) {
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
 				ProgressChecker.removeTask( id );
-				if (redir != null) redirect = redir;
+				redirect = referer;
 				return;
 			}
 		}
 		
 		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
+		session.setAttribute(ServletUtils.ATT_REFERRER, referer);
 		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
