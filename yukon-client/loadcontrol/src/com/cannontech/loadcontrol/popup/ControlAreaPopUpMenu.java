@@ -196,8 +196,7 @@ private void showDirectManualEntry( final int panelMode )
 				for( int i = 0; i < selected.length; i++ )
 				{
 					multi.getVector().add( 
-							DirectControlJPanel.createMessage(
-									panel,
+							panel.createMessage(
 									selected[i].getBaseProgram(),
 									selected[i].getGearNum() ) );
 				}

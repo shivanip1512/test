@@ -1,6 +1,5 @@
 package com.cannontech.web.loadcontrol;
 
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 
 /**
@@ -29,9 +28,6 @@ public class LMSession
 	public LMSession()
 	{
 		super();
-		
-		//dont show the seconds on timestamp strings
-		ModifiedDate.setFormatPattern("MM-dd-yyyy HH:mm");		
 	}
 
 	/**

@@ -5,12 +5,16 @@ package com.cannontech.loadcontrol.gui;
  * Creation date: (9/19/00 10:13:05 AM)
  * @author: 
  */
+import java.util.Hashtable;
+
 import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
+import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -25,6 +29,8 @@ import com.cannontech.loadcontrol.datamodels.IProgramTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.*;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
+import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
+import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
@@ -294,52 +300,105 @@ public void buttonBarPanel_JButtonEnableAllAction_actionPerformed(java.util.Even
 /**
  * Comment
  */
-public void buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent) 
+public void buttonBarPanel_JButtonStartScenarioAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	if( getSelectedControlArea() != null )
+	showControlScenarioWin( DirectControlJPanel.MODE_START_STOP );
+
+}
+
+/**
+ * Comment
+ */
+public void buttonBarPanel_JButtonStopScenarioAction_actionPerformed(java.util.EventObject newEvent) 
+{
+	showControlScenarioWin( DirectControlJPanel.MODE_STOP );		
+}
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (7/16/2001 5:05:29 PM)
+ */
+private void showControlScenarioWin( final int panelMode ) 
+{
+	Hashtable allProgs = new Hashtable( getControlAreaTableModel().getRowCount() * 3 ); //just a guess
+
+	for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
+		for( int j = 0; j < getControlAreaTableModel().getRowAt(i).getLmProgramVector().size(); j++ )
+		{
+			LMProgramBase prog = 
+				(LMProgramBase)
+				getControlAreaTableModel().getRowAt(i).getLmProgramVector().get(j);
+
+			allProgs.put( prog.getYukonID(), prog );
+		}
+	
+	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this) );
+	DirectControlJPanel panel = new DirectControlJPanel( allProgs )
 	{
-		if( getSelectedControlArea().getDisableFlag().booleanValue() )
+		public void exit()
 		{
-			int res = JOptionPane.showConfirmDialog( this,
-								"Are you sure you want to ENABLE the selected control area?", 
-								"Enable Confirmation", 
-								JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
-
-			if( res == JOptionPane.OK_OPTION )
-			{
-				LoadControlClientConnection.getInstance().write(
-					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
-						 				getSelectedControlArea().getYukonID().intValue(),
-						 				0, 0.0) );
-	
-				getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-					"Control area '" + getSelectedControlArea().getYukonName() + 
-					"' has been manually ENABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );		
-			}
+			d.dispose();
 		}
-		else
+	};
+
+
+	d.setTitle(
+		panelMode == DirectControlJPanel.MODE_START_STOP 
+		? "Start Control Scenario"
+		: "Stop Control Scenario" );
+		
+	panel.setMode( panelMode );
+	
+	
+	d.setModal(true);
+	d.setContentPane(panel);
+	d.pack();
+	d.setSize( 640, 285 );
+	d.setLocationRelativeTo(this);
+
+	if( allProgs.values().size() > 0 )
+	{
+		//init our list with the first scenario in the ComboBox
+		//if( getJComboBoxScenario().getItemCount() > 0 )
+		d.show();
+	
+		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
 		{
-			int res = JOptionPane.showConfirmDialog( this,
-								"Are you sure you want to DISABLE the selected control area?", 
-								"Disable Confirmation", 
-								JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
-
-			if( res == JOptionPane.OK_OPTION )
-			{
-				LoadControlClientConnection.getInstance().write(
-					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
-						 				getSelectedControlArea().getYukonID().intValue(),
-						 				0, 0.0) );
+			MultiSelectProg[] selected = panel.getMultiSelectObject();
 	
-				getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, 
-					"Control area '" + getSelectedControlArea().getYukonName() + 
-					"' has been manually DISABLED.", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE) );					 				
+			if( selected != null )
+			{
+				//create a multi to hold all of our messages
+				com.cannontech.message.dispatch.message.Multi multi = 
+						new com.cannontech.message.dispatch.message.Multi();
+		
+				for( int i = 0; i < selected.length; i++ )
+				{
+					multi.getVector().add( 
+							panel.createScenarioMessage( selected[i] ) );
+				}
+	
+				LoadControlClientConnection.getInstance().write(multi);
 			}
+	
+	
 		}
+	
+	}
+	else
+	{
+		JOptionPane.showMessageDialog(
+			this,
+			"There are no programs in the system, unable to use Control Scenarios",
+			"Control Scenario unavailable",
+			JOptionPane.WARNING_MESSAGE );
 		
 	}
-	
-	return;
+
+	//destroy the JDialog
+	d.dispose();
+
 }
 
 /**
@@ -478,7 +537,7 @@ public void executeRefreshButton()
 // This method is used to export a set of data to a file
 public void exportDataSet()
 {
-	java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame( this );
+	java.awt.Frame f = CtiUtilities.getParentFrame( this );
 
 	com.cannontech.clientutils.commonutils.ModifiedDate date = new com.cannontech.clientutils.commonutils.ModifiedDate();
 	
@@ -1203,11 +1262,21 @@ public void JButtonEnableAllAction_actionPerformed(java.util.EventObject newEven
  * Method to handle events for the ButtonBarPanelListener interface.
  * @param newEvent java.util.EventObject
  */
-public void JButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent) {
+public void JButtonStartScenarioAction_actionPerformed(java.util.EventObject newEvent)
+{
 
 	if (newEvent.getSource() == getButtonBarPanel()) 
-		buttonBarPanel_JButtonEnableControlAreaAction_actionPerformed(newEvent);
+		buttonBarPanel_JButtonStartScenarioAction_actionPerformed(newEvent);
+}
+/**
+ * Method to handle events for the ButtonBarPanelListener interface.
+ * @param newEvent java.util.EventObject
+ */
+public void JButtonStopScenarioAction_actionPerformed(java.util.EventObject newEvent)
+{
 
+	if (newEvent.getSource() == getButtonBarPanel()) 
+		buttonBarPanel_JButtonStopScenarioAction_actionPerformed(newEvent);
 }
 
 /**
@@ -1493,34 +1562,11 @@ public void silenceAlarms() {}
 private void showDebugInfo( Object value ) 
 {
 	com.cannontech.debug.gui.ObjectInfoDialog d = new com.cannontech.debug.gui.ObjectInfoDialog(
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this) ); 
+		CtiUtilities.getParentFrame(this) ); 
 
 	d.setLocation( this.getLocationOnScreen() );
 	d.setModal( true );
 	d.showDialog( value );
-}
-/**
- * This method was created in VisualAge.
- * @param selected Schedule
- */
-protected void synchControlAreaAndButtons()
-{
-	LMControlArea area = getSelectedControlArea();
-		
-	if( area != null )
-	{
-		if( area.getDisableFlag().booleanValue() ) 
-		{
-			getButtonBarPanel().getJButtonEnableControlArea().setText("Enable Area");
-		}
-		else 
-		{
-			getButtonBarPanel().getJButtonEnableControlArea().setText("Disable Area");
-		}
-
-		getButtonBarPanel().getJButtonEnableControlArea().setEnabled(true);
-	}
-
 }
 
 /**
@@ -1555,7 +1601,6 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 
 
 	revalidate();
-	synchControlAreaAndButtons();
 }
 
 
@@ -1578,7 +1623,7 @@ public void update(java.util.Observable source, Object val)
 			// set the frames Title to a connected/not connected text
 			final String connectedString = getConnectionState();
 
-			java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(LoadControlMainPanel.this);
+			java.awt.Frame f = CtiUtilities.getParentFrame(LoadControlMainPanel.this);
 			if( f != null )
 				f.setTitle(connectedString);						
 		}
@@ -1620,8 +1665,6 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 	//set all the LMGroup values from the Control Area
 	getGroupTableModel().setCurrentData( 
 			getSelectedControlArea(), getSelectedProgram() );
-
-	synchControlAreaAndButtons();
 }
 
 // Seems to cause a memory leak, the final object never gets GC'd

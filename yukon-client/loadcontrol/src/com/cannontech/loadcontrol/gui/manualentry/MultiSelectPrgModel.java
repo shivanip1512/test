@@ -5,7 +5,6 @@ import javax.swing.table.AbstractTableModel;
 import com.cannontech.common.gui.panel.IMultiSelectModel;
 import com.cannontech.common.gui.panel.MultiSelectRow;
 import com.cannontech.loadcontrol.data.IGearProgram;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 
 /**
@@ -160,8 +159,14 @@ public class MultiSelectPrgModel extends AbstractTableModel implements IMultiSel
 	public void setAllGearNumbers( Integer val )
 	{
 		for( int i = 0; i < getRowCount(); i++ )
-			setValueAt( val, i, COL_GEAR );
-		
+			setGearNumber( i, val );		
 	}
+
+
+	public void setGearNumber( int row, Integer val )
+	{
+		setValueAt( val, row, COL_GEAR );
+	}
+
 
 }

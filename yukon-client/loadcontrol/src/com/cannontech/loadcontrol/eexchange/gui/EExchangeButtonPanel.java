@@ -51,8 +51,8 @@ public EExchangeButtonPanel(boolean isDoubleBuffered) {
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJButtonEnableControlArea()) 
-		connEtoC5(e);
+//	if (e.getSource() == getJButtonEnableControlArea()) 
+//		connEtoC5(e);
 	if (e.getSource() == getJButtonCreateOffer()) 
 		connEtoC2(e);
 	if (e.getSource() == getJButtonCreateRevision()) 
@@ -134,24 +134,7 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
-/**
- * connEtoC5:  (JButtonEnableControlArea.action.actionPerformed(java.awt.event.ActionEvent) --> ButtonBarPanel.fireJButtonEnableControlAreaAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireJButtonEnableControlAreaAction_actionPerformed(new java.util.EventObject(this));
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+
 /**
  * connEtoC6:  (JButtonViewRevisions.action.actionPerformed(java.awt.event.ActionEvent) --> EExchangeButtonPanel.fireJButtonViewRevisionsAction_actionPerformed(Ljava.util.EventObject;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -210,16 +193,7 @@ protected void fireJButtonEnableAllAction_actionPerformed(java.util.EventObject 
 	};
 	fieldButtonBarPanelListenerEventMulticaster.JButtonEnableAllAction_actionPerformed(newEvent);
 }
-/**
- * Method to support listener events.
- * @param newEvent java.util.EventObject
- */
-protected void fireJButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent) {
-	if (fieldButtonBarPanelListenerEventMulticaster == null) {
-		return;
-	};
-	fieldButtonBarPanelListenerEventMulticaster.JButtonEnableControlAreaAction_actionPerformed(newEvent);
-}
+
 /**
  * Method to support listener events.
  * @param newEvent java.util.EventObject
@@ -340,6 +314,10 @@ public javax.swing.JButton getJButtonEnableControlArea() {
 			ivjJButtonEnableControlArea.setPreferredSize(new java.awt.Dimension(110, 23));
 			ivjJButtonEnableControlArea.setMinimumSize(new java.awt.Dimension(110, 23));
 			// user code begin {1}
+			
+			//this does not seem to fit in EExchange
+			ivjJButtonEnableControlArea.setEnabled( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

@@ -48,13 +48,23 @@ public void JButtonEnableAllAction_actionPerformed(java.util.EventObject newEven
 	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)a).JButtonEnableAllAction_actionPerformed(newEvent);
 	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)b).JButtonEnableAllAction_actionPerformed(newEvent);
 }
+
 /**
  * 
  * @param newEvent java.util.EventObject
  */
-public void JButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent) {
-	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)a).JButtonEnableControlAreaAction_actionPerformed(newEvent);
-	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)b).JButtonEnableControlAreaAction_actionPerformed(newEvent);
+public void JButtonStartScenarioAction_actionPerformed(java.util.EventObject newEvent) {
+	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)a).JButtonStartScenarioAction_actionPerformed(newEvent);
+	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)b).JButtonStartScenarioAction_actionPerformed(newEvent);
+}
+
+/**
+ * 
+ * @param newEvent java.util.EventObject
+ */
+public void JButtonStopScenarioAction_actionPerformed(java.util.EventObject newEvent) {
+	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)a).JButtonStopScenarioAction_actionPerformed(newEvent);
+	((com.cannontech.loadcontrol.gui.ButtonBarPanelListener)b).JButtonStopScenarioAction_actionPerformed(newEvent);
 }
 
 /**

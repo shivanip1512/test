@@ -1,5 +1,7 @@
 package com.cannontech.loadcontrol.gui;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * Insert the type's description here.
  * Creation date: (9/27/00 2:21:31 PM)
@@ -7,10 +9,11 @@ package com.cannontech.loadcontrol.gui;
  */
 public class ButtonBarPanel extends javax.swing.JPanel implements java.awt.event.ActionListener {
 	private javax.swing.BoxLayout ivjButtonBarPanelBoxLayout = null;
-	protected transient com.cannontech.loadcontrol.gui.ButtonBarPanelListener fieldButtonBarPanelListenerEventMulticaster = null;
+	protected transient ButtonBarPanelListener fieldButtonBarPanelListenerEventMulticaster = null;
 	private javax.swing.JButton ivjJButtonDisableAll = null;
 	private javax.swing.JButton ivjJButtonEnableAll = null;
-	private javax.swing.JButton ivjJButtonEnableControlArea = null;
+	private javax.swing.JButton jButtonStartScenario = null;
+	private javax.swing.JButton jButtonStopScenario = null;
 	
 	//private javax.swing.JButton ivjJButtonShowGrpsPrgs = null;
 	
@@ -47,25 +50,26 @@ public ButtonBarPanel(boolean isDoubleBuffered) {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
+public void actionPerformed(java.awt.event.ActionEvent e) 
+{
 	if (e.getSource() == getJButtonEnableAll()) 
 		connEtoC2(e);
 	if (e.getSource() == getJButtonDisableAll()) 
 		connEtoC3(e);
-	if (e.getSource() == getJButtonEnableControlArea()) 
-		connEtoC5(e);
-	// user code begin {2}
-	// user code end
+
+	if (e.getSource() == getJButtonStartScenario()) 
+		fireJButtonStartScenarioAction_actionPerformed(new java.util.EventObject(this));
+		
+	if (e.getSource() == getJButtonStopScenario()) 
+		fireJButtonStopScenarioAction_actionPerformed(new java.util.EventObject(this));
 }
+
 /**
  * 
- * @param newListener com.cannontech.loadcontrol.gui.ButtonBarPanelListener
+ * @param newListener ButtonBarPanelListener
  */
-public void addButtonBarPanelListener(com.cannontech.loadcontrol.gui.ButtonBarPanelListener newListener) {
-	fieldButtonBarPanelListenerEventMulticaster = com.cannontech.loadcontrol.gui.ButtonBarPanelListenerEventMulticaster.add(fieldButtonBarPanelListenerEventMulticaster, newListener);
+public void addButtonBarPanelListener(ButtonBarPanelListener newListener) {
+	fieldButtonBarPanelListenerEventMulticaster = ButtonBarPanelListenerEventMulticaster.add(fieldButtonBarPanelListenerEventMulticaster, newListener);
 	return;
 }
 /**
@@ -105,25 +109,6 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 	}
 }
 /**
- * connEtoC5:  (JButtonEnableControlArea.action.actionPerformed(java.awt.event.ActionEvent) --> ButtonBarPanel.fireJButtonEnableControlAreaAction_actionPerformed(Ljava.util.EventObject;)V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireJButtonEnableControlAreaAction_actionPerformed(new java.util.EventObject(this));
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-/**
  * Method to support listener events.
  * @param newEvent java.util.EventObject
  */
@@ -147,11 +132,22 @@ protected void fireJButtonEnableAllAction_actionPerformed(java.util.EventObject 
  * Method to support listener events.
  * @param newEvent java.util.EventObject
  */
-protected void fireJButtonEnableControlAreaAction_actionPerformed(java.util.EventObject newEvent) {
+protected void fireJButtonStartScenarioAction_actionPerformed(java.util.EventObject newEvent) {
 	if (fieldButtonBarPanelListenerEventMulticaster == null) {
 		return;
 	};
-	fieldButtonBarPanelListenerEventMulticaster.JButtonEnableControlAreaAction_actionPerformed(newEvent);
+	fieldButtonBarPanelListenerEventMulticaster.JButtonStartScenarioAction_actionPerformed(newEvent);
+}
+
+/**
+ * Method to support listener events.
+ * @param newEvent java.util.EventObject
+ */
+protected void fireJButtonStopScenarioAction_actionPerformed(java.util.EventObject newEvent) {
+	if (fieldButtonBarPanelListenerEventMulticaster == null) {
+		return;
+	};
+	fieldButtonBarPanelListenerEventMulticaster.JButtonStopScenarioAction_actionPerformed(newEvent);
 }
 
 /**
@@ -163,9 +159,10 @@ public javax.swing.JButton[] getAllJButtons()
 {
 	javax.swing.JButton[] buttons =
 	{
-		getJButtonEnableControlArea(),		
 		getJButtonEnableAll(),
 		getJButtonDisableAll(),
+		getJButtonStartScenario(),
+		getJButtonStopScenario()
 	};
 	
 	
@@ -202,6 +199,9 @@ public javax.swing.JButton getJButtonDisableAll() {
 			ivjJButtonDisableAll.setMaximumSize(new java.awt.Dimension(125, 23));
 			ivjJButtonDisableAll.setMinimumSize(new java.awt.Dimension(125, 23));
 			// user code begin {1}
+			
+			ivjJButtonDisableAll.setToolTipText("Disable all Control Areas");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -227,6 +227,9 @@ public javax.swing.JButton getJButtonEnableAll() {
 			ivjJButtonEnableAll.setMaximumSize(new java.awt.Dimension(125, 23));
 			ivjJButtonEnableAll.setMinimumSize(new java.awt.Dimension(125, 23));
 			// user code begin {1}
+			
+			ivjJButtonEnableAll.setToolTipText("Enable all Control Areas");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -240,26 +243,54 @@ public javax.swing.JButton getJButtonEnableAll() {
  * Return the JButtonEnableControlArea property value.
  * @return javax.swing.JButton
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public javax.swing.JButton getJButtonEnableControlArea() {
-	if (ivjJButtonEnableControlArea == null) {
-		try {
-			ivjJButtonEnableControlArea = new javax.swing.JButton();
-			ivjJButtonEnableControlArea.setName("JButtonEnableControlArea");
-			ivjJButtonEnableControlArea.setMnemonic('a');
-			ivjJButtonEnableControlArea.setText("Enable Area");
-			ivjJButtonEnableControlArea.setMaximumSize(new java.awt.Dimension(110, 23));
-			ivjJButtonEnableControlArea.setPreferredSize(new java.awt.Dimension(110, 23));
-			ivjJButtonEnableControlArea.setMinimumSize(new java.awt.Dimension(110, 23));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+public javax.swing.JButton getJButtonStartScenario() 
+{
+	if( jButtonStartScenario == null ) 
+	{
+		try 
+		{
+			jButtonStartScenario = new javax.swing.JButton();
+			jButtonStartScenario.setName("JButtonStartScenario");
+			jButtonStartScenario.setPreferredSize(new java.awt.Dimension(125, 23));
+			jButtonStartScenario.setMnemonic('c');
+			jButtonStartScenario.setText("Start Scenario...");
+			jButtonStartScenario.setToolTipText("Start a pre-defined Control Scenario");
+			jButtonStartScenario.setMaximumSize(new java.awt.Dimension(125, 23));
+			jButtonStartScenario.setMinimumSize(new java.awt.Dimension(125, 23));
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
 			handleException(ivjExc);
 		}
 	}
-	return ivjJButtonEnableControlArea;
+	return jButtonStartScenario;
+}
+
+/**
+ * 
+ * @return javax.swing.JButton
+ */
+public javax.swing.JButton getJButtonStopScenario() 
+{
+	if( jButtonStopScenario == null ) 
+	{
+		try 
+		{
+			jButtonStopScenario = new javax.swing.JButton();
+			jButtonStopScenario.setName("JButtonStopScenario");
+			jButtonStopScenario.setPreferredSize(new java.awt.Dimension(125, 23));
+			jButtonStopScenario.setMnemonic('t');
+			jButtonStopScenario.setText("Stop Scenario...");
+			jButtonStopScenario.setToolTipText("Stop/Cancel a pre-defined Control Scenario");
+			jButtonStopScenario.setMaximumSize(new java.awt.Dimension(125, 23));
+			jButtonStopScenario.setMinimumSize(new java.awt.Dimension(125, 23));
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			handleException(ivjExc);
+		}
+	}
+	return jButtonStopScenario;
 }
 
 /**
@@ -269,44 +300,44 @@ public javax.swing.JButton getJButtonEnableControlArea() {
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections
  * @exception java.lang.Exception The exception description.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
-	// user code end
+private void initConnections() throws java.lang.Exception
+{
 	getJButtonEnableAll().addActionListener(this);
 	getJButtonDisableAll().addActionListener(this);
-	getJButtonEnableControlArea().addActionListener(this);
+	getJButtonStartScenario().addActionListener(this);
+	getJButtonStopScenario().addActionListener(this);
 }
 
 /**
  * Initialize the class.
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
+private void initialize() 
+{
+	try 
+	{
 		setName("ButtonBarPanel");
 		setLayout(getButtonBarPanelBoxLayout());
 		setSize(575, 34);
-		add(getJButtonEnableControlArea(), getJButtonEnableControlArea().getName());
 		add(getJButtonEnableAll());
 		add(getJButtonDisableAll());
+		add(getJButtonStartScenario());
+		add(getJButtonStopScenario());
 
 		initConnections();
-	} catch (java.lang.Throwable ivjExc) {
+	}
+	catch (java.lang.Throwable ivjExc)
+	{
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	// user code end
 }
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -334,10 +365,10 @@ public static void main(java.lang.String[] args) {
 }
 /**
  * 
- * @param newListener com.cannontech.loadcontrol.gui.ButtonBarPanelListener
+ * @param newListener ButtonBarPanelListener
  */
-public void removeButtonBarPanelListener(com.cannontech.loadcontrol.gui.ButtonBarPanelListener newListener) {
-	fieldButtonBarPanelListenerEventMulticaster = com.cannontech.loadcontrol.gui.ButtonBarPanelListenerEventMulticaster.remove(fieldButtonBarPanelListenerEventMulticaster, newListener);
+public void removeButtonBarPanelListener(ButtonBarPanelListener newListener) {
+	fieldButtonBarPanelListenerEventMulticaster = ButtonBarPanelListenerEventMulticaster.remove(fieldButtonBarPanelListenerEventMulticaster, newListener);
 	return;
 }
 /**

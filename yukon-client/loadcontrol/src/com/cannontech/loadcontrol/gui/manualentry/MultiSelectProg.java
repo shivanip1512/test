@@ -1,11 +1,7 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 
 /**
  * @author rneuharth
@@ -24,9 +20,9 @@ public class MultiSelectProg
 	
 	//will stay null if we deal with a program that does not have gears
 	private Integer gearNum = null;
+	private Integer startDelay = null;
+	private Integer stopOffset = null;
 	
-	//private String[] gearStates = new String[0];
-
 
 	/**
 	 * Constructor for MultiSelectProg.
@@ -123,6 +119,38 @@ public class MultiSelectProg
 	private void setBaseProgram(LMProgramBase baseProgram)
 	{
 		this.baseProgram = baseProgram;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getStopOffset()
+	{
+		return stopOffset;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getStartDelay()
+	{
+		return startDelay;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setStopOffset(Integer integer)
+	{
+		stopOffset = integer;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setStartDelay(Integer integer)
+	{
+		startDelay = integer;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.cannontech.loadcontrol;
 
 import java.awt.Color;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.commonutils.ModifiedDate;
@@ -19,6 +20,7 @@ import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 import com.cannontech.loadcontrol.gui.MultiLineControlAreaRenderer;
+import com.cannontech.loadcontrol.messages.LMManualControlMsg;
 import com.cannontech.util.ServletUtil;
 
 
@@ -271,7 +273,7 @@ public class LCUtils
 						 || prg.getStartTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
 						return CtiUtilities.STRING_DASH_LINE;
 					else
-						return new ModifiedDate( prg.getStartTime().getTime().getTime() );
+						return new ModifiedDate( prg.getStartTime().getTime().getTime(), ModifiedDate.FRMT_NOSECS );
 				}
 
 			case ProgramTableModel.CURRENT_GEAR:
@@ -293,7 +295,7 @@ public class LCUtils
 						|| prg.getStopTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
 						return CtiUtilities.STRING_DASH_LINE;
 					else
-						return new ModifiedDate( prg.getStopTime().getTime().getTime() );
+						return new ModifiedDate( prg.getStopTime().getTime().getTime(), ModifiedDate.FRMT_NOSECS );
 				}
 			
 			case ProgramTableModel.PRIORITY:
@@ -329,7 +331,7 @@ public class LCUtils
 			case GroupTableModel.TIME:
 			{
 				if( grpVal.getGroupTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return new ModifiedDate( grpVal.getGroupTime().getTime() );
+					return new ModifiedDate( grpVal.getGroupTime().getTime(), ModifiedDate.FRMT_NOSECS );
 				else
 					return CtiUtilities.STRING_DASH_LINE;
 			}
@@ -537,21 +539,52 @@ public class LCUtils
 					: cntrlArea.getCurrentDailyStopTime().intValue() );
 	}
 
-//	public static synchronized NativeIntVector getIntVector( String ids )
-//	{
-//		NativeIntVector intVect = new NativeIntVector(8);
-//		
-//		if( ids == null )
-//			return intVect;
-//
-//
-//		StringTokenizer st = new StringTokenizer(ids, ",");
-//
-//		while( st.hasMoreTokens() )
-//			intVect.add( Integer.parseInt(st.nextToken()) );
-//		
-//		return intVect;	  
-//	}
+	/**
+	 * A method to create a LMManualControlMsg with some set values. 
+	 * Creation date: (5/14/2002 10:50:02 AM)
+	 * @param
+	 */
+	public static synchronized LMManualControlMsg createProgMessage(
+				boolean doItNow, boolean isStop,
+				Date startTime, Date stopTime, LMProgramBase program,
+				Integer gearNum ) 
+	{
+		LMManualControlMsg msg = null;
+		
+		//create the new message
+		if( isStop )
+		{
+			if( doItNow )
+				msg = program.createStartStopNowMsg(
+							stopTime,
+							(gearNum == null ? 0 : gearNum.intValue()), 
+							null, false);
+			else					
+				msg = program.createScheduledStopMsg(
+							startTime, 
+							stopTime,
+							(gearNum == null ? 0 : gearNum.intValue()), 
+							null);
+		}
+		else
+		{
+			if( doItNow )
+				msg = program.createStartStopNowMsg(
+							stopTime,
+							(gearNum == null ? 0 : gearNum.intValue()), 
+							null, true);
+			else
+				msg = program.createScheduledStartMsg( 
+							startTime, 
+							stopTime,
+							(gearNum == null ? 0 : gearNum.intValue()), 
+							null, null );
+		}
+	
+		
+		//return the message created
+		return msg;
+	}
 
 
 }
