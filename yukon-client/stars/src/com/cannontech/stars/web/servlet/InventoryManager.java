@@ -191,7 +191,7 @@ public class InventoryManager extends HttpServlet {
 		else {
 			// The hardware is installed with another account, go to CheckInv.jsp to let the user confirm the action
 			session.setAttribute(INVENTORY_TO_CHECK, liteInv);
-			redirect = req.getContextPath() + "/operator/Hardware/CheckInv.jsp";
+			redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 		}
 	}
 	
@@ -237,7 +237,7 @@ public class InventoryManager extends HttpServlet {
 		else {
 			// The device is installed with another account
 			session.setAttribute(INVENTORY_TO_CHECK, liteInv);
-			redirect = req.getContextPath() + "/operator/Hardware/CheckInv.jsp";
+			redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 		}
 	}
 	
@@ -325,7 +325,7 @@ public class InventoryManager extends HttpServlet {
 			}
 		}
 		
-		redirect = req.getContextPath() + "/operator/Hardware/CheckInv.jsp";
+		redirect = req.getContextPath() + "/operator/Consumer/CheckInv.jsp";
 	}
 	
 	/**
