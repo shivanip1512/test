@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/06/23 15:24:05 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/07/02 18:56:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "message.h"
 #include "mgr_point.h"
 #include "msg_cmd.h"
+#include "msg_dbchg.h"
 #include "msg_reg.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
@@ -59,6 +60,7 @@ void notifEmailExecute( int argc, char **argv );
 void seasonExecute(int argc, char **argv);
 void lmExecute(int argc, char **argv);
 void lmHelp();
+void  dbchangeExecute(int argc, char **argv);
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -76,12 +78,12 @@ typedef struct
 TESTFUNC_t testfunction[] = {
     {"seasonreset", seasonExecute, defaultHelp},
     {"tags", tagExecute, tagHelp},
+    {"dbchange", dbchangeExecute, defaultHelp},
     {"default", defaultExecute, defaultHelp},
     {"notif", notifEmailExecute, defaultHelp},
     {"lm", lmExecute, lmHelp},
     {"", 0, 0}
 };
-
 
 
 void DoTheNasty(int argc, char **argv);
@@ -999,3 +1001,111 @@ void lmExecute(int argc, char **argv)
     }
 }
 
+
+void  dbchangeExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+    CtiMessage  *pMsg;
+
+    CtiPointManager PointMgr;
+
+    try
+    {
+        int id = 0, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+
+        srand(1);   // This is replicable.
+
+        PointMgr.refreshList();     // This should give me all the points in the box.
+        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+        pM->setMessagePriority(15);
+
+        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NONE | REG_ALARMS);
+        PtRegMsg->setMessagePriority(15);
+        Connect.WriteConnQue( PtRegMsg );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reading inbound messages from registration" << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(500)))
+        {
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Done reading registration messages" << endl;
+        }
+
+        CtiDBChangeMsg *pChg = 0;
+
+        if(argc >= 5)
+        {
+            id = atoi(argv[4]);
+        }
+
+        pChg = CTIDBG_new CtiDBChangeMsg(id, ChangePAODb, "Device", "Device", ChangeTypeUpdate);
+
+        pChg->setSource("VgSrctest");
+
+        pChg->dump();
+        Connect.WriteConnQue(pChg);
+
+
+        // Wait for our message back with the instance id...
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "  Looking for a response from dispatch!" << endl;
+        }
+
+        int instance = 0;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reading inbound messages caused by tag message submission." << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Request application shutdown." << endl;
+        }
+
+        Sleep(1000);
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+        Connect.ShutdownConnection();
+        Sleep(2500);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return;
+}
