@@ -51,19 +51,19 @@ public:
     enum 
     {
         ENABLE_SUBSTATION_BUS = 0,
-        DISABLE_SUBSTATION_BUS,
-        ENABLE_FEEDER,
-        DISABLE_FEEDER,
-        ENABLE_CAPBANK,
-        DISABLE_CAPBANK,
-        OPEN_CAPBANK,
-        CLOSE_CAPBANK,
-        CONFIRM_OPEN,
-        CONFIRM_CLOSE,
-        REQUEST_ALL_SUBSTATION_BUSES
+        DISABLE_SUBSTATION_BUS,//1
+        ENABLE_FEEDER,//2
+        DISABLE_FEEDER,//3
+        ENABLE_CAPBANK,//4
+        DISABLE_CAPBANK,//5
+        OPEN_CAPBANK,//6
+        CLOSE_CAPBANK,//7
+        CONFIRM_OPEN,//8
+        CONFIRM_CLOSE,//9
+        REQUEST_ALL_SUBSTATION_BUSES,//10
+        RETURN_CAP_TO_ORIGINAL_FEEDER//11
     };
 
-    CtiCCCommand() { }; //provided for polymorphic persitence only
     CtiCCCommand(UINT command);
     CtiCCCommand(UINT command, ULONG id);
     CtiCCCommand(const CtiCCCommand& commandMsg);
@@ -79,8 +79,40 @@ public:
     CtiCCCommand& operator=(const CtiCCCommand& right);
 private:
     
+    CtiCCCommand() { }; //provided for polymorphic persitence only
     UINT _command;
     ULONG _id;
+};
+
+class CtiCCCapBankMoveMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCCapBankMoveMsg )
+
+public:
+    /*CtiCCCapBankMoveMsg(UINT command);
+    CtiCCCapBankMoveMsg(UINT command, ULONG id);
+    CtiCCCapBankMoveMsg(const CtiCCCommand& commandMsg);*/
+    
+    virtual ~CtiCCCapBankMoveMsg();
+
+    INT getPermanentFlag() const;
+    LONG getOldFeederId() const;
+    LONG getCapBankId() const;
+    LONG getNewFeederId() const;
+    LONG getCapSwitchingOrder() const;
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    CtiCCCapBankMoveMsg& operator=(const CtiCCCapBankMoveMsg& right);
+private:
+    CtiCCCapBankMoveMsg() { }; //provided for polymorphic persitence only
+    
+    INT _permanentflag;
+    LONG _oldfeederid;
+    LONG _capbankid;
+    LONG _newfeederid;
+    LONG _capswitchingorder;
 };
 
 class CtiCCSubstationBusMsg : public CtiCCMessage

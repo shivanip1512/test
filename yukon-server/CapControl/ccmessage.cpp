@@ -167,6 +167,96 @@ CtiCCCommand& CtiCCCommand::operator=(const CtiCCCommand& right)
     return *this;
 }
 
+/*===========================================================================
+    CtiCCCapBankMoveMsg
+
+    Message to dynamically move cap banks between feeders both temporarily
+    or permanent.
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCCapBankMoveMsg, CTICCCAPBANKMOVEMSG_ID )
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCCapBankMoveMsg::~CtiCCCapBankMoveMsg()
+{
+}
+
+INT CtiCCCapBankMoveMsg::getPermanentFlag() const
+{
+    return _permanentflag;
+}
+LONG CtiCCCapBankMoveMsg::getOldFeederId() const
+{
+    return _oldfeederid;
+}
+LONG CtiCCCapBankMoveMsg::getCapBankId() const
+{
+    return _capbankid;
+}
+LONG CtiCCCapBankMoveMsg::getNewFeederId() const
+{
+    return _newfeederid;
+}
+LONG CtiCCCapBankMoveMsg::getCapSwitchingOrder() const
+{
+    return _capswitchingorder;
+}
+    
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCCapBankMoveMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+    strm >> _permanentflag
+         >> _oldfeederid
+         >> _capbankid
+         >> _newfeederid
+         >> _capswitchingorder;
+ 
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCCapBankMoveMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+
+    strm << _permanentflag
+         << _oldfeederid
+         << _capbankid
+         << _newfeederid
+         << _capswitchingorder;
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCCapBankMoveMsg& CtiCCCapBankMoveMsg::operator=(const CtiCCCapBankMoveMsg& right)
+{
+    if( this != &right )
+    {
+        _permanentflag    = right._permanentflag    ;
+        _oldfeederid      = right._oldfeederid      ;
+        _capbankid        = right._capbankid        ;
+        _newfeederid      = right._newfeederid      ;
+        _capswitchingorder= right._capswitchingorder;
+    }
+
+    return *this;
+}
+
+
 
 /*===========================================================================
     CtiCCSubstationBusMsg
