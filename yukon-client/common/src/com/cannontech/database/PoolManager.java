@@ -328,33 +328,21 @@ public String[] getAllPoolsStrings()
    }
 
 
-	static synchronized public InputStream getDBInputStream() 
+	static synchronized public InputStream getDBInputStream() throws Exception
 	{
-		InputStream is = null;
+		InputStream is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
 
-		try
+		if( is == null ) //not in CLASSPATH, check catalina
 		{
-			is = PoolManager.class.getResourceAsStream( DB_PROPERTIES_FILE );
-
-			if( is == null ) //not in CLASSPATH, check catalina
-			{
-				File f = new File( DB_BASE + DB_PROPERTIES_FILE);
-				is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
-				
-				CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
-				CTILogger.info( "   catalina.base = " + DB_BASE );
+			File f = new File( DB_BASE + DB_PROPERTIES_FILE);
+			is = new FileInputStream( DB_BASE + DB_PROPERTIES_FILE );
+			
+			CTILogger.info( " Searching for db.properties in : " + f.getAbsolutePath() );
+			CTILogger.info( "   catalina.base = " + DB_BASE );
 //				CTILogger.info( " Con = " + f.getCanonicalPath() );
 //				CTILogger.info( " ppp = " + f.getPath() );				
-			}
+		}
 			
-		 }
-		 catch (Exception e)
-		 {
-			CTILogger.getStandardLog().error("Can't read the properties file. " +
-				"Make sure db.properties is in the CLASSPATH" + 
-				(DB_BASE != null ? " or in the directory: " + DB_BASE : "") );
-		 }	
-
 		return is;
 	}
    
