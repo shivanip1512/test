@@ -73,11 +73,13 @@ public class UpdateUtil {
 									
 		if( (displayAttrib & PointAttributes.LAST_UPDATE) != 0 ) {
 			PointData pData = pcc.getValue(pointID);
-			if( prev ) 
-				text += " ";
+			if(pData != null ) {
+				if( prev ) 
+					text += " ";
 
-			text += pData.getPointDataTimeStamp();
- 			prev = true;
+				text += pData.getPointDataTimeStamp();
+ 				prev = true;
+			}
 		}	
 		
 		if( (displayAttrib & PointAttributes.LOW_LIMIT) != 0 ) {
