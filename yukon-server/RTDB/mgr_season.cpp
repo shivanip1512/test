@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/30 19:00:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/06/30 22:02:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,12 +42,13 @@ bool CtiSeasonManager::isInSeason(const RWDate& date, long season_sched_id)
 	do
 	{
 	    date_of_season cur_dos = iter->second;
-	    if( month_of_year >= cur_dos.start_month && day_of_month >= cur_dos.start_day &&
-		month_of_year <= cur_dos.end_month && day_of_month <= cur_dos.end_day )
+	    if( (month_of_year > cur_dos.start_month ||
+		 (month_of_year == cur_dos.start_month && day_of_month >= cur_dos.start_day)) &&
+		(month_of_year < cur_dos.end_month ||
+		 (month_of_year == cur_dos.end_month && day_of_month <= cur_dos.end_day)) )
 	    {
 		return true;
 	    }
-		
 	} while(iter++ != last_elem);
     }
 
