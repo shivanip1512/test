@@ -146,7 +146,7 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(LONG offTime, LONG 
 
     
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime)
+BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
     BOOL returnBOOL = FALSE;
 

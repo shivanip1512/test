@@ -139,7 +139,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
 
     
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime)
+BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
     BOOL returnBOOL = FALSE;
 

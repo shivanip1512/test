@@ -487,12 +487,12 @@ CtiLMControlArea& CtiLMControlArea::setRequireAllTriggersActiveFlag(BOOL require
     Figures out when the control area should be checked again according to the
     control interval.
 ---------------------------------------------------------------------------*/
-CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(LONG secondsFrom1901)
+CtiLMControlArea& CtiLMControlArea::figureNextCheckTime(ULONG secondsFrom1901)
 {
 
     if( _controlinterval != 0 )
     {
-        LONG tempsum = (secondsFrom1901-(secondsFrom1901%_controlinterval))+_controlinterval;
+        ULONG tempsum = (secondsFrom1901-(secondsFrom1901%_controlinterval))+_controlinterval;
         _nextchecktime = RWDBDateTime(RWTime(tempsum));
     }
     else
@@ -704,7 +704,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
     Returns a BOOLean if the control area can be controlled more because the
     time since the last control is at least as long as the min response time.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::isPastMinResponseTime(LONG secondsFrom1901)
+BOOL CtiLMControlArea::isPastMinResponseTime(ULONG secondsFrom1901)
 {
 
 
@@ -894,7 +894,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
     Reduces load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
     LONG newlyActivePrograms = 0;
@@ -1025,7 +1025,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
     Reduces load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -1128,7 +1128,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
     need to increased.  Refreshes time refresh programs shed times.  Updates
     current hours values in programs as they continue to control.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     BOOL returnBoolean = FALSE;
     LONG numberOfActivePrograms = 0;
@@ -1267,7 +1267,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
 
     Takes appropriate action for a manual control messages.
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::handleManualControl(LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     LONG previousControlAreaState = getControlAreaState();
     LONG numberOfActivePrograms = 0;

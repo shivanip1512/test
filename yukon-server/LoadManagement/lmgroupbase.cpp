@@ -783,7 +783,7 @@ RWCString CtiLMGroupBase::convertSecondsToEvenTimeString(LONG shedTime) const
 
     doesMasterCycleNeedToBeUpdated
 ---------------------------------------------------------------------------*/
-BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(LONG secondsFrom1901, LONG groupControlDone, LONG offTime)
+BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
 {
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
