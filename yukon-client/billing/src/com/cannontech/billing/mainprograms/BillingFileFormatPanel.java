@@ -83,7 +83,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		if( file != null )
 		{
 			getOutputFileTextField().setText( file );
-			getBillingDefaults().setOutputFile(file);
+			getBillingDefaults().setOutputFileDir(file);
 		}
 		repaint();
 	}
@@ -99,8 +99,8 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if ( event.getSource() == getBillingGroupTypeComboBox())
 	{
-		getBillingDefaults().setBillGroupSQLString(getBillingGroupTypeComboBox().getSelectedIndex());
-		getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
+		getBillingDefaults().setBillGroupType(getBillingGroupTypeComboBox().getSelectedIndex());
+		getGroupList().setListData(getBillingFile().retrieveAllBillGroupsVector());
 	}
 }
 /**
@@ -188,7 +188,6 @@ private void generateFile()
 
 	if( getFileFormatBase() != null )
 	{
-		getFileFormatBase().setIsAppending(getIsAppendingCheckBox().isSelected());
 		getBillingFile().addObserver( this );
 
 		Thread billingThread = new Thread( getBillingFile(), "BillingFileThread" );
@@ -254,11 +253,11 @@ private javax.swing.JComboBox getBillingGroupTypeComboBox() {
 			ivjBillingGroupTypeComboBox = new javax.swing.JComboBox();
 			ivjBillingGroupTypeComboBox.setName("BillingGroupTypeComboBox");
 			// user code begin {1}
-			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.COLLECTION_GROUP));
-			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.ALTERNATE_GROUP));
-			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupComboBoxString(BillingFileDefaults.BILLING_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(BillingFileDefaults.COLLECTION_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(BillingFileDefaults.TEST_COLLECTION_GROUP));
+			ivjBillingGroupTypeComboBox.addItem(BillingFileDefaults.getBillGroupTypeDisplayString(BillingFileDefaults.BILLING_GROUP));
 
-			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupComboBoxString(getBillingDefaults().getBillGroupSQLString()));
+			ivjBillingGroupTypeComboBox.setSelectedItem(getBillingDefaults().getBillGroupTypeDisplayString(getBillingDefaults().getBillGroupTypeID()));
 			ivjBillingGroupTypeComboBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -986,7 +985,7 @@ private javax.swing.JCheckBox getRemoveMultiplierCheckBox() {
 			ivjRemoveMultiplierCheckBox.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjRemoveMultiplierCheckBox.setText("Remove Multiplier");
 			// user code begin {1}
-			ivjRemoveMultiplierCheckBox.setSelected(getBillingDefaults().getRemoveMultiplier());
+			ivjRemoveMultiplierCheckBox.setSelected(getBillingDefaults().isRemoveMultiplier());
 //			ivjRemoveMultiplierCheckBox.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1124,8 +1123,8 @@ private void initialize() {
 		//  This application stores it's own default text config file,
 		//	 defined in billingFileDefaults class.
 		billingFile = new BillingFile();
-		billingFile.setAllBillGroupsVector(getBillingFile().retreiveAllBillGroupsVector());
-		billingFile.retreiveFileFormats();
+		billingFile.setAllBillGroupsVector(getBillingFile().retrieveAllBillGroupsVector());
+		billingFile.retrieveFileFormats();
 		
 		// user code end
 		setName("BillingFile");
@@ -1251,7 +1250,8 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	getOutputFileTextField().getText(),
 	getRemoveMultiplierCheckBox().isSelected(), 
 	getInputFileText(),
-	newEndDate	);
+	newEndDate,
+	getIsAppendingCheckBox().isSelected());
 	return newDefaults;
 }
 private void setBillingDefaults(BillingFileDefaults newDefaults)

@@ -155,7 +155,7 @@ public boolean retrieveBillingData(String dbAlias)
 					pointID = rset.getInt(2);
 					
 					double multiplier = 1;
-					if( getBillingDefaults().getRemoveMultiplier())
+					if( getBillingDefaults().isRemoveMultiplier())
 					{
 						multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
 					}

@@ -91,7 +91,7 @@ public class MV_90Format extends FileFormatBase
 						int pointID = rset.getInt(4);
 						java.util.Vector readingVector = null;
 						double multiplier = 1;
-						if( getBillingDefaults().getRemoveMultiplier())
+						if( getBillingDefaults().isRemoveMultiplier())
 						{
 							multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
 						}

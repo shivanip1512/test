@@ -105,7 +105,7 @@ public class TurtleFormatBase extends FileFormatBase
 				
 				int recCount = 0;
 				
-				if( !isAppending() )
+				if( !getBillingDefaults().isAppendToFile() )
 				{
 					getRecordVector().add( new com.cannontech.billing.record.StringRecord(getHeader()));
 					recCount ++;
@@ -124,7 +124,7 @@ public class TurtleFormatBase extends FileFormatBase
 					{
 						currentPointID = rset.getInt(2);
 						double multiplier = 1;
-						if( getBillingDefaults().getRemoveMultiplier())
+						if( getBillingDefaults().isRemoveMultiplier())
 						{
 							multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
 						}

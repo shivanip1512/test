@@ -5,356 +5,420 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (5/7/2002 2:16:34 PM)
  * @author: 
  */
-
 import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
+
 public class BillingFile extends java.util.Observable implements Runnable
 {
 	private BillingFileDefaults billingDefaults = null;
 	private FileFormatBase fileFormatBase = null;
-	//private java.util.Date billingEndDate = null;
 	private java.util.Vector allBillGroupsVector = null;
 	
 	private String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-/**
- * BillingFile constructor comment.
- */
-public BillingFile()
-{
-	super();
-	initialize();
-}
-public java.util.Vector getAllBillGroupsVector ()
-{
-	if (allBillGroupsVector == null)
-		allBillGroupsVector = retreiveAllBillGroupsVector();
-	return allBillGroupsVector;
-}
-public BillingFileDefaults getBillingDefaults()
-{
-	if( billingDefaults == null)
-		billingDefaults = new BillingFileDefaults();
-	return billingDefaults;
-	
-}
-public FileFormatBase getFileFormatBase()
-{
-	return fileFormatBase;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/8/2002 3:03:15 PM)
- */
-public void initialize()
-{
-	billingDefaults = new BillingFileDefaults();	
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/28/2002 12:50:01 PM)
- * @param args java.lang.String[]
- */
-public static void main(String[] args)
-{
-	try
-	{
-		BillingFile billingFile = new BillingFile();
-		for ( int i = 0; i < args.length; i++)
-		{
-			String argLowerCase = (String)args[i].toLowerCase();
-	
-			if( argLowerCase.startsWith("format") || argLowerCase.startsWith("type"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-				if( subString.length() > 2 )	//we accept int values of 0 - 12ish...so far.  Anything longer must be the string value.
-					billingFile.getBillingDefaults().setFormatID(FileFormatTypes.getFormatID(subString));
-				else
-					billingFile.getBillingDefaults().setFormatID(Integer.valueOf(subString).intValue());
-			}
-			else if( argLowerCase.startsWith("dem"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-				billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
-			}
-			else if( argLowerCase.startsWith("ener"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-				billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
-			}
-			else if( argLowerCase.startsWith("billgr"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-				billingFile.getBillingDefaults().setBillGroup(subString);
-			}
-			else if( argLowerCase.startsWith("sqlcol"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-				if( subString.length() == 1)	//we have the integer value of the sqlcolumn
-					billingFile.getBillingDefaults().setBillGroupSQLString(Integer.valueOf(subString).intValue());
-				else
-					billingFile.getBillingDefaults().setBillGroupSQLString(subString);
-			}
-			else if( argLowerCase.startsWith("end"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-				com.cannontech.util.ServletUtil.parseDateStringLiberally(subString);
-				billingFile.getBillingDefaults().setEndDate(com.cannontech.util.ServletUtil.parseDateStringLiberally(subString));
-			}
-			else if( argLowerCase.startsWith("file") || argLowerCase.startsWith("dir"))
-			{
-				int startIndex = argLowerCase.indexOf("=") + 1;
-				String subString = argLowerCase.substring(startIndex);
-//				if( subString.indexOf(':') > 0)	//the remembered the whole directory
-					billingFile.getBillingDefaults().setOutputFile(subString);
-//				else	//try to help out and default the directory
-//					billingFile.getBillingDefaults().setOutputFile(com.cannontech.common.util.CtiUtilities.getExportDirPath() + "/" + subString);
-			}
-		}
-		
-		billingFile.setFileFormatBase( com.cannontech.billing.FileFormatFactory.createFileFormat(billingFile.getBillingDefaults().getFormatID() ));
-		billingFile.run();
-		billingFile.getBillingDefaults().writeDefaultsFile();
-	} 
-	catch (Throwable exception)
-	{
-		com.cannontech.clientutils.CTILogger.error("Exception occurred in main() of BillingFile");
-		exception.printStackTrace(System.out);
-	}
-}
-/**
- */
-public java.util.Vector retreiveAllBillGroupsVector()
-{
-	java.util.Vector billGroupVector = new java.util.Vector();
-		
-	java.sql.Statement stmt = null;
-	java.sql.Connection conn = null;
-	java.sql.ResultSet rset = null;
-	
-	String sql = new String( "SELECT DISTINCT " + getBillingDefaults().getBillGroupSQLString() + " FROM "
-					+ com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
-					+ " ORDER BY " + getBillingDefaults().getBillGroupSQLString());
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias);
 
-		stmt = conn.createStatement();	
-		rset = stmt.executeQuery(sql.toString());
-
-		while (rset.next())
-		{
-			billGroupVector.addElement(rset.getString(1));
-		}
-
-		//getGroupList().setListData(collectionGroupVector);
-	}
-	catch( java.sql.SQLException e )
+	/**
+	 * BillingFile constructor comment.
+	 */
+	public BillingFile()
 	{
-		e.printStackTrace();
+		super();
+		initialize();
 	}
-	finally
+
+	/**
+	 * Method initialize.
+	 */
+	public void initialize()
+	{
+		billingDefaults = new BillingFileDefaults();	
+	}
+
+	/**
+	 * Method main.
+	 * Takes args in format of key=value for batch running.
+	 * @param args
+	 */
+	public static void main(String[] args)
 	{
 		try
 		{
-			if( rset != null )
-				rset.close();
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
+			BillingFile billingFile = new BillingFile();
+			for ( int i = 0; i < args.length; i++)
+			{
+				String argLowerCase = (String)args[i].toLowerCase();
+		
+				if( argLowerCase.startsWith("format") || argLowerCase.startsWith("type"))
+				{//BillingFileDefaults.formatID
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					if( subString.length() > 2 )	//we accept int values of 0 - 12ish...so far.  Anything longer must be the string value.
+						billingFile.getBillingDefaults().setFormatID(FileFormatTypes.getFormatID(subString));
+					else
+						billingFile.getBillingDefaults().setFormatID(Integer.valueOf(subString).intValue());
+				}
+				else if( argLowerCase.startsWith("dem"))
+				{//BillingFileDefaults.demandDaysPrevious
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
+				}
+				else if( argLowerCase.startsWith("ener"))
+				{//BillingFileDefaults.energyDaysPrevious
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
+				}
+				else if( argLowerCase.startsWith("coll") )
+				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
+				 //BillingFileDefaults.billGroup
+					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.COLLECTION_GROUP);
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = args[i].substring(startIndex);
+					billingFile.getBillingDefaults().setBillGroup(subString);
+				}
+				else if( argLowerCase.startsWith("test"))
+				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
+				 //BillingFileDefaults.billGroup
+					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.TEST_COLLECTION_GROUP);
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = args[i].substring(startIndex);
+					billingFile.getBillingDefaults().setBillGroup(subString);
+				}
+				else if( argLowerCase.startsWith("bill") )
+				{//BillingFileDefaults.billGroupTypeString.BILLINGGROUP
+				 //BillingFileDefaults.billGroup
+					billingFile.getBillingDefaults().setBillGroupType(BillingFileDefaults.BILLING_GROUP);
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = args[i].substring(startIndex);
+					billingFile.getBillingDefaults().setBillGroup(subString);
+				}
+				else if( argLowerCase.startsWith("end"))
+				{//BillingFileDefaults.endDate
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					com.cannontech.util.ServletUtil.parseDateStringLiberally(subString);
+					billingFile.getBillingDefaults().setEndDate(com.cannontech.util.ServletUtil.parseDateStringLiberally(subString));
+				}
+				else if( argLowerCase.startsWith("file") || argLowerCase.startsWith("dir"))
+				{//BillingFileDefaults.outputFileDir
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					if( subString.indexOf(':') > 0)	//they remembered the whole directory
+						billingFile.getBillingDefaults().setOutputFileDir(subString);
+					else	//try to help out and default the directory
+						billingFile.getBillingDefaults().setOutputFileDir(com.cannontech.common.util.CtiUtilities.getExportDirPath() + subString);
+				}
+				else if( argLowerCase.startsWith("mult"))
+				{//BillingFileDefuaults.removeMultiplier
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					if( subString.startsWith("t"))
+						billingFile.getBillingDefaults().setRemoveMultiplier(true);
+					else
+						billingFile.getBillingDefaults().setRemoveMultiplier(false);
+				}
+				else if( argLowerCase.startsWith("app"))
+				{
+					int startIndex = argLowerCase.indexOf("=") + 1;
+					String subString = argLowerCase.substring(startIndex);
+					if( subString.startsWith("t"))
+						billingFile.getBillingDefaults().setAppendToFile(true);
+					else 
+						billingFile.getBillingDefaults().setAppendToFile(false);
+				}
+			}
+			
+			billingFile.setFileFormatBase( com.cannontech.billing.FileFormatFactory.createFileFormat(billingFile.getBillingDefaults().getFormatID() ));
+			billingFile.run();
+			billingFile.getBillingDefaults().writeDefaultsFile();
+		} 
+		catch (Throwable exception)
 		{
-			e.printStackTrace();
+			com.cannontech.clientutils.CTILogger.error("Exception occurred in main() of BillingFile");
+			exception.printStackTrace(System.out);
 		}
 	}
-	return billGroupVector;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/8/2002 9:08:12 AM)
- */
-public void retreiveFileFormats() 
-{
-	long timer = System.currentTimeMillis();
-		
-	String sql = "SELECT FORMATID, FORMATTYPE FROM BILLINGFILEFORMATS" +
-				" WHERE FORMATID >= 0";
-	
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-
-	try
+	/**
+	 * Method retrieveAllBillGroupsVector.
+	 * Retrieve all possible billGroups from database relative to getBillingFileDefaults().billGroupSQLString.
+	 * @return java.util.Vector
+	 */
+	public java.util.Vector retrieveAllBillGroupsVector()
 	{
-		java.util.Vector formatIDVector = new java.util.Vector();
-		java.util.Vector formatTypeVector = new java.util.Vector();
+		java.util.Vector billGroupVector = new java.util.Vector();
+			
+		java.sql.Statement stmt = null;
+		java.sql.Connection conn = null;
+		java.sql.ResultSet rset = null;
 		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-		if( conn == null )
+		String sql = new String( "SELECT DISTINCT " + getBillingDefaults().getBillGroupType() + " FROM "
+						+ com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
+						+ " ORDER BY " + getBillingDefaults().getBillGroupType());
+		try
 		{
-			com.cannontech.clientutils.CTILogger.info( getClass() + ":  Error getting database connection.");
-			return;
-		}
-		else
-		{
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias);
 			stmt = conn.createStatement();	
 			rset = stmt.executeQuery(sql.toString());
-			int rowCount = 0;
-			while( rset.next())
+	
+			while (rset.next())
 			{
-				formatIDVector.add(new Integer(rset.getInt(1)));
-				formatTypeVector.add( rset.getString(2));
-				rowCount++;
+				billGroupVector.addElement(rset.getString(1));
 			}
-
-			if( rowCount > 0)
-			{
-				//(Re-)Initialize the validFormat..Arrays.
-				int[] formatIDs = new int[rowCount];
-				String[] formatTypes = new String[rowCount];
-				
-				for (int i = 0; i < rowCount; i++)
-				{
-					formatIDs[i] = ((Integer)formatIDVector.get(i)).intValue();
-					formatTypes[i] = (String)formatTypeVector.get(i);
-				}	
-				//Copy into class arrays.
-				FileFormatTypes.setValidFormatIDs(formatIDs);
-				FileFormatTypes.setValidFormatTypes(formatTypes);
-			}
-		}
-	}
-			
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
 		}
 		catch( java.sql.SQLException e )
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				if( rset != null )
+					rset.close();
+				if( stmt != null )
+					stmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		return billGroupVector;
 	}
-	//logEvent("...BASELINE DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + 
-					//" millis.", com.cannontech.common.util.LogWriter.INFO);
-	return;
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/31/2001 11:56:09 AM)
- */
-public void run() 
-{
-	if( fileFormatBase != null )
+
+	/**
+	 * Method retrieveFileFormats.
+	 * Retrieve possible fileformats from yukon.BillingFileFormats db table.
+	 */
+	public void retrieveFileFormats() 
 	{
-		//tell our formatter about needing to append or not
-		//fileFormatBase.setIsAppending( getAppendCheckBox().isSelected() );
-		fileFormatBase.setBillingDefaults(getBillingDefaults());
-
-		com.cannontech.clientutils.CTILogger.info(" ** FYI ** Valid entries are for meters with: ");
-		com.cannontech.clientutils.CTILogger.info(" ** DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-		com.cannontech.clientutils.CTILogger.info(" ** ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-
-		boolean success = false;
+		long timer = System.currentTimeMillis();
+			
+		String sql = "SELECT FORMATID, FORMATTYPE FROM BILLINGFILEFORMATS" +
+					" WHERE FORMATID >= 0";
 		
-		if (getBillingDefaults().getBillGroup().isEmpty())
-			success = false;
-		else
-			success = fileFormatBase.retrieveBillingData( null );	// null is the dbalias.  It's set in
-																	// every method but should be updated sometime.
-
+		java.sql.Connection conn = null;
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+	
 		try
 		{
-			if( success )
+			java.util.Vector formatIDVector = new java.util.Vector();
+			java.util.Vector formatTypeVector = new java.util.Vector();
+			
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+			if( conn == null )
 			{
-				fileFormatBase.writeToFile();
+				com.cannontech.clientutils.CTILogger.info( getClass() + ":  Error getting database connection.");
+				return;
 			}
-			else				
+			else
+			{
+				stmt = conn.createStatement();	
+				rset = stmt.executeQuery(sql.toString());
+				int rowCount = 0;
+				while( rset.next())
+				{
+					formatIDVector.add(new Integer(rset.getInt(1)));
+					formatTypeVector.add( rset.getString(2));
+					rowCount++;
+				}
+	
+				if( rowCount > 0)
+				{
+					//(Re-)Initialize the validFormat..Arrays.
+					int[] formatIDs = new int[rowCount];
+					String[] formatTypes = new String[rowCount];
+					
+					for (int i = 0; i < rowCount; i++)
+					{
+						formatIDs[i] = ((Integer)formatIDVector.get(i)).intValue();
+						formatTypes[i] = (String)formatTypeVector.get(i);
+					}	
+					//Copy into class arrays.
+					FileFormatTypes.setValidFormatIDs(formatIDs);
+					FileFormatTypes.setValidFormatTypes(formatTypes);
+				}
+			}
+		}
+				
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( stmt != null )
+					stmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		return;
+	}
+
+	/**
+	 * Retrieve all billingData and writeTofile for a formatBase.
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() 
+	{
+		if( fileFormatBase != null )
+		{
+			fileFormatBase.setBillingDefaults(getBillingDefaults());
+	
+			com.cannontech.clientutils.CTILogger.info("Valid entries are for meter data where: ");
+			com.cannontech.clientutils.CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+			com.cannontech.clientutils.CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+	
+			boolean success = false;
+			
+			if (getBillingDefaults().getBillGroup().isEmpty())
+				success = false;
+			else
+				success = fileFormatBase.retrieveBillingData(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+	
+			try
+			{
+				if( success )
+				{
+					fileFormatBase.writeToFile();
+				}
+				else				
+				{
+					setChanged();
+					notify("Unsuccessfull database query" );
+				}
+	
+				setChanged();
+				notify("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
+			}
+			catch(java.io.IOException ioe)
 			{
 				setChanged();
-				notify("Unsuccessfull database query" );
+				notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
+				ioe.printStackTrace();
 			}
-
-			setChanged();
-			notify("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
-		}
-		catch(java.io.IOException ioe)
-		{
-			setChanged();
-			notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
-			ioe.printStackTrace();
 		}
 	}
-}
-public void setAllBillGroupsVector(java.util.Vector newBillGrpsVector)
-{
-	allBillGroupsVector = newBillGrpsVector;
-}
-public void setBillingDefaults(BillingFileDefaults newBillingFileDefaults)
-{
-	billingDefaults = newBillingFileDefaults ;
-}
-public void setFileFormatBase( FileFormatBase newFormatBase)
-{
-	fileFormatBase = newFormatBase;
-	fileFormatBase.setBillingDefaults(getBillingDefaults());
 
-}
-public void encodeOutput(java.io.OutputStream out) throws java.io.IOException
-{
-	if( fileFormatBase != null )
+	/**
+	 * Method encodeOutput.
+	 * Retrieve all billingData and write to outputStream for a formatBase.
+	 * @param out
+	 * @throws IOException
+	 */
+	public void encodeOutput(java.io.OutputStream out) throws java.io.IOException
 	{
-		//tell our formatter about needing to append or not
-		//fileFormatBase.setIsAppending( getAppendCheckBox().isSelected() );
-		fileFormatBase.setBillingDefaults(getBillingDefaults());
-
-		com.cannontech.clientutils.CTILogger.info(" ** FYI ** Valid entries are for meters with: ");
-		com.cannontech.clientutils.CTILogger.info(" ** DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-		com.cannontech.clientutils.CTILogger.info(" ** ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-
-		boolean success = false;
-		
-		if (getBillingDefaults().getBillGroup().isEmpty())
-			success = false;
-		else
-			success = fileFormatBase.retrieveBillingData( null );	// null is the dbalias.  It's set in
-																	// every method but should be updated sometime.
-
-		try
+		if( fileFormatBase != null )
 		{
-			if( success )
+			fileFormatBase.setBillingDefaults(getBillingDefaults());
+	
+			com.cannontech.clientutils.CTILogger.info("Valid entries are for meter data where: ");
+			com.cannontech.clientutils.CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+			com.cannontech.clientutils.CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+	
+			boolean success = false;
+			
+			if (getBillingDefaults().getBillGroup().isEmpty())
+				success = false;
+			else
+				success = fileFormatBase.retrieveBillingData(com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );	
+
+			try
 			{
-				fileFormatBase.writeToFile(out);
+				if( success )
+				{
+					fileFormatBase.writeToFile(out);
+				}
+				else				
+				{
+					notify("Unsuccessfull database query" );
+				}
 			}
-			else				
+			catch(java.io.IOException ioe)
 			{
-				notify("Unsuccessfull database query" );
+				ioe.printStackTrace();
 			}
-		}
-		catch(java.io.IOException ioe)
-		{
-			ioe.printStackTrace();
 		}
 	}
-}
-private void notify(String notifyString)
-{
-	this.notifyObservers(notifyString );
-	com.cannontech.clientutils.CTILogger.info(notifyString);
-}
+	
+	/**
+	 * Notify observers and write to CTILogger the notifyString.
+	 * @param notifyString
+	 */
+	private void notify(String notifyString)
+	{
+		this.notifyObservers(notifyString );
+		com.cannontech.clientutils.CTILogger.info(notifyString);
+	}
+	/**
+	 * Returns the allBillGroupsVector.
+	 * If null, value is set by retrieveAllBillGroupsVector().
+	 * @return java.util.Vector
+	 */
+	public java.util.Vector getAllBillGroupsVector()
+	{
+		if( allBillGroupsVector == null)
+			allBillGroupsVector = retrieveAllBillGroupsVector();
+		return allBillGroupsVector;
+	}
+
+	/**
+	 * Returns the billingDefaults.
+	 * If null, value is instantiated.
+	 * @return BillingFileDefaults
+	 */
+	public BillingFileDefaults getBillingDefaults()
+	{
+		if( billingDefaults == null)
+			billingDefaults = new BillingFileDefaults();
+		return billingDefaults;
+	}
+
+	/**
+	 * Returns the fileFormatBase.
+	 * @return FileFormatBase
+	 */
+	public FileFormatBase getFileFormatBase()
+	{
+		return fileFormatBase;
+	}
+
+	/**
+	 * Sets the allBillGroupsVector.
+	 * @param allBillGroupsVector The allBillGroupsVector to set
+	 */
+	public void setAllBillGroupsVector(java.util.Vector allBillGroupsVector)
+	{
+		this.allBillGroupsVector = allBillGroupsVector;
+	}
+
+	/**
+	 * Sets the billingDefaults.
+	 * @param billingDefaults The billingDefaults to set
+	 */
+	public void setBillingDefaults(BillingFileDefaults billingDefaults)
+	{
+		this.billingDefaults = billingDefaults;
+	}
+
+	/**
+	 * Sets the fileFormatBase.
+	 * Sets the fileFormatBase.billingDefaults to this.billingDefaults.
+	 * @param fileFormatBase The fileFormatBase to set
+	 */
+	public void setFileFormatBase(FileFormatBase fileFormatBase)
+	{
+		this.fileFormatBase = fileFormatBase;
+		this.fileFormatBase.setBillingDefaults(getBillingDefaults());
+	}
 }

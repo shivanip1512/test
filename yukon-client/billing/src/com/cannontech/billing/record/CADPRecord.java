@@ -72,15 +72,6 @@ public String dataToString()
 {
 	int pass = 0;
 		
-	//StringBuffer writeToFile = new StringBuffer();
-
-	//int acctNumLength = getAccountNumber().length();
-	
-	//for(int i=0;i<(10-acctNumLength);i++)
-	//{
-		//writeToFile.append("0");
-	//}
-	
 	StringBuffer writeToFile = new StringBuffer();
 	
 	writeToFile.append(getCoopId());
@@ -113,7 +104,6 @@ public String dataToString()
 			writeToFile.append("       ");
 		else
 		{
-			//writeToFile.append(decimalFormat4v3.format(((Double)getKwReadingVector().get(i)).doubleValue()));
 			String tempKwReadingString = decimalFormat4v3.format(((Double)getKwReadingVector().get(i)).doubleValue());
 
 			for(int j=0;j<tempKwReadingString.length();j++)
@@ -129,7 +119,6 @@ public String dataToString()
 			writeToFile.append("     ");
 		else
 		{
-			//writeToFile.append(decimalFormat5v0.format(((Double)getKvarReadingVector().get(i)).doubleValue()));
 			String tempKvarReadingString = decimalFormat5v0.format(((Double)getKvarReadingVector().get(i)).doubleValue());
 			for(int j = 0; j < tempKvarReadingString.length();j++)
 			{

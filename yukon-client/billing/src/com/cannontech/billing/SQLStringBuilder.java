@@ -24,7 +24,7 @@ public class SQLStringBuilder
 		StringBuffer sqlBuffer = new StringBuffer(buildSelectClause(columns));
 		
 		sqlBuffer.append( buildFromClause(tables));
-		sqlBuffer.append( buildWhereClause( billingDefaults.getBillGroup(), billingDefaults.getBillGroupSQLString(), analogOffsets, pulseAccOffsets, demandAccOffsets));
+		sqlBuffer.append( buildWhereClause( billingDefaults.getBillGroup(), billingDefaults.getBillGroupType(), analogOffsets, pulseAccOffsets, demandAccOffsets));
 	
 	
 		com.cannontech.clientutils.CTILogger.info(" SQL Statement: " + sqlBuffer.toString());

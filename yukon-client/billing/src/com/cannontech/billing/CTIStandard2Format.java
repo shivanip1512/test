@@ -51,14 +51,12 @@ public String dataToString() {
  * @param databasealias java.lang.String
  * @param collectionGroup java.lang.String
  */
-public final static String[] getAllPointID(String databaseAlias, String collectionGroup) {
+public final static String[] getAllPointID(String databaseAlias, String collectionGroup)
+{
+	StringBuffer sql = new StringBuffer("SELECT POINTID FROM POINT WHERE PAOBJECTID IN ");
+	sql.append(" (SELECT DEVICEID FROM DEVICEMETERGROUP WHERE COLLECTIONGROUP = '" + collectionGroup + "')");
 
-	com.cannontech.database.SqlStatement stmt =
-	//new com.cannontech.database.SqlStatement("SELECT POINTID FROM POINT WHERE DEVICEID IN (SELECT DEVICEID FROM DEVICEMETERGROUP WHERE COLLECTIONGROUP = '" + collectionGroup + "')"
-												//,databaseAlias );
-
-	new com.cannontech.database.SqlStatement("SELECT POINTID FROM POINT WHERE PAOBJECTID IN (SELECT DEVICEID FROM DEVICEMETERGROUP WHERE COLLECTIONGROUP = '" + collectionGroup + "')"
-											,databaseAlias );
+	com.cannontech.database.SqlStatement stmt =	new com.cannontech.database.SqlStatement(sql.toString(), databaseAlias );
 
 	try
 	{
@@ -88,12 +86,9 @@ public final static String[] getAllPointID(String databaseAlias, String collecti
  */
 public final String getMeterNumber(String databaseAlias, String pointID) {
 	
-	com.cannontech.database.SqlStatement stmt =
-	//new com.cannontech.database.SqlStatement("SELECT NAME FROM DEVICE WHERE DEVICEID = (SELECT DEVICEID FROM POINT WHERE POINTID = " + pointID + ")"
-											//,databaseAlias );
-	new com.cannontech.database.SqlStatement("SELECT PAONAME FROM YUKONPAOBJECT WHERE PAOBJECTID = (SELECT DEVICEID FROM POINT WHERE POINTID = " + pointID + ")"
-											,databaseAlias );
-
+	StringBuffer sql = new StringBuffer("SELECT PAONAME FROM YUKONPAOBJECT WHERE PAOBJECTID = ");
+	sql.append(" (SELECT DEVICEID FROM POINT WHERE POINTID = " + pointID + ")");
+	com.cannontech.database.SqlStatement stmt =	new com.cannontech.database.SqlStatement(sql.toString(), databaseAlias );
 												
 	String newMeterNumber = null;	
 	try
@@ -110,7 +105,6 @@ public final String getMeterNumber(String databaseAlias, String pointID) {
 		e.printStackTrace();
 	}
 
-	
 	return newMeterNumber;
 }
 /**

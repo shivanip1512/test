@@ -22,8 +22,8 @@ public class BillingBean implements java.util.Observer
 	private int fileFormat = 0;
 	private int demandDaysPrev = 30;
 	private int energyDaysPrev = 7;
-	private String billingGroup = "Default";
-	private int billingGroupType = BillingFileDefaults.COLLECTION_GROUP;
+	private String billGroup = "Default";
+	private int billGroupType = BillingFileDefaults.COLLECTION_GROUP;
 	private String outputFile = "";
 	private boolean removeMult = false;
 	private boolean appendToFile = false;
@@ -40,16 +40,16 @@ public BillingBean()
 {
 	super();
 }
-public String[] getValidBillingGroups()
+public String[] getValidBillGroups()
 {
-	getBillingDefaults().setBillGroupSQLString(getBillingGroupType());
-	java.util.Vector valids = getBillingFile().retreiveAllBillGroupsVector();
-	String [] validBillingGroups = new String[valids.size()];
+	getBillingDefaults().setBillGroupType(getBillGroupType());
+	java.util.Vector valids = getBillingFile().retrieveAllBillGroupsVector();
+	String [] validBillGroups = new String[valids.size()];
 	for (int i = 0; i < valids.size(); i++)
 	{
-		validBillingGroups[i] = valids.get(i).toString();
+		validBillGroups[i] = valids.get(i).toString();
 	}
-	return validBillingGroups;
+	return validBillGroups;
 }
 
 /**
@@ -81,11 +81,12 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 	getFileFormat(),
 	(new Integer( getDemandDaysPrev()).intValue()),
 	(new Integer( getEnergyDaysPrev()).intValue()),
-	getBillingGroup(),getBillingGroupType(),
+	getBillGroup(),getBillGroupType(),
 	"c:/yukon/client/export/BeanTest.txt",
 	getRemoveMult(),
 	"",
-	getEndDate());
+	getEndDate(),
+	getAppendToFile());
 
 	if (defaults == null)
 		return;
@@ -94,8 +95,6 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 
 	if( getFileFormatBase() != null )
 	{
-		getFileFormatBase().setIsAppending(getAppendToFile());
-
 		Date timerStart = new Date();
 		com.cannontech.clientutils.CTILogger.info("Started " + 
 					FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
@@ -120,8 +119,8 @@ private BillingFile getBillingFile()
 	if(billingFile == null)
 	{
 		billingFile = new BillingFile();
-		billingFile.setAllBillGroupsVector(getBillingFile().retreiveAllBillGroupsVector());
-		billingFile.retreiveFileFormats();
+		billingFile.setAllBillGroupsVector(getBillingFile().retrieveAllBillGroupsVector());
+		billingFile.retrieveFileFormats();
 	}
 	return billingFile;
 }
@@ -215,25 +214,23 @@ public void setRemoveMult(boolean isRemoveMult)
 }
 
 
-public String getBillingGroup()
+public String getBillGroup()
 {
-	return billingGroup;
+	return billGroup;
 }
-public void setBillingGroup(String newBillingGroup)
+public void setBillGroup(String billGroup)
 {
-	billingGroup = newBillingGroup;
+	this.billGroup = billGroup;
 }
 
-public int getBillingGroupType()
+public int getBillGroupType()
 {
-	return billingGroupType;
+	return billGroupType;
 }
-public void setBillingGroupType(int newBillingGroupType)
+public void setBillGroupType(int billGroupType)
 {
-	billingGroupType = newBillingGroupType;
-
-	getBillingDefaults().setBillGroupSQLString(billingGroupType);
-//	getGroupList().setListData(getBillingFile().retreiveAllBillGroupsVector());
+	this.billGroupType = billGroupType;
+	getBillingDefaults().setBillGroupType(billGroupType);
 }
 
 public String getOutputFile()
@@ -244,7 +241,7 @@ public void setOutputFile(String newOutputFile)
 {
 	outputFile = newOutputFile;
 	
-	getBillingDefaults().setOutputFile(outputFile);
+	getBillingDefaults().setOutputFileDir(outputFile);
 }
 
 /**

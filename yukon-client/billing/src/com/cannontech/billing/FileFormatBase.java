@@ -13,7 +13,6 @@ public abstract class FileFormatBase
 	//used to store every line of output that will be written to the file
 	// it holds Objects of type BillingRecordBase
 	private java.util.Vector recordVector = null;
-	private boolean appending = false;
 	public static BillingFileDefaults billingDefaults = null;
 	public java.util.Hashtable pointIDMultiplierHashTable = null;
 	
@@ -160,14 +159,6 @@ public abstract class FileFormatBase
 		return recordVector;
 	}
 	
-	/**
-	 * Returns the flag that determines if the output file will be appended to or over-written.
-	 * @return boolean
-	 */
-	public boolean isAppending() {
-		return appending;
-	}
-
 	/**
 	 * Returns the flag that determines if offset is valid for the static kvarAnalogOffsets values.
 	 * Creation date: (3/11/2002 3:11:08 PM)
@@ -415,19 +406,11 @@ public abstract class FileFormatBase
 	}
 	
 	/**
-	 * Sets the flag that determines if records will be appended to an existing file or over-written.
-	 * @param newAppending boolean
-	 */
-	public void setIsAppending(boolean newAppending) {
-		appending = newAppending;
-	}
-
-	/**
 	 * Writes the record string to the output file.
 	 */
 	public void writeToFile() throws java.io.IOException
 	{
-		java.io.FileWriter outputFileWriter = new java.io.FileWriter( getOutputFileName(), isAppending() );
+		java.io.FileWriter outputFileWriter = new java.io.FileWriter( getOutputFileName(), getBillingDefaults().isAppendToFile() );
 		outputFileWriter.write( getOutputAsStringBuffer().toString() );
 		outputFileWriter.flush();
 		outputFileWriter.close();
