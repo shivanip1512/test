@@ -40,7 +40,7 @@ import org.jfree.chart.urls.TimeSeriesURLGenerator;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.Dataset;
-import org.jfree.data.time.Second;
+import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -132,12 +132,12 @@ public TrendModel(GraphDefinition gdef, java.util.Date newStartDate, java.util.D
 	setChartName(gdef.getGraphDefinition().getName());
 	
 	setAutoScale(gdef.getGraphDefinition().getAutoScaleLeftAxis(), PRIMARY_AXIS);
-	setScaleMax(gdef.getGraphDefinition().getRightMax(), PRIMARY_AXIS);
-	setScaleMin(gdef.getGraphDefinition().getRightMin(), PRIMARY_AXIS);
+	setScaleMax(gdef.getGraphDefinition().getLeftMax(), PRIMARY_AXIS);
+	setScaleMin(gdef.getGraphDefinition().getLeftMin(), PRIMARY_AXIS);
 	
 	setAutoScale(gdef.getGraphDefinition().getAutoScaleRightAxis(), SECONDARY_AXIS);
-	setScaleMax(gdef.getGraphDefinition().getLeftMax(), SECONDARY_AXIS);
-	setScaleMin(gdef.getGraphDefinition().getLeftMin(), SECONDARY_AXIS);
+	setScaleMax(gdef.getGraphDefinition().getRightMax(), SECONDARY_AXIS);
+	setScaleMin(gdef.getGraphDefinition().getRightMin(), SECONDARY_AXIS);
 
 
 	// Inititialize series properties
@@ -410,7 +410,7 @@ private StringBuffer getSQLQueryString(int seriesTypeMask, int pointid)
 	if( validIDs.isEmpty())
 		return null;
 	*/		
-	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE "
+	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE, MILLIS "
 	+ "FROM RAWPOINTHISTORY WHERE POINTID IN (");
 	sql.append( pointid);
 
@@ -704,13 +704,16 @@ private void hitDatabase_Basic(int seriesTypeMask)
 					//new pointid in rset.
 					//init everything, a new freechartmodel will be created with the change of pointid.
 					java.sql.Timestamp ts = rset.getTimestamp(2);
+					double val = rset.getDouble(3);
+					short millis = rset.getShort(4);
+					
 					tempCal = new GregorianCalendar();
 					tempCal.setTimeInMillis(ts.getTime());
+					tempCal.set(Calendar.MILLISECOND, millis);
 					tempCal.add(Calendar.DATE, Math.abs(day));	//map timestamps to current start/stop range.
-					RegularTimePeriod tp = new Second((Date)tempCal.getTime().clone());
+					RegularTimePeriod tp = new Millisecond((Date)tempCal.getTime().clone());
 					Long timeKey = new Long(tp.getStart().getTime());
-					double val = rset.getDouble(3);
-				
+									
 					if( GDSTypesFuncs.isUsageType(seriesTypeMask))
 					{
 						java.util.Date tsDate = new java.util.Date(ts.getTime());
@@ -914,13 +917,15 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 				//new pointid in rset.
 				//init everything, a new freechartmodel will be created with the change of pointid.
 				java.sql.Timestamp ts = rset.getTimestamp(2);
+				double val = rset.getDouble(3);
+				short millis = rset.getShort(4);
+				
 				tempCal = new GregorianCalendar();
 				tempCal.setTimeInMillis(ts.getTime());
+				tempCal.set(Calendar.MILLISECOND, millis);
 				tempCal.add(Calendar.DATE, Math.abs(day));	//map timestamps to current start/stop range.
-				RegularTimePeriod tp = new Second((Date)tempCal.getTime().clone());
+				RegularTimePeriod tp = new Millisecond((Date)tempCal.getTime().clone());
 				Long timeKey = new Long(tp.getStart().getTime());
-
-				double val = rset.getDouble(3);
 			
 				dataItem = new TimeSeriesDataItem(tp, val);
 				dataItemsMap.put(timeKey, dataItem);
@@ -945,7 +950,7 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 							tempCal.setTime((Date)repeatItem.getPeriod().getStart().clone());
 							tempCal.add(Calendar.DATE, (int)i);
 							Long timeKey = new Long(tempCal.getTimeInMillis());
-							RegularTimePeriod tp = new Second(new java.util.Date(timeKey.longValue()));
+							RegularTimePeriod tp = new Millisecond(new java.util.Date(timeKey.longValue()));
 							
 							dataItem = new TimeSeriesDataItem(tp,v);
 							dataItemsMap.put(timeKey, dataItem);							
