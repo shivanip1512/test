@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/09/27 17:14:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/09/29 14:15:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@ CtiThreadMonitor::~CtiThreadMonitor()
 
 void CtiThreadMonitor::run( void )
 {
+   int cnt = 0;
    {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       dout << now() << " Monitor Startup" << endl;
@@ -97,14 +98,15 @@ void CtiThreadMonitor::processQueue( void )
 {
    while( _queue.entries() )
    {
-      CtiThreadRegData temp = *(_queue.getQueue());
+      //this says it removes the first entry, so we won't C&D later
+      CtiThreadRegData *temp = _queue.getQueue();
 
-      int tempId = temp.getId();
+      int tempId = temp->getId();
 
       pair< ThreadData::iterator, bool > insertpair;
 
       //we try to put the element from the queue into the map
-      insertpair = _threadData.insert( ThreadData::value_type( tempId, temp ) );
+      insertpair = _threadData.insert( ThreadData::value_type( tempId, *temp ) );
 
       //note that we heard from a particular thread
       (*insertpair.first).second.setReported( true );
@@ -173,9 +175,16 @@ void CtiThreadMonitor::processExpired( void )
                }
                break;
             }
+
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << "Removing Thread ID " << i->first << " " << i->second.getName() << endl;
+            }
+
+            i = _threadData.erase( i );
          }
 
-         i = _threadData.erase( i );
+         i++;
       }
    }
    catch( ... )
@@ -191,19 +200,20 @@ void CtiThreadMonitor::processExpired( void )
 
 void CtiThreadMonitor::dump( void )
 {  
-   CtiLockGuard<CtiLogger> doubt_guard( dout );
-
    for( map < int, CtiThreadRegData >::iterator i = _threadData.begin(); i != _threadData.end(); i++ )
    {
       CtiThreadRegData temp = i->second;
 
-      dout << endl;
-      dout << "Thread name             : " << temp.getName() << endl;
-      dout << "Thread id               : " << temp.getId() << endl;
-      dout << "Thread behaviour type   : " << temp.getBehaviour() << endl;
-      dout << "Thread tickle frequency : " << temp.getTickleFreq() << endl;
-      dout << "Thread tickle time      : " << timeString( temp.getTickledTime() ) << endl;
-      dout << endl;
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << endl;
+         dout << "Thread name             : " << temp.getName() << endl;
+         dout << "Thread id               : " << temp.getId() << endl;
+         dout << "Thread behaviour type   : " << temp.getBehaviour() << endl;
+         dout << "Thread tickle frequency : " << temp.getTickleFreq() << endl;
+         dout << "Thread tickle time      : " << timeString( temp.getTickledTime() ) << endl;
+         dout << endl;
+      }
    }  
 }
 
@@ -215,34 +225,42 @@ void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
 {
    //we need to copy the data locally to put on the queue or we'll destroy
    //data that is not ours when we delete the queue
-   CtiThreadRegData data = *in;
-
-   data.setTickledTime( second_clock::local_time() );
-
-   if( data.getId() != 0 )
+   try
    {
-      _queue.putQueue( &data );
+      CtiThreadRegData *data = new CtiThreadRegData( *in );
 
-      {
-         CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << now() << " Thread " << data.getId() << " inserted" << endl;
-      }
+      data->setTickledTime( second_clock::local_time() );
 
-      //our thread may have shut down, so we don't want the queue to keep growing
-      //as we won't be processing it anymore
-      if( !isRunning() )
+      if( data->getId() != 0 )
       {
+         _queue.putQueue( data );
+
          {
             CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << now() <<" WARNING: Monitor is NOT running, deleting monitor queue" << endl;
+            dout << now() << " Thread " << data->getName() << " " << data->getId() << " inserted" << endl;
          }
-         _queue.clearAndDestroy();
+
+         //our thread may have shut down, so we don't want the queue to keep growing
+         //as we won't be processing it anymore
+         if( !isRunning() )
+         {
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << now() <<" WARNING: Monitor is NOT running, deleting monitor queue" << endl;
+            }
+            _queue.clearAndDestroy();
+         }
+      }
+      else
+      {
+         CtiLockGuard<CtiLogger> doubt_guard( dout );
+         dout << now() <<" Thread id INVALID" << endl;
       }
    }
-   else
+   catch( ... )
    {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << now() <<" Thread id INVALID" << endl;
+      dout << now() <<" Monitor passed BAD data" << endl;
    }
 }
 
