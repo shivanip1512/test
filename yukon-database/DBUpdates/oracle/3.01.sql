@@ -369,6 +369,12 @@ alter table DeviceSeries5RTU modify Retries number not null;
 alter table LMControlScenarioProgram rename column StartDelay to StartOffset;
 
 
+update YukonListEntry set YukonDefinitionID=1305 where EntryID=1052;
+update YukonListEntry set YukonDefinitionID=1306 where EntryID=1053;
+update YukonListEntry set YukonDefinitionID=1307 where EntryID=1054;
+update YukonListEntry set YukonDefinitionID=1308 where EntryID=1055;
+
+
 
 
 /******************************************************************************/

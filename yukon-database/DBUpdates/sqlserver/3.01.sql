@@ -444,6 +444,11 @@ go
 sp_rename 'LMControlScenarioProgram.StartDelay', 'StartOffset', 'COLUMN';
 
 
+update YukonListEntry set YukonDefinitionID=1305 where EntryID=1052;
+update YukonListEntry set YukonDefinitionID=1306 where EntryID=1053;
+update YukonListEntry set YukonDefinitionID=1307 where EntryID=1054;
+update YukonListEntry set YukonDefinitionID=1308 where EntryID=1055;
+
 
 
 
