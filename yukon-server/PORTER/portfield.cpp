@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.122 $
-* DATE         :  $Date: 2004/11/16 20:52:49 $
+* REVISION     :  $Revision: 1.123 $
+* DATE         :  $Date: 2004/11/17 23:44:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,9 +221,10 @@ VOID PortThread(void *pid)
         if( Port->shouldProcessQueuedDevices() )
         {
             if( LastExclusionDevice &&
-                LastExclusionDevice->hasQueuedWork() &&
-                nowTime <= LastExclusionDevice->getExclusion().getExecutionGrantExpires() &&
-                nowTime >= LastExclusionDevice->getExclusion().getEvaluateNextAt() )
+                LastExclusionDevice->hasQueuedWork() &&                                             // This device has more work
+                nowTime >= LastExclusionDevice->getExclusion().getExecutingUntil() &&               // This device thinks he is ready for more work
+                nowTime <= LastExclusionDevice->getExclusion().getExecutionGrantExpires() &&        // The grant has not expired.
+                nowTime >= LastExclusionDevice->getExclusion().getEvaluateNextAt() )                // The device thinkscan be evaluated.
             {
                 Device = LastExclusionDevice;
 
