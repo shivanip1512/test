@@ -133,36 +133,28 @@ public class SQLStringBuilder
 		java.util.Vector whereClauses = new java.util.Vector();
 		
 		//String whereString = " WHERE ";
-		if( yukonPAObjectTable_from && deviceMeterGroup_from)
+		if( yukonPAObjectTable_from)
 		{
-			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
-		}
-		if( point_from && deviceCarrierSettings_from)
-		{
-			whereClauses.add(new String(" POINT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
-		}
-		if( yukonPAObjectTable_from && deviceCarrierSettings_from)
-		{
-			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
-		}
-//		if ( yukonPAObjectTable_from && deviceScanRate_from)
-//		{
-//			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICESCANRATE.DEVICEID"));
-//		}
-		if ( yukonPAObjectTable_from && point_from)
-		{
-			whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = POINT.PAOBJECTID "));
+			if(deviceMeterGroup_from)
+				whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID "));
+			
+			if(deviceCarrierSettings_from)
+				whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
+
+			if( point_from)
+				whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = POINT.PAOBJECTID "));
+											
+//			if(deviceScanRate_from)
+//				whereClauses.add(new String(" YUKONPAOBJECT.PAOBJECTID = DEVICESCANRATE.DEVICEID"));
 		}
 		if( rawPointHistoryTable_from)
 		{
 			whereClauses.add(new String(" RAWPOINTHISTORY.TIMESTAMP > ? "));	//START BILLING DATE
+			if(point_from)
+			{
+				whereClauses.add(new String(" RAWPOINTHISTORY.POINTID = POINT.POINTID "));
+			}
 		}
-	
-		if( rawPointHistoryTable_from && point_from)
-		{
-			whereClauses.add(new String(" RAWPOINTHISTORY.POINTID = POINT.POINTID "));
-		}
-		
 		if( deviceMeterGroup_from)
 		{
 			String inCollectionGroup = new String(groupingColumn + " IN ('" + groupVector.get(0) + "'");
@@ -183,11 +175,10 @@ public class SQLStringBuilder
 			}
 			
 			if( deviceMeterGroup_from)
-			{
 				whereClauses.add(new String(" POINT.PAOBJECTID = DEVICEMETERGROUP.DEVICEID"));
-			}
 			
-			
+			if( deviceCarrierSettings_from)
+				whereClauses.add(new String(" POINT.PAOBJECTID = DEVICECARRIERSETTINGS.DEVICEID "));
 			
 			// select valid pointtypes with appropriate pointoffsets.
 			if( analogOffsets != null || pulseAccOffsets != null || demandAccOffsets != null)
