@@ -3,7 +3,8 @@ package com.cannontech.database.data.device;
 /**
  * This type was created in VisualAge.
  */
-public class MCT410IL extends MCTBase {
+public class MCT410IL extends MCT400SeriesBase {
+
 /**
  * MCT410IL constructor comment.
  */

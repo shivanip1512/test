@@ -2,7 +2,6 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.db.tou.TOUDeviceMapping;
 import com.cannontech.database.db.config.MCTConfigMapping;
 /**
  * This type was created in VisualAge.
@@ -12,9 +11,7 @@ public class MCTBase extends CarrierBase implements IDeviceMeterGroup
 	private DeviceMeterGroup deviceMeterGroup = null;
 	private DeviceLoadProfile deviceLoadProfile = null;
 	private boolean hasConfig = false;
-	private boolean hasTOU = false;
 	private MCTConfigMapping configMapping = null;
-	private TOUDeviceMapping touDeviceMapping = null;
 /**
  * MCT constructor comment.
  */
@@ -30,10 +27,7 @@ public void add() throws java.sql.SQLException {
 	getDeviceLoadProfile().add();
 	if(hasConfig)
 		getConfigMapping().add();
-	if(hasTOU)
-		getTOUDeviceMapping().add();
-	
-	
+		
 }
 /**
  * Insert the method's description here.
@@ -49,8 +43,6 @@ public void addPartial() throws java.sql.SQLException
 	getDeviceLoadProfile().add();
 	if(hasConfig)
 		getConfigMapping().add();	
-	if(hasTOU)
-		getTOUDeviceMapping().add();
 	
 }
 /**
@@ -62,8 +54,7 @@ public void delete() throws java.sql.SQLException
 	getDeviceLoadProfile().delete();
 	if(hasConfig)
 		getConfigMapping().delete();
-	if(hasTOU)
-		getTOUDeviceMapping().delete();
+
 	super.delete();
 }
 /**
@@ -102,12 +93,6 @@ public MCTConfigMapping getConfigMapping() {
 	return configMapping;
 }
 
-public TOUDeviceMapping getTOUDeviceMapping() {
-	if( touDeviceMapping == null )
-		touDeviceMapping = new TOUDeviceMapping();
-	return touDeviceMapping;
-}
-
 public void setConfigMapping( MCTConfigMapping newConfig) {
 	configMapping = newConfig;
 }
@@ -115,11 +100,6 @@ public void setConfigMapping( MCTConfigMapping newConfig) {
 public void setConfigMapping( Integer conID, Integer mctID) {
 	getConfigMapping().setconfigID(conID);
 	getConfigMapping().setmctID(mctID);
-}
-
-public void setTOUDeviceMapping( Integer touID, Integer mctID) {
-	getTOUDeviceMapping().setScheduleID(touID);
-	getTOUDeviceMapping().setDeviceID(mctID);
 }
 
 public void setDeviceMeterGroup( DeviceMeterGroup dvMtrGrp_ )
@@ -136,8 +116,6 @@ public void retrieve() throws java.sql.SQLException {
 	getDeviceLoadProfile().retrieve();
 	if(hasConfig)
 		getConfigMapping().retrieve();
-	if(hasTOU)
-		getTOUDeviceMapping().retrieve();
 }
 /**
  * Insert the method's description here.
@@ -151,8 +129,6 @@ public void setDbConnection(java.sql.Connection conn)
 	getDeviceMeterGroup().setDbConnection(conn);
 	if(hasConfig)
 		getConfigMapping().setDbConnection(conn);
-	if(hasTOU)
-		getTOUDeviceMapping().setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -170,11 +146,6 @@ public void setHasConfig(boolean yesno)
 	hasConfig = yesno;
 }
 
-public void setHasTOUSchedule(boolean yesno)
-{
-	hasTOU = yesno;
-}
-
 /**
  * This method was created in VisualAge.
  */
@@ -184,8 +155,6 @@ public void update() throws java.sql.SQLException {
 	getDeviceLoadProfile().update();
 	if(hasConfig)
 		getConfigMapping().add();
-	if(hasTOU)
-		getTOUDeviceMapping().add(); 
 }
 
 public boolean hasMappedConfig()
@@ -202,22 +171,6 @@ public boolean hasMappedConfig()
 	}	
 	
 	return hasConfig;
-}
-
-public boolean hasTOUSchedule()
-{
-	hasTOU = false;
-	
-	try
-	{
-		hasTOU = TOUDeviceMapping.hasSchedule(getDevice().getDeviceID());
-	}
-	catch( java.sql.SQLException e2 )
-	{
-		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-	}	
-	
-	return hasTOU;
 }
 
 public Integer getConfigID()
@@ -247,32 +200,4 @@ public Integer getConfigID()
 	return id;
 }
 
-public Integer getTOUScheduleID()
-{
-	Integer id = new Integer(-1);
-	
-	if(hasTOU)
-	{
-		try
-		{
-			java.sql.Connection conn = null;
-	
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-	
-			id = TOUDeviceMapping.getTheScheduleID(getDevice().getDeviceID(), conn);
-			
-			conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}	
-	}
-	else
-		id = touDeviceMapping.getScheduleID();
-	
-	return id;
-		
-		
-}
 }
