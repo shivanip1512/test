@@ -15,12 +15,12 @@
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 
 <%@ page import="javax.xml.soap.SOAPMessage" %>
+
+<cti:checklogin/>
+ 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
-	if (lYukonUser == null) {
-		response.sendRedirect("/login.jsp"); return;
-	}
-	
+
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
@@ -59,8 +59,8 @@
 	StarsServiceRequestHistory serviceHist = null;
 	StarsThermostatSettings thermoSettings = null;
 	StarsUser userLogin = null;
-	
-	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, RoleTypes.OPERATOR_CONSUMER_INFO) != null)
+
+	if (com.cannontech.database.cache.functions.AuthFuncs.checkRole(lYukonUser, com.cannontech.roles.operator.ConsumerInfoRole.ROLEID) != null)
 	{
 		user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 		if (user == null || user.getYukonUser().getUserID() != lYukonUser.getUserID()) {	// This is logged in using the normal LoginController, not the StarsLoginController
@@ -78,9 +78,9 @@
 		}
 		
 		ecSettings = (StarsGetEnergyCompanySettingsResponse) user.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
-		if (ecSettings != null) {
+		if (ecSettings != null) {   
 			energyCompany = ecSettings.getStarsEnergyCompany();
-			ecWebSettings = ecSettings.getStarsWebConfig();
+			//ecWebSettings = ecSettings.getStarsWebConfig();
 			categories = ecSettings.getStarsEnrollmentPrograms();
 			companies = ecSettings.getStarsServiceCompanies();
 			customerFAQs = ecSettings.getStarsCustomerFAQs();
