@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/06/27 20:54:26 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/07/21 21:35:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -736,9 +736,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                             retMsg->PointData().insert(commStatus);
                             commStatus = NULL;
                         }
-
-                        //RWCString resultString = getName() + " / operation failed";
-                        //retMsg->setResultString(resultString);
 
                         vgList.append(retMsg);
                         retMsg = 0;
