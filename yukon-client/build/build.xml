@@ -71,6 +71,7 @@
         <ant dir="${loadcontrol}" target="${dotarget}" />
         <ant dir="${macs}" target="${dotarget}" />
         <ant dir="${commander}" target="${dotarget}" />
+        <ant dir="${commands}" target="${dotarget}" />
         <ant dir="${trending}" target="${dotarget}" />
         <ant dir="${webgraph}" target="${dotarget}" />
         <ant dir="${dbeditor}" target="${dotarget}" />
