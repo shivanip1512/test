@@ -138,6 +138,7 @@ public class ServletUtil {
 	public static final String FORMAT_LOWER = "lower";
 	public static final String FORMAT_CAPITAL = "capital";
 	public static final String FORMAT_ALL_CAPITAL = "all_capital";
+	public static final String FORMAT_ADD_ARTICLE = "add_article";
 	
 /**
  * Creation date: (6/7/2001 3:09:18 PM)
@@ -1007,5 +1008,21 @@ public static Date roundToMinute(Date toRound) {
     	
     	return sb.toString();
     }
+	
+	/**
+	 * Add an indefinite article in front of a word
+	 * @param word
+	 * @return
+	 */
+	public static String addArticle(String word) {
+		if (word.charAt(0) == 'a' || word.charAt(0) == 'A'
+			|| word.charAt(0) == 'e' || word.charAt(0) == 'E'
+			|| word.charAt(0) == 'i' || word.charAt(0) == 'I'
+			|| word.charAt(0) == 'o' || word.charAt(0) == 'O'
+			|| word.charAt(0) == 'u' || word.charAt(0) == 'U')
+			return "an " + word;
+		else
+			return "a " + word;
+	}
 
 }
