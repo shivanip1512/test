@@ -90,6 +90,9 @@ public class DBUpdater extends MessageFrameAdaptor
 	private static final String FS = System.getProperty("file.separator");
 	private static final String LF = System.getProperty("line.separator");
 
+	private DecimalFormat floatForm = new DecimalFormat( "#.00" );
+	private DecimalFormat intForm = new DecimalFormat( "00" );
+	
 
 	public final static String[] CMD_LINE_PARAM_NAMES = 
 	{
@@ -103,6 +106,8 @@ public class DBUpdater extends MessageFrameAdaptor
 	public DBUpdater()
 	{
 		super();
+		intForm.setMaximumIntegerDigits( 2 );
+		intForm.setMaximumFractionDigits( 0 );		
 	}
 
 	public String getName()
@@ -203,10 +208,8 @@ public class DBUpdater extends MessageFrameAdaptor
 
 	private synchronized boolean executeCommands()
 	{
-		File[] files = null;
-
 		//get all the files in the log DIR
-		files = updateDB.getDBUpdateFiles( CtiUtilities.getLogDirPath() );
+		FileVersion[] fileVers = updateDB.getDBUpdateFiles( CtiUtilities.getLogDirPath() );
 
 		Connection conn = 
 			PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
@@ -220,9 +223,9 @@ public class DBUpdater extends MessageFrameAdaptor
 			//be sure every trx commits after its execution automatically
 			conn.setAutoCommit( true );
 
-			for( int i = 0; i < files.length; i++ )
+			for( int i = 0; i < fileVers.length; i++ )
 			{
-				sqlFile = files[i];
+				sqlFile = fileVers[i].getFile();
 				validLines = updateDB.readFile( sqlFile );
 				isIgnoreAllErrors = false;
                 isIgnoreBlockErrors = false;
@@ -363,18 +366,16 @@ public class DBUpdater extends MessageFrameAdaptor
 		//"d:/eclipse/head/yukon-database/DBUpdates/oracle" );
 
 
-		File[] files = null;
 		UpdateLine[] validLines = new UpdateLine[0];		
 
 		//get all the files in the DIR
-		files = updateDB.getDBUpdateFiles( srcPath );
+		FileVersion[] filesVers = updateDB.getDBUpdateFiles( srcPath );
 
 
 
-		for( int i = 0; i < files.length; i++ )
+		for( int i = 0; i < filesVers.length; i++ )
 		{
-			File sqlFile = files[i];
-			double fVers = UpdateDB.getFileVersion( sqlFile );
+			File sqlFile = filesVers[i].getFile();
 
 
 			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
@@ -390,14 +391,13 @@ public class DBUpdater extends MessageFrameAdaptor
 			}
 			
 			getIMessageFrame().addOutput("Done reading file");
-
-
-			DecimalFormat df = new DecimalFormat( "#.00" );
+			
 			//find out if we need to right the valid file for this version			
 			if( !UpdateDB.isValidUpdateFile(sqlFile) )
 				printUpdateLines( validLines, 
 						new File( CtiUtilities.getLogDirPath() + 
-							df.format(fVers) + 
+							floatForm.format(filesVers[i].getVersion()) +
+							"_" + intForm.format(filesVers[i].getBuild()) +
 							DBMSDefines.NAME_VALID) );
 			
 			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");

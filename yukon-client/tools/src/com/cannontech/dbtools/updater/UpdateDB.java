@@ -7,7 +7,6 @@ package com.cannontech.dbtools.updater;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
@@ -25,26 +24,8 @@ import com.cannontech.tools.gui.IMessageFrame;
  */
 public class UpdateDB
 {
-	private static double dbVersion = 0.0;
+	//private static double dbVersion = 0.0;
 	private IMessageFrame output = null;
-
-
-	//A comparator to compare the DBupdate file versions 
-	public static final Comparator COMP_FILE_VERS = new Comparator()
-	{
-		public int compare(Object o1, Object o2)
-		{
-			double aVal = getFileVersion( (File)o1 );
-			double bVal = getFileVersion( (File)o2 );
-
-			return (aVal < bVal ? -1 : (aVal == bVal ? 0 : 1) );
-		}
-			
-		public boolean equals(Object obj)
-		{
-			return false;
-		}
-	};
 
 	/**
 	 * 
@@ -81,7 +62,7 @@ public class UpdateDB
 		if( file_ == null )
 			return false;
 
-		if( getFileVersion(file_) > 0.0
+		if( getFileVersion(file_).getVersion() > 0.0
 			 && file_.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT)
 			 && (file_.getAbsolutePath().toLowerCase().indexOf(DBMSDefines.NAME_VALID) > -1) )
 		{
@@ -95,10 +76,21 @@ public class UpdateDB
 	public static double getDBVersion()
 	{
 		//do not lazy init this, just in case!!
-		dbVersion = Double.parseDouble( 
+		return Double.parseDouble( 
                         VersionTools.getDBVersionRefresh().getVersion() );
 
-		return dbVersion;					
+		//return dbVersion;					
+	}
+
+	public static int getDBBuild()
+	{
+		//do not lazy init this, just in case!!
+		Integer bldInt = VersionTools.getDBVersionRefresh().getBuild();
+
+		if( bldInt == null )
+			return 0;
+		else
+			return bldInt.intValue();
 	}
 
 	/**
@@ -108,32 +100,20 @@ public class UpdateDB
 	 * @param file_
 	 * @return
 	 */
-	public static double getFileVersion( File file_ )
-	{
-		try
-		{
-			return Double.parseDouble( file_.getName().substring(0, 4) );
-		}
-		catch( Exception e )
-		{
-			CTILogger.info("Invalid file name, name = " + file_.getName() );
-			return -1.0;
-		}
-
+	public static FileVersion getFileVersion( File file_ )
+	{		
+		return new FileVersion( file_ );
 	}
 
 	/**
-	* @return File[]
+	* @return FileVersion[]
 	*
 	* Gets a list of specific files from a directory.
 	* First try to get the intermediate file generated.
 	* If that fails, then get the original update script file
 	* */
-	public File[] getDBUpdateFiles( String rootDIR )
+	public FileVersion[] getDBUpdateFiles( String rootDIR )
 	{
-		File[] dbUpdateFiles = null;
-		
-		ArrayList files = new ArrayList(32);
 		ArrayList versions = new ArrayList(32);
 
 		//previously generated list of valid commands
@@ -141,11 +121,13 @@ public class UpdateDB
 		for( int i = 0; i < genDIR.listFiles().length; i++ )
 		{
 			File sqlFile = genDIR.listFiles()[i];
-			double fVers = getFileVersion(sqlFile);
+			if( sqlFile.isDirectory() )
+				continue;
 
-
-			if( getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
-				 || fVers <= getDBVersion() )
+			FileVersion fVers = getFileVersion(sqlFile);
+			if( fVers.getVersion() < DBMSDefines.MIN_VERSION
+				 || fVers.getVersion() < getDBVersion()
+				 || (fVers.getVersion() == getDBVersion() && fVers.getBuild() <= getDBBuild()) )
 			{
 				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
 				continue;
@@ -155,8 +137,7 @@ public class UpdateDB
 			{
 				CTILogger.debug("  GenDir - Adding file : " + sqlFile );
                 getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
-				files.add( sqlFile );   //get all the .sql files in the directory
-				versions.add( new Double(fVers) );
+				versions.add( fVers );
 			}
 
 		}
@@ -167,31 +148,35 @@ public class UpdateDB
 		for( int i = 0; i < userDIR.listFiles().length; i++ )
 		{
 			File sqlFile = userDIR.listFiles()[i];
-			double fVers = getFileVersion(sqlFile);
-			
-			if( getFileVersion(sqlFile) < DBMSDefines.MIN_VERSION
-				 || fVers <= getDBVersion() )
+			if( sqlFile.isDirectory() )
+				continue;
+
+			FileVersion fVers = getFileVersion(sqlFile);			
+			if( fVers.getVersion() < DBMSDefines.MIN_VERSION
+				 || fVers.getVersion() < getDBVersion()
+				 || (fVers.getVersion() == getDBVersion() && fVers.getBuild() <= getDBBuild()) )
 			{
 				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
 				continue;
 			}
 
 			if( sqlFile.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT) 
-				 && !versions.contains(new Double(fVers)) )
+				 && !versions.contains(fVers) )
 			{
 				CTILogger.debug("  UserDIR - Adding file : " + sqlFile );
                 getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
-				files.add( sqlFile ); //get all the .sql files in the directory
+                versions.add( fVers );
 			}
 
 		}
 
 
-		dbUpdateFiles = new File[ files.size() ];
-		dbUpdateFiles = (File[])files.toArray( dbUpdateFiles );			
-		
+		FileVersion[] dbUpdateFiles = null;
+		dbUpdateFiles = new FileVersion[ versions.size() ];
+		dbUpdateFiles = (FileVersion[])versions.toArray( dbUpdateFiles );
+
 		//be sure the returned list is in order by version number
-		Arrays.sort( dbUpdateFiles, COMP_FILE_VERS );		 
+		Arrays.sort( dbUpdateFiles, FileVersion.FILE_COMP );
 		return dbUpdateFiles;
 	}
 
@@ -236,27 +221,26 @@ public class UpdateDB
 		if( token.indexOf(DBMSDefines.STARS_INC) > 0 
 			 && VersionTools.starsExists() )
 		{
+			getIMessageFrame().addOutput( "    <-=======================================->" );
+			getIMessageFrame().addOutput( "            Loading STARS updates" );
+			
 			try
 			{
 				//d:/eclipse/head/yukon-database/dbupdates/sqlserver
 				File starsFile = new File( file.getParent() + "/stars/" +
-					file.getName().substring(0, file.getName().length()-4) + "-stars.sql" );
-					
-				getIMessageFrame().addOutput( "<-=======================================->" );
-				getIMessageFrame().addOutput( "    Starting STARS updates" );
+					file.getName().substring(0, file.getName().length()-4) + "-stars.sql" );					
 
 				UpdateDB newUp = new UpdateDB( getIMessageFrame() );
-				starsLines = newUp.readFile( starsFile );
-						
-				getIMessageFrame().addOutput( "    Done with STARS updates" );
-				getIMessageFrame().addOutput( "<-=======================================->" );
+				starsLines = newUp.readFile( starsFile );						
 			}
 			catch( DBUpdateException e )
 			{
 				getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION with STARS Update ---------");
 				getIMessageFrame().addOutput("    " + e.getMessage() );
 			}
-
+			
+			getIMessageFrame().addOutput( "          Done with STARS updates" );
+			getIMessageFrame().addOutput( "    <-=======================================->" );
 		}
 		
 		return starsLines;
