@@ -39,7 +39,7 @@ public abstract class FileFormatBase
 	
 	public static final int validAccPtOffsets[] =
 	{
-		1
+		1, 2, 3
 	};
 	
 	public static final int validDemandAccOffsets[] =
