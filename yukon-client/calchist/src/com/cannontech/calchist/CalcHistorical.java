@@ -274,7 +274,7 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 						powerFactor.kq_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
 				}				
 			}
-			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
+			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVA_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
@@ -823,10 +823,11 @@ public static void main(java.lang.String[] args)
 						{
 							currentCalcComponents.add(allHistoricalCalcComponentsList.get(j));
 						}
-						else
-						{
-							break;
-						}
+//  Commented out:  the break statement was the cause of only the first point getting updated ...ever!  Bad Craphysterical.						
+//						else
+//						{
+//							break;
+//						}
 					}
 					if ( !currentCalcComponents.isEmpty() )
 					{
