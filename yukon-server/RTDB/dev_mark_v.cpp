@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/01/28 16:50:13 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/02/02 17:01:53 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -947,6 +947,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    int                              val = 0;
    int                              qual = 0;
    bool                             firstLoop = true;
+   bool                             foundSomething = false;
 
    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
    {
@@ -965,6 +966,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
       for( index = 0; index < lp->numLpRecs; )
       {
+         //FIXME we need some way out of this if none of the offset+lp matches anything....
          for( int x = 0; x < 4; x++ )
          {
             if( lp->enabledChannels[x] == true )
@@ -973,6 +975,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                if( pPoint != NULL )
                {
+                  foundSomething = true;
                   pData = CTIDBG_new CtiPointDataMsg();
                   val = 0;
                   qual = 0;
@@ -1028,16 +1031,22 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   pPoint = NULL;
                }
             }
-            mTime -= lp->lpFormat[0] * 60;
          }
          
+         if( !foundSomething )
+         {
+            index += 8; //keep us from looking forever!
+         }
+
          if( firstLoop )
          {
             firstLoop = false;
          }
 
          //decrement the time to the interval previous to the current one...
-         mTime -= lp->lpFormat[0] * 60; 
+//         RWTime mTime( mTime.seconds() - lp->lpFormat[0] * 60 );
+         RWTime tempTime( mTime.seconds() - ( lp->lpFormat[0] * 60 ) );
+         mTime = tempTime;
       }
 
       msgPtr->insert( msgMulti );
