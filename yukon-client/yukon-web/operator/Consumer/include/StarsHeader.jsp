@@ -6,6 +6,7 @@
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.common.version.VersionTools" %>
 <%@ page import="com.cannontech.database.PoolManager" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
@@ -53,7 +54,7 @@
 		}
 	}
 	
-	if (user == null) {
+	if (user == null && VersionTools.starsExists()) {
 		// This is logged in using the normal LoginController, not the StarsLoginController
 		user = SOAPServer.getStarsYukonUser( lYukonUser );
 		if (user == null) {

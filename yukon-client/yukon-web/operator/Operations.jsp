@@ -104,13 +104,15 @@ function confirmDelete() {
               <select name="SearchBy">
 <%
 	Integer lastOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SEARCH_OPTION);
-	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
-	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
-		String selectedStr = (lastOption != null && entry.getEntryID() == lastOption.intValue()) ? "selected" : "";
+	if (selectionListTable != null) {
+		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
+		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+			String selectedStr = (lastOption != null && entry.getEntryID() == lastOption.intValue()) ? "selected" : "";
 %>
                 <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%
+		}
 	}
 %>
               </select>
@@ -250,12 +252,14 @@ function confirmDelete() {
             <td width="43%" class="MainText" align="right" nowrap> 
               <select name="SearchBy">
 <%
-	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
-	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+	if (selectionListTable != null) {
+		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
+		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
 %>
 			    <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
 <%
+		}
 	}
 %>
 			  </select>
@@ -300,13 +304,15 @@ function confirmDelete() {
 			<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/SearchResults.jsp">
             <td width="43%" align="right" class = "MainText" nowrap> 
               <select name="SearchBy">
-              <%
-	StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
-	for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
+<%
+	if (selectionListTable != null) {
+		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
+		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
+			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
 %>
               <option value="<%= entry.getYukonDefID() %>"><%= entry.getContent() %></option>
-              <%
+<%
+		}
 	}
 %>
             </select>
