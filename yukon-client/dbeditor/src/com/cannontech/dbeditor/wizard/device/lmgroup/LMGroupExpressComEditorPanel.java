@@ -2444,6 +2444,7 @@ private javax.swing.JPanel getJPanelGeoAddress() {
 			getJPanelGeoAddress().add(getJLabelFeedAddress(), constraintsJLabelFeedAddress);
 
 			java.awt.GridBagConstraints constraintsJButtonFeedAddress = new java.awt.GridBagConstraints();
+			constraintsJButtonFeedAddress.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJButtonFeedAddress.gridx = 1; constraintsJButtonFeedAddress.gridy = 3;
 			constraintsJButtonFeedAddress.gridwidth = 3;
 			constraintsJButtonFeedAddress.ipadx = 16;
@@ -2605,6 +2606,7 @@ private javax.swing.JPanel getJPanelGeoAddress() {
 			getJPanelGeoAddress().add(getJLabelSerialAddress(), constraintsJLabelSerialAddress);
 
 			java.awt.GridBagConstraints constraintsJTextFieldSerialAddress = new java.awt.GridBagConstraints();
+			constraintsJTextFieldSerialAddress.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJTextFieldSerialAddress.gridx = 1; constraintsJTextFieldSerialAddress.gridy = 6;
 			constraintsJTextFieldSerialAddress.gridwidth = 3;
 			constraintsJTextFieldSerialAddress.weightx = 1.0;
@@ -4009,6 +4011,14 @@ public void jCheckBoxLOAD_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		alteredBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
 		alteredBorder.setTitle("Targeted Loads");
 		getJPanelRelayUsage().setBorder(alteredBorder);
+		getJCheckBoxRelay1().setBackground(Color.CYAN);
+		getJCheckBoxRelay2().setBackground(Color.CYAN);
+		getJCheckBoxRelay3().setBackground(Color.CYAN);
+		getJCheckBoxRelay4().setBackground(Color.CYAN);
+		getJCheckBoxRelay5().setBackground(Color.CYAN);
+		getJCheckBoxRelay6().setBackground(Color.CYAN);
+		getJCheckBoxRelay7().setBackground(Color.CYAN);
+		getJCheckBoxRelay8().setBackground(Color.CYAN);
 	}
 	
 	else
@@ -4017,6 +4027,14 @@ public void jCheckBoxLOAD_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		alteredBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
 		alteredBorder.setTitle("Configured Loads");
 		getJPanelRelayUsage().setBorder(alteredBorder);
+		getJCheckBoxRelay1().setBackground(null);
+		getJCheckBoxRelay2().setBackground(null);
+		getJCheckBoxRelay3().setBackground(null);
+		getJCheckBoxRelay4().setBackground(null);
+		getJCheckBoxRelay5().setBackground(null);
+		getJCheckBoxRelay6().setBackground(null);
+		getJCheckBoxRelay7().setBackground(null);
+		getJCheckBoxRelay8().setBackground(null);
 	}
 
 	fireInputUpdate();
@@ -4075,7 +4093,12 @@ public void jCheckBoxSerial_ActionPerformed(java.awt.event.ActionEvent actionEve
 	getJCheckBoxFEED().setEnabled(!(getJCheckBoxSerial().isSelected()));
 	
 	if(getJCheckBoxSerial().isSelected())
-		getJCheckBoxLOAD().setSelected(true);
+	{
+		if(! getJCheckBoxLOAD().isSelected())
+			getJCheckBoxLOAD().doClick();
+		getJCheckBoxPROG().setSelected(false);
+		getJCheckBoxSPLINTER().setSelected(false);
+	}
 		
 	if(getJCheckBoxSerial().isSelected())
 	{
@@ -4540,7 +4563,8 @@ public void setValue(Object o)
 		getJCheckBoxUSER().setSelected( addUsage.indexOf("U") >= 0 );
 		getJCheckBoxPROG().setSelected( addUsage.indexOf("P") >= 0 );
 		getJCheckBoxSPLINTER().setSelected( addUsage.indexOf("R") >= 0 );
-		getJCheckBoxLOAD().setSelected( addUsage.indexOf("L") >= 0 );
+		if( addUsage.indexOf("L") >= 0 )
+			getJCheckBoxLOAD().doClick();
 
 		if(getJCheckBoxGEO().isSelected())
 			getJTextFieldGeoAddress().setBackground(Color.CYAN);
