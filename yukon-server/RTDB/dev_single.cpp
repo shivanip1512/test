@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2004/07/28 18:58:05 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2004/09/20 16:03:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -631,12 +631,6 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
     }
 
     return nRet;
-}
-
-
-inline bool CtiDeviceSingle::hasProtocol() const
-{
-    return false;
 }
 
 

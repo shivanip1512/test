@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/07/28 18:58:05 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/09/20 16:02:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,7 +136,6 @@ public:
     BOOL     setUseScanFlags(BOOL b = TRUE);
     BOOL     resetUseScanFlags(BOOL b = FALSE);
 
-    virtual bool hasProtocol() const;
     virtual int  generate(CtiXfer &xfer);
     virtual int  decode(CtiXfer &xfer, int status);
     virtual int  recvCommRequest(OUTMESS *OutMessage);

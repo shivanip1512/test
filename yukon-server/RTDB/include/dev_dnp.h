@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/07/27 17:06:56 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2004/09/20 16:02:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,8 +60,6 @@ public:
     virtual ~CtiDeviceDNP();
 
     CtiDeviceDNP& operator=(const CtiDeviceDNP& aRef);
-
-    bool hasProtocol() const    {  return true;  };
 
     virtual RWCString getDescription(const CtiCommandParser & parse) const;
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);

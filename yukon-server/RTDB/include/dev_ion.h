@@ -68,8 +68,6 @@ public:
 
     CtiDeviceION& operator=(const CtiDeviceION& aRef);
 
-    bool hasProtocol() const    {  return true;  };
-
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
     virtual RWCString getMeterGroupName() const;
     virtual RWCString getAlternateMeterGroupName() const;
