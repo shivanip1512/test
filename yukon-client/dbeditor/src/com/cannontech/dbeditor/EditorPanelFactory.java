@@ -82,7 +82,10 @@ public final class EditorPanelFactory
 		com.cannontech.dbeditor.editor.baseline.BaselineEditorPanel.class},
 		
 	{com.cannontech.database.data.config.ConfigTwoWay.class,
-		com.cannontech.dbeditor.editor.config.ConfigEditorPanel.class}
+		com.cannontech.dbeditor.editor.config.ConfigEditorPanel.class},
+		
+	{com.cannontech.database.db.tags.Tag.class,
+		com.cannontech.dbeditor.editor.tags.TagEditorPanel.class}	
 
    	//Remove the Schedule editor because of dependency issues
    	//{com.cannontech.message.macs.message.Schedule.class,
