@@ -58,6 +58,13 @@ public final class PointTypes implements IPointOffsets
 	public static final int DATAFILTERTYPE_USELAST = 33;
 	public static final int DATAFILTERTYPE_USEDEFAULT = 34;
 	
+	//Outage points (for MCT410 and maybe more?), these types cannot be "created", it is only to give them a reference 
+	public static final int OUTAGE_1 = 35;
+	public static final int OUTAGE_2 = 36;
+	public static final int OUTAGE_3 = 37;
+	public static final int OUTAGE_4 = 38;
+	public static final int OUTAGE_5 = 39;
+	public static final int OUTAGE_6 = 40;
 	
 	//All the strings associated with points and the database
 	private static final String[] pointStrings = 
@@ -88,9 +95,14 @@ public final class PointTypes implements IPointOffsets
 		"None",
 		"Use Last",
 		"Use Default", //34
+		"Outage 1",
+		"Outage 2",
+		"Outage 3",
+		"Outage 4",
+		"Outage 5",
+		"Outage 6", //40		
 		"SBO Latch",
 		"SBO Pulse",
-		
 	};	
 /**
  * This method was created in VisualAge.
