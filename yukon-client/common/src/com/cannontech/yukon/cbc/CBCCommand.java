@@ -29,6 +29,10 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 	public static final int WAIVE_FEEDER = 15;
 	public static final int UNWAIVE_FEEDER = 16;
 
+	public static final int BANK_ENABLE_OVUV = 17;
+	public static final int BANK_DISABLE_OVUV = 18;
+
+
 	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY	= 20;
 
@@ -53,8 +57,9 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		"UNWAIVE SUB",
 		"WAIVE FEEDER",  //15
 		"UNWAIVE FEEDER",
-		"","","",
-
+		"ENABLE OV/UV",
+		"DISABLE OV/UV",
+		"",
 
 
 		//below are not used by the server
