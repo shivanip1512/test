@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.device.customer;
+package com.cannontech.dbeditor.wizard.customer;
 
 /**
  * Insert the type's description here.

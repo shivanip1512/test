@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.device.customer;
+package com.cannontech.dbeditor.wizard.customer;
 import java.util.Enumeration;
 
 import javax.swing.JRadioButton;

@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.device.customer;
+package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */

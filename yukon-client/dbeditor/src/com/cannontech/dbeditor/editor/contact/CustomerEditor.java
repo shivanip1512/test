@@ -31,32 +31,32 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerBasePanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerBasePanel();
 			objs[1] = "General";
 			break;
 
 		case 1:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerAddressPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerAddressPanel();
 			objs[1] = "Address";
 			break;
 
 		case 2:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerContactPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerContactPanel();
 			objs[1] = "Contacts";
 			break;
 
 		case 3:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerGraphListEditorPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerGraphListEditorPanel();
 			objs[1] = "Trends";
 			break;
 
 		case 4:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerMeterListEditorPanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerMeterListEditorPanel();
 			objs[1] = "Meters";
 			break;
 			
 		case 5:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerBaseLinePanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.customer.CustomerBaseLinePanel();
 			objs[1] = "Base Line";
 			break;
 	}

@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.device.customer;
+package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
@@ -300,7 +300,7 @@ private CICustomerBasePanel getCICustomerPanel() {
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
 			ivjLocalBorder.setTitle("Commercial / Industrial Customer Information");
-			ivjCICustomerPanel = new com.cannontech.dbeditor.wizard.device.customer.CICustomerBasePanel();
+			ivjCICustomerPanel = new com.cannontech.dbeditor.wizard.customer.CICustomerBasePanel();
 			ivjCICustomerPanel.setName("CICustomerPanel");
 			ivjCICustomerPanel.setBorder(ivjLocalBorder);
 			// user code begin {1}

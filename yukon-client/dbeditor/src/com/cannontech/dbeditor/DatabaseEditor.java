@@ -630,7 +630,7 @@ private void displayAWizardPanel(JMenuItem item)
 	}
 	else if (item == systemCreateMenu.customerMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.customer.CustomerWizardPanel());
+		showWizardPanel(new com.cannontech.dbeditor.wizard.customer.CustomerWizardPanel());
 	}
 
 }

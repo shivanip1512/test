@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.device.customer;
+package com.cannontech.dbeditor.wizard.customer;
 
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
