@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2004/11/23 14:19:30 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/01/27 17:49:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,6 +149,8 @@ private:
     CtiTableLMControlHistory& getControl();
     CtiPendingPointOperations& setControl(const CtiTableLMControlHistory& ref);
 
+    CtiOffsetPIDMap_t getOffsetMap() const;
+    CtiPendingPointOperations& setOffsetMap(CtiOffsetPIDMap_t &aMap);
     LONG getOffsetsPointID(int offset);
     void addOffset(int offset, long pid);
 

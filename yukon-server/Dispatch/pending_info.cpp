@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pending_info.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/11/18 23:56:08 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/01/27 17:48:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -218,6 +218,8 @@ CtiPendingPointOperations& CtiPendingPointOperations::operator=(const CtiPending
         _controlCompleteValue = aRef.getControlCompleteValue();
         _control = aRef.getControl();
 
+        _opidMap = aRef.getOffsetMap();
+
         if(_signal != NULL)
         {
             delete _signal;
@@ -325,6 +327,22 @@ LONG CtiPendingPointOperations::getOffsetsPointID(int offset)
 
     return pid;
 }
+
+CtiPendingPointOperations::CtiOffsetPIDMap_t CtiPendingPointOperations::getOffsetMap() const
+{
+    return _opidMap;
+}
+
+CtiPendingPointOperations& CtiPendingPointOperations::setOffsetMap(CtiPendingPointOperations::CtiOffsetPIDMap_t &aMap)
+{
+    _opidMap = aMap;
+    return *this;
+}
+
+
+/*
+ *  This map attempts to keep track of the
+ */
 void CtiPendingPointOperations::addOffset(int offset, long pid)
 {
     pair< CtiOffsetPIDMap_t::iterator, bool > insertpair  = _opidMap.insert( CtiOffsetPIDMap_t::value_type(make_pair(offset, pid)) );
