@@ -13,6 +13,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.user.YukonGroup;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 public class GroupRoleBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JEditorPane ivjJEditorPaneDesc = null;
@@ -437,6 +438,10 @@ private javax.swing.JTextField getJTextFieldGroupName() {
 			ivjJTextFieldGroupName.setEnabled(true);
 			ivjJTextFieldGroupName.setMinimumSize(new java.awt.Dimension(216, 20));
 			// user code begin {1}
+			ivjJTextFieldGroupName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_LOGIN_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

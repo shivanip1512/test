@@ -6,6 +6,7 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.user.UserUtils;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 //import com.cannontech.database.db.user.YukonUser;
 
@@ -463,6 +464,10 @@ private javax.swing.JPasswordField getJPasswordFieldPassword() {
 			ivjJPasswordFieldPassword.setName("JPasswordFieldPassword");
 			ivjJPasswordFieldPassword.setEnabled(true);
 			// user code begin {1}
+			ivjJPasswordFieldPassword.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_PASSWORD_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -485,6 +490,10 @@ private javax.swing.JPasswordField getJPasswordFieldRetypePassword() {
 			ivjJPasswordFieldRetypePassword.setName("JPasswordFieldRetypePassword");
 			ivjJPasswordFieldRetypePassword.setEnabled(true);
 			// user code begin {1}
+			ivjJPasswordFieldRetypePassword.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_PASSWORD_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -507,6 +516,10 @@ private javax.swing.JTextField getJTextFieldUserID() {
 			ivjJTextFieldUserID.setName("JTextFieldUserID");
 			ivjJTextFieldUserID.setEnabled(true);
 			// user code begin {1}
+			ivjJTextFieldUserID.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_LOGIN_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

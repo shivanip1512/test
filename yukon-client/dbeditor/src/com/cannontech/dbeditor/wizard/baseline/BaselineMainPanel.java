@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.baseline.Baseline;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 public class BaselineMainPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelCalcDays = null;
@@ -594,6 +595,10 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setToolTipText("Text field that holds the name of the baseline");
 			ivjJTextFieldName.setEnabled(true);
 			// user code begin {1}
+			ivjJTextFieldName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_BASELINE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
