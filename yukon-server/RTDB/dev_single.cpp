@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2003/04/16 21:25:07 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2003/04/17 14:49:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -667,11 +667,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
     CtiPointBase    *commPoint;
 
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " " << getName() << endl;
-    }
-
     if( !nRet )
     {
         nRet = ResultDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -896,10 +891,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 if( retMsg != NULL )
                 {
                     commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << getName() << " " << endl;
-                    }
 
                     if( commStatus != NULL )
                     {
