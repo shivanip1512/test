@@ -346,10 +346,16 @@ alter table LMProgramDirectGear modify RampOutPercent number not null;
 
 
 alter table LMProgramDirect rename column NotifyInterval to NotifyOffset;
-
 alter table LMProgramDirect drop column CanceledMsg;
-
 alter table LMProgramDirect drop column StoppedEarlyMsg;
+
+
+alter table DynamicLMProgramDirect ADD NotifyTime DATE;
+UPDATE DynamicLMProgramDirect SET NotifyTime ='01-JAN-1990';
+alter TABLE DynamicLMProgramDirect MODIFY NotifyTime NOT NULL;
+
+
+
 
 
 

@@ -2415,7 +2415,8 @@ create table DynamicLMProgramDirect  (
    StartTime            DATE                             not null,
    StopTime             DATE                             not null,
    TimeStamp            DATE                             not null,
-   DailyOps             NUMBER                           not null
+   DailyOps             NUMBER                           not null,
+   NotifyTime           DATE                             not null
 )
 /
 

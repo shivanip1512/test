@@ -3023,7 +3023,8 @@ LastGroupControlled  numeric              not null,
 StartTime            datetime             not null,
 StopTime             datetime             not null,
 TimeStamp            datetime             not null,
-DailyOps             numeric              not null
+DailyOps             numeric              not null,
+NotifyTime           datetime             not null
 )
 go
 

@@ -420,6 +420,12 @@ alter table LMProgramDirect drop column StoppedEarlyMsg;
 go
 
 
+alter table DynamicLMProgramDirect add NotifyTime datetime;
+go
+update DynamicLMProgramDirect set NotifyTime = '01-JAN-1990';
+go
+alter table DynamicLMProgramDirect alter column NotifyTime datetime not null;
+go
 
 
 
