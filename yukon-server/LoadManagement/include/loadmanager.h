@@ -42,6 +42,7 @@
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"
+#include "queue.h"
                        
 class CtiLMControlArea;
 class CtiLMExecutor;
@@ -55,6 +56,8 @@ public:
     void start();
     void stop();
 
+    void handleMessage(CtiMessage* msg);
+    
     void sendMessageToDispatch(CtiMessage* message);
     void sendMessageToPIL(CtiMessage* message);
     void sendMessageToClients(CtiMessage* message);
@@ -79,6 +82,8 @@ private:
     static CtiLoadManager* _instance;
     RWThread _loadManagerThread;
 
+    CtiQueue< CtiMessage, less< CtiMessage > > _main_queue;
+    
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;
     mutable RWRecursiveLock<RWMutexLock> _mutex;

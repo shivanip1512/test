@@ -15,6 +15,7 @@
 #include "lmmessage.h"
 #include "executor.h"
 #include "lmcontrolareastore.h"
+#include "loadmanager.h"
 #include "ctibase.h"
 #include "logger.h"
 
@@ -233,22 +234,12 @@ void CtiLMConnection::_recvthr()
         {
             //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
-
+ 
             *iStream >> current;
 
             if ( current != NULL )
             {
-                CtiLMExecutor* executor = f.createExecutor( (CtiMessage*) current );
-                try
-                {
-                    executor->Execute();
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-                delete executor;
+                CtiLoadManager::getInstance()->handleMessage((CtiMessage*)current);
             }
             else
             {

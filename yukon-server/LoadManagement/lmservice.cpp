@@ -212,26 +212,26 @@ void CtiLMService::Run()
         do
         {
             if ( trouble )
-                Sleep(1000);
+                Sleep(5000);
 
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-            {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-                RWOrdered* controlAreas = store->getControlAreas(RWDBDateTime().seconds());
-            }
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+            RWOrdered* controlAreas = store->getControlAreas(RWDBDateTime().seconds());
 
-            if ( !store->isValid() )
+
+            if ( controlAreas == NULL || controlAreas->entries() == 0 )
             {
                 trouble = true;
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime().asString() << " - Unable to obtain connection to database...will keep trying." << endl;
+                dout << RWTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
             }
             else
             {
                 trouble = false;
             }
-        }
-        while ( trouble );
+        } 
+        } while ( trouble );
 
         SetStatus(SERVICE_START_PENDING, 33, 5000 );
 

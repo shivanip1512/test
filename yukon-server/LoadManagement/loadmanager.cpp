@@ -159,6 +159,16 @@ void CtiLoadManager::stop()
     }
 }
 
+/*----------------------------------------------------------------------------
+  handleMessage
+
+  Handles any CtiMessages received from a client in the main thread.
+----------------------------------------------------------------------------*/
+void CtiLoadManager::handleMessage(CtiMessage* msg)
+{
+    _main_queue.putQueue(msg);
+}
+
 /*---------------------------------------------------------------------------
   controlLoop
 
@@ -181,9 +191,29 @@ void CtiLoadManager::controlLoop()
     RWOrdered controlAreaChanges;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+    
+    CtiMessage* msg = NULL;
+    CtiLMExecutorFactory executorFactory;
+    
     while(TRUE)
     {
     {
+        if( (msg = _main_queue.getQueue(500)) != NULL)
+        {
+            CtiLMExecutor* executor = executorFactory.createExecutor(msg);
+            try
+            {
+                executor->Execute();
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << " **Checkpoint** " <<  " Caught '...' executing executor in main thread." << __FILE__ << "(" << __LINE__ << ")" << endl;
+            }
+            delete executor;
+            continue;
+        }
+        
 	RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
 	RWDBDateTime prevDateTime = currentDateTime;
@@ -443,7 +473,7 @@ void CtiLoadManager::controlLoop()
     }
 
     rwRunnable().serviceCancellation();
-    rwRunnable().sleep( 500 );
+//    rwRunnable().sleep( 500 );
     }
     }
     catch(RWCancellation& )
