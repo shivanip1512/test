@@ -53,25 +53,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupVersacom lmGroupVersacom = (LMGroupVersacom) obj;
-	
-	Integer utilityAddress = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer sectionAddress = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer classAddress = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer divisionAddress = new Integer( (int)vstr.extractUnsignedInt() );
-	String addressUsage = (String) vstr.restoreObject( SimpleMappings.CString );
-	String relayUsage = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer routeID = new Integer( (int)vstr.extractUnsignedInt() );
-
-
-	lmGroupVersacom.setUtilityAddress(utilityAddress);
-	lmGroupVersacom.setSectionAddress(sectionAddress);
-	lmGroupVersacom.setClassAddress(classAddress);
-	lmGroupVersacom.setDivisionAddress(divisionAddress);
-	lmGroupVersacom.setAddressUsage(addressUsage);
-	lmGroupVersacom.setRelayUsage(relayUsage);
-	lmGroupVersacom.setRouteID(routeID);	
+	LMGroupVersacom lmGroupVersacom = (LMGroupVersacom) obj;	
 }
+
 /**
  * saveGuts method comment.
  */
@@ -81,36 +65,5 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 /* This saveGuts isn't implemented because we won't be sending full LMControlAreas
 	 to the Server */
-
-	/*LMControlArea lmControlArea = (LMControlArea) obj;
-	
-	vstr.insertUnsignedInt( strategy.getCapStrategyID().intValue() );
-	vstr.saveObject( strategy.getStrategyName(), SimpleMappings.CString );
-	vstr.saveObject( strategy.getAreaName(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( strategy.getActualVarPointID().intValue() );
-	vstr.insertDouble( strategy.getActualVarPointValue().doubleValue() );
-	vstr.insertUnsignedInt( strategy.getMaxDailyOperation().intValue() );
-	vstr.insertDouble( strategy.getPeakSetPoint().doubleValue() );
-	vstr.insertDouble( strategy.getOffPeakSetPoint().doubleValue() );
-	vstr.saveObject( strategy.getPeakStartTime().getTime(), SimpleMappings.Time );
-	vstr.saveObject( strategy.getPeakStopTime().getTime(), SimpleMappings.Time );
-	vstr.insertUnsignedInt( strategy.getCalculatedVarPointID().intValue() );
-	vstr.insertDouble( strategy.getCalculatedVarPointValue().doubleValue() );
-	vstr.insertDouble( strategy.getBandwidth().doubleValue() );
-	vstr.insertUnsignedInt( strategy.getControlInterval().intValue() );
-	vstr.insertUnsignedInt( strategy.getMinResponseTime().intValue() );
-	vstr.insertUnsignedInt( strategy.getMinConfirmPercent().intValue() );
-	vstr.insertUnsignedInt( strategy.getFailurePercent().intValue() );
-	vstr.saveObject( strategy.getStatus(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( strategy.getOperations().intValue() );
-	vstr.saveObject( strategy.getLastOperationTime().getTime(), SimpleMappings.Time );
-	vstr.insertUnsignedInt( strategy.getLastCapBankControlled().intValue() );
-	vstr.saveObject( strategy.getDaysOfWeek(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( strategy.getPeakOrOffPeak().intValue() );
-	vstr.insertUnsignedInt( strategy.getRecentlyControlled().intValue() );
-	vstr.insertDouble( strategy.getCalculatedValueBeforeControl().doubleValue() );
-	vstr.saveObject( strategy.getLastControlTime().getTime(), SimpleMappings.Time );
-	vstr.insertUnsignedInt( strategy.getDecimalPlaces().intValue() );
-	vstr.saveObject( ((java.util.Vector)strategy.getCapBankDeviceVector()), polystr );*/
 }
 }

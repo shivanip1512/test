@@ -53,13 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupRipple lmGroupRipple= (LMGroupRipple) obj;
-	
-	lmGroupRipple.setRouteID( new Integer( (int)vstr.extractUnsignedInt() ) );
-	lmGroupRipple.setScheduleTime( new Integer( (int)vstr.extractUnsignedInt() ) );
-	lmGroupRipple.setControlValue( (String) vstr.restoreObject(SimpleMappings.CString) );
-	lmGroupRipple.setRestoreValue( (String) vstr.restoreObject(SimpleMappings.CString) );
-	
+	LMGroupRipple lmGroupRipple = (LMGroupRipple) obj;
 }
 /**
  * saveGuts method comment.

@@ -53,19 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupEmetcon lmGroupEmetcon = (LMGroupEmetcon) obj;
-	
-	Integer goldAddress = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer silverAddress = new Integer( (int)vstr.extractUnsignedInt() );
-	String addressUsage = (String) vstr.restoreObject( SimpleMappings.CString );
-	String relayUsage = (String) vstr.restoreObject( SimpleMappings.CString );
-	Integer routeID = new Integer( (int)vstr.extractUnsignedInt() );
-
-	lmGroupEmetcon.setGoldAddress(goldAddress);
-	lmGroupEmetcon.setSilverAddress(silverAddress);
-	lmGroupEmetcon.setAddressUsage(addressUsage);
-	lmGroupEmetcon.setRelayUsage(relayUsage);
-	lmGroupEmetcon.setRouteID(routeID);	
+	LMGroupEmetcon lmGroupEmetcon = (LMGroupEmetcon) obj;	
 }
 /**
  * saveGuts method comment.
