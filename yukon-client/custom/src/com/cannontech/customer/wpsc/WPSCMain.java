@@ -97,6 +97,14 @@ public class WPSCMain implements Runnable
 						}
 					}
 				}
+				try{
+					//Must take a break otherwise we spick CPU to 100% constantly!
+					sleep(2000);
+				}
+				catch(InterruptedException ie)
+				{
+					return;
+				}
 			}
 		}
 	}
