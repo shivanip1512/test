@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
     <classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
     <classpathentry kind="lib" path="/third-party/acme.jar"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
@@ -32,5 +31,6 @@
     <classpathentry kind="lib" path="/third-party/itext.jar"/>
     <classpathentry kind="lib" path="/third-party/poi.jar"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
