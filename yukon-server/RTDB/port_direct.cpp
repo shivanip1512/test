@@ -173,19 +173,27 @@ CtiPortDirect& CtiPortDirect::setHandle(const HANDLE& hdl)
 
 INT CtiPortDirect::setLine(INT rate, INT bits, INT parity, INT stopbits)
 {
-    INT r = getTablePortSettings().getBaudRate();
+    INT retval = NORMAL;
 
-    if(rate != 0)
+    if( !rate )
     {
-        r = rate;
+        rate = getTablePortSettings().getBaudRate();
     }
 
-    _dcb.BaudRate  = r;
-    _dcb.ByteSize  = bits;
-    _dcb.Parity    = parity;
-    _dcb.StopBits  = stopbits;
+    if( (_dcb.BaudRate != rate)   ||
+        (_dcb.ByteSize != bits)   ||
+        (_dcb.Parity   != parity) ||
+        (_dcb.StopBits != stopbits) )
+    {
+        _dcb.BaudRate  = rate;
+        _dcb.ByteSize  = bits;
+        _dcb.Parity    = parity;
+        _dcb.StopBits  = stopbits;
 
-    return(SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM);
+        retval = SetCommState(_portHandle, &_dcb) ? NORMAL : SYSTEM;
+    }
+
+    return retval;
 }
 
 INT CtiPortDirect::byteTime(ULONG bytes) const
@@ -563,7 +571,7 @@ INT CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMes
     ULONG    StartWrite;
     ULONG    ReturnWrite;
 
-    if(!isViable())
+    //if(!isViable())
     {
         checkCommStatus(Dev, TRUE);
     }
