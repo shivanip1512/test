@@ -3,11 +3,16 @@
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="inventoryBean" property="pageName" value="Inventory.jsp"/>
 </jsp:useBean>
 
-<%-- intialize bean properties --%>
-<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
-<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
+<% if (request.getParameter("page") == null) { %>
+	<%-- intialize bean properties --%>
+	<jsp:setProperty name="inventoryBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
+	<jsp:setProperty name="inventoryBean" property="sortOrder" value="<%= InventoryBean.SORT_ORDER_ASCENDING %>"/>
+	<jsp:setProperty name="inventoryBean" property="filterBy" value="0"/>
+	<jsp:setProperty name="inventoryBean" property="page" value="1"/>
+<% } %>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="inventoryBean" property="sortBy" param="SortBy"/>
@@ -230,15 +235,8 @@ function showAll(form) {
                     </tr>
                 </table>
               </form>
-              <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td>
-                    <hr>
-                  </td>
-                </tr>
-              </table>
-              <%= inventoryBean.getHTML(request) %>
-<!--              <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
+              <%= inventoryBean.getHTML(request) %> 
+              <!--              <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
                 <tr>
                   <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
                     | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
@@ -257,7 +255,7 @@ function showAll(form) {
                         <td class='TableCell' width='17%'>LCR-5000</td>
                         <td class='TableCell' width='17%'>08/24/2003</td>
                         <td class='TableCell' width='49%'><a href='' onclick='selectAccount(7); return false;'>Acct 
-                          # 12345</a> (8301 Golden Valley Rd, Suite 300...)</td>
+                          # 12345</a> Robert Livingston, 8301 Golden Valley Rd, Suite 300...</td>
                       </tr>
                     </table>
                   </td>
