@@ -89,6 +89,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea& setCurrentDailyStartTime(LONG tempstart);
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
 
+    BOOL isTriggerCheckNeeded(ULONG secondsFrom1901);
     BOOL isControlTime(LONG secondsFromBeginningOfDay);
     BOOL isControlStillNeeded();
     BOOL isPastMinResponseTime(ULONG secondsFrom1901);
@@ -98,7 +99,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
     void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     void dumpDynamicData();
