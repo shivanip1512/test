@@ -1027,6 +1027,21 @@ alter table CALCCOMPONENT
 go
 
 
+delete from fdrinterface where InterfaceId = 14;
+insert into fdrinterface values (16,'LODESTAR_STD','Receive','f');
+insert into fdrinterface values (17,'LODESTAR_ENH','Receive','f');
+
+delete from fdrinterfaceoption where interfaceid = 14;
+insert into fdrinterfaceoption values (16,'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values (16,'Channel',2,'Text','(none)');
+insert into fdrinterfaceoption values (16,'DrivePath',3,'Text','(none)');
+insert into fdrinterfaceoption values (16,'Filename',4,'Text','(none)');
+insert into fdrinterfaceoption values (17,'Customer',1,'Text','(none)');
+insert into fdrinterfaceoption values (17,'Channel',2,'Text','(none)');
+insert into fdrinterfaceoption values (17,'DrivePath',3,'Text','(none)');
+insert into fdrinterfaceoption values (17,'Filename',4,'Text','(none)');
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
