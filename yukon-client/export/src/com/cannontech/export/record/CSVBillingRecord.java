@@ -12,7 +12,8 @@ public class CSVBillingRecord implements RecordBase
 	private static java.text.DecimalFormat DECIMAL_FORMAT = new java.text.DecimalFormat("#########0.00");
 
 	private String customerName;
-	private String servicePt;
+	private String energyDebtor;
+	private String energyPremise;
 	private String curtailOffer;
 	private String meterLocation;
 	private String curtailDate;
@@ -25,17 +26,20 @@ public class CSVBillingRecord implements RecordBase
 	private Double hdl_adl; //hdl - adl
 	//private Integer hdl_adl_greaterthan_scl; //hdl - adl > scl (1, 0)
 	//private Integer hdl_adl_equal_scl; //hdl - adl = scl (1, 0)
-	private Integer compliant; //hdl_adl_greaterthan_scl + hdl_adl_equal_scl = 1 (1, 0)
+	private Character compliant; //hdl_adl_greaterthan_scl + hdl_adl_equal_scl = 1 (1, 0)
 	private Double nonComplianceLevel; //compliant = 0 ( scl - hdl_adl, 0)
 	private Double curtailLevel; //compliant = 1 (scl, scl - non_compliance_level)
 	private Double curtailEnergyCredits; //curtail_level * curtail_rate/4
 	private Double nonComplianceFee; // -non_compliance_level * non_compliance_fee_rate/4
 	private Double netCredits; //curtail_energy_credits * non_compliance_fee
 
+	private static Character delimiter = new Character('|');
+
 	private static String[] columnHeadings =
 	{
 		"CustomerName",
-		"Service Pt.#",
+		"Energy Debtor #",
+		"Energy Premise #",
 		"Curtail. Offer#",
 		"Meter Location",
 		"Curtail. Date",
@@ -69,39 +73,41 @@ public CSVBillingRecord() {
 public String dataToString()
 {
 	
-	String dataString = new String( getCustomerName() + ", ");
+	String dataString = new String( getCustomerName() + getDelimiter().toString());
 	
-	dataString += getServicePt() + ", ";
+	dataString += getEnergyDebtor() + getDelimiter().toString();
 
-	dataString += getCurtailOffer() + ", ";
+	dataString += getEnergyPremise() + getDelimiter().toString();
 
-	dataString += getMeterLocation() + ", ";
+	dataString += getCurtailOffer() + getDelimiter().toString();
 
-	dataString += getCurtailDate() + ", ";
-	
-	dataString += getCurtailPeriodInterval() + ", ";
-	
-	dataString += DECIMAL_FORMAT.format(getCurtailRate().doubleValue()) + ", ";
-	
-	dataString += getHDL() + ", ";
-	
-	dataString += getSCL() + ", ";
-	
-	dataString += getADL() + ", ";
-	
-	dataString += getNonComplianceFeeRate() + ", ";
-	
-	dataString += getHDL_ADL() + ", ";
-	
-	dataString += getCompliant() + ", ";
-	
-	dataString += getNonComplianceLevel() + ", ";
-	
-	dataString += getCurtailLevel() + ", ";
+	dataString += getMeterLocation() + getDelimiter().toString();
 
-	dataString += getCurtailEnergyCredits() + ", ";
+	dataString += getCurtailDate() + getDelimiter().toString();
+	
+	dataString += getCurtailPeriodInterval() + getDelimiter().toString();
+	
+	dataString += DECIMAL_FORMAT.format(getCurtailRate().doubleValue()) + getDelimiter().toString();
+	
+	dataString += getHDL() + getDelimiter().toString();
+	
+	dataString += getSCL() + getDelimiter().toString();
+	
+	dataString += getADL() + getDelimiter().toString();
+	
+	dataString += getNonComplianceFeeRate() + getDelimiter().toString();
+	
+	dataString += getHDL_ADL() + getDelimiter().toString();
+	
+	dataString += getCompliant() + getDelimiter().toString();
+	
+	dataString += getNonComplianceLevel() + getDelimiter().toString();
+	
+	dataString += getCurtailLevel() + getDelimiter().toString();
 
-	dataString += getNonComplianceFee() + ", ";
+	dataString += getCurtailEnergyCredits() + getDelimiter().toString();
+
+	dataString += getNonComplianceFee() + getDelimiter().toString();
 		
 	dataString += getNetCredits() + "\r\n";
 	
@@ -124,7 +130,7 @@ public static  String getColumnHeadingsString()
 		
 		for (int i = 1; i < columnHeadings.length; i++)
 		{
-			dataString += ", " + columnHeadings[i];
+			dataString += getDelimiter() + columnHeadings[i];
 		}
 
 		dataString += "\r\n";
@@ -133,17 +139,17 @@ public static  String getColumnHeadingsString()
 	else
 		return null;
 }
-public Integer getCompliant()
+public Character getCompliant()
 {
 	if (compliant == null)
 	{
 		if( getHDL_ADL().doubleValue() >= getSCL().doubleValue())
 		{
-			compliant = new Integer(1);
+			compliant = new Character('Y');
 		}
 		else
 		{
-			compliant = new Integer(0);
+			compliant = new Character('N');
 		}
 	}
 	return compliant;
@@ -210,6 +216,18 @@ public String getCustomerName()
 {
 	return customerName;
 }
+public static Character getDelimiter()
+{
+	return delimiter;
+}
+public String getEnergyDebtor()
+{
+	return energyDebtor;
+}
+public String getEnergyPremise()
+{
+	return energyPremise;
+}
 public Double getHDL()
 {
 	return hdl;
@@ -263,7 +281,7 @@ public Double getNonComplianceLevel()
 {
 	if( nonComplianceLevel == null)
 	{
-		if( getCompliant().intValue() > 0 )
+		if( getCompliant().compareTo(new Character('Y')) ==  0 )
 		{
 			nonComplianceLevel = new Double(0);
 		}
@@ -279,10 +297,6 @@ public Double getSCL()
 {
 	return scl;
 }
-public String getServicePt()
-{
-	return servicePt;
-}
 public void setADL(Double newADL)
 {
 	adl = newADL;
@@ -295,10 +309,10 @@ public void setCurtailOffer(String newCurtailOffer)
 {
 	curtailOffer = newCurtailOffer;
 }
-	public void setCurtailPeriodInterval(String newCurtailPeriodInterval)
-	{
-		curtailPeriodInterval = newCurtailPeriodInterval;
-	}
+public void setCurtailPeriodInterval(String newCurtailPeriodInterval)
+{
+	curtailPeriodInterval = newCurtailPeriodInterval;
+}
 public void setCurtailPeriodInterval(java.util.GregorianCalendar newCurtailPeriodInterval)
 {
 	curtailPeriodInterval = INTERVAL_FORMAT.format(newCurtailPeriodInterval.getTime());
@@ -308,24 +322,32 @@ public void setCurtailRate(Double newCurtailRate)
 {
 	curtailRate = new Double(newCurtailRate.doubleValue() * .01);
 }
-	public void setCustomerName(String newCustomerName)
-	{
-		customerName = newCustomerName;
-	}
-	public void setHDL(Double newHDL)
-	{
-		hdl = newHDL;
-	}
+public void setCustomerName(String newCustomerName)
+{
+	customerName = newCustomerName;
+}
+public void setDelimiter(Character newDelimiter)
+{
+	delimiter = newDelimiter;
+}
+public void setEnergyDebtor(String newEnergyDebtor)
+{
+	energyDebtor = newEnergyDebtor;
+}
+public void setEnergyPremise(String newEnergyPremise)
+{
+	energyPremise = newEnergyPremise;
+}
+public void setHDL(Double newHDL)
+{
+	hdl = newHDL;
+}
 public void setMeterLocation(String newMeterLocation)
 {
 	meterLocation = newMeterLocation;
 }
-	public void setSCL(Double newSCL)
-	{
-		scl = newSCL;
-	}
-public void setServicePt(String newServicePt)
+public void setSCL(Double newSCL)
 {
-	servicePt = newServicePt;
+	scl = newSCL;
 }
 }

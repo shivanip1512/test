@@ -8,7 +8,8 @@ package com.cannontech.export.record;
 public class CSVBillingCustomerRecord implements RecordBase
 {
 	private String customerName;
-	private String servicePt;
+	private String energyDebtor;
+	private String energyPremise;
 	private String meterLocation;
 	private Integer baselinePointId;
 	private Integer curtailPointId;
@@ -22,12 +23,13 @@ public CSVBillingCustomerRecord() {
 /**
  * CSVBillingCustomerRecord constructor comment.
  */
-public CSVBillingCustomerRecord(String custName, String meterLoc, String srvPt, Integer baselinePt, Integer curtailPt)
+public CSVBillingCustomerRecord(String custName, String meterLoc, String engDebt, String engPre, Integer baselinePt, Integer curtailPt)
 {
 	super();
 	setCustomerName(custName);
 	setMeterLocation(meterLoc);
-	setServicePt(srvPt);
+	setEnergyDebtor(engDebt);
+	setEnergyPremise(engPre);
 	setBaselinePointId(baselinePt);
 	setCurtailPointId(curtailPt);
 }
@@ -63,9 +65,13 @@ public String getMeterLocation()
 {
 	return meterLocation;
 }
-public String getServicePt()
+public String getEnergyDebtor()
 {
-	return servicePt;
+	return energyDebtor;
+}
+public String getEnergyPremise()
+{
+	return energyPremise;
 }
 public void setBaselinePointId(Integer newBaselinePt)
 {
@@ -75,16 +81,20 @@ public void setCurtailPointId(Integer newCurtailPt)
 {
 	curtailPointId = newCurtailPt;
 }
-	public void setCustomerName(String newCustomerName)
-	{
-		customerName = newCustomerName;
-	}
+public void setCustomerName(String newCustomerName)
+{
+	customerName = newCustomerName;
+}
+public void setEnergyDebtor(String newEnergyDebtor)
+{
+	energyDebtor = newEnergyDebtor;
+}
+public void setEnergyPremise(String newEnergyPremise)
+{
+	energyPremise = newEnergyPremise;
+}
 public void setMeterLocation(String newMeterLocation)
 {
 	meterLocation = newMeterLocation;
-}
-public void setServicePt(String newServicePt)
-{
-	servicePt = newServicePt;
 }
 }
