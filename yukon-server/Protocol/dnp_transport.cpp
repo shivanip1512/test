@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,10 +140,6 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
 
                 _datalink.setToOutput((unsigned char *)&_outPacket, packetLen, _dstAddr, _srcAddr);
 
-                //  datalink layer guarantees transmission, so we take it for granted
-                _seq++;
-                _outAppLayerSent += dataLen;
-
                 break;
             }
 
@@ -174,60 +170,71 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
 
 int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 {
-    int retVal;
+    int retVal = NoError;
+    int datalinkStatus;
 
-    retVal = _datalink.decode(xfer, status);
+    datalinkStatus = _datalink.decode(xfer, status);
 
-    if( retVal )
+    if( _datalink.errorCondition() )
     {
+        //  ACH: if( tries > maxtries ) or something
         _ioState = Failed;
+        retVal   = datalinkStatus;
     }
-    else
+    else if( _datalink.isTransactionComplete() )
     {
-        if( _datalink.isTransactionComplete() )
+        switch( _ioState )
         {
-            switch( _ioState )
+            case Output:
             {
-                case Output:
+                _seq++;
+                _outAppLayerSent += _datalink.getOutPayloadLength();
+
+                if( _outAppLayerLen <= _outAppLayerSent )
                 {
-                    if( _outAppLayerLen == _outAppLayerSent )
+                    _ioState = Complete;
+
+                    if( _outAppLayerLen < _outAppLayerSent )
                     {
-                        _ioState = Complete;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
-
-                    break;
                 }
 
-                case Input:
+                break;
+            }
+
+            case Input:
+            {
+                int inLen, dataLen;
+
+                //  copy out the data
+                inLen = _datalink.getInLength();
+                _datalink.getInPayload((unsigned char *)&_inPacket);
+
+                //  remove the header
+                dataLen = inLen - sizeof(_inPacket.header);
+
+                memcpy(&_inAppLayer[_inAppLayerRecv], _inPacket.data, dataLen);
+
+                _inAppLayerRecv += dataLen;
+
+                //  ACH: verify incoming sequence numbers
+
+                if( _inPacket.header.final )
                 {
-                    int inLen, dataLen;
-
-                    //  copy out the data
-                    inLen = _datalink.getInLength();
-                    _datalink.getInPayload((unsigned char *)&_inPacket);
-
-                    //  remove the header
-                    dataLen = inLen - sizeof(_inPacket.header);
-
-                    memcpy(&_inAppLayer[_inAppLayerRecv], _inPacket.data, dataLen);
-
-                    _inAppLayerRecv += dataLen;
-
-                    //  ACH: verify incoming sequence numbers
-
-                    if( _inPacket.header.final )
-                    {
-                        _ioState = Complete;
-                    }
-
-                    break;
+                    _ioState = Complete;
                 }
 
-                default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                break;
+            }
+
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -239,6 +246,12 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
 bool CtiDNPTransport::isTransactionComplete( void )
 {
     return _ioState == Complete;
+}
+
+
+bool CtiDNPTransport::errorCondition( void )
+{
+    return _ioState == Failed;
 }
 
 

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,6 +73,7 @@ public:
     int decode  ( CtiXfer &xfer, int status );
 
     bool isTransactionComplete( void );
+    bool errorCondition( void );
 
     int  getInputSize( void );
 };

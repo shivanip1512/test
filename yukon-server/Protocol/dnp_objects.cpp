@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/06/24 18:13:40 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2002/06/24 20:00:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ void CtiDNPObjectBlock::setStop( unsigned short )
 
     CtiDNPObject *CtiDNPObjectBlock::getObject( int index );*/
 
-int  CtiDNPObjectBlock::getLength( void )
+int CtiDNPObjectBlock::getLength( void )
 {
     return 0;
 }
@@ -61,7 +61,14 @@ void CtiDNPObjectBlock::serialize( char *buf )
 
 int CtiDNPObjectBlock::restore( unsigned char *buf, int len )
 {
-    return len;
+    int lenUsed;
+
+    if( len > 0 )
+    {
+
+    }
+
+    return lenUsed;
 }
 
 bool CtiDNPObjectBlock::hasPoints( void )

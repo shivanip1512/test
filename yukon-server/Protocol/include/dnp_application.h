@@ -13,11 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#include <vector>
 
 #include "message.h"
 
@@ -101,6 +103,8 @@ private:
         Failed
     } _ioState;
 
+    vector< CtiDNPObjectBlock * > _objectList;
+
 public:
     enum AppFuncCode;
 
@@ -135,6 +139,7 @@ public:
 
     //  checking completion
     bool isTransactionComplete( void );
+    bool errorCondition( void );
     //bool isReplyExpected( void );
 
 

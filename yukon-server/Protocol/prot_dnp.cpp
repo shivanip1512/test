@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,12 +108,12 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
                 if( numPoints > 0 )
                 {
                     dnp_point_descriptor control;
-                    dnp_analog_output_block_32_bit *aob;
+                    dnp_analog_output_block_16_bit *aob;
 
                     _appLayer.setCommand(CtiDNPApplication::RequestDirectOp, _slaveAddress, _masterAddress);
 
                     control.group     = 41;  //  binary output
-                    control.variation =  1;  //  1
+                    control.variation =  2;  //  2
                     control.qual_idx  =  1;  //  1 octet index
                     control.qual_code =  7;  //  1 octect quantity
                     control.qual_x    =  0;  //  unused bit
@@ -121,12 +121,12 @@ void CtiProtocolDNP::setCommand( DNPCommand command, XferPoint *points, int numP
 
                     control.idx_qty.qty_1oct.data[0] = (unsigned char)points->offset - 1;
 
-                    aob = (dnp_analog_output_block_32_bit *)(control.idx_qty.qty_1oct.data + 1);
+                    aob = (dnp_analog_output_block_16_bit *)(control.idx_qty.qty_1oct.data + 1);
 
                     aob->status = 0;
-                    aob->value  = LONG_MAX / 4;
+                    aob->value  = points->value;
 
-                    _appLayer.addData((unsigned char *)&control, 10);
+                    _appLayer.addData((unsigned char *)&control, 8);
                 }
                 else
                 {
@@ -318,7 +318,8 @@ int CtiProtocolDNP::recvInbound( INMESS *InMessage )
 
 bool CtiProtocolDNP::isTransactionComplete( void )
 {
-    return _appLayer.isTransactionComplete();
+    //  ACH: factor in application layer retries... ?
+    return _appLayer.isTransactionComplete() | _appLayer.errorCondition();
 }
 
 

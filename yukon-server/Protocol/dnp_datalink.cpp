@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,8 @@ int CtiDNPDatalink::setToOutput(unsigned char *buf, unsigned int len, short dstA
         len = 0;
 
     _outLen  = 10;  //  minimum DNP packet size (just header and header CRC)
+
+    _errorCount = 0;
 
     while( pos < len )
     {
@@ -120,6 +122,8 @@ int CtiDNPDatalink::setToInput( void )
     _inRecv     = 0;
     _inExpected = 0;
     _inActual   = 0;
+
+    _errorCount = 0;
 
     return retVal;
 }
@@ -196,12 +200,12 @@ int CtiDNPDatalink::generate( CtiXfer &xfer )
 
 int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
 {
+    int retVal = NoError;
     int toCopy, srcLen, packetSize;
     unsigned char *dst, *src;
 
     if( status != NORMAL )
     {
-        _ioState = Failed;
         switch( status )
         {
             case BADPORT:
@@ -213,6 +217,12 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
         }
+
+        if( ++_errorCount > DNPDatalinkRetryCount )
+        {
+            _ioState = Failed;
+            retVal   = status;
+        }
     }
     else
     {
@@ -222,6 +232,7 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
                 {
                     //  ACH: someday verify ACK packet
                     _outSent += xfer.getOutCount();
+
                     break;
                 }
 
@@ -242,7 +253,7 @@ int CtiDNPDatalink::decode( CtiXfer &xfer, int status )
         }
     }
 
-    return status;
+    return retVal;
 }
 
 
@@ -285,6 +296,12 @@ bool CtiDNPDatalink::isTransactionComplete( void )
     }
 
     return complete;
+}
+
+
+bool CtiDNPDatalink::errorCondition( void )
+{
+    return _ioState == Failed;
 }
 
 
@@ -351,9 +368,9 @@ int CtiDNPDatalink::getInPayload(unsigned char *buf)
 }
 
 
-int CtiDNPDatalink::getOutLength( void )
+int CtiDNPDatalink::getOutPayloadLength( void )
 {
-    return _outLen;
+    return _outPacket.header.len - 5;
 }
 
 
@@ -426,7 +443,8 @@ unsigned short CtiDNPDatalink::computeCRC( unsigned char *buf, int len )
     //  this table and code taken from the DNP docs.
     //    original author Jim McFadyen
 
-    static unsigned short crctable[256] = { 0x0000,  0x365e,  0x6cbc,  0x5ae2,  0xd978,  0xef26,  0xb5c4,  0x839a,
+    static unsigned short crctable[256] =
+      { 0x0000,  0x365e,  0x6cbc,  0x5ae2,  0xd978,  0xef26,  0xb5c4,  0x839a,
         0xff89,  0xc9d7,  0x9335,  0xa56b,  0x26f1,  0x10af,  0x4a4d,  0x7c13,
         0xb26b,  0x8435,  0xded7,  0xe889,  0x6b13,  0x5d4d,  0x07af,  0x31f1,
         0x4de2,  0x7bbc,  0x215e,  0x1700,  0x949a,  0xa2c4,  0xf826,  0xce78,

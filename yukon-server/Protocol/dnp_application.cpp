@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,12 +25,31 @@ CtiDNPApplication::CtiDNPApplication()
     _ioState = Uninitialized;
 }
 
-CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef) { }
+CtiDNPApplication::CtiDNPApplication(const CtiDNPApplication &aRef)
+{
+    *this = aRef;
+}
 
-CtiDNPApplication::~CtiDNPApplication() { }
+CtiDNPApplication::~CtiDNPApplication()
+{
+    if( !_objectList.empty() )
+    {
+        while( _objectList.empty() )
+        {
+            delete _objectList.back();
+
+            _objectList.pop_back();
+        }
+    }
+}
 
 CtiDNPApplication &CtiDNPApplication::operator=(const CtiDNPApplication &aRef)
 {
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
     return *this;
 }
 
@@ -120,6 +139,7 @@ void CtiDNPApplication::restoreRsp( unsigned char *buf, int len )
 
 void CtiDNPApplication::processInput( void )
 {
+    //  mere output...
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -159,11 +179,24 @@ void CtiDNPApplication::processInput( void )
         dout << endl << endl;
     }
 
+    //  real code
     if( _appRsp.ctrl.app_confirm )
     {
         setCommand(RequestConfirm, _dstAddr, _srcAddr);
         _appReq.ctrl.seq = _appRsp.ctrl.seq;
         _hasOutput = true;
+    }
+
+    int processed = 0;
+    _inHasPoints = false;
+
+    while( processed < _appRspBytesUsed )
+    {
+        CtiDNPObjectBlock *tmpDOB = new CtiDNPObjectBlock();
+
+        processed += tmpDOB->restore(&(_appRsp.buf[processed]), _appRspBytesUsed - processed);
+
+        _inHasPoints |= tmpDOB->hasPoints();
     }
 }
 
@@ -238,6 +271,12 @@ bool CtiDNPApplication::isTransactionComplete( void )
 }
 
 
+bool CtiDNPApplication::errorCondition( void )
+{
+    return _ioState == Failed;
+}
+
+
 int CtiDNPApplication::generate( CtiXfer &xfer )
 {
     return _transport.generate(xfer);
@@ -247,10 +286,17 @@ int CtiDNPApplication::generate( CtiXfer &xfer )
 int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 {
     int retVal;
+    int transportStatus;
 
-    retVal = _transport.decode(xfer, status);
+    transportStatus = _transport.decode(xfer, status);
 
-    if( _transport.isTransactionComplete() )
+    if( _transport.errorCondition() )
+    {
+        //  ACH:  retries...
+        _ioState = Failed;
+        retVal   = transportStatus;
+    }
+    else if( _transport.isTransactionComplete() )
     {
         switch( _ioState )
         {

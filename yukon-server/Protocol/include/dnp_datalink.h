@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,11 +31,12 @@ protected:
 
     enum
     {
-        DNPDatalinkHeaderLen = 10
+        DNPDatalinkHeaderLen  = 10,
+        DNPDatalinkRetryCount =  3
     };
 
 private:
-    #pragma pack( push, 1 )
+#pragma pack( push, 1 )
     struct _dnp_datalink_header
     {
         unsigned char framing[2];
@@ -96,9 +97,10 @@ private:
     } _ioState;
 
     unsigned long _outLen, _outSent, _inRecv, _inExpected, _inActual;  //  would be ints, but i have to use inLen with the trx InCountExpected
+    int  _errorCount;
     bool _fcbExpected;
 
-    #pragma pack( pop )
+#pragma pack( pop )
 
 public:
     enum ControlFunction;
@@ -114,22 +116,23 @@ public:
 
     void reset( void );
 
-    int getOutLength( void );
     int setToOutput ( unsigned char *buf, unsigned int len, short dstAddr, short srcAddr );
     int setToInput  ( void );
 
     int calcPacketLength( int headerLen );
 
+    int getOutPayloadLength( void );
     int getInPayload( unsigned char *buf );
     int getInLength ( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-    bool isTransactionComplete(void);
+    bool isTransactionComplete( void );
+    bool errorCondition( void );
 
-    DatalinkError  validateInPacket(void);
-    bool           areInPacketCRCsValid(void);
+    DatalinkError validateInPacket( void );
+    bool          areInPacketCRCsValid( void );
 
     enum ControlFunction
     {
@@ -148,7 +151,7 @@ public:
     enum DatalinkError
     {
         NoError    = 0,
-        BadFraming = 1,
+        BadFraming,
         BadCRC,
         BadAddress,
         BadLength,

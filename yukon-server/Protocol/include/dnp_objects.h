@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/06/20 21:00:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/24 20:00:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,8 +31,10 @@ THIS MUST BE OBJECTS SOON, I HATE THIS
 
 class CtiDNPObjectBlock
 {
+public:
     enum QualifierType;
 
+    CtiDNPObjectBlock();  //  for restoring a serialized object
     CtiDNPObjectBlock( enum QualifierType type );
     ~CtiDNPObjectBlock();
 
@@ -58,7 +60,8 @@ class CtiDNPObjectBlock
     int  getLength( void );
     void serialize( char *buf );
 
-    void restore( char *buf, int len );
+    int  restore( unsigned char *buf, int len );
+    bool hasPoints( void );
 };
 
 
@@ -150,6 +153,12 @@ struct dnp_control_relay_output_block
 struct dnp_analog_output_block_32_bit
 {
     long value;
+    char status;
+};
+
+struct dnp_analog_output_block_16_bit
+{
+    short value;
     char status;
 };
 
