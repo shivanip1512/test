@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/09/02 18:45:53 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2004/06/30 15:12:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@
 #include "msg_cmd.h"
 #include "yukon.h"
 #include "logger.h"
-
+#include "utility.h"
 
 
 DLLEXPORT bool isQuestionable(const CtiConnectionManager *ptr, void *narg)
@@ -125,7 +125,15 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
                     else
                     {
                         Mgr->setClientQuestionable(TRUE);
-                        Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15));  // Ask the old guy to respond to us..
+
+                        CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
+
+                        pCmd->insert(-1);
+                        pCmd->insert(CompileInfo.major);
+                        pCmd->insert(CompileInfo.minor);
+                        pCmd->insert(CompileInfo.build);
+
+                        Mgr->WriteConnQue(pCmd);  // Ask the old guy to respond to us..
 
                         questionedEntry = TRUE;
 
@@ -381,6 +389,11 @@ int  CtiServer::clientConfrontEveryone(PULONG pClientCount)
 
             CtiCommandMsg *Cmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
             Cmd->setOpString("Are You There");
+            Cmd->insert(-1);
+            Cmd->insert(CompileInfo.major);
+            Cmd->insert(CompileInfo.minor);
+            Cmd->insert(CompileInfo.build);
+
             Mgr->WriteConnQue(Cmd);
         }
 

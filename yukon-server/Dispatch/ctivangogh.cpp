@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2004/06/30 15:12:07 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2004/06/30 15:15:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3735,7 +3735,7 @@ int  CtiVanGogh::clientRegistration(CtiConnectionManager *CM)
                         Mgr->setClientQuestionable(TRUE);      // Mark the old guy as needing confirmation (also causes eventual cleanup if he doesn't respond.)
                         Mgr->setClientRegistered(TRUE);        // Mark the old guy as having been previously registered
 
-                        CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15)
+                        CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
 
                         pCmd->insert(-1);
                         pCmd->insert(CompileInfo.major);
