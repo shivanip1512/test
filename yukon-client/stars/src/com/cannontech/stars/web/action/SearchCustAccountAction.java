@@ -1,6 +1,11 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,6 +14,9 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
+import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -39,6 +47,27 @@ import com.cannontech.stars.xml.util.StarsConstants;
 
 public class SearchCustAccountAction implements ActionBase {
 
+    private static Comparator ACCOUNT_NO_CMP = new Comparator() {
+    	public int compare(Object o1, Object o2) {
+    		LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
+			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
+    		return acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
+    	}
+    };
+    
+    private static Comparator LAST_NAME_CMP = new Comparator() {
+    	public int compare(Object o1, Object o2) {
+			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
+			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
+			LiteContact cont1 = ContactFuncs.getContact( acct1.getCustomer().getPrimaryContactID() );
+			LiteContact cont2 = ContactFuncs.getContact( acct2.getCustomer().getPrimaryContactID() );
+			int result = cont1.getContLastName().compareTo( cont2.getContLastName() );
+			if (result == 0) result = cont1.getContFirstName().compareTo( cont2.getContFirstName() );
+			if (result == 0) result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
+    		return result;
+    	}
+    };
+    
     public SearchCustAccountAction() {
         super();
     }
@@ -98,14 +127,15 @@ public class SearchCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
+			int searchByDefID = YukonListFuncs.getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
 			boolean searchMembers = energyCompany.getChildren().size() > 0;
 			ArrayList accountList = null;
             
-            if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO).getEntryID()) {
+            if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) {
             	/* Search by account number */
 				accountList = energyCompany.searchAccountByAccountNo( searchAccount.getSearchValue(), searchMembers );
             }
-            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO).getEntryID()) {
+            else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO) {
             	/* Search by phone number */
             	try {
             		String phoneNo = ServletUtils.formatPhoneNumber( searchAccount.getSearchValue() );
@@ -117,15 +147,15 @@ public class SearchCustAccountAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
             	}
             }
-            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME).getEntryID()) {
+            else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
             	/* Search by last name */
 				accountList = energyCompany.searchAccountByLastName( searchAccount.getSearchValue(), searchMembers );
             }
-            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO).getEntryID()) {
+            else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO) {
             	/* Search by hardware serial number */
 				accountList = energyCompany.searchAccountBySerialNo( searchAccount.getSearchValue(), searchMembers );
             }
-            else if (searchAccount.getSearchBy().getEntryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO).getEntryID()) {
+            else if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) {
             	/* Search by map number */
             	Object obj = energyCompany.searchAccountByMapNo( searchAccount.getSearchValue(), searchMembers );
             	if (obj != null) {
@@ -173,16 +203,49 @@ public class SearchCustAccountAction implements ActionBase {
 					resp.setStarsCustAccountInformation( starsAcctInfo );
             	}
 				else {
+					// Order the search result by company name/search criteria
+					// (last name if search by last name, account # otherwise)
+					TreeMap companyNameMap = new TreeMap();
+					Hashtable companyAcctTable = new Hashtable();
+					
 					for (int i = 0; i < accountList.size(); i++) {
-						StarsBriefCustAccountInfo starsAcctInfo = new StarsBriefCustAccountInfo();
-						if (searchMembers) {
-							starsAcctInfo.setAccountID( ((LiteStarsCustAccountInformation) ((Pair)accountList.get(i)).getFirst()).getAccountID() );
-							starsAcctInfo.setEnergyCompanyID( ((LiteStarsEnergyCompany) ((Pair)accountList.get(i)).getSecond()).getLiteID() );
-						}
-						else
-							starsAcctInfo.setAccountID( ((LiteStarsCustAccountInformation)accountList.get(i)).getAccountID() );
+						LiteStarsEnergyCompany company = energyCompany;
+						if (searchMembers) company = (LiteStarsEnergyCompany) ((Pair)accountList.get(i)).getSecond();
 						
-						resp.addStarsBriefCustAccountInfo( starsAcctInfo );
+						ArrayList acctList = (ArrayList) companyAcctTable.get( company );
+						if (acctList == null) {
+							acctList = new ArrayList();
+							companyAcctTable.put( company, acctList );
+							
+							String companyName = (company == energyCompany)? "" : company.getName();
+							companyNameMap.put( companyName, company );
+						}
+						
+						LiteStarsCustAccountInformation acctInfo = (LiteStarsCustAccountInformation)
+								(searchMembers? ((Pair)accountList.get(i)).getFirst() : accountList.get(i));
+						acctList.add( acctInfo );
+					}
+					
+					Iterator it = companyNameMap.values().iterator();
+					while (it.hasNext()) {
+						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) it.next();
+						ArrayList acctList = (ArrayList) companyAcctTable.get( company );
+						
+						LiteStarsCustAccountInformation[] accounts = new LiteStarsCustAccountInformation[ acctList.size() ];
+						acctList.toArray( accounts );
+						
+						if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME)
+							Arrays.sort( accounts, LAST_NAME_CMP );
+						else
+							Arrays.sort( accounts, ACCOUNT_NO_CMP );
+						
+						for (int i = 0; i < accounts.length; i++) {
+							StarsBriefCustAccountInfo starsAcctInfo = new StarsBriefCustAccountInfo();
+							starsAcctInfo.setAccountID( accounts[i].getAccountID() );
+							if (searchMembers) starsAcctInfo.setEnergyCompanyID( company.getLiteID() );
+							
+							resp.addStarsBriefCustAccountInfo( starsAcctInfo );
+						}
 					}
 				}
             }

@@ -91,10 +91,6 @@ function selectMemberAccount(accountID, memberID) {
 <% } %>
                 </tr>
 <%
-			// Order the search result by member name/account #
-			Hashtable memberTable = new Hashtable();
-			TreeMap memberNameMap = new TreeMap();
-			
 			for (int i = 0; i < resp.getStarsBriefCustAccountInfoCount(); i++) {
 				LiteStarsEnergyCompany member = liteEC;
 				if (resp.getStarsBriefCustAccountInfo(i).hasEnergyCompanyID())
@@ -102,52 +98,27 @@ function selectMemberAccount(accountID, memberID) {
 				
 				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(
 						resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
+				LiteContact contact = member.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
+				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 				
-				TreeMap acctNoMap = (TreeMap) memberTable.get(member);
-				if (acctNoMap == null) {
-					acctNoMap = new TreeMap();
-					memberTable.put(member, acctNoMap);
+				String homePhone = ECUtils.getNotification(
+						ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+				String workPhone = ECUtils.getNotification(
+						ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+				
+				StringBuffer phoneNo = new StringBuffer();
+				if (homePhone.length() > 0)
+					phoneNo.append( homePhone ).append( "(H)" );
+				if (workPhone.length() > 0) {
+					if (phoneNo.length() > 0) phoneNo.append( ", " );
+					phoneNo.append( workPhone ).append( "(W)" );
 				}
+				if (phoneNo.length() == 0) phoneNo.append( "(none)" );
 				
-				acctNoMap.put(liteAcctInfo.getCustomerAccount().getAccountNumber(), liteAcctInfo);
-			}
-			
-			Enumeration members = memberTable.keys();
-			while (members.hasMoreElements()) {
-				LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.nextElement();
-				String memberName = (member == liteEC)? "" : member.getName();
-				memberNameMap.put(memberName, member);
-			}
-			
-			Iterator it = memberNameMap.values().iterator();
-			while (it.hasNext()) {
-				LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
-				TreeMap accounts = (TreeMap) memberTable.get(member);
-				
-				Iterator it2 = accounts.values().iterator();
-				while (it2.hasNext()) {
-					LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) it2.next();
-					LiteContact contact = member.getContact(liteAcctInfo.getCustomer().getPrimaryContactID(), liteAcctInfo);
-					LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
-					
-					String homePhone = ECUtils.getNotification(
-							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-					String workPhone = ECUtils.getNotification(
-							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-					
-					StringBuffer phoneNo = new StringBuffer();
-					if (homePhone.length() > 0)
-						phoneNo.append( homePhone ).append( "(H)" );
-					if (workPhone.length() > 0) {
-						if (phoneNo.length() > 0) phoneNo.append( ", " );
-						phoneNo.append( workPhone ).append( "(W)" );
-					}
-					if (phoneNo.length() == 0) phoneNo.append( "(none)" );
-					
-					StreetAddress starsAddr = new StreetAddress();
-					StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
-					String address = ServletUtils.getOneLineAddress(starsAddr);
-					if (address.length() == 0) address = "(none)";
+				StreetAddress starsAddr = new StreetAddress();
+				StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
+				String address = ServletUtils.getOneLineAddress(starsAddr);
+				if (address.length() == 0) address = "(none)";
 %>
                 <tr valign="top"> 
                   <td width="15%" class="TableCell">
@@ -166,7 +137,6 @@ function selectMemberAccount(accountID, memberID) {
 <% } %>
                 </tr>
 <%
-				}
 			}
 %>
               </table>
