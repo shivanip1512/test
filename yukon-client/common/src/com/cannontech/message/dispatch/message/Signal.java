@@ -29,6 +29,9 @@ public class Signal extends com.cannontech.message.util.Message
 	// Identifies the condition this signal is responsible for
 	private int condition = SIGNAL_COND;  //valid values -1 to 31
 
+	//millis for high precision and SOE types
+	private long millis = 0;
+	
 
 
 	// Signals (alarms & events)
@@ -227,4 +230,19 @@ public String toString()
 		condition = i;
 	}
 
+	/**
+	 * @return
+	 */
+	public long getMillis()
+	{
+		return millis;
+	}
+
+	/**
+	 * @param l
+	 */
+	public void setMillis(long l)
+	{
+		millis = l;
+	}
 }

@@ -17,6 +17,8 @@ public class PointData extends com.cannontech.message.util.Message
 	private java.lang.String str = "";
 	private java.util.Date time = new java.util.Date();
 	private long forced;
+	
+	private long millis;
 
 
 	// Point Types
@@ -216,4 +218,20 @@ public String toString() {
 
 	return retStr;
 }
+	/**
+	 * @return
+	 */
+	public long getMillis()
+	{
+		return millis;
+	}
+
+	/**
+	 * @param l
+	 */
+	public void setMillis(long l)
+	{
+		millis = l;
+	}
+
 }
