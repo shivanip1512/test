@@ -15,7 +15,7 @@ import com.cannontech.database.db.point.SystemLog;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class SystemLogTypeCheckBoxTreeModel extends DBTreeModel
+public class SystemLogTypeCheckBoxTreeModel extends CheckBoxDBTreeModel
 {
 	public static String TITLE_STRING = "System Log Type";
 	/**
