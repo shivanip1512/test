@@ -58,18 +58,14 @@
 	}
 	
 	if (user == null && VersionTools.starsExists()) {
-		// This is logged in using the normal LoginController, not the StarsLoginController
 		user = StarsDatabaseCache.getInstance().getStarsYukonUser( lYukonUser );
 		if (user != null) {
 			session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 			
 			// Get the energy company settings
-			GetEnergyCompanySettingsAction action = new GetEnergyCompanySettingsAction();
-			SOAPMessage reqMsg = action.build(request, session);
-			SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-			SOAPMessage respMsg = action.process(reqMsg, session);
-			SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-			action.parse(reqMsg, respMsg, session);
+			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+			StarsEnergyCompanySettings settings = liteEC.getStarsEnergyCompanySettings( user );
+			session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
 		}
 	}
 	

@@ -43,7 +43,6 @@
 	}
 	
 	if (user == null) {
-		// This is logged in using the normal LoginController, not the StarsLoginController
 		user = StarsDatabaseCache.getInstance().getStarsYukonUser( lYukonUser );
 		if (user == null) {
 			// Something wrong happened when instantiating the StarsYukonUser
@@ -53,19 +52,16 @@
 		
 		session.setAttribute(ServletUtils.ATT_STARS_YUKON_USER, user);
 		
-		MultiAction actions = new MultiAction();
-		GetEnergyCompanySettingsAction action1 = new GetEnergyCompanySettingsAction();
-		SOAPMessage msg1 = action1.build( request, session );
-		actions.addAction( action1, msg1 );
-		GetCustAccountAction action2 = new GetCustAccountAction();
-		SOAPMessage msg2 = action2.build( request, session );
-		actions.addAction( action2, msg2 );
+		// Get the energy company settings
+		LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		StarsEnergyCompanySettings settings = liteEC.getStarsEnergyCompanySettings( user );
+		session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
 		
-		SOAPMessage reqMsg = actions.build(request, session);
-		SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
-		SOAPMessage respMsg = actions.process(reqMsg, session);
-		SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-		actions.parse(reqMsg, respMsg, session);
+		// Get customer account information
+		GetCustAccountAction action = new GetCustAccountAction();
+		SOAPMessage reqMsg = action.build(request, session);
+		SOAPMessage respMsg = action.process(reqMsg, session);
+		action.parse(reqMsg, respMsg, session);
 	}
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
