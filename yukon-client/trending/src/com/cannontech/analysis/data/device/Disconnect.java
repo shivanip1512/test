@@ -148,11 +148,11 @@ public class Disconnect implements Reportable
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, 18, null),
-				new ColumnProperties(0, 1, 200, 18, null),
-				new ColumnProperties(5, 1, 150, 18, null),
-				new ColumnProperties(155, 1, 100, 18, "MM/dd/yyyy HH:MM:SS"),
-				new ColumnProperties(260, 1, 100, 18, null)
+				new ColumnProperties(0, 1, 100, 18, null),  //Collection Group
+				new ColumnProperties(0, 1, 200, 18, null),	//MCT
+				new ColumnProperties(15, 1, 150, 18, null),	//Point
+				new ColumnProperties(155, 1, 100, 18, "MM/dd/yyyy HH:MM:SS"),   //Timestamp
+				new ColumnProperties(260, 1, 100, 18, null)   // Rawpointhistory.value
 			};
 		}
 		return columnProperties;
