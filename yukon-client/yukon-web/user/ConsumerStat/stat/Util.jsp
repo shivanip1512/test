@@ -13,7 +13,7 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_CORNER %>"/>">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -75,7 +75,7 @@
               Fax: <%= energyCompany.getMainFaxNumber() %><br>
 <% } %>
 <cti:checkProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
-			  <a href="<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_LINK_UTIL_EMAIL%>"/>" class="Link1" target="new">Click here for trouble shooting</a><br>
+			  <a href="<%= energyCompany.getEmail() %>" class="Link1" target="new">Send us an email</a><br>
 </cti:checkProperty>
 <cti:checkNoProperty propertyid="<%=ResidentialCustomerRole.CUSTOMIZED_UTIL_EMAIL_LINK %>">
 <% if (energyCompany.getEmail().trim().length() > 0) { %>

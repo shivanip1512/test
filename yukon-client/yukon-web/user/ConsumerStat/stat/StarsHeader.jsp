@@ -21,13 +21,14 @@
 	if (com.cannontech.database.cache.functions.YukonUserFuncs.getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
 	{
 		// User login no longer valid
-		response.sendRedirect("/login.jsp"); return;
+		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+		return;
 	}
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
-	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm z");
+	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
 	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm z");
+	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	java.text.SimpleDateFormat ampmTimeFormat = new java.text.SimpleDateFormat("hh:mm a");
 	
 	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);

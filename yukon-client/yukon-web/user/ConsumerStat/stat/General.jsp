@@ -13,7 +13,7 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_CORNER %>"/>">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -106,9 +106,9 @@
 %>
                                   <tr> 
                                     <td width="64"> 
-                                      <div align="center"> <span class="TableCell"> 
+                                      <div align="center"> 
                                         <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59"><br>
-                                        <%= program.getProgramName() %></span> 
+                                        <span class="TableCell"><%= program.getProgramName() %></span><br> 
                                       </div>
                                     </td>
                                     <td width="8" background="../../../Images/Icons/dot.gif"> </td>
@@ -116,8 +116,18 @@
                                       <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
                                         <tr height="50"> 
                                           <td> <div align="center"><b>
-<%		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { %>
-                                            Out of Service 
+<%
+		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
+			String untilStr = "";
+			StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
+			if (progHist.getStarsLMProgramEventCount() > 0) {
+				StarsLMProgramEvent lastEvent = progHist.getStarsLMProgramEvent(progHist.getStarsLMProgramEventCount() - 1);
+				if (lastEvent.getYukonDefID() == com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION)
+					untilStr = "until " + histDateFormat.format(lastEvent.getEventDateTime());
+			}
+%>
+                                              Out of Service<br>
+                                              <%= untilStr %>
 <%		} else if (todayCtrlHist.getBeingControlled()) { %>
                                               Currently<br>
                                               <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>"/> 
@@ -209,7 +219,9 @@
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
 					<%= ServletUtils.getFormattedAddress(propAddr) %><br>
-                    <%= primContact.getHomePhone() %></span><br> <br> <img src="../Family.jpg" width="168" height="224"> 
+                    <%= primContact.getHomePhone() %></span><br>
+                    <br>
+                    <img src="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_GENERAL %>"/>" width="168" height="224"> 
                   </td>
                 </tr>
               </table>

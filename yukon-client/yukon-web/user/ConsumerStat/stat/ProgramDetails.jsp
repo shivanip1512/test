@@ -13,7 +13,7 @@
     <td>
       <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
-          <td width="102" height="102" background="../../Mom.jpg">&nbsp;</td>
+          <td width="102" height="102" background="../../../WebConfig/<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_IMG_CORNER %>"/>">&nbsp;</td>
           <td valign="top" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
@@ -104,10 +104,10 @@
                       <td class = "TableCell" valign = "top"><%= program.getStarsWebConfig().getDescription() %><br>
                         <table width="210" border="0" cellspacing="0" cellpadding="0">
                           <tr> 
-                            <td><% if (imgNames[1] != null) { %><img src="../../../Images/Icons/<%= imgNames[1] %>"><% } %></td>
-                            <td><% if (imgNames[2] != null) { %><img src="../../../Images/Icons/<%= imgNames[2] %>"><% } %></td>
-                            <td><% if (imgNames[3] != null) { %><img src="../../../Images/Icons/<%= imgNames[3] %>"><% } %></td>
-                            <td><% if (imgNames[4] != null) { %><img src="../../../Images/Icons/<%= imgNames[4] %>"><% } %></td>
+                            <td><% if (!imgNames[1].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[1] %>"><% } %></td>
+                            <td><% if (!imgNames[2].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[2] %>"><% } %></td>
+                            <td><% if (!imgNames[3].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[3] %>"><% } %></td>
+                            <td><% if (!imgNames[4].equals("")) { %><img src="../../../Images/Icons/<%= imgNames[4] %>"><% } %></td>
                           </tr>
                         </table>
                       </td>
