@@ -831,7 +831,8 @@ delete from yukonroleproperty where rolepropertyid = -40050;
 /* Remove unused yukon list entries */
 delete from yukonlistentry where entrytext = 'LCR-1000';
 
-
+update lmprogramdirectgear set methodstoptype='RampOutRandom' where methodstoptype='RampOut';
+update lmprogramdirectgear set methodstoptype='RampOutRandomRest' where methodstoptype='RampOutRestore';
 
 
 
