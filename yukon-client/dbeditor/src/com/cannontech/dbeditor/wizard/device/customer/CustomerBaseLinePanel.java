@@ -5,6 +5,8 @@ package com.cannontech.dbeditor.wizard.device.customer;
  */
 import java.awt.Dimension;
 
+import com.cannontech.database.data.customer.CICustomerBase;
+
 public class CustomerBaseLinePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JCheckBox ivjJCheckBoxEnableBaseLine = null;
 	private javax.swing.JLabel ivjJLabelCalcDays = null;
@@ -568,19 +570,13 @@ private javax.swing.JTextField getJTextFieldPreviousDays() {
 	}
 	return ivjJTextFieldPreviousDays;
 }
-/**
- * This method was created in VisualAge.
- * @return java.awt.Dimension
- */
-public Dimension getPreferredSize() {
-	return null;
-}
+
 /**
  * getValue method comment.
  */
 public Object getValue(Object o) 
 {
-	com.cannontech.database.data.customer.CICustomerBase customer = (com.cannontech.database.data.customer.CICustomerBase)o;
+	CICustomerBase customer = (CICustomerBase)o;
 
 	if( getJCheckBoxEnableBaseLine().isSelected() )
 	{
@@ -607,7 +603,7 @@ public Object getValue(Object o)
 		//Since the base line is not used, set the DBPersistant object to a new
 		// dummy like base line so it gets deleted from the database if one already exists
 		com.cannontech.database.db.customer.CustomerBaseLine c = new com.cannontech.database.db.customer.CustomerBaseLine();
-		c.setCustomerID( customer.getCiCustomerBase().getDeviceID() );
+		c.setCustomerID( customer.getCustomerID() );
 		customer.setCustomerBaseLine( c );
 	}
 	

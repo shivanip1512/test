@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/14/2002 3:25:50 PM)
@@ -10,12 +12,15 @@ public class DBDeletionWarn
 	private static StringBuffer theWarning = new StringBuffer("");
    
    //types of delete
-	public static final int POINT_TYPE = 1;
-	public static final int NOTIFICATION_TYPE = 2;
-	public static final int STATEGROUP_TYPE = 3;
-	public static final int PORT_TYPE = 4;
-	public static final int DEVICE_TYPE = 5;
-	public static final int PAO_TYPE = 6;
+	public static final int POINT_TYPE				= 1;
+	public static final int NOTIF_GROUP_TYPE		= 2;
+	public static final int STATEGROUP_TYPE		= 3;
+	public static final int PORT_TYPE				= 4;
+	public static final int DEVICE_TYPE				= 5;
+	public static final int PAO_TYPE					= 6;
+	public static final int CONTACT_TYPE			= 7;
+	public static final int CUSTOMER_TYPE			= 8;
+
 
    //the return types of each possible delete
    public static final byte STATUS_ALLOW = 1;
@@ -94,7 +99,7 @@ private static byte createDeleteStringForDevice(int deviceID) throws java.sql.SQ
  * @return java.lang.String
  * @param pointID int
  */
-private static byte createDeleteStringForNotification(int noteID) throws java.sql.SQLException
+private static byte createDeleteStringForNotifGroup(int noteID) throws java.sql.SQLException
 {
 	Integer theID = new Integer( noteID );
 
@@ -102,14 +107,6 @@ private static byte createDeleteStringForNotification(int noteID) throws java.sq
     * statement. Do this when performance becomes an issue and put it into the
     * NotificationBase class 
     */
-	if( com.cannontech.database.data.notification.NotificationRecipient.hasPointAlarming( theID ) )
-	{
-		theWarning.delete(0, theWarning.length());
-		theWarning.append("\nbecause it is used by a point alarm.");
-      return STATUS_DISALLOW;
-	}
-	
-	
 	if( com.cannontech.database.data.notification.GroupNotification.hasAlarmCategory( theID ) )
 	{
 		theWarning.delete(0, theWarning.length());
@@ -127,6 +124,30 @@ private static byte createDeleteStringForNotification(int noteID) throws java.sq
 	//this point is deleteable
 	return STATUS_ALLOW;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (5/31/2001 2:36:20 PM)
+ * @return java.lang.String
+ * @param pointID int
+ */
+private static byte createDeleteStringForContact(int contactID) throws java.sql.SQLException
+{
+	Integer theID = new Integer( contactID );
+
+	if( com.cannontech.database.data.customer.Contact.isPrimaryContact(
+			theID, CtiUtilities.getDatabaseAlias() ) )
+	{
+		theWarning.delete(0, theWarning.length());
+		theWarning.append("\nbecause it is used as a primary contact for a customer.");
+		return STATUS_DISALLOW;
+	}
+
+	//this object is deleteable
+	return STATUS_ALLOW;
+}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (5/31/2001 2:36:20 PM)
@@ -218,8 +239,8 @@ public static byte deletionAttempted(int anID, int type) throws java.sql.SQLExce
 		if (type == POINT_TYPE)
 			return createDeleteStringForPoints(anID);
 
-		else if(type == NOTIFICATION_TYPE)
-			return createDeleteStringForNotification(anID);
+		else if(type == NOTIF_GROUP_TYPE)
+			return createDeleteStringForNotifGroup(anID);
 
 		else if(type == STATEGROUP_TYPE)
 			return createDeleteStringForStateGroup(anID);
@@ -230,8 +251,14 @@ public static byte deletionAttempted(int anID, int type) throws java.sql.SQLExce
 		else if(type == DEVICE_TYPE)
 			return createDeleteStringForDevice(anID);
 
-		else if(type == PAO_TYPE)
+		else if(type == CONTACT_TYPE)
+			return createDeleteStringForContact(anID);
+
+		else if( type == CUSTOMER_TYPE
+					 || type == PAO_TYPE )
+		{
 			return STATUS_CONFIRM;
+		}
 
 		else
 			return STATUS_DISALLOW;

@@ -96,7 +96,9 @@ private javax.swing.JTextField getJTextFieldName() {
  */
 public Object getValue(Object o)
 {
-	com.cannontech.database.data.notification.GroupNotification gn = com.cannontech.database.data.notification.NotificationGroupFactory.createGroupNotification();
+	com.cannontech.database.data.notification.GroupNotification gn =
+		new com.cannontech.database.data.notification.GroupNotification(); 
+	//com.cannontech.database.data.notification.NotificationGroupFactory.createGroupNotification();
 
 	String stateGroupName = getJTextFieldName().getText();
 	if( stateGroupName != null )
@@ -114,8 +116,8 @@ public Object getValue(Object o)
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
 /**
  * Initializes connections

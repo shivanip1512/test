@@ -3,12 +3,16 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.database.data.customer.CICustomerBase;
+import com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList;
 import com.cannontech.database.data.device.lm.LMProgramCurtailment;
 
 public class LMProgramCurtailListPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemoveJTablePanelListener 
 {
 	private AddremoveTableModel tableModel = null;
 	private com.cannontech.common.gui.util.AddRemoveJTablePanel ivjAddRemoveJTablePanel = null;
+
+
 /**
  * Constructor
  */
@@ -68,15 +72,17 @@ private com.cannontech.common.gui.util.AddRemoveJTablePanel getAddRemoveJTablePa
 			ivjAddRemoveJTablePanel.setJTableModel( getTableModel() );
 			ivjAddRemoveJTablePanel.setMode( com.cannontech.common.gui.util.AddRemoveJTablePanel.MODE_TRANSFER );
 
-			com.cannontech.database.data.customer.CustomerBase[] customers = com.cannontech.database.db.device.lm.LMProgramCurtailment.getAllAvailableCustomers( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-			com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList[] custList = new com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList[ customers.length ];
+			CICustomerBase[] ciCustomers = CICustomerBase.getAllAvailableCICustomers( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-			for( int i = 0; i < customers.length; i++ )
+			LMProgramCurtailCustomerList[] custList 
+					= new LMProgramCurtailCustomerList[ ciCustomers.length ];
+
+			for( int i = 0; i < ciCustomers.length; i++ )
 			{
-				com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList localCustomer = new com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList();
+				LMProgramCurtailCustomerList localCustomer = new LMProgramCurtailCustomerList();
 
-				localCustomer.getLmProgramCurtailCustomerList().setLmCustomerDeviceID( customers[i].getCustomerID() );
-				localCustomer.setCustomerName( customers[i].getPAOName() );
+				localCustomer.getLmProgramCurtailCustomerList().setLmCustomerDeviceID( ciCustomers[i].getCiCustomerBase().getCustomerID() );
+				localCustomer.setCustomerName( ciCustomers[i].getCiCustomerBase().getCompanyName() );
 				localCustomer.getLmProgramCurtailCustomerList().setRequireAck("N");
 
 				custList[i] = localCustomer;
@@ -117,7 +123,7 @@ public Object getValue(Object o)
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
 		AddremoveTableModel.RowValue row = (AddremoveTableModel.RowValue)getTableModel().getRowAt(i);
-		com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList customer = row.customer;//new com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList();
+		LMProgramCurtailCustomerList customer = row.customer;//new com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList();
 
 		customer.setDeviceID( program.getPAObjectID() );
 		customer.getLmProgramCurtailCustomerList().setLmCustomerDeviceID( row.customer.getLmProgramCurtailCustomerList().getLmCustomerDeviceID() );
@@ -268,11 +274,11 @@ public void setValue(Object o)
 	{
 		//AddremoveTableModel.RowValue row = new AddremoveTableModel.RowValue( (com.cannontech.database.data.device.customer.CustomerBase)program.getLmProgramStorageVector().get(i) );
 
-		((com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i)).setDeviceID( program.getPAObjectID() );
+		((LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i)).setDeviceID( program.getPAObjectID() );
 		
 		getTableModel().addRow( 
-			(com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i),
-			((com.cannontech.database.data.device.lm.LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i)).getLmProgramCurtailCustomerList().getRequireAck() );
+			(LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i),
+			((LMProgramCurtailCustomerList)program.getLmProgramStorageVector().get(i)).getLmProgramCurtailCustomerList().getRequireAck() );
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.notification.group;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/20/00 10:45:15 AM)
@@ -539,7 +541,7 @@ private void initialize() {
 public boolean isInputValid() 
 {
 	if( getJTextFieldName().getText() == null || getJTextFieldName().getText().length() <= 0 ||
-		getJTextFieldName().getText().equalsIgnoreCase( com.cannontech.database.db.notification.NotificationRecipient.NONE_STRING) )
+		getJTextFieldName().getText().equalsIgnoreCase(CtiUtilities.STRING_NONE) )
 	{
 		setErrorString("The Name text field must be filled in");
 		return false;

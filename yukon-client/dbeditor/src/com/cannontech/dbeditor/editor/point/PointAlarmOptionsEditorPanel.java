@@ -1,10 +1,23 @@
 package com.cannontech.dbeditor.editor.point;
-
 /**
  * This type was created in VisualAge.
  */
 
+import java.awt.Toolkit;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.data.customer.Contact;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 
 public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private PointAlarmOptionsEditorTableModel tableModel = null;
@@ -26,15 +39,13 @@ public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util
 		"Limit Set 2"
 	};
 	private javax.swing.JCheckBox ivjJCheckBoxNotifyWhenAck = null;
-	private javax.swing.JLabel ivjJLabelEmail = null;
-	private javax.swing.JComboBox ivjJComboBoxRecipient = null;
 	private javax.swing.JCheckBox ivjJCheckBoxDisableAllAlarms = null;
 	private javax.swing.JComboBox ivjJComboBoxGroup = null;
 	private javax.swing.JLabel ivjJLabelGroup = null;
-	private javax.swing.JButton ivjNewEmailButton = null;
-	
-	
-	
+	private javax.swing.JButton ivjJButtonNewContact = null;
+	private javax.swing.JComboBox ivjJComboBoxContact = null;
+	private javax.swing.JLabel ivjJLabelContact = null;
+
 /**
  * Constructor
  */
@@ -43,6 +54,8 @@ public PointAlarmOptionsEditorPanel() {
 	super();
 	initialize();
 }
+
+
 /**
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
@@ -55,13 +68,14 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC1(e);
 	if (e.getSource() == getJCheckBoxNotifyWhenAck()) 
 		connEtoC4(e);
-	if (e.getSource() == getJComboBoxRecipient()) 
+	if (e.getSource() == getJComboBoxContact()) 
 		connEtoC3(e);
-	if (e.getSource() == getNewEmailButton()) 
+	if (e.getSource() == getJButtonNewContact()) 
 		connEtoC2(e);
 	// user code begin {2}
 	// user code end
 }
+
 /**
  * connEtoC1:  (AlarmInhibitCheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> PointAlarmOptionsEditorPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
@@ -80,6 +94,8 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC2:  (NewEmailButton.action.actionPerformed(java.awt.event.ActionEvent) --> PointAlarmOptionsEditorPanel.newEmailButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -89,7 +105,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.newEmailButton_ActionPerformed(arg1);
+		this.newContactButton_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -98,6 +114,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
 /**
  * connEtoC3:  (JComboBox1.action.actionPerformed(java.awt.event.ActionEvent) --> PointAlarmOptionsEditorPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
@@ -116,6 +133,8 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
 /**
  * connEtoC4:  (JCheckBoxNotifyWhenAck.action.actionPerformed(java.awt.event.ActionEvent) --> PointAlarmOptionsEditorPanel.fireInputUpdate()V)
  * @param arg1 java.awt.event.ActionEvent
@@ -134,6 +153,55 @@ private void connEtoC4(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+
+/**
+ * 
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private static void getBuilderData() {
+/*V1.1
+**start of data**
+	D0CB838494G88G88GC7D1C5AEGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E14DBC8DF8D4D715F40D0A167A954595AB7DC40ACAEDD454F4656B52B53638520ACAF7E9C5CDEBF4D1D9B7352C32CA7B21FD197CCC7889A4A401A0D00690A010A13FC05249A464E77287C3B210E19258E8F9493CA4831319F1662519G25FB4E3D6F3CF9194CA48441ED3E6F643EFB6EBD771CFB6F39671EFB6ECD045C7D735312F53902101CA6A8BFD54902B06B02A08CFF78397B8937EE3BC3AFE8FE8EG
+	E48B8F99D2B1136550AF949D7AACE1DFCB86E4F3A15FF349215F855FB9C2C1CBF5BBA2A37349023254B7AACBA76713BECAFC74AC7F3E462D10EE8348871C99E0E696727FD4E33E023F8279ED4AB7C232CE902C59D867313AFC8DFE05D24FGE5A7G5631BA7F5438D7A91F83F92C938BE9FCB62F3B9A52CDCC3A771B2A15FA3D3397896B1FB56AB2111726FD026A9D1C36D7C98DC29C9B0894E1571FDBA1B55B2E8D5675FB07CB7AC50F476B11257E2192E71F64F449DEFF0912783CAE0FECB259B0E9F00B7E61CE
+	1F6C72FA824D2C58A6FAA43730E2874A7FDCDD86EB9B6407FCCF8E625ACF6318E541F791C0FD8E756139CCB375755AA2A171117DD17BB0AF074B9E1F936AC3597204D4DFAE367F93B6A7C8A7C03E9A004BF22409E4094BA5D9F61B30EE9264D3739C7A3DF904CFE47893103782B873C8465AA3A4E34F0D2F8B99A59FCA599EC5461BF9DC3605F9A19997BE11103A1B694DC703B87709D0163A53214F87B08374825C84584374755C68B1C89B7A64A66F703057536073B53A1D7EF3DE276406EF1389CA945C85295F
+	6BF78A825749976A0C9164A11833F33CBEA2703EF58B24C331973EA4ECC878D0CADA043E45BDDF22DB243431F4E728EF9BF66238BD4966B6813E1315F6B97ED906B76F8A6179DCF5B2BC66FB20EC69AE9A671EEDA40BB5F50110D5FEDE270FA04B5C27DAF406FCAEC3F5FEC896BE46B157F10C1D001F81B097E0B140CA00F579B4461F982D1CEA0C5BE18D78BD223BEB244FA77A654691175BA97915317EF963E4E39D89B85DEF27CD4747E5D125F60E923EE60BB8AE890BCE6A366E6663D138BBB4AE1C3731A99A
+	EF4B6E093A31CD1D4387581A68594D67B0C545FF026107B4F8BE377B999E73C1A8CBG60756DB5082F7FD3380E088C5F7B27F09D790509F4A488E589GFCFE8BEE22ED2C5F836B86C0861885908B309CA0E18F4D714FC6CBEFF39D59B4734BE9BF955C892994147DE23BA7A00B1EFE49A17ADDE21FDB8A88CA1D05C19C573EF1F40F32755D8FBCDAA50F649751BCC26B6230844A9460F53E9A4C46BAFE09155ADD4392B0987689546E93419CC85DE2C03E68F30A32942A414B1F8A62183CADBA20C5E8G3E0DFBF1
+	3CDEE6B6F7A374BFFFAF0DD567BB0873C1FE66DE9A175A319D101E8565165CA61345550FE2087EB1525127CFE7C1BA8F6A9B77415A84E8FB0356672FFBC88FAD19DF940C4FF7C654C384E1BF57297C7D61FA381235DF8F78ABGB3G666F27FD7562691EE92E0FC800F2237C4CD66D63A9760173705C959EE90A0E535A26354A477D49DB283B71502F84000D7BE96C03E3862E130DE2C0A2AD6C740382C94E50CC703A8FDC47BDC6FADB72489649A7F91C7091D0F4E04E75CDA17D9C702A3A739043233DEA82858A
+	2878795733B99E5A50EABB15AFE26522AC7BDDFDA33254A549324BB39822DF4CE4890CB30581252FEB5E453E669AC0DFG4C866A6B1BB7F2B4FAE675FA2F0D786C380294FDEDE27B328D6A8F99E8EEBEE6C2BFEB161AFF1865C36507CCF7E36E88104FC49BDDF7D7F9240465B90F4BB538861215BC0ED729DAB6484A62C03684005483B02E87287FC9CC36E4253ED6772602BD37D10773C82B69D1645E2451755B61F1BB32F05DB05E0C2E5B15B7A36B761BB7A36B76691B136BEE6B4DC83A4B4BBAEEE25F3C239E
+	4DDA683A0976315F6B71C8ECC12AA44A1A7F359D7B61723864EE17F3D0123BDC57A5707B8E20CE271EC61D36437750813219238749E696DEFFD408FF6B18AE12FFB577336D3A7883DC9FD79D8859CCAE137D9DDCE312DB9A0601EA720EF8E40E3F4C6C3B028F24B05C0D9BB1C8DBF426E9C86A3F56688DDADC81DCF68DEEB7F35A83C611752B04A7B649BF60758FCB4E222B625BE209B8AA1730F9A9E9E0454D78FD54F07CF81DE1B23F5FB86072CB6D9E5F0832E9959DF59CAD63727CFB41FD636569704A2E0131
+	6EA1495350FF6D6FA5CC252253B942FF965FD264718E77F9C19EF023DDBE97347C7712253C12E479157E8BDC164691D976FABA2451A6B8FB817FFBA20AC7ED1E33FB2BA12CF5EB7466EBC06E0ACA5A5FF6A523BE2E87BD4DA8F0688D85E473DFF8874B4966AB9BDB13576D66CB89753C002D137ADC0D6ED79770B3F48C243C7C7D914B9355727406C8656B55724C56C8659987C94E27EF210D8DC8FF9D1140354355F1D69AD37C33E7EF6D88ABF3086E11105F77EF3736C06A566CE79C7F2BF7A32F51F56F629EF6
+	CDEDFF7D3B69827AEF3CCDEED3960B58264F6F9A066D9FB7E8A5D6F039C99BAB588B72E3DC2197D29FG275DFA837D6149A65ED048E293B594D3188934738162157604C2455E30FAEF19291E9B72B1G8B8BA355BBD8CB7556C0FEA3405EC3116A7DD22D578B65B2409C255E2AC3CA3D43D8EF4FE9BA27172A388A06AB070D651594BA8B1D4B5246BCE2FEF3BD22BDC5F09E666D878F071F912DBAECF7AE60979DA61D7088DAFF25A19070763B180B2E4C6F3EE42D2D653802644D1042928F40F951A985C9C70A12
+	D1D674619534B24F0F95578A934FA4FC2A489DEC9AE58B4E6EED02E3C49B28D9133A95B9DC52A8507338C6CDBD0D57524334573C53220D25AC5DDE255B92E5EC56ABE312FBA4B4B666A792D2F95BCB55366DC7A80E72F48B61E629B8CBAB61169DA1FD7C2489EDED24F8D2BF6BF44960082BE4C4F66161C314C5E69B353123E54CAF4436B69E21384CCBADACAED36450DB811CG7C0C380C1D9D316ECD404595517A7FF42DF67DA795F19FB37728C34F6DEE31398252695BD81A47E5C7F770F98FB36D24238BF26A
+	955EAB3E34C0B03F1B2F0B94AF1A393DC087C4EC7CEDC7C373E0B8BE26DB597B2292571AE926BE4E03BA2B0ED29F638B437B387518C3DFF60C7A784A9D771173355692DF8B34F97398717DCB2916EF5CB14EB7C1657B355A3F0DEFD69D71DD87ED9695935F6AAAAD5FAB451C6F4CE262BBDA77374D69178F1F0674EF5CA3A926D62135D1710927225A28F945FC5E9797075B2832D4DC87ABG1FD8CCB66A1164EC0D0D8247C596BD033083115DB92F4331003DC649DFE4FC59DEA310FFDFDFBF1D98547AE20AA58C
+	276178E7989D7AC2GB3009DC0B612EC893AA9E3EA4D41C9E2EA5F1C16DCF30CF4A6DA5EB29D3AC5AADDFB6BF468162AF44FCC08232DB4064E11EB0C93E3E9BC4EF5219575FA0311473974AA7EAF8C1FF5BC04676BE08D33F918AF0232D947097F33B5617C579D9F4FF3EBC924F36D6A89F4A5E17932B0BA3EAE6A9CB83F4C1E236A87CB8223F03EB219D4FFDE315BAF54223E66813415104EBC1D0EFBFFAC641783A482EC84B014027EGDCA9A55DA9CE0934AF0E571DE81BE2A816417B7991731D0D4F3C89F461
+	63B323F4BC9D7751BE512A75516616723DE6A924ABCBE91F7CFDE10642E7EDA94D63055ABB13734A843AF0B98DE51166F1509DED9E15F310B20F9FAF25BD3D3A0CE45DB961EE6176E4AD1CC077C6D85E97D1566DDD3BA34B4A0D32C0BE10370A46F5E69969DCCA866262A13F320C74EBE68A5EA9115DE43E32C0B673E4AA7A63DE3FEB5065A11C09617A3DFE969860712AEE6693A5C21B9B55F6C7522247B1EE26C50EE37CC3DA64B8464C3449E3F48F26C50BF3F079D62B72E515BB749C77139642952A38AB2D04
+	2BD6F1094C6732C27E0A0AFB2C99F1B1101FD7CEFA5043ECD5BC649381D2AB886FE4F85C0F0D957CEC41713FEA19AA16066DE00AEDCDE503634BA369D8CA6BD4BC52B4752762919E2F5B47F04F6C5C4E66A69010824C9021672A147DD24E93A2440BBA44E1C920F3FE32F913D227D976B6152B327F38B6126CB6E5AC1CCA9A540C4DAC9CDF00383071DA8E798400F5G29153C0C6B4DF753236B682A7448BA7A23F4DCAF816F083FDF8A57431F26672BE5A1AB5CAECB4358E565AC4C68E551BFA8CD50637FE6743C
+	AC9A7DEB6951F41D0F6737460D678955EE7C76E8FEE43B418E985CE6FC3F15ECC6FEA51DAF7EF09075578679A1009915243F9B8B3576EB2EB22E31CA9ADFB9D1E739FC9F2A554AD7294E77C32513799C2B2236F72ECE5BDE055A1EDC25EDEF2DC23FD1C933CECCEC0F0FEFC6867A9AC1B53F15654754F1149A3629F3546CF1AA86131F49BD4C4EBC8902BD2FA35CAB8C77B860B2138977BBE6FBBE1D22BD4F0F3231BF1DAA8833553E7D3E89ED2DDB9C730EG0F87CFE03DED965AD38BA1EF86F08284157EF0993F
+	B20AE75B813FB88CD35C65137A8577C924FD2A19E8D7C37DA4002D00B782D8CF52D96161CABC3F01768D3886C7681A8E0F200ACC758E3C7FBB53556F773A5DD842A2ABDDB21C7282D4E745D95CEF22C6D985728F3ED825758F62CEF27FA0915275A749567E0179CEDBCFB974FBCF912E0F5D6795C13EDE45BD30134517A16FD3F107F6B1BBFD0A7B0F4A5D8A434D875CD2355E8E9362D6C2BED1457DCB8A6256C3BE230AF06BAF30B7B418D7F12945082B2F62E7FC0EBBD8CC7B4315AADAAF2B4679540B813F2CAA
+	24032B2B227946A3056CBDC6956FC3260A0FE1782C6A901E7B46A98C0F7993D0B63F1A644CB9444671CD9847B789B7D40338B248572B386F56106CD6957715D2F53FD3F177B37FA289729BD51C319CF1D9A670E3CD041BDDCE34C69345A6CED968BD4ACD404519A8BED2FEE52F56C661D152E4EA753B1C0D6220152D82EE27EED9B2947AA4935929D856E6E18D2C89GFB8D45FD0207A96E937B398502F506AD629B1AC4FB154EDD436760411A50F9F3099A77D95BCCBCD7C0F92A99F1BBDB3467EE547D9F68384F
+	494B5B4615235D06A335267C7A38F214B7B9C5DB9EBB2EBCCDC34F7B761DC354370D5FD9AC389F2F0B7ABE48EA66FD72A969721103C25287DFCCD57C5F66FDC2443DA1344A8572ABFF4E669D79AFB253582F6B4131CF047C86143B16ECC9EE9D46F7E558C40BEA716D5890EE370A0D982BC39BB5AC86DD43A3436C22E8E1AD539736365D709DD45BD938937B458397F88C92BDCE48737ACF32F53F963E572B754D3B30FE1F97036CB6918C3464D479DEE6E5BE3FB4A0797D1213DFD1A9ED8518ED482A03B5D2C7ED
+	9DE5772C83DE0F4C6B1CE636228D4A6DEA1D67D352D9DF7C4CCF66FDFDA1AB5457ADDD2C2FAECFD8DF8FF63135816DBC2836352798E32DC360F4DF47E08B18CC572087632AC2C29D52180AAD9166D72B03FAA5E571CF20C1B8286845CA78FEC779666B733F583ED3F89AFC5E5334E64FF4A22E9772BE9577F59B2D63B92749265DA8C47B3D867299753066814CGBDGF2BD5579B02B033172B9000B83D8D54FE362986F66F5B695DED16447F6347D116B237B3E48579C253CC711E722CFDC28728A3F3B4D1CE2DC
+	B7C5A95BA2CC741F79DC9EBBB4DEF76A198DDE8FF2898DB45F6F560CDFA32F2219D066FACD4D6D4CB53D37881F6BB260013A747B57DFFF1D37373CF4327652B4EDA1189BC26DA15E8679C3CA5BDC7685D5637B37045906DE28B724762F29FCFC7F9AF2C27DDBD4BE19BC7AB0F9427BB737016FFD949B4A964C16BBFBFBF6668E695EB7EDBA3EF75FEAC6FB39D0A3BF47FF106197EB70FC3F7C2A3ADFAE05B2C3A31D678BF3595A027CFC00A5GAB815681ECED22F3786C0CB2E10A78115D6B3342A1482DB9DA737E
+	3D5CFCE7EF723E2927FDA96E09AF88CBBE704764E8F7AD06A63EC66B15740AFC1061F97F3E1E077D73C159AC0045G4B8192G562B7D7BE10611778F2F0A9AE4D96C9FE237D054B93C988A21519966FDDBEC223EE5D8405E8314D9C27642E209660FB9AF31B7FF1670B7FF9E069F32043F797BDD0F7A668F4A92AC6417FC7FFF35F1702C078E6BE84E437956B7F3D92C4DA13F042F25D770993732967FE167FE0145688DEA945E6202AE63C33822723293C6C34529234A7C4C9F55722E5EEC0E9A031F21701C2324
+	A7BEFFD0595FAE6D8E71FEE397EE6C854C3BB734FB06DCFDAE39C029B77BCF21FAFA536D4848690E99C2F4DFCDA98827EB8123D3D460F409EE6FE00151D0E6B4141FB8CAFB6FC78F04E8DFBDF6BBBC77333A208BC268073775B832D6466D27DBC92F77BE7608E079419F134996050F5B8AE53C76360466AC77FFDECC65B2695A50DF607E891D6B765A68ACE4879AB740A200258ABD2793BBA71E87031DC4372A051F8713A095DAB99D37335F33CD350FE8A19FE80D2D5C4EE23E3E156F533F05FD044B914B4F0091
+	DF2D28BAD10FEB7E0CD56C135C2DFE6F08CF415F6A5A46E81548AAAFD24AD677E62AB44AD5135A777CCDD9DABA2518174D2C46CDF342CB91015ED45C1F2975232D2D7CFE4C57CA77E75FEF0BF4EF972316FFA1BB927DDCC8390E3CF4A824EF3DB553535564A3C8BBD17F561D666505C5A1DD1CF1AC4447D0FEBBFCAAD4BE3692246536AF26B9747D0066FB0965EE3E6F0B3CE7BEF7CFF970BD61F8EE74385E095C48F1BDD3EE6458F3FD6E64EF685AF2233F216B4C553E2163FB1A015D9147026EAC87C882905A9C
+	7A5CB65A4FDE4C45F9459758937732E667A04695715535CC7C63732277755BF9D33F55DE19076FB47A3C30F40631FD423F100773A5FBFD8C49F1BF4E43B1723B8607E4DE15621EF96C4CA68DB0B4BFAFFC1B1D134A20DF76B6BAC398D8ECE188728F2A386B8C379072CBD45C22E4BAEBA4345199616AA574A30D6D1417D95E2A66B7765C1577516D114F931CC75E253B41A3BC0ECE407523965DB5E5DC7F3A938D0BC33C9A71B54C99D8771DFDD725FE59AE8E2A74C7D83C45877D1855CEBAF5A23FB8DABB003479
+	3DBE49AF0FF1ACFB51253455DF017BC6AC34339CA089A0750CC31F8FD086E0816881F08344G4C83D88C308CE0B540DA000DGD9E7C90E578A0ECEA2079268E18A6E9779BD947721DE33118FD588ED751E25F851131BF130EE6BBD0D5DA53B25C6366372B8C663F9FACBB367AC45B19E6DC0BEABA03F86E063D90AD74D6FA47FBB576A50DB2DF4F7393613E2C2B1D6EAE3A713F5A964D781A481C4326D516DFD5DE1C1D0E37683D1E276EC0764B2BC15C9B17B54F3A4D7FABB754D2C62FE1ACD7564F3B49FC52551
+	EDC7E9695436231A4585A5D87376B11FF2BFD1DB4A6E8C87868212EA239ACB33D4DCFB40668D38B01243773117CC68443E8D8A686A975DBC6054A87AEDDE372BFFCC09133C4AEC49F15445F3F42E2C2AC19D8D45C942A9A92653456CCB83C012CABB3BE6227F3528067CA8E387773FAC1076F4E87D28EFA4CF65C7E94F2BBE200D698879D1F3617BB3BAC148CB26BD3C2D1579ADF69E9D570451157878E7AFE963638BBB789D62F2C893BAE88E0D65D8266ECFFC7952FB71F25CEB70BDB678842E6BAC185F8595BD
+	033CFC34A27A7C5F2A18FA7EBFD891F96FF820E2625E71510A48FB475C8A6D5E41F18FD760B88E02BD68D16BADD0F117D45C67D91B086BF6B965A1957FC5A697625BA4E4C8782FB139C6992EC741AD5160AEA938A7ABD0BF204B20DEC47BD4850BF5385CEE1E7FD7D647658115D64763BBCCC617CF54483DD245DD92E89F914ECFF52EDE5F91A9F635EDCA3A70B7841C2E1551E5F5CEFD0F0CD058C9FF17360F593D6A4E70B845E10637F40647A93E5CC1F65286E5F11D34B7FF2E734E62ABF1F7C877723469F83F
+	BE4CECF73EAD3C3F9FE378C2DBF8FF775A283FE5D0B647C67D7DF626167F869B9F772D6715336079097340693634CFA6778920EBBB9FC9AFFE112D256BD56A7814B4A682BFEEFF32EA703EDD333514E8A27EA50E668B767626866BDBDDCD97BA2D5646068BEFB5D83B9BAEF52974D7EBAAA721EF6B3C50FE3933439E2985BEFEABEBE8DF1F8BB22EBCCFFBD53E19762F0C8B342F6A593B7AFA4C8378AECCF7DF9559B90B5B672BB7226C2B4C92F399DE3CC4EFFDE62AB2A43177267110DF8D308E003FF3084F41F3
+	2B4B63F6F924A67E970E8245577F427C0C0CAE075E50C57EEDF98762CEC03E2D0BF466E027204E27D1737DF8473DBF13FD6F6F4063C1DB28CF1F54FC97586EBD6F1AFB4A034F69CB19F43FEAD767D937196ED707D4DC7FE6BA5B48AA2E201DF04BD4DCA77357F26D8EFD11DD3D8B4FA69EE695F7DFB7713029381FF5D3FB3DF6522F97A63CF18C0748FB4E1AA969A26FB97B581B41D87B6D6DB971F65AF3EE30F53E4A9EEE03E398BE519EEE03B3134986A7C1196DA27577E717A613BB6EE234786E957636FB7945
+	F07EAE06DFF5B11C7FEF4C44BF914AAC8E72B1C74E23EFA263318363B28279238FB0FB30886A4529F55BBA52282EC0711A98967761B47AEDC833866A2FF3D04C6973F814D27C526B1B27935F8B3FC7B1F4F3BB763AFACF74E67BD477C45A760C5D636F096A3B436F098632F1CEA48FDAD7275227F732493EDA21BE479D5E416E0FA0BF54CD7DFC76D8281F2FF6CF477F1EF0DF544DFD66505D6789B35966055D34F66688E41B17F413AE5D477EF506F21F29794EC93E77364BF8CFF970BE3FFAC935BFEA1F87EAC3
+	7D74EA3EB7186FFD1F33A33E7D3BDB4075EAAE9EA7957DBC54B13D186DD8D90876F71B26C7BB8FDD2EC9623D5F288835BDA71B5D1D7AC7A4DE3667E428EC24FBFAFC6BCEA1ADDFE7FFE6FA3F9666FA3D3A4E44AAAC676F4432AE2BEF4CFA9C7AEA009E00A0405C9E2A7F641BA1D9E68A37AB8B772DCEDD263849129EFACB633C9C7E16E6F63276AD4CBFDE8EFFCB0374217219667037B463691FB0073F25A1FA45C738BC5DB3837F9FCA6D7B7001DF6C4BC21AAC6CD0DE3A999A5CEE83FF6B96708B5B55C1E9E727
+	454437ABCDA97F71C80ACEC8ED9752796939DDC845A3F03B1046CE486DC28A1C1E03781FAFF4DA1005FCFE59E2405B96C3C37FB50FF7540D819827ACE4B661BF4E108CB08FA5A5A540F847449B2F060F7C708731EFD9F2F5028EF88FC91CD95AA89E1F99BB3C2D0383F366383B3C40DF05DBEC48D8A9341CB9EE1E3F7519133FD87112A310A224378B3B71B9C01764E7918749092F0115FF4751A2ECE27FA6899F40C0FF83ACC98B48E3EE49AA648EDC40BFAB8D48123301E29981D948E3FFD3D40AB13C52B6B1B0
+	A4637056D805D48F7E6390E187AFF60B1E41D29E5828E13DC8EE38429695CE13G7266B0F931159235151CFF5EFE684019B5CBD284DD0B30596D951DADE23F6C75378B1B64A13F9498723A1DC15F69FA56D046A8EAAC5EE825C0F3FB546EE3E7CB6CD2D0D6053E96FCF8D6665A4C96182F20DFA8E5B57175C309DA4359B4A47A011564EF17719F21F87D05EA59FDEF48073F5B3A2BD7A7A4AB1D44215F927449C27A00B86CF20F4187DFD5ECD2364BA02DDF748470CF30C0B2C318E4D424B2A87958B3E59FFF7435
+	4B0CC108D496767321845252C149BBDC5AB0B0G2799358198D7E8FE1F5ABC56A9892B33A3B8BB6F4C732F77019ED804146132B2763B1C7D2E405F658CD34EB06595B0386B04C9FF424B0354E726BC6A524269AFE9019914FF7472B38BFEECDE17843DEB9152589FF741A4E405EAF50C8C77C97E8F44FEFC5F16B90977639C79D0D50258EECEB0CC4FB1C70FAB5120BC47269F311BA66898E2B3A7AA8B2233E14AACEC4AB0174B2A6EE43FF7CFFBG10EA8F235D274ADD98D4A5C539D0FE8C6B69D4EC2AE2BEB0CD
+	55484F255D7A7FA5FF3D12B7066457C5159FA546205E26F1F5891BAA8BDB19E1F47533A0A7C84CAE16CD321021DC861B5EFB93D79DFC6F49D4971A8CFA8F06831CB2EE58C919125FFB72370464CFD764C7E953C191581606F7376FB921BB027CFD4951F7356FF2B63CFFDF54F7B9EBC5656F9944703F0DFD74G0ADE5D67505B7B680E60D583BA3B516E913B06C537DB965D579ABCCE3CD3EC9C63F7901C76CB87307DG55D18AF9596387D06E2B9A1A7F83D0CB8788BF39B941609BGG34D2GGD0CB818294G
+	94G88G88GC7D1C5AEBF39B941609BGG34D2GG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG9A9CGGGG
+**end of data**/
+}
+
 /**
  * Return the ConfigurationPanel property value.
  * @return javax.swing.JPanel
@@ -144,7 +212,7 @@ private javax.swing.JPanel getConfigurationPanel() {
 		try {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
+			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog", 0, 14));
 			ivjLocalBorder.setTitle("Notification");
 			ivjConfigurationPanel = new javax.swing.JPanel();
 			ivjConfigurationPanel.setName("ConfigurationPanel");
@@ -155,17 +223,17 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsJCheckBoxNotifyWhenAck.gridx = 1; constraintsJCheckBoxNotifyWhenAck.gridy = 3;
 			constraintsJCheckBoxNotifyWhenAck.gridwidth = 2;
 			constraintsJCheckBoxNotifyWhenAck.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJCheckBoxNotifyWhenAck.ipadx = 38;
+			constraintsJCheckBoxNotifyWhenAck.ipadx = 9;
 			constraintsJCheckBoxNotifyWhenAck.ipady = -5;
-			constraintsJCheckBoxNotifyWhenAck.insets = new java.awt.Insets(3, 30, 3, 15);
+			constraintsJCheckBoxNotifyWhenAck.insets = new java.awt.Insets(2, 5, 9, 15);
 			getConfigurationPanel().add(getJCheckBoxNotifyWhenAck(), constraintsJCheckBoxNotifyWhenAck);
 
 			java.awt.GridBagConstraints constraintsJLabelGroup = new java.awt.GridBagConstraints();
 			constraintsJLabelGroup.gridx = 1; constraintsJLabelGroup.gridy = 1;
 			constraintsJLabelGroup.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelGroup.ipadx = 19;
+			constraintsJLabelGroup.ipadx = 14;
 			constraintsJLabelGroup.ipady = -1;
-			constraintsJLabelGroup.insets = new java.awt.Insets(4, 32, 5, 3);
+			constraintsJLabelGroup.insets = new java.awt.Insets(3, 5, 5, 10);
 			getConfigurationPanel().add(getJLabelGroup(), constraintsJLabelGroup);
 
 			java.awt.GridBagConstraints constraintsJComboBoxGroup = new java.awt.GridBagConstraints();
@@ -173,30 +241,31 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsJComboBoxGroup.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxGroup.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJComboBoxGroup.weightx = 1.0;
-			constraintsJComboBoxGroup.ipadx = 57;
-			constraintsJComboBoxGroup.insets = new java.awt.Insets(2, 3, 2, 5);
+			constraintsJComboBoxGroup.ipadx = 18;
+			constraintsJComboBoxGroup.insets = new java.awt.Insets(1, 2, 2, 4);
 			getConfigurationPanel().add(getJComboBoxGroup(), constraintsJComboBoxGroup);
 
-			java.awt.GridBagConstraints constraintsJLabelEmail = new java.awt.GridBagConstraints();
-			constraintsJLabelEmail.gridx = 1; constraintsJLabelEmail.gridy = 2;
-			constraintsJLabelEmail.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelEmail.ipadx = 25;
-			constraintsJLabelEmail.insets = new java.awt.Insets(3, 32, 6, 3);
-			getConfigurationPanel().add(getJLabelEmail(), constraintsJLabelEmail);
+			java.awt.GridBagConstraints constraintsJLabelContact = new java.awt.GridBagConstraints();
+			constraintsJLabelContact.gridx = 1; constraintsJLabelContact.gridy = 2;
+			constraintsJLabelContact.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelContact.ipadx = 13;
+			constraintsJLabelContact.insets = new java.awt.Insets(6, 5, 6, 2);
+			getConfigurationPanel().add(getJLabelContact(), constraintsJLabelContact);
 
-			java.awt.GridBagConstraints constraintsJComboBoxRecipient = new java.awt.GridBagConstraints();
-			constraintsJComboBoxRecipient.gridx = 2; constraintsJComboBoxRecipient.gridy = 2;
-			constraintsJComboBoxRecipient.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJComboBoxRecipient.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJComboBoxRecipient.weightx = 1.0;
-			constraintsJComboBoxRecipient.ipadx = 59;
-			constraintsJComboBoxRecipient.insets = new java.awt.Insets(2, 3, 3, 5);
-			getConfigurationPanel().add(getJComboBoxRecipient(), constraintsJComboBoxRecipient);
+			java.awt.GridBagConstraints constraintsJComboBoxContact = new java.awt.GridBagConstraints();
+			constraintsJComboBoxContact.gridx = 2; constraintsJComboBoxContact.gridy = 2;
+			constraintsJComboBoxContact.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJComboBoxContact.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJComboBoxContact.weightx = 1.0;
+			constraintsJComboBoxContact.ipadx = 18;
+			constraintsJComboBoxContact.insets = new java.awt.Insets(4, 2, 4, 4);
+			getConfigurationPanel().add(getJComboBoxContact(), constraintsJComboBoxContact);
 
-			java.awt.GridBagConstraints constraintsNewEmailButton = new java.awt.GridBagConstraints();
-			constraintsNewEmailButton.gridx = 3; constraintsNewEmailButton.gridy = 2;
-			constraintsNewEmailButton.insets = new java.awt.Insets(4, 4, 4, 4);
-			getConfigurationPanel().add(getNewEmailButton(), constraintsNewEmailButton);
+			java.awt.GridBagConstraints constraintsJButtonNewContact = new java.awt.GridBagConstraints();
+			constraintsJButtonNewContact.gridx = 3; constraintsJButtonNewContact.gridy = 2;
+			constraintsJButtonNewContact.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJButtonNewContact.insets = new java.awt.Insets(2, 5, 2, 15);
+			getConfigurationPanel().add(getJButtonNewContact(), constraintsJButtonNewContact);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -207,6 +276,30 @@ private javax.swing.JPanel getConfigurationPanel() {
 	}
 	return ivjConfigurationPanel;
 }
+
+/**
+ * Return the NewEmailButton property value.
+ * @return javax.swing.JButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getJButtonNewContact() {
+	if (ivjJButtonNewContact == null) {
+		try {
+			ivjJButtonNewContact = new javax.swing.JButton();
+			ivjJButtonNewContact.setName("JButtonNewContact");
+			ivjJButtonNewContact.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJButtonNewContact.setText("Create new...");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJButtonNewContact;
+}
+
 /**
  * Return the AlarmInhibitCheckBox property value.
  * @return javax.swing.JCheckBox
@@ -236,6 +329,7 @@ private javax.swing.JCheckBox getJCheckBoxDisableAllAlarms() {
 	}
 	return ivjJCheckBoxDisableAllAlarms;
 }
+
 /**
  * Return the JCheckBoxNotifyWhenAck property value.
  * @return javax.swing.JCheckBox
@@ -258,6 +352,31 @@ private javax.swing.JCheckBox getJCheckBoxNotifyWhenAck() {
 	}
 	return ivjJCheckBoxNotifyWhenAck;
 }
+
+/**
+ * Return the JComboBox1 property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getJComboBoxContact() {
+	if (ivjJComboBoxContact == null) {
+		try {
+			ivjJComboBoxContact = new javax.swing.JComboBox();
+			ivjJComboBoxContact.setName("JComboBoxContact");
+			// user code begin {1}
+
+			refillContactComboBox();
+			
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJComboBoxContact;
+}
+
 /**
  * Return the JComboBox1 property value.
  * @return javax.swing.JComboBox
@@ -274,7 +393,7 @@ private javax.swing.JComboBox getJComboBoxGroup() {
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
-				java.util.List notifGroups = cache.getAllNotificationGroups();
+				java.util.List notifGroups = cache.getAllContactNotificationGroups();
 
 				for( int i = 0; i < notifGroups.size(); i++ )
 					ivjJComboBoxGroup.addItem( notifGroups.get(i) );
@@ -289,53 +408,19 @@ private javax.swing.JComboBox getJComboBoxGroup() {
 	}
 	return ivjJComboBoxGroup;
 }
-/**
- * Return the JComboBox1 property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxRecipient() {
-	if (ivjJComboBoxRecipient == null) {
-		try {
-			ivjJComboBoxRecipient = new javax.swing.JComboBox();
-			ivjJComboBoxRecipient.setName("JComboBoxRecipient");
-			// user code begin {1}
 
-			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized( cache )
-			{
-				java.util.List recipients = cache.getAllNotificationRecipients();
-
-				for( int i = 0; i < recipients.size(); i++ )
-				{
-					com.cannontech.database.data.lite.LiteNotificationRecipient rec = (com.cannontech.database.data.lite.LiteNotificationRecipient)recipients.get(i);
-
-					getJComboBoxRecipient().addItem(rec);
-				}
-
-			}
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJComboBoxRecipient;
-}
 /**
  * Return the JLabelEmail property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelEmail() {
-	if (ivjJLabelEmail == null) {
+private javax.swing.JLabel getJLabelContact() {
+	if (ivjJLabelContact == null) {
 		try {
-			ivjJLabelEmail = new javax.swing.JLabel();
-			ivjJLabelEmail.setName("JLabelEmail");
-			ivjJLabelEmail.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelEmail.setText("Email:");
+			ivjJLabelContact = new javax.swing.JLabel();
+			ivjJLabelContact.setName("JLabelContact");
+			ivjJLabelContact.setFont(new java.awt.Font("dialog", 0, 14));
+			ivjJLabelContact.setText("Contact:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -344,8 +429,9 @@ private javax.swing.JLabel getJLabelEmail() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJLabelEmail;
+	return ivjJLabelContact;
 }
+
 /**
  * Return the JLabelType property value.
  * @return javax.swing.JLabel
@@ -368,6 +454,7 @@ private javax.swing.JLabel getJLabelGroup() {
 	}
 	return ivjJLabelGroup;
 }
+
 /**
  * Return the JScrollPaneAlarmStates property value.
  * @return javax.swing.JScrollPane
@@ -378,8 +465,7 @@ private javax.swing.JScrollPane getJScrollPaneAlarmStates() {
 		try {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
 			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 14));
-			ivjLocalBorder1.setTitlePosition(2);
+			ivjLocalBorder1.setTitleFont(new java.awt.Font("dialog", 0, 14));
 			ivjLocalBorder1.setTitle("Alarming");
 			ivjJScrollPaneAlarmStates = new javax.swing.JScrollPane();
 			ivjJScrollPaneAlarmStates.setName("JScrollPaneAlarmStates");
@@ -397,6 +483,7 @@ private javax.swing.JScrollPane getJScrollPaneAlarmStates() {
 	}
 	return ivjJScrollPaneAlarmStates;
 }
+
 /**
  * Return the JTableAlarmStates property value.
  * @return javax.swing.JTable
@@ -408,7 +495,6 @@ private javax.swing.JTable getJTableAlarmStates() {
 			ivjJTableAlarmStates = new javax.swing.JTable();
 			ivjJTableAlarmStates.setName("JTableAlarmStates");
 			getJScrollPaneAlarmStates().setColumnHeaderView(ivjJTableAlarmStates.getTableHeader());
-			getJScrollPaneAlarmStates().getViewport().setBackingStoreEnabled(true);
 			ivjJTableAlarmStates.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 			
@@ -430,28 +516,8 @@ private javax.swing.JTable getJTableAlarmStates() {
 	}
 	return ivjJTableAlarmStates;
 }
-/**
- * Return the NewEmailButton property value.
- * @return javax.swing.JButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getNewEmailButton() {
-	if (ivjNewEmailButton == null) {
-		try {
-			ivjNewEmailButton = new javax.swing.JButton();
-			ivjNewEmailButton.setName("NewEmailButton");
-			ivjNewEmailButton.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjNewEmailButton.setText("Create new...");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjNewEmailButton;
-}
+
+
 /**
  * Insert the method's description here.
  * Creation date: (11/9/00 4:58:59 PM)
@@ -464,14 +530,18 @@ private PointAlarmOptionsEditorTableModel getTableModel()
 		
 	return tableModel;
 }
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-public Object getValue(Object val) {
+public Object getValue(Object val) 
+{
 	//Consider commonObject an instance of com.cannontech.database.data.point.PointBase
-	com.cannontech.database.data.point.PointBase point = (com.cannontech.database.data.point.PointBase) val;
+	com.cannontech.database.data.point.PointBase point = 
+			(com.cannontech.database.data.point.PointBase) val;
 
 	Character alarmInhibit;
 	if( getJCheckBoxDisableAllAlarms().isSelected() )
@@ -524,16 +594,36 @@ public Object getValue(Object val) {
 	else
 		point.getPointAlarming().setNotifyOnAcknowledge("N");
 
-	// get the selected notificationRecipient from its combo box and insert its id
-	com.cannontech.database.data.lite.LiteNotificationRecipient rec = (com.cannontech.database.data.lite.LiteNotificationRecipient)getJComboBoxRecipient().getSelectedItem();
-	point.getPointAlarming().setRecipientID( new Integer(rec.getRecipientID()) );
+	// get the selected contact from its combo box
+	LiteContact contact = (LiteContact)getJComboBoxContact().getSelectedItem();
+
+	if( contact != null )
+	{
+		//find the first email address in the list ContactNotifications...then use it
+		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
+		{	
+			LiteContactNotification ltCntNotif = 
+					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
+					
+			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL )
+			{
+				point.getPointAlarming().setRecipientID( new Integer(ltCntNotif.getContactNotifID()) );
+				break;
+			}
+		}
+	}
+
 
 	// get the selected notificationGroup from its combo box and insert its id
-	com.cannontech.database.data.lite.LiteNotificationGroup grp = (com.cannontech.database.data.lite.LiteNotificationGroup)getJComboBoxGroup().getSelectedItem();
+	LiteNotificationGroup grp = 
+		(LiteNotificationGroup)getJComboBoxGroup().getSelectedItem();
+
 	point.getPointAlarming().setNotificationGroupID( new Integer(grp.getNotificationGroupID()) );
 	
 	return point;
 }
+
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -541,9 +631,11 @@ public Object getValue(Object val) {
 private void handleException(Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	// com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
+	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 }
+
+
 /**
  * Initializes connections
  */
@@ -555,9 +647,10 @@ private void initConnections() throws java.lang.Exception {
 	// user code end
 	getJCheckBoxDisableAllAlarms().addActionListener(this);
 	getJCheckBoxNotifyWhenAck().addActionListener(this);
-	getJComboBoxRecipient().addActionListener(this);
-	getNewEmailButton().addActionListener(this);
+	getJComboBoxContact().addActionListener(this);
+	getJButtonNewContact().addActionListener(this);
 }
+
 /**
  * Initialize the class.
  */
@@ -576,8 +669,8 @@ private void initialize() {
 		constraintsConfigurationPanel.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsConfigurationPanel.weightx = 1.0;
 		constraintsConfigurationPanel.weighty = 1.0;
-		constraintsConfigurationPanel.ipadx = -10;
-		constraintsConfigurationPanel.ipady = 1;
+		constraintsConfigurationPanel.ipadx = 3;
+		constraintsConfigurationPanel.ipady = -7;
 		constraintsConfigurationPanel.insets = new java.awt.Insets(9, 9, 4, 10);
 		add(getConfigurationPanel(), constraintsConfigurationPanel);
 
@@ -588,7 +681,7 @@ private void initialize() {
 		constraintsJScrollPaneAlarmStates.weightx = 1.0;
 		constraintsJScrollPaneAlarmStates.weighty = 1.0;
 		constraintsJScrollPaneAlarmStates.ipadx = 336;
-		constraintsJScrollPaneAlarmStates.ipady = 143;
+		constraintsJScrollPaneAlarmStates.ipady = 138;
 		constraintsJScrollPaneAlarmStates.insets = new java.awt.Insets(4, 9, 2, 10);
 		add(getJScrollPaneAlarmStates(), constraintsJScrollPaneAlarmStates);
 
@@ -608,6 +701,7 @@ private void initialize() {
 	
 	// user code end
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (11/15/00 10:52:29 AM)
@@ -674,6 +768,8 @@ private void initJTableCellComponents()
 	}
 		
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (5/1/2001 9:11:36 AM)
@@ -683,6 +779,8 @@ public boolean isInputValid()
 {
 	return true;
 }
+
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -706,98 +804,74 @@ public static void main(java.lang.String[] args) {
 		com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 	}
 }
+
+
 /**
  * Comment
  */
-public void newEmailButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+public void newContactButton_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-
-	com.cannontech.dbeditor.wizard.notification.recipients.NameEmailPanel nameEmailPanel =
-		new com.cannontech.dbeditor.wizard.notification.recipients.NameEmailPanel();
-
+	QuickContactPanel contactPanel = new QuickContactPanel();	
 	int userResponse =
 		javax.swing.JOptionPane.showInternalOptionDialog(
-			com.cannontech.common.util.CtiUtilities.getDesktopPane(this),
-			nameEmailPanel,
-			"Create New Email Recipient",
+			CtiUtilities.getParentFrame(this),
+			contactPanel,
+			"Create New Contact",
 			javax.swing.JOptionPane.OK_CANCEL_OPTION,
 			javax.swing.JOptionPane.PLAIN_MESSAGE,
 			null,
 			null,
 			null);
 
-	if (userResponse == javax.swing.JOptionPane.OK_OPTION)
+	if( userResponse == javax.swing.JOptionPane.OK_OPTION )
 	{
-		com.cannontech.database.data.notification.NotificationRecipient notifRecipient =
-			(com.cannontech.database.data.notification.NotificationRecipient) nameEmailPanel.getValue(null);
-		try
+		Contact contactDB = (Contact)contactPanel.getValue(null);
+
+		fireInputDataPanelEvent( 
+			new PropertyPanelEvent(
+						this,
+						PropertyPanelEvent.EVENT_DB_INSERT,
+						contactDB) );
+
+		refillContactComboBox();
+
+		//select the newly created contact in out JComboBox, seems reasonable
+		for (int j = 0; j < getJComboBoxContact().getModel().getSize(); j++)
 		{
-			com.cannontech.database.Transaction t =
-				com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, notifRecipient);
-			
-         notifRecipient = 
-               (com.cannontech.database.data.notification.NotificationRecipient)t.execute();
-
-			com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange =
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
-							notifRecipient, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
-
-			for (int i = 0; i < dbChange.length; i++)
+			if( contactDB.getContact().getContactID().intValue()
+				 == ((LiteContact)getJComboBoxContact().getItemAt(j)).getContactID() )
 			{
-				//handle the DBChangeMsg locally
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-
-				//connToVanGogh.write(dbChange[i]);
+				getJComboBoxContact().setSelectedIndex(j);
+				break;
 			}
-
-			refillRecipientComboBox();
-
-			for (int j = 0; j < getJComboBoxRecipient().getModel().getSize(); j++)
-			{
-				if (notifRecipient.getNotificationRecipient().getRecipientID().intValue()
-					== ((com.cannontech.database.data.lite.LiteNotificationRecipient) getJComboBoxRecipient().getItemAt(j)).getRecipientID())
-				{
-
-					getJComboBoxRecipient().setSelectedIndex(j);
-				}
-			}
-		}
-		catch (com.cannontech.database.TransactionException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-
 		}
 	}
 
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (8/9/2001 2:54:35 PM)
  */
-public void refillRecipientComboBox()
+private void refillContactComboBox()
 {
-	getJComboBoxRecipient().removeAllItems();
+	getJComboBoxContact().removeAllItems();
 
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized (cache)
-{
-		
-	
-	java.util.List recipients = cache.getAllNotificationRecipients();
-	java.util.Collections.sort( recipients, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-
-		for (int i = 0; i < recipients.size(); i++)
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized( cache )
+	{
+		List contacts = cache.getAllContacts();
+		for( int i = 0; i < contacts.size(); i++ )
 		{
-			com.cannontech.database.data.lite.LiteNotificationRecipient rec =
-				(com.cannontech.database.data.lite.LiteNotificationRecipient) recipients.get(i);
-
-			getJComboBoxRecipient().addItem(rec);
+			getJComboBoxContact().addItem( 
+				(LiteContact)contacts.get(i) );
 		}
-
 	}
+
 }
+
+
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -904,21 +978,27 @@ public void setValue(Object val)
 		}
 
 
-		// assign the correct recipient to the getJComboBoxRecipient() component
-		java.util.List recipients = cache.getAllNotificationRecipients();
-		for( int i = 0; i < recipients.size(); i++ )
+		// assign the correct contact to the JComboBox component
+		java.util.List contacts = cache.getAllContacts();
+		for( int i = 0; i < contacts.size(); i++ )
 		{
-			com.cannontech.database.data.lite.LiteNotificationRecipient rec = (com.cannontech.database.data.lite.LiteNotificationRecipient)recipients.get(i);
-
-			if( rec.getRecipientID() == point.getPointAlarming().getRecipientID().intValue() )
+			LiteContact ltCnt = (LiteContact)contacts.get(i);
+			for( int j = 0; j < ltCnt.getLiteContactNotifications().size(); i++ )
 			{
-				getJComboBoxRecipient().setSelectedItem( rec );
-				break;
+				LiteContactNotification ltCntNotif= 
+						(LiteContactNotification)ltCnt.getLiteContactNotifications().get(j);
+
+				if( ltCntNotif.getContactNotifID() 
+					  == point.getPointAlarming().getRecipientID().intValue() )
+				{
+					getJComboBoxContact().setSelectedItem( ltCnt );
+					break;
+				}
 			}
 		}
 	
 		// assign the correct notificationGroup to the getJComboBoxGroup() component
-		java.util.List notifGroups = cache.getAllNotificationGroups();
+		java.util.List notifGroups = cache.getAllContactNotificationGroups();
 		for( int i = 0; i < notifGroups.size(); i++ )
 		{
 			com.cannontech.database.data.lite.LiteNotificationGroup grp = (com.cannontech.database.data.lite.LiteNotificationGroup)notifGroups.get(i);
@@ -940,49 +1020,5 @@ public void setValue(Object val)
 	getTableModel().fireTableDataChanged();
 	
 	return;
-}
-/**
- * 
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private static void getBuilderData() {
-/*V1.1
-**start of data**
-	D0CB838494G88G88G6CF854ACGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E14DBC8DD8D45715C6C9C292E3B1B1ADD1CC0892EB37FC894D3A293B716BDAEAF6F56336E6EBB6E957ED59AECDE957346C566D1A162D17615788718F8594F5D4CC302588A88D0C207C8BC810882B58E4A38F66818F9E73A6B3EFE0C023FB4E3D6F3E7798E6C0ED7C36FE5F613EFB6E4F7939671EFB6E4FC8328E0527A4DA3288C9CCA15A3F779289E9BDCF48330FBCE0673899E2F4AAB17DBB8C3013D4DEC8
-	06B4844AB6BD9B1D3A03BCDF1E8E79884887FDB1BAB59B3EF713974A575740C7GBA11D05630EAF55854F43E370753C92379583A8CC85F86D88AB8CCB709C8BF21AEC7432F55709C92AD044474E11D6C7ABC8DD78E79F600B00028BED6FFB524DBA965FBED65DA3D0F660613CDFF772EA5937BB1754921201F35ED55D2ABF9B6F1D3BF522A2E4F505A84C1FE85G8A1FC4FEA91E013432FD287FCC2FB2DC54ABB89C0AC395FB870AC43B24AA2EA227A2B9D41B2D9D139AD9F08DDFF02A1262F0B75062F641A14A04
-	B88710C6F0FDBA6D936401FC8245DDABC73A4B60FBADC02C0E2F2DC0FC35941D5A856014382CD56FD6EA32F4DDFB16A43C6AC85A9EC056E0094998A599324E737CB2AD170E4B71EC547FC6A85BB1981D1A8F5084B0G908C301F5A43313D3F013426C72DD3060795C70D53D9AB5BDD6FABF6D106EF1B8DCAB45CC531D7F1018532B1EF2CAF74434FD4405AF55EF6BB261325A77978C7DEDCC2B67C79F9CB1A9F1DECD8DAEC899FE43AD8BEE8680451FEB8A06D5786A75A67C45A17091976467B142494BF34173DF2
-	5C32D16B078C99340B07F02CFFC6ED408A5F091AFDB07C1B942F1A704CD66F21F84C87C1D95C90370D2E37B9AF2D4973490E12D63FFA880D2E31344A0C873B6C4B4B73546EC2E4C6F32B4E4BB7A8BE5204E73CB4D1BC66D7C3D961F0F4AA332F52DC1C3BA1100F84D8853081A081A04781759C5C4646761E38C59BEB97DCEA2DC7126D220B30362559FBA1953D2ACBE8F638D54151ABDE92DC1250A30BEE2255B91D0DBA6819502E1A5AFEAF50B8A7BAC417007395FA9706C5D5F439D91D666C1DD847A55252CEE9
-	D8848243CE427B7DA0FBB7243260D67F47E997D45128414A2FE423CEC604CB50A3F4G5FCCAFD777213EDAC1FEBB002A6BE1BD6D6F3C6882FFE13335AA4A104759091210D58E54F384759D41709D6E60BA7EF0BF62521568D42B427B5916334B54CF3D540B6C8B2EB1BE477E339C7D73A9055B4CCF3B384D54E7BECD8ADFE971EBB35437AA4CD6D445F76EEC21FDA2DFACFFFFF957ED4E63296014B2F17EB19A611FA90DA41FBC536F1ABC9C2BB0203F9C60B5DD470DB9D6E6333502DB64D6FA418586A65A8D0DB3
-	BED7D46C50741926594E89DD06B534AC9E7A4DF1C627D6838CB8398E5BAA3A34F6A7CCF25F0AAC7BEF218E2351CFE9206CDBB5FC4AAD523895DE182EAAF3F1FD92C7C407DAAFBAC5079DBE5CDAD9DDAE525566EF1F2237E926F8A74C77BA18E0EE9DFFA1976724202AAE2947230A9D222ACA0EFE237CB225657674B88DD741E9FD1C0B32A923B05F757A3D39B8D7FA9507C3240326B7514AC5BAD7C5D99C86266B940FC3E57821FDE86FC3621866AB14FD98880D8832877D8E0B9B2204EDA803CB9A86D3C057C5B6
-	B9F19E3FD01FE352D18860B07ED98D6986A71F1323C7791C4C9FFF0A2C3CFA4C62EFCD89FD3A5ED279891B9B6D1F98F31271543D5FBF6FFD54E7E8F8B763B5639A7A6A29A298B69FAC8731CFA7508A82887B044F079F6C47F26EF33409D02748B2D32B2E6FEF65213D3B45CFBCA238EAF4EE67F59D7EE35EAE1F32CB1ABED9797772D01F3249AF363AD01F7FDD41E344E5404FDA000D1FB01D963A34D80F567B3A0D578B05FC9440BA173FFA771E6675F63823D38BG1A5C7E6AB5D772FA41D09E8E30D22BC7D4D6
-	0F69B66DAA46957E6247FE0FD464D1A57452028A934069D1292ED92CF82CA1DD6B23D565B16187CD287FA0480781ACD3393D3C1C49E342F9C361A4E6713E00716FDA0D37F85530976BAC9E93DEBE04B40BBD600BBCFCEC2F9CB02FCBB5EE3752AB51A5D19B177403E6FBE2384C03EFC15AA7395CEAB3CCF8AF9F435D8711DFDCB3B53496C33CE34B50E46D843A3381488862171F4DB2713E4A43563E0D10A6517E9E361522BF20C6D64412F65155273806C5FB4120B0A2948923EA9175BDC5B53438813F0F7331D9
-	F5FC9763D3245AE78BF94171CBBC36DB343B1A6B6D1979247266EE0B3FD8BBF87B81CB53885327F344506B7567D213B6FE7C2BB4A663CFF499D7C01DCDA3DC46199EDF998BC7E12FB34AE57C60741D4A4868BEF31A5335C31FE1231C6E4B23E63A6BC7995D841D6E1E4ABF0E2E2B12535D6105B96465F46DE5E63AB33C0C6ED2AF277B1DBB264B46B4F1DF95248EF134E1D81064DA0F2AAA0E2BB5BE7D34866E68B48E3F36BE7E2641F7CF3042EB44A26B3C137785ACD6FE114E53D8AF0B1553F47C4B941FE042B3
-	DDDD26F84CE70DC527FA47F8FC773A95570A8D105F8C30E39C7C91C0934040B81F1FCB8E1EA453444F4D60EFDC8EC16E1830B0EAF37223C328F7D84B34FC77A154A3DD4BF4BD945AFC7590B4BED17670F1FFB11AEDD23BA21F7CAA1FF6EC8C4FDC5A4FFDA68E143748BD8A6B3C4D56D2B7A0768E55AADEEDBF7D333368FB76200E4639AF7C34516C8BD7ECAF35EC8B608B2B2FB15A5D570CB9DB286F0FC30E20FF8F073295G6B816281322EC7279683F4DE677A7F49212A6974CF6D2AD32983DC932CDFF53E7106
-	2E2F78BB54732F275533FAFDE2BB960B3C55EC0EC5E6DFE77EB58A52D5GCC47FF69C95768EC384EE353E5276F0C4F68C96DFC794C7A541FBD744B016CC1996ED18CFBC87772731542CFB92F5E4ABB63753EC96D8E7A646DFEF95D5E116B1FD7660A88BF8BDAD04675FA9D7AE1FB3C9A3A66AF037CEA9DF7709C62B6C2BE79861769A56AAF8AA05F84A06B78D7A99E7D693C9BAC96E2787FED1AEE2F047DE0AA5F70FF56E106029B7E74B5B2AD0D94D37D69E8786E4758DC7B19B570DE6297D67FFB09842B7F3D04
-	6570CE0607BE4CA78B3C7C2D43D36FB5F69D763757B8C0F9DF33F7BB6D5B6D965DF472E30027157DC8C5FFB5E94F51A68C0B1A5C30AF31ED556AB428CADD092E63CDE77D69F839B69EEB35B446B4BE1B60BB7DE6F4EA5E4D09E3D68C79FA00AEGD9ABE3FEAFBB9F576799008B83D8863096E063CD6E6F169E1EF63DE970CE315E4CBF92F88C1FBA62FF8C3FF88463D93762F1750A3E63744C119C3D4C702C4D2AB80CAAE5F53ECA5B2B022BDF1CB44EDF236DD9D92076FFFBA410AD3071FA7734F93CCE693E6067
-	47F37C7B82D31CDF5B4C7DC0468C9E677F350A73389E729F8128B378BC7E1A476C13E64FE063962E254BE6CC1E3B0C3FFF1B405FC95D1EB23DD31D372E8E585F3315667ECA757E424B4C7DED505A47EBE972BD017A6BEA407D33AC0CA99E957C73BD288325012FCDB910AF866882106FE1EB94536FD7C6F1ED6FF3894320568E2758CB3AE7E25B32F37A5D82540F81A0003782D44F64F1664213987B430877C97D9EFE84C84F6AD9F975A5BCDBEC6968F541BE96CB684E38C3059D021B57D9FB9E670C9E1554CBEE
-	5C185648B22D0B7641565968B273BA3BF4A613E1BD24F1B3391F5FDB0DF6C0E64177AC0E3BC6F1F910BF2563EA33915784F93B0E7BAE45F9E731381261B6D35CBC40C56975E651BB1FD510DF2F6396A4A2AE8E7289BA6ECBDD74DCB188F49644F1396308BB9544F44FF06563FCED6A8C627E61D0FE60797DCE3E7F79DD186F5FC71766CF6D23ED790166A53347F34DE6FB0CG9E178799B638B6A8D07C7E1E8767DFCC9053E7260EEF247864FB8DBC0B5FDF2473957385D0B66FDE2E33D7E86CC46E036F7BB8AE4B
-	0138FC481F52F1E38E2E47EA9D176F6538909D77D59AB344C0BEDE473D120338647BA1B63D1F63EC393C2D95F00C47AFB4707BADA760165E4F67D0C9F71E59C7612648E6BB67126C35C2FFAB1D114CCFFD1F46A658BE66FE6E27B29B314F1CE0181FGCD41BC86773E43E37048A573C96B0C73FE4FA3E2BACBAD5D41EC8C02020D98FCA944600C660767B84D15D03EB998F18F1CB36F9FF19E3EEAE1F1A4ABFFE1C2B95A87EC8DCD65EFCCA8C7FE93134C65071A4C65A92676CC36170EF15992DEDACA643F2888F8
-	56D27D00F64722256D170E127C87FF152645348D87085F354170B804470AAB693CC57AE18FF05D2F217B6B75105F88107CA077EB3F2B4633C995A6D95E03F8BF7B455F92427D55A35568AF07852FB46C996E1046C5927AA07675E7544FF443372C77F3A59B65E29BF0DC6A8587DEB0337AAE6ADBB640F71CDE7F5FE97D9E858F7F5A8589361CF61D6E769CACF33A44BE5165926D14B26F2B00596FC3707D906FEBBE3DCF68D39CAA2B93C5652F0472A63D4EF30929D496D73F84C1B513F54F6F8CD9D7F6D1D9A507
-	0F2C2FD15F6605FE02743E0A47710CEBC0F1C963C0D3G77AD75BB70BC0B2CC33E480571FABF63EB3641B4ADC50802B688C7B53BD8855F1F72EFBABFBF26EBFE4E6C68544259FC4EFEE190F16D10376B383DB21F474133F98CD065413564B548A7GE4BD8CF38F2089E060E1DE27155641B34EA040C5G2CFA181DE562B9253607D03B399D4FE6FDCC5A937841A15D296276AC2D4D0016B2DA2F6B34D208F157E006ED8174BA95AD3E0F48B4555FCDB6FAA65A0EE584F5988B7C44BF4C477B370E09F3249C2737B6
-	56A10EDB996B14GE3ED1D931D7ABE247F35E54B96565FE96FD47D25187A227B56B9C6FF082F067C2856B7637D1BE593650B25EBC2AB546B1A43655B18B3D13E019306FC9F64F2FE0267CC9E4BB49FFE42208E429E0D0728B9EC6D6367D7BB4942C9E7E45381EB7765BBEC97FB5B6D585A7DFD3AD62DB0714F70F1943F5A04E76B656EC63EDE2E0732724F71B3397345B83742A03F9CE09DC09CC0FAC8F4EAFE880F0156659713E976C81D0A339502A4599456B0793A4F5D599B082F2771F5E959DFADA24B6FFBB3
-	B15039D7F9889B77AEAD0D6BBCCA71CC3E9F1720FC41D09681309AA086E093C046DCAEDF4E31C2A69F5E9055282A50BBC0CF7F39F017A4F154C0E3E04EE4FB311C4BE6053ECE81B44DB5EC7023390162312AAAFA6FB45777FD44B90A1FB15777FD4437AA797B0890A85BB41747A55F7A507CCEE8477C4396BE663EF43B9E51566EC70C38044D2543383D536662FB590788BDEB366A67497592080C977E85A545278A2D253FBF2E0DCF782819F679DB6F793D53C38855E8C6EA690A7B0FEA6B5BC3E5866DEFE7E31C
-	FD046EB42C4D0E8129C7D20FE8753E71FB231E377CD6F8E46D4AAA0DF61FCBBC625B2E911CCE41913BA448CA7F11C2EBF121356454F13E76AE2CB25A3EBDFEABB48F513A304FA046BF5657CAFCF225696DDFB238DD67FDF98129FF754DC46EEBFD75962B696B54234618458DA624B11EBC4D98AF3078046FB1E76B671FB2348982D881306ED1F6A7415ABDB3B8F9EF7A62A0EF9777A85B1B12F930964FE36D181F7D1DBC5DBAE206C2E8DBBD0F79FD4CF742779B300670725DA4126DC779DE33CDD1253E314B8322
-	2326F70857B9C8633B16D621C7144F39940FD3435F68F81B3655CECBD911D6A67698ED681509060F7BF817394DC531D7F2CA9892E9654F5D44BE5BA65C33G025E717C20429CC3F7EBFA891A476F006615793BFB8A554B23C77D350F04145947629A4356529D37E727FFD30BEDA75BDE7CD9D63E294E304376C6034E1A1CDB21D3FA1C476CB3F3797D6DCA60BB302DDBDB701B79479FB69A5FBFB5FD67B6FE16EFDD7C2F2B25F71586DBB7BA0B831F8DFCD86C7FECC0A876FFB650DFBC75792CD29C78AD48C83179
-	AD88DB7762DB5066B663BCFE8C56FB00D6006E47781A17DC02630F2F51A62FF78D76FEBCFB4497E8AA277F9FA501E5FD33E47AF7EB16D23CC36FD1E0DE8DE37F9C1FDE0A6325AACE0A546E5BCBD1C7AE29FFC0E5D579FDFBA95A1BAC76D1B45BD3EC20FB296BA0D778E3FC1FD1DDC16F9DA03FC1474D2738F848A7FF1E631EC9617B11024F73FDC4DD95461ADEBD7FBE4D076A79D7AABF8B3B427E835B6ECFBF939A01769B4CBEF2DA092E57452547A03DA48CEA119DFBA8432D21857C43051EC131D76D947A7576
-	1677D1F7ABC00E57BE4FED2A6F54EF83758348F6176294DD6A98435257B0DADFE75AF0ED598C7DE4FD81EC95209D408EF09DA084A082E0B940BA00B80084009D219023821C82E88278A8147311F2767894FCE807C15440DD3833A7BC4E9AEC61F116937ADA9A4A4F14FEF4G7B1B7A4DCB27244AE22D369CEBBE7339966EB3E3C279B9C72CC44F189E07F5962069F1FE1E7546A00F4F3B81977AB83F2FAC9B62E7C66B9E67FD748EE15D74795129D60072797E7CF17C5940EB423EF6C274B37D3EGE77AF485E5BC
-	645A7819FE7BFC4E57CBE5DC36E09D7766A82F37F23E7EF6B2579C7FEF86FC460229775CEC8CB7378476B7DBDA2677B7696769BB9E70931DE3CE6D5EA373BC46BECADF1FDB547D5A2E73BBF4DC333BDDF1CBF8C24456481F17636F88C640E825DEC1E687D935022BDD11255EB16D7C65ED6AD77020463A0047D817AB502E0D73975F167C2C48CD5B62625F2D377DCA456438EEF5850F4F42973038EEB924EB9730FBD1961F3D18B2DDFCE65E8747C25B4D8B0C78ACA3ACBA75A98B449109BCBEE8BA076BD1CBA73B
-	81B0DD95E8F7GB72A4CF7GB9E10C17CAC85B4378BCCCFB9F4B74B50DCDF9CD6FEF3F0F6B1364GF58B32B4CEAFACBA2022231F15DFEC8BBC7ED75A269F7F1EB67F6B4DC05B6475E6384D7FFA63EEB32FB78C67EDC3BD76038F69526BFD2A632E68381934CF44DD166C6A000E8F26FCA13EC9C4029CBF0772B5CAF1DD9A6ED1936E0A068BEDC37BG11413CF85B05ED748CC512E56D5E1156119CE0523ABE16D09EA527E0627B4BBA6E8A61EB0F33E53A7D7AC0183F7B729B533673FDEF405AFD15368B8A1B5AA7
-	F08805FAEC2F5CC57DE5E4186F7907C0714B43FC4FBFFEA2F17F3A8A4A8A96F27F747341BBBB37C99C3A33F6365BEE4764FA157A7C598BFD650D217850053E72CAC3DC5E88A8CBFF024BFBF0425B9A7989267799DABA6F897FE7E8BB493A322978DE8A6DD6BC614FAEFEBDEAEE37CE2B932B251B7D50E3315993F43F117124798EF0B14565BFE91C0F6CA647AA70BD01E969AAB25DB894DDEA385859DCD753FA35236E620556565A1A0BD7EBDAAF57DC69505BBFD8F1F20A76CD97AEB67F61C2DB273F9E181E63AB
-	F84CD08DFCF91F64EBE1393EE6C6BD49576DDFA5E35DB848137068541C705BDD371BBE409C73630357822C5B54E3B39E1E2F626F070A43B98FA9E7110781484FG8885E06FB8D66E46F3E749A1CB8E310E7D12C4577BB7E99C9385F5D7077358D916681D8964634339EDFDBCC874F16FB7FD47CBF7FF3F37F5706E537867A1C32657CD5F4A505D279DFCD7E930B1AD33717B5D84FD1C33F2787D6E0E27B84E134377CDF9BA6EC7E59CA76B38FE9A8F2E007CBA9D37474BE9446A38684B1C46E69DF734CBFFA73608
-	476142BB99C40F9968324A70F95ECC834F17D5CDEF3F28383375ACF9529BC4DF703F1ED551F61D407340226957346B0B78FA2624505F29AD72756FDE0A8FDB646B5F93D338FFDF8AE5990B799CFC21EAAA3E1D0B831DC90FD13F903458177ECC0A8FD96CCBFF5BD9CEBF8C4AC8840FDFFF5802F10F0A3BA1BCCFA2BC567DEF6AC36CD04F29571DA525703A041F9F8DDDA4FA1B0F29BDC6C07D2888FED6B687DD37F677B3BB67F64EA4FD6F36E2204FF7A15D225FED7D3AEC3A3BADF3FF9BA3A65EED112723D35D44
-	FC37F5E39447C4F420C736EBB2BDB64AFDF28654E738B3F4CE64C13E60E9AE67D7BA8DB9EDDD37935B7B4A5985FD1EA4667B5ACE2AD7BB602FBF4D67DBF9B262C2A09F2963E6D15CCA482FFF1A5B17070A2A45FC266F34143B6F832DF7158613799F2A385F0951E53EF95610B358743D536F7B454FD6665F5CD59A5ABD4CE5C2384DDE15F0CE84BC97AE6AD1E47B11C2EB89BB04E66DBB3A0D766937F42EEC1CDF5FA3E05B40B1CFC40F51F764A83D87F6F9C4D6C6C4236C794B37C777E81F51F648665FE74D2273
-	A4F989FCAF61BE6BC2F2A62F4B8F8B747A83497CCC24DA2FBFBFF9320FEB44E3B46DED5F0F75FDF4BB3431838481C4G2CDA42FD41A2496035B07930FFB9EBE083AC9BA3436B5FCC46F90FEF9AD9CC387D8CBFCF0ADD425FA0D51D71FD03B4B7517C06C8B9637B86895B9B65CF1D71FD03B4317D374F783EC1626D190DE71D395DBD917B7F9DFEF0DEGE1A25FA0A9AA59253DD634564832153DD7F43B48F6DDC94DF4B79CB3F25216742F0B13ACA4391924325301E6120CDB7CE612C2CFG1AC9122AB83D784BE8
-	0B99D41243AE292CF8CBE52D699DF2A823B29EB059D512D907BF2C962DB0AEC5C5C5C0F857641B421AB95FF9B572EAFD1605D80076004808250CE29CC3496D830048A5F3429D287B93F2032A0C16C24F1993467D45274ADEDF7B3DCB6EA4125ACCF27199C5076822A7AA229DDFE9EBBF57EEA4DB697F6B008F07C0DEB7CDD25C6A18AC36122C3E0B78B3C537AA5AEB78D90DDBA5FB682F0ACE60716609A641BD2022FACF3712E4877E301C6CE245326068BF418EEECED3A992EB28B72043C4005F5D14DF6C25C86F
-	E5778B5B0F9DEE09DD1EC4AC0D64ADD9916C0DC22F2A381A49D6F540A53A874049F81DE72BE9C769F44544DB3DA468EE3FAEBE8ADB54A9FAD51D69A16F425919F1190DB0DEDE97B9C1EB622B11A23D063DEEC0F081A951552C628F6595D73EDEF64FC1751D3FBF177D1105A4EAC2226A37F91DAAC96D9306A5F98CBE18B7210332DD85EEDD02430DBF42824E2CBE1C71A21DC05123EB0A9F7B52AF7FC08998CDD5F20829921A1E6897156193B5FDFD308B53BBG3DC27787746E31CE11CF1DDD5E39FBDADE595283
-	F6D0CF12060B0B695F927A37947F16D0CC8945141402F26349147FFC4B3DDCE6EABC7A544261AFEA0491D43F7B461AC57FD4993F9124EBA4A97487D7B088BB0CDAED1E619E51F5DF64E387364D0BF988474809266245FEF7FBFD6C9CF37CD1AABA14176970A3F66BA49BC3EC66E4E3C174CE9832FABAE4184B22D577523F39372DGEC351F36BD20731D6F55B9C53709DB026DBA279C4B83B40B09FF46ED467F977F55DA3E5060BF598C933048B19EDAEE55319693B6D9A59954B1CA3D749097B8269772B67820F7
-	69B63F431698C06C6409E2F32BCBE527200CFDECF3F746335C7B27E7E3B546982195D9893328648923614F467EC478EFB678CFB5711F2412F43A5261B5779FE1A1182B40BF276F8E7B9F606F3A595B1D63B74DEF1EB65F1B93704DD3F914765B7AA8636D8E3B6BBC59CE7F5F9340C7C471FB12D997707EA8507DEB4730A04B2AA08F55B86CF897DBBB466EE1D85B72F66C5F4D6BE8052C6CECBB72BDE8EA73FFD0CB8788B22EE550BE9AGGF4CBGGD0CB818294G94G88G88G6CF854ACB22EE550BE9AGG
-	F4CBGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGF89AGGGG
-**end of data**/
 }
 }

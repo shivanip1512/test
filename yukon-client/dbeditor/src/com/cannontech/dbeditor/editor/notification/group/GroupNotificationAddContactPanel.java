@@ -1,16 +1,22 @@
 package com.cannontech.dbeditor.editor.notification.group;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.CustomerContactFuncs;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.db.notification.NotificationDestination;
+import com.cannontech.database.db.point.PointAlarming;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/20/00 4:13:29 PM)
  * @author: 
  */
-public class GroupNotificationAddLocationPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
+public class GroupNotificationAddContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
 	private com.cannontech.common.gui.util.AddRemovePanel ivjAddRemovePanel = null;
 /**
  * GroupNotificationAddLocationPanel constructor comment.
  */
-public GroupNotificationAddLocationPanel() {
+public GroupNotificationAddContactPanel() {
 	super();
 	initialize();
 }
@@ -74,6 +80,10 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 			ivjAddRemovePanel = new com.cannontech.common.gui.util.AddRemovePanel();
 			ivjAddRemovePanel.setName("AddRemovePanel");
 			// user code begin {1}
+			
+			ivjAddRemovePanel.leftListLabelSetText("Available Notifications");
+			ivjAddRemovePanel.rightListLabelSetText("Assigned Notifications");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -97,15 +107,16 @@ public Object getValue(Object val)
 	
 	for( int i = 0; i < getAddRemovePanel().rightListGetModel().getSize(); i++ )
 	{
-		locationID = new Integer( ((com.cannontech.database.data.lite.LiteNotificationRecipient)getAddRemovePanel().rightListGetModel().getElementAt(i)).getRecipientID() );
+		locationID = new Integer( 
+				((LiteContactNotification)getAddRemovePanel().rightListGetModel().getElementAt(i)).getContactNotifID() );
 
 		com.cannontech.database.db.notification.NotificationDestination dest = 
-				new com.cannontech.database.db.notification.NotificationDestination
-				(
-					new Integer(i+1),
-					gn.getNotificationGroup().getNotificationGroupID(),
-					locationID
-				);
+			new com.cannontech.database.db.notification.NotificationDestination
+			(
+				new Integer(i+1),
+				gn.getNotificationGroup().getNotificationGroupID(),
+				locationID
+			);
 		
 		destinationVector.addElement(dest);
 	}
@@ -180,8 +191,8 @@ public void leftListListSelection_valueChanged(java.util.EventObject newEvent) {
 public static void main(java.lang.String[] args) {
 	try {
 		javax.swing.JFrame frame = new javax.swing.JFrame();
-		GroupNotificationAddLocationPanel aGroupNotificationAddLocationPanel;
-		aGroupNotificationAddLocationPanel = new GroupNotificationAddLocationPanel();
+		GroupNotificationAddContactPanel aGroupNotificationAddLocationPanel;
+		aGroupNotificationAddLocationPanel = new GroupNotificationAddContactPanel();
 		frame.setContentPane(aGroupNotificationAddLocationPanel);
 		frame.setSize(aGroupNotificationAddLocationPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -303,42 +314,44 @@ public void setValue(Object val)
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		java.util.List locations = cache.getAllNotificationRecipients();
+		//locations
+		java.util.List cntNotifs = CustomerContactFuncs.getAllContactNotifications();
 
 		for(int i = 0; i < destinationVector.size(); i++)
 		{
-			for( int j = 0; j < locations.size(); j++ )
+			for( int j = 0; j < cntNotifs.size(); j++ )
 			{
-				if( ((com.cannontech.database.data.lite.LiteNotificationRecipient)locations.get(j)).getRecipientID() ==
-					((com.cannontech.database.db.notification.NotificationDestination)destinationVector.elementAt(i)).getRecipientID().intValue() )
+				if( ((LiteContactNotification)cntNotifs.get(j)).getContactNotifID() ==
+					((NotificationDestination)destinationVector.elementAt(i)).getRecipientID().intValue() )
 				{
-					assignedLocations.addElement(locations.get(j));
+					assignedLocations.addElement( cntNotifs.get(j) );
 					break;
 				}
 			}
 		}
 			
 		boolean alreadyAssigned = false;
-		for(int i = 0; i < locations.size(); i++)
+		for(int i = 0; i < cntNotifs.size(); i++)
 		{
 			alreadyAssigned = false;
-			com.cannontech.database.data.lite.LiteNotificationRecipient possibleRecipient = (com.cannontech.database.data.lite.LiteNotificationRecipient)locations.get(i);
+			LiteContactNotification possibleNotif = 
+					(LiteContactNotification)cntNotifs.get(i);
 
-			if( possibleRecipient.getRecipientID() == com.cannontech.database.db.point.PointAlarming.NONE_LOCATIONID )
+			if( possibleNotif.getContactNotifID() == CtiUtilities.NONE_ID )
 				continue;
 				
 			for(int j = 0; j < assignedLocations.size(); j++)
 			{
-				if( possibleRecipient.getRecipientID() == 
-					((com.cannontech.database.data.lite.LiteNotificationRecipient)assignedLocations.elementAt(j)).getRecipientID() )
+				if( possibleNotif.getContactNotifID() == 
+					((LiteContactNotification)assignedLocations.elementAt(j)).getContactNotifID() )
 				{
 					alreadyAssigned = true;
 				}
 			}
 			
-			if( !alreadyAssigned && !availableLocations.contains(locations.get(i)) )				
+			if( !alreadyAssigned && !availableLocations.contains(cntNotifs.get(i)) )				
 			{
-				availableLocations.addElement(locations.get(i));
+				availableLocations.addElement( cntNotifs.get(i) );
 			}
 			
 		}

@@ -1,17 +1,17 @@
-package com.cannontech.dbeditor.wizard.notification.recipients;
+package com.cannontech.dbeditor.wizard.contact;
 
 /**
  * Insert the type's description here.
  * Creation date: (11/22/00 12:18:12 PM)
  * @author: 
  */
-public class NotifRecipientWizardPanel extends com.cannontech.common.wizard.EditorlessWizardPanel
+public class ContactWizardPanel extends com.cannontech.common.wizard.EditorlessWizardPanel
 {
-	private NotifRecipientEmailPanel notifRecipientEmailPanel;
+	private ContactPanel contactPanel = null;
 /**
  * DestinationLocationWizardPanel constructor comment.
  */
-public NotifRecipientWizardPanel() {
+public ContactWizardPanel() {
 	super();
 }
 /**
@@ -24,6 +24,18 @@ public java.awt.Dimension getActualSize()
 	setPreferredSize( new java.awt.Dimension(410, 480) );
 
 	return getPreferredSize();
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (11/22/00 12:29:58 PM)
+ * @return com.cannontech.dbeditor.wizard.notification.destination.NotifRecipientEmailPanel
+ */
+public ContactPanel getContactPanel() 
+{
+	if( contactPanel == null )
+		contactPanel = new ContactPanel();
+		
+	return contactPanel;
 }
 /**
  * This method was created in VisualAge.
@@ -41,22 +53,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 {
 	if( currentInputPanel == null )
 	{
-		return getNotifRecipientEmailPanel();
+		return getContactPanel();
 	}
 	else
 		throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/22/00 12:29:58 PM)
- * @return com.cannontech.dbeditor.wizard.notification.destination.NotifRecipientEmailPanel
- */
-public NotifRecipientEmailPanel getNotifRecipientEmailPanel() 
-{
-	if( notifRecipientEmailPanel == null )
-		notifRecipientEmailPanel = new NotifRecipientEmailPanel();
-		
-	return notifRecipientEmailPanel;
 }
 /**
  * This method was created in VisualAge.
@@ -65,6 +65,6 @@ public NotifRecipientEmailPanel getNotifRecipientEmailPanel()
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) 
 {
-	return ( currentPanel == getNotifRecipientEmailPanel() );
+	return ( currentPanel == getContactPanel() );
 }
 }

@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteCICustomer;
+
 /**
  * This type was created in VisualAge.
  */
@@ -172,13 +175,12 @@ private void initializeAddPanel()
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		java.util.List customers = cache.getAllCustomers();
+		java.util.List customers = cache.getAllCICustomers();
 		java.util.Vector lmCusts = new java.util.Vector( (int)(customers.size() * .75) );
 
 		for( int i = 0; i < customers.size(); i++ )
 		{ 
-			if( com.cannontech.database.data.pao.CustomerTypes.CI_CUSTOMER == ((com.cannontech.database.data.lite.LiteYukonPAObject)customers.get(i)).getType() )
-				lmCusts.addElement( customers.get(i) );
+			lmCusts.addElement( customers.get(i) );
 		}
 
 		getAddRemovePanel().leftListSetListData(lmCusts);

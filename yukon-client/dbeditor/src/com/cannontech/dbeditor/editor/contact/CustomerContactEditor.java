@@ -1,6 +1,7 @@
-package com.cannontech.dbeditor.editor.device.customercontact;
+package com.cannontech.dbeditor.editor.contact;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.dbeditor.wizard.contact.ContactPanel;
 
 /**
  * This type was created in VisualAge.
@@ -11,7 +12,11 @@ public class CustomerContactEditor extends com.cannontech.common.editor.Property
 	private String[] inputPanelTabNames;
 	
 	private javax.swing.JTabbedPane ivjStateEditorTabbedPane = null;
-public CustomerContactEditor() {
+	
+
+
+public CustomerContactEditor() 
+{
 	super();
 	initialize();
 }
@@ -31,7 +36,7 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new CustomerContactBasePanel();
+			objs[0] = new ContactPanel();
 			objs[1] = "General";
 			break;
 

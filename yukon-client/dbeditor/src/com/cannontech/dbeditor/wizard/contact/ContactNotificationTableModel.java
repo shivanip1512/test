@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.wizard.notification.recipients;
+package com.cannontech.dbeditor.wizard.contact;
 
 /**
  * Insert the type's description here.
@@ -7,36 +7,45 @@ package com.cannontech.dbeditor.wizard.notification.recipients;
  */
 import java.util.Vector;
 
-import com.cannontech.database.data.lite.LiteNotificationRecipient;
+import com.cannontech.common.constants.YukonListFuncs;
+import com.cannontech.database.db.contact.ContactNotification;
 
-public class RecipientEmailTableModel extends javax.swing.table.AbstractTableModel 
+public class ContactNotificationTableModel extends javax.swing.table.AbstractTableModel 
 {
-	public final static int NAME_COLUMN = 0;
-	public final static int TYPE_COLUMN = 1;
-	public final static int ADDRESS_COLUMN = 2;
-	private String[] COLUMN_NAMES = {"Name", "Type", "Address"};
+	public final static int COLUMN_NOTIFICATION = 0;
+	public final static int COLUMN_TYPE= 1;
+	public final static int COLUMN_DISABLED = 2;
 
+	private String[] COLUMN_NAMES = 
+	{
+		"Notification",
+		"Type",
+		"Disabled" 
+	};
+
+
+	//contians com.cannontech.database.db.contact.ContactNotification
 	private Vector rows = null;
 
 	private class RowValue
 	{
-		private LiteNotificationRecipient liteRecipient = null;
+		private ContactNotification cntNotif = null;
 		
-		public RowValue(LiteNotificationRecipient lite )
+		public RowValue(ContactNotification cntNotif_ )
 		{
 			super();
-			this.liteRecipient = lite;
+			this.cntNotif = cntNotif_;
 		}
 
-		public LiteNotificationRecipient getLiteRecipient()
-		{  return liteRecipient; };
+		public ContactNotification getContactNotification()
+		{  return cntNotif; };
 		
 	}
 	
 /**
  * PointAlarmOptionsEditorTableModel constructor comment.
  */
-public RecipientEmailTableModel() {
+public ContactNotificationTableModel() {
 	super();
 }
 /**
@@ -46,10 +55,14 @@ public RecipientEmailTableModel() {
  * @param generate boolean
  * @param notify boolean
  */
-public void addRowValue(com.cannontech.database.data.lite.LiteNotificationRecipient lite) 
+public void addRowValue(ContactNotification cntNotif) 
 {
-	if( !rowExists(lite) )
-		getRows().addElement( new RowValue(lite) );
+	if( !rowExists(cntNotif) )
+	{
+		getRows().add( new RowValue(cntNotif) );
+		fireTableDataChanged();
+	}
+	
 }
 /**
  * getColumnCount method comment.
@@ -69,14 +82,12 @@ public String getColumnName(int index) {
  * Insert the method's description here.
  * Creation date: (11/28/00 2:20:00 PM)
  */
-public LiteNotificationRecipient getLiteRowRecipient(int row) 
+public ContactNotification getContactNotificationRow(int row) 
 {
-	if( getRows() == null )
-		return null;
 
 	if( row <= getRows().size() )
 	{
-		return ((RowValue)getRows().elementAt(row)).getLiteRecipient();
+		return ((RowValue)getRows().elementAt(row)).getContactNotification();
 	}
 	else
 		return null;
@@ -105,27 +116,23 @@ private java.util.Vector getRows()
  */
 public Object getValueAt(int row, int col) 
 {
-	if( getRows() == null )
-		return null;
 
 	if( row <= getRows().size() )
 	{
-		RowValue rowVal = ((RowValue)getRows().elementAt(row));
+		ContactNotification cntNotif = getContactNotificationRow(row);
 		
 		switch( col )
 		{
-		 	case NAME_COLUMN:
-				return getLiteRowRecipient(row).getRecipientName();
+		 	case COLUMN_NOTIFICATION:
+				return cntNotif.getNotification();
 
-		 	case TYPE_COLUMN:
-				if( getLiteRowRecipient(row).getEmailSendType() == com.cannontech.database.db.notification.NotificationRecipient.PAGER_NOTIFYTYPE )
-					return "Pager";
-				else
-					return "Email";
+		 	case COLUMN_TYPE:
+				return YukonListFuncs.getYukonListEntry(
+						cntNotif.getNotificationCatID().intValue()).getEntryText();
+
+		 	case COLUMN_DISABLED:
+				return cntNotif.getDisableFlag();
 	
-			case ADDRESS_COLUMN:
-				return getLiteRowRecipient(row).getEmailAddress();
-				
 			default:
 				return null;
 		}
@@ -154,6 +161,7 @@ public void removeRowValue(int rowNumber )
 	if( rowNumber >=0 && rowNumber < getRowCount() )
 	{
 		getRows().removeElementAt( rowNumber );
+		fireTableDataChanged();
 	}
 }
 /**
@@ -161,11 +169,11 @@ public void removeRowValue(int rowNumber )
  * Creation date: (11/9/00 5:07:51 PM)
  * @return boolean
  */
-public boolean rowExists(LiteNotificationRecipient liteRec )
+public boolean rowExists(ContactNotification cntNotif )
 {
 	for( int i = 0; i < getRowCount(); i++ )
 	{
-		if( getLiteRowRecipient(i).getRecipientName().equalsIgnoreCase(liteRec.getRecipientName()) )
+		if( getContactNotificationRow(i).toString().equalsIgnoreCase(cntNotif.toString()) )
 		{
 			return true;
 		}
@@ -181,11 +189,12 @@ public boolean rowExists(LiteNotificationRecipient liteRec )
  * @param generate boolean
  * @param notify boolean
  */
-public void setRowValue(int rowNumber, com.cannontech.database.data.lite.LiteNotificationRecipient lite) 
+public void setRowValue(int rowNumber, ContactNotification cntNotif) 
 {
 	if( rowNumber >=0 && rowNumber < getRowCount() )
 	{
-		getRows().setElementAt( new RowValue(lite), rowNumber );
+		getRows().setElementAt( new RowValue(cntNotif), rowNumber );
+		fireTableDataChanged();
 	}
 }
 }

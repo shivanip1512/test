@@ -477,7 +477,6 @@ private javax.swing.JTable getComponentsTable() {
 			ivjComponentsTable = new javax.swing.JTable();
 			ivjComponentsTable.setName("ComponentsTable");
 			getComponentsScrollPane().setColumnHeaderView(ivjComponentsTable.getTableHeader());
-			getComponentsScrollPane().getViewport().setBackingStoreEnabled(true);
 			ivjComponentsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
 			ivjComponentsTable.setPreferredSize(new java.awt.Dimension(200, 8000));
 			ivjComponentsTable.setBounds(0, 0, 396, 177);

@@ -225,19 +225,19 @@ public class TreeItemDeleter
 			anID = ((com.cannontech.database.data.point.PointBase) toDelete).getPoint().getPointID().intValue();
 			deletionType = DBDeletionWarn.POINT_TYPE;
 		}
-		else if (toDelete instanceof com.cannontech.database.data.notification.NotificationRecipient)
+		else if (toDelete instanceof com.cannontech.database.data.customer.Contact)
 		{
          message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
-			unableDel.append("You cannot delete the notification recipient '" + nodeName + "'");
-			anID = ((com.cannontech.database.data.notification.NotificationRecipient) toDelete).getNotificationRecipient().getRecipientID().intValue();
-			deletionType = DBDeletionWarn.NOTIFICATION_TYPE;
+			unableDel.append("You cannot delete the contact '" + nodeName + "'");
+			anID = ((com.cannontech.database.data.customer.Contact) toDelete).getContact().getContactID().intValue();
+			deletionType = DBDeletionWarn.CONTACT_TYPE;
 		}		
 		else if (toDelete instanceof com.cannontech.database.data.notification.GroupNotification)
 		{
 			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
 			unableDel.append("You cannot delete the notification group '" + nodeName + "'");
 			anID = ((com.cannontech.database.data.notification.GroupNotification) toDelete).getNotificationGroup().getNotificationGroupID().intValue();
-			deletionType = DBDeletionWarn.NOTIFICATION_TYPE;
+			deletionType = DBDeletionWarn.NOTIF_GROUP_TYPE;
 		}
 		else if (toDelete instanceof com.cannontech.database.data.state.GroupState)
 		{
@@ -266,6 +266,7 @@ public class TreeItemDeleter
 								"' and all of its points?\n\n" +
 								"*The delete process will take extra time if several points are present.\n" +
 								"*All points history will also be deleted.");
+
 			unableDel.append("You cannot delete the point attachable object '" + nodeName + "'");
 			anID = ((com.cannontech.database.data.pao.YukonPAObject) toDelete).getPAObjectID().intValue();
 			deletionType = DBDeletionWarn.PAO_TYPE;
@@ -278,6 +279,15 @@ public class TreeItemDeleter
 
 			retValue = false;
 		}
+		else if (toDelete instanceof com.cannontech.database.data.customer.Customer)
+		{
+         message.append("Are you sure you want to permanently delete '" + nodeName + "'?\n\n" +
+         			"*All customer activity and settings will be deleted");
+
+			unableDel.append("You cannot delete the customer '" + nodeName + "'");
+			anID = ((com.cannontech.database.data.customer.Customer) toDelete).getCustomerID().intValue();
+			deletionType = DBDeletionWarn.CUSTOMER_TYPE;
+		}		
 		else
 		{
 			message.append("You can not delete this object using the DatabaseEditor"); 

@@ -963,7 +963,6 @@ private javax.swing.JTable getJTableFDR() {
 			ivjJTableFDR = new javax.swing.JTable();
 			ivjJTableFDR.setName("JTableFDR");
 			getJScrollPaneJtableFDR().setColumnHeaderView(ivjJTableFDR.getTableHeader());
-			getJScrollPaneJtableFDR().getViewport().setBackingStoreEnabled(true);
 			ivjJTableFDR.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 			// user code end

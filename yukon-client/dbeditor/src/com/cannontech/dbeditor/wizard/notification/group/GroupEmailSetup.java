@@ -372,8 +372,10 @@ private javax.swing.JTextField getJTextFieldName() {
  */
 public Object getValue(Object o) 
 {
-	com.cannontech.database.data.notification.GroupNotification group = com.cannontech.database.data.notification.NotificationGroupFactory.createGroupNotification();
-	//com.cannontech.database.data.notification.GroupNotification group = (com.cannontech.database.data.notification.GroupNotification)o;
+	com.cannontech.database.data.notification.GroupNotification group =
+		new com.cannontech.database.data.notification.GroupNotification(); 
+	//com.cannontech.database.data.notification.NotificationGroupFactory.createGroupNotification();
+
 
 	String stateGroupName = getJTextFieldName().getText();
 	if( stateGroupName != null )

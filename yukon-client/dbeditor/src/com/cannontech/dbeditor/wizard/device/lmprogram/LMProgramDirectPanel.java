@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
@@ -388,7 +389,7 @@ private void initialize() {
 /**
  * This method was created in VisualAge.
  */
-public void inputUpdate(com.cannontech.common.gui.util.DataInputPanelEvent event)
+public void inputUpdate(PropertyPanelEvent event)
 {
 	
 	if( getJComboBoxGear().getSelectedItem() != null 

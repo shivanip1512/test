@@ -120,7 +120,7 @@ private javax.swing.JComboBox getJComboBoxNotificationGroup() {
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
-				java.util.List notifGroups = cache.getAllNotificationGroups();
+				java.util.List notifGroups = cache.getAllContactNotificationGroups();
 
 				for( int i = 0; i < notifGroups.size(); i++ )
 					ivjJComboBoxNotificationGroup.addItem( notifGroups.get(i) );

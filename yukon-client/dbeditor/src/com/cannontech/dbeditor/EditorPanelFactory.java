@@ -30,14 +30,17 @@ public final class EditorPanelFactory
 		{com.cannontech.database.data.capcontrol.CapControlSubBus.class,
 	  	com.cannontech.dbeditor.editor.capsubbus.CCSubstationBusEditorPanel.class},
 		
-		{com.cannontech.database.data.customer.CICustomerBase.class,
-		 com.cannontech.dbeditor.editor.device.customercontact.CICustomerEditor.class},
+//		{com.cannontech.database.data.customer.CICustomerBase.class,
+//		 com.cannontech.dbeditor.editor.device.customercontact.CustomerEditor.class},
 
-   	{com.cannontech.database.data.customer.CustomerContact.class,
-		 com.cannontech.dbeditor.editor.device.customercontact.CustomerContactEditor.class},
+		{com.cannontech.database.data.customer.Customer.class,
+		 com.cannontech.dbeditor.editor.contact.CustomerEditor.class},
 
-   	{com.cannontech.database.db.customer.CustomerContact.class,
-		 com.cannontech.dbeditor.editor.device.customercontact.CustomerContactEditor.class},
+   	{com.cannontech.database.data.customer.Contact.class,
+		 com.cannontech.dbeditor.editor.contact.CustomerContactEditor.class},
+
+   	{com.cannontech.database.db.contact.Contact.class,
+		 com.cannontech.dbeditor.editor.contact.CustomerContactEditor.class},
 
 /*FIXFIX
    	{com.cannontech.database.db.customer.CustomerLogin.class,
@@ -52,8 +55,8 @@ public final class EditorPanelFactory
    	{com.cannontech.database.data.notification.GroupNotification.class,
 		 com.cannontech.dbeditor.editor.notification.group.NotificationGroupEditorPanel.class},
 
-   	{com.cannontech.database.data.notification.NotificationRecipient.class,
-		 com.cannontech.dbeditor.editor.notification.recipient.NotificationRecipientEditorPanel.class},
+//   	{com.cannontech.database.data.notification.ContactNotification.class,
+//		 com.cannontech.dbeditor.editor.notification.recipient.NotificationRecipientEditorPanel.class},
 
    	{com.cannontech.database.data.state.GroupState.class,
 	  	com.cannontech.dbeditor.editor.state.StateEditorPanel.class},

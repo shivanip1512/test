@@ -53,10 +53,12 @@ import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -164,7 +166,7 @@ public class DatabaseEditor
 		};
 	private final Integer[] SYSTEM_MODELS =
 		{
-			new Integer(ModelFactory.NOTIFICATION_LOCATION),
+			//new Integer(ModelFactory.NOTIFICATION_LOCATION),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.ALARM_STATES),
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
@@ -618,10 +620,10 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.group.NotificationGroupWizardPanel());
 	}
-	else if (item == systemCreateMenu.notificationDestination)
-	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.recipients.NotifRecipientWizardPanel());
-	}
+//	else if (item == systemCreateMenu.notificationDestination)
+//	{
+//		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.recipients.NotifRecipientWizardPanel());
+//	}
 	else if (item == systemCreateMenu.holidayMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.holidayschedule.HolidayScheduleWizardPanel());
@@ -1907,20 +1909,21 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 							current.fireCancelButtonPressed();
 						}			
 					}
+/*
 					else if( msg.getDatabase() == msg.CHANGE_NOTIFICATION_RECIPIENT_DB 
-								&& userObject instanceof com.cannontech.database.data.notification.NotificationRecipient )
-									 //|| userObject instanceof com.cannontech.database.db.notification.NotificationRecipient) )
+								&& userObject instanceof com.cannontech.database.data.notification.ContactNotification )
 					{	
-						com.cannontech.database.data.notification.NotificationRecipient obj = (com.cannontech.database.data.notification.NotificationRecipient)userObject;
-						if( obj.getNotificationRecipient().getRecipientID().intValue() == msg.getId()
+						com.cannontech.database.data.notification.ContactNotification obj = (com.cannontech.database.data.notification.ContactNotification)userObject;
+						if( obj.getContactNotification().getRecipientID().intValue() == msg.getId()
 							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
 						{
 							txtMsg.append( ". Editing of '"+
-								obj.getNotificationRecipient().getRecipientName() + "' was canceled." );
+								obj.getContactNotification().getRecipientName() + "' was canceled." );
 
 							current.fireCancelButtonPressed();
 						}			
 					}
+*/
 					else if( msg.getDatabase() == msg.CHANGE_ALARM_CATEGORY_DB 
 								&& userObject instanceof com.cannontech.database.db.notification.AlarmCategory )
 					{
@@ -1935,15 +1938,15 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 						}			
 					}		
 					else if( msg.getDatabase() == msg.CHANGE_CUSTOMER_CONTACT_DB 
-								&& userObject instanceof com.cannontech.database.data.customer.CustomerContact )
+								&& userObject instanceof com.cannontech.database.data.customer.Contact )
 					{
-						com.cannontech.database.data.customer.CustomerContact obj = (com.cannontech.database.data.customer.CustomerContact)userObject;
-						if( obj.getCustomerContact().getContactID().intValue() == msg.getId()
+						com.cannontech.database.data.customer.Contact obj = (com.cannontech.database.data.customer.Contact)userObject;
+						if( obj.getContact().getContactID().intValue() == msg.getId()
 							 && msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE )
 						{
 							txtMsg.append( ". Editing of '"+
-								obj.getCustomerContact().getContFirstName() + " " +
-								obj.getCustomerContact().getContLastName() + "' was canceled." );
+								obj.getContact().getContFirstName() + " " +
+								obj.getContact().getContLastName() + "' was canceled." );
 
 							current.fireCancelButtonPressed();
 						}			
@@ -2264,7 +2267,7 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	         }
 	         else if (
 	            selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationGroup
-	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteNotificationRecipient
+	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteContactNotification
 	               || selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteAlarmCategory
 	               || (selectedNode.getUserObject() instanceof com.cannontech.database.data.lite.LiteYukonPAObject
 	                   && ((com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject()).getType()
@@ -2428,13 +2431,23 @@ private void removeUnneededEditorFrames()
  */
 public void selectionPerformed( PropertyPanelEvent event)
 {
-	try {
+	try 
+	{
 		
 		
-		
+	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
+	{
+		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
+
+		insertDBPersistent( dbPersist );
+
+		return;		
+	}
+	
+
 	if( !( event.getSource() instanceof PropertyPanel) )
 		return;
-
+	
 	PropertyPanel panel = (PropertyPanel) event.getSource();
 	int frameLocation = getFrameLocationByPanel(panel);
 	
@@ -2514,13 +2527,62 @@ finally{
 
 }
 
+public boolean insertDBPersistent( DBPersistent newItem )
+// throws TransactionException
+{
+	boolean success = false;
+	
+	try
+	{
+		//insert the newly created item into the DB
+		Transaction t = Transaction.createTransaction(Transaction.INSERT, newItem);
+		newItem = t.execute();
+	
+		String messageString = newItem + " inserted successfully into the database.";
+		fireMessage(new MessageEvent(this, messageString));
+	
+		//fire DBChange messages out to Dispatch
+		generateDBChangeMsg( newItem, DBChangeMsg.CHANGE_TYPE_ADD );
+		
+		success = true;
+	}
+	catch( com.cannontech.common.wizard.CancelInsertException ci )
+	{
+		//inside the getValue(), this exception was thrown
+	}
+	catch (com.cannontech.database.TransactionException e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+
+		String messageString =
+			"Error Inserting " + newItem + " into the database.  Error received:  " + e.getMessage().trim();
+		fireMessage(new MessageEvent(this, messageString, MessageEvent.ERROR_MESSAGE));
+	}
+
+	return success;
+}
+
 /**
  * This method was created in VisualAge.
  * @param event com.cannontech.common.wizard.WizardPanelEvent
  */
 public void selectionPerformed(WizardPanelEvent event)
 {
-	
+
+
+	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
+	{
+		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
+
+		insertDBPersistent( dbPersist );
+
+		return;		
+	}
+
+
+	if( !( event.getSource() instanceof WizardPanel) )
+		return;
+
 	boolean changedObjectType = false;
 	boolean successfullInsertion = false;
 
@@ -2536,37 +2598,15 @@ public void selectionPerformed(WizardPanelEvent event)
 
 			//get the newly created item from the wizard panel
 			com.cannontech.database.db.DBPersistent newItem = null;
+
+			copyingObject = false;
+
+			//p.getValue(null) may throw a CancelInsertException
+			newItem = (com.cannontech.database.db.DBPersistent) p.getValue(null);
+
+			//try to insert tih object into the DB
+			successfullInsertion = insertDBPersistent( newItem );
 	
-			try
-			{
-				copyingObject = false;
-
-				//p.getValue(null) may throw a CancelInsertException
-				newItem = (com.cannontech.database.db.DBPersistent) p.getValue(null);
-				
-				//insert the newly created item into the DB
-				Transaction t = Transaction.createTransaction(Transaction.INSERT, newItem);
-				newItem = t.execute();
-
-				successfullInsertion = true;
-				String messageString = newItem + " inserted successfully into the database.";
-				fireMessage(new MessageEvent(this, messageString));
-
-				//fire DBChange messages out to Dispatch
-				generateDBChangeMsg( newItem, DBChangeMsg.CHANGE_TYPE_ADD );
-			}
-			catch( com.cannontech.common.wizard.CancelInsertException ci )
-			{
-				//inside the getValue(), this exception was thrown
-			}
-			catch (com.cannontech.database.TransactionException e)
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-
-				String messageString =
-					"Error Inserting " + newItem + " into the database.  Error received:  " + e.getMessage().trim();
-				fireMessage(new MessageEvent(this, messageString, MessageEvent.ERROR_MESSAGE));
-			}
 
 			//tell our current tree model to update itself so it can display the newly added item
 			//getTreeViewPanel().refresh();
@@ -2608,6 +2648,8 @@ public void selectionPerformed(WizardPanelEvent event)
 			}
 		}
 	}
+	
+
 	if(successfullInsertion || changedObjectType) {
 		 showEditorSelectedObject();
 	}
@@ -2803,6 +2845,7 @@ private void showWizardPanel(WizardPanel wizard) {
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
 	wizard.addWizardPanelListener(this);
+
 	
 	javax.swing.JInternalFrame f = new javax.swing.JInternalFrame();
 	

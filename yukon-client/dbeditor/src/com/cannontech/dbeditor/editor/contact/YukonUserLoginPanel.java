@@ -1,4 +1,4 @@
-package com.cannontech.dbeditor.editor.device.customercontact;
+package com.cannontech.dbeditor.editor.contact;
 /**
  * This type was created in VisualAge.
  */
@@ -6,7 +6,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.customer.CustomerContact;
+import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonUser;
 /*FIXFIX
@@ -459,12 +459,12 @@ public void setValue(Object o)
 	if( o == null )
 		return;
 
-	CustomerContact cContact = (CustomerContact)o;
+	Contact cContact = (Contact)o;
 	
 	for( int i = 0; i < getJComboBoxUser().getItemCount(); i++ )
 	{
 		LiteYukonUser user = (LiteYukonUser)getJComboBoxUser().getItemAt(i);
-		if( user.getUserID() == cContact.getCustomerContact().getLogInID().intValue() )
+		if( user.getUserID() == cContact.getContact().getLogInID().intValue() )
 		{
 			getJComboBoxUser().setSelectedIndex( i );
 			break;	

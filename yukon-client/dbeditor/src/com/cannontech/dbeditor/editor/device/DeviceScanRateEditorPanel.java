@@ -1873,8 +1873,6 @@ public void setDeviceType(int type)
 			getAccumulatorRateCheckBox().setText("Accumulator (Energy) Rate");			
 		}
 		else if( type == PAOGroups.RTUILEX 
-                || type == PAOGroups.RTU_DNP
-                || type == PAOGroups.DNP_CBC_6510
                 || type == PAOGroups.ION_7700
                 || type == PAOGroups.ION_7330
                 || type == PAOGroups.ION_8300 )
@@ -1883,6 +1881,15 @@ public void setDeviceType(int type)
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");
 		}		
+		else if( type == PAOGroups.RTU_DNP
+                || type == PAOGroups.DNP_CBC_6510 )
+      {
+			getPeriodicHealthCheckBox().setText("Class 1,2,3 Scan");
+			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");      	
+
+			getIntegrityRateCheckBox().setText("Class 0,1,2,3 Scan");
+			getIntegrityRateComboBox().setSelectedItem("5 minute");
+      }
       else if( type == PAOGroups.LCU415 )
       {
          getPeriodicHealthCheckBox().setText("Status & Analog");
@@ -1900,7 +1907,7 @@ public void setDeviceType(int type)
       setIntegrityObjectsVisible(
          !(type == PAOGroups.LMT_2
           || type == PAOGroups.RTUILEX
-          || type == PAOGroups.RTU_DNP
+          //|| type == PAOGroups.RTU_DNP
           || type == PAOGroups.LCU415) );
 		
       setHealthObjectsVisible( 
@@ -1911,6 +1918,7 @@ public void setDeviceType(int type)
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
                || type == PAOGroups.DNP_CBC_6510
+	            || type == PAOGroups.RTU_DNP
 	            || type == PAOGroups.ION_7700
 				   || type == PAOGroups.ION_7330
 				   || type == PAOGroups.ION_8300               

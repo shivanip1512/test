@@ -1,17 +1,17 @@
-package com.cannontech.dbeditor.editor.device.customercontact;
+package com.cannontech.dbeditor.editor.contact;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * This type was created in VisualAge.
  */
-public class CICustomerEditor extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
+public class CustomerEditor extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
 	
 	private javax.swing.JTabbedPane ivjStateEditorTabbedPane = null;
-public CICustomerEditor() {
+public CustomerEditor() {
 	super();
 	initialize();
 }
@@ -31,7 +31,7 @@ public Object[] createNewPanel(int panelIndex)
 	switch( panelIndex )
 	{
 		case 0: 
-			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CICustomerBasePanel();
+			objs[0] = new com.cannontech.dbeditor.wizard.device.customer.CustomerBasePanel();
 			objs[1] = "General";
 			break;
 
@@ -133,7 +133,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("RouteEditorPanel");
+		setName("CustomerEditorPanel");
 		setPreferredSize(new java.awt.Dimension(400, 350));
 		setLayout(null);
 		setSize(400, 350);
@@ -186,7 +186,7 @@ public void setValue(Object val)
  * @return java.lang.String
  */
 public String toString() {
-	return "CI Customer Editor";
+	return "Customer Editor";
 }
 /**
  * 

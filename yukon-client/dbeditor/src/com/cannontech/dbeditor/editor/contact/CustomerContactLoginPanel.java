@@ -1,11 +1,11 @@
-package com.cannontech.dbeditor.editor.device.customercontact;
+package com.cannontech.dbeditor.editor.contact;
 
 /**
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
 
-import com.cannontech.database.data.customer.CustomerContact;
+import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.db.user.YukonUser;
 /*FIXFIX
 import com.cannontech.database.db.customer.CustomerLogin;
@@ -1131,7 +1131,7 @@ public void setValue(Object o)
 	if( o == null )
 		return;
 
-	CustomerContact cContact = (CustomerContact)o;
+	Contact cContact = (Contact)o;
 /*	YukonUser login = cContact.getYukonUser();
 
 	if( login.getUserID().intValue() > YukonUser.INVALID_ID.intValue() )

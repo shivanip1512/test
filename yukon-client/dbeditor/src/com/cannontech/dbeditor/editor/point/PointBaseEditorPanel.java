@@ -4,8 +4,8 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.gui.util.DataInputPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -643,9 +643,9 @@ private void initialize() {
 
 /**
  * This method was created in VisualAge.
- * @param event DataInputPanelEvent
+ * @param event PropertyPanelEvent
  */
-public void inputUpdate(DataInputPanelEvent event) {
+public void inputUpdate(PropertyPanelEvent event) {
 	//Just pass it on to our listeners
 	fireInputUpdate();
 }

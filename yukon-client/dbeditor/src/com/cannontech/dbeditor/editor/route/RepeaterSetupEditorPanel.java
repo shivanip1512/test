@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.editor.route;
 
 import javax.swing.JOptionPane;
 
+import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 
@@ -79,7 +80,9 @@ public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actio
 			 * in order to simulate an apply button click so that the db is updated
 			 */
 		
-			fireInputDataPanelEvent( new com.cannontech.common.gui.util.DataInputPanelEvent(this, com.cannontech.common.gui.util.DataInputPanelEvent.EVENT_FORCE_APPLY));
+			fireInputDataPanelEvent( new PropertyPanelEvent(
+						this, 
+						PropertyPanelEvent.EVENT_FORCE_APPLY));
         }
        else {
        	dbRegenerate = false;

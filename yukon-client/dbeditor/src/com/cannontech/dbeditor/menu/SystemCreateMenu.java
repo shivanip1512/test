@@ -9,9 +9,11 @@ public class SystemCreateMenu extends javax.swing.JMenu {
 
 	//System wizards
 	public CommandableMenuItem notificationGroupMenuItem;
-	public CommandableMenuItem notificationDestination;
+
 	public CommandableMenuItem holidayMenuItem;
 	public CommandableMenuItem customerMenuItem;
+
+
 /**
  * CreateMenu constructor comment.
  */
@@ -25,10 +27,6 @@ public SystemCreateMenu() {
 private void initialize() {
 
 	java.awt.Font font = new java.awt.Font("dialog", 0, 14);
-
-	notificationDestination = new CommandableMenuItem("Notification Recipients...");
-	notificationDestination.setFont(font);
-	notificationDestination.setMnemonic('r');
 
 	notificationGroupMenuItem = new CommandableMenuItem("Notification Group...");
 	notificationGroupMenuItem.setFont(font);
@@ -46,7 +44,6 @@ private void initialize() {
 	setFont( font );
 	setMnemonic('c');
 
-	add( notificationDestination );
 	add( notificationGroupMenuItem );
 	add( holidayMenuItem );
 	add( customerMenuItem );
