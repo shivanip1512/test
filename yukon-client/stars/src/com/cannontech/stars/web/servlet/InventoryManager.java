@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
@@ -29,10 +27,15 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.task.AddSNRangeTask;
+import com.cannontech.stars.util.task.ConfigSNRangeTask;
+import com.cannontech.stars.util.task.DeleteSNRangeTask;
+import com.cannontech.stars.util.task.UpdateSNRangeTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
@@ -43,7 +46,6 @@ import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -492,8 +494,8 @@ public class InventoryManager extends HttpServlet {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
-		Integer categoryID = new Integer( ECUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
-		if (ECUtils.isMCT( categoryID.intValue() )) {
+		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		if (ECUtils.isMCT( categoryID )) {
 			String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot add SN range for device type " + mctType);
 			return;
@@ -508,12 +510,12 @@ public class InventoryManager extends HttpServlet {
 				snTo = snFrom;
 		}
 		catch (NumberFormatException nfe) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid serial number format");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Serial number must be numerical");
 			return;
 		}
 		
 		if (snFrom > snTo) {
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "'From' value must be less than or equal to 'to' value");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The 'from' value cannot be greater than the 'to' value");
 			return;
 		}
 		
@@ -525,85 +527,42 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr.length() > 0) {
 			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, energyCompany.getDefaultTimeZone());
 			if (recvDate == null) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid format for receive date.");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format, the date should be in the form of 'mm/dd/yy'");
 				return;
 			}
 		}
 		
-		ArrayList hardwareSet = new ArrayList();
-		ArrayList serialNoSet = new ArrayList();
-		int numSuccess = 0, numFailure = 0;
+		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-				devTypeID.intValue(), String.valueOf(snFrom), String.valueOf(snTo), user.getEnergyCompanyID() );
-		if (snTable == null) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to add serial range" );
-			return;
-		}
+		AddSNRangeTask task = new AddSNRangeTask( snFrom, snTo, devTypeID, recvDate, voltageID, companyID, req );
+		long id = ProgressChecker.addTask( task );
 		
-		for (int sn = snFrom; sn <= snTo; sn++) {
-			String serialNo = String.valueOf(sn);
-			Integer invID = (Integer) snTable.get( serialNo );
-			if (invID != null) {
-				hardwareSet.add( energyCompany.getInventoryBrief(invID.intValue(), true) );
-				numFailure++;
-				continue;
-			}
-			
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
 			try {
-				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-				com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
-				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
-				
-				invDB.setInstallationCompanyID( companyID );
-				invDB.setCategoryID( categoryID );
-				if (recvDate != null)
-					invDB.setReceiveDate( recvDate );
-				invDB.setVoltageID( voltageID );
-				invDB.setDeviceLabel( serialNo );
-				hwDB.setManufacturerSerialNumber( serialNo );
-				hwDB.setLMHardwareTypeID( devTypeID );
-				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				
-				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
-				
-				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
-				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-				energyCompany.addInventory( liteHw );
-				
-				numSuccess++;
+				Thread.sleep(1000);
 			}
-			catch (TransactionException e) {
-				CTILogger.error( e.getMessage(), e );
-				serialNoSet.add( serialNo );
-				numFailure++;
-			}
-		}
-		
-		session.removeAttribute( INVENTORY_SET );
-		
-		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares added to inventory successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (serial numbers may already exist). They are listed below:</span><br>";
-			if (serialNoSet.size() > 0) {
-				resultDesc += "<br><table width='100' cellspacing='0' cellpadding='0' border='0' align='center' class='TableCell'>";
-				for (int i = 0; i < serialNoSet.size(); i++) {
-					String serialNo = (String) serialNoSet.get(i);
-					resultDesc += "<tr><td align='center'>" + serialNo + "</td></tr>";
-				}
-				resultDesc += "</table><br>";
+			catch (InterruptedException e) {}
+			
+			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+			
+			if (task.getStatus() == AddSNRangeTask.STATUS_FINISHED) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
 			}
 			
-			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
-			redirect = req.getContextPath() + "/operator/Hardware/ResultSet.jsp";
+			if (task.getStatus() == AddSNRangeTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
+			}
 		}
-		else if (numSuccess > 0) {
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardwares added to inventory successfully");
-		}
+		
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 	/**
@@ -622,13 +581,12 @@ public class InventoryManager extends HttpServlet {
 		
 		Integer newDevTypeID = (req.getParameter("NewDeviceType") != null)?
 				Integer.valueOf( req.getParameter("NewDeviceType") ) : null;
-		int newCatID = CtiUtilities.NONE_ID;
 		if (newDevTypeID != null) {
 			if (newDevTypeID.intValue() == devTypeID.intValue()) {
 				newDevTypeID = null;
 			}
 			else {
-				newCatID = ECUtils.getInventoryCategoryID( newDevTypeID.intValue(), energyCompany );
+				int newCatID = ECUtils.getInventoryCategoryID( newDevTypeID.intValue(), energyCompany );
 				if (ECUtils.isMCT( newCatID )) {
 					String mctType = YukonListFuncs.getYukonListEntry( devTypeID.intValue() ).getEntryText();
 					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Cannot change device type to " + mctType);
@@ -677,7 +635,7 @@ public class InventoryManager extends HttpServlet {
 		if (recvDateStr != null && recvDateStr.length() > 0) {
 			recvDate = com.cannontech.util.ServletUtil.parseDateStringLiberally(recvDateStr, energyCompany.getDefaultTimeZone());
 			if (recvDate == null) {
-				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid format for receive date.");
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid receive date format, the date should be in the form of 'mm/dd/yy'");
 				return;
 			}
 		}
@@ -685,99 +643,37 @@ public class InventoryManager extends HttpServlet {
 		if (newDevTypeID == null && recvDate == null && voltageID == null && companyID == null)
 			return;
 		
-		ArrayList hardwareSet = new ArrayList();
-		int numSuccess = 0, numFailure = 0;
+		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-				devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID() );
-		if (snTable == null) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to update serial range" );
-			return;
-		}
+		UpdateSNRangeTask task = new UpdateSNRangeTask( fromStr, toStr, devTypeID, newDevTypeID, recvDate, voltageID, companyID, req );
+		long id = ProgressChecker.addTask( task );
 		
-		java.util.Iterator it = snTable.values().iterator();
-		while (it.hasNext()) {
-			Integer invID = (Integer) it.next();
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventoryBrief( invID.intValue(), true );
-			
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
 			try {
-				com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-				com.cannontech.database.db.stars.hardware.InventoryBase invDB = hardware.getInventoryBase();
-				
-				if (newDevTypeID != null) {
-					StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
-					hardware.getInventoryBase().setCategoryID( new Integer(newCatID) );
-					hardware.getLMHardwareBase().setLMHardwareTypeID( newDevTypeID );
-				}
-				else {
-					StarsLiteFactory.setInventoryBase( invDB, liteHw );
-				}
-				
-				if (companyID != null)
-					invDB.setInstallationCompanyID( companyID );
-				if (recvDate != null)
-					invDB.setReceiveDate( recvDate );
-				if (voltageID != null)
-					invDB.setVoltageID( voltageID );
-				
-				if (newDevTypeID != null) {
-					hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-							Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
-					
-					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-					if (liteHw.isExtended()) {
-						liteHw.updateThermostatType();
-						if (liteHw.isThermostat())
-							liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
-						else
-							liteHw.setThermostatSettings( null );
-					}
-				}
-				else {
-					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
-					StarsLiteFactory.setLiteInventoryBase( liteHw, invDB );
-				}
-				
-				if (liteHw.getAccountID() > 0) {
-					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-					if (starsAcctInfo != null) {
-						if (!liteHw.isExtended()) StarsLiteFactory.extendLiteInventoryBase( liteHw, energyCompany );
-						
-						for (int i = 0; i < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); i++) {
-							StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(i);
-							if (starsInv.getInventoryID() == invID.intValue()) {
-								StarsLiteFactory.setStarsInv( starsInv, liteHw, energyCompany );
-								break;
-							}
-						}
-					}
-				}
-				
-				numSuccess++;
+				Thread.sleep(1000);
 			}
-			catch (TransactionException e) {
-				CTILogger.error( e.getMessage(), e );
-				hardwareSet.add( liteHw );
-				numFailure++;
-			}
-		}
-		
-		session.removeAttribute( INVENTORY_SET );
-		
-		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares updated successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed. They are listed below:</span><br>";
+			catch (InterruptedException e) {}
 			
-			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
-			redirect = req.getContextPath() + "/operator/Hardware/ResultSet.jsp";
+			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+			
+			if (task.getStatus() == UpdateSNRangeTask.STATUS_FINISHED) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
+			}
+			
+			if (task.getStatus() == UpdateSNRangeTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
+			}
 		}
-		else if (numSuccess > 0) {
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardwares updated successfully");
-		}
+		
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 	/**
@@ -790,7 +686,7 @@ public class InventoryManager extends HttpServlet {
 		String toStr = req.getParameter("To");
 		
 		if (fromStr.equals("*")) {
-			// Update all hardwares in inventory
+			// Delete all hardwares in inventory
 			fromStr = toStr = null;
 		}
 		else {
@@ -817,104 +713,44 @@ public class InventoryManager extends HttpServlet {
 		}
 		
 		Integer devTypeID = Integer.valueOf( req.getParameter("DeviceType") );
+		
 		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		if (ECUtils.isMCT(categoryID) && fromStr != null) {
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "If device type is MCT, the 'From' value must be '*' (delete all MCTs)");
+			return;
+		} 
 		
-		// If device type is MCT, the from string must be "*" (delete all MCTs)
-		if (ECUtils.isMCT(categoryID) && fromStr != null) return;
+		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		int numSuccess = 0, numFailure = 0;
-		ArrayList hardwareSet = new ArrayList();
+		DeleteSNRangeTask task = new DeleteSNRangeTask( fromStr, toStr, devTypeID, req );
+		long id = ProgressChecker.addTask( task );
 		
-		if (ECUtils.isMCT(categoryID)) {
-			ArrayList inventory = energyCompany.loadAllInventory();
-			ArrayList mctList = new ArrayList();
-			
-			synchronized (inventory) {
-				for (int i = 0; i < inventory.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-					if (ECUtils.isMCT( liteInv.getCategoryID() )) {
-						if (liteInv.getAccountID() > 0) {
-							hardwareSet.add( liteInv );
-							numFailure++;
-						}
-						else
-							mctList.add( liteInv );
-					}
-				}
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
+			try {
+				Thread.sleep(1000);
 			}
+			catch (InterruptedException e) {}
 			
-			for (int i = 0; i < mctList.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) mctList.get(i);
-				
-				try {
-					com.cannontech.database.data.stars.hardware.InventoryBase inv =
-							new com.cannontech.database.data.stars.hardware.InventoryBase();
-					inv.setInventoryID( new Integer(liteInv.getInventoryID()) );
-					
-					Transaction.createTransaction( Transaction.DELETE, inv ).execute();
-					
-					energyCompany.deleteInventory( liteInv.getInventoryID() );
-					numSuccess++;
-				}
-				catch (TransactionException e) {
-					e.printStackTrace();
-					hardwareSet.add( liteInv );
-					numFailure++;
-				}
-			}
-		}
-		else {
-			java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-					devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID() );
-			if (snTable == null) {
-				session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete serial range" );
+			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+			
+			if (task.getStatus() == DeleteSNRangeTask.STATUS_FINISHED) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
 				return;
 			}
 			
-			java.util.Iterator it = snTable.values().iterator();
-			while (it.hasNext()) {
-				Integer invID = (Integer) it.next();
-				LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID.intValue(), true );
-				
-				if (liteInv.getAccountID() > 0) {
-					hardwareSet.add( liteInv );
-					numFailure++;
-					continue;
-				}
-				
-				try {
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					hardware.setInventoryID( invID );
-					
-					Transaction.createTransaction( Transaction.DELETE, hardware ).execute();
-					
-					energyCompany.deleteInventory( invID.intValue() );
-					numSuccess++;
-				}
-				catch (TransactionException e) {
-					CTILogger.error( e.getMessage(), e );
-					hardwareSet.add( liteInv );
-					numFailure++;
-				}
+			if (task.getStatus() == DeleteSNRangeTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
 			}
 		}
 		
-		session.removeAttribute( INVENTORY_SET );
-		
-		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardwares deleted successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardwares failed (If a hardware is assigned to an account, you must remove it from the account before deleting it). " +
-					"They are listed below:</span><br>";
-			
-			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
-			redirect = req.getContextPath() + "/operator/Hardware/ResultSet.jsp";
-		}
-		else if (numSuccess > 0) {
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, numSuccess + " hardwares deleted successfully");
-		}
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 	/**
@@ -963,64 +799,37 @@ public class InventoryManager extends HttpServlet {
 		
 		boolean configNow = req.getParameter("ConfigNow") != null;
 		
-		SwitchCommandQueue cmdQueue = (configNow)?
-				null : energyCompany.getSwitchCommandQueue();
+		session.removeAttribute( ServletUtils.ATT_REDIRECT );
 		
-		int numSuccess = 0, numFailure = 0;
-		ArrayList hardwareSet = new ArrayList();
+		ConfigSNRangeTask task = new ConfigSNRangeTask( fromStr, toStr, devTypeID, configNow, req );
+		long id = ProgressChecker.addTask( task );
 		
-		java.util.TreeMap snTable = com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySNRange(
-				devTypeID.intValue(), fromStr, toStr, user.getEnergyCompanyID() );
-		if (snTable == null) {
-			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to config serial range" );
-			return;
-		}
-		
-		java.util.Iterator it = snTable.values().iterator();
-		while (it.hasNext()) {
-			Integer invID = (Integer) it.next();
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(invID.intValue(), true);
-			
+		// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+		for (int i = 0; i < 5; i++) {
 			try {
-				if (configNow) {
-					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true);
-				}
-				else {
-					SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-					cmd.setEnergyCompanyID( user.getEnergyCompanyID() );
-					cmd.setInventoryID( invID.intValue() );
-					cmd.setSerialNumber( liteHw.getManufacturerSerialNumber() );
-					cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
-					cmdQueue.addCommand( cmd, false );
-				}
-				
-				numSuccess++;
+				Thread.sleep(1000);
 			}
-			catch (WebClientException e) {
-				CTILogger.error( e.getMessage() , e );
-				hardwareSet.add( liteHw );
-				numFailure++;
-			}
-		}
-		
-		if (!configNow) cmdQueue.addCommand( null, true );
-		
-		session.removeAttribute( INVENTORY_SET );
-		
-		if (numFailure > 0) {
-			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " hardwares " +
-					((configNow)? "sent out" : "scheduled") + " successfully.</span><br>";
-			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed. They are listed below:</span><br>";
+			catch (InterruptedException e) {}
 			
-			session.setAttribute(INVENTORY_SET_DESC, resultDesc);
-			session.setAttribute(INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REFERRER, referer);
-			redirect = req.getContextPath() + "/operator/Hardware/ResultSet.jsp";
+			String redir = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+			
+			if (task.getStatus() == ConfigSNRangeTask.STATUS_FINISHED) {
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
+			}
+			
+			if (task.getStatus() == ConfigSNRangeTask.STATUS_ERROR) {
+				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+				ProgressChecker.removeTask( id );
+				if (redir != null) redirect = redir;
+				return;
+			}
 		}
-		else if (numSuccess > 0) {
-			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Configuration of " + numSuccess + " hardwares " +
-					((configNow)? "sent out" : "scheduled") + " successfully.");
-		}
+		
+		session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+		redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 	}
 	
 	/**
