@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/05/21 16:04:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/06/02 20:53:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include <winbase.h>
 #include <winsock.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <process.h>
 
@@ -26,6 +27,7 @@
 #include <rw/db/db.h>
 #include <rw\thr\mutex.h>
 #include <rw\cstring.h>
+#include <rw\ctoken.h>
 
 #include "dsm2.h"
 #include "yukon.h"
@@ -73,7 +75,8 @@ IM_EX_CTIBASE bool          gDNPVerbose = false;
 IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
 IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
-IM_EX_CTIBASE bool          gSimulatePorts = false;
+IM_EX_CTIBASE short         gSimulatePorts = 0;
+IM_EX_CTIBASE set<long>     gSimulatedPortList;
 
 /*
  *  These are global to the ctibase, but
@@ -302,30 +305,67 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         gDefaultCommFailCount = 10;
     }
-    if(DebugLevel & 0x0001)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Default Yukon comm fail count is " << gDefaultCommFailCount << endl;
-    }
+    if(DebugLevel & 0x0001) cout << " Default Yukon comm fail count is " << gDefaultCommFailCount << endl;
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_PORT_COMM_FAIL_COUNT")).isNull() )
     {
         gDefaultPortCommFailCount = atoi(str.data());
     }
-    if(DebugLevel & 0x0001)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
-    }
+    if(DebugLevel & 0x0001) cout << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
 
-    if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).isNull() && (!stricmp("TRUE", str.data())))
+    if( !(str = gConfigParms.getValueAsString("YUKON_SIMULATE_PORTS")).isNull() )
     {
-        gSimulatePorts = true;
+        RWCTokenizer tok(str);
+        RWCString id_str;
+        long      id;
+
+        gSimulatedPortList.clear();
+
+        while( !(id_str = tok(",")).isNull() )
+        {
+            //  if it's uninitialized
+            if( gSimulatePorts == 0 && id_str.compareTo("true",   RWCString::ignoreCase) == 0 )
+            {
+                gSimulatePorts =  1;
+            }
+            //  if they want to exclude instead, make sure they already turned it on
+            else if( gSimulatePorts == 1 && id_str.compareTo("exclude",RWCString::ignoreCase) == 0 )
+            {
+                gSimulatePorts = -1;
+            }
+            else if( id = atol(id_str) )
+            {
+                gSimulatedPortList.insert(id);
+            }
+        }
+
+        //  if they don't say to include anything, include them all by default
+        if( gSimulatePorts == 1 && gSimulatedPortList.size() == 0 )
+        {
+            gSimulatePorts = -1;
+        }
     }
     if(DebugLevel & 0x0001)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
+        cout << RWTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
+
+        if( gSimulatePorts )
+        {
+            if( gSimulatePorts > 0 )    cout << RWTime() << " Simulated portids (" << gSimulatedPortList.size() << "): " << endl;
+            else                        cout << RWTime() << " Excluded portids (" << gSimulatedPortList.size() << "): " << endl;
+
+            for( set<long>::const_iterator itr = gSimulatedPortList.begin(); itr != gSimulatedPortList.end(); itr++ )
+            {
+                if( itr != gSimulatedPortList.begin() )
+                {
+                    cout << ", ";
+                }
+
+                cout << *itr;
+            }
+
+            cout << endl;
+        }
     }
 }
 

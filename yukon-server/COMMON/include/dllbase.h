@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2004/05/21 16:04:11 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2004/06/02 20:53:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <lmcons.h>
 #include <iostream>
+#include <set>
 using namespace std;
 
 #include <rw\thr\mutex.h>
@@ -78,7 +79,8 @@ IM_EX_CTIBASE extern bool           gDNPVerbose;
 IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
 IM_EX_CTIBASE extern int            gDefaultCommFailCount;
 IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;
-IM_EX_CTIBASE extern bool           gSimulatePorts;
+IM_EX_CTIBASE extern short          gSimulatePorts;
+IM_EX_CTIBASE extern set<long>      gSimulatedPortList;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
 IM_EX_CTIBASE INT          getDebugLevel(void);
