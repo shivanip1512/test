@@ -382,9 +382,7 @@ private void showContScenWindow( final int panelMode )
 				for( int i = 0; i < selected.length; i++ )
 				{
 					programResp[i] = new ResponseProg(
-							panel.createMessage(
-								selected[i].getBaseProgram(),
-								selected[i].getGearNum()),
+							panel.createScenarioMessage(selected[i]),
 							selected[i].getBaseProgram() );
 				}
 
@@ -406,7 +404,7 @@ private void showContScenWindow( final int panelMode )
 					
 					diag.setCancelButtonVisible( false );					
 					diag.setResizable( true );
-					diag.setSize( 640, 350 );
+					diag.setSize( 800, 350 );
 					diag.setLocationRelativeTo( this );
 
 					diag.show();
