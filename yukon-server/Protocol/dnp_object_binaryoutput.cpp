@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/10/12 01:16:34 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/10/17 18:42:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,8 @@ int CtiDNPBinaryOutput::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     switch( getVariation() )
     {
         case WithStatus:
@@ -42,6 +44,7 @@ int CtiDNPBinaryOutput::restore(unsigned char *buf, int len)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }
@@ -55,6 +58,7 @@ int CtiDNPBinaryOutput::restoreBits(unsigned char *buf, int bitoffset, int len)
     int bitpos;
 
     bitpos = bitoffset;
+    _valid = true;
 
     switch( getVariation() )
     {
@@ -72,6 +76,7 @@ int CtiDNPBinaryOutput::restoreBits(unsigned char *buf, int bitoffset, int len)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             bitpos = len * 8;
 
             break;
@@ -236,6 +241,8 @@ int CtiDNPBinaryOutputControl::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     switch( getVariation() )
     {
         case ControlRelayOutputBlock:
@@ -256,6 +263,7 @@ int CtiDNPBinaryOutputControl::restore(unsigned char *buf, int len)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }
@@ -269,6 +277,7 @@ int CtiDNPBinaryOutputControl::restoreBits(unsigned char *buf, int bitoffset, in
     int bitpos;
 
     bitpos = bitoffset;
+    _valid = true;
 
     switch( getVariation() )
     {
@@ -288,6 +297,7 @@ int CtiDNPBinaryOutputControl::restoreBits(unsigned char *buf, int bitoffset, in
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             bitpos = len * 8;
 
             break;

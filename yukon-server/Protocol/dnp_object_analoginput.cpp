@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/03/13 19:35:36 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2003/10/17 18:42:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,8 @@ int CtiDNPAnalogInput::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     if( len < getSerializedLen() )
     {
         {
@@ -46,6 +48,7 @@ int CtiDNPAnalogInput::restore(unsigned char *buf, int len)
         }
 
         pos = len;
+        _valid = false;
     }
     else
     {
@@ -109,6 +112,7 @@ int CtiDNPAnalogInput::restoreVariation(unsigned char *buf, int len, int variati
             }
 
             pos = len;
+            _valid = false;
         }
     }
 
@@ -311,6 +315,8 @@ int CtiDNPAnalogInputFrozen::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     if( len < getSerializedLen() )
     {
         {
@@ -318,6 +324,7 @@ int CtiDNPAnalogInputFrozen::restore(unsigned char *buf, int len)
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        _valid = false;
         pos = len;
     }
     else
@@ -508,6 +515,8 @@ int CtiDNPAnalogInputChange::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     if( len < getSerializedLen() )
     {
         {
@@ -515,6 +524,7 @@ int CtiDNPAnalogInputChange::restore(unsigned char *buf, int len)
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        _valid = false;
         pos = len;
     }
     else

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2003/03/13 19:35:37 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2003/10/17 18:42:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,8 @@ int CtiDNPAnalogOutput::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     if( len < getSerializedLen() )
     {
         {
@@ -48,6 +50,7 @@ int CtiDNPAnalogOutput::restore(unsigned char *buf, int len)
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        _valid = false;
         pos = len;
     }
     else
@@ -105,6 +108,7 @@ int CtiDNPAnalogOutput::restoreVariation(unsigned char *buf, int len, int variat
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }
@@ -276,6 +280,8 @@ int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     switch(getVariation())
     {
         case AOB32Bit:
@@ -299,6 +305,7 @@ int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }
@@ -310,6 +317,8 @@ int CtiDNPAnalogOutputBlock::restore(unsigned char *buf, int len)
 int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int variation)
 {
     int pos = 0;
+
+    _valid = true;
 
     switch(variation)
     {
@@ -353,6 +362,7 @@ int CtiDNPAnalogOutputBlock::restoreVariation(unsigned char *buf, int len, int v
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/03/13 19:35:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/10/17 18:42:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,8 @@ int CtiDNPBinaryInput::restoreVariation(unsigned char *buf, int len, int variati
 {
     int pos = 0;
 
+    _valid = true;
+
     switch( variation )
     {
         case WithStatus:
@@ -56,6 +58,7 @@ int CtiDNPBinaryInput::restoreVariation(unsigned char *buf, int len, int variati
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }
@@ -67,6 +70,8 @@ int CtiDNPBinaryInput::restoreVariation(unsigned char *buf, int len, int variati
 int CtiDNPBinaryInput::restoreBits(unsigned char *buf, int bitoffset, int len)
 {
     int bitpos;
+
+    _valid = true;
 
     bitpos = bitoffset;
 
@@ -86,6 +91,7 @@ int CtiDNPBinaryInput::restoreBits(unsigned char *buf, int bitoffset, int len)
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             bitpos = len * 8;
 
             break;
@@ -239,6 +245,8 @@ int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     switch( getVariation() )
     {
         case WithoutTime:
@@ -271,6 +279,7 @@ int CtiDNPBinaryInputChange::restore(unsigned char *buf, int len)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }

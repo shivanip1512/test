@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/03/13 19:35:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/10/17 18:42:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,8 @@ int CtiDNPTime::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     if( len <= getSerializedLen() )
     {
         pos = restoreVariation(buf, len, getVariation());
@@ -58,6 +60,7 @@ int CtiDNPTime::restore(unsigned char *buf, int len)
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
+        _valid = false;
         pos = len;
     }
 
@@ -205,6 +208,8 @@ int CtiDNPTimeCTO::restore(unsigned char *buf, int len)
 {
     int pos = 0;
 
+    _valid = true;
+
     switch( getVariation() )
     {
         case TimeAndDateCTO:
@@ -221,6 +226,7 @@ int CtiDNPTimeCTO::restore(unsigned char *buf, int len)
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
+            _valid = false;
             pos = len;
         }
     }
