@@ -28,6 +28,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
     case CTRL_C_EVENT:
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
+    case CTRL_BREAK_EVENT:
 
         load_management_do_quit = TRUE;
         Sleep(30000);
@@ -36,10 +37,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
         /* CTRL+CLOSE: confirm that the user wants to exit. */
         /* Pass other signals to the next handler. */
 
-    case CTRL_BREAK_EVENT:
-
     case CTRL_LOGOFF_EVENT:
-
 
     default:
         return FALSE;
@@ -70,6 +68,10 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
     Run();
 
     OnStop();
+    dout.interrupt(CtiThread::SHUTDOWN);
+    dout.join();
+
+    SetStatus( SERVICE_STOPPED );
 }
 
 void CtiLMService::Init()
@@ -236,9 +238,6 @@ void CtiLMService::Run()
         {
             Sleep(500);
         }
-
-
-        SetStatus( SERVICE_STOPPED );
     }
     catch(...)
     {
