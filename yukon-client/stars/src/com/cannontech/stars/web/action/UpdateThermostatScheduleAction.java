@@ -43,6 +43,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatScheduleResponse;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
+import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -63,6 +64,15 @@ public class UpdateThermostatScheduleAction implements ActionBase {
         try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) return null;
+            
+            if (req.getParameter("ApplyToWeekend") != null)
+            	user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND, "checked");
+            else
+            	user.removeAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
+			if (req.getParameter("ApplyToWeekdays") != null)
+				user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS, "checked");
+			else
+				user.removeAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKDAYS);
             
             StarsOperation operation = getRequestOperation( req );
             return SOAPUtil.buildSOAPMessage( operation );
@@ -554,14 +564,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			schedule.setTemperature4( -1 );
 		}
 		
-		if (req.getParameter("isTwoWay") == null) {
-			// This is a one-way thermostat or the default thermostat
-			if (ServletUtils.isWeekday( day )) {
-				if (req.getParameter("ApplyToWeekend") != null)
-					schedule.setDay( StarsThermoDaySettings.ALL );
-			}
-		}
-		else {
+		String type = req.getParameter("type");
+		if (type != null && type.equalsIgnoreCase(StarsThermostatTypes.ENERGYPRO.toString())) {
 			// This is a two-way thermostat
 			String applyToWeekdaysStr = req.getParameter( "ApplyToWeekdays" );
 			String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
@@ -588,6 +592,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					schedule2.setDay( StarsThermoDaySettings.WEEKEND );
 					season.addStarsThermostatSchedule( schedule2 );
 				}
+			}
+		}
+		else {
+			// This is a one-way thermostat or the default thermostat
+			if (ServletUtils.isWeekday( day )) {
+				if (req.getParameter("ApplyToWeekend") != null)
+					schedule.setDay( StarsThermoDaySettings.ALL );
 			}
 		}
         
