@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_dv_lmgmct
@@ -9,39 +8,67 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/05/23 22:32:22 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/06/27 20:53:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
 #pragma warning( disable : 4786)
 #ifndef __TBL_DV_LMGMCT_H__
 #define __TBL_DV_LMGMCT_H__
 
-class CtiTableLMGroupMCT
+#include <rw/db/dbase.h>
+#include <rw/db/table.h>
+#include <rw/db/select.h>
+
+#include "dlldefs.h"
+
+class IM_EX_CTIYUKONDB CtiTableLMGroupMCT
 {
-protected:
+    enum AddressLevels;
 
 private:
+    unsigned long _address;
+
+    AddressLevels _addressLevel;
+
+    unsigned int _relays;
+
+    long _routeID, _deviceID, _mctUniqueAddress;
+
+protected:
 
 public:
-    CtiTableLMGroupMCT() {}
 
-    CtiTableLMGroupMCT(const CtiTableLMGroupMCT& aRef)
+    CtiTableLMGroupMCT();
+    CtiTableLMGroupMCT( const CtiTableLMGroupMCT &aRef );
+
+    virtual ~CtiTableLMGroupMCT();
+
+    CtiTableLMGroupMCT &operator=( const CtiTableLMGroupMCT &aRef );
+
+    enum AddressLevels
     {
-        *this = aRef;
-    }
+        Addr_Bronze,
+        Addr_Lead,
+        Addr_Unique,
+        Addr_Invalid
+    };
 
-    virtual ~CtiTableLMGroupMCT() {}
+    static RWCString getTableName();
 
-    CtiTableLMGroupMCT& operator=(const CtiTableLMGroupMCT& aRef)
-    {
-        if(this != &aRef)
-        {
-        }
-        return *this;
-    }
+    unsigned int getRelays();
+    unsigned long getAddress() const;
+    AddressLevels getAddressLevel() const;
+    long getRouteID() const;
+    long getMCTUniqueAddress() const;
 
+    static void getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector );
+    virtual void DecodeDatabaseReader( RWDBReader &rdr );
+    virtual RWDBStatus Restore();
+    virtual RWDBStatus Insert();
+    virtual RWDBStatus Update();
+    virtual RWDBStatus Delete();
 };
+
 #endif // #ifndef __TBL_DV_LMGMCT_H__

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/06/13 20:03:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/06/27 20:53:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,13 +16,19 @@
 
 
 #include "dev_grp_mct.h"
+#include "porter.h"
+#include "numstr.h"
+#include "prot_emetcon.h"
 
+
+CtiDeviceGroupMCT::CtiDeviceGroupMCT()
+{
+}
 
 CtiDeviceGroupMCT::CtiDeviceGroupMCT( const CtiDeviceGroupMCT &aRef )
 {
     *this = aRef;
 }
-
 
 CtiDeviceGroupMCT::~CtiDeviceGroupMCT()
 {
@@ -56,7 +62,7 @@ void CtiDeviceGroupMCT::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 {
     Inherited::getSQL(db, keyTable, selector);
 
-    _lmGroupMCT::getSQL(db, keyTable, selector);
+    _lmGroupMCT.getSQL(db, keyTable, selector);
 }
 
 
@@ -74,7 +80,7 @@ void CtiDeviceGroupMCT::DecodeDatabaseReader( RWDBReader &rdr )
 }
 
 
-LONG CtiDeviceGroupMCT::getAddress()
+LONG CtiDeviceGroupMCT::getAddress() const
 {
     int address = 0;
 
@@ -100,26 +106,16 @@ LONG CtiDeviceGroupMCT::getAddress()
         {
             CtiDeviceBase *tmpDevice;
 
-            if( _lmGroupMCT.getMCTDeviceID() == getID() )
+            if( _lmGroupMCT.getMCTUniqueAddress() )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Self-referential address lookup for MCT loadgroup \"" << getName() << "\".  Aborting command." << endl;
-                }
-
-                address = 0;
-            }
-            else if( tmpDevice = DeviceManager.getEqual(_lmGroupMCT.getMCTDeviceID()) )
-            {
-                address = tmpDevice->getAddress();
+                address = _lmGroupMCT.getMCTUniqueAddress();
             }
             else
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Can't find device with ID \"" << _lmGroupMCT.getMCTDeviceID() << "\" for unique address lookup for MCT loadgroup \"" << getName() << "\"" << endl;
+                    dout << "MCT Load Group \"" << getName() << "\" has unique address 0, aborting command" << endl;
                 }
 
                 address = 0;
@@ -139,6 +135,8 @@ LONG CtiDeviceGroupMCT::getAddress()
             address = 0;
         }
     }
+
+    return address;
 }
 
 
@@ -158,6 +156,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
         case ControlRequest:
         {
             nRet = executeControl( pReq, parse, OutMessage, vgList, retList, outList );
+
             break;
         }
         default:
@@ -235,7 +234,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
 
                 pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the MCT.
                 pOut->Buffer.BSt.DeviceType   = getType();
-                pOut->Buffer.BSt.SSpec        = getSSpec();
+                pOut->Buffer.BSt.SSpec        = 0;  //  ACH FIX what-huh?
 
                 /*
                  * OK, these are the items we are about to set out to perform..  Any additional signals will
@@ -399,7 +398,7 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         nRet = NoMethod;
     }
-    else if( !calcMCTLMGroupAddress() )
+    else if( !getAddress() )
     {
         nRet = ADDRESSERROR;
     }
