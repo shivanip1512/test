@@ -296,6 +296,36 @@ public final static boolean isLoadProfile3Channel(int deviceType)
          return false;
    }
 }
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 1:46:22 PM)
+ * @return boolean
+ * @param deviceType int
+ */
+public final static boolean isMCTOnly(int deviceType) 
+{
+	switch(deviceType)
+	{
+		case MCT213:
+		case MCT310:
+		case MCT318:
+		case MCT360:
+		case MCT370:
+		case MCT240:
+		case MCT248:
+		case MCT250:
+		case MCT210:
+		case MCT310ID:
+		case MCT310IL:
+	    case MCT310CT:
+    	case MCT310IM:
+		case MCT318L:
+			return true;
+	
+		default:
+			return false;
+	}
+}
 
 /**
  * Insert the method's description here.
