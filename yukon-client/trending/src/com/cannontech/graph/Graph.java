@@ -454,7 +454,7 @@ public int getViewType()
 {
 	return getTrendProperties().getViewType();
 }
-public int getOptionsMaskSettings()
+public int getOption()
 {
 	return getTrendProperties().getOptionsMaskSettings();
 }
@@ -764,7 +764,7 @@ public void getDataNow(java.util.List paobjects)
 		LiteYukonPAObject paobject = (LiteYukonPAObject)paobjects.get(i);
 		if(com.cannontech.database.data.device.DeviceTypesFuncs.hasDeviceScanRate(paobject.getType()))
 		{
-			System.out.println("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
+			CTILogger.info("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
 			com.cannontech.message.dispatch.message.Command messageCommand = new com.cannontech.message.dispatch.message.Command();
 			messageCommand.setOperation(com.cannontech.message.dispatch.message.Command.ALTERNATE_SCAN_RATE);
 			messageCommand.setPriority(14);
