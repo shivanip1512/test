@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/09/18 21:22:36 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/10/18 20:21:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,9 +409,17 @@ int CtiDNPApplication::decode( CtiXfer &xfer, int status )
 
             case Input:
             {
-                _appRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
-
-                _ioState = Complete;
+                if( _transport.getInputSize() >= RspHeaderSize )
+                {
+                    _appRspBytesUsed = _transport.getInputSize() - RspHeaderSize;
+                    _ioState = Complete;
+                }
+                else
+                {
+                    _appRspBytesUsed = 0;
+                    _ioState = Failed;
+                    retVal = PORTREAD;  //  timeout reading from port
+                }
 
                 break;
             }
