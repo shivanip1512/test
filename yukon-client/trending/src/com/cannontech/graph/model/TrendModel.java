@@ -539,7 +539,7 @@ private com.jrefinery.chart.StandardLegend getLegend(JFreeChart fChart)
 	legend.setAnchor(com.jrefinery.chart.Legend.SOUTH);
 	legend.setItemFont(new java.awt.Font("dialog", java.awt.Font.BOLD, 10));
 	
-//	if( (OPTIONS_MASK_SETTINGS & TrendModelType.LOAD_FACTOR_MASK) == TrendModelType.LOAD_FACTOR_MASK)
+	if( (OPTIONS_MASK_SETTINGS & TrendModelType.LOAD_FACTOR_MASK) == TrendModelType.LOAD_FACTOR_MASK)
 	{
 		java.util.Vector stats = new java.util.Vector(trendSeries.length);
 		for( int i = 0; i < trendSeries.length; i++)
