@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/INCLUDE/SCANGLOB.H-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/05/28 21:12:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,8 @@
 
 #define S_MAX_MUTEX                    ((S_MAX_EVENT) + 1)  // This  one needs to move with the rest
 
+#define SCANNER_DEBUG_DBRELOAD          0x00000040
+#define SCANNER_DEBUG_NEXTSCAN          0x00000100
 
 // IM_EX_SCANSUP extern HEV         ScanSem;
 // IM_EX_SCANSUP extern HMTX        LockSem;

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2002/05/28 18:27:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2002/05/28 21:12:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,6 +144,7 @@ HANDLE hLockArray[] = {
 
 void barkAboutCurrentTime(CtiDevice *Device, RWTime &rt, INT line)
 {
+    if(ScannerDebugLevel & SCANNER_DEBUG_NEXTSCAN)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Next scan is for " << Device->getName() << " at " << rt << " on " << line << endl;
@@ -1132,9 +1133,9 @@ void LoadScannableDevices(void *ptr)
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
 
-            if(ScannerDebugLevel & 0x00000040) start = start.now();
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             ScannerDeviceManager.RefreshList();
-            if(ScannerDebugLevel & 0x00000040)
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
                 {
@@ -1144,10 +1145,10 @@ void LoadScannableDevices(void *ptr)
                 }
             }
 
-            if(ScannerDebugLevel & 0x00000040) start = start.now();
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             ScannerDeviceManager.RefreshScanRates();
 
-            if(ScannerDebugLevel & 0x00000040)
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
                 {
@@ -1157,7 +1158,7 @@ void LoadScannableDevices(void *ptr)
                 }
             }
 
-            if(ScannerDebugLevel & 0x00000040) start = start.now();
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             // Limit this list to just scannable devices!
             while( 1 )
             {
@@ -1203,7 +1204,7 @@ void LoadScannableDevices(void *ptr)
                     break;
                 }
             }
-            if(ScannerDebugLevel & 0x00000040)
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
                 {
@@ -1213,9 +1214,9 @@ void LoadScannableDevices(void *ptr)
                 }
             }
 
-            if(ScannerDebugLevel & 0x00000040) start = start.now();
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             ScannerDeviceManager.RefreshRoutes();  // Get the devices which have routes into memory?
-            if(ScannerDebugLevel & 0x00000040)
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
                 {
@@ -1225,9 +1226,9 @@ void LoadScannableDevices(void *ptr)
                 }
             }
 
-            if(ScannerDebugLevel & 0x00000040) start = start.now();
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             ScannerDeviceManager.apply( applyUseScanFlags, NULL );
-            if(ScannerDebugLevel & 0x00000040)
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                 stop = stop.now();
                 {
@@ -1237,9 +1238,9 @@ void LoadScannableDevices(void *ptr)
                 }
             }
             // load the scan window list if there is one
-            if(ScannerDebugLevel & 0x00000040) start = start.now();
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
             ScannerDeviceManager.RefreshDeviceWindows();
-            if(ScannerDebugLevel & 0x00000040)
+            if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
             {
                stop = stop.now();
                {
@@ -1258,7 +1259,7 @@ void LoadScannableDevices(void *ptr)
     }
 
 
-    if(ScannerDebugLevel & 0x00000040) start = start.now();
+    if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD) start = start.now();
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) )
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(ScannerDeviceManager.getMux());
@@ -1276,7 +1277,7 @@ void LoadScannableDevices(void *ptr)
         }
     }
 
-    if(ScannerDebugLevel & 0x00000040)
+    if(ScannerDebugLevel & SCANNER_DEBUG_DBRELOAD)
     {
         stop = stop.now();
         {
