@@ -235,6 +235,7 @@ void CtiLMControlAreaStore::reset()
                     {
                         dumpAllDynamicData();
                         saveAnyProjectionData();
+                        saveAnyControlStringData();
                         _controlAreas->clearAndDestroy();
                         wasAlreadyRunning = true;
                     }
@@ -475,6 +476,7 @@ void CtiLMControlAreaStore::reset()
                                             }*/
                                         }
                                     }
+                                    attachControlStringData(currentLMGroupBase);
                                     allGroupList.insert(currentLMGroupBase);
                                 }
                             }
@@ -1883,6 +1885,63 @@ void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigge
     }
 }
 
+/*---------------------------------------------------------------------------
+    saveAnyControlStringData
+
+    .
+---------------------------------------------------------------------------*/
+void CtiLMControlAreaStore::saveAnyControlStringData()
+{
+    if( _controlStrings.entries() > 0 )
+        _controlStrings.clear();
+
+    for(LONG i=0;i<_controlAreas->entries();i++)
+    {
+        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
+
+        RWOrdered& lmPrograms = currentLMControlArea->getLMPrograms();
+        if( lmPrograms.entries() > 0 )
+        {
+            for(LONG j=0;j<lmPrograms.entries();j++)
+            {
+                CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)lmPrograms[j];
+                if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+                {
+                    RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentLMProgram)->getLMProgramDirectGroups();
+                    for(LONG k=0;k<lmGroups.entries();k++)
+                    {
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)lmGroups[k];
+                        if( currentLMGroup->getLastControlString().length() > 0 )
+                        {
+                            _controlStrings.insert(CtiLMSavedControlString(currentLMGroup->getPAOId(), currentLMGroup->getLastControlString()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+    attachControlStringData
+
+    .
+---------------------------------------------------------------------------*/
+void CtiLMControlAreaStore::attachControlStringData(CtiLMGroupBase* group)
+{
+    for(LONG i=0;i<_controlStrings.entries();i++)
+    {
+        CtiLMSavedControlString currentSavedString =  _controlStrings.at(i);
+        if( group->getPAOId() == currentSavedString.getPAOId() )
+        {
+            group->setLastControlString(currentSavedString.getControlString());
+            break;
+        }
+    }
+}
+
+
+
 const RWCString CtiLMControlAreaStore::LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE = "LOAD_MANAGEMENT_SERVER";
 
 
@@ -1933,6 +1992,58 @@ CtiLMSavedProjectionQueue& CtiLMSavedProjectionQueue::operator=(const CtiLMSaved
     {
         _pointId = right.getPointId();
         _projectionEntryList = right.getProjectionEntryList();
+    }
+
+    return *this;
+}
+
+//*************************************************************
+//**********  CtiLMSavedControlString                **********
+//**********                                         **********
+//**********  This is equivalent to an inner class,  **********
+//**********  only used for saving control strings   **********
+//*************************************************************
+CtiLMSavedControlString::CtiLMSavedControlString(LONG paoId, const RWCString& controlString)
+{
+    setPAOId(paoId);
+    setControlString(controlString);
+}
+
+CtiLMSavedControlString::CtiLMSavedControlString(const CtiLMSavedControlString& savedControlString)
+{
+    operator=(savedControlString);
+}
+
+CtiLMSavedControlString::~CtiLMSavedControlString()
+{
+}
+
+LONG CtiLMSavedControlString::getPAOId() const
+{
+    return _paoId;
+}
+const RWCString& CtiLMSavedControlString::getControlString() const
+{
+    return _controlString;
+}
+
+CtiLMSavedControlString& CtiLMSavedControlString::setPAOId(LONG paoId)
+{
+    _paoId = paoId;
+    return *this;
+}
+CtiLMSavedControlString& CtiLMSavedControlString::setControlString(const RWCString& controlstr)
+{
+    _controlString = controlstr;
+    return *this;
+}
+
+CtiLMSavedControlString& CtiLMSavedControlString::operator=(const CtiLMSavedControlString& right)
+{
+    if( this != &right )
+    {
+        _paoId = right.getPAOId();
+        _controlString = right.getControlString();
     }
 
     return *this;

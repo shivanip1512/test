@@ -58,6 +58,32 @@ private:
 };
 
 
+class CtiLMSavedControlString
+{//equivalent to an inner class, only used for saving control strings
+
+public:
+    CtiLMSavedControlString(LONG paoId, const RWCString& controlString);
+    CtiLMSavedControlString(const CtiLMSavedControlString& savedControlString);
+
+    virtual ~CtiLMSavedControlString();
+
+    LONG getPAOId() const;
+    const RWCString& getControlString() const;
+
+    CtiLMSavedControlString& setPAOId(LONG paoId);
+    CtiLMSavedControlString& setControlString(const RWCString& controlstr);
+
+    CtiLMSavedControlString& operator=(const CtiLMSavedControlString& right);
+
+    //int operator==(const CtiLMSavedControlString& right) const;
+    //int operator!=(const CtiLMSavedControlString& right) const;
+
+private:
+    LONG _paoId;
+    RWCString _controlString;
+};
+
+
 class CtiLMControlAreaStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
@@ -80,6 +106,8 @@ public:
 
     void saveAnyProjectionData();
     void attachProjectionData(CtiLMControlAreaTrigger* trigger);
+    void saveAnyControlStringData();
+    void attachControlStringData(CtiLMGroupBase* group);
 
     static const RWCString LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
 
@@ -106,6 +134,7 @@ private:
     bool _reregisterforpoints;
     RWDBDateTime _lastdbreloadtime;
     RWTValOrderedVector<CtiLMSavedProjectionQueue> _projectionQueues;
+    RWTValOrderedVector<CtiLMSavedControlString> _controlStrings;
 
     //The singleton instance of CtiLMControlAreaStore
     static CtiLMControlAreaStore* _instance;
