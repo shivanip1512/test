@@ -829,6 +829,9 @@ private javax.swing.JLabel getJLabelStartTypePolicy() {
 			ivjJLabelStartTypePolicy.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelStartTypePolicy.setText("Stop Type Policy:");
 			// user code begin {1}
+         
+         ivjJLabelStartTypePolicy.setText("Start Type Policy:");
+         
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
