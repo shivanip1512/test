@@ -1057,7 +1057,7 @@ public Object getValue(Object val)
 
 				newCalcComponent.setFunctionName((String) operation);
 				
-				if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) && currentlyMappedBaselineID != null )
+				if( newCalcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) && currentlyMappedBaselineID != null )
 				{
 					calcPoint.getCalcBaselinePoint().setBaselineID(currentlyMappedBaselineID);
 					calcPoint.setBaselineAssigned(true);
