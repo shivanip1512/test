@@ -81,9 +81,12 @@ alter table LMControlScenarioProgram
 go
 alter table LMControlScenarioProgram
    add constraint FK_LMC_REF__LMP foreign key (ProgramID)
-      references LMPROGRAM (DEVICEID);
+      references LMPROGRAM (DeviceID);
 go
-
+alter table LMControlScenarioProgram
+   add constraint FK_LmCScP_YkPA foreign key (ScenarioID)
+      references YukonPAObject (PAObjectID);
+go
 
 create table LMProgramConstraints (
 ConstraintID         numeric              not null,
@@ -205,7 +208,8 @@ create table DeviceRTC (
 DeviceID             numeric              not null,
 RTCAddress           numeric              not null,
 Response             varchar(1)           not null,
-LBTMode              numeric              not null
+LBTMode              numeric              not null,
+DisableVerifies      varchar(1)           not null
 );
 go
 alter table DeviceRTC
