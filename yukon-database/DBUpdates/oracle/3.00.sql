@@ -48,6 +48,10 @@ alter table YukonServices
 insert into billingFileformats values (9, 'CTI2');
 
 
+alter table GraphDataSeries add viewType smallint;
+update GraphDataSeries set viewType = 0;	/*Line view*/
+alter table GraphDataSeries modify viewType not null;
+
 alter table GraphDataSeries add moreData varchar2(100);
 update GraphDataSeries set moreData = '(none)';
 alter table GraphDataSeries modify moreData not null;

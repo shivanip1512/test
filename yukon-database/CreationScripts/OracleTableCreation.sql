@@ -2469,6 +2469,7 @@ create table GRAPHDATASERIES  (
    Color                NUMBER                           not null,
    Type                 NUMBER                           not null,
    Multiplier           FLOAT                            not null,
+   ViewType             SMALLINT                         not null,
    MoreData             VARCHAR2(100)                    not null
 )
 /
