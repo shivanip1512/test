@@ -509,18 +509,19 @@ public Object getValue(Object o) {
 			//some annoying checks to verify that the user hasn't messed up the six digit address
 			StringBuffer opAddress = new StringBuffer();
 			if(getOpAddressJTextField1().getText().length() < 2)
-				opAddress.append("0");
+				opAddress.append( (getOpAddressJTextField1().getText().length()==0 ? "00" : "0") );
 			opAddress.append(getOpAddressJTextField1().getText());
+
 			if(getOpAddressJTextField2().getText().length() < 2)
-				opAddress.append("0");
+				opAddress.append( (getOpAddressJTextField2().getText().length()==0 ? "00" : "0") );
 			opAddress.append(getOpAddressJTextField2().getText());
+
 			if(getOpAddressJTextField3().getText().length() < 2)
-				opAddress.append("0");
+				opAddress.append( (getOpAddressJTextField3().getText().length()==0 ? "00" : "0") );
 			opAddress.append(getOpAddressJTextField3().getText());
-			golay.getLMGroupSASimple().setOperationalAddress(opAddress.toString());
-			
+
+			golay.getLMGroupSASimple().setOperationalAddress(opAddress.toString());			
 			golay.getLMGroupSASimple().setNominalTimeout(com.cannontech.common.util.CtiUtilities.getIntervalSecondsValueFromDecimal((String)getNominalTimeoutJComboBox().getSelectedItem()));
-		
 			golay.getLMGroupSASimple().setVirtualTimeout(com.cannontech.common.util.CtiUtilities.getIntervalSecondsValueFromDecimal((String)getVirtualTimeoutJComboBox().getSelectedItem()));
 			
 		}
@@ -686,7 +687,7 @@ public void setValue(Object o) {
 
 public boolean isInputValid() 
 {
-
-		return true;
+	return true;
 }
+
 }
