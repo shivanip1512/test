@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2003/04/08 19:36:11 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2003/04/22 16:30:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1064,6 +1064,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             while( !protocol->isTransactionComplete() )
                             {
+                                //  ACH - perhaps pass the VanGoghConnection object into the protocol,
+                                //          so it can send messages to Dispatch directly... ?
                                 protocol->generate(trx);
 
                                 status = Port->outInMess(trx, Device, traceList);
