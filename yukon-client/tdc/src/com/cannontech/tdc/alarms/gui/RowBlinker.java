@@ -255,7 +255,7 @@ private synchronized void processAlarmColors()
 	javax.swing.SwingUtilities.invokeLater( new AlarmTableModelPainter( model, minLoc, maxLoc )
 		{	public void run()
 			{
-				getModel().forcePaintTableRowUpdated( getMin(), getMax() );
+				this.getModel().forcePaintTableRowUpdated( getMin(), getMax() );
 			}				
 		}			
 	);
@@ -288,7 +288,7 @@ private synchronized void processOriginalColors()
 	javax.swing.SwingUtilities.invokeLater( new AlarmTableModelPainter( model, minLoc, maxLoc )
 		{	public void run()
 			{
-				getModel().forcePaintTableRowUpdated( getMin(), getMax() );
+				this.getModel().forcePaintTableRowUpdated( getMin(), getMax() );
 			}				
 		}			
 	);
