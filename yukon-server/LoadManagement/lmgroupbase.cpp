@@ -289,6 +289,18 @@ ULONG CtiLMGroupBase::getHoursAnnuallyPointId() const
 }
 
 /*---------------------------------------------------------------------------
+    getLMProgramId
+
+    Returns the pao id of the program that this group is in
+---------------------------------------------------------------------------*/
+ULONG CtiLMGroupBase::getLMProgramId() const
+{
+
+    return _lmprogramid;
+}
+
+
+/*---------------------------------------------------------------------------
     setPAOId
 
     Sets the unique id of the substation - use with caution
@@ -552,6 +564,18 @@ CtiLMGroupBase& CtiLMGroupBase::setHoursAnnuallyPointId(ULONG annuallyid)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setLMProgramId
+
+    Sets the pao id of the program that this group is in
+---------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setLMProgramId(ULONG progid)
+{
+
+    _lmprogramid = progid;
+    return *this;
+}
+
 
 /*-------------------------------------------------------------------------
     createLatchingRequestMsg
@@ -678,6 +702,11 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _currenthoursseasonal = right._currenthoursseasonal;
         _currenthoursannually = right._currenthoursannually;
         _lastcontrolsent = right._lastcontrolsent;
+        _hoursdailypointid = right._hoursdailypointid;
+        _hoursmonthlypointid = right._hoursmonthlypointid;
+        _hoursseasonalpointid = right._hoursseasonalpointid;
+        _hoursannuallypointid = right._hoursannuallypointid;
+        _lmprogramid = right._lmprogramid;
     }
 
     return *this;
@@ -793,6 +822,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         _childorder = 0;
     }
 
+    rdr["deviceid"] >> _lmprogramid;
     rdr["groupcontrolstate"] >> isNull;
     if( !isNull )
     {
@@ -913,7 +943,8 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 << dynamicLMGroupTable["lastcontrolsent"].assign( getLastControlSent() )
                 << dynamicLMGroupTable["timestamp"].assign( currentDateTime );
 
-                updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
+                updater.where(dynamicLMGroupTable["deviceid"]==getPAOId()&&
+                              dynamicLMGroupTable["lmprogramid"]==getLMProgramId());
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -949,7 +980,8 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 << getCurrentHoursSeasonal()
                 << getCurrentHoursAnnually()
                 << getLastControlSent()
-                << currentDateTime;
+                << currentDateTime
+                << getLMProgramId();
 
                 /*{
                     CtiLockGuard<CtiLogger> logger_guard(dout);

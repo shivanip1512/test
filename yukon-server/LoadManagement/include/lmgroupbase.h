@@ -58,6 +58,7 @@ public:
     ULONG getHoursMonthlyPointId() const;
     ULONG getHoursSeasonalPointId() const;
     ULONG getHoursAnnuallyPointId() const;
+    ULONG getLMProgramId() const;
 
     CtiLMGroupBase& setPAOId(ULONG id);
     CtiLMGroupBase& setPAOCategory(const RWCString& category);
@@ -81,6 +82,7 @@ public:
     CtiLMGroupBase& setHoursMonthlyPointId(ULONG monthlyid);
     CtiLMGroupBase& setHoursSeasonalPointId(ULONG seasonalid);
     CtiLMGroupBase& setHoursAnnuallyPointId(ULONG annuallyid);
+    CtiLMGroupBase& setLMProgramId(ULONG progid);
 
     virtual void dumpDynamicData();
     virtual void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -145,6 +147,7 @@ private:
     ULONG _hoursannuallypointid;
 
     //don't stream
+    ULONG _lmprogramid;
     BOOL _insertDynamicDataFlag;
 };
 #endif
