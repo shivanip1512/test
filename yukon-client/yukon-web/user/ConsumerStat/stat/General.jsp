@@ -105,8 +105,10 @@
 %>
                                   <tr> 
                                     <td width="64"> 
-                                      <div align="center"> 
+                                      <div align="center">
+<% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
                                         <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+<% } %>
                                         <span class="TableCell"><%= program.getProgramName() %></span><br> 
                                       </div>
                                     </td>

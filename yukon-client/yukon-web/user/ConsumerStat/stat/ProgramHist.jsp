@@ -98,7 +98,10 @@ function setRedirect(form) {
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="110"> 
-                    <div align="center"> <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+                    <div align="center">
+<% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
+					  <img src="../../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+<% } %>
                       <span class="TableCell"><%= program.getProgramName() %></span> 
                     </div>
                   </td>

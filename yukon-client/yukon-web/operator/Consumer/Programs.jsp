@@ -280,12 +280,15 @@ function resendNotEnrolled(form) {
 		
 		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
 			StarsLMProgram prog = programs.getStarsLMProgram(j);
-			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
-				program = prog;
-				programStatus = program.getStatus();
-				numEnrolledProg++;
-				break;
+			for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+				if (category.getStarsEnrLMProgram(k).getProgramID() == prog.getProgramID()) {
+					program = prog;
+					programStatus = program.getStatus();
+					numEnrolledProg++;
+					break;
+				}
 			}
+			if (program != null) break;
 		}
 %>
                   <tr> 

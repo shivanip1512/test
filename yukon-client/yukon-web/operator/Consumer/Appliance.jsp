@@ -841,7 +841,10 @@ function deleteAppliance(form) {
                         </tr>
                         <tr valign="top"> 
                           <td width="109" bgcolor="#FFFFFF"> 
-                            <div align="center"><img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+                            <div align="center">
+<% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
+							  <img src="../../Images/Icons/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
+<% } %>
 							  <span class="TableCell"><%= program.getProgramName() %></span>
 							</div>
                           </td>
@@ -917,7 +920,7 @@ function deleteAppliance(form) {
                 </tr>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="75" class="TableCell"><%= hardware.getCategory() %></td>
-                  <td width="75" class="TableCell"><%= hardware.getLMHardware().getLMHardwareType().getContent() %></td>
+                  <td width="75" class="TableCell"><%= hardware.getDeviceType().getContent() %></td>
                   <td width="75" class="TableCell"><%= hardware.getLMHardware().getManufacturerSerialNumber() %></td>
                 </tr>
               </table>
