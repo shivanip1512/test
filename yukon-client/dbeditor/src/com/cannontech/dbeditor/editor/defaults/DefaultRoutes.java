@@ -121,10 +121,17 @@ public final static java.util.Vector calculateDefaults()
 	
 		if (dflt) {
 			 ((RouteBase) rt).setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
-			 totalRecDefaults++;
+			 
 		}
 		else
 			 ((RouteBase) rt).setDefaultRoute(CtiUtilities.getFalseCharacter().toString());
+	}
+
+	for (int i =0; i< routes.size(); i++) {
+		rt = (DBPersistent) routes.get(i);
+		if (((RouteBase)rt).getDefaultRoute().equals("Y"))
+			totalRecDefaults++;
+				
 	}
 
 	java.util.Vector returnVector = new Vector();
