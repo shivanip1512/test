@@ -4945,6 +4945,8 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
         _insertDynamicDataFlag = TRUE;
 	setDirty(true);
     }
+    //ok to announce timed program constraint violations once per database reload
+    _announced_constraint_violation = false;
 }
 
 /*---------------------------------------------------------------------------
