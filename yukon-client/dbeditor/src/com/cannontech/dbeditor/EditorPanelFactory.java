@@ -39,9 +39,10 @@ public final class EditorPanelFactory
    	{com.cannontech.database.db.customer.CustomerContact.class,
 		 com.cannontech.dbeditor.editor.device.customercontact.CustomerContactEditor.class},
 
+/*FIXFIX
    	{com.cannontech.database.db.customer.CustomerLogin.class,
 		 com.cannontech.dbeditor.editor.device.customercontact.CustomerContactEditor.class},
-
+*/
    	{com.cannontech.database.data.device.DeviceBase.class,
 	  	com.cannontech.dbeditor.editor.device.DeviceEditorPanel.class},
    	
