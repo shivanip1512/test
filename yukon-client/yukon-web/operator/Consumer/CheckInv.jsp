@@ -62,26 +62,9 @@
 <%
 	if (inOther) {
 		LiteStarsEnergyCompany company = ((ObjectInOtherEnergyCompanyException)obj).getEnergyCompany();
-		if (ECUtils.isDescendantOf(company, liteEC)) {
 %>
                 <p class="ErrorMsg">The hardware or device is found in the inventory 
-                  of <i><%= company.getName() %></i>.</p>
-<%
-		}
-		else if (ECUtils.isDescendantOf(liteEC, company)) {
-%>
-                <p class="ErrorMsg">The hardware or device is found in another 
-                  energy company. Please contact <i><%= liteEC.getParent().getName() %></i> 
-                  for more information.</p>
-<%
-		}
-		else {
-%>
-                <p class="ErrorMsg">The device has already been assigned to another 
-                  energy company.</p>
-<%
-		}
-%>
+                  list of <i><%= company.getName() %></i>.</p>
                 <table width="200" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
                   <tr> 
                     <td align="center"> 
