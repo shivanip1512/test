@@ -27,6 +27,13 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	static final int INVALID_POINT = -1;	
 	
+	// Available display attributes
+	public static final int VALUE = 0x01;
+	public static final int UOFM = 0x02;
+	public static final int NAME = 0x04;
+	public static final int LAST_UPDATE = 0x08;
+	public static final int PAO = 0x10;
+	
 	private com.cannontech.database.data.lite.LitePoint point;	
 	private int displayAttribs = 0x00;
 
@@ -207,6 +214,7 @@ public void setPointID(int newPointID) {
 // 	return super.clone();
 	}
 
+	
 	/**
 	 * Returns the displayAttribs.
 	 * @return int
