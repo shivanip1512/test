@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.6 $                               #
-#       $Date: 2002/09/19 17:42:18 $                  #
+#       $Revision: 1.7 $                               #
+#       $Date: 2002/10/15 17:42:12 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -109,14 +109,14 @@ XERCESINC       = $(COMPILEBASE)\xerces\include
 
 
 !IFDEF DEBUG
-CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200
-DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200
+CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD
+DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD
 TCL_LIB = tcl81d
 XERCES_LIB = xerces-c_1D
 XERCES_DLL = xerces-c_1_7_0D
 !ELSE
-CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200
-DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200
+CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD
+DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0
