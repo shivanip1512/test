@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:40 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/05 19:33:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,7 @@ int main(int argc, char* argv[] )
    dout.setOutputPath(gLogDirectory.data());
    dout.setOutputFile("porter");
    dout.setToStdOut(true);
-   dout.setWriteInterval(1);
+   dout.setWriteInterval(15000);
 
 
    if( SetConsoleTitle("Port Control") ) // We are a console application
@@ -68,6 +68,7 @@ int main(int argc, char* argv[] )
       }
       else
       {
+         dout.setWriteInterval(0);
          CtiPorterService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
          RunningInConsole = TRUE;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/11/05 19:37:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ int main(int argc, char* argv[] )
    dout.setOutputPath(gLogDirectory.data());
    dout.setOutputFile("dispatch");
    dout.setToStdOut(true);
-   dout.setWriteInterval(0);
+   dout.setWriteInterval(15000);
 
    identifyProject(CompileInfo);
 
@@ -79,6 +79,8 @@ int main(int argc, char* argv[] )
       }
       else
       {
+         dout.setWriteInterval(0);
+
          CtiDispatchService service(szName, szDisplay, SERVICE_WIN32_OWN_PROCESS );
          service.RunInConsole(argc, argv );
 

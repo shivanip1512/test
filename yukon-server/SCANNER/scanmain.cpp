@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2002/09/06 19:03:43 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2002/11/05 19:33:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ int main(int argc, char* argv[] )
    dout.setOutputPath(gLogDirectory.data());
    dout.setOutputFile("scanner");
    dout.setToStdOut(true);
-   dout.setWriteInterval(5000);
+   dout.setWriteInterval(15000);
 
 
    if( SetConsoleTitle("Scanner") )
@@ -67,6 +67,8 @@ int main(int argc, char* argv[] )
       }
       else
       {
+         dout.setWriteInterval(0);
+
          CtiScannerService service(szName, szDisplay, SERVICE_WIN32_OWN_PROCESS );
          service.RunInConsole(argc, argv );
       }
