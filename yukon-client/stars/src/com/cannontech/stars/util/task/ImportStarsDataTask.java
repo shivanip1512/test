@@ -214,21 +214,21 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		resFieldsCnt = resFieldsList.size();
 		
 		// Map of import_account_id(Integer) to db_account_id(Integer) or LiteStarsCustAccountInformation object
-		Hashtable acctIDMap = (Hashtable) preprocessedData.get( "CustomerAccountMap" );
+		Hashtable acctIDMap = (Hashtable) preprocessedData.get( ImportManager.CUSTOMER_ACCOUNT_MAP );
 		if (acctIDMap == null) {
 			acctIDMap = new Hashtable();
-			preprocessedData.put( "CustomerAccountMap", acctIDMap );
+			preprocessedData.put( ImportManager.CUSTOMER_ACCOUNT_MAP, acctIDMap );
 		}
 		
 		// Map of import_inv_id(Integer) to db_app_ids (int[]: {relay1_app_id, relay2_app_id, relay3_app_id})
-		Hashtable appIDMap = (Hashtable) preprocessedData.get( "HwConfigAppMap" );
+		Hashtable appIDMap = (Hashtable) preprocessedData.get( ImportManager.HW_CONFIG_APP_MAP );
 		if (appIDMap == null) {
 			appIDMap = new Hashtable();
-			preprocessedData.put( "HwConfigAppMap", appIDMap );
+			preprocessedData.put( ImportManager.HW_CONFIG_APP_MAP, appIDMap );
 		}
 		
 		// Directory where the mapping and log files will be written into
-		String path = (String) preprocessedData.get( "CustomerFilePath" );
+		String path = (String) preprocessedData.get( ImportManager.CUSTOMER_FILE_PATH );
 		
 		String position = null;
 		java.io.PrintWriter fw = null;

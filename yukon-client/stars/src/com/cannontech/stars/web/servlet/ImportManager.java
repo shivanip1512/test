@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -23,15 +24,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -158,6 +162,12 @@ public class ImportManager extends HttpServlet {
 	public static final String PREPROCESSED_DATA = "PREPROCESSED_DATA";
 	public static final String UNASSIGNED_LISTS = "UNASSIGNED_LISTS";
 	public static final String USER_LABELS = "USER_LABELS";
+	public static final String DEVICE_TYPES = "DEVICE_TYPES";
+	public static final String WORK_ORDER_STATUS = "WORK_ORDER_STATUS";
+	
+	public static final String CUSTOMER_FILE_PATH = "CUSTOMER_FILE_PATH";
+	public static final String CUSTOMER_ACCOUNT_MAP = "CUSTOMER_ACCOUNT_MAP";
+	public static final String HW_CONFIG_APP_MAP = "HW_CONFIG_APP_MAP";
 	
 	// Customer account fields
 	public static int acct_idx = 0;
@@ -465,6 +475,11 @@ public class ImportManager extends HttpServlet {
 	public static final String LABEL_LI_NUMERIC2 = "LINumericLabel2";
 	public static final String LABEL_LI_CHECKBOX1 = "LICheckBoxLabel1";
 	public static final String LABEL_LI_CHECKBOX2 = "LICheckBoxLabel2";
+	
+	public static final String WO_STATUS_OPEN = "OPEN";
+	public static final String WO_STATUS_CLOSED = "CLOSED";
+	public static final String WO_STATUS_SCHEDULED = "SCHEDULED";
+	public static final String WO_STATUS_WAITING = "WAITING";
     
 	public static final String HARDWARE_ACTION_INSERT = "INSERT";
 	public static final String HARDWARE_ACTION_UPDATE = "UPDATE";
@@ -1600,7 +1615,7 @@ public class ImportManager extends HttpServlet {
 				redirect = getFormField( items, ServletUtils.ATT_REDIRECT );
 			}
 			catch (FileUploadException e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to parse the form data");
 			}
 		}
@@ -1665,27 +1680,27 @@ public class ImportManager extends HttpServlet {
 			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
 		}
 		catch (WebClientException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 			redirect = referer;
 		}
 	}
 	
 	private void importSelectionLists(File selListFile, LiteStarsEnergyCompany energyCompany) throws Exception {
-		String[] selListLines = ServerUtils.readFile( selListFile );
-		if (selListLines == null)
-			throw new WebClientException("Unable to read selection list file '" + selListFile.getPath() + "'");
+		String[] lines = ServerUtils.readFile( selListFile );
+		if (lines == null)
+			throw new WebClientException("Unable to read file '" + selListFile.getPath() + "'");
 		
 		String listName = null;
 		ArrayList listEntries = null;
 		boolean isInList = false;
 		
-		for (int i = 0; i < selListLines.length; i++) {
+		for (int i = 0; i < lines.length; i++) {
 			if (!isInList) {
-				if (!selListLines[i].startsWith("[")) continue;
+				if (!lines[i].startsWith("[")) continue;
 				
 				for (int j = 0; j < LIST_NAMES.length; j++) {
-					if (LIST_NAMES[j][2].equals( selListLines[i] )) {
+					if (LIST_NAMES[j][2].equals( lines[i] )) {
 						listName = LIST_NAMES[j][0];
 						listEntries = new ArrayList();
 						isInList = true;
@@ -1694,7 +1709,7 @@ public class ImportManager extends HttpServlet {
 				}
 			}
 			else {
-				if (selListLines[i].trim().equals("")) {
+				if (lines[i].trim().equals("")) {
 					if (isInList && listEntries.size() > 0) {
 						// Find the end of a list, update the list entries
 						if (listName.equals("ServiceCompany")) {
@@ -1731,72 +1746,111 @@ public class ImportManager extends HttpServlet {
 					isInList = false;
 				}
 				else {
-					if (selListLines[i].endsWith("="))
-						selListLines[i] = selListLines[i].substring(0, selListLines[i].length() - 1);
-					listEntries.add( selListLines[i] );
+					if (lines[i].endsWith("="))
+						lines[i] = lines[i].substring(0, lines[i].length() - 1);
+					listEntries.add( lines[i] );
 				}
 			}
 		}
 	}
 	
-	private void importUserLabels(File usrLabelFile, HttpSession session) throws WebClientException {
-		String[] usrLabelLines = ServerUtils.readFile( usrLabelFile );
-		if (usrLabelLines == null)
-			throw new WebClientException( "Unable to read user label file '" + usrLabelFile.getPath() + "'" );
+	private void importAppSettings(File appSettingsFile, HttpSession session) throws WebClientException {
+		String[] lines = ServerUtils.readFile( appSettingsFile );
+		if (lines == null)
+			throw new WebClientException( "Unable to read file '" + appSettingsFile.getPath() + "'" );
 		
-		boolean inUsrLabelDefs = false;
+		String sectionName = null;
 		Hashtable userLabels = new Hashtable();
 		
-		for (int i = 0; i < usrLabelLines.length; i++) {
-			if (!inUsrLabelDefs) {
-				if (usrLabelLines[i].equals( "[User Labels]" ))
-					inUsrLabelDefs = true;
+		Hashtable deviceTypes = new Hashtable();
+		deviceTypes.put( "201", "LCR-1000" );
+		deviceTypes.put( "202", "LCR-2000" );
+		deviceTypes.put( "203", "LCR-3000" );
+		deviceTypes.put( "204", "LCR-4000" );
+		deviceTypes.put( "10", "MCT-210" );
+		deviceTypes.put( "11", "MCT-212" );
+		deviceTypes.put( "12", "MCT-213" );
+		deviceTypes.put( "20", "MCT-224" );
+		deviceTypes.put( "21", "MCT-226" );
+		deviceTypes.put( "30", "MCT-240" );
+		deviceTypes.put( "31", "MCT-242" );
+		deviceTypes.put( "32", "MCT-248" );
+		deviceTypes.put( "40", "MCT-250" );
+		deviceTypes.put( "50", "MCT-260" );
+		deviceTypes.put( "60", "MCT-310" );
+		deviceTypes.put( "64", "MCT-310ID" );
+		deviceTypes.put( "68", "MCT-318" );
+		deviceTypes.put( "69", "MCT-310IL" );
+		deviceTypes.put( "70", "MCT-318L" );
+		deviceTypes.put( "75", "MCT-360" );
+		deviceTypes.put( "80", "MCT-370" );
+		
+		Hashtable woStatus = new Hashtable();
+		woStatus.put( "0", WO_STATUS_CLOSED );
+		woStatus.put( "1", WO_STATUS_OPEN );
+		woStatus.put( "2", WO_STATUS_SCHEDULED );
+		woStatus.put( "99", WO_STATUS_WAITING );
+		woStatus.put( "65535", WO_STATUS_OPEN );
+		
+		for (int i = 0; i < lines.length; i++) {
+			if (lines[i].trim().length() == 0) continue;
+			if (lines[i].charAt(0) == ';') continue;
+			
+			if (lines[i].charAt(0) == '[') {
+				sectionName = lines[i];
 				continue;
 			}
-			else {
-				if (usrLabelLines[i].startsWith("[")) break;
-				if (usrLabelLines[i].trim().equals("")) continue;
-				
-				int pos = usrLabelLines[i].indexOf('=');
-				if (pos < 0) continue;
-				String name = usrLabelLines[i].substring( 0, pos );
-				String value = usrLabelLines[i].substring( pos+1 );
+			
+			int pos = lines[i].indexOf('=');
+			if (pos < 0) continue;
+			String name = lines[i].substring( 0, pos );
+			String value = lines[i].substring( pos+1 );
+			
+			if (sectionName.equalsIgnoreCase("[User Labels]")) {
 				if (!value.startsWith("@"))
 					userLabels.put( name, value );
+			}
+			else if (sectionName.equalsIgnoreCase("[Device Types]")) {
+				deviceTypes.put( value, name );
+			}
+			else if (sectionName.equalsIgnoreCase("[Work Order Status]")) {
+				woStatus.put( value, name );
 			}
 		}
 		
 		session.setAttribute( USER_LABELS, userLabels );
+		session.setAttribute( DEVICE_TYPES, deviceTypes );
+		session.setAttribute( WORK_ORDER_STATUS, woStatus );
 	}
 	
 	private void importINIData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		
 		try {
-			boolean hasSelListFile = false;
+			boolean selListImported = false;
 			
-			if (req.getParameter("SelListFile").length() > 0) {
-				File selListFile = new File( req.getParameter("SelListFile") );
+			if (req.getParameter("S3DATA_INI").length() > 0) {
+				File selListFile = new File( req.getParameter("S3DATA_INI") );
 				importSelectionLists( selListFile, energyCompany );
-				hasSelListFile = true;
+				selListImported = true;
 			}
 			
-			if (req.getParameter("UsrLabelFile").length() > 0) {
-				File usrLabelFile = new File( req.getParameter("UsrLabelFile") );
-				importUserLabels( usrLabelFile, session );
+			if (req.getParameter("STARS3_INI").length() > 0) {
+				File appSettingsFile = new File( req.getParameter("STARS3_INI") );
+				importAppSettings( appSettingsFile, session );
 			}
 			
 			String msg = "INI file(s) imported successfully.";
-			if (hasSelListFile)
-				msg += " Please go to the energy company settings page to update the appliance category information.";
+			if (selListImported)
+				msg += LINE_SEPARATOR + "Please go to the energy company settings page to update the appliance categories and device type list.";
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, msg);
 		}
 		catch (WebClientException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import INI file(s)");
 		}
 	}
@@ -1808,7 +1862,7 @@ public class ImportManager extends HttpServlet {
 			ArrayList companies = energyCompany.getAllServiceCompanies();
 			for (int i = 0; i < companies.size(); i++) {
 				LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
-				if (text.equals( liteCompany.getCompanyName() ))
+				if (text.equalsIgnoreCase( liteCompany.getCompanyName() ))
 					return new Integer( liteCompany.getCompanyID() );
 			}
 		}
@@ -1818,8 +1872,22 @@ public class ImportManager extends HttpServlet {
 			ArrayList appCats = energyCompany.getAllApplianceCategories();
 			for (int i = 0; i < appCats.size(); i++) {
 				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(i);
-				if (text.equals( liteAppCat.getDescription() ))
+				if (text.equalsIgnoreCase( liteAppCat.getDescription() ))
 					return new Integer( liteAppCat.getApplianceCategoryID() );
+			}
+		}
+		else if (listName.equals("LoadGroup")) {
+			if (text.equals("")) return null;
+			
+			ArrayList programs = energyCompany.getAllPrograms();
+			for (int i = 0; i < programs.size(); i++) {
+				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
+				if (liteProg.getGroupIDs() == null) continue;
+				
+				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
+					if (PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] ).equalsIgnoreCase( text ))
+						return new Integer(liteProg.getGroupIDs()[j]);
+				}
 			}
 		}
 		else {
@@ -1827,9 +1895,57 @@ public class ImportManager extends HttpServlet {
 			if (list != null) {
 				for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 					YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
-					if (text.equals( entry.getEntryText().trim() ))
+					if (text.equalsIgnoreCase( entry.getEntryText().trim() ))
 						return new Integer( entry.getEntryID() );
 				}
+			}
+		}
+		
+		return ZERO;
+	}
+	
+	private Integer getTextEntryID(String value, String listName, LiteStarsEnergyCompany energyCompany, Hashtable map) {
+		String text = (String) map.get(value);
+		if (text != null) {
+			if (listName.equals("DeviceType")) {
+				if (text.equals("LCR-1000"))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000).getEntryID() );
+				else if (text.equals("LCR-2000"))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000).getEntryID() );
+				else if (text.equals("LCR-3000"))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000).getEntryID() );
+				else if (text.equals("LCR-4000"))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000).getEntryID() );
+				else if (text.startsWith("MCT"))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryID() );
+				
+				YukonSelectionList list = energyCompany.getYukonSelectionList( listName );
+				if (list != null) {
+					for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+						if (text.equals( entry.getEntryText() ))
+							return new Integer( entry.getEntryID() );
+					}
+				}
+			}
+			else if (listName.equals("ServiceStatus")) {
+				if (text.equals(WO_STATUS_CLOSED))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID() );
+				else if (text.equals(WO_STATUS_SCHEDULED))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID() );
+				else if (text.equals(WO_STATUS_OPEN))
+					return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID() );
+				
+				YukonSelectionList list = energyCompany.getYukonSelectionList( listName );
+				if (list != null) {
+					for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+						YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+						if (text.equals( entry.getEntryText() ))
+							return new Integer( entry.getEntryID() );
+					}
+				}
+				
+				return new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID() );
 			}
 		}
 		
@@ -2498,6 +2614,95 @@ public class ImportManager extends HttpServlet {
 		return fields;
 	}
 	
+	private void dumpSelectionLists(Hashtable preprocessedData, LiteStarsEnergyCompany energyCompany) {
+		ArrayList lines = new ArrayList();
+		
+		for (int i = 0; i < LIST_NAMES.length; i++) {
+			if (LIST_NAMES[i][1].length() == 0) continue;
+			
+			TreeMap valueIDMap = (TreeMap) preprocessedData.get( LIST_NAMES[i][0] );
+			if (valueIDMap.size() == 0) continue;
+			
+			lines.add( "[" + LIST_NAMES[i][0] + "]" );
+			
+			Iterator it = valueIDMap.keySet().iterator();
+			while (it.hasNext()) {
+				String value = (String) it.next();
+				Integer id = (Integer) valueIDMap.get( value );
+				
+				if (id == null) {
+					if (value.trim().length() > 0)
+						lines.add( "@" + value + "=" );
+				}
+				else {
+					String line = value + "=";
+					if (id.intValue() > 0) {
+						if (LIST_NAMES[i][0].equals("ServiceCompany")) {
+							ArrayList companies = energyCompany.getAllServiceCompanies();
+							for (int j = 0; j < companies.size(); j++) {
+								LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(j);
+								if (liteCompany.getCompanyID() == id.intValue()) {
+									line += "\"" + liteCompany.getCompanyName() + "\"";
+									break;
+								}
+							}
+						}
+						else if (LIST_NAMES[i][0].equals("LoadType")) {
+							ArrayList appCats = energyCompany.getAllApplianceCategories();
+							for (int j = 0; j < appCats.size(); j++) {
+								LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+								if (liteAppCat.getApplianceCategoryID() == id.intValue()) {
+									line += "\"" + liteAppCat.getDescription() + "\"";
+									break;
+								}
+							}
+						}
+						else if (LIST_NAMES[i][0].equals("LoadGroup")) {
+							ArrayList programs = energyCompany.getAllPrograms();
+							for (int j = 0; j < programs.size(); j++) {
+								LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+								if (liteProg.getGroupIDs() == null) continue;
+								
+								for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
+									if (liteProg.getGroupIDs()[k] == id.intValue()) {
+										line += "\"" + PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[k] ) + "\"";
+										break;
+									}
+								}
+							}
+						}
+						else {
+							YukonSelectionList list = energyCompany.getYukonSelectionList( LIST_NAMES[i][0] );
+							for (int j = 0; j < list.getYukonListEntries().size(); j++) {
+								YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(j);
+								if (entry.getEntryID() == id.intValue()) {
+									line += "\"" + entry.getEntryText() + "\"";
+									break;
+								}
+							}
+						}
+					}
+					
+					lines.add( line );
+				}
+			}
+			
+			lines.add( "" );
+		}
+		
+		String[] lns = new String[ lines.size() ];
+		lines.toArray( lns );
+		
+		String path = (String) preprocessedData.get( CUSTOMER_FILE_PATH );
+		File custListFile = new File( path, "custlist.map" );
+		try {
+			ServerUtils.writeFile( custListFile, lns );
+		}
+		catch (IOException e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
+	
 	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
 		int lineNo = 0;
@@ -2577,6 +2782,10 @@ public class ImportManager extends HttpServlet {
 			
 			Hashtable userLabels = (Hashtable) session.getAttribute( USER_LABELS );
 			if (userLabels == null) userLabels = new Hashtable();
+			Hashtable deviceTypes = (Hashtable) session.getAttribute( DEVICE_TYPES );
+			if (deviceTypes == null) deviceTypes = new Hashtable();
+			Hashtable woStatus = (Hashtable) session.getAttribute( WORK_ORDER_STATUS );
+			if (woStatus == null) woStatus = new Hashtable();
 			
 			Hashtable acctIDFields = new Hashtable();	// Map from account id(Integer) to fields(String[])
 			Hashtable invIDFields = new Hashtable();	// Map from inventory id(Integer) to fields(String[])
@@ -2609,7 +2818,7 @@ public class ImportManager extends HttpServlet {
 						acctIDMap.put( Integer.valueOf(fields[0]), Integer.valueOf(fields[1]) );
 					}
 					
-					preprocessedData.put("CustomerAccountMap", acctIDMap);
+					preprocessedData.put(CUSTOMER_ACCOUNT_MAP, acctIDMap);
 				}
 				else {
 					for (int i = 0; i < custLines.length; i++) {
@@ -2624,10 +2833,10 @@ public class ImportManager extends HttpServlet {
 					}
 				}
 				
-				preprocessedData.put("CustomerFilePath", custFile.getParent());
+				preprocessedData.put(CUSTOMER_FILE_PATH, custFile.getParent());
 			}
 			else {
-				if (preprocessedData.get("CustomerAccountMap") == null)
+				if (preprocessedData.get(CUSTOMER_ACCOUNT_MAP) == null)
 					throw new WebClientException("No customer information found. If you have already imported the customer file, select the generated 'customer.map' file in the 'Customer File' field");
 			}
 			
@@ -2673,9 +2882,18 @@ public class ImportManager extends HttpServlet {
 					for (int j = 0; j < INV_LIST_FIELDS.length; j++) {
 						int listIdx = INV_LIST_FIELDS[j][0];
 						int fieldIdx = INV_LIST_FIELDS[j][1];
-						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
-							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
-							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+						
+						String text = fields[fieldIdx];
+						if (fieldIdx == IDX_DEVICE_TYPE) {
+							text = (String) deviceTypes.get( fields[fieldIdx] );
+							if (text == null)
+								throw new WebClientException( "Inventory file line #" + lineNo + ": invalid device type " + fields[fieldIdx] );
+							if (text.startsWith("MCT")) text = "MCT";
+						}
+						
+						if (!valueIDMaps[listIdx].containsKey( text )) {
+							Integer entryID = getTextEntryID( text, LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( text, entryID );
 						}
 					}
 				}
@@ -2701,7 +2919,7 @@ public class ImportManager extends HttpServlet {
 						appIDMap.put( invID, appIDs );
 					}
 					
-					preprocessedData.put("HwConfigAppMap", appIDMap);
+					preprocessedData.put(HW_CONFIG_APP_MAP, appIDMap);
 				}
 				else {
 					for (int i = 0; i < recvrLines.length; i++) {
@@ -2726,9 +2944,20 @@ public class ImportManager extends HttpServlet {
 							for (int j = 0; j < RECV_LIST_FIELDS.length; j++) {
 								int listIdx = RECV_LIST_FIELDS[j][0];
 								int fieldIdx = RECV_LIST_FIELDS[j][1];
-								if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
-									Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
-									if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+								
+								String text = fields[fieldIdx];
+								if (fieldIdx == IDX_DEVICE_STATUS) {
+									if (text.equals("SwitchStatus:1"))
+										text = "Temp Unavail";
+									else if (text.equals("SwitchStatus:4"))
+										text = "Unavailable";
+									else if (text.equals("SwitchStatus:8"))
+										text = "Available";
+								}
+								
+								if (!valueIDMaps[listIdx].containsKey( text )) {
+									Integer entryID = getTextEntryID( text, LIST_NAMES[listIdx][0], energyCompany );
+									if (entryID != null) valueIDMaps[listIdx].put( text, entryID );
 								}
 							}
 						}
@@ -2769,7 +2998,7 @@ public class ImportManager extends HttpServlet {
 			
 			if (loadInfoLines != null) {
 				lineNo = 0;
-				if (recvrLines == null && preprocessedData.get("HwConfigAppMap") == null)
+				if (recvrLines == null && preprocessedData.get(HW_CONFIG_APP_MAP) == null)
 					throw new WebClientException("No hardware config information found. If you have already imported the receiver file, select the generated 'hwconfig.map' file in the 'Receiver File' field.");
 				
 				for (int i = 0; i < loadInfoLines.length; i++) {
@@ -3080,9 +3309,23 @@ public class ImportManager extends HttpServlet {
 					for (int j = 0; j < ORDER_LIST_FIELDS.length; j++) {
 						int listIdx = ORDER_LIST_FIELDS[j][0];
 						int fieldIdx = ORDER_LIST_FIELDS[j][1];
-						if (!valueIDMaps[listIdx].containsKey( fields[fieldIdx] )) {
-							Integer entryID = getTextEntryID( fields[fieldIdx], LIST_NAMES[listIdx][0], energyCompany );
-							if (entryID != null) valueIDMaps[listIdx].put( fields[fieldIdx], entryID );
+						
+						String text = fields[fieldIdx];
+						if (fieldIdx == IDX_ORDER_STATUS) {
+							text = (String) woStatus.get( fields[fieldIdx] );
+							if (text == null)
+								throw new WebClientException( "Work order file line #" + lineNo + ": invalid work order status " + fields[fieldIdx] );
+							if (text.equalsIgnoreCase(WO_STATUS_CLOSED))
+								text = "Completed";
+							else if (text.equalsIgnoreCase(WO_STATUS_SCHEDULED))
+								text = "Scheduled";
+							else if (text.equalsIgnoreCase(WO_STATUS_OPEN) || text.equalsIgnoreCase(WO_STATUS_WAITING))
+								text = "Pending";
+						}
+						
+						if (!valueIDMaps[listIdx].containsKey( text )) {
+							Integer entryID = getTextEntryID( text, LIST_NAMES[listIdx][0], energyCompany );
+							if (entryID != null) valueIDMaps[listIdx].put( text, entryID );
 						}
 					}
 				}
@@ -3129,16 +3372,18 @@ public class ImportManager extends HttpServlet {
 				if (valueIDMaps[i].containsValue(ZERO) && LIST_NAMES[i][1].length() > 0)
 					unassignedLists.put( LIST_NAMES[i][0], new Boolean(true) );
 			}
+			
+			dumpSelectionLists( preprocessedData, energyCompany );
 		}
 		catch (WebClientException e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			String errorMsg = e.getMessage();
 			if (lineNo > 0) errorMsg += ": line #" + lineNo;
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, errorMsg);
 			redirect = referer;
 		}
 		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to preprocess old STARS data");
 			redirect = referer;
 		}
@@ -3163,24 +3408,27 @@ public class ImportManager extends HttpServlet {
 		for (int i = 0; i < values.length; i++)
 			valueIDMap.put( values[i], null );
 		
-		ArrayList assignedValues = new ArrayList();
+		ArrayList newEntries = new ArrayList();
 		if (enabled != null) {
+			int entryIDIdx = 0;
 			for (int i = 0; i < enabled.length; i++) {
 				int idx = Integer.parseInt( enabled[i] );
-				assignedValues.add( values[idx] );
+				
+				String listEntry = req.getParameter("ListEntry" + idx);
+				if (listEntry != null && listEntry.equals("New"))
+					newEntries.add( values[idx] );
+				else
+					valueIDMap.put( values[idx], Integer.valueOf(entryIDs[entryIDIdx++]) );
 			}
 		}
 		
-		if (entryIDs != null) {
-			for (int i = 0; i < assignedValues.size(); i++)
-				valueIDMap.put( assignedValues.get(i), Integer.valueOf(entryIDs[i]) );
-		}
-		else if (entryTexts != null) {
+		if (entryTexts != null) {
+			// Create new list entries
 			try {
 				if (listName.equals("ServiceCompany")) {
 					for (int i = 0; i < entryTexts.length; i++) {
 						LiteServiceCompany liteCompany = StarsAdmin.createServiceCompany( entryTexts[i], energyCompany );
-						valueIDMap.put( assignedValues.get(i), new Integer(liteCompany.getCompanyID()) );
+						valueIDMap.put( newEntries.get(i), new Integer(liteCompany.getCompanyID()) );
 					}
 				}
 				else {
@@ -3208,11 +3456,11 @@ public class ImportManager extends HttpServlet {
 					StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 					selectionListTable.put( starsList.getListName(), starsList );
 					
-					for (int i = 0; i < assignedValues.size(); i++) {
+					for (int i = 0; i < newEntries.size(); i++) {
 						for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
 							YukonListEntry cEntry = (YukonListEntry) cList.getYukonListEntries().get(j);
 							if (cEntry.getEntryText().equals(entryTexts[i]) && cEntry.getYukonDefID() == 0) {
-								valueIDMap.put( assignedValues.get(i), new Integer(cEntry.getEntryID()) );
+								valueIDMap.put( newEntries.get(i), new Integer(cEntry.getEntryID()) );
 								break;
 							}
 						}
@@ -3224,7 +3472,7 @@ public class ImportManager extends HttpServlet {
 				redirect = referer;
 			}
 			catch (Exception e) {
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				CTILogger.error( e.getMessage(), e );
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to assign import values to selection list");
 				redirect = referer;
 			}
@@ -3244,6 +3492,8 @@ public class ImportManager extends HttpServlet {
 		ArrayList appFieldsList = (ArrayList) preprocessedData.get("Appliance");
 		ArrayList orderFieldsList = (ArrayList) preprocessedData.get("WorkOrder");
 		ArrayList resFieldsList = (ArrayList) preprocessedData.get("CustomerResidence");
+		
+		dumpSelectionLists( preprocessedData, energyCompany );
 		
 		TreeMap[] valueIDMaps = new TreeMap[ LIST_NAMES.length ];
 		for (int i = 0; i < LIST_NAMES.length; i++)
