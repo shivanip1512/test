@@ -121,6 +121,37 @@ public final class ContactFuncs
 		LiteContact[] cArr = new LiteContact[ notifs.size() ];
 		return (LiteContact[])notifs.toArray( cArr );
 	}
+	
+	public static LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
+		if (phoneNo == null) return null;
+		
+		java.util.Arrays.sort( phoneNotifCatIDs );
+		ArrayList contList = new ArrayList();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized (cache) {
+			List allConts = cache.getAllContacts();
+			
+			for (int i = 0; i < allConts.size(); i++) {
+				LiteContact lCont = (LiteContact) allConts.get(i);
+				for (int j = 0; j < lCont.getLiteContactNotifications().size(); j++) {
+					LiteContactNotification lNotif = (LiteContactNotification)
+							lCont.getLiteContactNotifications().get(j);
+					
+					if (java.util.Arrays.binarySearch(phoneNotifCatIDs, lNotif.getNotificationCategoryID()) >= 0
+						&& phoneNo.equalsIgnoreCase( lNotif.getNotification() ))
+					{
+						contList.add( lCont );
+						break;
+					}
+				}
+			}
+		}
+		
+		LiteContact[] contacts = new LiteContact[ contList.size() ];
+		contList.toArray( contacts );
+		return contacts;
+	}
 
 	/**
 	 * Returns the LiteContact for email_.
