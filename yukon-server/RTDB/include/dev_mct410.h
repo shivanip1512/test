@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/25 21:50:38 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/03/01 16:01:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,9 +142,13 @@ protected:
 
     enum
     {
-        MCT4XX_LPChannels       =  4,
-        MCT410_LPVoltageChannel =  4,
-        MCT4XX_LPRecentBlocks   = 16,
+        MCT4XX_LPChannels       =    4,
+        MCT410_LPVoltageChannel =    4,
+        MCT4XX_LPRecentBlocks   =   16,
+
+        MCT410_Sspec            = 1029,
+        MCT410_Min_NewOutageRev =    8,
+        MCT410_Max_NewOutageRev =   30,
 
         MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000
                                               //  if 81c99f60 is 1970
@@ -153,6 +157,7 @@ protected:
     typedef pair<double, PointQuality_t> data_pair;
     typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
 
+    unsigned char crc8(const unsigned char *buf, unsigned int len);
     data_pair getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
     static  const QualityMap _errorQualities;
 
@@ -179,6 +184,8 @@ protected:
         int period;
         int command;
     } _llpPeakInterest;
+
+    int _sspec, _rev;
 
 private:
 
@@ -223,7 +230,7 @@ public:
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-    virtual INT executeGetValueLoadProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+    virtual INT executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
 
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
