@@ -243,7 +243,7 @@ function validate(form) {
 <%
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	if (inventory.getLMHardware() != null && trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
-		int hwConfigType = ECUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
+		int hwConfigType = InventoryUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
 		StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 %>
                   <input type="hidden" name="UseHardwareAddressing" value="true">

@@ -25,8 +25,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ImportProblem;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -696,8 +696,8 @@ public class ImportManagerUtil {
 			devType.setEntryID( Integer.parseInt(fields[IDX_DEVICE_TYPE]) );
 			inv.setDeviceType( devType );
 			
-			int categoryID = ECUtils.getInventoryCategoryID(devType.getEntryID(), energyCompany);
-			isLMHardware = ECUtils.isLMHardware(categoryID);
+			int categoryID = InventoryUtils.getInventoryCategoryID(devType.getEntryID(), energyCompany);
+			isLMHardware = InventoryUtils.isLMHardware(categoryID);
 		}
 		
 		if (isLMHardware) {
@@ -728,8 +728,8 @@ public class ImportManagerUtil {
 		StarsCreateLMHardware createHw = null;
 		LiteInventoryBase liteInv = null;
 		
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID, energyCompany );
-		if (ECUtils.isLMHardware( categoryID )) {
+		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID, energyCompany );
+		if (InventoryUtils.isLMHardware( categoryID )) {
 			if (checkConstraint)
 				liteInv = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
 		}

@@ -59,6 +59,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.DeleteCustAccountsTask;
@@ -668,7 +669,7 @@ public class StarsAdmin extends HttpServlet {
 						liteProg.setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
 						liteProg.setProgramOrder( pubProg.getLMProgramWebPublishing().getProgramOrder().intValue() );
 						
-						String oldDispName = ECUtils.getPublishedProgramName( liteProg );
+						String oldDispName = StarsUtils.getPublishedProgramName( liteProg );
 						
 						LiteWebConfiguration liteCfg = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
 						StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
@@ -1504,7 +1505,7 @@ public class StarsAdmin extends HttpServlet {
         
 		try {
 			StarsThermostatTypes thermType = StarsThermostatTypes.valueOf( req.getParameter("type") );
-			int hwTypeDefID = ECUtils.getLMHardwareTypeDefID(thermType).intValue();
+			int hwTypeDefID = StarsMsgUtils.getLMHardwareTypeDefID(thermType).intValue();
         	
 			StarsUpdateThermostatSchedule updateSched = UpdateThermostatScheduleAction.getRequestOperation(req).getStarsUpdateThermostatSchedule();
         	

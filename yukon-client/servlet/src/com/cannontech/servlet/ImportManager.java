@@ -32,7 +32,7 @@ import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -2358,8 +2358,8 @@ public class ImportManager extends HttpServlet {
 				fields[fieldIdx] = (id != null)? id.toString() : "0";
 			}
 			
-			int categoryID = ECUtils.getInventoryCategoryID( Integer.parseInt(fields[ImportManagerUtil.IDX_DEVICE_TYPE]), energyCompany );
-			if (ECUtils.isLMHardware( categoryID )) {
+			int categoryID = InventoryUtils.getInventoryCategoryID( Integer.parseInt(fields[ImportManagerUtil.IDX_DEVICE_TYPE]), energyCompany );
+			if (InventoryUtils.isLMHardware( categoryID )) {
 				for (int j = 0; j < ImportManagerUtil.RECV_LIST_FIELDS.length; j++) {
 					int listIdx = ImportManagerUtil.RECV_LIST_FIELDS[j][0];
 					int fieldIdx = ImportManagerUtil.RECV_LIST_FIELDS[j][1];

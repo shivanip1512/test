@@ -631,7 +631,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 					CTILogger.error( e.getMessage(), e );
 				}
 				
-				String newProgName = ECUtils.getPublishedProgramName( liteProg );
+				String newProgName = StarsUtils.getPublishedProgramName( liteProg );
 				
 				ArrayList accounts = energyCompany.getActiveAccounts();
 				for (int i = 0; i < accounts.size(); i++) {

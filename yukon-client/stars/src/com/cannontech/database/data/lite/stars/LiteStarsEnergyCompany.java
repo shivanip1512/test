@@ -47,6 +47,7 @@ import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ProgressChecker;
@@ -781,7 +782,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public ArrayList getAllSelectionLists(StarsYukonUser user) {
 		ArrayList userLists = new ArrayList();
 		
-		if (ECUtils.isOperator( user )) {
+		if (StarsUtils.isOperator( user )) {
 			TreeMap listMap = new TreeMap();
 			listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
 					getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
@@ -969,7 +970,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			while (it.hasNext())
 				userLists.add( it.next() );
 		}
-		else if (ECUtils.isResidentialCustomer( user )) {
+		else if (StarsUtils.isResidentialCustomer( user )) {
 			userLists.add( getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 			
 			if (AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)) {
@@ -1712,7 +1713,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
 						Transaction.createTransaction( Transaction.RETRIEVE, invDB ).execute();
 				
-				if (ECUtils.isLMHardware( invDB.getCategoryID().intValue() )) {
+				if (InventoryUtils.isLMHardware( invDB.getCategoryID().intValue() )) {
 					com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB =
 							new com.cannontech.database.db.stars.hardware.LMHardwareBase();
 					hwDB.setInventoryID( invDB.getInventoryID() );
@@ -1898,7 +1899,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
-		if (ECUtils.isMCT( categoryID )) {
+		if (InventoryUtils.isMCT( categoryID )) {
 			synchronized (cache) {
 				java.util.List mctList = cache.getAllMCTs();
 				for (int i = 0; i < mctList.size(); i++) {
@@ -2023,7 +2024,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 				liteSched = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
 			}
 			
-			if (!ECUtils.isValidThermostatSchedule( liteSched )) {
+			if (!InventoryUtils.isValidThermostatSchedule( liteSched )) {
 				if (schedule != null)
 					Transaction.createTransaction( Transaction.DELETE, schedule ).execute();
 				
@@ -2722,7 +2723,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	/* The following methods are only used when SOAPClient exists locally */
 	
 	public synchronized StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
-		if (ECUtils.isOperator(user)) {
+		if (StarsUtils.isOperator(user)) {
 			if (starsOperECSettings == null) {
 				starsOperECSettings = new StarsEnergyCompanySettings();
 				starsOperECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -2737,7 +2738,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsOperECSettings;
 		}
-		else if (ECUtils.isResidentialCustomer(user)) {
+		else if (StarsUtils.isResidentialCustomer(user)) {
 			if (starsCustECSettings == null) {
 				starsCustECSettings = new StarsEnergyCompanySettings();
 				starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -2817,7 +2818,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 	public synchronized StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
 		LiteYukonUser liteUser = starsUser.getYukonUser();
 		
-		if (ECUtils.isOperator( starsUser )) {
+		if (StarsUtils.isOperator( starsUser )) {
 			if (starsOperSelLists == null) {
 				starsOperSelLists = new StarsCustomerSelectionLists();
 				updateOperSelectionLists();
@@ -2825,7 +2826,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			
 			return starsOperSelLists;
 		}
-		else if (ECUtils.isResidentialCustomer( starsUser )) {
+		else if (StarsUtils.isResidentialCustomer( starsUser )) {
 			if (starsCustSelLists == null) {
 				starsCustSelLists = new StarsCustomerSelectionLists();
 				updateCustSelectionLists();

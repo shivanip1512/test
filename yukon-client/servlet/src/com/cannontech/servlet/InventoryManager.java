@@ -27,9 +27,11 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.AddSNRangeTask;
@@ -294,7 +296,7 @@ public class InventoryManager extends HttpServlet {
 					if (liteInv == null) {
 						createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
 						createHw.setDeviceID( deviceID );
-						if (ECUtils.isMCT( categoryID )) {
+						if (InventoryUtils.isMCT( categoryID )) {
 							createHw.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 									energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
 						}
@@ -329,7 +331,7 @@ public class InventoryManager extends HttpServlet {
 					if (liteInv == null) {
 						updateHw = (StarsUpdateLMHardware) StarsFactory.newStarsInv(StarsUpdateLMHardware.class);
 						updateHw.setDeviceID( deviceID );
-						if (ECUtils.isMCT( categoryID )) {
+						if (InventoryUtils.isMCT( categoryID )) {
 							updateHw.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 									energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
 						}
@@ -370,7 +372,7 @@ public class InventoryManager extends HttpServlet {
 					StarsInventory starsInv = (StarsInventory) StarsFactory.newStarsInv(StarsInventory.class);
 					starsInv.setDeviceID( deviceID );
 					
-					if (ECUtils.isMCT( categoryID )) {
+					if (InventoryUtils.isMCT( categoryID )) {
 						starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 								energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), DeviceType.class) );
 						
@@ -415,7 +417,7 @@ public class InventoryManager extends HttpServlet {
 		String serialNo = req.getParameter("SerialNo");
 		String deviceName = req.getParameter("DeviceName");
 		
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID, energyCompany );
+		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID, energyCompany );
 		
 		if (invChecking) {
 			// Save the request parameters
@@ -423,12 +425,12 @@ public class InventoryManager extends HttpServlet {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					YukonListFuncs.getYukonListEntry(devTypeID), DeviceType.class) );
 			
-			if (ECUtils.isLMHardware(categoryID)) {
+			if (InventoryUtils.isLMHardware(categoryID)) {
 				LMHardware hw = new LMHardware();
 				hw.setManufacturerSerialNumber( serialNo );
 				starsInv.setLMHardware( hw );
 			}
-			else if (ECUtils.isMCT(categoryID)) {
+			else if (InventoryUtils.isMCT(categoryID)) {
 				MCT mct = new MCT();
 				mct.setDeviceName( deviceName );
 				starsInv.setMCT( mct );
@@ -440,7 +442,7 @@ public class InventoryManager extends HttpServlet {
 		LiteInventoryBase liteInv = null;
 		
 		try {
-			if (ECUtils.isLMHardware( categoryID )) {
+			if (InventoryUtils.isLMHardware( categoryID )) {
 				liteInv = energyCompany.searchForLMHardware( devTypeID, serialNo );
 				session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
 			}
@@ -771,7 +773,7 @@ public class InventoryManager extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
 			redirect = referer = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+					(StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		catch (WebClientException e) {
 			CTILogger.error( e.getMessage(), e );

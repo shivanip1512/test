@@ -22,7 +22,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -133,7 +132,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				if (ECUtils.isOperator(user)) {
+				if (StarsUtils.isOperator(user)) {
 					try {
 						updateInventory( updateHw, liteInv, energyCompany );
 					}
@@ -407,7 +406,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			}
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (ECUtils.isOperator( user ))
+			if (StarsUtils.isOperator( user ))
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
 			else
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Thermostat name updated successfully" );

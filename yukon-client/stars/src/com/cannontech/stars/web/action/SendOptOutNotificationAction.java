@@ -26,7 +26,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -183,7 +182,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
 		LiteContact cont = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-		String name = ECUtils.formatName( cont );
+		String name = StarsUtils.formatName( cont );
 		if (name.length() > 0)
 			text.append( name ).append(LINE_SEPARATOR);
         
@@ -202,11 +201,11 @@ public class SendOptOutNotificationAction implements ActionBase {
 			text.append(LINE_SEPARATOR);
 		}
 		
-		String homePhone = ECUtils.getNotification(
+		String homePhone = StarsUtils.getNotification(
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-		String workPhone = ECUtils.getNotification(
+		String workPhone = StarsUtils.getNotification(
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
-		String email = ECUtils.getNotification(
+		String email = StarsUtils.getNotification(
 				ContactFuncs.getContactNotification(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
         
 		if (homePhone.length() > 0)
@@ -232,7 +231,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 					
-					String progName = ECUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
+					String progName = StarsUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 					text.append("    Program: ").append( progName );
 					
 					String groupName = "(none)";

@@ -32,9 +32,10 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
@@ -1171,8 +1172,8 @@ public class StarsLiteFactory {
 			starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
 		if (liteDynData.getDisplayedTempUnit() != null)
 			starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit().equalsIgnoreCase("C") ? "Celsius" : "Fahrenheit" );
-		starsDynData.setFan( ECUtils.getThermFanSetting(liteDynData.getFanSwitch()) );
-		starsDynData.setMode( ECUtils.getThermModeSetting(liteDynData.getSystemSwitch()) );
+		starsDynData.setFan( StarsMsgUtils.getThermFanSetting(liteDynData.getFanSwitch()) );
+		starsDynData.setMode( StarsMsgUtils.getThermModeSetting(liteDynData.getSystemSwitch()) );
 		if (liteDynData.getCoolSetpoint() != Integer.MIN_VALUE)
 			starsDynData.setCoolSetpoint( liteDynData.getCoolSetpoint() );
 		if (liteDynData.getHeatSetpoint() != Integer.MIN_VALUE)
@@ -1191,9 +1192,9 @@ public class StarsLiteFactory {
 		starsDynData.removeAllInfoString();
 
 		// If the current mode is auto, then display that in the text area, and set mode to the last none-auto mode of the thermostat
-		StarsThermoModeSettings mode = ECUtils.getThermModeSetting( liteDynData.getSystemSwitch() );
+		StarsThermoModeSettings mode = StarsMsgUtils.getThermModeSetting( liteDynData.getSystemSwitch() );
 		if (mode != null && mode.getType() == StarsThermoModeSettings.AUTO_TYPE) {
-			mode = ECUtils.getThermModeSetting( liteDynData.getLastSystemSwitch() );
+			mode = StarsMsgUtils.getThermModeSetting( liteDynData.getLastSystemSwitch() );
 			starsDynData.addInfoString( "Mode: AUTO" );
 		}
 		starsDynData.setMode( mode );
@@ -1228,7 +1229,7 @@ public class StarsLiteFactory {
 		starsThermProg.setScheduleID( liteSchedule.getScheduleID() );
 		if (!liteSchedule.getScheduleName().equals( CtiUtilities.STRING_NONE ))
 			starsThermProg.setScheduleName( liteSchedule.getScheduleName() );
-		starsThermProg.setThermostatType( ECUtils.getThermostatType(liteSchedule.getThermostatTypeID()) );
+		starsThermProg.setThermostatType( StarsMsgUtils.getThermostatType(liteSchedule.getThermostatTypeID()) );
 		for (int i = 0; i < liteSchedule.getThermostatSeasons().size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSchedule.getThermostatSeasons().get(i);
 			StarsThermostatSeason starsSeason = createStarsThermostatSeason( liteSeason, energyCompany );
@@ -1495,13 +1496,13 @@ public class StarsLiteFactory {
 			
 			if (liteContact != null) {
 				LiteContactNotification liteNotifPhone = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
-				starsCompany.setMainPhoneNumber( ECUtils.getNotification(liteNotifPhone) );
+				starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone) );
 				
 				LiteContactNotification liteNotifFax = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
-				starsCompany.setMainFaxNumber( ECUtils.getNotification(liteNotifFax) );
+				starsCompany.setMainFaxNumber( StarsUtils.getNotification(liteNotifFax) );
 				
 				LiteContactNotification liteNotifEmail = ContactFuncs.getContactNotification( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-				starsCompany.setEmail( ECUtils.getNotification(liteNotifEmail) );
+				starsCompany.setEmail( StarsUtils.getNotification(liteNotifEmail) );
 				
 				if (liteContact.getAddressID() != CtiUtilities.NONE_ID) {
 					LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
@@ -1657,7 +1658,7 @@ public class StarsLiteFactory {
 			
 			starsInv.setLMHardware( hw );
 		}
-		else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+		else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT),
 					DeviceType.class) );
@@ -1759,7 +1760,7 @@ public class StarsLiteFactory {
 		starsProg.setProgramID( liteProg.getProgramID() );
 		starsProg.setApplianceCategoryID( liteProg.getPublishedProgram().getApplianceCategoryID() );
 		starsProg.setGroupID( liteProg.getGroupID() );
-		starsProg.setProgramName( ECUtils.getPublishedProgramName(liteProg.getPublishedProgram()) );
+		starsProg.setProgramName( StarsUtils.getPublishedProgramName(liteProg.getPublishedProgram()) );
 		
 		if (liteProg.isInService())
 			starsProg.setStatus( ServletUtils.IN_SERVICE );
@@ -1996,7 +1997,7 @@ public class StarsLiteFactory {
 		starsUser.setUsername( StarsUtils.forceNotNull(liteUser.getUsername()) );
 		//starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
 		starsUser.setPassword( "" );
-		starsUser.setStatus( ECUtils.getLoginStatus(liteUser.getStatus()) );
+		starsUser.setStatus( StarsMsgUtils.getLoginStatus(liteUser.getStatus()) );
 		
 		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 		com.cannontech.database.cache.DefaultDatabaseCache cache =
@@ -2019,7 +2020,7 @@ public class StarsLiteFactory {
 		if (liteEntries.size() != 4) return null;
 		
 		StarsThermostatSchedule starsSched = new StarsThermostatSchedule();
-		starsSched.setDay( ECUtils.getThermDaySetting(towID) );
+		starsSched.setDay( StarsMsgUtils.getThermDaySetting(towID) );
 		
 		LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(0);
 		starsSched.setTime1( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
@@ -2049,7 +2050,7 @@ public class StarsLiteFactory {
 		starsSeason.setStartDate( new org.exolab.castor.types.Date(startCal.getTime()) );
 */		
 		//if (starsConfig.getURL().equalsIgnoreCase("Cool"))	// Temporarily use URL field to define cool/heat mode
-		if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL)
+		if (liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL)
 			starsSeason.setMode( StarsThermoModeSettings.COOL );
 		else
 			starsSeason.setMode( StarsThermoModeSettings.HEAT );
@@ -2088,8 +2089,8 @@ public class StarsLiteFactory {
 		ThermostatManualOption starsOption = new ThermostatManualOption();
 		starsOption.setTemperature( liteEvent.getPreviousTemperature() );
 		starsOption.setHold( liteEvent.isHoldTemperature() );
-		starsOption.setMode( ECUtils.getThermModeSetting(liteEvent.getOperationStateID()) );
-		starsOption.setFan( ECUtils.getThermFanSetting(liteEvent.getFanOperationID()) );
+		starsOption.setMode( StarsMsgUtils.getThermModeSetting(liteEvent.getOperationStateID()) );
+		starsOption.setFan( StarsMsgUtils.getThermFanSetting(liteEvent.getFanOperationID()) );
 		starsEvent.setThermostatManualOption( starsOption );
 		
 		return starsEvent;

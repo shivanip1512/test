@@ -23,14 +23,14 @@
 		else
 			devTypeID = ((LiteStarsLMHardware)invToConfig.get(0)).getLmHardwareTypeID();
 		
-		hwConfigType = ECUtils.getHardwareConfigType(devTypeID);
+		hwConfigType = InventoryUtils.getHardwareConfigType(devTypeID);
 	}
 	
 	if (request.getParameter("AddRange") != null) {
 		ServletUtils.saveRequest(request, session, new String[] {"From", "To", "DeviceType"});
 		
 		Integer devTypeID = Integer.valueOf(request.getParameter("DeviceType"));
-		int newHwConfigType = ECUtils.getHardwareConfigType(devTypeID.intValue());
+		int newHwConfigType = InventoryUtils.getHardwareConfigType(devTypeID.intValue());
 		
 		if (hwConfigType > 0 && newHwConfigType != hwConfigType) {
 			errorMsg = "The devices you tried to add don't have the same addressing scheme as those already added.";
@@ -68,7 +68,7 @@
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware)
 					((invObj instanceof Pair)? ((Pair)invObj).getFirst() : invObj);
-			int newHwConfigType = ECUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
+			int newHwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
 			
 			if (hwConfigType > 0 && newHwConfigType != hwConfigType) {
 				errorMsg = "The device you tried to add doesn't have the same addressing scheme as those already added.";

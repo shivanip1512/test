@@ -162,7 +162,7 @@
 		LiteContact liteContact = com.cannontech.database.cache.functions.ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		
-		String name = ECUtils.formatName(liteContact);
+		String name = StarsUtils.formatName(liteContact);
 		if (name.length() == 0) name = "(none)";
 		
 		StreetAddress starsAddr = new StreetAddress();

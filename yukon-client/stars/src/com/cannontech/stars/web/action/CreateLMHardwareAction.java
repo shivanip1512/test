@@ -26,6 +26,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -316,7 +317,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			
 			StarsFactory.setInventoryBase( invDB, createHw );
 			
-			int categoryID = ECUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
+			int categoryID = InventoryUtils.getInventoryCategoryID(createHw.getDeviceType().getEntryID(), energyCompany);
 			invDB.setCategoryID( new Integer(categoryID) );
 			
 			if (liteAcctInfo != null)

@@ -25,7 +25,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -958,7 +957,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		synchronized (programs) {
 			for (int i = 0; i < programs.size(); i++) {
 				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
-				String progName = ECUtils.getPublishedProgramName( liteProg );
+				String progName = StarsUtils.getPublishedProgramName( liteProg );
 				
 				if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
 					int[] suProg = new int[3];

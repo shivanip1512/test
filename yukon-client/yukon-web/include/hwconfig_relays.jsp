@@ -35,17 +35,17 @@ Required variables:
           <td width="30" class="HeaderCell">Relay</td>
           <td width="65" class="HeaderCell">Cold Load 
             Pickup (seconds)</td>
-<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) { %>
+<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) { %>
           <td width="65" class="HeaderCell">Tamper 
             Detect</td>
 <% } %>
-<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
+<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
           <td width="65" class="HeaderCell">Program</td>
           <td width="65" class="HeaderCell">Splinter</td>
 <% } %>
         </tr>
 <%
-	int numRelay = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+	int numRelay = (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
 	for (int i = 0; i < numRelay; i++) {
 %>
         <tr align="center"> 
@@ -53,12 +53,12 @@ Required variables:
           <td width="65"> 
             <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
-<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) { %>
+<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) { %>
           <td width="65"> 
             <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
 <% } %>
-<% if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
+<% if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) { %>
           <td width="65"> 
             <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>

@@ -29,6 +29,7 @@
 <%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
 <%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.util.ECUtils" %> 
+<%@ page import="com.cannontech.stars.util.InventoryUtils" %> 
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.util.StarsUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>

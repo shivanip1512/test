@@ -8,8 +8,8 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
@@ -123,7 +123,7 @@ public class SOAPClient extends HttpServlet {
 			session.setAttribute( ServletUtils.ATT_REDIRECT2, destURL );
 			session.setAttribute( ServletUtils.ATT_REFERRER2, errorURL );
 			destURL = errorURL = req.getContextPath() +
-					(ECUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+					(StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
 		}
 		
 		if (action.equalsIgnoreCase("NewCustAccount")) {

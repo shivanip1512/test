@@ -15,7 +15,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.util.ServletUtil;
 
@@ -110,7 +110,7 @@ public class SendControlOddsTask implements Runnable {
 					StringBuffer text = new StringBuffer( header );
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
-						String progName = ECUtils.getPublishedProgramName( program.getPublishedProgram() );
+						String progName = StarsUtils.getPublishedProgramName( program.getPublishedProgram() );
 						String ctrlOdds = YukonListFuncs.getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
 						text.append( progName );

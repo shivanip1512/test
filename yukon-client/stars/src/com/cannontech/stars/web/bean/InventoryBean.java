@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -286,7 +287,7 @@ public class InventoryBean {
 				
 				if (liteInv instanceof LiteStarsLMHardware &&
 					YukonListFuncs.areSameInYukon( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID(), getDeviceType() )
-					|| getDeviceType() == devTypeMCT && ECUtils.isMCT(liteInv.getCategoryID()))
+					|| getDeviceType() == devTypeMCT && InventoryUtils.isMCT(liteInv.getCategoryID()))
 				{
 					sortedInvs.add( hardwares.get(i) );
 				}
@@ -546,7 +547,7 @@ public class InventoryBean {
 				deviceType = PAOGroups.getPAOTypeString( litePao.getType() );
 				deviceName = litePao.getPaoName();
 			}
-			else if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+			else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 				deviceType = getEnergyCompany().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryText();
 				if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
 					deviceName = liteInv.getDeviceLabel();
@@ -587,7 +588,7 @@ public class InventoryBean {
 				LiteContact liteCont = ContactFuncs.getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
-				String name = ECUtils.formatName( liteCont );
+				String name = StarsUtils.formatName( liteCont );
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
 				String address = ServletUtils.getOneLineAddress( starsAddr );

@@ -20,9 +20,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -197,7 +197,7 @@ public class UpdateLoginAction implements ActionBase {
 		dbUser.setUsername( login.getUsername() );
 		dbUser.setPassword( login.getPassword() );
 		if (login.getStatus() != null)
-			dbUser.setStatus( ECUtils.getUserStatus(login.getStatus()) );
+			dbUser.setStatus( StarsMsgUtils.getUserStatus(login.getStatus()) );
 		else
 			dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
         
@@ -291,7 +291,7 @@ public class UpdateLoginAction implements ActionBase {
 			dbUser.setUsername( username );
 			dbUser.setPassword( password );
 			if (updateLogin.getStatus() != null)
-				dbUser.setStatus( ECUtils.getUserStatus(updateLogin.getStatus()) );
+				dbUser.setStatus( StarsMsgUtils.getUserStatus(updateLogin.getStatus()) );
 			
 			int loginGroupID = 0;
 			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();

@@ -24,7 +24,7 @@ var dftEntryYukDefIDs = new Array();
 		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
 		// Show SA switches only when allowed
 		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)
-			&& ECUtils.isAdditionalProtocol(entry.getYukonDefID())
+			&& InventoryUtils.isAdditionalProtocol(entry.getYukonDefID())
 			&& !showAddtlProtocols)
 			continue;
 %>

@@ -136,9 +136,9 @@ function selectMemberAccount(accountID, memberID) {
 <%
 				}
 				else {
-					String homePhone = ECUtils.getNotification(
+					String homePhone = StarsUtils.getNotification(
 							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
-					String workPhone = ECUtils.getNotification(
+					String workPhone = StarsUtils.getNotification(
 							ContactFuncs.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
 					
 					StringBuffer phoneNo = new StringBuffer();

@@ -23,7 +23,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -238,24 +238,24 @@ public class YukonSwitchCommandAction implements ActionBase {
 		java.util.Date now = new java.util.Date();
 		
 		String cmd = null;
-		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+		int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 			cmd = "putconfig vcom service out serial " + liteHw.getManufacturerSerialNumber();
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 			cmd = "putconfig xcom service out serial " + liteHw.getManufacturerSerialNumber();
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
 			// To disable a SA205 switch, reconfig all slots to the unused address
 			cmd = "putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() + " assign" +
-				" 1=" + ECUtils.SA205_UNUSED_ADDR +
-				",2=" + ECUtils.SA205_UNUSED_ADDR +
-				",3=" + ECUtils.SA205_UNUSED_ADDR +
-				",4=" + ECUtils.SA205_UNUSED_ADDR +
-				",5=" + ECUtils.SA205_UNUSED_ADDR +
-				",6=" + ECUtils.SA205_UNUSED_ADDR;
+				" 1=" + InventoryUtils.SA205_UNUSED_ADDR +
+				",2=" + InventoryUtils.SA205_UNUSED_ADDR +
+				",3=" + InventoryUtils.SA205_UNUSED_ADDR +
+				",4=" + InventoryUtils.SA205_UNUSED_ADDR +
+				",5=" + InventoryUtils.SA205_UNUSED_ADDR +
+				",6=" + InventoryUtils.SA205_UNUSED_ADDR;
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 			// TODO: reconfig a SA305 switch to disable it
 		}
 		if (cmd == null) return;
@@ -301,18 +301,18 @@ public class YukonSwitchCommandAction implements ActionBase {
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
 		String cmd = null;
-		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+		int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 			cmd = "putconfig vcom service in serial " + liteHw.getManufacturerSerialNumber();
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 			cmd = "putconfig xcom service in serial " + liteHw.getManufacturerSerialNumber();
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
 			// To enable a SA205 switch, just reconfig it using the saved configuration
 			cmd = getConfigCommands(liteHw, energyCompany, true, null)[0];
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 			// TODO: reconfig a SA305 switch to enable it
 		}
 		

@@ -7,7 +7,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.StarsUtils;
 
 /**
  * @author yao
@@ -68,14 +68,14 @@ public class StarsYukonUser {
 	}
 	
 	private void init() throws InstantiationException {
-		if (ECUtils.isOperator(this)) {
+		if (StarsUtils.isOperator(this)) {
 			LiteEnergyCompany energyCompany = EnergyCompanyFuncs.getEnergyCompany( getYukonUser() );
 			if (energyCompany == null)
 				throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
 			
 			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
-		else if (ECUtils.isResidentialCustomer(this)) {
+		else if (StarsUtils.isResidentialCustomer(this)) {
 			LiteContact liteContact = YukonUserFuncs.getLiteContact( getUserID() );
 			if (liteContact == null)
 				throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );

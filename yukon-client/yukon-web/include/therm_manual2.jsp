@@ -6,7 +6,7 @@
  * allTherm: boolean
  * thermNoStr: String
  */
-	boolean isOperator = ECUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user);
 	
 	int setpoint = 72;
 	int coolSetpoint = 72;

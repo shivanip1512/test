@@ -240,8 +240,8 @@ function prepareSubmit(form) {
                             <select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
                               <option value="0">(none)</option>
 <%
-			int hwConfigType = ECUtils.getHardwareConfigType(hardware.getDeviceType().getEntryID());
-			int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+			int hwConfigType = InventoryUtils.getHardwareConfigType(hardware.getDeviceType().getEntryID());
+			int numRelays = (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
 			for (int ln = 1; ln <= numRelays; ln++) {
 				String selected = (ln == loadNo)? "selected" : "";
 %>

@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -221,7 +221,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			}
     		
 			if (liteAcctInfo != null) {
-				if (ECUtils.isLMHardware( liteInv.getCategoryID() )) {
+				if (InventoryUtils.isLMHardware( liteInv.getCategoryID() )) {
 					ArrayList liteApps = liteAcctInfo.getAppliances();
 					
 					for (int i = 0; i < liteApps.size(); i++) {

@@ -19,7 +19,7 @@ import com.cannontech.database.db.stars.hardware.LMConfigurationExpressCom;
 import com.cannontech.database.db.stars.hardware.LMConfigurationSA205;
 import com.cannontech.database.db.stars.hardware.LMConfigurationSA305;
 import com.cannontech.database.db.stars.hardware.LMConfigurationVersaCom;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 
 /**
  * @author yao
@@ -134,8 +134,8 @@ public class LMConfigurationBase extends DBPersistent {
 		config.getLMConfigurationBase().setConfigurationID( new Integer(configID) );
 		
 		try {
-			int hwConfigType = ECUtils.getHardwareConfigType( hwTypeID );
-			if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
+			int hwConfigType = InventoryUtils.getHardwareConfigType( hwTypeID );
+			if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA205 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -146,7 +146,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA205( sa205 );
 				}
 			}
-			else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
+			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA305 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -157,7 +157,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA305( sa305 );
 				}
 			}
-			else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationExpressCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -168,7 +168,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setExpressCom( xcom );
 				}
 			}
-			else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+			else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationVersaCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();

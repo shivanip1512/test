@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -114,7 +115,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 				int devTypeDefID = YukonListFuncs.getYukonListEntry(snRange[0].intValue()).getYukonDefID();
 				
 				if (!searchMembers) {
-					ArrayList hwsInRange = ECUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
+					ArrayList hwsInRange = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
 					for (int j = 0; j < hwsInRange.size(); j++) {
 						if (!hwsToConfig.contains( hwsInRange.get(j) ))
 							hwsToConfig.add( hwsInRange.get(j) );
@@ -124,7 +125,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 					for (int j = 0; j < descendants.size(); j++) {
 						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
-						ArrayList hwsInRange = ECUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
+						ArrayList hwsInRange = InventoryUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
 						for (int k = 0; k < hwsInRange.size(); k++) {
 							if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)hwsInRange.get(k) ))
 								hwsToConfig.add( new Pair(hwsInRange.get(k), company) );

@@ -376,9 +376,9 @@ function sendWorkOrder() {
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
-		String name = ECUtils.formatName(liteContact);
-		String homePhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-		String workPhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+		String name = StarsUtils.formatName(liteContact);
+		String homePhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+		String workPhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();

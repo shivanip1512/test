@@ -4,7 +4,7 @@
  * hasPrevStep: boolean
  * needMoreInfo: boolean
  */
-	boolean isOperator = ECUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user);
 	String inWizardStr = (inWizard)? "&Wizard=true" : "";
 %>
 

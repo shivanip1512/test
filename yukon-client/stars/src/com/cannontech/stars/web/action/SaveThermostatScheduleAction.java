@@ -25,7 +25,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -216,7 +216,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 	public static LMThermostatSchedule createLMThermostatSchedule(LiteLMThermostatSchedule liteOldSched, LiteLMThermostatSchedule liteNewSched)
 		throws WebClientException
 	{
-		if (!ECUtils.isValidThermostatSchedule( liteNewSched ))
+		if (!InventoryUtils.isValidThermostatSchedule( liteNewSched ))
 			throw new WebClientException( "Cannot copy thermostat schedule because the source is invalid" );
 		
 		LMThermostatSchedule schedule = StarsLiteFactory.createLMThermostatSchedule( liteNewSched );

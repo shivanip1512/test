@@ -25,6 +25,17 @@ import java.util.TimeZone;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
+import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.stars.web.StarsYukonUser;
 
 /**
  * @author yao
@@ -205,5 +216,49 @@ public class StarsUtils {
 		long time1 = (date1 != null)? date1.getTime() : System.currentTimeMillis();
 		long time2 = (date2 != null)? date2.getTime() : System.currentTimeMillis();
 		return Math.abs(time1 - time2) <= DATE_ACCURACY;
+	}
+
+	public static String getNotification(LiteContactNotification liteNotif) {
+		String notification = (liteNotif == null)? null : liteNotif.getNotification();
+		return StarsUtils.forceNotNull(notification);
+	}
+
+	public static String formatName(LiteContact liteContact) {
+		StringBuffer name = new StringBuffer();
+		
+		String firstName = StarsUtils.forceNotNone( liteContact.getContFirstName() ).trim();
+		if (firstName.length() > 0)
+			name.append( firstName );
+		
+		String lastName = StarsUtils.forceNotNone( liteContact.getContLastName() ).trim();
+		if (lastName.length() > 0)
+			name.append(" ").append( lastName );
+		
+		return name.toString();
+	}
+
+	public static String getPublishedProgramName(LiteLMProgramWebPublishing liteProg) {
+		String progName = CtiUtilities.STRING_NONE;
+		
+		if (liteProg.getDeviceID() > 0)
+			progName = PAOFuncs.getYukonPAOName( liteProg.getDeviceID() );
+		
+		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
+		if (liteConfig != null) {
+			String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
+			if (dispNames.length > 0 && dispNames[0].length() > 0)
+				progName = dispNames[0];
+		}
+		
+		return progName;
+	}
+
+	public static boolean isOperator(StarsYukonUser user) {
+		return !isResidentialCustomer(user) &&
+				EnergyCompanyFuncs.getEnergyCompany( user.getYukonUser() ) != null;
+	}
+
+	public static boolean isResidentialCustomer(StarsYukonUser user) {
+		return AuthFuncs.checkRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
 	}
 }

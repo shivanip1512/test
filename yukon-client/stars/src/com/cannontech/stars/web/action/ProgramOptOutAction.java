@@ -29,7 +29,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -306,7 +306,7 @@ public class ProgramOptOutAction implements ActionBase {
             	StarsLMProgramHistory progHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo, energyCompany );
             	resp.setStarsLMProgramHistory( progHist );
             	
-		        if (ECUtils.isOperator( user ))
+		        if (StarsUtils.isOperator( user ))
 			        resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully." );
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) + "." );
@@ -459,7 +459,7 @@ public class ProgramOptOutAction implements ActionBase {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String ruleStr = null;
-		if (ECUtils.isOperator( user ))
+		if (StarsUtils.isOperator( user ))
 			ruleStr = AuthFuncs.getRolePropertyValue(user.getYukonUser(), ConsumerInfoRole.OPT_OUT_RULES);
 		else
 			ruleStr = AuthFuncs.getRolePropertyValue(user.getYukonUser(), ResidentialCustomerRole.OPT_OUT_RULES);
@@ -805,18 +805,18 @@ public class ProgramOptOutAction implements ActionBase {
 			throw new WebClientException( "The serial # of the hardware cannot be empty" );
         
 		String cmd = "putconfig serial " + liteHw.getManufacturerSerialNumber();
-		int hwConfigType = ECUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
-		if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+		int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
+		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 			cmd += " vcom service out temp offhours " + String.valueOf(offHours);
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 			cmd += " xcom service out temp offhours " + String.valueOf(offHours);
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205)
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205)
 		{
 			cmd += " sa205 service out temp offhours " + String.valueOf(offHours);
 		}
-		else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305)
+		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305)
 		{
 			String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 			if (trackHwAddr == null || !Boolean.valueOf(trackHwAddr).booleanValue())

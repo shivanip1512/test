@@ -33,7 +33,7 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.dbeditor.DBDeletionFuncs;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -156,15 +156,15 @@ public class InventoryManagerUtil {
 		}
 		
 		if (starsInv.getDeviceType() != null) {
-			int categoryID = ECUtils.getInventoryCategoryID( starsInv.getDeviceType().getEntryID(), energyCompany );
-			if (ECUtils.isLMHardware( categoryID )) {
+			int categoryID = InventoryUtils.getInventoryCategoryID( starsInv.getDeviceType().getEntryID(), energyCompany );
+			if (InventoryUtils.isLMHardware( categoryID )) {
 				LMHardware hw = new LMHardware();
 				hw.setManufacturerSerialNumber( req.getParameter("SerialNo") );
 				if (req.getParameter("Route") != null)
 					hw.setRouteID( Integer.parseInt(req.getParameter("Route")) );
 				starsInv.setLMHardware( hw );
 			}
-			else if (ECUtils.isMCT(categoryID) && starsInv.getDeviceID() == 0) {
+			else if (InventoryUtils.isMCT(categoryID) && starsInv.getDeviceID() == 0) {
 				MCT mct = new MCT();
 				mct.setDeviceName( req.getParameter("DeviceName") );
 				if (req.getParameter("MCTType") != null)
@@ -197,7 +197,7 @@ public class InventoryManagerUtil {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
 		synchronized (cache) {
-			if (ECUtils.isMCT( categoryID ))
+			if (InventoryUtils.isMCT( categoryID ))
 				allDevices = cache.getAllMCTs();
 			
 			if (deviceName == null || deviceName.length() == 0) {

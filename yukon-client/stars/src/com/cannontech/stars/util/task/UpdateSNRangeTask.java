@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -101,13 +102,13 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
 		
 		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
 		int devTypeDefID = YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getYukonDefID();
-		ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
+		ArrayList hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
 		
 		numToBeUpdated = hwList.size();
 		if (numToBeUpdated == 0) {
@@ -143,7 +144,7 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 				
 				StarsLiteFactory.setLMHardwareBase( hardware, liteHw );
 				if (newDevTypeID != null) {
-					invDB.setCategoryID( new Integer(ECUtils.getInventoryCategoryID(newDevTypeID.intValue(), energyCompany)) );
+					invDB.setCategoryID( new Integer(InventoryUtils.getInventoryCategoryID(newDevTypeID.intValue(), energyCompany)) );
 					hwDB.setLMHardwareTypeID( newDevTypeID );
 				}
 				if (companyID != null)

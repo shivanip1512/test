@@ -4,17 +4,17 @@ Required variables:
 	configuration: StarsLMConfiguration
 --%>
 <%
-	if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205) {
+	if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
 		SA205 sa205 = null;
 		if (configuration != null) sa205 = configuration.getSA205();
 		if (sa205 == null) {
 			sa205 = new SA205();
-			sa205.setSlot1( ECUtils.SA205_UNUSED_ADDR );
-			sa205.setSlot2( ECUtils.SA205_UNUSED_ADDR );
-			sa205.setSlot3( ECUtils.SA205_UNUSED_ADDR );
-			sa205.setSlot4( ECUtils.SA205_UNUSED_ADDR );
-			sa205.setSlot5( ECUtils.SA205_UNUSED_ADDR );
-			sa205.setSlot6( ECUtils.SA205_UNUSED_ADDR );
+			sa205.setSlot1( InventoryUtils.SA205_UNUSED_ADDR );
+			sa205.setSlot2( InventoryUtils.SA205_UNUSED_ADDR );
+			sa205.setSlot3( InventoryUtils.SA205_UNUSED_ADDR );
+			sa205.setSlot4( InventoryUtils.SA205_UNUSED_ADDR );
+			sa205.setSlot5( InventoryUtils.SA205_UNUSED_ADDR );
+			sa205.setSlot6( InventoryUtils.SA205_UNUSED_ADDR );
 		}
 %>
 <table width="180" border="1" cellspacing="0" cellpadding="3" bgcolor="#CCCCCC">
@@ -57,7 +57,7 @@ Required variables:
 </table>
 <%
 	}
-	else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305) {
+	else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
 		SA305 sa305 = null;
 		if (configuration != null) sa305 = configuration.getSA305();
 		if (sa305 == null) sa305 = new SA305();
@@ -120,7 +120,7 @@ Required variables:
 </table>
 <%
 	}
-	else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_VERSACOM) {
+	else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 		VersaCom vcom = null;
 		if (configuration != null) vcom = configuration.getVersaCom();
 		if (vcom == null) vcom = new VersaCom();
@@ -327,7 +327,7 @@ Required variables:
 </table>
 <%
 	}
-	else if (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+	else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 		ExpressCom xcom = null;
 		if (configuration != null) xcom = configuration.getExpressCom();
 		if (xcom == null) xcom = new ExpressCom();

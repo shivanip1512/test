@@ -17,9 +17,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsMsgUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -141,7 +142,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
-					if (ECUtils.isOperator(user)) {
+					if (StarsUtils.isOperator(user)) {
 						errorMsg = (invIDs.length == 1)?
 								"The thermostat is currently out of service. Manual option is not sent." :
 								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service. Manual option is not sent.";
@@ -155,7 +156,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					String errorMsg = ECUtils.isOperator(user) ?
+					String errorMsg = StarsUtils.isOperator(user) ?
 							"The serial # of the thermostat cannot be empty. Manual option is not sent" :
 							"Cannot send manual option to the thermostat. Please contact your utility company to report this problem.";
 					
@@ -201,8 +202,8 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				event.getLmThermostatManualEvent().setInventoryID( new Integer(invIDs[i]) );
 				event.getLmThermostatManualEvent().setPreviousTemperature( new Integer(starsOption.getTemperature()) );
 				event.getLmThermostatManualEvent().setHoldTemperature( starsOption.getHold() ? "Y" : "N" );
-				event.getLmThermostatManualEvent().setOperationStateID( new Integer(ECUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompany)) );
-				event.getLmThermostatManualEvent().setFanOperationID( ECUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompany) );
+				event.getLmThermostatManualEvent().setOperationStateID( new Integer(StarsMsgUtils.getThermOptionOpStateID(starsOption.getMode(), energyCompany)) );
+				event.getLmThermostatManualEvent().setFanOperationID( StarsMsgUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompany) );
 				
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)

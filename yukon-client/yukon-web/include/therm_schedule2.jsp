@@ -7,7 +7,7 @@
  * allTherm: boolean
  * thermNoStr: String
  */
-	boolean isOperator = ECUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user);
 	boolean isRecommended = (invID < 0);
 
 	StarsThermostatProgram dftThermoProgram = null;

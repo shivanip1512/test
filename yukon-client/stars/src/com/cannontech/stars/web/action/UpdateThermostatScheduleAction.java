@@ -26,9 +26,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsMsgUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -139,7 +140,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
-					if (ECUtils.isOperator( user )) {
+					if (StarsUtils.isOperator( user )) {
 						errorMsg = (invIDs.length == 1)?
 								"The thermostat is currently out of service. Schedule is not sent." :
 								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service. Schedule is not sent.";
@@ -153,7 +154,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					String errorMsg = ECUtils.isOperator( user )?
+					String errorMsg = StarsUtils.isOperator( user )?
 							"The serial # of the thermostat cannot be empty. Schedule is not sent." :
 							"Cannot send schedule to the thermostat. Please contact your utility company to report this problem.";
 					
@@ -177,13 +178,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					
 					for (int k = 0; k < starsSeason.getStarsThermostatScheduleCount(); k++) {
 						StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(k);
-						int towID = ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
+						int towID = StarsMsgUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
 						
 						ArrayList oldSched = new ArrayList();
 						for (int l = 0; l < liteSchedule.getThermostatSeasons().size(); l++) {
 							LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSchedule.getThermostatSeasons().get(l);
-							if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
-								liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
+							if (liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
+								liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
 							{
 								for (int m = 0; m < liteSeason.getSeasonEntries().size(); m++) {
 									LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(m);
@@ -197,8 +198,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						ArrayList dftOtherSched = new ArrayList();
 						for (int l = 0; l < dftSchedule.getThermostatSeasons().size(); l++) {
 							LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftSchedule.getThermostatSeasons().get(l);
-							if (liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
-								liteSeason.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
+							if (liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
+								liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
 							{
 								for (int m = 0; m < liteSeason.getSeasonEntries().size(); m++) {
 									LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(m);
@@ -622,7 +623,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			for (int i = 0; i < updateSched.getStarsThermostatSeasonCount(); i++) {
 				StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(i);
 				int webConfigID = (starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) ?
-						ECUtils.YUK_WEB_CONFIG_ID_COOL : ECUtils.YUK_WEB_CONFIG_ID_HEAT;
+						StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL : StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT;
 				
 				LiteLMThermostatSeason liteSeason = null;
 				LiteLMThermostatSeason liteSeason2 = null;
@@ -686,7 +687,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
 				if (starsRespSeason2 == null) {
 					starsRespSeason2 = new StarsThermostatSeason();
-					starsRespSeason2.setMode( ECUtils.getThermSeasonMode(liteSeason2.getWebConfigurationID()) );
+					starsRespSeason2.setMode( StarsMsgUtils.getThermSeasonMode(liteSeason2.getWebConfigurationID()) );
 					resp.addStarsThermostatSeason( starsRespSeason2 );
 				}
 					
@@ -738,7 +739,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					}
 					else {
 						towIDs = new int[] {
-							ECUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany )
+							StarsMsgUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany )
 						};
 					}
 					

@@ -374,9 +374,9 @@ function validate(form) {
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
-		String name = ECUtils.formatName(liteContact);
-		String homePhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-		String workPhone = ECUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+		String name = StarsUtils.formatName(liteContact);
+		String homePhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+		String workPhone = StarsUtils.getNotification(ContactFuncs.getContactNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
 		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();
@@ -420,7 +420,7 @@ function validate(form) {
 	String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 	boolean configHw = (inventory.getLMHardware() != null) && trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue();
 	if (configHw) {
-		int hwConfigType = ECUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
+		int hwConfigType = InventoryUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
 		StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 %>
                 <input type="hidden" name="UseHardwareAddressing" value="true">

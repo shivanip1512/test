@@ -3,7 +3,7 @@
 <%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory inventory = inventories.getStarsInventory(invNo);
-	int hwConfigType = ECUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
+	int hwConfigType = InventoryUtils.getHardwareConfigType(inventory.getDeviceType().getEntryID());
 	StarsLMConfiguration configuration = inventory.getLMHardware().getStarsLMConfiguration();
 	
 	ArrayList attachedApps = new ArrayList();
@@ -156,7 +156,7 @@ function changeProgSelection(chkBox) {
                       <% if (!assigned) out.print("disabled"); %>>
                         <option value="0">(none)</option>
 <%
-			int numRelays = (hwConfigType == ECUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
+			int numRelays = (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM)? 8 : 4;
 			for (int ln = 1; ln <= numRelays; ln++) {
 				String selected = (ln == loadNo)? "selected" : "";
 %>

@@ -7,7 +7,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.StarsMsgUtils;
 
 /**
  * @author yao
@@ -384,7 +384,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		for (int i = 0; i < seasons.size(); i++) {
 			LiteLMThermostatSeason season = (LiteLMThermostatSeason) seasons.get(i);
 			
-			int dim3 = (season.getWebConfigurationID() == ECUtils.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
+			int dim3 = (season.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL) ? 2 : 3;
 			int[] towCnt = { 0, 0, 0, 0, 0, 0, 0 };
 			
 			for (int j = 0; j < season.getSeasonEntries().size(); j++) {

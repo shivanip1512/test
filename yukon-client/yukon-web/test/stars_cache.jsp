@@ -2,14 +2,14 @@
 <%@ page import="java.io.StringWriter" %>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.stars.util.ECUtils" %>
+<%@ page import="com.cannontech.stars.util.StarsUtils" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <cti:checklogin/>
 <%
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (!ECUtils.isOperator(user)) {
+	if (!StarsUtils.isOperator(user)) {
 		response.sendRedirect(request.getContextPath() + "/login.jsp");
 		return;
 	}

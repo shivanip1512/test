@@ -20,7 +20,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
@@ -86,16 +86,16 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		int categoryID = ECUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
+		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
 		
-		if (ECUtils.isMCT(categoryID)) {
+		if (InventoryUtils.isMCT(categoryID)) {
 			ArrayList mctList = new ArrayList();
 			
 			ArrayList inventory = energyCompany.loadAllInventory( true );
 			synchronized (inventory) {
 				for (int i = 0; i < inventory.size(); i++) {
 					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
-					if (ECUtils.isMCT( liteInv.getCategoryID() )) {
+					if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 						if (liteInv.getAccountID() > 0) {
 							hardwareSet.add( liteInv );
 							numFailure++;
@@ -135,7 +135,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		}
 		else {
 			int devTypeDefID = YukonListFuncs.getYukonListEntry(devTypeID.intValue()).getYukonDefID();
-			ArrayList hwList = ECUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
+			ArrayList hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
 			
 			numToBeDeleted = hwList.size();
 			if (numToBeDeleted == 0) {

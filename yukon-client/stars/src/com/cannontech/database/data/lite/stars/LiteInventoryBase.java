@@ -14,7 +14,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.InventoryUtils;
 
 /**
  * @author yao
@@ -248,8 +248,8 @@ public class LiteInventoryBase extends LiteBase {
 		
 		boolean isSA = false;
 		if (this instanceof LiteStarsLMHardware) {
-			int hwConfigType = ECUtils.getHardwareConfigType( ((LiteStarsLMHardware)this).getLmHardwareTypeID() );
-			isSA = hwConfigType == ECUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == ECUtils.HW_CONFIG_TYPE_SA305;
+			int hwConfigType = InventoryUtils.getHardwareConfigType( ((LiteStarsLMHardware)this).getLmHardwareTypeID() );
+			isSA = hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305;
 		}
 		
 		for (int i = invHist.size() - 1; i >= 0; i--) {
