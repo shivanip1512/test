@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/04/01 21:48:56 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/04/14 00:46:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -191,6 +191,7 @@ public:
         PutConfig_GroupAddr_GoldSilver,
         PutConfig_GroupAddr_Bronze,
         PutConfig_GroupAddr_Lead,
+        PutConfig_UniqueAddr,
         PutConfig_IEDScan,
         PutConfig_IEDClass,
         PutConfig_Role,   //  only for repeaters
