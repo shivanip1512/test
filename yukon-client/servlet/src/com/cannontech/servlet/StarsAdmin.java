@@ -588,7 +588,7 @@ public class StarsAdmin extends HttpServlet {
 			}
 			else {
 				liteAppCat = energyCompany.getApplianceCategory( appCatID );
-				if (liteAppCat.getDirectOwner() != energyCompany) {
+				if (!energyCompany.getApplianceCategories().contains(liteAppCat)) {
 					session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Cannot update an inherited appliance category" );
 					return;
 				}
