@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/03/13 19:35:31 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2003/06/10 20:58:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,9 +111,6 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     ERRSTRUCT ErrStruct;
     struct timeb TimeB;
 
-    char  errstr[80];
-    char  logstr[128];
-
     InMessage.DeviceID = PORTERSU_DEVID;
     /* create and send return message if calling process expects it */
     if(OutMessage->EventCode & RESULT)
@@ -142,6 +139,8 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
             CtiDeviceBase *tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+
+            if(tempDev)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " SendError returning an Inmessage for " << tempDev->getName() << " error " << ErrorCode << endl;
@@ -176,10 +175,9 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
     if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
     {
-        GetErrorString(ErrorCode, errstr);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " DeviceID " << CtiNumStr(OutMessage->DeviceID) << ", Error " << CtiNumStr(ErrorCode) << " " << errstr << endl;
+            dout << RWTime() << " DeviceID " << CtiNumStr(OutMessage->DeviceID) << ", Error " << CtiNumStr(ErrorCode) << " " << FormatError(ErrorCode) << endl;
         }
     }
 
