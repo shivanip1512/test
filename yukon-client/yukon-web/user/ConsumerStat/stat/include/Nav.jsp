@@ -205,11 +205,9 @@ pageLinks = new Array(<%= thermostats.getStarsLMHardwareCount() %>);
 <%
 		}
 		else {
-			StarsThermoModeSettings navMode = settings.getStarsThermostatDynamicData().getMode();
-			String navModeStr = (navMode != null)? "&mode=" + navMode.toString() : "";
 %>
-	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %><%= navModeStr %>";
-	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %><%= navModeStr %>";
+	pageLinks[<%= i %>][1] = "ThermSchedule2.jsp?Item=<%= i %>";
+	pageLinks[<%= i %>][2] = "Thermostat2.jsp?Item=<%= i %>";
 <%
 		}
 	}

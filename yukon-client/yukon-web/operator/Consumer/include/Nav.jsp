@@ -422,11 +422,9 @@ pageLinks = new Array(<%= inventories.getStarsLMHardwareCount() %>);
 <%
 		}
 		else {
-			StarsThermoModeSettings navMode = settings.getStarsThermostatDynamicData().getMode();
-			String navModeStr = (navMode != null)? "&mode=" + navMode.toString() : "";
 %>
-	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %><%= navModeStr %>";
-	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=<%= num %><%= navModeStr %>";
+	pageLinks[<%= num %>][2] = "ThermSchedule2.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][3] = "Thermostat2.jsp?InvNo=<%= num %>";
 <%
 		}
 	}
