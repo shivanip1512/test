@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2003/04/09 22:46:26 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2003/06/27 20:11:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -491,6 +491,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "expresscom group")
     {
         nRet = TYPE_LMGROUP_EXPRESSCOM;
+    }
+    else if(rwsTemp == "mct group")
+    {
+        nRet = TYPE_LMGROUP_MCT;
     }
     else if(rwsTemp == "macro group")
     {
@@ -1019,6 +1023,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LMGROUP_RIPPLE:
     case TYPE_LMGROUP_VERSACOM:
     case TYPE_LMGROUP_EXPRESSCOM:
+    case TYPE_LMGROUP_MCT:
     case TYPEMCTBCAST:
     case TYPE_MACRO:
         {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2003/03/13 19:35:23 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2003/06/27 20:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -382,6 +382,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_LMGROUP_EXPRESSCOM)
    {
       Ret = "expresscom group";
+   }
+   else if(aType == TYPE_LMGROUP_MCT)
+   {
+      Ret = "mct group";
    }
    else if(aType == TYPE_MACRO)
    {
