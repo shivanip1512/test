@@ -1,12 +1,11 @@
 package com.cannontech.database.cache.functions;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Insert the type's description here.
@@ -122,4 +121,21 @@ public static LiteContact[] getUnusedContacts( )
 	return (LiteContact[])retValues.toArray( cnts );
 }
 */
+/**
+ * Returns the lite cicustomer with the given customer id.
+ * @param customerID
+ * @return LiteCICustomer
+ */
+public static LiteCICustomer getLiteCICustomer(int customerID) {
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		synchronized( cache ) {
+			for(Iterator i = cache.getAllCICustomers().iterator(); i.hasNext();) {
+				LiteCICustomer lc = (LiteCICustomer) i.next();
+				if(lc.getCustomerID() == customerID ) {
+					return lc;
+				}
+			}	
+		}
+	return null;
+}
 }
