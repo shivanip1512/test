@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 21:34:39 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/07/23 20:54:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@
 #include "tbl_gateway_end_device.h"
 #include "yukon.h"
 
+#define GATEWAY_TEMPERATURE_PRECISION 0
 
 CtiDeviceGatewayStat::CtiDeviceGatewayStat(ULONG sn) :
     _controlOutMessage(0),
@@ -89,26 +90,37 @@ CtiDeviceGatewayStat& CtiDeviceGatewayStat::setPrimed(bool prime)
     return *this;
 }
 
-short CtiDeviceGatewayStat::convertFromStatTemp (short Temp)
+// The stat stores most temps as hundreths of a degree C
+short CtiDeviceGatewayStat::convertFromStatTemp(short Temp, int tempScale)
 {
-    long TempTemp;
+    long TempTemp = (long)Temp;
 
-    TempTemp = (long) Temp;
-
-    TempTemp = (((TempTemp + 1) * 9) / 500) + 32;
+    if(tempScale == scaleCelsius || (tempScale == scaleToStat && _displayedTemp._displayedTempUnits == 1))      // Celsius
+    {
+        TempTemp = (((TempTemp + 1)) / 100);
+    }
+    else
+    {
+        TempTemp = (((TempTemp + 1) * 9) / 500) + 32;
+    }
 
     return((short) TempTemp);
 }
 
 // The stat stores most temps as hundreths of a degree C
-// This routing converts from degrees F for sending
-short CtiDeviceGatewayStat::convertToStatTemp (short Temp)
+// This routine converts from degrees F for sending
+short CtiDeviceGatewayStat::convertToStatTemp(short Temp, int tempScale)
 {
-    long TempTemp;
+    long TempTemp = (long) Temp;
 
-    TempTemp = (long) Temp;
-
-    TempTemp = ((TempTemp - 32) * 500) / 9;
+    if(tempScale == scaleCelsius || (tempScale == scaleToStat && _displayedTemp._displayedTempUnits == 1))      // Celsius
+    {
+        TempTemp = (TempTemp * 100);
+    }
+    else
+    {
+        TempTemp = ((TempTemp - 32) * 500) / 9;
+    }
 
     return((short) TempTemp);
 }
@@ -201,8 +213,8 @@ bool CtiDeviceGatewayStat::convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX )
     case TYPE_DISPLAYEDTEMPERATURE:
         {
             _displayedTemp._utime = now.seconds();
-            _displayedTemp._displayedTemperature = ntohs (GatewayRX.U.DisplayedTemp.DisplayedTemperature);
             _displayedTemp._displayedTempUnits = GatewayRX.U.DisplayedTemp.DisplayedTempUnits;
+            _displayedTemp._displayedTemperature = ntohs (GatewayRX.U.DisplayedTemp.DisplayedTemperature);
 
             break;
         }
@@ -631,7 +643,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._coolSetpoint)) + " Degrees F\n");
+                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._coolSetpoint)) + getUnitName() + "\n");
             }
 
             astr += RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Heat Setpoint:  ");
@@ -641,7 +653,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._heatSetpoint)) + " Degrees F\n");
+                astr += RWCString(CtiNumStr(convertFromStatTemp(_setpoints._heatSetpoint)) + getUnitName() + "\n");
             }
 
             astr += RWCString(now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + " Setpoint Status:  ");
@@ -723,7 +735,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += RWCString(CtiNumStr(_deadband._deadband) + " Degrees F");
+                astr += RWCString(CtiNumStr(_deadband._deadband) + getUnitName());
             }
 
             updatePrintList(Type, astr);
@@ -781,20 +793,13 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             now = RWTime(_displayedTemp._utime);
             astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Displayed Temperature Received: " ));
 
-
-            if(_displayedTemp._displayedTempUnits == 0)
+            float dt = (float)_displayedTemp._displayedTemperature;
+            if(_displayedTemp._displayedTempUnits == 1)     // Celsius is given in 1/2 degrees.
             {
-                astr += RWCString(CtiNumStr(_displayedTemp._displayedTemperature) + "F");
-            }
-            else if(_displayedTemp._displayedTempUnits == 1)
-            {
-                astr += RWCString(CtiNumStr(_displayedTemp._displayedTemperature / 2) + "C");
-            }
-            else
-            {
-                astr += RWCString("Temperature Units Invalid:  " + CtiNumStr(_displayedTemp._displayedTempUnits));
+                dt = dt / 2 ;
             }
 
+            astr += RWCString(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + getUnitName());
             updatePrintList(Type, astr);
 
             break;
@@ -1017,7 +1022,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + " F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._lowerCoolSetpointLimit)) + getUnitName()));
             }
 
             astr += RWCString(" Heat Limit: ");
@@ -1027,7 +1032,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._upperHeatSetpointLimit)) + " F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_setpointLimits._upperHeatSetpointLimit)) + getUnitName()));
             }
             updatePrintList(Type, astr);
 
@@ -1068,7 +1073,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp (_outdoorTemp._outdoorTemperature)) + " Degrees F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_outdoorTemp._outdoorTemperature)) + getUnitName()));
             }
             updatePrintList(Type, astr);
 
@@ -1088,7 +1093,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
         {
             if(Type == TYPE_SYSTEMSWITCH_CH) {
                 now = RWTime(_systemSwitch._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" System Switch Confirmed"));
+                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" System Switch Confirmed: "));
             }
             else {
                 now = RWTime(_systemSwitch._utime);
@@ -1149,7 +1154,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + " F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + getUnitName()));
             }
 
             astr += (RWCString(" Heat Setpoint: "));
@@ -1159,7 +1164,7 @@ bool CtiDeviceGatewayStat::generatePacketData( USHORT Type, int day, int period 
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + " F\n"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + getUnitName() + "\n"));
             }
 
             // updatePrintList(Type, astr);
@@ -1637,7 +1642,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._coolSetpoint)).spad(3) + " F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._coolSetpoint)).spad(3) + getUnitName()));
             }
 
             astr += (RWCString(" \\ Heat: "));
@@ -1647,7 +1652,7 @@ RWCString CtiDeviceGatewayStat::generateSchedulePeriod(int day, int period)
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._heatSetpoint)).spad(3) + " F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_schedule[day][period]._heatSetpoint)).spad(3) + getUnitName()));
             }
         }
     }
@@ -1853,397 +1858,422 @@ int CtiDeviceGatewayStat::checkPendingOperation( CtiPendingGatewayResult& pendin
     {
         if(pendingOperation.isPosted(getDeviceSerialNumber()))  // Make certain we participated in the opertion to start.
         {
-            switch(pendingOperation.getMessageType())
+            CtiPendingGatewayResult::OpCol_t::const_iterator citr;
+
+            for( citr = pendingOperation.getConstOperations().begin(); citr != pendingOperation.getConstOperations().end(); citr++ )
             {
-            case TYPE_SETDLC:
+                USHORT messagetype = *citr;
+
+                switch(messagetype)
                 {
-                    RWTime arrival(_DLC._utime);
-                    RWTime confirm(_DLC._ch_utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_SETDLC:
                     {
-                        if(0)
+                        RWTime arrival(_DLC._utime);
+                        RWTime confirm(_DLC._ch_utime);
+
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getDeviceSerialNumber() << " **** DLC SUBMITTED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << arrival << " >= " << pendingOperation.getTimeSubmitted() << endl;
-                        }
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                    }
-
-                    if( !pendingOperation.isConfirmed(getDeviceSerialNumber()) && theend != confirm && confirm >= pendingOperation.getTimeSubmitted() )
-                    {
-                        if(0)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " " << getDeviceSerialNumber() << " **** DLC CONFIRMED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << confirm << " >= " << pendingOperation.getTimeSubmitted() << endl;
-                        }
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-                    }
-
-                    break;
-                }
-            case TYPE_GETALL:
-                {
-                    RWTime arrival(_clock._utime);      // Clock is toward the end of reportables from the gateway.
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
-                    {
-                        if(1)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Pending GETALL complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
-
-                        clearPrintList();
-                        generatePrintList();
-                        // printPacketData();
-
-                        // Add the reply data into the pending op.
-                        {
-                            StatPrintList_t::iterator itr;
-
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                            if(0)
                             {
-                                pendingOperation.addReplyVector( ((*itr).second) );
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << getDeviceSerialNumber() << " **** DLC SUBMITTED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << arrival << " >= " << pendingOperation.getTimeSubmitted() << endl;
+                            }
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                        }
+
+                        if( !pendingOperation.isConfirmed(getDeviceSerialNumber()) && theend != confirm && confirm >= pendingOperation.getTimeSubmitted() )
+                        {
+                            if(0)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " << getDeviceSerialNumber() << " **** DLC CONFIRMED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << confirm << " >= " << pendingOperation.getTimeSubmitted() << endl;
+                            }
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        }
+
+                        break;
+                    }
+                case TYPE_GETALL:
+                    {
+                        RWTime arrival(_clock._utime);      // Clock is toward the end of reportables from the gateway.
+
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            if(1)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Pending GETALL complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            clearPrintList();
+                            generatePrintList();
+                            // printPacketData();
+
+                            // Add the reply data into the pending op.
+                            {
+                                StatPrintList_t::iterator itr;
+
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                                {
+                                    pendingOperation.addReplyVector( ((*itr).second) );
+                                }
                             }
                         }
+
+                        break;
                     }
-
-                    break;
-                }
-            case TYPE_SETSCHEDULE:
-                {
-                    RWTime arrival;
-
-                    int waiting_on = 0;         // Number of data elements we are waiting on.
-                    int dow;
-                    int pod;
-
-                    for(dow = 0; dow < 7; dow ++)
+                case TYPE_SETSCHEDULE:
                     {
-                        for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
-                        {
-                            if( _schedule[dow][pod]._ch_utime == 86400 )    // Has not been reported back to us yet!
-                            {
-                                waiting_on++;
-                            }
-                        }
-                    }
+                        RWTime arrival;
 
-                    int rcCount = returnCodeCount( pendingOperation.getMessageType());
-
-                    if( waiting_on == 0 || waiting_on <= rcCount )
-                    {
-                        removeReturnCode(pendingOperation.getMessageType());
+                        int waiting_on = 0;         // Number of data elements we are waiting on.
+                        int dow;
+                        int pod;
 
                         for(dow = 0; dow < 7; dow ++)
                         {
                             for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
                             {
-                                // Undo them for the next  schedule command!
-                                if( _schedule[dow][pod]._utime == 86400 ) _schedule[dow][pod]._utime = arrival.seconds();
-                                if( _schedule[dow][pod]._ch_utime == 86400 ) _schedule[dow][pod]._ch_utime = arrival.seconds();
+                                if( _schedule[dow][pod]._ch_utime == 86400 )    // Has not been reported back to us yet!
+                                {
+                                    waiting_on++;
+                                }
                             }
                         }
 
-                        if(1)
+                        int rcCount = returnCodeCount( messagetype );
+
+                        if( waiting_on == 0 || waiting_on <= rcCount )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Pending SCHEDULE complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                            removeReturnCode(messagetype);
 
-                        generatePacketDataSchedule();
-
-                        // Add the reply data into the pending op.
-                        {
-                            StatPrintList_t::iterator itr;
-
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                            for(dow = 0; dow < 7; dow ++)
                             {
-                                pendingOperation.addReplyVector( ((*itr).second) );
+                                for(pod = 0; pod < EP_PERIODS_PER_DAY; pod ++)
+                                {
+                                    // Undo them for the next  schedule command!
+                                    if( _schedule[dow][pod]._utime == 86400 ) _schedule[dow][pod]._utime = arrival.seconds();
+                                    if( _schedule[dow][pod]._ch_utime == 86400 ) _schedule[dow][pod]._ch_utime = arrival.seconds();
+                                }
+                            }
+
+                            if(1)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Pending SCHEDULE complete. **** Stat " << getDeviceSerialNumber() << ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generatePacketDataSchedule();
+
+                            // Add the reply data into the pending op.
+                            {
+                                StatPrintList_t::iterator itr;
+
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                for(itr = _printlist.begin() ; itr != _printlist.end(); itr++)
+                                {
+                                    pendingOperation.addReplyVector( ((*itr).second) );
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        pendingOperation.setTimeExpires( RWTime() + 300 );   // Five minute expiration time, from now.
+                        else
+                        {
+                            pendingOperation.setTimeExpires( RWTime() + 300 );   // Five minute expiration time, from now.
 
-                        if(0)
+                            if(0)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Pending SCHEDULE incomplete. **** Stat " << getDeviceSerialNumber() << ".  Waiting on " << waiting_on << " and  " << rcCount << " command matches." << endl;
+                            }
+                        }
+
+                        break;
+                    }
+                case TYPE_SETSETPOINTS:
+                    {
+                        RWTime arrival(_setpoints._utime);
+                        RWTime confirm(_setpoints._ch_utime);
+
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                        }
+
+                        if( !pendingOperation.isConfirmed(getDeviceSerialNumber()) && theend != confirm && confirm >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        }
+
+                        break;
+                    }
+                case TYPE_SETDLCOVERRIDE:
+                case TYPE_SETFANSWITCH:
+                case TYPE_SETFILTERRESTART:
+                case TYPE_SETSETPOINTLIMITS:
+                case TYPE_SETSYSTEMSWITCH:
+                case TYPE_SETUTILSETPOINTS:
+                case TYPE_SETUTILOVERRIDE:
+                    {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Pending SCHEDULE incomplete. **** Stat " << getDeviceSerialNumber() << ".  Waiting on " << waiting_on << " and  " << rcCount << " command matches." << endl;
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " Unknown message type in a pending Operation: " << messagetype << endl;
                         }
-                    }
 
-                    break;
-                }
-            case TYPE_SETDLCOVERRIDE:
-            case TYPE_SETFANSWITCH:
-            case TYPE_SETFILTERRESTART:
-            case TYPE_SETSETPOINTLIMITS:
-            case TYPE_SETSETPOINTS:
-            case TYPE_SETSYSTEMSWITCH:
-            case TYPE_SETUTILSETPOINTS:
-            case TYPE_SETUTILOVERRIDE:
-                {
+                        break;
+                    }
+                case TYPE_GETALLOWEDSYSTEMSWITCH:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unknown message type in a pending Operation: " << pendingOperation.getMessageType() << endl;
+                        RWTime arrival(_allowedSystemSwitch._utime);
+
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-
-                    break;
-                }
-            case TYPE_GETALLOWEDSYSTEMSWITCH:
-                {
-                    RWTime arrival(_allowedSystemSwitch._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETBATTERY:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_battery._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETBATTERY:
-                {
-                    RWTime arrival(_battery._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETRUNTIME:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_runtime._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETRUNTIME:
-                {
-                    RWTime arrival(_runtime._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETSETPOINTS:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_setpoints._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETSETPOINTS:
-                {
-                    RWTime arrival(_setpoints._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETDEADBAND:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_deadband._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETDEADBAND:
-                {
-                    RWTime arrival(_deadband._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETDEVICEABSENT:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_deviceAbsent._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETDEVICEABSENT:
-                {
-                    RWTime arrival(_deviceAbsent._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETDEVICETYPE:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_deviceType._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETDEVICETYPE:
-                {
-                    RWTime arrival(_deviceType._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETDISPLAYEDTEMPERATURE:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_displayedTemp._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETDISPLAYEDTEMPERATURE:
-                {
-                    RWTime arrival(_displayedTemp._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETDLC:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_DLC._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETDLC:
-                {
-                    RWTime arrival(_DLC._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETFANSWITCH:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_fanSwitch._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETFANSWITCH:
-                {
-                    RWTime arrival(_fanSwitch._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETFILTER:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_filter._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETFILTER:
-                {
-                    RWTime arrival(_filter._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETHEATPUMPFAULT:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_heatPumpFault._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETHEATPUMPFAULT:
-                {
-                    RWTime arrival(_heatPumpFault._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETSETPOINTLIMITS:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_setpointLimits._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETSETPOINTLIMITS:
-                {
-                    RWTime arrival(_setpointLimits._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETOUTDOORTEMP:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_outdoorTemp._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETOUTDOORTEMP:
-                {
-                    RWTime arrival(_outdoorTemp._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETSYSTEMSWITCH:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_systemSwitch._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETSYSTEMSWITCH:
-                {
-                    RWTime arrival(_systemSwitch._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETUTILSETPOINT:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_utilSetpoint._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETUTILSETPOINT:
-                {
-                    RWTime arrival(_utilSetpoint._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETCLOCK:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        RWTime arrival(_clock._utime);
 
-                        generateReplyVector(pendingOperation);
+                        if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                        {
+                            pendingOperation.addRespondedSet(getDeviceSerialNumber());
+                            pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+
+                            generateReplyVector(pendingOperation);
+                        }
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETCLOCK:
-                {
-                    RWTime arrival(_clock._utime);
-
-                    if(!pendingOperation.isResponded(getDeviceSerialNumber()) && theend != arrival && arrival >= pendingOperation.getTimeSubmitted() )
+                case TYPE_GETDEVICEBOUND:
                     {
-                        pendingOperation.addRespondedSet(getDeviceSerialNumber());
-                        pendingOperation.addConfirmedSet(getDeviceSerialNumber());
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " Unknown message type in a pending Operation: " << messagetype << endl;
+                        }
 
-                        generateReplyVector(pendingOperation);
+                        break;
                     }
-                    break;
-                }
-            case TYPE_GETDEVICEBOUND:
-                {
+                case TYPE_GETSCHEDULE:
+                default:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unknown message type in a pending Operation: " << pendingOperation.getMessageType() << endl;
-                    }
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " Unknown message type in a pending Operation: " << messagetype << endl;
+                        }
 
-                    break;
-                }
-            case TYPE_GETSCHEDULE:
-            default:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " Unknown message type in a pending Operation: " << pendingOperation.getMessageType() << endl;
+                        break;
                     }
-
-                    break;
                 }
+
+
             }
         }
     }
@@ -2381,8 +2411,120 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                 operation = TYPE_SETSCHEDULE;
                 processed = processSchedule(msgsock,parse,OutMessage,pendingOperation);
             }
+            else if( parse.isKeyValid("xcsetstate") )
+            {
+                int system      = parse.getiValue("xcsysstate",-1);
+                int fan         = parse.getiValue("xcfanstate",0);
+                int temp        = parse.getiValue("xcsettemp",0);
+                int holdstatus  = (parse.getiValue("xcholdprog",0) != 0 ? EP_SETPOINT_STATUS_HOLD : EP_SETPOINT_STATUS_TEMPORARY);
+                int runprog     = parse.getiValue("xcrunprog",0);
+
+                int sppriority;
+
+                switch(system)
+                {
+                case 0x04:      // This is OFF
+                    {
+                        system = EP_SETSYSTEM_OFF;
+                        break;
+                    }
+                case 0x08:      // This is HEAT
+                    {
+                        system = EP_SETSYSTEM_HEAT;
+                        break;
+                    }
+                case 0x0c:      // This is COOL
+                    {
+                        system = EP_SETSYSTEM_COOL;
+                        break;
+                    }
+                case 0x10:      // This is EMHEAT
+                    {
+                        system = EP_SETSYSTEM_EMHEAT;
+                        break;
+                    }
+                default:
+                    {
+                        system = ( (_systemSwitch._systemSwitch < EP_SETSYSTEM_AUTO) ? _systemSwitch._systemSwitch : -1);
+                        break;
+                    }
+                }
+
+                if(system == EP_SETSYSTEM_COOL)
+                {
+                    sppriority = EP_SETPOINT_PRIORITY_COOL;
+                }
+                else
+                {
+                    sppriority = EP_SETPOINT_PRIORITY_HEAT;
+                }
+
+                switch(fan)
+                {
+                case 0x03:  // On.
+                    {
+                        processed = 1;
+                        operation = TYPE_SETFANSWITCH;
+                        sendSetFanSwitch( msgsock, 200 );
+                        break;
+                    }
+                case 0x02:  // Auto
+                case 0x01:  // Off which I guess is auto too.
+                    {
+                        processed = 1;
+                        operation = TYPE_SETFANSWITCH;
+                        sendSetFanSwitch( msgsock, 0 );
+                        break;
+                    }
+                case 0x00:
+                default:
+                    {
+                        // Don't send anything...
+                        break;
+                    }
+                }
+
+                if(runprog)
+                {
+                    processed = 1;
+                    operation = TYPE_SETSETPOINTS;
+                    sendSetSetpoints(msgsock,
+                                     0,                             // Heat setpoint.  Not used on a run program
+                                     0,                             // Cool setpoint.  Not used on a run program
+                                     EP_SETPOINT_PRIORITY_COOL,     // Setpoint priority (false is cool (not heat))
+                                     EP_SETPOINT_STATUS_RUNPROGRAM, // This is a run program operation
+                                     0,                             // Vacation hold days N/A
+                                     0);                            // Vacation hold period N/A
+                }
+                else
+                {
+                    if(system >= 0)
+                    {
+                        processed = 1;
+                        operation = TYPE_SETSYSTEMSWITCH;
+                        sendSetSystemSwitch( msgsock, system );
+                    }
+
+                    if(temp != 0)
+                    {
+                        processed = 1;
+                        operation = TYPE_SETSETPOINTS;
+                        sendSetSetpoints(msgsock,
+                                         convertToStatTemp(temp),   // Heat setpoint.  Not used on a run program
+                                         convertToStatTemp(temp),   // Cool setpoint.  Not used on a run program
+                                         sppriority,                // Setpoint priority (false is cool (not heat))
+                                         holdstatus,                // Temporary or permanent hold.
+                                         0,                         // Vacation hold days N/A
+                                         0);                        // Vacation hold period N/A
+                    }
+                }
+            }
             else
             {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
         else if(parse.getCommand() == GetValueRequest)
@@ -2497,6 +2639,29 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
 
                     if(dow < 7 && pod < EP_PERIODS_PER_DAY)
                     {
+                        if(heat == 0xff)
+                        {
+                            if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
+                            {
+                                heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
+                            }
+                            else
+                            {
+                                heat = 68;
+                            }
+                        }
+                        if(cool == 0xff)
+                        {
+                            if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
+                            {
+                                cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
+                            }
+                            else
+                            {
+                                cool = 80;
+                            }
+                        }
+
                         #if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2510,7 +2675,7 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
                         _schedule[dow][pod]._utime = 86400;
                     }
 
-                    sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat), convertToStatTemp(cool), hh, mm, 1 );
+                    sendSetSchedule(msgsock, convertCDayToStatDay(dow), pod+1, convertToStatTemp(heat, scaleFahrenheit), convertToStatTemp(cool, scaleFahrenheit), hh, mm, 1 );
                 }
             }
         }
@@ -2539,6 +2704,29 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
 
                     if(dow < 7 && pod < EP_PERIODS_PER_DAY)
                     {
+                        if(heat == 0xff)
+                        {
+                            if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
+                            {
+                                heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
+                            }
+                            else
+                            {
+                                heat = 68;
+                            }
+                        }
+                        if(cool == 0xff)
+                        {
+                            if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
+                            {
+                                cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
+                            }
+                            else
+                            {
+                                cool = 80;
+                            }
+                        }
+
                         #if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2581,6 +2769,29 @@ int CtiDeviceGatewayStat::processSchedule(SOCKET msgsock, CtiCommandParser &pars
 
                     if(dow < 7 && pod < EP_PERIODS_PER_DAY)
                     {
+                        if(heat == 0xff)
+                        {
+                            if(_schedule[dow][pod]._heatSetpoint != 0x7fff)
+                            {
+                                heat = convertFromStatTemp(_schedule[dow][pod]._heatSetpoint, scaleFahrenheit);
+                            }
+                            else
+                            {
+                                heat = 68;
+                            }
+                        }
+                        if(cool == 0xff)
+                        {
+                            if(_schedule[dow][pod]._coolSetpoint != 0x7fff)
+                            {
+                                cool = convertFromStatTemp(_schedule[dow][pod]._coolSetpoint, scaleFahrenheit);
+                            }
+                            else
+                            {
+                                cool = 80;
+                            }
+                        }
+
                         #if 0
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3134,7 +3345,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 }
                 else
                 {
-                    astr += RWCString("," + CtiNumStr(_setpoints._vacationHoldDays).zpad(3) );
+                    astr += RWCString("," + CtiNumStr(_setpoints._vacationHoldDays) );
                 }
 
                 astr += RWCString(",");
@@ -3195,7 +3406,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             }
             else
             {
-                astr += RWCString(CtiNumStr(_deadband._deadband) + " Degrees F");
+                astr += RWCString(CtiNumStr(_deadband._deadband) + getUnitName(true, true));
             }
 
 
@@ -3246,14 +3457,13 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_DISPLAYEDTEMPERATURE:
         {
-            if(_displayedTemp._displayedTempUnits == 0)
+            float dt = (float)_displayedTemp._displayedTemperature;
+            if(_displayedTemp._displayedTempUnits == 1)     // Celsius is given in 1/2 degrees.
             {
-                astr = RWCString(CtiNumStr(_displayedTemp._displayedTemperature) + ",F");
+                dt = dt / 2 ;
             }
-            else if(_displayedTemp._displayedTempUnits == 1)
-            {
-                astr = RWCString(CtiNumStr(_displayedTemp._displayedTemperature / 2) + ",C");
-            }
+
+            astr = RWCString(CtiNumStr(dt, GATEWAY_TEMPERATURE_PRECISION) + "," + getUnitName(true, true));
 
             if(!astr.isNull())
             {
@@ -3514,7 +3724,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             }
             else
             {
-                astr += CtiNumStr(convertFromStatTemp (_outdoorTemp._outdoorTemperature));
+                astr += CtiNumStr(convertFromStatTemp(_outdoorTemp._outdoorTemperature));
             }
 
             if(!astr.isNull())
@@ -3608,7 +3818,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + " F"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + getUnitName(true, true)));
             }
 
             astr += (RWCString(" Heat Setpoint: "));
@@ -3618,7 +3828,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + " F\n"));
+                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + getUnitName(true, true) + "\n"));
             }
 
             //
@@ -4012,5 +4222,32 @@ RWCString CtiDeviceGatewayStat::generateTidbitScheduleToDatabase(int day, int pe
     }
 
     return astr;
+}
+
+RWCString CtiDeviceGatewayStat::getUnitName(bool abbreviated, bool nospaces)
+{
+    RWCString str;
+
+    if(_displayedTemp._displayedTempUnits == 1)     // This is Celsius
+    {
+        if(abbreviated)
+            str = " C";
+        else
+            str = " Celsius";
+    }
+    else
+    {
+        if(abbreviated)
+            str = " F";
+        else
+            str = " Fahrenheit";
+    }
+
+    if(nospaces)
+    {
+        str = str.strip(RWCString::both);
+    }
+
+    return str;
 }
 

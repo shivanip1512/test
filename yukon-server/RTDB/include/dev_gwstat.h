@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 21:34:41 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/07/23 20:54:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,12 @@ using namespace std;
 #include "dlldefs.h"
 #include "gateway.h"
 #include "pending_gwresult.h"
+
+#define EP_PERIOD_WAKE          0
+#define EP_PERIOD_LEAVE         1
+#define EP_PERIOD_RETURN        2
+#define EP_PERIOD_SLEEP         3
+
 
 #define EP_PERIODS_PER_DAY          4   // Number of schedule periods per day
 
@@ -114,8 +120,6 @@ public:
     int checkPendingOperation( CtiPendingGatewayResult& pendingOperation );
 
     bool convertGatewayRXStruct( GATEWAYRXSTRUCT &GatewayRX );
-    static short convertFromStatTemp (short Temp);
-    static short convertToStatTemp (short Temp);
     void sendGet(SOCKET msgsock, USHORT Type);
     bool sendSetDLC(SOCKET msgsock, UCHAR OffCycleDuration, UCHAR CyclePeriod, USHORT DLCDuration, UCHAR OverrideDisable);
     void sendSetDLCOverride(SOCKET msgsock, UCHAR DLCOverride);
@@ -123,7 +127,23 @@ public:
     void sendSetFilterRestart(SOCKET msgsock, UCHAR Restart);
     void sendSetSchedule(SOCKET msgsock, UCHAR Day, UCHAR Period, SHORT HeatSetpoint, SHORT CoolSetpoint, UCHAR Hour, UCHAR Minute, UCHAR Fan);
     void sendSetpointLimits(SOCKET msgsock, SHORT UpperHeatLimit, SHORT LowerCoolLimit);
+
+    #define EP_SETPOINT_PRIORITY_COOL           FALSE
+    #define EP_SETPOINT_PRIORITY_HEAT           TRUE
+
+    #define EP_SETPOINT_STATUS_RUNPROGRAM       0
+    #define EP_SETPOINT_STATUS_TEMPORARY        1
+    #define EP_SETPOINT_STATUS_HOLD             2
+    #define EP_SETPOINT_STATUS_VACATIONHOLD     254
+
     void sendSetSetpoints(SOCKET msgsock, USHORT HeatSetpoint, USHORT CoolSetpoint, UCHAR SetpointPriority, UCHAR SetpointStatus, UCHAR VacationHoldDays, UCHAR VacationPeriod);
+
+    #define EP_SETSYSTEM_EMHEAT         0       // = Emergency Heat
+    #define EP_SETSYSTEM_HEAT           1       // = Heat
+    #define EP_SETSYSTEM_OFF            2       // = Off
+    #define EP_SETSYSTEM_COOL           3       // = Cool
+    #define EP_SETSYSTEM_AUTO           4       // = Auto
+
     void sendSetSystemSwitch(SOCKET msgsock, UCHAR SystemSwitch);
     void sendSetUtilSetpoints(SOCKET msgsock, SHORT UtilHeatSetpoint, SHORT UtilCoolSetpoint, USHORT UtilDuration, UCHAR PriceTier, UCHAR Mode, UCHAR UserOverrideDisable, UCHAR AdaptiveRecoveryDisable);
     void sendSetUtilOverride(SOCKET msgsock, UCHAR Override);
@@ -146,6 +166,17 @@ public:
 
 
     StatPrintList_t& getPrintList();
+
+    enum {
+        scaleToStat = 0,
+        scaleFahrenheit,
+        scaleCelsius
+    };
+
+    short convertFromStatTemp (short Temp, int tempScale = scaleToStat);
+    short convertToStatTemp (short Temp, int tempScale = scaleToStat);
+    RWCString getUnitName(bool abbreviated = true, bool nospaces = false);
+
 
     static int convertCDayToStatDay(int dow);
     static int convertStatDayToCDay(UCHAR Day);

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/07/21 21:34:39 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2003/07/23 20:55:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -492,25 +492,36 @@ void CtiDeviceGateway::run()
 
                 CtiDeviceGatewayStat *pGW = 0;
 
-                if(did)
+                if( did )
                 {
-                    SMAP_t::iterator smitr = _statMap.find( did );
-                    if( smitr != _statMap.end() )
+                    if(did != 0xFFFFFFFF)
                     {
-                        pGW = (*smitr).second;
+                        SMAP_t::iterator smitr = _statMap.find( did );
+                        if( smitr != _statMap.end() )
+                        {
+                            pGW = (*smitr).second;
+                        }
+                        else
+                        {
+                            pGW = new CtiDeviceGatewayStat(did);
+                            _statMap.insert( SMAP_t::value_type(did, pGW) );
+                            _statSN.push_back(did);
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Stat " << pGW->getDeviceSerialNumber() << " New EnergyPro Stat Connected." << endl;
+                            }
+
+                            pGW->sendGet( _msgsock, TYPE_GETALL );  // Update the works!
+                        }
                     }
                     else
                     {
-                        pGW = new CtiDeviceGatewayStat(did);
-                        _statMap.insert( SMAP_t::value_type(did, pGW) );
-                        _statSN.push_back(did);
-
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Stat " << pGW->getDeviceSerialNumber() << " New EnergyPro Stat Connected." << endl;
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << " Gateway Message Type " << (int)ntohs(GatewayRX.Type) << endl;
                         }
-
-                        pGW->sendGet( _msgsock, TYPE_GETALL );  // Update the works!
                     }
                 }
                 else
