@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2004/10/25 16:24:23 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2004/12/07 17:57:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,6 @@ using namespace std;
 #define MCT_STATUS_LONGPF           4        // True status. (latched)
 #define MCT_STATUS_OVERFLOW         5        // True status. (latched & alarm)
 #define MCT_STATUS_ADDRESSING       6        // 4 state status. 0 = all address, 1 = unique and fct, 2 = fct, 3 illegal.
-#define MCT_STATUS_DISCONNECT       7        // 4 state status. 0 = connected, 1 = connect armed, 2 = connect in progress, 3 = disconnected (matches bits 7,6 in 'status0')
 
 
 
@@ -164,6 +163,8 @@ public:
         PutStatus_Reset,
         PutStatus_FreezeOne,
         PutStatus_FreezeTwo,
+        PutStatus_FreezeVoltageOne,
+        PutStatus_FreezeVoltageTwo,
         PutStatus_ResetOverride,
         PutStatus_PeakOn,
         PutStatus_PeakOff,
@@ -186,6 +187,7 @@ public:
         GetConfig_DemandInterval,
         GetConfig_Options,
         GetConfig_GroupAddress,
+        GetConfig_Disconnect,
 
         // PutConfig commands
         PutConfig_Install,
@@ -209,6 +211,7 @@ public:
         PutConfig_Multiplier3,
         PutConfig_MinMax,
         PutConfig_OnOffPeak,
+        PutConfig_Disconnect,
 
         PutConfig_ARMC,
         PutConfig_ARML,  //  these used to be "Control_ARML," etc - I wanted to make them consistent...
