@@ -45,22 +45,22 @@ protected:
 
 private:
 
-    void     doParse(RWCString Cmd);
-    void     doParseGetValue(const RWCString &CmdStr);
-    void     doParsePutValue(const RWCString &CmdStr);
-    void     doParseGetStatus(const RWCString &CmdStr);
-    void     doParsePutStatus(const RWCString &CmdStr);
-    void     doParseControl(const RWCString &CmdStr);
-    void     doParseGetConfig(const RWCString &CmdStr);
-    void     doParsePutConfig(const RWCString &CmdStr);
-    void     doParseScan(const RWCString &CmdStr);
+    void    doParse(RWCString Cmd);
+    void    doParseGetValue(const RWCString &CmdStr);
+    void    doParsePutValue(const RWCString &CmdStr);
+    void    doParseGetStatus(const RWCString &CmdStr);
+    void    doParsePutStatus(const RWCString &CmdStr);
+    void    doParseControl(const RWCString &CmdStr);
+    void    doParseGetConfig(const RWCString &CmdStr);
+    void    doParsePutConfig(const RWCString &CmdStr);
+    void    doParseScan(const RWCString &CmdStr);
 
-    void     doParsePutConfigVersacom(const RWCString &CmdStr);
-    void     doParsePutConfigEmetcon(const RWCString &CmdStr);
-    void     doParsePutStatusVersacom(const RWCString &CmdStr);
-    void     doParsePutStatusFisherP(const RWCString &CmdStr);
-    void     doParsePutStatusEmetcon(const RWCString &CmdStr);
-    void     resolveProtocolType(const RWCString &CmdStr);
+    void    doParsePutConfigVersacom(const RWCString &CmdStr);
+    void    doParsePutConfigEmetcon(const RWCString &CmdStr);
+    void    doParsePutStatusVersacom(const RWCString &CmdStr);
+    void    doParsePutStatusFisherP(const RWCString &CmdStr);
+    void    doParsePutStatusEmetcon(const RWCString &CmdStr);
+    void    resolveProtocolType(const RWCString &CmdStr);
 
     void    doParseControlExpresscom(const RWCString &CmdStr);
     void    doParsePutConfigExpresscom(const RWCString &CmdStr);
@@ -117,6 +117,7 @@ public:
 
    RWTValSlist< RWCString >& getActionItems();
 
+   void parse();
 };
 
 

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/07/21 22:11:39 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2004/03/18 22:12:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,7 +130,11 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
      *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
      *   That method prepares an outmessage for submission to the internals..
      */
-    parse.setValue("type", ProtocolExpresscomType);
+    if(parse.getiValue("type") != ProtocolExpresscomType)
+    {
+        parse.setValue("type", ProtocolExpresscomType);
+        parse.parse();  // reparse for xcom specific data items....  This is required in case we got here from a group macro.
+    }
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
     {

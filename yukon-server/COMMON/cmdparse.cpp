@@ -69,8 +69,16 @@ void  CtiCommandParser::doParse(RWCString Cmd)
 
     _cmdString = Cmd;       // OK already, now we are in business.
 
+    parse();
+
+    return;
+}
+
+
+void  CtiCommandParser::parse()
+{
     CHAR            *p;
-    RWCString       CmdStr = Cmd;
+    RWCString       CmdStr = _cmdString;
     RWCString       token;
     RWCString       cmdstr;
     RWCString       strnum;
