@@ -20,4 +20,30 @@ public final class UserUtils
 	public static final int USER_YUKON_ID 				= -1;
 	public static final int USER_WEB_USER_ID 			= -2;
 	public static final int USER_WEB_OPERATOR_ID 	= -3;
+	
+	
+
+
+	/* Precanned role categories for users in the system */
+	public static final String CAT_YUKON = "Yukon";
+
+	
+	public static final String[] ALL_CATEGORIES =
+	{
+		CAT_YUKON
+	};
+	
+	
+	
+	public static final boolean isHiddenCategory( String cat_ )
+	{
+		for( int i = 0; i < ALL_CATEGORIES.length; i++ )
+		{
+			if( ALL_CATEGORIES[i].equalsIgnoreCase(cat_) )
+				return true;
+		}
+		
+		return false;
+	}
+
 }
