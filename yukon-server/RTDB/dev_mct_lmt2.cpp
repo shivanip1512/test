@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2003/10/06 18:43:45 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2003/10/21 16:31:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -531,7 +531,7 @@ INT CtiDeviceMCT_LMT2::decodeGetStatusInternal( INMESS *InMessage, RWTime &TimeN
 
         if( geneBuf[6] & 0x01 ) resultString += "  Reading Overflow\n";
         if( geneBuf[6] & 0x02 ) resultString += "  Long Power Fail\n";
-        if( geneBuf[6] & 0x04 ) resultString += "  Short PF/Reset\n";
+        if( geneBuf[6] & 0x04 ) resultString += "  Short Power Fail/Reset\n";
         if( geneBuf[6] & 0x08 ) resultString += "  Tamper latched\n";
         if( geneBuf[6] & 0x10 ) resultString += "  Self Test Error\n";
 
