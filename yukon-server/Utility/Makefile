@@ -25,13 +25,25 @@ INCLPATHS+= \
 
 BASEOBJS=cid.obj
 
-all:    wpsccfgparse.exe cid.exe
+all:    wpsccfgparse.exe cid.exe nextrev.exe
 
 cid.exe:  $(BASEOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(BASEOBJS) -link $(LIBS) $(RWLIBS)
+                @echo:
+               -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
+               -@copy ..\$@ $(YUKONOUTPUT)\yukon
+                @echo Done building Target ..\$@
+                @%cd $(CWD)
+
+
+nextrev.exe:    nextrev.obj Makefile
+                @echo:
+                @echo Compiling $@
+                @%cd $(OBJ)
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ nextrev.obj -link $(LIBS) $(RWLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT)\yukon md $(YUKONOUTPUT)\yukon
                -@copy ..\$@ $(YUKONOUTPUT)\yukon
