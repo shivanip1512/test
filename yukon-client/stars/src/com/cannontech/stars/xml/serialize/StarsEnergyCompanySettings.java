@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnergyCompanySettings.java,v 1.24 2004/12/14 02:15:21 zyao Exp $
+ * $Id: StarsEnergyCompanySettings.java,v 1.25 2005/01/04 20:45:06 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.24 $ $Date: 2004/12/14 02:15:21 $
+ * @version $Revision: 1.25 $ $Date: 2005/01/04 20:45:06 $
 **/
 public class StarsEnergyCompanySettings implements java.io.Serializable {
 
@@ -50,6 +50,8 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     private StarsCustomerFAQs _starsCustomerFAQs;
 
     private StarsServiceCompanies _starsServiceCompanies;
+
+    private StarsSubstations _starsSubstations;
 
     private StarsExitInterviewQuestions _starsExitInterviewQuestions;
 
@@ -156,6 +158,16 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     {
         return this._starsServiceCompanies;
     } //-- StarsServiceCompanies getStarsServiceCompanies() 
+
+    /**
+     * Returns the value of field 'starsSubstations'.
+     * 
+     * @return the value of field 'starsSubstations'.
+    **/
+    public StarsSubstations getStarsSubstations()
+    {
+        return this._starsSubstations;
+    } //-- StarsSubstations getStarsSubstations() 
 
     /**
      * Returns the value of field 'starsWebConfig'.
@@ -298,6 +310,16 @@ public class StarsEnergyCompanySettings implements java.io.Serializable {
     {
         this._starsServiceCompanies = starsServiceCompanies;
     } //-- void setStarsServiceCompanies(StarsServiceCompanies) 
+
+    /**
+     * Sets the value of field 'starsSubstations'.
+     * 
+     * @param starsSubstations the value of field 'starsSubstations'
+    **/
+    public void setStarsSubstations(StarsSubstations starsSubstations)
+    {
+        this._starsSubstations = starsSubstations;
+    } //-- void setStarsSubstations(StarsSubstations) 
 
     /**
      * Sets the value of field 'starsWebConfig'.

@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.InventoryUtils;
@@ -475,12 +476,12 @@ public class ImportManagerUtil {
 			catch (NumberFormatException e) {
 				// Otherwise, this is the substation name inside ""
 				String subName = fields[IDX_SUBSTATION].substring( 1, fields[IDX_SUBSTATION].length()-1 );
-				YukonSelectionList subList = energyCompany.getYukonSelectionList( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
 				
-				for (int i = 0; i < subList.getYukonListEntries().size(); i++) {
-					YukonListEntry sub = (YukonListEntry) subList.getYukonListEntries().get(i);
-					if (sub.getEntryText().equalsIgnoreCase( subName )) {
-						starsSub.setEntryID( sub.getEntryID() );
+				ArrayList subList = energyCompany.getAllSubstations();
+				for (int i = 0; i < subList.size(); i++) {
+					LiteSubstation liteSub = (LiteSubstation) subList.get(i);
+					if (liteSub.getSubstationName().equalsIgnoreCase( subName )) {
+						starsSub.setEntryID( liteSub.getSubstationID() );
 						break;
 					}
 				}

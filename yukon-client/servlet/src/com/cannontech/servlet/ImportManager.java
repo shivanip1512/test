@@ -28,6 +28,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -491,50 +492,75 @@ public class ImportManager extends HttpServlet {
 					}
 				}
 			}
+			else if (lines[i].trim().length() > 0) {
+				if (lines[i].endsWith("="))
+					lines[i] = lines[i].substring(0, lines[i].length() - 1);
+				listEntries.add( lines[i] );
+			}
 			else {
-				if (lines[i].trim().equals("")) {
-					if (isInList && listEntries.size() > 0) {
-						// Find the end of a list, update the list entries
-						if (listName.equals("ServiceCompany")) {
-							StarsAdminUtil.deleteAllServiceCompanies( energyCompany );
-							
-							for (int j = 0; j < listEntries.size(); j++) {
-								String entry = (String) listEntries.get(j);
-								StarsAdminUtil.createServiceCompany( entry, energyCompany );
-							}
-						}
-						else if (listName.equals("LoadType")) {
-							for (int j = 0; j < listEntries.size(); j++) {
-								String entry = (String) listEntries.get(j);
-								StarsAdminUtil.createApplianceCategory( entry, energyCompany );
+				// Find the end of a list, update the list entries
+				isInList = false;
+				
+				if (listName.equals("ServiceCompany")) {
+					StarsAdminUtil.deleteAllServiceCompanies( energyCompany );
+					
+					for (int j = 0; j < listEntries.size(); j++) {
+						String entry = (String) listEntries.get(j);
+						StarsAdminUtil.createServiceCompany( entry, energyCompany );
+					}
+				}
+				else if (listName.equals("Substation")) {
+					StarsAdminUtil.deleteAllSubstations( energyCompany );
+					
+					for (int j = 0; j < listEntries.size(); j++) {
+						String entry = (String) listEntries.get(j);
+						String subName = null;
+						int routeID = 0;
+						
+						int pos = entry.indexOf('=');
+						if (pos >= 0) {
+							subName = entry.substring(0, pos);
+							String routeName = entry.substring(pos + 1);
+							if (routeName.length() > 0) {
+								LiteYukonPAObject[] routes = PAOFuncs.getAllLiteRoutes();
+								for (int k = 0; k < routes.length; k++) {
+									if (routes[k].getPaoName().equalsIgnoreCase( routeName )) {
+										routeID = routes[k].getYukonID();
+										break;
+									}
+								}
 							}
 						}
 						else {
-							// Always add an empty entry at the beginning of the list
-							listEntries.add(0, " ");
-							
-							Object[][] entryData = new Object[ listEntries.size() ][];
-							for (int j = 0; j < listEntries.size(); j++) {
-								entryData[j] = new Object[3];
-								entryData[j][0] = ZERO;
-								entryData[j][1] = listEntries.get(j);
-								entryData[j][2] = ZERO;
-							}
-							
-							YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false, false);
-							if (cList == null)
-								throw new WebClientException("Cannot import data into an inherited selection list.");
-							
-							StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
+							subName = entry;
 						}
+						
+						StarsAdminUtil.createSubstation( subName, routeID, energyCompany );
 					}
-					
-					isInList = false;
+				}
+				else if (listName.equals("LoadType")) {
+					for (int j = 0; j < listEntries.size(); j++) {
+						String entry = (String) listEntries.get(j);
+						StarsAdminUtil.createApplianceCategory( entry, energyCompany );
+					}
 				}
 				else {
-					if (lines[i].endsWith("="))
-						lines[i] = lines[i].substring(0, lines[i].length() - 1);
-					listEntries.add( lines[i] );
+					// Always add an empty entry at the beginning of the list
+					listEntries.add(0, " ");
+					
+					Object[][] entryData = new Object[ listEntries.size() ][];
+					for (int j = 0; j < listEntries.size(); j++) {
+						entryData[j] = new Object[3];
+						entryData[j][0] = ZERO;
+						entryData[j][1] = listEntries.get(j);
+						entryData[j][2] = ZERO;
+					}
+					
+					YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false, false);
+					if (cList == null)
+						throw new WebClientException("Cannot import data into an inherited selection list.");
+					
+					StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
 				}
 			}
 		}

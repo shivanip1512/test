@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsSendOptOutNotificationDescriptor.java,v 1.6 2004/12/14 02:15:03 zyao Exp $
+ * $Id: StarsSendOptOutNotificationDescriptor.java,v 1.7 2005/01/04 20:45:03 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.6 $ $Date: 2004/12/14 02:15:03 $
+ * @version $Revision: 1.7 $ $Date: 2005/01/04 20:45:03 $
 **/
 public class StarsSendOptOutNotificationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

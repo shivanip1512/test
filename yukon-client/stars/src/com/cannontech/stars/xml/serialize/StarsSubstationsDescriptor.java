@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StreetAddressDescriptor.java,v 1.93 2005/01/04 20:45:06 yao Exp $
+ * $Id: StarsSubstationsDescriptor.java,v 1.1 2005/01/04 20:45:03 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.93 $ $Date: 2005/01/04 20:45:06 $
+ * @version $Revision: 1.1 $ $Date: 2005/01/04 20:45:03 $
 **/
-public class StreetAddressDescriptor extends StarsCustomerAddressDescriptor {
+public class StarsSubstationsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,18 +47,53 @@ public class StreetAddressDescriptor extends StarsCustomerAddressDescriptor {
      //- Constructors -/
     //----------------/
 
-    public StreetAddressDescriptor() {
+    public StarsSubstationsDescriptor() {
         super();
-        setExtendsWithoutFlatten(new StarsCustomerAddressDescriptor());
-        xmlName = "StreetAddress";
+        xmlName = "stars-Substations";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-    } //-- com.cannontech.stars.xml.serialize.StreetAddressDescriptor()
+        //-- _starsSubstationList
+        desc = new XMLFieldDescriptorImpl(StarsSubstation.class, "_starsSubstationList", "stars-Substation", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSubstations target = (StarsSubstations) object;
+                return target.getStarsSubstation();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSubstations target = (StarsSubstations) object;
+                    target.addStarsSubstation( (StarsSubstation) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsSubstation();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsSubstationList
+        fieldValidator = new FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        desc.setValidator(fieldValidator);
+        
+    } //-- com.cannontech.stars.xml.serialize.StarsSubstationsDescriptor()
 
 
       //-----------/
@@ -76,15 +111,13 @@ public class StreetAddressDescriptor extends StarsCustomerAddressDescriptor {
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return super.getExtends();
+        return null;
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
-        if (identity == null)
-            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -92,7 +125,7 @@ public class StreetAddressDescriptor extends StarsCustomerAddressDescriptor {
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StreetAddress.class;
+        return com.cannontech.stars.xml.serialize.StarsSubstations.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -44,6 +44,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -84,7 +85,6 @@ import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
 import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsLMPrograms;
-import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.stars.xml.serialize.StarsUpdateThermostatSchedule;
@@ -170,6 +170,10 @@ public class StarsAdmin extends HttpServlet {
 			updateServiceCompany( user, req, session );
 		else if (action.equalsIgnoreCase("DeleteServiceCompany"))
 			deleteServiceCompany( user, req, session );
+		else if (action.equalsIgnoreCase("UpdateSubstation"))
+			updateSubstation( user, req, session );
+		else if (action.equalsIgnoreCase("DeleteSubstation"))
+			deleteSubstation( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateFAQLink"))
 			updateCustomerFAQLink( user, req, session );
 		else if (action.equalsIgnoreCase("UpdateFAQSubjects"))
@@ -899,7 +903,6 @@ public class StarsAdmin extends HttpServlet {
 	
 	private void updateServiceCompany(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-		StarsServiceCompanies starsCompanies = energyCompany.getStarsServiceCompanies();
         
 		try {
 			int companyID = Integer.parseInt( req.getParameter("CompanyID") );
@@ -1039,6 +1042,79 @@ public class StarsAdmin extends HttpServlet {
 		catch (Exception e) {
 			CTILogger.error( e.getMessage(), e );
 			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the service company");
+			redirect = referer;
+		}
+	}
+	
+	private void updateSubstation(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+        
+		try {
+			int subID = Integer.parseInt( req.getParameter("SubID") );
+			boolean newSubstation = (subID == -1);
+			
+			com.cannontech.database.data.stars.Substation sub =
+					new com.cannontech.database.data.stars.Substation();
+			com.cannontech.database.db.stars.Substation subDB = sub.getSubstation();
+			
+			LiteSubstation liteSub = null;
+			if (!newSubstation) {
+				liteSub = energyCompany.getSubstation( subID );
+				StarsLiteFactory.setSubstation( subDB, liteSub );
+			}
+        	
+			subDB.setSubstationName( req.getParameter("SubName") );
+			subDB.setRouteID( Integer.valueOf(req.getParameter("Route")) );
+			
+			if (newSubstation) {
+				sub.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				sub = (com.cannontech.database.data.stars.Substation)
+						Transaction.createTransaction( Transaction.INSERT, sub ).execute();
+				
+				liteSub = (LiteSubstation) StarsLiteFactory.createLite( sub.getSubstation() );
+				energyCompany.addSubstation( liteSub );
+			}
+			else {
+				subDB = (com.cannontech.database.db.stars.Substation)
+						Transaction.createTransaction( Transaction.UPDATE, subDB ).execute();
+				StarsLiteFactory.setLiteSubstation( liteSub, subDB );
+			}
+			
+			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+			for (int i = 0; i < descendants.size(); i++) {
+				LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
+				ec.updateStarsSubstations();
+			}
+        	
+			if (newSubstation)
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation created successfully");
+			else
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation information updated successfully");
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update substation information");
+			redirect = referer;
+		}
+	}
+	
+	private void deleteSubstation(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+        
+		try {
+			int subID = Integer.parseInt( req.getParameter("SubID") );
+			if (subID == -1) {
+				StarsAdminUtil.deleteAllSubstations( energyCompany );
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substations have been deleted successfully");
+			}
+			else {
+				StarsAdminUtil.deleteSubstation( subID, energyCompany );
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation has been deleted successfully");
+			}
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to delete the substation");
 			redirect = referer;
 		}
 	}
@@ -1431,47 +1507,45 @@ public class StarsAdmin extends HttpServlet {
 					}
 				}
 				
-				if (!listName.equalsIgnoreCase(com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION)) {
-					if (cList != null) {
-						// Update yukon selection list
-						com.cannontech.database.db.constants.YukonSelectionList listDB =
-								StarsLiteFactory.createYukonSelectionList( cList );
-						listDB.setOrdering( ordering );
-						listDB.setSelectionLabel( label );
-						listDB.setWhereIsList( whereIsList );
-						
-						listDB = (com.cannontech.database.db.constants.YukonSelectionList)
-								Transaction.createTransaction( Transaction.UPDATE, listDB ).execute();
-						
-						StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
-					}
-					else {
-						// Create a new selection list
-						com.cannontech.database.data.constants.YukonSelectionList list =
-								new com.cannontech.database.data.constants.YukonSelectionList();
-						com.cannontech.database.db.constants.YukonSelectionList listDB = list.getYukonSelectionList();
-						listDB.setOrdering( ordering );
-						listDB.setSelectionLabel( label );
-						listDB.setWhereIsList( whereIsList );
-						listDB.setListName( listName );
-						listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
-						list.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-						
-						list = (com.cannontech.database.data.constants.YukonSelectionList)
-								Transaction.createTransaction(Transaction.INSERT, list).execute();
-						listDB = list.getYukonSelectionList();
-						
-						cList = new YukonSelectionList();
-						StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
-						
-						YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
-						energyCompany.getAllSelectionLists().add( cList );
-						
-						// Mark all entry data as new entries
-						if (entryData != null) {
-							for (int i = 0; i < entryData.length; i++)
-								entryData[i][0] = new Integer(0);
-						}
+				if (cList != null) {
+					// Update yukon selection list
+					com.cannontech.database.db.constants.YukonSelectionList listDB =
+							StarsLiteFactory.createYukonSelectionList( cList );
+					listDB.setOrdering( ordering );
+					listDB.setSelectionLabel( label );
+					listDB.setWhereIsList( whereIsList );
+					
+					listDB = (com.cannontech.database.db.constants.YukonSelectionList)
+							Transaction.createTransaction( Transaction.UPDATE, listDB ).execute();
+					
+					StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
+				}
+				else {
+					// Create a new selection list
+					com.cannontech.database.data.constants.YukonSelectionList list =
+							new com.cannontech.database.data.constants.YukonSelectionList();
+					com.cannontech.database.db.constants.YukonSelectionList listDB = list.getYukonSelectionList();
+					listDB.setOrdering( ordering );
+					listDB.setSelectionLabel( label );
+					listDB.setWhereIsList( whereIsList );
+					listDB.setListName( listName );
+					listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
+					list.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					
+					list = (com.cannontech.database.data.constants.YukonSelectionList)
+							Transaction.createTransaction(Transaction.INSERT, list).execute();
+					listDB = list.getYukonSelectionList();
+					
+					cList = new YukonSelectionList();
+					StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
+					
+					YukonListFuncs.getYukonSelectionLists().put( listDB.getListID(), cList );
+					energyCompany.getAllSelectionLists().add( cList );
+					
+					// Mark all entry data as new entries
+					if (entryData != null) {
+						for (int i = 0; i < entryData.length; i++)
+							entryData[i][0] = new Integer(0);
 					}
 				}
 				

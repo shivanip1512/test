@@ -1557,6 +1557,13 @@ public class StarsLiteFactory {
 		}
 	}
 	
+	public static void setStarsSubstation(StarsSubstation starsSub, LiteSubstation liteSub, LiteStarsEnergyCompany energyCompany) {
+		starsSub.setSubstationID( liteSub.getSubstationID() );
+		starsSub.setSubstationName( liteSub.getSubstationName() );
+		starsSub.setRouteID( liteSub.getRouteID() );
+		starsSub.setInherited( !energyCompany.getSubstations().contains(liteSub) );
+	}
+	
 	public static StarsLMConfiguration createStarsLMConfiguration(LiteLMConfiguration liteCfg) {
 		StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 		
@@ -1715,18 +1722,16 @@ public class StarsLiteFactory {
 		starsSite.setTransformerSize( StarsUtils.forceNotNull(liteSite.getTransformerSize()) );
 		starsSite.setServiceVoltage( StarsUtils.forceNotNull(liteSite.getServiceVoltage()) );
 		
-		YukonListEntry subEntry = null;
-		YukonSelectionList subList = energyCompany.getYukonSelectionList( com.cannontech.database.db.stars.Substation.LISTNAME_SUBSTATION );
-		if (subList != null) {
-			for (int i = 0; i < subList.getYukonListEntries().size(); i++) {
-				YukonListEntry entry = (YukonListEntry) subList.getYukonListEntries().get(i);
-				if (entry.getEntryID() == liteSite.getSubstationID()) {
-					subEntry = entry;
-					break;
-				}
-			}
+		LiteSubstation liteSub = energyCompany.getSubstation( liteSite.getSubstationID() );
+		if (liteSub != null) {
+			Substation sub = new Substation();
+			sub.setEntryID( liteSub.getSubstationID() );
+			sub.setContent( liteSub.getSubstationName() );
+			starsSite.setSubstation( sub );
 		}
-		starsSite.setSubstation( (Substation)StarsFactory.newStarsCustListEntry(subEntry, Substation.class) );
+		else {
+			starsSite.setSubstation( (Substation)StarsFactory.newEmptyStarsCustListEntry(Substation.class) );
+		}
 		
 		return starsSite;
 	}

@@ -242,6 +242,18 @@ public class InventoryBase extends DBPersistent {
 		
 		return null;
 	}
+	
+	public static void resetInstallationCompany(int companyID) {
+		String sql = "UPDATE " + TABLE_NAME + " SET InstallationCompanyID = 0 WHERE InstallationCompanyID = " + companyID;
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+		
+		try {
+			stmt.execute();
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
 
 	public Integer getInventoryID() {
 		return inventoryID;

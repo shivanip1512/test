@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsAppliances.java,v 1.93 2005/01/04 20:45:05 yao Exp $
+ * $Id: StarsSubstations.java,v 1.1 2005/01/04 20:45:03 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,26 +25,26 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.93 $ $Date: 2005/01/04 20:45:05 $
+ * @version $Revision: 1.1 $ $Date: 2005/01/04 20:45:03 $
 **/
-public class StarsAppliances implements java.io.Serializable {
+public class StarsSubstations implements java.io.Serializable {
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    private java.util.Vector _starsApplianceList;
+    private java.util.Vector _starsSubstationList;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public StarsAppliances() {
+    public StarsSubstations() {
         super();
-        _starsApplianceList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsAppliances()
+        _starsSubstationList = new Vector();
+    } //-- com.cannontech.stars.xml.serialize.StarsSubstations()
 
 
       //-----------/
@@ -54,67 +54,67 @@ public class StarsAppliances implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vStarsAppliance
+     * @param vStarsSubstation
     **/
-    public void addStarsAppliance(StarsAppliance vStarsAppliance)
+    public void addStarsSubstation(StarsSubstation vStarsSubstation)
         throws java.lang.IndexOutOfBoundsException
     {
-        _starsApplianceList.addElement(vStarsAppliance);
-    } //-- void addStarsAppliance(StarsAppliance) 
+        _starsSubstationList.addElement(vStarsSubstation);
+    } //-- void addStarsSubstation(StarsSubstation) 
 
     /**
      * 
      * 
      * @param index
-     * @param vStarsAppliance
+     * @param vStarsSubstation
     **/
-    public void addStarsAppliance(int index, StarsAppliance vStarsAppliance)
+    public void addStarsSubstation(int index, StarsSubstation vStarsSubstation)
         throws java.lang.IndexOutOfBoundsException
     {
-        _starsApplianceList.insertElementAt(vStarsAppliance, index);
-    } //-- void addStarsAppliance(int, StarsAppliance) 
+        _starsSubstationList.insertElementAt(vStarsSubstation, index);
+    } //-- void addStarsSubstation(int, StarsSubstation) 
 
     /**
     **/
-    public java.util.Enumeration enumerateStarsAppliance()
+    public java.util.Enumeration enumerateStarsSubstation()
     {
-        return _starsApplianceList.elements();
-    } //-- java.util.Enumeration enumerateStarsAppliance() 
+        return _starsSubstationList.elements();
+    } //-- java.util.Enumeration enumerateStarsSubstation() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsAppliance getStarsAppliance(int index)
+    public StarsSubstation getStarsSubstation(int index)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsApplianceList.size())) {
+        if ((index < 0) || (index > _starsSubstationList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsAppliance) _starsApplianceList.elementAt(index);
-    } //-- StarsAppliance getStarsAppliance(int) 
+        return (StarsSubstation) _starsSubstationList.elementAt(index);
+    } //-- StarsSubstation getStarsSubstation(int) 
 
     /**
     **/
-    public StarsAppliance[] getStarsAppliance()
+    public StarsSubstation[] getStarsSubstation()
     {
-        int size = _starsApplianceList.size();
-        StarsAppliance[] mArray = new StarsAppliance[size];
+        int size = _starsSubstationList.size();
+        StarsSubstation[] mArray = new StarsSubstation[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsAppliance) _starsApplianceList.elementAt(index);
+            mArray[index] = (StarsSubstation) _starsSubstationList.elementAt(index);
         }
         return mArray;
-    } //-- StarsAppliance[] getStarsAppliance() 
+    } //-- StarsSubstation[] getStarsSubstation() 
 
     /**
     **/
-    public int getStarsApplianceCount()
+    public int getStarsSubstationCount()
     {
-        return _starsApplianceList.size();
-    } //-- int getStarsApplianceCount() 
+        return _starsSubstationList.size();
+    } //-- int getStarsSubstationCount() 
 
     /**
     **/
@@ -155,63 +155,63 @@ public class StarsAppliances implements java.io.Serializable {
 
     /**
     **/
-    public void removeAllStarsAppliance()
+    public void removeAllStarsSubstation()
     {
-        _starsApplianceList.removeAllElements();
-    } //-- void removeAllStarsAppliance() 
+        _starsSubstationList.removeAllElements();
+    } //-- void removeAllStarsSubstation() 
 
     /**
      * 
      * 
      * @param index
     **/
-    public StarsAppliance removeStarsAppliance(int index)
+    public StarsSubstation removeStarsSubstation(int index)
     {
-        java.lang.Object obj = _starsApplianceList.elementAt(index);
-        _starsApplianceList.removeElementAt(index);
-        return (StarsAppliance) obj;
-    } //-- StarsAppliance removeStarsAppliance(int) 
+        java.lang.Object obj = _starsSubstationList.elementAt(index);
+        _starsSubstationList.removeElementAt(index);
+        return (StarsSubstation) obj;
+    } //-- StarsSubstation removeStarsSubstation(int) 
 
     /**
      * 
      * 
      * @param index
-     * @param vStarsAppliance
+     * @param vStarsSubstation
     **/
-    public void setStarsAppliance(int index, StarsAppliance vStarsAppliance)
+    public void setStarsSubstation(int index, StarsSubstation vStarsSubstation)
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsApplianceList.size())) {
+        if ((index < 0) || (index > _starsSubstationList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _starsApplianceList.setElementAt(vStarsAppliance, index);
-    } //-- void setStarsAppliance(int, StarsAppliance) 
+        _starsSubstationList.setElementAt(vStarsSubstation, index);
+    } //-- void setStarsSubstation(int, StarsSubstation) 
 
     /**
      * 
      * 
-     * @param starsApplianceArray
+     * @param starsSubstationArray
     **/
-    public void setStarsAppliance(StarsAppliance[] starsApplianceArray)
+    public void setStarsSubstation(StarsSubstation[] starsSubstationArray)
     {
         //-- copy array
-        _starsApplianceList.removeAllElements();
-        for (int i = 0; i < starsApplianceArray.length; i++) {
-            _starsApplianceList.addElement(starsApplianceArray[i]);
+        _starsSubstationList.removeAllElements();
+        for (int i = 0; i < starsSubstationArray.length; i++) {
+            _starsSubstationList.addElement(starsSubstationArray[i]);
         }
-    } //-- void setStarsAppliance(StarsAppliance) 
+    } //-- void setStarsSubstation(StarsSubstation) 
 
     /**
      * 
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsAppliances unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.StarsSubstations unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsAppliances) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsAppliances.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsAppliances unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.StarsSubstations) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsSubstations.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.StarsSubstations unmarshal(java.io.Reader) 
 
     /**
     **/

@@ -1115,6 +1115,23 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="stars-Substation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SubstationName" type="xs:string"/>
+			</xs:sequence>
+			<xs:attribute name="substationID" type="xs:int"/>
+			<xs:attribute name="routeID" type="xs:int"/>
+			<xs:attribute name="inherited" type="xs:boolean"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-Substations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-Substation" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="stars-UpdateLogin" type="stars-Usr"/>
 	<xs:element name="stars-UpdateLoginResponse">
 		<xs:complexType>
@@ -1198,6 +1215,7 @@
 				<xs:element ref="stars-CustomerSelectionLists" minOccurs="0"/>
 				<xs:element ref="stars-CustomerFAQs" minOccurs="0"/>
 				<xs:element ref="stars-ServiceCompanies" minOccurs="0"/>
+				<xs:element ref="stars-Substations" minOccurs="0"/>
 				<xs:element ref="stars-ExitInterviewQuestions" minOccurs="0"/>
 				<xs:element name="stars-DefaultThermostatSchedules" minOccurs="0">
 					<xs:complexType>

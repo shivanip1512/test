@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsEnergyCompanySettingsDescriptor.java,v 1.24 2004/12/14 02:15:17 zyao Exp $
+ * $Id: StarsEnergyCompanySettingsDescriptor.java,v 1.25 2005/01/04 20:45:06 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.24 $ $Date: 2004/12/14 02:15:17 $
+ * @version $Revision: 1.25 $ $Date: 2005/01/04 20:45:06 $
 **/
 public class StarsEnergyCompanySettingsDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -293,6 +293,38 @@ public class StarsEnergyCompanySettingsDescriptor extends org.exolab.castor.xml.
         addFieldDescriptor(desc);
         
         //-- validation code for: _starsServiceCompanies
+        fieldValidator = new FieldValidator();
+        desc.setValidator(fieldValidator);
+        
+        //-- _starsSubstations
+        desc = new XMLFieldDescriptorImpl(StarsSubstations.class, "_starsSubstations", "stars-Substations", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                return target.getStarsSubstations();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsEnergyCompanySettings target = (StarsEnergyCompanySettings) object;
+                    target.setStarsSubstations( (StarsSubstations) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new StarsSubstations();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _starsSubstations
         fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         

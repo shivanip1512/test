@@ -16,8 +16,6 @@ import com.cannontech.database.db.DBPersistent;
 public class Substation extends DBPersistent {
 
     public static final int NONE_INT = 0;
-    
-    public static final String LISTNAME_SUBSTATION = "Substation";
 
     private Integer substationID = null;
     private String substationName = "";

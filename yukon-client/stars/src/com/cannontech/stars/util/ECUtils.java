@@ -50,6 +50,11 @@ public class ECUtils {
 	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
 		return company.getLiteID() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
 	}
+	
+	public static boolean isSingleEnergyCompany(LiteStarsEnergyCompany company) {
+		String value = company.getEnergyCompanySetting( EnergyCompanyRole.SINGLE_ENERGY_COMPANY );
+		return (value == null) || Boolean.valueOf(value).booleanValue();
+	}
 
 	public static boolean hasRight(LiteStarsEnergyCompany energyCompany, int rightCode) {
 		String value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV );

@@ -33,6 +33,8 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
+import com.cannontech.database.data.lite.stars.LiteServiceCompany;
+import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -60,8 +62,28 @@ public class StarsUtils {
 		public int compare(Object o1, Object o2) {
 			YukonListEntry entry1 = (YukonListEntry) o1;
 			YukonListEntry entry2 = (YukonListEntry) o2;
-			int res = entry1.getEntryText().compareTo( entry2.getEntryText() );
+			int res = entry1.getEntryText().compareToIgnoreCase( entry2.getEntryText() );
 			if (res == 0) res = entry1.getEntryID() - entry2.getEntryID();
+			return res;
+		}
+	};
+	
+	public static final Comparator SERVICE_COMPANY_CMPTR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+			LiteServiceCompany company1 = (LiteServiceCompany) o1;
+			LiteServiceCompany company2 = (LiteServiceCompany) o2;
+			int res = company1.getCompanyName().compareToIgnoreCase( company2.getCompanyName() );
+			if (res == 0) res = company1.getCompanyID() - company2.getCompanyID();
+			return res;
+		}
+	};
+	
+	public static final Comparator SUBSTATION_CMPTR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+			LiteSubstation sub1 = (LiteSubstation) o1;
+			LiteSubstation sub2 = (LiteSubstation) o2;
+			int res = sub1.getSubstationName().compareToIgnoreCase( sub2.getSubstationName() );
+			if (res == 0) res = sub1.getSubstationID() - sub2.getSubstationID();
 			return res;
 		}
 	};

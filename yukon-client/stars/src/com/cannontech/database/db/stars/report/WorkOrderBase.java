@@ -190,6 +190,18 @@ public class WorkOrderBase extends DBPersistent {
     	
     	return null;
     }
+    
+    public static void resetServiceCompany(int companyID) {
+    	String sql = "UPDATE " + TABLE_NAME + " SET ServiceCompanyID = 0 WHERE ServiceCompanyID = " + companyID;
+    	SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    	}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+    }
 
 	/**
 	 * Returns the actionTaken.

@@ -1,6 +1,8 @@
 package com.cannontech.database.db.stars.customer;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -109,6 +111,18 @@ public class SiteInformation extends DBPersistent {
         }
 
         return new Integer( nextSiteID );
+    }
+    
+    public static void resetSubstation(int substationID) {
+    	String sql = "UPDATE " + TABLE_NAME + " SET SubstationID = 0 WHERE SubstationID = " + substationID;
+    	SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+    	
+    	try {
+    		stmt.execute();
+    	}
+    	catch (Exception e) {
+    		CTILogger.error( e.getMessage(), e );
+    	}
     }
 
     public Integer getSiteID() {

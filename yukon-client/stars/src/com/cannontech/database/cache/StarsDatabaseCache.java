@@ -37,7 +37,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
@@ -442,7 +441,7 @@ public class StarsDatabaseCache implements com.cannontech.database.cache.DBChang
 				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
 				
 				if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
-					if (!Boolean.valueOf(energyCompany.getEnergyCompanySetting( EnergyCompanyRole.SINGLE_ENERGY_COMPANY )).booleanValue())
+					if (!ECUtils.isSingleEnergyCompany( energyCompany ))
 						handleRouteChange( msg, energyCompany );
 				}
 				else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {

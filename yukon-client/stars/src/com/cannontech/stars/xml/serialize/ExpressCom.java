@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ExpressCom.java,v 1.10 2004/12/14 02:15:12 zyao Exp $
+ * $Id: ExpressCom.java,v 1.11 2005/01/04 20:45:05 yao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.10 $ $Date: 2004/12/14 02:15:12 $
+ * @version $Revision: 1.11 $ $Date: 2005/01/04 20:45:05 $
 **/
 public class ExpressCom implements java.io.Serializable {
 

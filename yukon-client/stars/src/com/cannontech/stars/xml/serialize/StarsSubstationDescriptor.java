@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsNewCustomerAccountDescriptor.java,v 1.93 2005/01/04 20:45:04 yao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.93 $ $Date: 2005/01/04 20:45:04 $
+ * @version $Revision$ $Date$
 **/
-public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StarsSubstationDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -47,38 +47,168 @@ public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.uti
      //- Constructors -/
     //----------------/
 
-    public StarsNewCustomerAccountDescriptor() {
+    public StarsSubstationDescriptor() {
         super();
-        xmlName = "stars-NewCustomerAccount";
+        xmlName = "stars-Substation";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
+        
+        //-- set grouping compositor
+        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _starsCustomerAccount
-        desc = new XMLFieldDescriptorImpl(StarsCustomerAccount.class, "_starsCustomerAccount", "stars-CustomerAccount", NodeType.Element);
+        //-- _substationID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_substationID", "substationID", NodeType.Attribute);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                return target.getStarsCustomerAccount();
+                StarsSubstation target = (StarsSubstation) object;
+                if(!target.hasSubstationID())
+                    return null;
+                return new Integer(target.getSubstationID());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                    target.setStarsCustomerAccount( (StarsCustomerAccount) value);
+                    StarsSubstation target = (StarsSubstation) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteSubstationID();
+                        return;
+                    }
+                    target.setSubstationID( ((Integer)value).intValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsCustomerAccount();
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _substationID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _routeID
+        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_routeID", "routeID", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSubstation target = (StarsSubstation) object;
+                if(!target.hasRouteID())
+                    return null;
+                return new Integer(target.getRouteID());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSubstation target = (StarsSubstation) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteRouteID();
+                        return;
+                    }
+                    target.setRouteID( ((Integer)value).intValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _routeID
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            IntegerValidator iv = new IntegerValidator();
+            fieldValidator.setValidator(iv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- _inherited
+        desc = new XMLFieldDescriptorImpl(java.lang.Boolean.TYPE, "_inherited", "inherited", NodeType.Attribute);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSubstation target = (StarsSubstation) object;
+                if(!target.hasInherited())
+                    return null;
+                return new Boolean(target.getInherited());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSubstation target = (StarsSubstation) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteInherited();
+                        return;
+                    }
+                    target.setInherited( ((Boolean)value).booleanValue());
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _inherited
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            BooleanValidator bv = new BooleanValidator();
+            fieldValidator.setValidator(bv);
+        }
+        desc.setValidator(fieldValidator);
+        
+        //-- initialize element descriptors
+        
+        //-- _substationName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_substationName", "SubstationName", NodeType.Element);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsSubstation target = (StarsSubstation) object;
+                return target.getSubstationName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsSubstation target = (StarsSubstation) object;
+                    target.setSubstationName( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
             }
         } );
         desc.setHandler(handler);
@@ -86,76 +216,17 @@ public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.uti
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _starsCustomerAccount
+        //-- validation code for: _substationName
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
         desc.setValidator(fieldValidator);
         
-        //-- _starsSULMPrograms
-        desc = new XMLFieldDescriptorImpl(StarsSULMPrograms.class, "_starsSULMPrograms", "stars-SULMPrograms", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                return target.getStarsSULMPrograms();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                    target.setStarsSULMPrograms( (StarsSULMPrograms) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsSULMPrograms();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsSULMPrograms
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-        //-- _starsUpdateLogin
-        desc = new XMLFieldDescriptorImpl(StarsUpdateLogin.class, "_starsUpdateLogin", "stars-UpdateLogin", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                return target.getStarsUpdateLogin();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsNewCustomerAccount target = (StarsNewCustomerAccount) object;
-                    target.setStarsUpdateLogin( (StarsUpdateLogin) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsUpdateLogin();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsUpdateLogin
-        fieldValidator = new FieldValidator();
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsNewCustomerAccountDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.StarsSubstationDescriptor()
 
 
       //-----------/
@@ -187,7 +258,7 @@ public class StarsNewCustomerAccountDescriptor extends org.exolab.castor.xml.uti
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsNewCustomerAccount.class;
+        return com.cannontech.stars.xml.serialize.StarsSubstation.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**
