@@ -5,7 +5,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
-
+<script language="JavaScript">
+function updateField(f, checked) {
+	f.disabled = !checked;
+	if (checked) f.focus();
+}
+</script>
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
@@ -51,44 +56,46 @@
 		  <td width="1" bgcolor="#000000" height="1"></td>
         </tr>
         <tr> 
-          <td  valign="top" width="101">
-            <% String pageName = "AddSN.jsp"; %>
+          <td  valign="top" width="101"> 
+            <% String pageName = "UpdateSN.jsp"; %>
             <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = "ADD SERIAL NUMBER RANGE"; %>
+              <% String header = "UPDATE SERIAL NUMBER RANGE"; %>
               <%@ include file="SearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  
               <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
-			    <input type="hidden" name="action" value="AddSNRange">
+			    <input type="hidden" name="action" value="UpdateSNRange">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
-                    <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Add 
+                    <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Update 
                       Serial Number Range</b></td>
                   </tr>
                   <tr> 
                     <td> 
                       <table width="100%" border="0" class="TableCell">
                         <tr> 
+                          <td width="5%">&nbsp;</td>
                           <td width="25%"> 
-                            <div align="right">Range:</div>
+                            <div align="left">Range:</div>
                           </td>
-                          <td width="75%"> 
-                            <input type="text" name="From" size="10">
-                            &nbsp;to&nbsp; 
-                            <input type="text" name="To" size="10">
+                          <td width="70%"> 
+                            <input type="text" name="From" size="10">&nbsp;to&nbsp;<input type="text" name="To" size="10">
                           </td>
                         </tr>
                         <tr> 
-                          <td width="25%"> 
-                            <div align="right">Device Type: </div>
+                          <td width="5%">
+                            <input type="checkbox" name="UpdateDeviceType" value="true" onclick="updateField(this.form.DeviceType, this.checked)">
                           </td>
-                          <td width="75%"> 
-                            <select name="DeviceType">
+                          <td width="25%"> 
+                            <div align="left">Device Type: </div>
+                          </td>
+                          <td width="70%"> 
+                            <select name="DeviceType" disabled>
                               <%
 	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -102,43 +109,52 @@
                           </td>
                         </tr>
                         <tr> 
-                          <td width="25%"> 
-                            <div align="right">Receive Date:</div>
+                          <td width="5%">
+                            <input type="checkbox" name="UpdateRecvDate" value="true" onclick="updateField(this.form.ReceiveDate, this.checked)">
                           </td>
-                          <td width="75%"> 
-                            <input type="text" name="ReceiveDate" size="24">
+                          <td width="25%"> 
+                            <div align="left">Receive Date:</div>
+                          </td>
+                          <td width="70%"> 
+                            <input type="text" name="ReceiveDate" size="24" disabled>
                           </td>
                         </tr>
                         <tr> 
-                          <td width="25%"> 
-                            <div align="right">Voltage:</div>
+                          <td width="5%">
+                            <input type="checkbox" name="UpdateVoltage" value="true" onclick="updateField(this.form.Voltage, this.checked)">
                           </td>
-                          <td width="75%"> 
-                            <select name="Voltage">
-<%
+                          <td width="25%"> 
+                            <div align="left">Voltage:</div>
+                          </td>
+                          <td width="70%"> 
+                            <select name="Voltage" disabled>
+                              <%
 	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
 	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
 %>
                               <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
+                              <%
 	}
 %>
                             </select>
                           </td>
                         </tr>
                         <tr> 
-                          <td width="25%"> 
-                            <div align="right">Service Company:</div>
+                          <td width="5%">
+                            <input type="checkbox" name="UpdateSrvCompany" value="true" onclick="updateField(this.form.ServiceCompany, this.checked)">
                           </td>
-                          <td width="75%"> 
-                            <select name="ServiceCompany">
-<%
+                          <td width="25%"> 
+                            <div align="left">Service Company:</div>
+                          </td>
+                          <td width="70%"> 
+                            <select name="ServiceCompany" disabled>
+                              <%
 	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
 %>
                               <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
-<%
+                              <%
 	}
 %>
                             </select>

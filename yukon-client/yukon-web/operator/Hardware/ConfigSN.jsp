@@ -52,13 +52,13 @@
         </tr>
         <tr> 
           <td  valign="top" width="101">
-            <% String pageName = "AddSN.jsp"; %>
+            <% String pageName = "ConfigSN.jsp"; %>
             <%@ include file="Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../Images/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
             <div align="center"> 
-              <% String header = "ADD SERIAL NUMBER RANGE"; %>
+              <% String header = "CONFIGURE SERIAL NUMBER RANGE"; %>
               <%@ include file="SearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
@@ -67,7 +67,7 @@
 			    <input type="hidden" name="action" value="AddSNRange">
                 <table width="64%" border="1" cellspacing="0" cellpadding="5" align="center" height="91">
                   <tr> 
-                    <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Add 
+                    <td align = "left" class = "Main" bgcolor="#CCCCCC"><b>Configure 
                       Serial Number Range</b></td>
                   </tr>
                   <tr> 
@@ -78,70 +78,7 @@
                             <div align="right">Range:</div>
                           </td>
                           <td width="75%"> 
-                            <input type="text" name="From" size="10">
-                            &nbsp;to&nbsp; 
-                            <input type="text" name="To" size="10">
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="25%"> 
-                            <div align="right">Device Type: </div>
-                          </td>
-                          <td width="75%"> 
-                            <select name="DeviceType">
-                              <%
-	StarsCustSelectionList deviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-	for (int i = 0; i < deviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = deviceTypeList.getStarsSelectionListEntry(i);
-%>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-                              <%
-	}
-%>
-                            </select>
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="25%"> 
-                            <div align="right">Receive Date:</div>
-                          </td>
-                          <td width="75%"> 
-                            <input type="text" name="ReceiveDate" size="24">
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="25%"> 
-                            <div align="right">Voltage:</div>
-                          </td>
-                          <td width="75%"> 
-                            <select name="Voltage">
-<%
-	StarsCustSelectionList voltageList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE );
-	for (int i = 0; i < voltageList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = voltageList.getStarsSelectionListEntry(i);
-%>
-                              <option value="<%= entry.getEntryID() %>"><%= entry.getContent() %></option>
-<%
-	}
-%>
-                            </select>
-                          </td>
-                        </tr>
-                        <tr> 
-                          <td width="25%"> 
-                            <div align="right">Service Company:</div>
-                          </td>
-                          <td width="75%"> 
-                            <select name="ServiceCompany">
-<%
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany servCompany = companies.getStarsServiceCompany(i);
-%>
-                              <option value="<%= servCompany.getCompanyID() %>"><%= servCompany.getCompanyName() %></option>
-<%
-	}
-%>
-                            </select>
+                            <input type="text" name="From" size="10">&nbsp;to&nbsp;<input type="text" name="To" size="10">
                           </td>
                         </tr>
                       </table>
@@ -151,14 +88,14 @@
                 <br>
                 <table width="64%" border="0" cellspacing="0" cellpadding="3" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td width="210"> 
+                    <td width="169"> 
                       <div align="right"> 
-                        <input type="submit" name="Submit" value="Submit">
+                        <input type="submit" name="ConfigNow" value="Configure Now">
                       </div>
                     </td>
-                    <td width="210"> 
+                    <td width="239"> 
                       <div align="left"> 
-                        <input type="reset" name="Cancel" value="Cancel">
+                        <input type="submit" name="ScheduleConfig" value="Schedule Configuration">
                       </div>
                     </td>
                   </tr>
