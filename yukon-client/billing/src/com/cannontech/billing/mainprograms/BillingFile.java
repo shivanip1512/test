@@ -76,9 +76,9 @@ public java.util.Vector retreiveAllBillGroupsVector()
 	java.sql.Connection conn = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = new String( "SELECT DISTINCT " + getBillingDefaults().getBillGroupColumn() + " FROM "
+	String sql = new String( "SELECT DISTINCT " + getBillingDefaults().getBillGroupSQLString() + " FROM "
 					+ com.cannontech.database.db.device.DeviceMeterGroup.TABLE_NAME
-					+ " ORDER BY " + getBillingDefaults().getBillGroupColumn());
+					+ " ORDER BY " + getBillingDefaults().getBillGroupSQLString());
 	try
 	{
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias);
@@ -166,7 +166,7 @@ public void retreiveFileFormats()
 				}	
 				//Copy into class arrays.
 				FileFormatTypes.setValidFormatIDs(formatIDs);
-				FileFormatTypes.setValiedFormatTypes(formatTypes);
+				FileFormatTypes.setValidFormatTypes(formatTypes);
 			}
 		}
 	}
@@ -230,7 +230,7 @@ public void run()
 			}
 
 			setChanged();
-			this.notifyObservers("Successfully created the file : " + fileFormatBase.getOutputFileName() );
+			this.notifyObservers("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
 			com.cannontech.clientutils.CTILogger.info("notified observers!");
 		}
 		catch(java.io.IOException ioe)
@@ -254,5 +254,44 @@ public void setFileFormatBase( FileFormatBase newFormatBase)
 	fileFormatBase = newFormatBase;
 	fileFormatBase.setBillingDefaults(getBillingDefaults());
 
+}
+public void encodeOutput(java.io.OutputStream out) throws java.io.IOException
+{
+	if( fileFormatBase != null )
+	{
+		//tell our formatter about needing to append or not
+		//fileFormatBase.setIsAppending( getAppendCheckBox().isSelected() );
+		fileFormatBase.setBillingDefaults(getBillingDefaults());
+
+		com.cannontech.clientutils.CTILogger.info(" ** FYI ** Valid entries are for meters with: ");
+		com.cannontech.clientutils.CTILogger.info(" ** DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+		com.cannontech.clientutils.CTILogger.info(" ** ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
+
+		boolean success = false;
+		
+		if (getBillingDefaults().getBillGroup().isEmpty())
+			success = false;
+		else
+			success = fileFormatBase.retrieveBillingData( null );	// null is the dbalias.  It's set in
+																	// every method but should be updated sometime.
+
+		try
+		{
+			if( success )
+			{
+				fileFormatBase.writeToFile(out);
+			}
+			else				
+			{
+				this.notifyObservers("Unsuccessfull database query" );
+			}
+
+			com.cannontech.clientutils.CTILogger.info("notified observers!");
+		}
+		catch(java.io.IOException ioe)
+		{
+			ioe.printStackTrace();
+		}
+	}
 }
 }
