@@ -354,7 +354,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener
 
 		// insert items
 		yukonSysTray.addItem( getMenuItemExit() );
-		yukonSysTray.addItem( getMenuItemLogout() );
+		//yukonSysTray.addItem( getMenuItemLogout() );
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( getMenuItemAbout() );
 		yukonSysTray.addSeparator();

@@ -87,7 +87,7 @@ public class SystrayLogger extends Thread
 		catch( Exception e )
 		{
 			//maybe not needed
-			CTILogger.warn( "Spawned process died", e );
+			CTILogger.warn( "Spawned process died for procid = " + getProcID(), e );
 		}
 
 	}
