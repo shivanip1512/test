@@ -125,8 +125,8 @@ public:
     virtual BOOL isReadyForTimedControl(LONG secondsFromBeginningOfDay);
     virtual BOOL handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
-
-
+    virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay);
+    
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -156,7 +156,7 @@ public:
     static int TimedActiveState;
 
 protected:
-    virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay);
+
     
     void restore(RWDBReader& rdr);
 

@@ -35,6 +35,7 @@
 #include "lmcontrolareatrigger.h"
 #include "lmprogramthermostatgear.h"
 #include "lmprogramcontrolwindow.h"
+#include "lmconstraint.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -4064,11 +4065,10 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                        setStartedRampingOutTime(now);
                        is_ramping_out = true;
 
-
                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
                        {
                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << RWTime() << " LMGroup: " << currentLMGroup->getPAOName() << " will be ramped out by: " << currentLMGroup->getControlCompleteTime().asString() << endl;
+                           dout << RWTime() << " LMGroup: " << currentLMGroup->getPAOName() << " waiting to ramp out." << endl;
                        }
                     }
                     else
@@ -4191,6 +4191,11 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
         {
             setReductionTotal(0.0);
             setProgramState(CtiLMProgramBase::InactiveState);
+            for(int i = 0; i < _lmprogramdirectgroups.entries(); i++)
+            {
+                CtiLMGroupBase* lm_group = (CtiLMGroupBase*) _lmprogramdirectgroups[i];
+                lm_group->setGroupControlState(CtiLMGroupBase::InactiveState);
+            }
             setCurrentGearNumber(0);
             setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
             setManualControlReceivedFlag(FALSE);
@@ -4272,7 +4277,7 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(ULONG secondsFrom1901)
     CtiLMProgramDirectGear* lm_gear = getCurrentGearObject();
     long ramp_out_interval = lm_gear->getRampOutInterval();
     long ramp_out_percent = lm_gear->getRampOutPercent();
-    int cur_interval = (secondsFrom1901 - getStartedRampingOutTime().seconds()) / getCurrentGearObject()->getRampOutInterval();
+    int cur_interval = (secondsFrom1901 - getStartedRampingOutTime().seconds()) / getCurrentGearObject()->getRampOutInterval()+1;
     int should_be_ramped_out = min((int) floor((((double)ramp_out_percent/100.0 * (double)cur_interval) * (double)num_groups) + 0.5), (int) num_groups);
     int num_ramped_out = 0;
     
@@ -4508,59 +4513,98 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
     {
 	if(isReady)
 	{
-	    string text = "Timed Start, LM Program: ";
-	    text += getPAOName();
-	    string additional = "";
-	    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
-	    signal->setSOE(2);
-
-	    multiDispatchMsg->insert(signal);
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " - " << text << ", " << additional << endl;
-        }
-	manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
-	setProgramState(CtiLMProgramBase::TimedActiveState);
+	    CtiLMConstraintChecker con_checker;
 	
-	CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
-	assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
-	RWDBDateTime startTime(RWTime((unsigned long)secondsFrom1901));
-	RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
+	    CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
+	    assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
+	    RWDBDateTime startTime(RWTime((unsigned long)secondsFrom1901));
+	    RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
 
-	incrementDailyOps();
-        setDirectStartTime(startTime);
-	setDirectStopTime(endTime);
-	return TRUE;
+	    vector<string> cons_results;
+	    if(!con_checker.checkConstraints(*this, getCurrentGearObject()->getGearNumber(), startTime.seconds(), endTime.seconds(), cons_results))
+	    {
+		string text = " LMProgram: ";
+		text += getPAOName();
+		text += ", a timed program, was scheduled to start but did not due to constraint violations";
+		string additional = "";
+		for(vector<string>::iterator iter = cons_results.begin(); iter != cons_results.end(); iter++)
+		{
+		    additional += *iter;
+		    additional += "\n";
+		}
+		CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+		signal->setSOE(2);
+		multiDispatchMsg->insert(signal);
+		return FALSE;
+	    }
+	    else
+	    {
+		string text = "Timed Start, LM Program: ";
+		text += getPAOName();
+		string additional = "";
+		CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+		signal->setSOE(2);
+
+		multiDispatchMsg->insert(signal);
+	    {
+		CtiLockGuard<CtiLogger> dout_guard(dout);
+		dout << RWTime() << " - " << text << ", " << additional << endl;
+	    }
+	    manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
+	    setProgramState(CtiLMProgramBase::TimedActiveState);
+
+	    incrementDailyOps();
+	    setDirectStartTime(startTime);
+	    setDirectStopTime(endTime);
+	    return TRUE;
+	    }
 	}
 	else
 	{
 	    return FALSE;
 	}
-	
     }
+	
     else if( getProgramState() == CtiLMProgramBase::TimedActiveState )
     {
+	
 	if(isReady)
 	{
-	    string text = "Timed Stop, LM Program: ";
-	    text += getPAOName();
-	    string additional = "";
-	    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
-	    signal->setSOE(2);
+	    if(getIsRampingOut() && !updateGroupsRampingOut(secondsFrom1901))
+	    {
+		string text = "Finisehd ramping out, LM Program: ";
+		text += getPAOName();
+		CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),"",GeneralLogType,SignalEvent);
+		multiDispatchMsg->insert(signal);
+		
+	    {
+		CtiLockGuard<CtiLogger> dout_guard(dout);
+		dout << RWTime() << " - " <<  text << endl;
+	    }
+	    }
+	    else if(!getIsRampingOut())
+	    {
+		string text = "Timed Stop, LM Program: ";
+		text += getPAOName();
+		string additional = "";
+		CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+		signal->setSOE(2);
 
-	    multiDispatchMsg->insert(signal);
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << RWTime() << " - " << text << ", " << additional << endl;
-        }
+		multiDispatchMsg->insert(signal);
+	    {
+		CtiLockGuard<CtiLogger> dout_guard(dout);
+		dout << RWTime() << " - " << text << ", " << additional << endl;
+	    }
 //	setProgramState(CtiLMProgramBase::StoppingState); //are we settings thse to make stopprogramcontrol work correctly?
-	//otherwise i don't see why
-	stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+	    //otherwise i don't see why
+	    stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
 
-	setReductionTotal(0.0); //is this resetting dynamic info?
+	    setReductionTotal(0.0); //is this resetting dynamic info?
 //	setProgramState(CtiLMProgramBase::InactiveState);
-	setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
-	return TRUE;
+	    setStartedControlling(RWDBDateTime(1990,1,1,0,0,0,0));
+	    return TRUE;
+	    }
+	return FALSE;
 	}
 	else
 	{
@@ -4589,13 +4633,15 @@ BOOL CtiLMProgramDirect::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
     // to start the program
     // If the program IS NOT in a control window and IS started, then we are ready
     // to stop the program
-        
+
+    bool ret_val = true;
+    
     if(getControlType() == CtiLMProgramBase::TimedType && !getDisableFlag())
     {
 	CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
 	if(controlWindow != NULL)
 	{
-   	    return (getProgramState() == CtiLMProgramBase::InactiveState);
+   	    return  (getProgramState() == CtiLMProgramBase::InactiveState);
 	}
 	else
 	{
@@ -4818,8 +4864,6 @@ void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& right)
 {
-
-
     if( this != &right )
     {
         CtiLMProgramBase::operator=(right);
@@ -4827,7 +4871,10 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _lastgroupcontrolled = right._lastgroupcontrolled;
         _directstarttime = right._directstarttime;
         _directstoptime = right._directstoptime;
-
+	_dailyops = right._dailyops;
+	_notifytime = right._notifytime;
+	_startedrampingout = right._startedrampingout;
+	
         _lmprogramdirectgears.clearAndDestroy();
         for(LONG i=0;i<right._lmprogramdirectgears.entries();i++)
         {
@@ -5095,18 +5142,18 @@ void CtiLMProgramDirect::RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectG
     long ramp_in_interval = lm_gear->getRampInInterval();
     long ramp_in_percent = lm_gear->getRampInPercent();
     int total_groups_taken = 0;
-    int cur_interval = 0;
+    int cur_interval = 1; //start at first interval so action starts right awayTue Jun 22 14:52:14 CST 2004
     
     while(total_groups_taken < num_groups)
     {   //the number of groups that should be taken by the nth interval
 	int should_be_taken = floor((((double)ramp_in_percent/100.0 * (double)cur_interval) * (double)num_groups) + 0.5);
 	int num_to_take = should_be_taken - total_groups_taken;
-	RWDBDateTime ctrl_time = RWDBDateTime(RWTime(secondsFrom1901 + (cur_interval * ramp_in_interval)));
+	RWDBDateTime ctrl_time = RWDBDateTime(RWTime(secondsFrom1901 + (cur_interval-1) * ramp_in_interval));
 	
 	if( _LM_DEBUG & LM_DEBUG_STANDARD )			
 	{
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << "LMProgram: " << getPAOName() << ",  ramping in " << num_to_take << " groups at: " << ctrl_time.asString() << endl;
+	    dout << RWTime() << "LMProgram: " << getPAOName() << ",  ramping in a total of " << num_to_take << " groups"; 
 	}
 		for(int j = 0; j < num_to_take; j++)
 	{
@@ -5114,6 +5161,12 @@ void CtiLMProgramDirect::RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectG
     	    CtiLMGroupBase* lm_group = findGroupToTake(lm_gear);
 	    if(lm_group != NULL)
 	    {
+		if( _LM_DEBUG & LM_DEBUG_STANDARD )			
+		{
+		    CtiLockGuard<CtiLogger> dout_guard(dout);
+		    dout << RWTime() << "ramping in LMGroup: " << lm_group->getPAOName() << " at: " << ctrl_time.asString() << endl;
+		}
+
 		lm_group->setIsRampingIn(true);
 		lm_group->setNextControlTime(ctrl_time);
 	    }

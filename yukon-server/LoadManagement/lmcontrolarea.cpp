@@ -1559,18 +1559,10 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
 
 	if(currentLMProgram->getControlType() == CtiLMProgramBase::TimedType )
 	{
-	    //  if( currentLMProgram->isReadyForTimedControl(secondsFromBeginningOfDay) )
-//	    {
-	    /*    {
-		CtiLockGuard<CtiLogger> dout_guard(dout);
-		dout << RWTime() << " **Checkpoint** " << "Program in handling timed control" << __FILE__ << "(" << __LINE__ << ")" << endl;
-	    }
-	    */
 	    if(currentLMProgram->handleTimedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg))
 	    {
 		setUpdatedFlag(TRUE);
 	    }
-//	    }
 	}
 	
         if( currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState  ||

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "lmprogramcontrolwindow.h"
 #include "lmid.h"
 #include "mgr_season.h"
 #include "numstr.h"
@@ -33,7 +34,8 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
     ret_val = (checkMinRestartTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkMaxDailyOps(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkMaxActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
-
+    ret_val = (checkControlWindows(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
+    
     if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -323,3 +325,68 @@ bool CtiLMConstraintChecker::checkMaxActivateTime(const CtiLMProgramDirect& lm_p
     }
     return true;
 }
+
+bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results)
+{
+    CtiLMProgramBase& lm_base = (CtiLMProgramBase&) lm_program;
+    if(lm_base.getLMProgramControlWindows().entries() == 0)
+    {  // No control windows so don't consider control windows
+	return true;
+    }
+    
+    RWDBDateTime prop_start = RWDBDateTime(RWTime(proposed_start_from_1901));
+    RWDBDateTime prop_stop = RWDBDateTime(RWTime(proposed_stop_from_1901));
+
+    prop_start.hour();
+    
+    CtiLMProgramControlWindow* start_ctrl_window = lm_base.getControlWindow((prop_start.hour() * 3600) + (prop_start.minute() * 60) + prop_start.second());
+    CtiLMProgramControlWindow* stop_ctrl_window = lm_base.getControlWindow((prop_stop.hour() * 3600) + (prop_stop.minute() * 60) + prop_stop.second());
+
+    if(start_ctrl_window != 0 && stop_ctrl_window != 0)
+    {
+	if(start_ctrl_window->getWindowNumber() == stop_ctrl_window->getWindowNumber())
+	{ //good
+	    return true;
+	}
+	else
+	{ 
+	    results->push_back("The program cannot run outside of its prescribed control windows.  The proposed start and stop times span different control windows");
+	    return false;
+	}
+    }
+    
+    if(start_ctrl_window == 0 && stop_ctrl_window == 0)
+    { //start and stop outside any control windows
+	results->push_back("The program cannot run outside of its prescribed control windows");
+	return false;
+    }
+
+    if(start_ctrl_window != 0 && stop_ctrl_window == 0)
+    {
+	string result = "The program cannot run outside of its prescribed control windows.  The proposed stop time of ";
+	result += RWDBDateTime(proposed_stop_from_1901).rwtime().asString();
+	result += " is outside the control window that runs from ";
+	result += RWDBDateTime(start_ctrl_window->getAvailableStartTime()).rwtime().asString();
+	result += " to ";
+	result += RWDBDateTime(start_ctrl_window->getAvailableStopTime()).rwtime().asString();	
+	results->push_back(result);
+    }
+
+    if(start_ctrl_window == 0 && stop_ctrl_window != 0)
+    {
+	string result = "The program cannot run outside of its prescribed control windows.  The proposed start time of ";
+	result += RWDBDateTime(proposed_start_from_1901).rwtime().asString();
+	result += " is outside the control window that runs from ";
+	result += RWDBDateTime(stop_ctrl_window->getAvailableStartTime()).rwtime().asString();
+	result += " to ";
+	result += RWDBDateTime(stop_ctrl_window->getAvailableStopTime()).rwtime().asString();	
+	results->push_back(result);
+    }
+
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " **Checkpoint** " <<  " Shouldn't get here " << __FILE__ << "(" << __LINE__ << ")" << endl;
+    }
+    return false;
+}
+						 
