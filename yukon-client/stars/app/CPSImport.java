@@ -34,14 +34,32 @@ public class CPSImport {
 		}
 		
 		File outputFile = (args.length > 1)? new File(args[1]) : new File(inputFile.getParent(), OUTPUT_FILE);
-		String[] output = new String[ lines.length ];
 		
+		String[] output = new String[ lines.length ];
 		output[0] = "COLUMN_NAMES:ACCOUNT_NO,LAST_NAME,FIRST_NAME,HOME_PHONE,WORK_PHONE,EMAIL,STREET_ADDR1,STREET_ADDR2,CITY,STATE,ZIP_CODE,MAP_NO,SERIAL_NO,INSTALL_DATE,REMOVE_DATE,USERNAME,PASSWORD,ACTION,DEVICE_TYPE,PROGRAM_NAME";
 		
 		try {
-			// Remove the action field, then add the device type and program name fields
-			for (int i = 1; i < lines.length; i++)
-				output[i] = lines[i].substring(0, lines[i].length() - 6) + ",ExpressStat,San Antonio (CPS) Residential Cooling";
+			for (int i = 1; i < lines.length; i++) {
+				output[i] = "";
+				String[] columns = ServerUtils.splitString( lines[i], "," );
+				
+				// Clear the invalid columns (columns with number in scientific format)
+				for (int j = 0; j < 17; j++) {
+					if (columns[j].indexOf(',') >= 0)
+						output[i] += "\"" + columns[j] + "\",";
+					else if (columns[j].indexOf("E+") >= 0)
+						output[i] += ",";
+					else
+						output[i] += columns[j] + ",";
+				}
+				
+				// Leave the action field to non-default only if it is "REMOVE"
+				if (columns[17].equalsIgnoreCase( "REMOVE" ))
+					output[i] += "REMOVE";
+				
+				// Add device type and program name
+				output[i] += ",ExpressStat,San Antonio (CPS) Residential Cooling";
+			}
 			
 			ServerUtils.writeFile( outputFile, output );
 		}
