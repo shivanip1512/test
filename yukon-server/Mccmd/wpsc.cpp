@@ -383,7 +383,7 @@ bool DecodeEOILine( char* line, RWOrdered* results)
         *decoded += " service ";
         *decoded += contract;
         *decoded += select_str;
-   cout << "contract: " << *decoded << endl;     
+
         results->insert(decoded);
     }
 
@@ -395,7 +395,7 @@ bool DecodeEOILine( char* line, RWOrdered* results)
         *decoded += temp;
         *decoded += " t";
         *decoded += select_str;
-    cout << "temp: " << *decoded << endl;             
+    
         results->insert(decoded);
     }
 
