@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -21,7 +22,7 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	// These should be moved into global type properties
 	// so we can change them at runtime FIXFIX 
 	private static final String INVALID_URI = "/login.jsp?failed=true";
-	private static final String LOG_OUT_URI = "/login.jsp";
+	private static final String LOGIN_URI = "/login.jsp";
 		
 	private static final String ACTION = com.cannontech.common.constants.LoginController.ACTION;
 
@@ -33,6 +34,9 @@ public class LoginController extends javax.servlet.http.HttpServlet {
 	private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
 	
 	private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
+	
+	private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
+	private static final String SAVED_YUKON_USER = com.cannontech.common.constants.LoginController.SAVED_YUKON_USER;
 		
 /**
  * Handles login authentication, logout.
@@ -75,10 +79,26 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	else 
 	if(LOGOUT.equalsIgnoreCase(action)) {
 		HttpSession session = req.getSession();
-		if(session != null) session.invalidate();
+		if(session != null) {
+			LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);
+			if (user != null && nextURI == null) {
+				nextURI = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_OFF_URL, "");
+				if (nextURI.length() == 0 || nextURI.equalsIgnoreCase(CtiUtilities.STRING_NONE))
+					nextURI = LOGIN_URI;
+			}
+			
+			LiteYukonUser savedUser = (LiteYukonUser) session.getAttribute(SAVED_YUKON_USER);
+			session.invalidate();
+			if (savedUser != null) {
+				// Restore saved yukon user into session after logging off
+				session = req.getSession( true );
+				session.setAttribute(SAVED_YUKON_USER, savedUser);
+			}
+		}
 
-		if (nextURI == null)
-			nextURI = req.getContextPath() + LOG_OUT_URI;
+		if (nextURI == null) nextURI = LOGIN_URI;
+		if (nextURI.charAt(0) == '/')
+			nextURI = req.getContextPath() + nextURI;
 		resp.sendRedirect(nextURI);
 	} 
 	else 
