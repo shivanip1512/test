@@ -7,7 +7,7 @@ import com.cannontech.roles.*;
  */
 public interface LoggingRole 
 {
-	public static final int ROLEID = YukonRoleDefs.LOGGING_ROLDID;
+	public static final int ROLEID = YukonRoleDefs.LOGGING_ROLEID;
 	
 	public static final int DBEDITOR_LEVEL = YukonRoleDefs.LOGGING_PROPERTYID_BASE;
 	public static final int DATABASE_LEVEL = YukonRoleDefs.LOGGING_PROPERTYID_BASE - 1;
