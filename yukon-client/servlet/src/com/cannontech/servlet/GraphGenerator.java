@@ -150,7 +150,7 @@ public synchronized void  doGet(javax.servlet.http.HttpServletRequest req, javax
 					;//graph.encodeJPG(out);
 				else
 				if( format.equalsIgnoreCase("svg") )
-					//graph.encodeSVG(out);
+					graph.encodeSVG(out);
 					
 				out.flush();
 			}
