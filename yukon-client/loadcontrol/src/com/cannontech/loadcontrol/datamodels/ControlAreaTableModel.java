@@ -321,7 +321,10 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 				case PRIORITY:
 				{
 					//data is on the trigger object
-					return lmCntrArea.getCurrentPriority();
+					return
+						( lmCntrArea.getCurrentPriority().intValue() <= 0
+						? new Integer(1)
+						: lmCntrArea.getCurrentPriority() );
 				}
 	
 				case ATKU:
