@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/24 13:58:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/03/14 01:17:00 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.13  2005/03/14 01:17:00  cplender
+* Grab resore and terminate in the protocol.
+*
 * Revision 1.12  2005/02/24 13:58:40  cplender
 * Make certain rate is displayed in the decode.
 *
@@ -230,7 +233,9 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
     // We only try to predict it if it has not already been fully identified for us.
     if(_strategy == 0)
     {
-        if(parse.isKeyValid("sa_restore"))
+        if(parse.isKeyValid("sa_restore") ||
+           parse.getCommandStr().contains(" restore", RWCString::ignoreCase) ||
+           parse.getCommandStr().contains(" terminate", RWCString::ignoreCase) )
         {
             strategy = 61;
             _repetitions = parse.getiValue("sa_reps", 0);
@@ -311,7 +316,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
                 }
             }
         }

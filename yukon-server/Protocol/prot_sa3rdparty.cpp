@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/02/17 23:36:32 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/03/14 01:17:00 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.22  2005/03/14 01:17:00  cplender
+* Grab resore and terminate in the protocol.
+*
 * Revision 1.21  2005/02/17 23:36:32  cplender
 * Prevent failure on a 105 or 205 restore.
 *
@@ -374,7 +377,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
         {
             status = NoMethod;
             {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** CONTROL RESTORE? **** Cannot restore this type of group." << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
@@ -616,7 +619,9 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
     INT status = NORMAL;
 
     // We only try to predict it if it has not already been fully identified for us.
-    if(parse.isKeyValid("sa_restore"))
+    if(parse.isKeyValid("sa_restore") ||
+       parse.getCommandStr().contains(" restore", RWCString::ignoreCase) ||
+       parse.getCommandStr().contains(" terminate", RWCString::ignoreCase) )
     {
         _sa._repeats = parse.getiValue("sa_reps", 0);
         _sa._swTimeout = 450;
@@ -1086,7 +1091,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Unknown command check syntax. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Unknown command check syntax. **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
             }
         }
     }
