@@ -227,6 +227,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		String position = null;
 		ArrayList logMsg = new ArrayList();
 		java.io.PrintWriter fw = null;
+		ArrayList stackTrace = null;
 		
 		startTime = System.currentTimeMillis();
 		
@@ -429,7 +430,7 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 				String[] fields = (String[]) it.next();
 				position = "loadinfo file line #" + fields[ImportManager.IDX_LINE_NUM];
 				
-				if (fields[ImportManager.IDX_APP_DESC].equals("")) {
+				if (fields[ImportManager.IDX_APP_DESC].equals("") || fields[ImportManager.IDX_APP_DESC].equals("0")) {
 					numNoLoadDescription++;
 					continue;
 				}
@@ -579,14 +580,21 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			// We must catch this error to make sure the log file is written
 			status = STATUS_ERROR;
 			errorMsg = "Operation caused out of memory error";
+			if (position != null)
+				errorMsg += " when processing " + position;
 		}
 		catch (Exception e) {
 			if (status == STATUS_CANCELED) {
 				errorMsg = "Operation is canceled by user";
+				if (position != null)
+					errorMsg += " after " + position + " is processed";
 			}
 			else {
-				e.printStackTrace();
 				status = STATUS_ERROR;
+				e.printStackTrace();
+				stackTrace = new ArrayList();
+				for (int i = 0; i < e.getStackTrace().length; i++)
+					stackTrace.add( "\tat " + e.getStackTrace()[i].toString() );
 				
 				if (position != null)
 					errorMsg = "Error at " + position;
@@ -612,21 +620,21 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 		else
 			timeTaken += minTaken + " minute";
 		
-		int idx = 0;
-		logMsg.add(idx++, "Start Time: " + ServerUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
-		logMsg.add(idx++, "Time Taken: " + timeTaken);
-		logMsg.add(idx++, "");
+		logMsg.add("Start Time: " + ServerUtils.formatDate( new Date(startTime), java.util.TimeZone.getDefault() ));
+		logMsg.add("Time Taken: " + timeTaken);
+		logMsg.add("");
 		
 		if (errorMsg != null) {
-			logMsg.add(idx++, errorMsg);
-			logMsg.add(idx++, "");
+			logMsg.add(errorMsg);
+			if (stackTrace != null) logMsg.addAll(stackTrace);
+			logMsg.add("");
 		}
 		
 		if (acctFieldsCnt > 0) {
 			if (numAcctAdded == acctFieldsCnt)
-				logMsg.add(idx++, numAcctAdded + " customer accounts imported successfully");
+				logMsg.add(numAcctAdded + " customer accounts imported successfully");
 			else
-				logMsg.add(idx++, numAcctAdded + " of " + acctFieldsCnt + " customer accounts imported");
+				logMsg.add(numAcctAdded + " of " + acctFieldsCnt + " customer accounts imported");
 		}
 		if (invFieldsCnt > 0) {
 			String msg = null;
@@ -635,14 +643,14 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 			else
 				msg = numInvAdded + " of " + invFieldsCnt + " hardwares imported";
 			msg += " (" + numRecvrAdded + " receivers, " + numMeterAdded + " meters)";
-			logMsg.add(idx++, msg);
+			logMsg.add(msg);
 			
 			if (numDuplicateHardware > 0)
-				logMsg.add(idx++, numDuplicateHardware + " hardwares ignored because they already exist and assigned to customer accounts");
+				logMsg.add(numDuplicateHardware + " hardwares ignored because they already exist and assigned to customer accounts");
 			if (numNoDeviceName > 0)
-				logMsg.add(idx++, numNoDeviceName + " hardwares ignored because device name is empty");
+				logMsg.add(numNoDeviceName + " hardwares ignored because device name is empty");
 			if (numDeviceNameNotFound > 0)
-				logMsg.add(idx++, numDeviceNameNotFound + " hardwares ignored because device name not found in Yukon");
+				logMsg.add(numDeviceNameNotFound + " hardwares ignored because device name not found in Yukon");
 		}
 		if (appFieldsCnt > 0) {
 			String msg = null;
@@ -659,24 +667,24 @@ public class ImportStarsDataTask implements TimeConsumingTask {
 					numSHImported + " sh," +
 					numDFImported + " df," +
 					numGenlImported + " genl)";
-			logMsg.add(idx++, msg);
+			logMsg.add(msg);
 			
 			if (numNoLoadDescription > 0)
-				logMsg.add(idx++, numNoLoadDescription + " appliances ignored because load description is empty");
+				logMsg.add(numNoLoadDescription + " appliances ignored because load description is empty");
 		}
 		if (orderFieldsCnt > 0) {
 			if (numOrderAdded == orderFieldsCnt)
-				logMsg.add(idx++, numOrderAdded + " work orders imported successfully");
+				logMsg.add(numOrderAdded + " work orders imported successfully");
 			else
-				logMsg.add(idx++, numOrderAdded + " of " + orderFieldsCnt + " work orders imported");
+				logMsg.add(numOrderAdded + " of " + orderFieldsCnt + " work orders imported");
 		}
 		if (resFieldsCnt > 0) {
 			if (numResAdded == resFieldsCnt)
-				logMsg.add(idx++, numResAdded + " residence info imported successfully");
+				logMsg.add(numResAdded + " residence info imported successfully");
 			else
-				logMsg.add(idx++, numResAdded + " of " + resFieldsCnt + " residence information imported");
+				logMsg.add(numResAdded + " of " + resFieldsCnt + " residence information imported");
 		}
-		logMsg.add(idx++, "");
+		logMsg.add("");
 		
 		Date logDate = new Date();
 		String logFileName = "import_" + ServerUtils.starsDateFormat.format(logDate) +

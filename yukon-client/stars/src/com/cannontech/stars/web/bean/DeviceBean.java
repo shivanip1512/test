@@ -6,6 +6,7 @@
  */
 package com.cannontech.stars.web.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.web.servlet.InventoryManager;
 import com.cannontech.stars.web.servlet.SOAPServer;
 
 /**
@@ -24,18 +28,24 @@ import com.cannontech.stars.web.servlet.SOAPServer;
  */
 public class DeviceBean {
 	
+	public static final int DEV_FILTER_NOT_ASSIGNED = 0;
+	public static final int DEV_FILTER_ALL = 1;
+	public static final int DEV_FILTER_DEVICE_NAME = 2;
+	
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private static final int DEFAULT_PAGE_SIZE = 20;
 	
 	private int categoryID = 0;
+	private String deviceName = null;
+	private int filter = DEV_FILTER_NOT_ASSIGNED;
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
 	private String referer = null;
-	private List deviceList = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
+	private ArrayList deviceList = null;
 
 	public DeviceBean() {
 	}
@@ -46,8 +56,37 @@ public class DeviceBean {
 		return energyCompany;
 	}
 	
+	private ArrayList getDeviceList() {
+		if (deviceList != null) return deviceList;
+		deviceList = new ArrayList();
+		
+		String deviceName = getDeviceName();
+		if (getFilter() != DEV_FILTER_DEVICE_NAME)
+			deviceName = "";	// Get all devices
+		List devices = InventoryManager.searchDevice( getCategoryID(), deviceName );
+		
+		if (getFilter() == DEV_FILTER_NOT_ASSIGNED) {
+			for (int i = 0; i < devices.size(); i++) {
+				LiteYukonPAObject litePao =  (LiteYukonPAObject) devices.get(i);
+				try {
+					LiteInventoryBase liteInv = getEnergyCompany().getDevice( litePao.getYukonID() );
+					if (liteInv == null || liteInv.getAccountID() == 0)
+						deviceList.add( litePao );
+				}
+				catch (ObjectInOtherEnergyCompanyException e) {}
+			}
+		}
+		else {
+			deviceList.addAll( devices );
+		}
+		
+		return deviceList;
+	}
+	
 	public String getHTML(HttpServletRequest req) {
-		if (deviceList == null || deviceList.size() == 0) {
+		ArrayList devList = getDeviceList();
+		
+		if (devList == null || devList.size() == 0) {
 			StringBuffer htmlBuf = new StringBuffer();
 			htmlBuf.append("<p class='ErrorMsg'>No device found.</p>").append(LINE_SEPARATOR);
 			
@@ -70,17 +109,17 @@ public class DeviceBean {
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
 		if (page < 1) page = 1;
-		int maxPageNo = (int) Math.ceil(deviceList.size() * 1.0 / pageSize);
+		int maxPageNo = (int) Math.ceil(devList.size() * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
 		int minInvNo = (page - 1) * pageSize + 1;
-		int maxInvNo = Math.min(page * pageSize, deviceList.size());
+		int maxInvNo = Math.min(page * pageSize, devList.size());
         
 		StringBuffer navBuf = new StringBuffer();
 		navBuf.append(minInvNo);
 		if (maxInvNo > minInvNo)
 			navBuf.append("-").append(maxInvNo);
-		navBuf.append(" of ").append(deviceList.size());
+		navBuf.append(" of ").append(devList.size());
 		navBuf.append(" | ");
 		if (page == 1)
 			navBuf.append("<font color='#CCCCCC'>First</font>");
@@ -121,7 +160,7 @@ public class DeviceBean {
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
 		for (int i = minInvNo; i <= maxInvNo; i++) {
-			LiteYukonPAObject litePao = (LiteYukonPAObject) deviceList.get(i-1);
+			LiteYukonPAObject litePao = (LiteYukonPAObject) devList.get(i-1);
         	
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%'>");
@@ -218,15 +257,33 @@ public class DeviceBean {
 	/**
 	 * @return
 	 */
-	public List getDeviceList() {
-		return deviceList;
+	public int getFilter() {
+		return filter;
 	}
 
 	/**
-	 * @param list
+	 * @param i
 	 */
-	public void setDeviceList(List list) {
-		deviceList = list;
+	public void setFilter(int i) {
+		filter = i;
+		// Update the search result
+		deviceList = null;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setDeviceName(String string) {
+		deviceName = string;
+		// Update the search result
+		deviceList = null;
 	}
 
 }

@@ -159,6 +159,7 @@ public class ImportManager extends HttpServlet {
     
 	public static final String PREPROCESSED_DATA = "PREPROCESSED_DATA";
 	public static final String UNASSIGNED_LISTS = "UNASSIGNED_LISTS";
+	public static final String USER_LABELS = "USER_LABELS";
 	
 	// Customer account fields
 	public static int acct_idx = 0;
@@ -437,6 +438,34 @@ public class ImportManager extends HttpServlet {
 		{41, IDX_OWNERSHIP_TYPE},
 		{42, IDX_MAIN_FUEL_TYPE},
 	};
+	
+	// User label names
+	public static final String LABEL_SI_CHAR1 = "SICharLabel1";
+	public static final String LABEL_SI_CHAR2 = "SICharLabel2";
+	public static final String LABEL_SI_DROPBOX1 = "SIDropBoxLabel1";
+	public static final String LABEL_SI_DROPBOX2 = "SIDropBoxLabel2";
+	public static final String LABEL_SI_CHECKBOX1 = "SICheckBoxLabel1";
+	public static final String LABEL_SI_CHECKBOX2 = "SICheckBoxLabel2";
+	public static final String LABEL_SI_NUMERIC1 = "SINumericLabel1";
+	public static final String LABEL_SI_NUMERIC2 = "SINumericLabel2";
+	public static final String LABEL_DI_CHAR1 = "DICharLabel1";
+	public static final String LABEL_DI_DROPBOX1 = "DIDropBoxLabel1";
+	public static final String LABEL_DC_CHAR1 = "DCCharLabel1";
+	public static final String LABEL_DC_DROPBOX1 = "DCDropBoxLabel1";
+	public static final String LABEL_DC_NUMERIC1 = "DCNumericLabel1";
+	public static final String LABEL_PHONE1 = "Phone1Label";
+	public static final String LABEL_PHONE2 = "Phone2Label";
+	public static final String LABEL_PHONE3 = "Phone3Label";
+	public static final String LABEL_CONTRACTOR1 = "ContractorLabel1";
+	public static final String LABEL_CONTRACTOR2 = "ContractorLabel2";
+	public static final String LABEL_LI_CHAR1 = "LICharLabel1";
+	public static final String LABEL_LI_DROPBOX1 = "LIDropBoxLabel1";
+	public static final String LABEL_LI_DROPBOX2 = "LIDropBoxLabel2";
+	public static final String LABEL_LI_DROPBOX3 = "LIDropBoxLabel3";
+	public static final String LABEL_LI_NUMERIC1 = "LINumericLabel1";
+	public static final String LABEL_LI_NUMERIC2 = "LINumericLabel2";
+	public static final String LABEL_LI_CHECKBOX1 = "LICheckBoxLabel1";
+	public static final String LABEL_LI_CHECKBOX2 = "LICheckBoxLabel2";
     
 	public static final String HARDWARE_ACTION_INSERT = "INSERT";
 	public static final String HARDWARE_ACTION_UPDATE = "UPDATE";
@@ -765,1051 +794,6 @@ public class ImportManager extends HttpServlet {
 				return fields;
 			}
 		});
-    	
-		/** Old STARS customer table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)	#used accross old STARS tables
-		 * 2,3		ACCOUNT_NO
-		 * 4		CUSTOMER_TYPE
-		 * 5		LAST_NAME
-		 * 6		FIRST_NAME
-		 * 7		----
-		 * 8		COMPANY_NAME
-		 * 9		MAP_NO
-		 * 10		STREET_ADDR1
-		 * 11		STREET_ADDR2
-		 * 12		CITY
-		 * 13		STATE
-		 * 14		ZIP_CODE
-		 * 15		HOME_PHONE
-		 * 16		WORK_PHONE
-		 * 17		----
-		 * 18		ACCOUNT_NOTES
-		 */
-		parsers.put("STARS Customer", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_NO] += "-" + st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_CUSTOMER_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_LAST_NAME] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_FIRST_NAME] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_COMPANY_NAME] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_MAP_NO] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_STREET_ADDR1] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_STREET_ADDR2] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_CITY] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_STATE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ZIP_CODE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_HOME_PHONE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_WORK_PHONE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ACCOUNT_NOTES] = st.sval;
-				
-				return fields;
-			}
-		});
-    	
-		/** Old STARS service info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		PROP_NOTES
-		 * 3		SUBSTATION
-		 * 4		FEEDER
-		 * 5		POLE
-		 * 6		TRFM_SIZE
-		 * 7		SERV_VOLT
-		 * 8,9		----
-		 * 10-18	PROP_NOTES
-		 */
-		parsers.put("STARS ServiceInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ACCOUNT_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_PROP_NOTES] += "MeterNumber:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_SUBSTATION] = "\"" + st.sval + "\"";
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_FEEDER] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_POLE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_TRFM_SIZE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SERV_VOLT] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				for (int i = 10; i <= 18; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_PROP_NOTES] += st.sval + LINE_SEPARATOR;
-				}
-				
-				return fields;
-			}
-		});
-    	
-		/** Old STARS inventory table
-		 * COL_NUM:	COL_NAME
-		 * 1		(INV_ID)
-		 * 2		SERIAL_NO
-		 * 3		(ACCOUNT_ID)
-		 * 4		ALT_TRACK_NO
-		 * 5		DEVICE_NAME
-		 * 6-8		INV_NOTES		
-		 * 9		DEVICE_TYPE
-		 * 10-12	----
-		 * 13		DEVICE_VOLT
-		 * 14		RECEIVE_DATE
-		 * 15		----
-		 * 16		SERVICE_COMPANY
-		 * 17-19	INV_NOTES
-		 */
-		parsers.put("STARS Inventory", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_INV_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_SERIAL_NO] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ALT_TRACK_NO] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DEVICE_NAME] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "MapNumber:" + st.sval + LINE_SEPARATOR;
-				for (int i = 7; i <= 8; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
-				}
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_DEVICE_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				for (int i = 10; i <= 12; i++) {
-					st.nextToken();
-					if (st.ttype != ',') st.nextToken();
-				}
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DEVICE_VOLTAGE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_RECEIVE_DATE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SERVICE_COMPANY] = st.sval;
-				for (int i = 17; i <= 19; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
-				}
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS receiver table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(INV_ID)
-		 * 3		INSTALL_DATE
-		 * 4-10		INV_NOTES
-		 * 11		DEVICE_STATUS
-		 * 12,15,18	R1_GROUP,R2_GROUP,R3_GROUP
-		 * 13,16,19	INV_NOTES
-		 * 14,17,20	R1_STATUS,R2_STATUS,R3_STATUS
-		 */
-		parsers.put("STARS Receiver", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_INV_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INSTALL_DATE] = st.sval;
-				for (int i = 4; i <= 6; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
-				}
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "Technician:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "Location:" + st.sval + LINE_SEPARATOR;
-				for (int i = 9; i <= 10; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
-				}
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DEVICE_STATUS] = st.sval;
-				for (int i = 0; i < 3; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-						fields[IDX_R1_GROUP + i] = st.sval.substring( "RX-GROUP:".length() );
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_INV_NOTES] += st.sval + LINE_SEPARATOR;
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-						fields[IDX_R1_STATUS + i] = st.sval.substring( "RX-STATUS:".length() );
-				}
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS meter table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(INV_ID)
-		 * 3		DEVICE_NAME
-		 * 4		INV_NOTES
-		 * 5		INSTALL_DATE
-		 * 6		INV_NOTES		
-		 */
-		parsers.put("STARS Meter", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_INV_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DEVICE_NAME] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += "Technician:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INSTALL_DATE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_INV_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS load info table
-		 * COL_NUM:	COL_NAME
-		 * 1		APP_ID
-		 * 2		(ACCOUNT_ID)
-		 * 3		(INV_ID)
-		 * 4		RELAY_NUM
-		 * 5		APP_DESC
-		 * 6		APP_TYPE
-		 * 7		APP_NOTES
-		 * 8		MANUFACTURER
-		 * 9-11		APP_NOTES
-		 * 12		AVAIL_FOR_CTRL
-		 * 13		YEAR_MADE
-		 * 14-21	APP_NOTES
-		 */
-		parsers.put("STARS LoadInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_RELAY_NUM] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_DESC] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "EquipCode:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_MANUFACTURER] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "Contractor1:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "Contractor2:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_APP_NOTES] += "WarrantyInfo:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_AVAIL_FOR_CTRL] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_YEAR_MADE] = st.sval;
-				for (int i = 14; i <= 21; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-						fields[IDX_APP_NOTES] += st.sval + LINE_SEPARATOR;
-				}
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS work order table
-		 * COL_NUM:	COL_NAME
-		 * 1		ORDER_NO
-		 * 2		(ACCOUNT_ID)
-		 * 3		(INV_ID)
-		 * 4-8		----
-		 * 9		DATE_REPORTED
-		 * 10		DATE_COMPLETED
-		 * 11		ORDER_STATUS
-		 * 12		ORDER_TYPE
-		 * 13		ORDER_DESC
-		 * 14		ACTION_TAKEN
-		 * 15		TIME_SCHEDULED
-		 * 16		DATE_SCHEDULED
-		 * 17-19	ORDER_NOTES
-		 * 20		SERVICE_COMPANY
-		 */
-		parsers.put("STARS WorkOrder", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_ORDER_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ORDER_NO] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_INV_ID] = st.sval;
-				for (int i = 4; i <=8; i++) {
-					if (st.ttype != ',') st.nextToken();
-					st.nextToken();
-				}
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_DATE_REPORTED] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_DATE_COMPLETED] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ORDER_STATUS] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ORDER_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ORDER_DESC] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ACTION_TAKEN] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) {
-					fields[IDX_TIME_SCHEDULED] = st.sval;
-					fields[IDX_ORDER_DESC] += "<br>Time Scheduled: " + fields[IDX_TIME_SCHEDULED];
-				} 
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_DATE_SCHEDULED] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_ACTION_TAKEN] += "<br>" + st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_ACTION_TAKEN] += "<br>Overtime Hours: " + st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"' && st.sval.length() > 0)
-					fields[IDX_ACTION_TAKEN] += "<br>Technician: " + st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_ORDER_CONTRACTOR] = st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS residence info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		OWNERSHIP_TYPE
-		 * 3		RES_TYPE
-		 * 4		CONSTRUCTION_TYPE
-		 * 5		DECADE_BUILT
-		 * 6		SQUARE_FEET
-		 * 7		NUM_OCCUPANTS
-		 * 8		GENERAL_COND
-		 * 9		INSULATION_DEPTH
-		 * 10		MAIN_FUEL_TYPE
-		 * 11		RES_NOTES
-		 * 12		MAIN_COOLING_SYS
-		 * 13,14	RES_NOTES
-		 * 15		MAIN_HEATING_SYS
-		 * 16-21	RES_NOTES
-		 */
-		parsers.put("STARS ResInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_RES_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_OWNERSHIP_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_RES_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_CONSTRUCTION_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DECADE_BUILT] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SQUARE_FEET] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_NUM_OCCUPANTS] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GENERAL_COND] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_INSULATION_DEPTH] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_MAIN_FUEL_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "SetBackThermostat:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_MAIN_COOLING_SYS] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "CoolingSystemYearInstalled:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "CoolingSystemEfficiency:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_MAIN_HEATING_SYS] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "HeatingSystemYearInstalled:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "HeatingSystemEfficiency:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "EnergyAudit:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "HeatLoss:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "HeatGain:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_RES_NOTES] += "EnergyManagementParticipant:" + st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS AC info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4		APP_NOTES
-		 * 5		AC_TONNAGE
-		 * 6,7		NOTES
-		 */
-		parsers.put("STARS ACInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_AC_TONNAGE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += "BTU_Hour:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS WH info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4		APP_NOTES
-		 * 5		WH_NUM_GALLONS
-		 * 6		WH_NUM_ELEMENTS
-		 * 7		WH_ENERGY_SRC
-		 * 8		WH_LOCATION
-		 * 8		APP_NOTES
-		 */
-		parsers.put("STARS WHInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_WH_NUM_GALLONS] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_WH_NUM_ELEMENTS] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_WH_ENERGY_SRC] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += "Location:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS generator info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_NOTES
-		 * 4		GEN_FUEL_CAP
-		 * 5		GEN_START_DELAY
-		 * 6		GEN_CAPACITY
-		 * 7		GEN_TRAN_SWITCH_MFC
-		 * 8		GEN_TRAN_SWITCH_TYPE
-		 */
-		parsers.put("STARS GenInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += "StandbyKW:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GEN_FUEL_CAP] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GEN_START_DELAY] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GEN_CAPACITY] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GEN_TRAN_SWITCH_MFC] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GEN_TRAN_SWITCH_TYPE] = st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS irrigation info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4		APP_NOTES
-		 * 5		IRR_TYPE
-		 * 6		IRR_ENERGY_SRC
-		 * 7		IRR_HORSE_POWER
-		 * 8		IRR_METER_VOLT
-		 * 9		IRR_METER_LOC
-		 * 10		IRR_SOIL_TYPE
-		 */
-		parsers.put("STARS IrrInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_IRR_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_IRR_ENERGY_SRC] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_IRR_HORSE_POWER] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_IRR_METER_VOLT] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_IRR_METER_LOC] += st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_IRR_SOIL_TYPE] = st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS grain dryer info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4		APP_NOTES
-		 * 5		GDRY_TYPE
-		 * 6		GDRY_ENERGY_SRC
-		 * 7		GDRY_HORSE_POWER
-		 * 8		GDRY_HEAT_SRC
-		 * 9		GDRY_BIN_SIZE
-		 */
-		parsers.put("STARS GDryInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GDRY_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GDRY_ENERGY_SRC] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GDRY_HORSE_POWER] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GDRY_HEAT_SRC] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_GDRY_BIN_SIZE] = st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS heat pump info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4		APP_NOTES
-		 * 5		HP_TYPE
-		 * 6		HP_SIZE
-		 * 7		HP_STANDBY_SRC
-		 * 8		HP_RESTART_DELAY
-		 * 9		APP_NOTES
-		 */
-		parsers.put("STARS HPInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_HP_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_HP_SIZE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_HP_STANDBY_SRC] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_HP_RESTART_DELAY] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS storage heat info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4		APP_NOTES
-		 * 5		SH_TYPE
-		 * 6		SH_CAPACITY
-		 * 7		SH_RECHARGE_TIME
-		 * 8,9		APP_NOTES
-		 */
-		parsers.put("STARS SHInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SH_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SH_CAPACITY] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_SH_RECHARGE_TIME] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "ContractHours:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS dual fuel info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4,5		APP_NOTES
-		 * 6		DF_2ND_ENERGY_SRC
-		 * 7		DF_2ND_CAPACITY
-		 * 8		DF_SWITCH_OVER_TYPE
-		 * 9		APP_NOTES
-		 */
-		parsers.put("STARS DFInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += "PrimarySize:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DF_2ND_ENERGY_SRC] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DF_2ND_CAPACITY] = st.sval;
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_DF_SWITCH_OVER_TYPE] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
-		
-		/** Old STARS general info table
-		 * COL_NUM:	COL_NAME
-		 * 1		(ACCOUNT_ID)
-		 * 2		(APP_ID)
-		 * 3		APP_KW
-		 * 4,5		APP_NOTES
-		 */
-		parsers.put("STARS GenlInfo", new ImportFileParser() {
-			public String[] populateFields(String line) throws Exception {
-				StreamTokenizer st = prepareStreamTokenzier( line );
-				String[] fields = prepareFields(NUM_APP_FIELDS);
-				
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_ACCOUNT_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_ID] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_APP_KW] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD)
-					fields[IDX_APP_NOTES] += "Rebate:" + st.sval + LINE_SEPARATOR;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"')
-					fields[IDX_APP_NOTES] += st.sval;
-				
-				return fields;
-			}
-		});
 	}
     
 	private String referer = null;
@@ -2084,7 +1068,6 @@ public class ImportManager extends HttpServlet {
 			
 			createHw = new StarsCreateLMHardware();
 			StarsLiteFactory.setStarsInv( createHw, liteInv, energyCompany );
-			createHw.setInstallDate( new java.util.Date() );
 			createHw.setRemoveDate( new java.util.Date(0) );
 			createHw.setInstallationNotes( "" );
 		}
@@ -2092,6 +1075,7 @@ public class ImportManager extends HttpServlet {
 			createHw = (StarsCreateLMHardware) StarsFactory.newStarsInv(StarsCreateLMHardware.class);
 		}
 		
+		createHw.setInstallDate( new java.util.Date(0) );
 		fields[IDX_DEVICE_TYPE] = String.valueOf( devTypeID );
 		ImportManager.setStarsInventory( createHw, fields, energyCompany );
 	    
@@ -2653,6 +1637,8 @@ public class ImportManager extends HttpServlet {
 		
 		if (action.equalsIgnoreCase("ImportCustAccounts"))
 			importCustomerAccounts( items, user, req, session );
+		else if (action.equalsIgnoreCase("ImportINIData"))
+			importINIData( user, req, session );
 		else if (action.equalsIgnoreCase("PreprocessStarsData"))
 			preprocessStarsData( user, req, session );
 		else if (action.equalsIgnoreCase("AssignSelectionList"))
@@ -2701,83 +1687,123 @@ public class ImportManager extends HttpServlet {
 		}
 	}
 	
-	private void importSelectionLists(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+	private void importSelectionLists(File selListFile, LiteStarsEnergyCompany energyCompany) throws Exception {
+		String[] selListLines = ServerUtils.readFile( selListFile );
+		if (selListLines == null)
+			throw new WebClientException("Unable to read selection list file '" + selListFile.getPath() + "'");
 		
-		try {
-			File selListFile = new File( req.getParameter("SelListFile") );
-			
-			String[] selListLines = ServerUtils.readFile( selListFile );
-			if (selListLines == null)
-				throw new WebClientException("Unable to read selection list file '" + selListFile.getPath() + "'");
-			
-			String listName = null;
-			ArrayList listEntries = null;
-			boolean isInList = false;
-			boolean hasLoadTypes = false;
-			
-			for (int i = 0; i < selListLines.length; i++) {
-				if (!isInList) {
-					if (!selListLines[i].startsWith("[")) continue;
-					
-					for (int j = 0; j < LIST_NAMES.length; j++) {
-						if (LIST_NAMES[j][2].equals( selListLines[i] )) {
-							listName = LIST_NAMES[j][0];
-							listEntries = new ArrayList();
-							isInList = true;
-							break;
-						}
-					}
-				}
-				else {
-					if (selListLines[i].trim().equals("")) {
-						if (isInList && listEntries.size() > 0) {
-							// Find the end of a list, update the list entries
-							if (listName.equals("ServiceCompany")) {
-								StarsAdmin.deleteAllServiceCompanies( energyCompany );
-								
-								for (int j = 0; j < listEntries.size(); j++) {
-									String entry = (String) listEntries.get(j);
-									StarsAdmin.createServiceCompany( entry, energyCompany );
-								}
-							}
-							else if (listName.equals("LoadType")) {
-								for (int j = 0; j < listEntries.size(); j++) {
-									String entry = (String) listEntries.get(j);
-									StarsAdmin.createApplianceCategory( entry, energyCompany );
-								}
-								
-								hasLoadTypes = true;
-							}
-							else {
-								// Always add an empty entry at the beginning of the list
-								listEntries.add(0, " ");
-								
-								Object[][] entryData = new Object[ listEntries.size() ][];
-								for (int j = 0; j < listEntries.size(); j++) {
-									entryData[j] = new Object[3];
-									entryData[j][0] = ZERO;
-									entryData[j][1] = listEntries.get(j);
-									entryData[j][2] = ZERO;
-								}
-								
-								YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
-								StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany );
-							}
-						}
-						
-						isInList = false;
-					}
-					else {
-						if (selListLines[i].endsWith("="))
-							selListLines[i] = selListLines[i].substring(0, selListLines[i].length() - 1);
-						listEntries.add( selListLines[i] );
+		String listName = null;
+		ArrayList listEntries = null;
+		boolean isInList = false;
+		
+		for (int i = 0; i < selListLines.length; i++) {
+			if (!isInList) {
+				if (!selListLines[i].startsWith("[")) continue;
+				
+				for (int j = 0; j < LIST_NAMES.length; j++) {
+					if (LIST_NAMES[j][2].equals( selListLines[i] )) {
+						listName = LIST_NAMES[j][0];
+						listEntries = new ArrayList();
+						isInList = true;
+						break;
 					}
 				}
 			}
+			else {
+				if (selListLines[i].trim().equals("")) {
+					if (isInList && listEntries.size() > 0) {
+						// Find the end of a list, update the list entries
+						if (listName.equals("ServiceCompany")) {
+							StarsAdmin.deleteAllServiceCompanies( energyCompany );
+							
+							for (int j = 0; j < listEntries.size(); j++) {
+								String entry = (String) listEntries.get(j);
+								StarsAdmin.createServiceCompany( entry, energyCompany );
+							}
+						}
+						else if (listName.equals("LoadType")) {
+							for (int j = 0; j < listEntries.size(); j++) {
+								String entry = (String) listEntries.get(j);
+								StarsAdmin.createApplianceCategory( entry, energyCompany );
+							}
+						}
+						else {
+							// Always add an empty entry at the beginning of the list
+							listEntries.add(0, " ");
+							
+							Object[][] entryData = new Object[ listEntries.size() ][];
+							for (int j = 0; j < listEntries.size(); j++) {
+								entryData[j] = new Object[3];
+								entryData[j][0] = ZERO;
+								entryData[j][1] = listEntries.get(j);
+								entryData[j][2] = ZERO;
+							}
+							
+							YukonSelectionList cList = energyCompany.getYukonSelectionList(listName, false);
+							StarsAdmin.updateYukonListEntries( cList, entryData, energyCompany );
+						}
+					}
+					
+					isInList = false;
+				}
+				else {
+					if (selListLines[i].endsWith("="))
+						selListLines[i] = selListLines[i].substring(0, selListLines[i].length() - 1);
+					listEntries.add( selListLines[i] );
+				}
+			}
+		}
+	}
+	
+	private void importUserLabels(File usrLabelFile, HttpSession session) throws WebClientException {
+		String[] usrLabelLines = ServerUtils.readFile( usrLabelFile );
+		if (usrLabelLines == null)
+			throw new WebClientException( "Unable to read user label file '" + usrLabelFile.getPath() + "'" );
+		
+		boolean inUsrLabelDefs = false;
+		Hashtable userLabels = new Hashtable();
+		
+		for (int i = 0; i < usrLabelLines.length; i++) {
+			if (!inUsrLabelDefs) {
+				if (usrLabelLines[i].equals( "[User Labels]" ))
+					inUsrLabelDefs = true;
+				continue;
+			}
+			else {
+				if (usrLabelLines[i].startsWith("[")) break;
+				if (usrLabelLines[i].trim().equals("")) continue;
+				
+				int pos = usrLabelLines[i].indexOf('=');
+				if (pos < 0) continue;
+				String name = usrLabelLines[i].substring( 0, pos );
+				String value = usrLabelLines[i].substring( pos+1 );
+				if (!value.startsWith("@"))
+					userLabels.put( name, value );
+			}
+		}
+		
+		session.setAttribute( USER_LABELS, userLabels );
+	}
+	
+	private void importINIData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try {
+			boolean hasSelListFile = false;
 			
-			String msg = "Customer selection lists imported successfully.";
-			if (hasLoadTypes)
+			if (req.getParameter("SelListFile").length() > 0) {
+				File selListFile = new File( req.getParameter("SelListFile") );
+				importSelectionLists( selListFile, energyCompany );
+				hasSelListFile = true;
+			}
+			
+			if (req.getParameter("UsrLabelFile").length() > 0) {
+				File usrLabelFile = new File( req.getParameter("UsrLabelFile") );
+				importUserLabels( usrLabelFile, session );
+			}
+			
+			String msg = "INI file(s) imported successfully.";
+			if (hasSelListFile)
 				msg += " Please go to the energy company settings page to update the appliance category information.";
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, msg);
 		}
@@ -2787,10 +1813,8 @@ public class ImportManager extends HttpServlet {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import selection lists");
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to import INI file(s)");
 		}
-		
-		redirect = referer;
 	}
 	
 	private Integer getTextEntryID(String text, String listName, LiteStarsEnergyCompany energyCompany) {
@@ -2819,7 +1843,7 @@ public class ImportManager extends HttpServlet {
 			if (list != null) {
 				for (int i = 0; i < list.getYukonListEntries().size(); i++) {
 					YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
-					if (text.equals( entry.getEntryText() ))
+					if (text.equals( entry.getEntryText().trim() ))
 						return new Integer( entry.getEntryID() );
 				}
 			}
@@ -2828,13 +1852,670 @@ public class ImportManager extends HttpServlet {
 		return ZERO;
 	}
 	
+	/** Old STARS customer table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)	#used accross old STARS tables
+	 * 2,3		ACCOUNT_NO
+	 * 4		CUSTOMER_TYPE
+	 * 5		LAST_NAME
+	 * 6		FIRST_NAME
+	 * 7		----
+	 * 8		COMPANY_NAME
+	 * 9		MAP_NO
+	 * 10		STREET_ADDR1
+	 * 11		STREET_ADDR2
+	 * 12		CITY
+	 * 13		STATE
+	 * 14		ZIP_CODE
+	 * 15		HOME_PHONE
+	 * 16		WORK_PHONE
+	 * 17		----
+	 * 18		ACCOUNT_NOTES
+	 */
+	private String[] parseStarsCustomer(String line) throws Exception {
+		String[] fields = prepareFields( NUM_ACCOUNT_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 18)
+			throw new WebClientException( "Incorrect number of fields in customer file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_ACCOUNT_NO] = columns[1];
+		if (columns[2].length() > 0)
+			fields[IDX_ACCOUNT_NO] += "-" + columns[2];
+		fields[IDX_CUSTOMER_TYPE] = columns[3];
+		fields[IDX_LAST_NAME] = columns[4];
+		fields[IDX_FIRST_NAME] = columns[5];
+		fields[IDX_COMPANY_NAME] = columns[7];
+		fields[IDX_MAP_NO] = columns[8];
+		fields[IDX_STREET_ADDR1] = columns[9];
+		fields[IDX_STREET_ADDR2] = columns[10];
+		fields[IDX_CITY] = columns[11];
+		fields[IDX_STATE] = columns[12];
+		fields[IDX_ZIP_CODE] = columns[13];
+		fields[IDX_HOME_PHONE] = columns[14];
+		fields[IDX_WORK_PHONE] = columns[15];
+		fields[IDX_ACCOUNT_NOTES] = columns[17];
+		
+		return fields;
+	}
+	
+	/** Old STARS service info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		PROP_NOTES
+	 * 3		SUBSTATION
+	 * 4		FEEDER
+	 * 5		POLE
+	 * 6		TRFM_SIZE
+	 * 7		SERV_VOLT
+	 * 8,9		----
+	 * 10-17	PROP_NOTES
+	 */
+	private String[] parseStarsServiceInfo(String line, Hashtable userLabels) throws Exception {
+		String[] fields = prepareFields( NUM_ACCOUNT_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 17)
+			throw new WebClientException( "Incorrect number of fields in service info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		if (columns[1].length() > 0)
+			fields[IDX_PROP_NOTES] += "MeterNumber: " + columns[1] + LINE_SEPARATOR;
+		fields[IDX_SUBSTATION] = columns[2];
+		fields[IDX_FEEDER] = columns[3];
+		fields[IDX_POLE] = columns[4];
+		fields[IDX_TRFM_SIZE] = columns[5];
+		fields[IDX_SERV_VOLT] = columns[6];
+		if (columns[9].length() > 0 && userLabels.get(LABEL_SI_CHAR1) != null) {
+			String text = columns[9].substring( columns[9].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHAR1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[10].length() > 0 && userLabels.get(LABEL_SI_CHAR2) != null) {
+			String text = columns[10].substring( columns[10].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHAR2) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[11].length() > 0 && userLabels.get(LABEL_SI_DROPBOX1) != null) {
+			String text = columns[11].substring( columns[11].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[12].length() > 0 && userLabels.get(LABEL_SI_DROPBOX2) != null) {
+			String text = columns[12].substring( columns[12].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_DROPBOX2) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[13].length() > 0 && userLabels.get(LABEL_SI_CHECKBOX1) != null) {
+			String text = columns[13].substring( columns[13].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHECKBOX1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[14].length() > 0 && userLabels.get(LABEL_SI_CHECKBOX2) != null) {
+			String text = columns[14].substring( columns[14].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_CHECKBOX2) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[15].length() > 0 && userLabels.get(LABEL_SI_NUMERIC1) != null) {
+			String text = columns[15].substring( columns[15].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_NUMERIC1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[16].length() > 0 && userLabels.get(LABEL_SI_NUMERIC2) != null) {
+			String text = columns[16].substring( columns[16].indexOf(':')+1 );
+			fields[IDX_PROP_NOTES] += userLabels.get(LABEL_SI_NUMERIC2) + ": " + text + LINE_SEPARATOR;
+		}
+		
+		return fields;
+	}
+    
+	/** Old STARS inventory table
+	 * COL_NUM:	COL_NAME
+	 * 1		(INV_ID)
+	 * 2		SERIAL_NO
+	 * 3		(ACCOUNT_ID)
+	 * 4		ALT_TRACK_NO
+	 * 5		DEVICE_NAME
+	 * 6-8		INV_NOTES		
+	 * 9		DEVICE_TYPE
+	 * 10-12	----
+	 * 13		DEVICE_VOLT
+	 * 14		RECEIVE_DATE
+	 * 15		----
+	 * 16		SERVICE_COMPANY
+	 * 17-19	INV_NOTES
+	 */
+	private String[] parseStarsInventory(String line, Hashtable userLabels) throws Exception {
+		String[] fields = prepareFields(NUM_INV_FIELDS);
+		String[] columns = parseColumns( line );
+		if (columns.length != 19)
+			throw new WebClientException( "Incorrect number of fields in inventory file" );
+		
+		fields[IDX_INV_ID] = columns[0];
+		fields[IDX_SERIAL_NO] = columns[1];
+		fields[IDX_ACCOUNT_ID] = columns[2];
+		fields[IDX_ALT_TRACK_NO] = columns[3];
+		fields[IDX_DEVICE_NAME] = columns[4];
+		if (columns[5].length() > 0)
+			fields[IDX_INV_NOTES] += "MapNumber: " + columns[5] + LINE_SEPARATOR;
+		if (columns[6].length() > 0)
+			fields[IDX_INV_NOTES] += "OriginAddr1: " + columns[6] + LINE_SEPARATOR;
+		if (columns[7].length() > 0)
+			fields[IDX_INV_NOTES] += "OriginAddr2: " + columns[7] + LINE_SEPARATOR;
+		fields[IDX_DEVICE_TYPE] = columns[8];
+		fields[IDX_DEVICE_VOLTAGE] = columns[12];
+		fields[IDX_RECEIVE_DATE] = columns[13];
+		fields[IDX_SERVICE_COMPANY] = columns[15];
+		if (columns[16].length() > 0 && userLabels.get(LABEL_DI_CHAR1) != null) {
+			String text = columns[16].substring( columns[16].indexOf(':')+1 );
+			fields[IDX_INV_NOTES] += userLabels.get(LABEL_DI_CHAR1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[17].length() > 0 && userLabels.get(LABEL_DI_DROPBOX1) != null) {
+			String text = columns[17].substring( columns[17].indexOf(':')+1 );
+			fields[IDX_INV_NOTES] += userLabels.get(LABEL_DI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
+		}
+		//TODO: Date entry label not found in INI file 
+		
+		return fields;
+	}
+	
+	/** Old STARS receiver table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(INV_ID)
+	 * 3		INSTALL_DATE
+	 * 4-10		INV_NOTES
+	 * 11		DEVICE_STATUS
+	 * 12,15,18	R1_GROUP,R2_GROUP,R3_GROUP
+	 * 13,16,19	INV_NOTES
+	 * 14,17,20	R1_STATUS,R2_STATUS,R3_STATUS
+	 */
+	private String[] parseStarsReceiver(String line) throws Exception {
+		String[] fields = prepareFields( NUM_INV_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 20)
+			throw new WebClientException( "Incorrect number of fields in receiver file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_INV_ID] = columns[1];
+		fields[IDX_INSTALL_DATE] = columns[2];
+		for (int i = 3; i <= 5; i++) {
+			if (columns[i].length() > 0)
+				fields[IDX_INV_NOTES] += columns[i] + LINE_SEPARATOR;
+		}
+		if (columns[6].length() > 0)
+			fields[IDX_INV_NOTES] += "Technician: " + columns[6] + LINE_SEPARATOR;
+		if (columns[7].length() > 0)
+			fields[IDX_INV_NOTES] += "Location: " + columns[7] + LINE_SEPARATOR;
+		for (int i = 8; i <= 9; i++) {
+			if (columns[i].length() > 0)
+				fields[IDX_INV_NOTES] += columns[i] + LINE_SEPARATOR;
+		}
+		fields[IDX_DEVICE_STATUS] = columns[10];
+		for (int i = 0; i < 3; i++) {
+			fields[IDX_R1_GROUP + i] = columns[11+3*i].substring( "RX-GROUP:".length() );
+			if (columns[12+3*i].length() > 0)
+				fields[IDX_INV_NOTES] += columns[12+3*i] + LINE_SEPARATOR;
+			fields[IDX_R1_STATUS + i] = columns[13+3*i].substring( "RX-STATUS:".length() );
+		}
+		
+		return fields;
+	}
+	
+	/** Old STARS meter table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(INV_ID)
+	 * 3		DEVICE_NAME
+	 * 4		INV_NOTES
+	 * 5		INSTALL_DATE
+	 * 6		INV_NOTES		
+	 */
+	private String[] parseStarsMeter(String line) throws Exception {
+		String[] fields = prepareFields( NUM_INV_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 6)
+			throw new WebClientException( "Incorrect number of fields in meter file" );
+
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_INV_ID] = columns[1];
+		fields[IDX_DEVICE_NAME] = columns[2];
+		if (columns[3].length() > 0)
+			fields[IDX_INV_NOTES] += "Technician: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_INSTALL_DATE] = columns[4];
+		if (columns[5].length() > 0)
+			fields[IDX_INV_NOTES] += columns[5];
+		
+		return fields;
+	}
+	
+	/** Old STARS load info table
+	 * COL_NUM:	COL_NAME
+	 * 1		APP_ID
+	 * 2		(ACCOUNT_ID)
+	 * 3		(INV_ID)
+	 * 4		RELAY_NUM
+	 * 5		APP_DESC
+	 * 6		APP_TYPE
+	 * 7		APP_NOTES
+	 * 8		MANUFACTURER
+	 * 9-11		APP_NOTES
+	 * 12		AVAIL_FOR_CTRL
+	 * 13		YEAR_MADE
+	 * 14-21	APP_NOTES
+	 */
+	private String[] parseStarsLoadInfo(String line, Hashtable userLabels) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 21)
+			throw new WebClientException( "Incorrect number of fields in load info file" );
+		
+		fields[IDX_APP_ID] = columns[0];
+		fields[IDX_ACCOUNT_ID] = columns[1];
+		fields[IDX_INV_ID] = columns[2];
+		fields[IDX_RELAY_NUM] = columns[3];
+		fields[IDX_APP_DESC] = columns[4];
+		fields[IDX_APP_TYPE] = columns[5];
+		if (columns[6].length() > 0)
+			fields[IDX_APP_NOTES] += "EquipCode: " + columns[6] + LINE_SEPARATOR;
+		fields[IDX_MANUFACTURER] = columns[7];
+		if (columns[8].length() > 0 && userLabels.get(LABEL_CONTRACTOR1) != null)
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_CONTRACTOR1) + ": " + columns[8] + LINE_SEPARATOR;
+		if (columns[9].length() > 0 && userLabels.get(LABEL_CONTRACTOR2) != null)
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_CONTRACTOR2) + ": " + columns[9] + LINE_SEPARATOR;
+		if (columns[10].length() > 0)
+			fields[IDX_APP_NOTES] += "WarrantyInfo: " + columns[10] + LINE_SEPARATOR;
+		fields[IDX_AVAIL_FOR_CTRL] = columns[11];
+		fields[IDX_YEAR_MADE] = columns[12];
+		if (columns[13].length() > 0 && userLabels.get(LABEL_LI_CHAR1) != null) {
+			String text = columns[13].substring( columns[13].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHAR1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[14].length() > 0 && userLabels.get(LABEL_LI_DROPBOX1) != null) {
+			String text = columns[14].substring( columns[14].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[15].length() > 0 && userLabels.get(LABEL_LI_DROPBOX2) != null) {
+			String text = columns[15].substring( columns[15].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX2) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[16].length() > 0 && userLabels.get(LABEL_LI_DROPBOX3) != null) {
+			String text = columns[16].substring( columns[16].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_DROPBOX3) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[17].length() > 0 && userLabels.get(LABEL_LI_CHECKBOX1) != null) {
+			String text = columns[17].substring( columns[17].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHECKBOX1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[18].length() > 0 && userLabels.get(LABEL_LI_CHECKBOX2) != null) {
+			String text = columns[18].substring( columns[18].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_CHECKBOX2) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[19].length() > 0 && userLabels.get(LABEL_LI_NUMERIC1) != null) {
+			String text = columns[19].substring( columns[19].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_NUMERIC1) + ": " + text + LINE_SEPARATOR;
+		}
+		if (columns[20].length() > 0 && userLabels.get(LABEL_LI_NUMERIC2) != null) {
+			String text = columns[20].substring( columns[20].indexOf(':')+1 );
+			fields[IDX_APP_NOTES] += userLabels.get(LABEL_LI_NUMERIC2) + ": " + text + LINE_SEPARATOR;
+		}
+		
+		return fields;
+	}
+	
+	/** Old STARS work order table
+	 * COL_NUM:	COL_NAME
+	 * 1		ORDER_NO
+	 * 2		(ACCOUNT_ID)
+	 * 3		(INV_ID)
+	 * 4-8		----
+	 * 9		DATE_REPORTED
+	 * 10		DATE_COMPLETED
+	 * 11		ORDER_STATUS
+	 * 12		ORDER_TYPE
+	 * 13		ORDER_DESC
+	 * 14		ACTION_TAKEN
+	 * 15		TIME_SCHEDULED
+	 * 16		DATE_SCHEDULED
+	 * 17-19	ORDER_NOTES
+	 * 20		SERVICE_COMPANY
+	 */
+	private String[] parseStarsWorkOrder(String line) throws Exception {
+		String[] fields = prepareFields( NUM_ORDER_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 20)
+			throw new WebClientException( "Incorrect number of fields in work order file" );
+		
+		fields[IDX_ORDER_NO] = columns[0];
+		fields[IDX_ACCOUNT_ID] = columns[1];
+		fields[IDX_INV_ID] = columns[2];
+		fields[IDX_DATE_REPORTED] = columns[8];
+		fields[IDX_DATE_COMPLETED] = columns[9];
+		fields[IDX_ORDER_STATUS] = columns[10];
+		fields[IDX_ORDER_TYPE] = columns[11];
+		fields[IDX_ORDER_DESC] = columns[12] + LINE_SEPARATOR;
+		fields[IDX_ACTION_TAKEN] = columns[13] + LINE_SEPARATOR;
+		fields[IDX_TIME_SCHEDULED] = columns[14];
+		if (fields[IDX_TIME_SCHEDULED].length() > 0)
+			fields[IDX_ORDER_DESC] += "Time Scheduled: " + fields[IDX_TIME_SCHEDULED];
+		fields[IDX_DATE_SCHEDULED] = columns[15];
+		if (columns[16].length() > 0)
+			fields[IDX_ACTION_TAKEN] += columns[16] + LINE_SEPARATOR;
+		if (columns[17].length() > 0)
+			fields[IDX_ACTION_TAKEN] += "Overtime Hours: " + columns[17] + LINE_SEPARATOR;
+		if (columns[18].length() > 0)
+			fields[IDX_ACTION_TAKEN] += "Technician: " + columns[18];
+		fields[IDX_ORDER_CONTRACTOR] = columns[19];
+		
+		return fields;
+	}
+	
+	/** Old STARS residence info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		OWNERSHIP_TYPE
+	 * 3		RES_TYPE
+	 * 4		CONSTRUCTION_TYPE
+	 * 5		DECADE_BUILT
+	 * 6		SQUARE_FEET
+	 * 7		NUM_OCCUPANTS
+	 * 8		GENERAL_COND
+	 * 9		INSULATION_DEPTH
+	 * 10		MAIN_FUEL_TYPE
+	 * 11		RES_NOTES
+	 * 12		MAIN_COOLING_SYS
+	 * 13,14	RES_NOTES
+	 * 15		MAIN_HEATING_SYS
+	 * 16-21	RES_NOTES
+	 */
+	private String[] parseStarsResidenceInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_RES_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 21)
+			throw new WebClientException( "Incorrect number of fields in residence info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_OWNERSHIP_TYPE] = columns[1];
+		fields[IDX_RES_TYPE] = columns[2];
+		fields[IDX_CONSTRUCTION_TYPE] = columns[3];
+		fields[IDX_DECADE_BUILT] = columns[4];
+		fields[IDX_SQUARE_FEET] = columns[5];
+		fields[IDX_NUM_OCCUPANTS] = columns[6];
+		fields[IDX_GENERAL_COND] = columns[7];
+		fields[IDX_INSULATION_DEPTH] = columns[8];
+		fields[IDX_MAIN_FUEL_TYPE] = columns[9];
+		//fields[IDX_RES_NOTES] += "SetBackThermostat: " + columns[10] + LINE_SEPARATOR;
+		fields[IDX_MAIN_COOLING_SYS] = columns[11];
+		//fields[IDX_RES_NOTES] += "CoolingSystemYearInstalled: " + columns[12] + LINE_SEPARATOR;
+		//fields[IDX_RES_NOTES] += "CoolingSystemEff.: " + columns[13] + LINE_SEPARATOR;
+		fields[IDX_MAIN_HEATING_SYS] = columns[14];
+		//fields[IDX_RES_NOTES] += "HeatingSystemYearInstalled: " + columns[15] + LINE_SEPARATOR;
+		//fields[IDX_RES_NOTES] += "HeatingSystemEfficiency: " + columns[16] + LINE_SEPARATOR;
+		//fields[IDX_RES_NOTES] += "EnergyAudit: " + columns[17] + LINE_SEPARATOR;
+		//fields[IDX_RES_NOTES] += "HeatLoss: " + columns[18] + LINE_SEPARATOR;
+		//fields[IDX_RES_NOTES] += "HeatGain: " + columns[19] + LINE_SEPARATOR;
+		//fields[IDX_RES_NOTES] += "EnergyManagementParticipant: " + columns[20];
+		
+		return fields;
+	}
+	
+	/** Old STARS AC info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4		APP_NOTES
+	 * 5		AC_TONNAGE
+	 * 6,7		NOTES
+	 */
+	private String[] parseStarsACInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 7)
+			throw new WebClientException( "Incorrect number of fields in AC info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_AC_TONNAGE] = columns[4];
+		fields[IDX_APP_NOTES] += "BTU_Hour: " + columns[5] + LINE_SEPARATOR;
+		fields[IDX_APP_NOTES] += columns[6];
+			
+		return fields;
+	}
+	
+	/** Old STARS WH info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4		APP_NOTES
+	 * 5		WH_NUM_GALLONS
+	 * 6		WH_NUM_ELEMENTS
+	 * 7		WH_ENERGY_SRC
+	 * 8		WH_LOCATION
+	 * 9		APP_NOTES
+	 */
+	private String[] parseStarsWHInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 9)
+			throw new WebClientException( "Incorrect number of fields in WH info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_WH_NUM_GALLONS] = columns[4];
+		fields[IDX_WH_NUM_ELEMENTS] = columns[5];
+		fields[IDX_WH_ENERGY_SRC] = columns[6];
+		fields[IDX_APP_NOTES] += "Location: " + columns[7] + LINE_SEPARATOR;
+		fields[IDX_APP_NOTES] += columns[8];
+		
+		return fields;
+	}
+	
+	/** Old STARS generator info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_NOTES
+	 * 4		GEN_FUEL_CAP
+	 * 5		GEN_START_DELAY
+	 * 6		GEN_CAPACITY
+	 * 7		GEN_TRAN_SWITCH_MFC
+	 * 8		GEN_TRAN_SWITCH_TYPE
+	 */
+	private String[] parseStarsGeneratorInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 8)
+			throw new WebClientException( "Incorrect number of fields in generator info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_NOTES] += "StandbyKW: " + columns[2] + LINE_SEPARATOR;
+		fields[IDX_GEN_FUEL_CAP] = columns[3];
+		fields[IDX_GEN_START_DELAY] = columns[4];
+		fields[IDX_GEN_CAPACITY] = columns[5];
+		fields[IDX_GEN_TRAN_SWITCH_MFC] = columns[6];
+		fields[IDX_GEN_TRAN_SWITCH_TYPE] = columns[7];
+		
+		return fields;
+	}
+	
+	/** Old STARS irrigation info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4		APP_NOTES
+	 * 5		IRR_TYPE
+	 * 6		IRR_ENERGY_SRC
+	 * 7		IRR_HORSE_POWER
+	 * 8		IRR_METER_VOLT
+	 * 9		IRR_METER_LOC
+	 * 10		IRR_SOIL_TYPE
+	 */
+	private String[] parseStarsIrrigationInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 10)
+			throw new WebClientException( "Incorrect number of fields in irrigation info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_IRR_TYPE] = columns[4];
+		fields[IDX_IRR_ENERGY_SRC] = columns[5];
+		fields[IDX_IRR_HORSE_POWER] = columns[6];
+		fields[IDX_IRR_METER_VOLT] = columns[7];
+		fields[IDX_IRR_METER_LOC] += columns[8];
+		fields[IDX_IRR_SOIL_TYPE] = columns[9];
+		
+		return fields;
+	}
+	
+	/** Old STARS grain dryer info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4		APP_NOTES
+	 * 5		GDRY_TYPE
+	 * 6		GDRY_ENERGY_SRC
+	 * 7		GDRY_HORSE_POWER
+	 * 8		GDRY_HEAT_SRC
+	 * 9		GDRY_BIN_SIZE
+	 */
+	private String[] parseStarsGrainDryerInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 9)
+			throw new WebClientException( "Incorrect number of fields in grain dryer info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_GDRY_TYPE] = columns[4];
+		fields[IDX_GDRY_ENERGY_SRC] = columns[5];
+		fields[IDX_GDRY_HORSE_POWER] = columns[6];
+		fields[IDX_GDRY_HEAT_SRC] = columns[7];
+		fields[IDX_GDRY_BIN_SIZE] = columns[8];
+		
+		return fields;
+	}
+	
+	/** Old STARS heat pump info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4		APP_NOTES
+	 * 5		HP_TYPE
+	 * 6		HP_SIZE
+	 * 7		HP_STANDBY_SRC
+	 * 8		HP_RESTART_DELAY
+	 * 9		APP_NOTES
+	 */
+	private String[] parseStarsHeatPumpInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 9)
+			throw new WebClientException( "Incorrect number of fields in heat pump info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_HP_TYPE] = columns[4];
+		fields[IDX_HP_SIZE] = columns[5];
+		fields[IDX_HP_STANDBY_SRC] = columns[6];
+		fields[IDX_HP_RESTART_DELAY] = columns[7];
+		fields[IDX_APP_NOTES] += columns[8];
+		
+		return fields;
+	}
+	
+	/** Old STARS storage heat info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4		APP_NOTES
+	 * 5		SH_TYPE
+	 * 6		SH_CAPACITY
+	 * 7		SH_RECHARGE_TIME
+	 * 8,9		APP_NOTES
+	 */
+	private String[] parseStarsStorageHeatInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 9)
+			throw new WebClientException( "Incorrect number of fields in storage heat info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_SH_TYPE] = columns[4];
+		fields[IDX_SH_CAPACITY] = columns[5];
+		fields[IDX_SH_RECHARGE_TIME] = columns[6];
+		fields[IDX_APP_NOTES] += "ContractHours: " + columns[7] + LINE_SEPARATOR;
+		fields[IDX_APP_NOTES] += columns[8];
+		
+		return fields;
+	}
+	
+	/** Old STARS dual fuel info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4,5		APP_NOTES
+	 * 6		DF_2ND_ENERGY_SRC
+	 * 7		DF_2ND_CAPACITY
+	 * 8		DF_SWITCH_OVER_TYPE
+	 * 9		APP_NOTES
+	 */
+	private String[] parseStarsDualFuelInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 9)
+			throw new WebClientException( "Incorrect number of fields in dual fuel info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_APP_NOTES] += "PrimarySize: " + columns[4] + LINE_SEPARATOR;
+		fields[IDX_DF_2ND_ENERGY_SRC] = columns[5];
+		fields[IDX_DF_2ND_CAPACITY] = columns[6];
+		fields[IDX_DF_SWITCH_OVER_TYPE] = columns[7];
+		fields[IDX_APP_NOTES] += columns[8];
+		
+		return fields;
+	}
+	
+	/** Old STARS general info table
+	 * COL_NUM:	COL_NAME
+	 * 1		(ACCOUNT_ID)
+	 * 2		(APP_ID)
+	 * 3		APP_KW
+	 * 4,5		APP_NOTES
+	 */
+	private String[] parseStarsGeneralInfo(String line) throws Exception {
+		String[] fields = prepareFields( NUM_APP_FIELDS );
+		String[] columns = parseColumns( line );
+		if (columns.length != 5)
+			throw new WebClientException( "Incorrect number of fields in general info file" );
+		
+		fields[IDX_ACCOUNT_ID] = columns[0];
+		fields[IDX_APP_ID] = columns[1];
+		fields[IDX_APP_KW] = columns[2];
+		fields[IDX_APP_NOTES] += "Rebate: " + columns[3] + LINE_SEPARATOR;
+		fields[IDX_APP_NOTES] += columns[4];
+		
+		return fields;
+	}
+	
 	private void preprocessStarsData(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
-		
-		if (req.getParameter("SelListFile").length() > 0) {
-			importSelectionLists(user, req, session);
-			return;
-		}
 		
 		try {
 			File custFile = new File( req.getParameter("CustFile") );
@@ -2909,6 +2590,9 @@ public class ImportManager extends HttpServlet {
 			else
 				preprocessedData = new Hashtable();
 			
+			Hashtable userLabels = (Hashtable) session.getAttribute( USER_LABELS );
+			if (userLabels == null) userLabels = new Hashtable();
+			
 			Hashtable acctIDFields = new Hashtable();	// Map from account id(Integer) to fields(String[])
 			Hashtable invIDFields = new Hashtable();	// Map from inventory id(Integer) to fields(String[])
 			Hashtable appIDFields = new Hashtable();	// Map from appliance id(Integer) to fields(String[])
@@ -2942,13 +2626,11 @@ public class ImportManager extends HttpServlet {
 					preprocessedData.put("CustomerAccountMap", acctIDMap);
 				}
 				else {
-					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Customer");
-					
 					for (int i = 0; i < custLines.length; i++) {
 						if (custLines[i].trim().equals("") || custLines[i].charAt(0) == '#')
 							continue;
 						
-						String[] fields = parser.populateFields( custLines[i] );
+						String[] fields = parseStarsCustomer( custLines[i] );
 						fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 						acctFieldsList.add( fields );
 						acctIDFields.put( fields[IDX_ACCOUNT_ID], fields );
@@ -2963,10 +2645,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (servInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ServiceInfo");
-				
 				for (int i = 0; i < servInfoLines.length; i++) {
-					String[] fields = parser.populateFields( servInfoLines[i] );
+					String[] fields = parseStarsServiceInfo( servInfoLines[i], userLabels );
 					String[] custFields = (String[]) acctIDFields.get( fields[IDX_ACCOUNT_ID] );
 					
 					if (custFields != null) {
@@ -2986,13 +2666,11 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (invLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Inventory");
-				
 				for (int i = 0; i < invLines.length; i++) {
 					if (invLines[i].trim().equals("") || invLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] fields = parser.populateFields( invLines[i] );
+					String[] fields = parseStarsInventory( invLines[i], userLabels );
 					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					
 					if (fields[IDX_DEVICE_TYPE].equals("") || fields[IDX_DEVICE_TYPE].equals("-1"))
@@ -3033,10 +2711,8 @@ public class ImportManager extends HttpServlet {
 					preprocessedData.put("HwConfigAppMap", appIDMap);
 				}
 				else {
-					ImportFileParser parser = (ImportFileParser) parsers.get("STARS Receiver");
-					
 					for (int i = 0; i < recvrLines.length; i++) {
-						String[] fields = parser.populateFields( recvrLines[i] );
+						String[] fields = parseStarsReceiver( recvrLines[i] );
 						String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 						
 						if (invFields != null) {
@@ -3063,10 +2739,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (meterLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS Meter");
-				
 				for (int i = 0; i < meterLines.length; i++) {
-					String[] fields = parser.populateFields( meterLines[i] );
+					String[] fields = parseStarsMeter( meterLines[i] );
 					String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 					
 					if (invFields != null) {
@@ -3086,13 +2760,11 @@ public class ImportManager extends HttpServlet {
 				if (recvrLines == null && preprocessedData.get("HwConfigAppMap") == null)
 					throw new WebClientException("No hardware config information found. If you have already imported the receiver file, select the generated 'hwconfig.map' file in the 'Receiver File' field.");
 				
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS LoadInfo");
-				
 				for (int i = 0; i < loadInfoLines.length; i++) {
 					if (loadInfoLines[i].trim().equals("") || loadInfoLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] fields = parser.populateFields( loadInfoLines[i] );
+					String[] fields = parseStarsLoadInfo( loadInfoLines[i], userLabels );
 					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					appFieldsList.add( fields );
 					appIDFields.put( fields[IDX_APP_ID], fields );
@@ -3109,10 +2781,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (acInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ACInfo");
-				
 				for (int i = 0; i < acInfoLines.length; i++) {
-					String[] fields = parser.populateFields( acInfoLines[i] );
+					String[] fields = parseStarsACInfo( acInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3141,10 +2811,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (whInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS WHInfo");
-				
 				for (int i = 0; i < whInfoLines.length; i++) {
-					String[] fields = parser.populateFields( whInfoLines[i] );
+					String[] fields = parseStarsWHInfo( whInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3172,10 +2840,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (genInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GenInfo");
-				
 				for (int i = 0; i < genInfoLines.length; i++) {
-					String[] fields = parser.populateFields( genInfoLines[i] );
+					String[] fields = parseStarsGeneratorInfo( genInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3203,10 +2869,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (irrInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS IrrInfo");
-				
 				for (int i = 0; i < irrInfoLines.length; i++) {
-					String[] fields = parser.populateFields( irrInfoLines[i] );
+					String[] fields = parseStarsIrrigationInfo( irrInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3234,10 +2898,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (gdryInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GDryInfo");
-				
 				for (int i = 0; i < gdryInfoLines.length; i++) {
-					String[] fields = parser.populateFields( gdryInfoLines[i] );
+					String[] fields = parseStarsGrainDryerInfo( gdryInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3265,10 +2927,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (hpInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS HPInfo");
-				
 				for (int i = 0; i < hpInfoLines.length; i++) {
-					String[] fields = parser.populateFields( hpInfoLines[i] );
+					String[] fields = parseStarsHeatPumpInfo( hpInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3296,10 +2956,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (shInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS SHInfo");
-				
 				for (int i = 0; i < shInfoLines.length; i++) {
-					String[] fields = parser.populateFields( shInfoLines[i] );
+					String[] fields = parseStarsStorageHeatInfo( shInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3327,10 +2985,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (dfInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS DFInfo");
-				
 				for (int i = 0; i < dfInfoLines.length; i++) {
-					String[] fields = parser.populateFields( dfInfoLines[i] );
+					String[] fields = parseStarsDualFuelInfo( dfInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3358,10 +3014,8 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (genlInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS GenlInfo");
-				
 				for (int i = 0; i < genlInfoLines.length; i++) {
-					String[] fields = parser.populateFields( genlInfoLines[i] );
+					String[] fields = parseStarsGeneralInfo( genlInfoLines[i] );
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
@@ -3380,13 +3034,11 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (workOrderLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS WorkOrder");
-				
 				for (int i = 0; i < workOrderLines.length; i++) {
 					if (workOrderLines[i].trim().equals("") || workOrderLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] fields = parser.populateFields( workOrderLines[i] );
+					String[] fields = parseStarsWorkOrder( workOrderLines[i] );
 					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					orderFieldsList.add( fields );
 					
@@ -3402,13 +3054,11 @@ public class ImportManager extends HttpServlet {
 			}
 			
 			if (resInfoLines != null) {
-				ImportFileParser parser = (ImportFileParser) parsers.get("STARS ResInfo");
-				
 				for (int i = 0; i < resInfoLines.length; i++) {
 					if (resInfoLines[i].trim().equals("") || resInfoLines[i].charAt(0) == '#')
 						continue;
 					
-					String[] fields = parser.populateFields( resInfoLines[i] );
+					String[] fields = parseStarsResidenceInfo( resInfoLines[i] );
 					fields[IDX_LINE_NUM] = String.valueOf(i + 1);
 					resFieldsList.add( fields );
 					

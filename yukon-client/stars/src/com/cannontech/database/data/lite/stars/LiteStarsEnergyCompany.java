@@ -1674,7 +1674,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		if (autoLoad) return loadInventory( inventoryID );
+		if (autoLoad && !inventoryLoaded)
+			return loadInventory( inventoryID );
 		
 		return null;
 	}
@@ -1729,30 +1730,32 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		try {
-			com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
-					com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, getLiteID() );
-			
-			for (int i = 0; i < hardwares.length; i++) {
-				if (YukonListFuncs.getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getYukonDefID() == devTypeDefID) {
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					hw.setInventoryID( hardwares[i].getInventoryID() );
-					
-					hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-							Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
-					
-					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
-					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
-					addInventory( liteHw );
-					
-					return liteHw;
+		if (!inventoryLoaded) {
+			try {
+				com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
+						com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, getLiteID() );
+				
+				for (int i = 0; i < hardwares.length; i++) {
+					if (YukonListFuncs.getYukonListEntry( hardwares[i].getLMHardwareTypeID().intValue() ).getYukonDefID() == devTypeDefID) {
+						com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
+								new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+						hw.setInventoryID( hardwares[i].getInventoryID() );
+						
+						hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
+								Transaction.createTransaction( Transaction.RETRIEVE, hw ).execute();
+						
+						LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
+						StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
+						addInventory( liteHw );
+						
+						return liteHw;
+					}
 				}
 			}
-		}
-		catch (TransactionException e) {
-			e.printStackTrace();
-			return null;
+			catch (TransactionException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 		
 		// Search the LM hardware in the child energy companies
@@ -1804,28 +1807,30 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		try {
-			int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice(
-					categoryID, deviceName, getLiteID() );
-			
-			if (invIDs != null && invIDs.length > 0) {
-				com.cannontech.database.db.stars.hardware.InventoryBase inv =
-						new com.cannontech.database.db.stars.hardware.InventoryBase();
-				inv.setInventoryID( new Integer(invIDs[0]) );
+		if (!inventoryLoaded) {
+			try {
+				int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice(
+						categoryID, deviceName, getLiteID() );
 				
-				inv = (com.cannontech.database.db.stars.hardware.InventoryBase)
-						Transaction.createTransaction( Transaction.RETRIEVE, inv ).execute();
-				
-				LiteInventoryBase liteInv = new LiteInventoryBase();
-				StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
-				addInventory( liteInv );
-				
-				return liteInv;
+				if (invIDs != null && invIDs.length > 0) {
+					com.cannontech.database.db.stars.hardware.InventoryBase inv =
+							new com.cannontech.database.db.stars.hardware.InventoryBase();
+					inv.setInventoryID( new Integer(invIDs[0]) );
+					
+					inv = (com.cannontech.database.db.stars.hardware.InventoryBase)
+							Transaction.createTransaction( Transaction.RETRIEVE, inv ).execute();
+					
+					LiteInventoryBase liteInv = new LiteInventoryBase();
+					StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
+					addInventory( liteInv );
+					
+					return liteInv;
+				}
 			}
-		}
-		catch (TransactionException e) {
-			e.printStackTrace();
-			return null;
+			catch (TransactionException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 		
 		for (int i = 0; i < getChildren().size(); i++) {
@@ -1894,13 +1899,15 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			}
 		}
 		
-		com.cannontech.database.db.stars.hardware.InventoryBase inv =
-				com.cannontech.database.db.stars.hardware.InventoryBase.searchByDeviceID( deviceID, getLiteID() );
-		
-		if (inv != null) {
-			LiteInventoryBase liteInv = new LiteInventoryBase();
-			StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
-			return liteInv;
+		if (!inventoryLoaded) {
+			com.cannontech.database.db.stars.hardware.InventoryBase inv =
+					com.cannontech.database.db.stars.hardware.InventoryBase.searchByDeviceID( deviceID, getLiteID() );
+			
+			if (inv != null) {
+				LiteInventoryBase liteInv = new LiteInventoryBase();
+				StarsLiteFactory.setLiteInventoryBase( liteInv, inv );
+				return liteInv;
+			}
 		}
 		
 		for (int i = 0; i < getChildren().size(); i++) {
