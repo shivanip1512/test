@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/21 21:47:12 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/02/25 21:49:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,8 +44,6 @@ protected:
     static DLCCommandSet _commandStore;
     static const double MCT360_GEKV_KWHMultiplier;
 
-public:
-
     enum
     {
         MCT31X_FuncReadDemandPos = 0x92,
@@ -72,18 +70,25 @@ public:
         MCT360_IEDScanLen        =    8,
 
         MCT360_IEDClassPos       = 0x76,
-        MCT360_IEDClassLen       =    4,
+        MCT360_IEDClassLen       =    4
+    };
 
-        MCT360_AlphaResetPos     = 0xb0,
-        MCT360_AlphaResetLen     =    2,
-        MCT360_LGS4ResetPos      = 0xc0,
-        MCT360_LGS4ResetLen      =    3,
-        MCT360_GEKVResetPos      = 0xc1,
-        MCT360_GEKVResetLen      =    6,
+public:
 
-        MCT360_LGS4ResetID       =    3,
-        MCT360_GEKVResetID       =    4,
+    enum
+    {
+        //  for dev_mctbroadcast
+        MCT360_AlphaResetPos = 0xb0,
+        MCT360_AlphaResetLen =    2,
+        MCT360_LGS4ResetPos  = 0xc0,
+        MCT360_LGS4ResetLen  =    3,
+        MCT360_GEKVResetPos  = 0xc1,
+        MCT360_GEKVResetLen  =    6,
 
+        MCT360_LGS4ResetID   =    3,
+        MCT360_GEKVResetID   =    4,
+
+        //  for dev_mct errordecode
         MCT360_IED_VoltsPhaseA_PointOffset = 41,
         MCT360_IED_VoltsPhaseB_PointOffset = 42,
         MCT360_IED_VoltsPhaseC_PointOffset = 43,
