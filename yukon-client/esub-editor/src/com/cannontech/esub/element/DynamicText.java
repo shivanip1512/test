@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.PointAttributes;
@@ -18,7 +17,6 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicText;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxContainer;
-import com.loox.jloox.LxSaveUtils;
 
 /**
  * DynamicText is a text element that is bound to a point attribute.
@@ -210,7 +208,7 @@ public void setPointID(int newPointID) {
 		this.props = props;
 	}
 	
-	/**
+/**
  * Creation date: (12/17/2001 3:50:28 PM)
  * @param in java.io.InputStream
  * @param version java.lang.String

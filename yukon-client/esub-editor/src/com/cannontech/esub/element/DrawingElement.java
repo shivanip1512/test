@@ -13,6 +13,9 @@ public interface DrawingElement {
 	public int getVersion();
     public void setVersion(int newVer);
     
+	/**
+	 * @return true if this element is copyable (cut 'N pasteable)
+	 */
 	public boolean isCopyable();
 	
 	public Drawing getDrawing();

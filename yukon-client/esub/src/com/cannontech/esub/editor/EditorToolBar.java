@@ -48,6 +48,7 @@ public void addToToolBar(LxAbstractAction action, JToolBar toolBar) {
 		addToToolBar( actions.getAction(EditorActions.STATE_IMAGE), toolBar);
 		addToToolBar( actions.getAction(EditorActions.DYNAMIC_GRAPH), toolBar);
 		addToToolBar( actions.getAction(EditorActions.ALARM_TABLE_ELEMENT), toolBar);
+		addToToolBar( actions.getAction(EditorActions.ALARM_TEXT_ELEMENT), toolBar);
 	
 		
 	}

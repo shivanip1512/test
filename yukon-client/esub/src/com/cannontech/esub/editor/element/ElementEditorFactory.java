@@ -1,6 +1,7 @@
 package com.cannontech.esub.editor.element;
 
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.element.DynamicGraphElement;
@@ -21,7 +22,8 @@ public class ElementEditorFactory {
 		{ StaticText.class, StaticTextEditor.class },
 		{ DynamicGraphElement.class, DynamicGraphElementEditor.class },
 		{ DrawingMetaElement.class, DrawingMetaElementEditor.class },
-		{ CurrentAlarmsTable.class, CurrentAlarmsTableEditor.class }
+		{ CurrentAlarmsTable.class, CurrentAlarmsTableEditor.class },
+		{ AlarmTextElement.class, AlarmTextElementEditor.class }
 	};
 		
 	private static ElementEditorFactory instance = null;

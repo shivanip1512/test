@@ -179,5 +179,5 @@ public class UpdateUtil {
 		LiteState ls = StateFuncs.getLiteState(lp.getStateGroupID(), (int) pData.getValue());
 		LiteYukonImage img = YukonImageFuncs.getLiteYukonImage(ls.getImageID());
 		return img.getImageName();
-	}
+	}	
 }

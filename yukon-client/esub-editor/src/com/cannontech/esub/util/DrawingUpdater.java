@@ -7,6 +7,7 @@ import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.DynamicText;
@@ -100,6 +101,32 @@ public class DrawingUpdater extends TimerTask {
 						if(comp[i] instanceof CurrentAlarmsTable) {
 							CurrentAlarmsTable cat = (CurrentAlarmsTable) comp[i];
 							((PointAlarmTableModel)cat.getTable().getModel()).refresh();
+							change = true;
+						}
+						
+						if(comp[i] instanceof AlarmTextElement) {
+							AlarmTextElement te =(AlarmTextElement) comp[i];
+							boolean inAlarm = false;
+							LitePoint[] points = te.getPoints();
+							if(points != null) {
+								for(int j = 0; j < points.length; j++) {
+									if( pcc.getSignal(points[j].getPointID()) != null) {
+										inAlarm = true;
+										break;
+									}
+								}
+							}
+							
+							if(inAlarm) {
+								te.setText(te.getAlarmText());
+								te.setFont(te.getAlarmTextFont());
+								te.setPaint(te.getAlarmTextColor());
+							}
+							else {
+								te.setText(te.getDefaultText());
+								te.setFont(te.getDefaultTextFont());
+								te.setPaint(te.getDefaultTextColor());
+							}
 							change = true;
 						}
 					}

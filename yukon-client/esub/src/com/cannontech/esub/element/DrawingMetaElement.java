@@ -9,7 +9,6 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.EditorPrefs;
 import com.cannontech.esub.element.persist.PersistDrawingMetaElement;
 import com.loox.jloox.LxAbstractText;
-import com.loox.jloox.LxSaveUtils;
 
 /**
  * The purpose of this element is to store meta information about a drawing.

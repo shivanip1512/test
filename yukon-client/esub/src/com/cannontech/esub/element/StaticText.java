@@ -10,7 +10,6 @@ import java.util.Properties;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistStaticText;
 import com.loox.jloox.LxAbstractText;
-import com.loox.jloox.LxSaveUtils;
 
 /**
  * Creation date: (1/23/2002 11:36:05 AM)

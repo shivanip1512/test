@@ -8,13 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import com.cannontech.esub.EsubConstants;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistCurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.table.Table;
 import com.loox.jloox.LxAbstractRectangle;
-import com.loox.jloox.LxSaveUtils;
 
 /**
  * @author alauinger

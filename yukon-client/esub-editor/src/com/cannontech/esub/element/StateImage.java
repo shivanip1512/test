@@ -15,7 +15,6 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistStateImage;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractImage;
-import com.loox.jloox.LxSaveUtils;
 
 /**
  * 

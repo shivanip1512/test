@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.util.Util;
@@ -48,6 +49,7 @@ class EditorActions {
 	public static final String STATIC_TEXT = "STATIC TEXT";
 	public static final String DYNAMIC_GRAPH = "DYNAMIC GRAPH";
 	public static final String ALARM_TABLE_ELEMENT = "ALARM TABLE";
+	public static final String ALARM_TEXT_ELEMENT = "ALARM TEXT";
 		
 	//Element or group of elements related actions
 	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
@@ -531,8 +533,8 @@ class EditorActions {
 			true) {
 			
 		public void processAction(ActionEvent e ) {
-			com.cannontech.esub.element.DynamicGraphElement graph = 
-				new com.cannontech.esub.element.DynamicGraphElement();
+			DynamicGraphElement graph = 
+				new DynamicGraphElement();
 				
 			graph.setDrawing(editor.getDrawing());
 			editor.setBehavior(graph);
@@ -548,10 +550,10 @@ class EditorActions {
 			ALARM_TABLE_ELEMENT,
 			"Alarm Table",
 			"Alarm Table",
-			"AlarmIcon.gif",
+			"TableAlarm.gif",
 			true) {
 		public void processAction(ActionEvent e) {				
-				com.cannontech.esub.element.CurrentAlarmsTable table = new com.cannontech.esub.element.CurrentAlarmsTable();
+				CurrentAlarmsTable table = new com.cannontech.esub.element.CurrentAlarmsTable();
 				
 				editor.setBehavior(table);
 				editor.elementPlacer.setElement(table);
@@ -562,6 +564,25 @@ class EditorActions {
 				
 			}
 	};
+	
+	private final LxAbstractAction alarmTextElementAction =
+		new LxAbstractAction(
+			ALARM_TEXT_ELEMENT,
+			"Alarm Text",
+			"Alarm Text",
+			"TextAlarm.gif",
+			true) {
+				public void processAction(ActionEvent e) {
+					AlarmTextElement elem = new AlarmTextElement();
+					
+					editor.setBehavior(elem);
+					editor.elementPlacer.setElement(elem);
+					editor.elementPlacer.setIsPlacing(true);
+					
+					editor.getDrawing().getLxView().setCursor(
+						new Cursor(Cursor.CROSSHAIR_CURSOR));
+				}
+			};
 					
 	private final LxAbstractAction aboutEsubEditor = 
 		new LxAbstractAction(
@@ -618,6 +639,7 @@ class EditorActions {
 		actionMap.put(SET_DYNAMIC_TEXT_COLOR, setDynamicTextColor);
 		actionMap.put(DYNAMIC_GRAPH, dynamicGraphAction);
 		actionMap.put(ALARM_TABLE_ELEMENT, alarmTableElementAction);
+		actionMap.put(ALARM_TEXT_ELEMENT, alarmTextElementAction);
 		
 		actionMap.put(ABOUT_ESUB_EDITOR, aboutEsubEditor);
 		

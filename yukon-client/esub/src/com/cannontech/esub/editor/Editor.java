@@ -421,7 +421,8 @@ public class Editor extends JPanel {
 		if (elem instanceof com.cannontech.esub.element.DynamicText
 			|| elem instanceof com.cannontech.esub.element.StateImage
 			|| elem instanceof com.cannontech.esub.element.StaticImage
-			|| elem instanceof com.cannontech.esub.element.StaticText ) {				
+			|| elem instanceof com.cannontech.esub.element.StaticText 
+			|| elem instanceof com.cannontech.esub.element.AlarmTextElement ) {				
 			elem.setUserResizable(false);
 			elem.removeDefaultDoubleClickBehavior();
 			elem.removeMouseListener(editElementMouseListener);

@@ -12,7 +12,7 @@ import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.element.persist.PersistStaticImage;
 import com.cannontech.esub.util.Util;
 import com.loox.jloox.LxAbstractImage;
-import com.loox.jloox.LxSaveUtils;
+
 /**
  * Creation date: (1/22/2002 10:15:09 AM)
  * @author: 

@@ -1,5 +1,8 @@
 package com.cannontech.esub.editor.element;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -8,6 +11,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -173,12 +177,44 @@ private javax.swing.JScrollPane getJScrollPane1() {
 	return ivjJScrollPane1;
 }
 /**
- * Creation date: (12/18/2001 4:13:09 PM)
+ * Returns the selected point.
  * @return com.cannontech.database.data.lite.LitePoint
  */
 public LitePoint getSelectedPoint() {
 	javax.swing.tree.TreePath path = getDevicePointTree().getSelectionPath();
+	return getSelectedPoint(path);
+		
+}
+
+/**
+ * Returns all the selected points
+ * @return
+ */
+public LitePoint[] getSelectedPoints() {
+	TreePath[] paths = getDevicePointTree().getSelectionPaths();
+	if(paths == null) {
+		return new LitePoint[0];
+	}
 	
+	ArrayList selectedPoints = new ArrayList(paths.length);
+	for(int i = 0; i < paths.length; i++) {
+		LitePoint pt = getSelectedPoint(paths[i]);
+		if(pt != null) {
+			selectedPoints.add(pt);
+		}
+	}
+	
+	LitePoint[] retPts = new LitePoint[selectedPoints.size()];
+	selectedPoints.toArray(retPts);
+	return retPts;
+}
+
+/**
+ * Return the selected point at the end of the given path
+ * @param path
+ * @return
+ */
+private LitePoint getSelectedPoint(TreePath path) {
 	if( path != null )	{
 		javax.swing.tree.DefaultMutableTreeNode node = (javax.swing.tree.DefaultMutableTreeNode) path.getLastPathComponent();
 		Object selected = node.getUserObject();
@@ -187,7 +223,7 @@ public LitePoint getSelectedPoint() {
 			return (LitePoint) node.getUserObject();
 	}
 
-		return null;	
+		return null;
 }
 /**
  * Called whenever the part throws an exception.
@@ -235,6 +271,14 @@ private void initialize() {
  * @param point com.cannontech.database.data.lite.LitePoint
  */
 public boolean selectPoint(LitePoint point) {
+	return selectPoint(point, true);
+}
+
+private boolean selectPoint(LitePoint point, boolean clear) {
+	if(clear) {
+		getDevicePointTree().clearSelection();
+	}
+	
 	TreePath rootPath = new TreePath( getDeviceTreeModel().getRoot() );
 	TreePath paoPath = findPAO(rootPath, point.getPaobjectID());
 	
@@ -243,7 +287,7 @@ public boolean selectPoint(LitePoint point) {
 		return selectPoint(paoPath, point);
 	}
 
-	return false;
+	return false;	
 }
 /**
  * Creation date: (12/18/2001 4:36:53 PM)
@@ -255,7 +299,7 @@ private boolean selectPoint(TreePath path, LitePoint point) {
 
 	Object o = node.getUserObject();
 	if( o instanceof LitePoint && ((LitePoint) o).getPointID() == point.getPointID()) {
-		getDevicePointTree().getSelectionModel().setSelectionPath( path );
+		getDevicePointTree().getSelectionModel().addSelectionPath( path );
 		getDevicePointTree().scrollPathToVisible(path);
 		return true;
  	}
@@ -283,12 +327,23 @@ private boolean selectPoint(TreePath path, LitePoint point) {
 			
 }
 
+public void selectPoints(LitePoint[] points) {
+	getDevicePointTree().clearSelection();
+	for(int i = 0; i < points.length; i++) {
+		selectPoint(points[i], false);	
+	}
+	
+	LitePoint[] fun = getSelectedPoints();
+	
+}
+
+
 private TreePath findPAO(TreePath path, int paoID) {
 	DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 
 	Object o = node.getUserObject();
 	if( o instanceof LiteYukonPAObject && ((LiteYukonPAObject) o).getYukonID() == paoID) {
-		getDevicePointTree().getSelectionModel().setSelectionPath( path );
+		//getDevicePointTree().getSelectionModel().addSelectionPath( path );
 		return path;
  	}
 	else 

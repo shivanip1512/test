@@ -23,7 +23,9 @@ import org.w3c.dom.svg.SVGDocument;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Drawing;
+import com.cannontech.esub.element.AlarmTextElement;
 import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
@@ -391,6 +393,47 @@ public class SVGGenerator {
 		
 		return retElement;		
 	}
+	
+/*	private Element createAlarmText(SVGDocument doc, AlarmTextElement alarmText) {
+	  	//		Ignore stroke color for now, always use fill color
+	  	//could become a problem, pay attention
+		Rectangle2D r = alarmText.getBounds2D();
+		
+		int x = (int) Math.round(alarmText.getBaseLinePoint1().getX());
+		int y = (int) Math.round(alarmText.getBaseLinePoint1().getY());
+		
+		LxAbstractStyle style = alarmText.getStyle();
+		
+		Color fillColor = (Color) style.getPaint();
+		
+		String fontStyleStr = "normal";
+		if( alarmText.getFont().isItalic() ) {
+			fontStyleStr = "italic";
+		}
+			
+		String fontWeightStr = "normal";
+		if( alarmText.getFont().isBold() ) {
+			fontWeightStr = "bold";
+		}
+		
+		float opacity = alarmText.getStyle().getTransparency();
+	
+		Element textElem = doc.createElementNS(svgNS, "text");
+		textElem.setAttributeNS(null, "id", Integer.toString(text.getPointID()));
+		textElem.setAttributeNS(null, "dattrib", Integer.toString(PointAttributes.ALARM_TEXT));
+		textElem.setAttributeNS(null, "x", Integer.toString(x));
+		textElem.setAttributeNS(null, "y", Integer.toString(y));
+		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
+		
+			  if(isEditEnabled() && text.isEditable()) {
+				  textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+			  }
+
+			  Text theText = doc.createTextNode(text.getText());
+			  textElem.insertBefore(theText, null);
+		
+			  return textElem;					
+	}*/
 			
 	/**
 	 * Builds up a svg path string given a shape and the center of the element.
