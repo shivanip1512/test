@@ -10,6 +10,8 @@ import mx4j.AbstractDynamicMBean;
 public abstract class CTIBaseDynMBean extends AbstractDynamicMBean
 {
 	public abstract boolean isRunning();
+	public abstract void start();
+	public abstract void stop();
 
 	/**
 	 * A default constructor
