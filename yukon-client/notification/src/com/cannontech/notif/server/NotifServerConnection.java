@@ -9,6 +9,7 @@ import com.cannontech.message.dispatch.message.DefineCollectableMulti;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.notif.message.DefColl_NotifEmailAttchMsg;
 import com.cannontech.notif.message.DefColl_NotifEmailMsg;
+import com.cannontech.notif.message.DefColl_NotifVoiceMsg;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.CollectableMappings;
@@ -25,7 +26,8 @@ public class NotifServerConnection extends ClientConnection
 		
 		new DefColl_NotifEmailAttchMsg(),
 		new DefColl_NotifEmailMsg(),
-		new DefineCollectableMulti()
+		new DefineCollectableMulti(),
+        new DefColl_NotifVoiceMsg()
 
 	};
 	
