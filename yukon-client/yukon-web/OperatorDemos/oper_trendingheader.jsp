@@ -40,11 +40,10 @@
    }
 
    String sizeStr = request.getParameter("width");
-	out.println(" width = " + sizeStr);
    if( sizeStr != null )                           
       width = Integer.parseInt(sizeStr);
+
    sizeStr = request.getParameter("height");
-   	out.println(" height= " + sizeStr);
    if( sizeStr != null )                           
       height = Integer.parseInt(sizeStr);
 
