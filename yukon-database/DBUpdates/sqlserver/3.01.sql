@@ -1063,6 +1063,9 @@ insert into UserPaoOwner select operatorloginid, scheduleid from LMMacsscheduleo
 
 drop table LMMacsscheduleoperatorlist;
 
+drop table OpearatorSerialGroup;
+
+
 
 
 
