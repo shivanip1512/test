@@ -1,14 +1,3 @@
-<%            
-// Grab their graphdefinitions
-%>
-<jsp:setProperty name="graphBean" property="period" param="period"/>
-<jsp:setProperty name="graphBean" property="gdefid" param="gdefid"/>
-<jsp:setProperty name="graphBean" property="start" param="start"/>
-<jsp:setProperty name="graphBean" property="viewType" param="view"/>
-<jsp:setProperty name="graphBean" property="option" param="option"/>
-<jsp:setProperty name="graphBean" property="format" param="format"/>
-<jsp:setProperty name="graphBean" property="page" param="page"/>
-
 <SCRIPT> <!--trend/view menu items-->
 //view types
 var LINE  = parseInt(<%=GraphRenderers.LINE%>);
@@ -200,7 +189,7 @@ function changeFormat(format)
 function exportData(extension)
 {
 //	changeFormat(extension);
-	document.exportForm.action="/servlet/Download?ext="+extension;
+	document.exportForm.action="<%=request.getContextPath()%>/servlet/Download?ext="+extension;
 	document.exportForm.method="post";
 	document.exportForm.submit();
 }
