@@ -35,6 +35,7 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
    };
 	private static final String DEVICE_TYPES[][] = 
    { { //MCTs
+			PAOGroups.STRING_MCT_410IL[0],
 		PAOGroups.STRING_MCT_410_KWH_ONLY[0],
 			PAOGroups.STRING_MCT_370[0],
 			PAOGroups.STRING_MCT_360[0],
@@ -638,6 +639,11 @@ private void listDeviceType_Selection( javax.swing.event.ListSelectionEvent ev )
 
 			handleMCT_310IL();
 		}
+		else if( PAOGroups.getDeviceType(PAOGroups.STRING_MCT_410IL[0])
+					 == PAOGroups.getDeviceType(selObj.toString()) ) {
+
+			handleMCT_410IL();
+		}
 		else
 			extraObj = null;
 	
@@ -682,6 +688,42 @@ private void handleMCT_310IL()
             PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
             PointUnits.UOMID_KW,
             .01 );
+
+}
+
+private void handleMCT_410IL()
+{
+	
+	LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+					getCurrentDevice().getPAObjectID().intValue() );
+	
+	for( int i = 0; i < ltPoints.length; i++ ) {
+		LitePoint point = ltPoints[i];	
+
+		if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+			 && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ){
+
+			getJTextPaneNotes().setText(
+				"A Load Profile Demand point will NOT be " +
+				"generated for this change type since one already exists." );
+			
+			extraObj = null;
+			return;
+		}
+	}
+	
+	getJTextPaneNotes().setText(
+		"A Load Profile Demand point will be " +
+		"generated for this change type" );
+
+	extraObj = 
+		 PointFactory.createDmdAccumPoint(
+			"kW-LP",
+			getCurrentDevice().getPAObjectID(),
+			new Integer( PointFuncs.getMaxPointID() + 1 ),
+			PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+			PointUnits.UOMID_KW,
+			.1 );
 
 }
 
