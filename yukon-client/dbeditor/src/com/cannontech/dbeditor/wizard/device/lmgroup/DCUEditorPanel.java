@@ -36,6 +36,16 @@ public class DCUEditorPanel extends com.cannontech.common.gui.util.DataInputPane
 	private javax.swing.JTextField ivjJTextFieldSerialAddress = null;
 	private javax.swing.JPanel ivjJPanel1 = null;
 	private javax.swing.JCheckBox ivjJCheckBoxSPID1 = null;
+	
+	private javax.swing.JPanel ivjCodepanel = null;
+	private javax.swing.JLabel ivjJLabel1 = null;
+	private javax.swing.JTextField ivjJTextField1 = null;
+	private javax.swing.JTextField ivjJTextField11 = null;
+	private javax.swing.JTextField ivjJTextField12 = null;
+	private javax.swing.JLabel ivjTimeoutJLabel = null;
+	private javax.swing.JComboBox ivjTimeoutTextField = null;
+	private javax.swing.JLabel ivjHyphen1 = null;
+	private javax.swing.JLabel ivjHyphen11 = null;
 
 /**
  * Constructor
@@ -572,7 +582,6 @@ private com.cannontech.database.db.device.lm.LMGroupExpressComAddress createAddr
 				 || addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS.getAddress()) )				
 			{
 				
-
 				if( !addValue.equals(com.cannontech.database.db.device.lm.LMGroupExpressComAddress.NONE_ADDRESS.getAddress()) )
 				{
 					//we have a none address selected but have a non zero id typed
@@ -1001,6 +1010,201 @@ private javax.swing.JCheckBox getJCheckBoxSUB() {
 	return ivjJCheckBoxSUB;
 }
 
+private javax.swing.JLabel getJLabel1() {
+	if (ivjJLabel1 == null) {
+		try {
+			ivjJLabel1 = new javax.swing.JLabel();
+			ivjJLabel1.setName("JLabel1");
+			ivjJLabel1.setText("Code #");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabel1;
+}
+
+private javax.swing.JTextField getJTextField1() {
+	if (ivjJTextField1 == null) {
+		try {
+			ivjJTextField1 = new javax.swing.JTextField();
+			ivjJTextField1.setName("JTextField1");
+			// user code begin {1}
+			ivjJTextField1.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 99) );
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextField1;
+}
+/**
+ * Return the JTextField11 property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextField11() {
+	if (ivjJTextField11 == null) {
+		try {
+			ivjJTextField11 = new javax.swing.JTextField();
+			ivjJTextField11.setName("JTextField11");
+			// user code begin {1}
+			ivjJTextField11.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 99) );
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextField11;
+}
+/**
+ * Return the JTextField12 property value.
+ * @return javax.swing.JTextField
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JTextField getJTextField12() {
+	if (ivjJTextField12 == null) {
+		try {
+			ivjJTextField12 = new javax.swing.JTextField();
+			ivjJTextField12.setName("JTextField12");
+			// user code begin {1}
+			ivjJTextField12.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0, 99) );
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJTextField12;
+}
+
+private javax.swing.JPanel getCodepanel() {
+	if (ivjCodepanel == null) {
+		try {
+			ivjCodepanel = new javax.swing.JPanel();
+			ivjCodepanel.setName("Codepanel");
+			ivjCodepanel.setLayout(new java.awt.GridBagLayout());
+			ivjCodepanel.setVisible(true);
+
+			java.awt.GridBagConstraints constraintsJLabel1 = new java.awt.GridBagConstraints();
+			constraintsJLabel1.gridx = 1; constraintsJLabel1.gridy = 1;
+			constraintsJLabel1.ipadx = 6;
+			constraintsJLabel1.insets = new java.awt.Insets(40, 10, 7, 19);
+			getCodepanel().add(getJLabel1(), constraintsJLabel1);
+
+			java.awt.GridBagConstraints constraintsJTextField1 = new java.awt.GridBagConstraints();
+			constraintsJTextField1.gridx = 2; constraintsJTextField1.gridy = 1;
+			constraintsJTextField1.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextField1.fill = java.awt.GridBagConstraints.NONE;
+			constraintsJTextField1.weightx = 1.0;
+			constraintsJTextField1.ipadx = 24;
+			constraintsJTextField1.ipady = -3;
+			constraintsJTextField1.insets = new java.awt.Insets(38, 2, 6, 2);
+			getCodepanel().add(getJTextField1(), constraintsJTextField1);
+
+			java.awt.GridBagConstraints constraintsJTextField11 = new java.awt.GridBagConstraints();
+			constraintsJTextField11.gridx = 3; constraintsJTextField11.gridy = 1;
+			constraintsJTextField11.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextField11.fill = java.awt.GridBagConstraints.NONE;
+			constraintsJTextField11.weightx = 1.0;
+			constraintsJTextField11.ipadx = 24;
+			constraintsJTextField11.ipady = -3;
+			constraintsJTextField11.insets = new java.awt.Insets(38, 8, 6, 1);
+			getCodepanel().add(getJTextField11(), constraintsJTextField11);
+
+			java.awt.GridBagConstraints constraintsJTextField12 = new java.awt.GridBagConstraints();
+			constraintsJTextField12.gridx = 5; constraintsJTextField12.gridy = 1;
+			constraintsJTextField12.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextField12.fill = java.awt.GridBagConstraints.NONE;
+			constraintsJTextField12.weightx = 1.0;
+			constraintsJTextField12.ipadx = 24;
+			constraintsJTextField12.ipady = -3;
+			constraintsJTextField12.insets = new java.awt.Insets(38, 0, 6, 66);
+			getCodepanel().add(getJTextField12(), constraintsJTextField12);
+
+			java.awt.GridBagConstraints constraintsTimeoutTextField = new java.awt.GridBagConstraints();
+			constraintsTimeoutTextField.gridx = 2; constraintsTimeoutTextField.gridy = 2;
+			constraintsTimeoutTextField.gridwidth = 4;
+			constraintsTimeoutTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsTimeoutTextField.weightx = 1.0;
+			constraintsTimeoutTextField.ipadx = 5;
+			constraintsTimeoutTextField.insets = new java.awt.Insets(7, 2, 30, 39);
+			getCodepanel().add(getTimeoutTextField(), constraintsTimeoutTextField);
+
+			java.awt.GridBagConstraints constraintsTimeoutJLabel = new java.awt.GridBagConstraints();
+			constraintsTimeoutJLabel.gridx = 1; constraintsTimeoutJLabel.gridy = 2;
+			constraintsTimeoutJLabel.ipadx = 16;
+			constraintsTimeoutJLabel.insets = new java.awt.Insets(11, 10, 35, 2);
+			getCodepanel().add(getTimeoutJLabel(), constraintsTimeoutJLabel);
+
+			java.awt.GridBagConstraints constraintsHyphen1 = new java.awt.GridBagConstraints();
+			constraintsHyphen1.gridx = 3; constraintsHyphen1.gridy = 1;
+			constraintsHyphen1.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsHyphen1.fill = java.awt.GridBagConstraints.NONE;
+			constraintsHyphen1.ipadx = 3;
+			constraintsHyphen1.insets = new java.awt.Insets(39, 2, 8, 28);
+			getCodepanel().add(getHyphen1(), constraintsHyphen1);
+
+			java.awt.GridBagConstraints constraintsHyphen11 = new java.awt.GridBagConstraints();
+			constraintsHyphen11.gridx = 4; constraintsHyphen11.gridy = 1;
+			constraintsHyphen11.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsHyphen1.fill = java.awt.GridBagConstraints.NONE;
+			constraintsHyphen11.ipadx = 3;
+			constraintsHyphen11.insets = new java.awt.Insets(39, 2, 8, 0);
+			getCodepanel().add(getHyphen11(), constraintsHyphen11);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjCodepanel;
+}
+
+
+private javax.swing.JLabel getHyphen1() {
+	if (ivjHyphen1 == null) {
+		try {
+			ivjHyphen1 = new javax.swing.JLabel();
+			ivjHyphen1.setName("Hyphen1");
+			ivjHyphen1.setText("-");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjHyphen1;
+}
+
+private javax.swing.JLabel getHyphen11() {
+	if (ivjHyphen11 == null) {
+		try {
+			ivjHyphen11 = new javax.swing.JLabel();
+			ivjHyphen11.setName("Hyphen11");
+			ivjHyphen11.setText("-");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjHyphen11;
+}
 /**
  * Return the JLabelFeedAddress property value.
  * @return javax.swing.JLabel
@@ -1314,6 +1518,14 @@ private javax.swing.JPanel getJPanelAddress() {
 			constraintsJPanel1.ipady = -8;
 			constraintsJPanel1.insets = new java.awt.Insets(5, 21, 8, 91);
 			getJPanelAddress().add(getJPanel1(), constraintsJPanel1);
+			
+			java.awt.GridBagConstraints constraintsCodepanel = new java.awt.GridBagConstraints();
+			constraintsCodepanel.gridx = 1; constraintsCodepanel.gridy = 1;
+			constraintsCodepanel.fill = java.awt.GridBagConstraints.VERTICAL;
+			constraintsCodepanel.weightx = 1.0;
+			constraintsCodepanel.weighty = 1.0;
+			constraintsCodepanel.insets = new java.awt.Insets(45, 45, 49, 45);
+			getJPanelAddress().add(getCodepanel(), constraintsCodepanel);	
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1680,6 +1892,51 @@ private javax.swing.JTextField getJTextFieldZipAddress() {
 	return ivjJTextFieldZipAddress;
 }
 
+private javax.swing.JLabel getTimeoutJLabel() {
+	if (ivjTimeoutJLabel == null) {
+		try {
+			ivjTimeoutJLabel = new javax.swing.JLabel();
+			ivjTimeoutJLabel.setName("TimeoutJLabel");
+			ivjTimeoutJLabel.setText("Timeout");
+			ivjTimeoutJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTimeoutJLabel;
+}
+/**
+ * Return the JComboBox1 property value.
+ * @return javax.swing.JComboBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getTimeoutTextField() {
+	if (ivjTimeoutTextField == null) {
+		try {
+			ivjTimeoutTextField = new javax.swing.JComboBox();
+			ivjTimeoutTextField.setName("TimeoutTextField");
+
+			// user code begin {1}
+			ivjTimeoutTextField.addItem("7.5 minutes");
+			ivjTimeoutTextField.addItem("15 minutes");
+			ivjTimeoutTextField.addItem("30 minutes");
+			ivjTimeoutTextField.addItem("60 minutes");
+			ivjTimeoutTextField.addItem("2 hours");
+			ivjTimeoutTextField.addItem("4 hours");
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTimeoutTextField;
+}
+
 /**
  * getValue method comment.
  */
@@ -1743,7 +2000,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("LMGroupExpressComEditorPanel");
+		setName("DCUEditorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(357, 363);
 
@@ -1889,4 +2146,142 @@ public void setValue(Object o)
 
 
 }
+
+public void setDCUType(String type)
+{
+	if(type == "SA-305")
+	{
+		getCodepanel().setVisible(false);
+		
+		//Group Address
+		ivjJLabelSubAddress.setText("Group Address");
+		ivjJLabelSubAddress.setVisible(true);
+		ivjJTextFieldSubAddress.setVisible(true);
+		//Utility Address
+		ivjJLabelSPID.setVisible(true);
+		ivjJTextFieldSPIDAddress.setVisible(true);
+		//Division Address
+		ivjJLabelFeedAddress.setVisible(true);
+		ivjJTextFieldFeedAddress.setVisible(true);
+		//Substation Address
+		ivjJLabelZipAddress.setVisible(true);
+		ivjJTextFieldZipAddress.setVisible(true);
+		
+		getJPanelAddressUsage().setVisible(true);
+		getJCheckBoxSerial().setVisible(true);
+		getJTextFieldSerialAddress().setVisible(true);
+		
+		//Rate Address
+		getJPanel1().setVisible(true);
+		
+		//Function Usage
+		ivjJCheckBoxRelay4.setVisible(true);
+		getJPanelRelayUsage().setVisible(true);
+	}
+	
+	if(type == "SA-205")
+		{
+			getCodepanel().setVisible(false);
+			
+			//Group Address
+			ivjJLabelSubAddress.setText("Operational Address");
+			ivjJLabelSubAddress.setVisible(true);
+			ivjJTextFieldSubAddress.setVisible(true);
+			//Utility Address
+			ivjJLabelSPID.setVisible(false);
+			ivjJTextFieldSPIDAddress.setVisible(false);
+			//Division Address
+			ivjJLabelFeedAddress.setVisible(false);
+			ivjJTextFieldFeedAddress.setVisible(false);
+			//Substation Address
+			ivjJLabelZipAddress.setVisible(false);
+			ivjJTextFieldZipAddress.setVisible(false);
+		
+			getJPanelAddressUsage().setVisible(false);
+			getJCheckBoxSerial().setVisible(false);
+			getJTextFieldSerialAddress().setVisible(false);
+		
+			//Rate Address
+			getJPanel1().setVisible(false);
+			
+			//Function Usage
+			ivjJCheckBoxRelay4.setVisible(true);
+			getJPanelRelayUsage().setVisible(true);
+			
+		}
+		
+		if(type == "SA Digital")
+		{
+			//Group Address
+			ivjJLabelSubAddress.setText("Group Address");
+			ivjJLabelSubAddress.setVisible(false);
+			ivjJTextFieldSubAddress.setVisible(false);
+			//Utility Address
+			ivjJLabelSPID.setVisible(false);
+			ivjJTextFieldSPIDAddress.setVisible(false);
+			//Division Address
+			ivjJLabelFeedAddress.setVisible(false);
+			ivjJTextFieldFeedAddress.setVisible(false);
+			//Substation Address
+			ivjJLabelZipAddress.setVisible(false);
+			ivjJTextFieldZipAddress.setVisible(false);
+		
+			getJPanelAddressUsage().setVisible(false);
+			getJCheckBoxSerial().setVisible(false);
+			getJTextFieldSerialAddress().setVisible(false);
+				
+			//Rate Address
+			getJPanel1().setVisible(false);	
+			ivjJTextField11.setVisible(false);
+			ivjJTextField1.setText("");
+			ivjJTextField12.setText("");
+			getHyphen1().setVisible(false);
+			getCodepanel().setVisible(true);
+			
+			//Function Usage
+			ivjJCheckBoxRelay4.setVisible(true);
+			getJPanelRelayUsage().setVisible(false);
+			
+			getTimeoutTextField().setVisible(true);
+			getTimeoutJLabel().setVisible(true);
+			
+		}
+		
+		if(type == "Golay")
+		{
+			//Group Address
+			ivjJLabelSubAddress.setVisible(false);
+			ivjJTextFieldSubAddress.setVisible(false);
+			//Utility Address
+			ivjJLabelSPID.setVisible(false);
+			ivjJTextFieldSPIDAddress.setVisible(false);
+			//Division Address
+			ivjJLabelFeedAddress.setVisible(false);
+			ivjJTextFieldFeedAddress.setVisible(false);
+			//Substation Address
+			ivjJLabelZipAddress.setVisible(false);
+			ivjJTextFieldZipAddress.setVisible(false);
+		
+			getJPanelAddressUsage().setVisible(false);
+			getJCheckBoxSerial().setVisible(false);
+			getJTextFieldSerialAddress().setVisible(false);
+		
+			//Rate Address
+			getJPanel1().setVisible(false);
+			
+			ivjJTextField11.setVisible(true);
+			ivjJTextField1.setText("");
+			ivjJTextField12.setText("");
+			getHyphen1().setVisible(true);
+			getCodepanel().setVisible(true);
+			
+			//Function Usage
+			ivjJCheckBoxRelay4.setVisible(false);
+			getJPanelRelayUsage().setVisible(true);
+
+		}
+	
+	
+}
+
 }

@@ -250,12 +250,32 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		return getLMGroupMCTEditorPanel();
 	}
 	//Start LMGroupMCT specific
+	//This is currently just demo GUI
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999999 )
 	{
+		getDCUEditorPanel().setDCUType("SA-305");
 		return getDCUEditorPanel();
 	}
-		
+	else if ( currentInputPanel == getLMGroupBasePanel()
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999998 )
+	{
+		getDCUEditorPanel().setDCUType("SA-205");
+		return getDCUEditorPanel();
+	}
+	else if ( currentInputPanel == getLMGroupBasePanel()
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999997 )
+	{
+		getDCUEditorPanel().setDCUType("SA Digital");
+		return getDCUEditorPanel();
+	}
+	else if ( currentInputPanel == getLMGroupBasePanel()
+				 && getSwitchTypePanel().getTypeOfSwitchSelected() == 999996 )
+	{
+		getDCUEditorPanel().setDCUType("Golay");
+		return getDCUEditorPanel();
+	}	
+	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
 	return null;
 	
