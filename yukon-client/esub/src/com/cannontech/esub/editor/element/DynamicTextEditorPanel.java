@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.event.TreeSelectionEvent;
 
 import com.cannontech.database.data.lite.LitePoint;
+
 /**
  * Creation date: (12/18/2001 2:05:01 PM)
  * @author: 
@@ -20,6 +21,11 @@ public class DynamicTextEditorPanel extends com.cannontech.common.gui.util.DataI
 	private static final String ATTRIBUTE_POINT_NAME = "Point Name";
 	private static final String ATTRIBUTE_DEVICE_NAME = "Device Name";
 	private static final String ATTRIBUTE_LAST_UPDATE = "Last Update";
+	private static final String ATTRIBUTE_LOW_LIMIT = "Low Limit";
+	private static final String ATTRIBUTE_HIGH_LIMIT = "High Limit";
+	private static final String ATTRIBUTE_LIMIT_DURATION = "Limit Duration";
+	private static final String ATTRIBUTE_ALARM_TEXT = "Alarm Text";
+	private static final String ATTRIBUTE_CURRENT_STATE = "Current State";
 			
 	private DynamicText dynamicText;
 	private JColorChooser colorChooser;
@@ -187,11 +193,16 @@ private javax.swing.JComboBox getDisplayAttributesComboBox() {
 			ivjDisplayAttributesComboBox.setName("DisplayAttributesComboBox");
 			ivjDisplayAttributesComboBox.setToolTipText("The attributes of the selected point that will be displayed");
 			// user code begin {1}
-			ivjDisplayAttributesComboBox.addItem("Current Value");
-			ivjDisplayAttributesComboBox.addItem("Current Value / Unit of Measure");
-			ivjDisplayAttributesComboBox.addItem("Point Name");
-			ivjDisplayAttributesComboBox.addItem("Device Name");
-			ivjDisplayAttributesComboBox.addItem("Last Update");
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_CURRENT_VALUE);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_CURRENT_VALUE_AND_UNIT_OF_MEASURE);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_CURRENT_STATE);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_POINT_NAME);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_DEVICE_NAME);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_LAST_UPDATE);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_LOW_LIMIT);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_HIGH_LIMIT);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_LIMIT_DURATION);
+			ivjDisplayAttributesComboBox.addItem(ATTRIBUTE_ALARM_TEXT);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -202,6 +213,7 @@ private javax.swing.JComboBox getDisplayAttributesComboBox() {
 	}
 	return ivjDisplayAttributesComboBox;
 }
+
 /**
  * Return the DisplayAttributesLabel property value.
  * @return javax.swing.JLabel
@@ -459,10 +471,32 @@ public Object getValue(Object o) {
 	if( attStr.equals(ATTRIBUTE_POINT_NAME) ) {
 		att = DynamicText.NAME;
 	}
+	else
+	if( attStr.equals(ATTRIBUTE_LOW_LIMIT) ) {
+		att = DynamicText.LOW_LIMIT;			
+	}
+	else
+	if( attStr.equals(ATTRIBUTE_HIGH_LIMIT) ) {
+		att = DynamicText.HIGH_LIMIT;
+	}
+	else
+	if( attStr.equals(ATTRIBUTE_LIMIT_DURATION) ) {
+		att = DynamicText.LIMIT_DURATION;
+	}
+	else
+	if( attStr.equals(ATTRIBUTE_ALARM_TEXT) ) {
+		att = DynamicText.ALARM_TEXT;
+	}
+	else
+	if( attStr.equals(ATTRIBUTE_CURRENT_STATE)) {
+		att = DynamicText.STATE_TEXT;
+	}
+
 	dynamicText.setDisplayAttribs(att);
 	
 	return dynamicText;
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -614,8 +648,26 @@ public void setValue(Object o) {
 	if( (att & DynamicText.LAST_UPDATE) != 0 ) {
 		attStr = ATTRIBUTE_LAST_UPDATE;	
 	}
-	
-	
+	else
+	if( (att & DynamicText.LOW_LIMIT) != 0 ) {
+		attStr = ATTRIBUTE_LOW_LIMIT;
+	}
+	else
+	if( (att & DynamicText.HIGH_LIMIT) != 0 ) {
+		attStr = ATTRIBUTE_HIGH_LIMIT;
+	}
+	else
+	if( (att & DynamicText.LIMIT_DURATION) != 0 ) {
+		attStr = ATTRIBUTE_LIMIT_DURATION;
+	}
+	else
+	if( (att & DynamicText.ALARM_TEXT) != 0 ) {
+	}
+	else
+	if( (att & DynamicText.STATE_TEXT) != 0 ) {
+		attStr = ATTRIBUTE_CURRENT_STATE;
+	}
+		
 	for( int i = 0; i < getDisplayAttributesComboBox().getItemCount(); i++ ) {
 		if( getDisplayAttributesComboBox().getItemAt(i).equals(attStr) ) {
 			getDisplayAttributesComboBox().setSelectedIndex(i);
@@ -626,40 +678,7 @@ public void setValue(Object o) {
 	getColorButton().setBackground(textColor);
 	colorChooser.setColor(textColor);
 }
-/*
-DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-	
-	if( node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase &&
-			((com.cannontech.database.data.lite.LiteBase)node.getUserObject()).getLiteType() == liteBaseType &&
-			((com.cannontech.database.data.lite.LiteBase)node.getUserObject()).getLiteID() == liteBaseID )
-	{
-		getTree().getSelectionModel().setSelectionPath( path );
-		return true;
-	}
-	else
-	if( node.isLeaf() )
-	{
-		return false;
-	}
-	else
-	{
-		for( int i = 0; i < node.getChildCount(); i++ )
-		{
-			Object nextPathObjs[] = new Object[path.getPath().length +1];
 
-			System.arraycopy( path.getPath(), 0, nextPathObjs, 0, path.getPath().length );
-
-			nextPathObjs[path.getPath().length] = node.getChildAt(i);
-			
-			TreePath nextPath = new TreePath(nextPathObjs);
-			
-			if( selectLiteBase(nextPath,liteBaseType,liteBaseID) )
-				return true;	
-		}
-
-		return false;
-	}
-	*/
 /**
  * Creation date: (12/18/2001 4:16:51 PM)
  * @param evt javax.swing.event.TreeSelectionEvent

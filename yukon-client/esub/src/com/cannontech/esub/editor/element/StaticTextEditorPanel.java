@@ -506,7 +506,8 @@ public void setValue(Object o) {
 	}
 	
 	java.awt.Color textColor = (java.awt.Color) staticText.getPaint();
-	getColorButton().setBackground(textColor);
-	colorChooser.setColor(textColor);
+		
+	getColorButton().setBackground(textColor);	
+	colorChooser.setColor(textColor);	
 }
 }
