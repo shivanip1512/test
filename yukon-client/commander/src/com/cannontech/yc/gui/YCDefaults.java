@@ -17,205 +17,268 @@ public class YCDefaults
 	private boolean showMessageLog = true;
 	private boolean confirmCommandExecute = false;
 	private String commandFileDirectory = null;
-/**
- * YCDefaults constructor comment.
- */
-public YCDefaults() {
-	super();
-	parseDefaultsFile();
-}
-/**
- * YCDefaults constructor comment.
- */
-public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir) 
-{
-	super();
-	setCommandPriority(priority);
-	setQueueExecuteCommand(queueCommand);
-	setShowMessageLog(showLog);
-	setConfirmCommandExecute(confirmExecute);
-	setCommandFileDirectory(commandFileDir);
 	
-	//parseDefaultsFile();
-}
-public String getCommandFileDirectory()
-{
-	if( commandFileDirectory == null)
-	{
-		String dirPath = com.cannontech.common.util.CtiUtilities.getCommandsDirPath();
-		commandFileDirectory = com.cannontech.common.util.CtiUtilities.getCanonicalFile(dirPath); 
+//	private final String VALID_TEXT = "Valid Text";
+//	private final String INVALID_TEXT = "Invalid Text";
+//	private final String DISPLAY_TEXT = "Display Text";
+	
+	private java.awt.Color validTextColor = java.awt.Color.blue;
+	private java.awt.Color invalidTextColor = java.awt.Color.red;
+	private java.awt.Color displayTextColor = java.awt.Color.black;
+	
+	/**
+	 * YCDefaults constructor comment.
+	 */
+	public YCDefaults() {
+		super();
+		parseDefaultsFile();
 	}
-	return commandFileDirectory;
-}
-public int getCommandPriority()
-{
-	return commandPriority;
-}
-public boolean getConfirmCommandExecute ()
-{
-	return confirmCommandExecute;
-}
-public boolean getQueueExecuteCommand ()
-{
-	return queueExecuteCommand;
-}
-public boolean getShowMessageLog ()
-{
-	return showMessageLog;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/13/2002 9:53:47 AM)
- */
-private void parseDefaultsFile()
-{
-	java.io.RandomAccessFile raFile = null;
-	java.io.File inFile = new java.io.File( YC_DEFAULTS_DIRECTORY + YC_DEFAULTS_FILENAME);
-
-	java.util.Vector fileParameters = new java.util.Vector( 15 );
-	
-	try
+	/**
+	 * YCDefaults constructor comment.
+	 */
+	public YCDefaults(int priority, boolean queueCommand, boolean showLog, boolean confirmExecute, String commandFileDir) 
 	{
-		// open file		
-		if( inFile.exists() )
+		super();
+		setCommandPriority(priority);
+		setQueueExecuteCommand(queueCommand);
+		setShowMessageLog(showLog);
+		setConfirmCommandExecute(confirmExecute);
+		setCommandFileDirectory(commandFileDir);
+		
+		//parseDefaultsFile();
+	}
+	public String getCommandFileDirectory()
+	{
+		if( commandFileDirectory == null)
 		{
-			raFile = new java.io.RandomAccessFile( inFile, "r" );
-					
-			long readLinePointer = 0;
-			long fileLength = raFile.length();
-
-			while ( readLinePointer < fileLength )  // loop until the end of the file
-			{
-					
-				String line = raFile.readLine();  // read a line in
-				fileParameters.addElement( line );
-
-				// set our pointer to the new position in the file
-				readLinePointer = raFile.getFilePointer();
-			}
+			String dirPath = com.cannontech.common.util.CtiUtilities.getCommandsDirPath();
+			commandFileDirectory = com.cannontech.common.util.CtiUtilities.getCanonicalFile(dirPath); 
 		}
-		else
-			return;
-
-		// Close file
-		raFile.close();						
+		return commandFileDirectory;
 	}
-	catch(java.io.IOException ex)
+	public int getCommandPriority()
 	{
-		System.out.print("IOException in parseDefaultsFile()");
-		ex.printStackTrace();
+		return commandPriority;
 	}
-	finally
+	public boolean getConfirmCommandExecute ()
+	{
+		return confirmCommandExecute;
+	}
+	public boolean getQueueExecuteCommand ()
+	{
+		return queueExecuteCommand;
+	}
+	public boolean getShowMessageLog ()
+	{
+		return showMessageLog;
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/13/2002 9:53:47 AM)
+	 */
+	private void parseDefaultsFile()
+	{
+		java.io.RandomAccessFile raFile = null;
+		java.io.File inFile = new java.io.File( YC_DEFAULTS_DIRECTORY + YC_DEFAULTS_FILENAME);
+	
+		java.util.Vector fileParameters = new java.util.Vector( 15 );
+		
+		try
+		{
+			// open file		
+			if( inFile.exists() )
+			{
+				raFile = new java.io.RandomAccessFile( inFile, "r" );
+						
+				long readLinePointer = 0;
+				long fileLength = raFile.length();
+	
+				while ( readLinePointer < fileLength )  // loop until the end of the file
+				{
+						
+					String line = raFile.readLine();  // read a line in
+					fileParameters.addElement( line );
+	
+					// set our pointer to the new position in the file
+					readLinePointer = raFile.getFilePointer();
+				}
+			}
+			else
+				return;
+	
+			// Close file
+			raFile.close();						
+		}
+		catch(java.io.IOException ex)
+		{
+			System.out.print("IOException in parseDefaultsFile()");
+			ex.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				//Try to close the file, again.
+				if( inFile.exists() )
+					raFile.close();
+			}
+			catch( java.io.IOException ex )
+			{}		
+		}
+	
+		if( fileParameters.size() == NUMBER_OF_PARAMETERS )
+		{
+			// make sure we received all lines from the parameters file		
+			updateFileDefaults( fileParameters);
+		}
+	}
+	private void setCommandFileDirectory(String newDirectory)
+	{
+		commandFileDirectory = newDirectory;
+	}
+	private void  setCommandPriority(int newPriority)
+	{
+		if( newPriority > 14)
+			commandPriority = 14;
+		else if ( newPriority < 1)
+			commandPriority = 1;
+		else 
+			commandPriority = newPriority;
+	}
+	private void setConfirmCommandExecute (boolean isConfirming)
+	{
+		confirmCommandExecute = isConfirming;
+	}
+	private void setQueueExecuteCommand (boolean isQueuing)
+	{
+		queueExecuteCommand = isQueuing;
+	}
+	private void setShowMessageLog (boolean isShowing)
+	{
+		showMessageLog = isShowing;
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/14/2002 1:54:19 PM)
+	 * @param infileDefaultsVector java.util.Vector
+	 */
+	private  void updateFileDefaults(java.util.Vector infileDefaultsVector)
+	{
+		int index = 0;
+		//*******priority**************//
+		int p = new Integer((String)infileDefaultsVector.get(index++)).intValue();
+		if( p < 1 )
+			p = 14;
+		setCommandPriority( p );
+		
+		//*******queue command**************//
+		String boolValue = (String)infileDefaultsVector.get(index++);
+		if(boolValue.equalsIgnoreCase("true") )
+			setQueueExecuteCommand(true);
+		else
+			setQueueExecuteCommand(false);
+	
+		//*******show log**************//
+		boolValue = (String)infileDefaultsVector.get(index++);
+		if(boolValue.equalsIgnoreCase("true") )
+			setShowMessageLog(true);
+		else
+			setShowMessageLog(false);
+	
+		//*******confirm command**************//
+		boolValue = (String)infileDefaultsVector.get(index++);
+		if(boolValue.equalsIgnoreCase("true") )
+			setConfirmCommandExecute(true);
+		else
+			setConfirmCommandExecute(false);
+	
+		//*******command file dir**************//		
+		setCommandFileDirectory((String)infileDefaultsVector.get(index++));
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/13/2002 9:23:11 AM)
+	 */
+	public void writeDefaultsFile()
 	{
 		try
 		{
-			//Try to close the file, again.
-			if( inFile.exists() )
-				raFile.close();
-		}
-		catch( java.io.IOException ex )
-		{}		
-	}
-
-	if( fileParameters.size() == NUMBER_OF_PARAMETERS )
-	{
-		// make sure we received all lines from the parameters file		
-		updateFileDefaults( fileParameters);
-	}
-}
-private void setCommandFileDirectory(String newDirectory)
-{
-	commandFileDirectory = newDirectory;
-}
-private void  setCommandPriority(int newPriority)
-{
-	if( newPriority > 14)
-		commandPriority = 14;
-	else if ( newPriority < 1)
-		commandPriority = 1;
-	else 
-		commandPriority = newPriority;
-}
-private void setConfirmCommandExecute (boolean isConfirming)
-{
-	confirmCommandExecute = isConfirming;
-}
-private void setQueueExecuteCommand (boolean isQueuing)
-{
-	queueExecuteCommand = isQueuing;
-}
-private void setShowMessageLog (boolean isShowing)
-{
-	showMessageLog = isShowing;
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/14/2002 1:54:19 PM)
- * @param infileDefaultsVector java.util.Vector
- */
-private  void updateFileDefaults(java.util.Vector infileDefaultsVector)
-{
-	int index = 0;
-	//*******priority**************//
-	int p = new Integer((String)infileDefaultsVector.get(index++)).intValue();
-	if( p < 1 )
-		p = 14;
-	setCommandPriority( p );
-	
-	//*******queue command**************//
-	String boolValue = (String)infileDefaultsVector.get(index++);
-	if(boolValue.equalsIgnoreCase("true") )
-		setQueueExecuteCommand(true);
-	else
-		setQueueExecuteCommand(false);
-
-	//*******show log**************//
-	boolValue = (String)infileDefaultsVector.get(index++);
-	if(boolValue.equalsIgnoreCase("true") )
-		setShowMessageLog(true);
-	else
-		setShowMessageLog(false);
-
-	//*******confirm command**************//
-	boolValue = (String)infileDefaultsVector.get(index++);
-	if(boolValue.equalsIgnoreCase("true") )
-		setConfirmCommandExecute(true);
-	else
-		setConfirmCommandExecute(false);
-
-	//*******command file dir**************//		
-	setCommandFileDirectory((String)infileDefaultsVector.get(index++));
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/13/2002 9:23:11 AM)
- */
-public void writeDefaultsFile()
-{
-	try
-	{
-		java.io.File file = new java.io.File( YC_DEFAULTS_DIRECTORY );
-		file.mkdirs();
-		
-		java.io.FileWriter writer = new java.io.FileWriter( file.getPath() + YC_DEFAULTS_FILENAME);
-
- 		writer.write( String.valueOf( getCommandPriority() ) + "\r\n");
-
-		writer.write( String.valueOf( getQueueExecuteCommand() ) + "\r\n" );
+			java.io.File file = new java.io.File( YC_DEFAULTS_DIRECTORY );
+			file.mkdirs();
 			
-		writer.write( String.valueOf( getShowMessageLog()) + "\r\n" );
-
-		writer.write( String.valueOf( getConfirmCommandExecute()) + "\r\n" );
-
-		writer.write( getCommandFileDirectory() + "\r\n" );
-
-		writer.close();
+			java.io.FileWriter writer = new java.io.FileWriter( file.getPath() + YC_DEFAULTS_FILENAME);
+	
+	 		writer.write( String.valueOf( getCommandPriority() ) + "\r\n");
+	
+			writer.write( String.valueOf( getQueueExecuteCommand() ) + "\r\n" );
+				
+			writer.write( String.valueOf( getShowMessageLog()) + "\r\n" );
+	
+			writer.write( String.valueOf( getConfirmCommandExecute()) + "\r\n" );
+	
+			writer.write( getCommandFileDirectory() + "\r\n" );
+	
+			writer.close();
+		}
+		catch ( java.io.IOException e )
+		{
+			System.out.print(" IOException in writeBillingDefaultsFile");
+			e.printStackTrace();
+		}
+		
 	}
-	catch ( java.io.IOException e )
+	/**
+	 * Returns the displayTextColor.
+	 * @return java.awt.Color
+	 */
+	public java.awt.Color getDisplayTextColor()
 	{
-		System.out.print(" IOException in writeBillingDefaultsFile");
-		e.printStackTrace();
+		return displayTextColor;
+	}
+
+	/**
+	 * Returns the invalidTextColor.
+	 * @return java.awt.Color
+	 */
+	public java.awt.Color getInvalidTextColor()
+	{
+		return invalidTextColor;
+	}
+
+	/**
+	 * Returns the validTextColor.
+	 * @return java.awt.Color
+	 */
+	public java.awt.Color getValidTextColor()
+	{
+		return validTextColor;
+	}
+
+	/**
+	 * Sets the displayTextColor.
+	 * @param displayTextColor The displayTextColor to set
+	 */
+	public void setDisplayTextColor(java.awt.Color displayTextColor)
+	{
+		this.displayTextColor = displayTextColor;
+	}
+
+	/**
+	 * Sets the invalidTextColor.
+	 * @param invalidTextColor The invalidTextColor to set
+	 */
+	public void setInvalidTextColor(java.awt.Color invalidTextColor)
+	{
+		this.invalidTextColor = invalidTextColor;
+	}
+
+	/**
+	 * Sets the validTextColor.
+	 * @param validTextColor The validTextColor to set
+	 */
+	public void setValidTextColor(java.awt.Color validTextColor)
+	{
+		this.validTextColor = validTextColor;
 	}
 	
-}
 }
