@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/06/23 19:05:48 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/07/09 19:11:11 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -292,7 +292,19 @@ RWTime CtiProtocolLMI::getTransmittingUntil( void ) const
 
 bool CtiProtocolLMI::isTransactionComplete( void )
 {
-    return _transactionComplete;  //  this is rather naive - maybe it should check state instead
+    bool retval = _transactionComplete;
+
+    if( _completion_time.seconds() && _completion_time <= RWTime::now() )
+    {
+        retval = true;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return retval;  //  this is rather naive, and prone to failure
 }
 
 
@@ -353,9 +365,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 {
                     numcodes = 42;
                 }
-                else if( numcodes < 0 )
+                else if( numcodes <= 0 )
                 {
                     numcodes = 0;
+                    _transactionComplete = true;
                 }
 
                 _outbound.body_header.message_type = Opcode_SendCodes;
@@ -549,7 +562,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                 {
                     case Command_SendQueuedCodes:
                     {
-                        if( _codes.empty() || !((_completion_time - 1) > _transmitting_until) )  //  knock off a second so we act polite
+                        if( _codes.empty() || (_transmitting_until >= (_completion_time - 1)) )  //  knock off a second so we act polite
                         {
                             _transactionComplete = true;
                         }
