@@ -2604,3 +2604,32 @@ IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length)
     return value;
 }
 
+LONG GetPAOIdOfEnergyPro(long devicesn)
+{
+    RWCString sql("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE TYPE='ENERGYPRO' AND PAOBJECTID IN (SELECT DEVICEID FROM DEVICEIED WHERE SLAVEADDRESS='");
+
+    sql += CtiNumStr(devicesn) + RWCString("')");
+
+    INT id = 0;
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr() && rdr.isValid())
+    {
+        rdr >> id;
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+
+    return id;
+}
+
