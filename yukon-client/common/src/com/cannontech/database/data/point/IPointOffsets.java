@@ -19,11 +19,9 @@ public interface IPointOffsets
    public static final int PT_OFFSET_KVAR_DEMAND			= 35;
 	
 	
-   public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;
-
-	
+   public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;	
 	public static final int PT_OFFSET_TRANS_STATUS			= 2000;
-	
+
    public static final int PT_OFFSET_DAILY_HISTORY			= 2500;
    public static final int PT_OFFSET_MONTHLY_HISTORY		= 2501;
    public static final int PT_OFFSET_SEASONAL_HISTORY		= 2502;
@@ -64,7 +62,6 @@ public interface IPointOffsets
 					new int[]{1},
 					new String[] {"Control relays A/B"} ),
 
-
 		new PointOffset( PAOGroups.MCT360, PointTypes.STATUS_POINT, 
 					new int[]{5,6,10,11,12,20},
 					new String[] {"Status of A relay","Status of B relay","Power Fail Flag",
@@ -95,6 +92,20 @@ public interface IPointOffsets
 		new PointOffset( PAOGroups.MCT318, PointTypes.CONTROLTYPE_NORMAL,
 					new int[]{1},
 					new String[] {"Control relays A/B"} ),
+
+		new PointOffset( PAOGroups.MCT310IL, PointTypes.DEMAND_ACCUMULATOR_POINT, 
+					new int[]{101},
+					new String[] {"Load profile kW demand"} ),
+		new PointOffset( PAOGroups.MCT310IL, PointTypes.STATUS_POINT,
+					new int[]{1},
+					new String[] {"Disconnect status"} ),
+
+		new PointOffset( PAOGroups.MCT310IDL, PointTypes.DEMAND_ACCUMULATOR_POINT, 
+					new int[]{101},
+					new String[] {"Load profile kW demand"} ),
+		new PointOffset( PAOGroups.MCT310IDL, PointTypes.STATUS_POINT,
+					new int[]{1},
+					new String[] {"Disconnect status"} ),
 
 		new PointOffset( PAOGroups.MCT310, PointTypes.STATUS_POINT, 
 					new int[]{5,6,10,11,12,20},
@@ -188,7 +199,6 @@ public interface IPointOffsets
 					new int[]{1,2},
 					new String[] {"Relay 1 and 2","Relay 3 and 4"} ),
 
-
 		new PointOffset( PAOGroups.TCU5000, PointTypes.STATUS_POINT, 
 					new int[]{17,18,19,20,21,23,24,25,26,29},
 					new String[] {"Local Operation","Alarms","Queue Full (overflowed when set)","COP Reset","Message Verification",
@@ -252,13 +262,13 @@ public interface IPointOffsets
 					new int[]{1,2,3,4,5,6,7,8},
 					new String[] {"Analog #1","Analog #2","Analog #3","Analog #4","Analog #5","Analog #6","Analog #7","Analog #8"} ),
 
-   	
+
 		//Offsets for CAP_CONTROL
-		new PointOffset( PAOGroups.CAP_CONTROL_SUBBUS, PointTypes.ANALOG_POINT, 
+		new PointOffset( "CAP CONTROL SUB BUS", PAOGroups.CAP_CONTROL_SUBBUS, PointTypes.ANALOG_POINT, 
 					new int[]{1,2,3,4},
 					new String[] {"Estimated Var Load","Daily Operations","Power Factor","Estimated Power Factor"} ),
 
-		new PointOffset( PAOGroups.CAP_CONTROL_FEEDER, PointTypes.ANALOG_POINT, 
+		new PointOffset( "CAP CONTROL FEEDER", PAOGroups.CAP_CONTROL_FEEDER, PointTypes.ANALOG_POINT, 
 					new int[]{1,2,3,4},
 					new String[] {"Estimated Var Load","Daily Operations","Power Factor","Estimated Power Factor"} ),   	
 
@@ -279,30 +289,25 @@ public interface IPointOffsets
 					new int[]{1},
 					new String[] {"Program Control Status"} ),   	
 
-		new PointOffset( PAOGroups.LM_GROUP_VERSACOM, PointTypes.ANALOG_POINT, 
+		new PointOffset( "LM GROUPS", PAOGroups.LM_GROUP_VERSACOM, PointTypes.ANALOG_POINT, 
 					new int[]{2500,2501,2502,2503},
 					new String[] {"Daily Control Hours (in seconds)","Monthly Control Hours (in seconds)",
 						"Seasonal Control Hours (in seconds)","Annual Control Hours (in seconds)"} ),   	
-		new PointOffset( PAOGroups.LM_GROUP_VERSACOM, PointTypes.STATUS_POINT,
+		new PointOffset( "LM GROUPS", PAOGroups.LM_GROUP_VERSACOM, PointTypes.STATUS_POINT,
 					new int[]{1},
 					new String[] {"Controlable status point for latching gears"} ),
 
-		new PointOffset( PAOGroups.LM_GROUP_EXPRESSCOMM, PointTypes.ANALOG_POINT, 
-					new int[]{2500,2501,2502,2503},
-					new String[] {"Daily Control Hours (in seconds)","Monthly Control Hours (in seconds)",
-						"Seasonal Control Hours (in seconds)","Annual Control Hours (in seconds)"} ),   	
-		new PointOffset( PAOGroups.LM_GROUP_EXPRESSCOMM, PointTypes.STATUS_POINT,
-					new int[]{1},
-					new String[] {"Controlable status point for latching gears"} ),
 
-		new PointOffset( PAOGroups.LM_GROUP_EMETCON, PointTypes.ANALOG_POINT, 
-					new int[]{2500,2501,2502,2503},
-					new String[] {"Daily Control Hours (in seconds)","Monthly Control Hours (in seconds)",
-						"Seasonal Control Hours (in seconds)","Annual Control Hours (in seconds)"} ),   	
-		new PointOffset( PAOGroups.LM_GROUP_EMETCON, PointTypes.STATUS_POINT,
-					new int[]{1},
-					new String[] {"Controlable status point for latching gears"} ),
 
+
+		//Offset for remaining YUKON points
+		new PointOffset( "BILLING", PAOGroups.INVALID, PointTypes.ANALOG_POINT, 
+					new int[]{6000},
+					new String[] {"Base line, curtailment settlement (CSVBilling)"} ),
+
+		new PointOffset( "TRANSMITTERS", PAOGroups.INVALID, PointTypes.STATUS_POINT,
+					new int[]{2000},
+					new String[] {"Comm. status point for transmitters"} ),
 
    };
 

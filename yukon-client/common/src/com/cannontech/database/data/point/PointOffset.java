@@ -12,10 +12,21 @@ public class PointOffset implements IPointOffsets
 {
 	private int paoType = PAOGroups.INVALID;
 	private int pointType = PointTypes.INVALID_POINT;
+	private String label = null;
 	
 	//parallel arrays of the value and its corresponding description
 	private int[] values = null;
 	private String[] descriptions = null;
+
+	/**
+	 * 
+	 */
+	public PointOffset( String label_, int paoType_, int pointType_, int values_[], String descriptions_[] )
+	{
+		this( paoType_, pointType_, values_, descriptions_ );
+
+		setLabel( label_ );
+	}
 
 	/**
 	 * 
@@ -29,7 +40,7 @@ public class PointOffset implements IPointOffsets
 		setValues( values_ );
 		setDescriptions( descriptions_ );
 	}
-
+	
 	/**
 	 * @return
 	 */
@@ -92,6 +103,22 @@ public class PointOffset implements IPointOffsets
 	public void setValues(int[] is)
 	{
 		values = is;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getLabel()
+	{
+		return label;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setLabel(String string)
+	{
+		label = string;
 	}
 
 }
