@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2003/07/31 20:23:41 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2003/09/24 19:07:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -562,7 +562,7 @@ void CtiProtocolION::decodeConfigRead( void )
                 {
                     CtiIONUnsignedIntArray *tmpArray;
 
-                    tmpArray = (CtiIONUnsignedIntArray *)_dsIn[0];
+                    tmpArray = (CtiIONUnsignedIntArray *)_dsIn.at(0);
                     _setup_handles.clear();
 
                     for( int i = 0; i < tmpArray->size(); i++ )
@@ -1010,7 +1010,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                 {
                     for( int i = 0; i < _dsIn.size(); i++ )
                     {
-                        tmpBoolean = (CtiIONBoolean *)(_dsIn[i]);
+                        tmpBoolean = (CtiIONBoolean *)_dsIn.at(i);
 
                         //  MAGIC NUMBER:  1-based offset
                         pdata.offset = i + 1;
@@ -1084,7 +1084,7 @@ void CtiProtocolION::decodeExceptionScan( void )
                 {
                     for( int i = 0; i < _dsIn.size(); i++ )
                     {
-                        tmpBoolean = (CtiIONBoolean *)(_dsIn[i]);
+                        tmpBoolean = (CtiIONBoolean *)_dsIn.at(i);
 
                         //  MAGIC NUMBER:  1-based offset, +50 offset for seperating digital out from digital ins
                         pdata.offset = i + 1 + 50;
@@ -1294,7 +1294,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "KW");
                 pdata.name[19] = 0;
 
@@ -1303,7 +1303,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "KVA");
                 pdata.name[19] = 0;
 
@@ -1312,7 +1312,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "KVAR");
                 pdata.name[19] = 0;
 
@@ -1321,7 +1321,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase A Volts");
                 pdata.name[19] = 0;
 
@@ -1330,7 +1330,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase B Volts");
                 pdata.name[19] = 0;
 
@@ -1339,7 +1339,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase C Volts");
                 pdata.name[19] = 0;
 
@@ -1348,7 +1348,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_A_CURRENT;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase A Current");
                 pdata.name[19] = 0;
 
@@ -1357,7 +1357,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_B_CURRENT;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase B Current");
                 pdata.name[19] = 0;
 
@@ -1366,7 +1366,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = OFFSET_INSTANTANEOUS_PHASE_C_CURRENT;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Phase C Current");
                 pdata.name[19] = 0;
 
@@ -1375,7 +1375,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                 pdata.offset = 100;
                 pdata.time   = Now.seconds();
                 pdata.type   = AnalogPointType;
-                pdata.value  = _dsIn[i++]->getNumericValue();
+                pdata.value  = _dsIn.at(i++)->getNumericValue();
                 _snprintf(pdata.name, 19, "Power Factor");
                 pdata.name[19] = 0;
 
@@ -1386,7 +1386,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     pdata.offset = 257;
                     pdata.time   = Now.seconds();
                     pdata.type   = AnalogPointType;
-                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    pdata.value  = _dsIn.at(i++)->getNumericValue();
                     _snprintf(pdata.name, 19, "Notify Delay");
                     pdata.name[19] = 0;
 
@@ -1395,7 +1395,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     pdata.offset = 258;
                     pdata.time   = Now.seconds();
                     pdata.type   = AnalogPointType;
-                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    pdata.value  = _dsIn.at(i++)->getNumericValue();
                     _snprintf(pdata.name, 19, "Control Delay");
                     pdata.name[19] = 0;
 
@@ -1404,7 +1404,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     pdata.offset = 263;
                     pdata.time   = Now.seconds();
                     pdata.type   = AnalogPointType;
-                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    pdata.value  = _dsIn.at(i++)->getNumericValue();
                     _snprintf(pdata.name, 19, "Notify Remain");
                     pdata.name[19] = 0;
 
@@ -1413,7 +1413,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                     pdata.offset = 264;
                     pdata.time   = Now.seconds();
                     pdata.type   = AnalogPointType;
-                    pdata.value  = _dsIn[i++]->getNumericValue();
+                    pdata.value  = _dsIn.at(i++)->getNumericValue();
                     _snprintf(pdata.name, 19, "Control Remain");
                     pdata.name[19] = 0;
 
@@ -1424,7 +1424,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
                         pdata.offset = 101;
                         pdata.time   = Now.seconds();
                         pdata.type   = StatusPointType;
-                        pdata.value  = _dsIn[i++]->getNumericValue();
+                        pdata.value  = _dsIn.at(i++)->getNumericValue();
                         _snprintf(pdata.name, 19, "Program");
                         pdata.name[19] = 0;
 
@@ -1626,13 +1626,13 @@ void CtiProtocolION::decodeEventLogRead( void )
                 ion_pointdata_struct  pdata;
                 RWTime Now;
 
-                if( _dsIn.size() >= 2 && _dsIn[0]->isNumeric() && _dsIn[1]->isNumeric() )
+                if( _dsIn.size() >= 2 && _dsIn.at(0)->isNumeric() && _dsIn.at(1)->isNumeric() )
                 {
-                    if( _dsIn[0]->getNumericValue() > 0 &&
-                        _dsIn[1]->getNumericValue() > 0 )
+                    if( _dsIn.at(0)->getNumericValue() > 0 &&
+                        _dsIn.at(1)->getNumericValue() > 0 )
                     {
-                        _eventLogCurrentPosition = _dsIn[0]->getNumericValue();
-                        _eventLogDepth           = _dsIn[1]->getNumericValue();
+                        _eventLogCurrentPosition = _dsIn.at(0)->getNumericValue();
+                        _eventLogDepth           = _dsIn.at(1)->getNumericValue();
 
                         //  Check if _eventLogLastPosition is outside the range defined
                         //    by _eventLogCurrentPosition and _eventLogDepth
@@ -1723,9 +1723,9 @@ void CtiProtocolION::decodeEventLogRead( void )
                 ion_pointdata_struct  pdata;
                 RWTime Now;
 
-                if( _dsIn[0]->isStruct() )
+                if( _dsIn.at(0)->isStruct() )
                 {
-                    CtiIONStruct *tmpStruct = (CtiIONStruct *)_dsIn[0];
+                    CtiIONStruct *tmpStruct = (CtiIONStruct *)_dsIn.at(0);
 
                     if( tmpStruct->isStructType(CtiIONStruct::StructType_Exception) )
                     {
@@ -1733,9 +1733,9 @@ void CtiProtocolION::decodeEventLogRead( void )
                     }
                 }
 
-                if( _dsIn[0]->isStructArray() )
+                if( _dsIn.at(0)->isStructArray() )
                 {
-                    CtiIONStructArray *tmpStructArray = (CtiIONStructArray *)_dsIn[0];
+                    CtiIONStructArray *tmpStructArray = (CtiIONStructArray *)_dsIn.at(0);
 
                     if( tmpStructArray->isStructArrayType(CtiIONStructArray::StructArrayType_LogArray) )
                     {
@@ -1804,13 +1804,13 @@ void CtiProtocolION::decodeEventLogRead( void )
                 _ionState = State_Complete;
                 _retryState = _ionState;
 
-                if( _dsIn[0]->isStructArray() )
+                if( _dsIn.at(0)->isStructArray() )
                 {
-                    CtiIONStructArray *tmp = (CtiIONStructArray *)_dsIn[0];
+                    CtiIONStructArray *tmp = (CtiIONStructArray *)_dsIn.at(0);
 
                     if( tmp->isStructArrayType(CtiIONStructArray::StructArrayType_LogArray) )
                     {
-                        _collectedEventLogs.push_back((CtiIONLogArray *)_dsIn[0]);
+                        _collectedEventLogs.push_back((CtiIONLogArray *)_dsIn.at(0));
 
                         _dsIn.erase(0);
 
@@ -2161,7 +2161,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
                 }
             }
 
-            delete buf;
+            delete [] buf;
         }
         else
         {
@@ -2285,11 +2285,11 @@ int CtiProtocolION::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
             {
                 if( tmpDS.itemIsType(0, CtiIONStructArray::StructArrayType_LogArray) )
                 {
-                    _returnedEventLogs.push_back((CtiIONLogArray *)tmpDS[0]);
+                    _returnedEventLogs.push_back((CtiIONLogArray *)tmpDS.at(0));
                 }
                 else
                 {
-                    delete tmpDS[0];
+                    delete tmpDS.at(0);
                 }
 
                 tmpDS.erase(0);
@@ -2627,4 +2627,5 @@ void CtiProtocolION::clearCollectedData( void )
         _collectedEventLogs.pop_back();
     }
 }
+
 
