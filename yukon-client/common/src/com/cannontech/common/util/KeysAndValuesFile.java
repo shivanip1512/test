@@ -93,7 +93,7 @@ public class KeysAndValuesFile extends java.io.File
 				{
 					String line = raFile.readLine();  // read a line in
 	
-					if( line.length() > 2 )	// must have at least a=b (3 chars) for a valid length.
+//					if( line.length() > 2 )	// must have at least a=b (3 chars) for a valid length.
 					{
 						//Check if this line contains a comment character
 						int commentPos = line.indexOf(getComment());
@@ -141,6 +141,11 @@ public class KeysAndValuesFile extends java.io.File
 
 								keys.addElement( key.trim());
 								values.addElement( value.trim() );
+							}
+							else	//no separator found so assuming it is a value only
+							{
+								keys.addElement("");
+								values.addElement(line);
 							}
 						}
 					}
