@@ -15,25 +15,44 @@ function changeCategory(checkbox, index) {
 		radioBtns = eval("form.Program" + index);
 		if (radioBtns != null)
 			radioBtns[0].checked = true;
-		form.CatID[index].value = checkbox.value;
-		form.ProgID[index].value = form.DefProgID[index].value;
+		if (eval("form.CatID[index]") != null) {
+			form.CatID[index].value = checkbox.value;
+			form.ProgID[index].value = form.DefProgID[index].value;
+		}
+		else {	// There is only one appliance category
+			form.CatID.value = checkbox.value;
+			form.ProgID.value = form.DefProgID.value;
+		}
 	}
 	else {
 		radioBtns = eval("form.Program" + index);
 		if (radioBtns != null)
 			for (i = 0; i < radioBtns.length; i++)
 				radioBtns[i].checked = false;
-		form.CatID[index].value = "";
-		form.ProgID[index].value = "";
+		if (eval("form.CatID[index]") != null) {
+			form.CatID[index].value = "";
+			form.ProgID[index].value = "";
+		}
+		else {
+			form.CatID.value = "";
+			form.ProgID.value = "";
+		}
 	}
 	form.SignUpChanged.value = "true";
 }
 
 function changeProgram(radioBtn, index) {
 	form = radioBtn.form;
-	form.AppCat[index].checked = true;
-	form.CatID[index].value = form.AppCat[index].value;
-	form.ProgID[index].value = radioBtn.value;
+	if (eval("form.CatID[index]") != null) {
+		form.AppCat[index].checked = true;
+		form.CatID[index].value = form.AppCat[index].value;
+		form.ProgID[index].value = radioBtn.value;
+	}
+	else {
+		form.AppCat.checked = true;
+		form.CatID.value = form.AppCat.value;
+		form.ProgID.value = radioBtn.value;
+	}
 	form.SignUpChanged.value = "true";
 }
 </script>

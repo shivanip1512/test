@@ -88,7 +88,7 @@ function changeCategory(checkbox, index) {
 		radioBtns = eval("form.Program" + index);
 		if (radioBtns != null)
 			radioBtns[0].checked = true;
-		if (eval("form.CatID") == null) {
+		if (eval("form.CatID[index]") != null) {
 			form.CatID[index].value = checkbox.value;
 			form.ProgID[index].value = form.DefProgID[index].value;
 		}
@@ -102,7 +102,7 @@ function changeCategory(checkbox, index) {
 		if (radioBtns != null)
 			for (i = 0; i < radioBtns.length; i++)
 				radioBtns[i].checked = false;
-		if (eval("form.CatID") == null) {
+		if (eval("form.CatID[index]") != null) {
 			form.CatID[index].value = "";
 			form.ProgID[index].value = "";
 		}
@@ -116,7 +116,7 @@ function changeCategory(checkbox, index) {
 
 function changeProgram(radioBtn, index) {
 	form = radioBtn.form;
-	if (eval("form.CatID") == null) {
+	if (eval("form.CatID[index]") != null) {
 		form.AppCat[index].checked = true;
 		form.CatID[index].value = form.AppCat[index].value;
 		form.ProgID[index].value = radioBtn.value;
