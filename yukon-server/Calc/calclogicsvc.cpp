@@ -471,6 +471,7 @@ void CtiCalcLogicService::_outputThread( void )
     RWTPtrDeque<CtiMultiMsg>::size_type entries = 0;
     BOOL interrupted = FALSE;
     CtiMultiMsg *toSend;
+    RWTime rwnow, announceTime;
 
     try
     {
@@ -484,16 +485,23 @@ void CtiCalcLogicService::_outputThread( void )
                     RWMutexLock::LockGuard outboxGuard(calcThread->outboxMux);
                     entries = calcThread->outboxEntries( );
                 }
-
                 if( _pSelf.serviceInterrupt( ) )
                     interrupted = TRUE;
                 else if( !entries )
                     _pSelf.sleep( 200 );
 
-                //ecs 1/5/2005
+                rwnow = rwnow.now();
                 CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action1, 210, &CtiCalcLogicService::outComplain, 0 , 0, 0 );
                 ThreadMonitor.tickle( data );
 
+                if(rwnow > announceTime)
+                {
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " _outputThread active" << endl;
+                    }
+                }
             } while( !entries && !interrupted );
 
             if( !interrupted )
@@ -547,6 +555,7 @@ void CtiCalcLogicService::_inputThread( void )
         RWRunnableSelf  _pSelf = rwRunnable( );
         RWCollectable   *incomingMsg;
         BOOL            interrupted = FALSE;
+        RWTime rwnow, announceTime;
 
         while( !interrupted )
         {
@@ -564,6 +573,16 @@ void CtiCalcLogicService::_inputThread( void )
                 else
                 {
                     _pSelf.sleep( 1000 );
+                }
+            }
+
+            rwnow = rwnow.now();
+            if(rwnow > announceTime)
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " _inputThread active" << endl;
                 }
             }
 
