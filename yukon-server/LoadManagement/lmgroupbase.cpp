@@ -607,6 +607,20 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(ULONG rawState, int prio
 }
 
 /*-------------------------------------------------------------------------
+    createTrueCycleRequestMsg
+
+    .
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Can not true cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return NULL;
+}
+
+/*-------------------------------------------------------------------------
     restoreGuts
 
     Restore self's state from the given stream
