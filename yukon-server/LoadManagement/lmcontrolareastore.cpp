@@ -553,7 +553,6 @@ void CtiLMControlAreaStore::reset()
                                     << dynamicLMGroupTable["currenthoursannually"]
                                     << dynamicLMGroupTable["lastcontrolsent"]
                                     << dynamicLMGroupTable["timestamp"]
-                                    << dynamicLMGroupTable["lmprogramid"]
                                     << pointTable["pointid"]
                                     << pointTable["pointoffset"]
                                     << pointTable["pointtype"];
@@ -570,7 +569,6 @@ void CtiLMControlAreaStore::reset()
                                                             lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                                        currentLMProgramBase->getPAOId()==dynamicLMGroupTable["lmprogramid"] &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                                         /*if( _LM_DEBUG )
@@ -585,7 +583,6 @@ void CtiLMControlAreaStore::reset()
                                                         lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                                        currentLMProgramBase->getPAOId()==dynamicLMGroupTable["lmprogramid"] &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
                                         /*if( _LM_DEBUG )
                                         {
