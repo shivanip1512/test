@@ -87,7 +87,12 @@ public class JNTServices implements IServiceConstants
 		if (bLibraryLoaded == false)
 		{
 			//System.loadLibrary( new File(DLL_FILE).getAbsolutePath() );
-			System.load( new File(DLL_FILE).getAbsolutePath() );
+			//System.load( new File(DLL_FILE).getAbsolutePath() );
+            
+            System.load( 
+                    new File(Class.class.getResource("/JNTServices.dll").getFile()).getAbsolutePath() );
+            
+            
 			bLibraryLoaded = true;
 		}
 
