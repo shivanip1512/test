@@ -72,7 +72,7 @@ public class StarsRequestPword extends RequestPword
 					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
 					
 					LiteStarsCustAccountInformation lCustInfo =
-							lsec.searchByAccountNumber( accNum );
+							lsec.searchAccountByAccountNo( accNum );
 					
 					if( lCustInfo != null )
 					{

@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import javax.servlet.ServletException;
 
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.StarsCustListEntry;
@@ -61,6 +61,7 @@ public class ServletUtils {
 	
 	public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
 	public static final String ATT_THERMOSTAT_INVENTORY_IDS = "THERMOSTAT_INVENTORY_IDS";
+	public static final String ATT_CONTEXT_SWITCHED = "CONTEXT_SWITCHED";
 	
 	public static final String IN_SERVICE = "In Service";
 	public static final String OUT_OF_SERVICE = "Out of Service";
@@ -176,7 +177,7 @@ public class ServletUtils {
      * Format phone number to format "[...-#-###-]###-####"
      * In the original string, each segment between adjacent "-" above must be consecutive
      */
-    public static String formatPhoneNumber(String phoneNo) throws ServletException {
+    public static String formatPhoneNumber(String phoneNo) throws WebClientException {
     	if (phoneNo.trim().equals("")) return "";
     	
     	StringBuffer formatedPhoneNo = new StringBuffer();
@@ -186,12 +187,12 @@ public class ServletUtils {
     	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
     		n--;
     	if (n < 0)
-			throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+			throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	
     	for (int i = 1; i < 4; i++) {
     		n--;
     		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-    			throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+    			throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	}
     	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+4) );
     	
@@ -200,12 +201,12 @@ public class ServletUtils {
     	while (n >= 0 && !Character.isDigit( phoneNo.charAt(n) ))
     		n--;
     	if (n < 0)
-			throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+			throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	
     	for (int i = 1; i < 3; i++) {
     		n--;
     		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-				throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+				throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	}
     	formatedPhoneNo.insert( 0, '-' );
     	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );
@@ -219,7 +220,7 @@ public class ServletUtils {
     	for (int i = 1; i < 3; i++) {
     		n--;
     		if (n < 0 || !Character.isDigit( phoneNo.charAt(n) ))
-				throw new ServletException("Invalid phone number format '" + phoneNo + "'");
+				throw new WebClientException("Invalid phone number format '" + phoneNo + "'");
     	}
     	formatedPhoneNo.insert( 0, '-' );
     	formatedPhoneNo.insert( 0, phoneNo.substring(n, n+3) );

@@ -26,7 +26,6 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -1253,18 +1252,7 @@ public class StarsLiteFactory {
 		
 		for (int i = 0; i < liteProgs.size(); i++) {
 			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteProgs.get(i);
-			LiteStarsAppliance liteApp = null;
-			
-			ArrayList liteApps = liteAcctInfo.getAppliances();
-			for (int k = 0; k < liteApps.size(); k++) {
-				LiteStarsAppliance lApp = (LiteStarsAppliance) liteApps.get(k);
-				if (lApp.getLmProgramID() == liteProg.getLmProgram().getProgramID()) {
-					liteApp = lApp;
-					break;
-				}
-			}
-			
-			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteApp, energyCompany) );
+			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, energyCompany) );
 		}
 		
 		ArrayList liteProgHist = liteAcctInfo.getProgramHistory();
@@ -1450,13 +1438,12 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setStarsEnergyCompany(StarsEnergyCompany starsCompany, LiteStarsEnergyCompany liteCompany) {
-		starsCompany.setEnergyCompanyID( liteCompany.getLiteID() );
 		starsCompany.setCompanyName( liteCompany.getName() );
 		starsCompany.setMainPhoneNumber( "" );
 		starsCompany.setMainFaxNumber( "" );
 		starsCompany.setEmail( "" );
 		starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
-		starsCompany.setTimeZone( liteCompany.getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE) );
+		starsCompany.setTimeZone( liteCompany.getDefaultTimeZone().getID() );
 		
 		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ID) {
 			LiteContact liteContact = ContactFuncs.getContact( liteCompany.getPrimaryContactID() );
@@ -1668,13 +1655,23 @@ public class StarsLiteFactory {
         return starsCtrlHist;
 	}
 	
-	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsAppliance liteApp, LiteStarsEnergyCompany energyCompany) {
+	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsEnergyCompany energyCompany) {
 		StarsLMProgram starsProg = new StarsLMProgram();
 		starsProg.setProgramID( liteProg.getLmProgram().getProgramID() );
 		starsProg.setGroupID( liteProg.getGroupID() );
 		starsProg.setProgramName( ServerUtils.forceNotNull(liteProg.getLmProgram().getProgramName()) );
-		starsProg.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
-
+		
+		ArrayList appCats = energyCompany.getAllApplianceCategories();
+		for (int i = 0; i < appCats.size(); i++) {
+			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
+			for (int j = 0; j < appCat.getPublishedPrograms().length; j++) {
+				if (appCat.getPublishedPrograms()[j].getProgramID() == liteProg.getLmProgram().getProgramID()) {
+					starsProg.setApplianceCategoryID( appCat.getApplianceCategoryID() );
+					break;
+				}
+			}
+		}
+		
 		// AlternativeDisplayName field: (program alias),(short name used in enrollment page)
 		StarsWebConfig starsConfig = energyCompany.getStarsWebConfig( liteProg.getLmProgram().getWebSettingsID() );
 		String[] dispNames = starsConfig.getAlternateDisplayName().split(",");
@@ -1818,6 +1815,7 @@ public class StarsLiteFactory {
 		StarsUser starsUser = new StarsUser();
 		starsUser.setUsername( ServerUtils.forceNotNull(liteUser.getUsername()) );
 		starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
+		starsUser.setStatus( ECUtils.getLoginStatus(liteUser.getStatus()) );
 		
 		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 		com.cannontech.database.cache.DefaultDatabaseCache cache =

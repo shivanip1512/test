@@ -23,7 +23,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private LiteCustomerResidence customerResidence = null;
 	private ArrayList lmPrograms = null;	// List of LiteStarsLMProgram
 	private ArrayList appliances = null;	// List of LiteStarsAppliance
-	private ArrayList inventories = null;	// List of IDs of LiteLMHardware
+	private ArrayList inventories = null;	// List of IDs of LiteInventoryBase
 	private ArrayList programHistory = null;	// List of LiteLMProgramEvent
 	private ArrayList callReportHistory = null;	// List of StarsCallReport
 	private ArrayList serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase

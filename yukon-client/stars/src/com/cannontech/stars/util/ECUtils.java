@@ -17,10 +17,12 @@ import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
+import com.cannontech.user.UserUtils;
 
 /**
  * @author yao
@@ -224,6 +226,24 @@ public class ECUtils {
 			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
 		else if (type.getType() == StarsThermostatTypes.COMMERCIAL_TYPE)
 			return new Integer(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT);
+		else
+			return null;
+	}
+	
+	public static StarsLoginStatus getLoginStatus(String status) {
+		if (status.equalsIgnoreCase( UserUtils.STATUS_ENABLED ))
+			return StarsLoginStatus.ENABLED;
+		else if (status.equalsIgnoreCase( UserUtils.STATUS_DISABLED ))
+			return StarsLoginStatus.DISABLED;
+		else
+			return null;
+	}
+	
+	public static String getUserStatus(StarsLoginStatus status) {
+		if (status.getType() == StarsLoginStatus.ENABLED_TYPE)
+			return UserUtils.STATUS_ENABLED;
+		else if (status.getType() == StarsLoginStatus.DISABLED_TYPE)
+			return UserUtils.STATUS_DISABLED;
 		else
 			return null;
 	}
