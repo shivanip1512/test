@@ -567,11 +567,7 @@ void CtiLMControlAreaStore::reset()
                                                             lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["childid"] ) ) &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) &&
-                                                        ( pointTable["pointoffset"]==DAILYCONTROLHISTOFFSET ||
-                                                          pointTable["pointoffset"]==MONTHLYCONTROLHISTOFFSET ||
-                                                          pointTable["pointoffset"]==SEASONALCONTROLHISTOFFSET ||
-                                                          pointTable["pointoffset"]==ANNUALCONTROLHISTOFFSET ) );
+                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
 
                                         /*if( _LM_DEBUG )
                                         {
@@ -585,11 +581,7 @@ void CtiLMControlAreaStore::reset()
                                                         lmGroupMacroExpanderView["paobjectid"]==lmGroupMacroExpanderView["lmgroupdeviceid"] &&
                                                         lmGroupMacroExpanderView["deviceid"]==currentLMProgramDirect->getPAOId() &&
                                                         lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(dynamicLMGroupTable["deviceid"]) &&
-                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) &&
-                                                        ( pointTable["pointoffset"]==DAILYCONTROLHISTOFFSET ||
-                                                          pointTable["pointoffset"]==MONTHLYCONTROLHISTOFFSET ||
-                                                          pointTable["pointoffset"]==SEASONALCONTROLHISTOFFSET ||
-                                                          pointTable["pointoffset"]==ANNUALCONTROLHISTOFFSET ) );
+                                                        lmGroupMacroExpanderView["paobjectid"].leftOuterJoin(pointTable["paobjectid"]) );
                                         /*if( _LM_DEBUG )
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
