@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/03/17 05:24:16 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/03/30 19:42:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -745,8 +745,8 @@ int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj 
             obj = CTIDBG_new Counter(_variation);
             break;
 
-        case CounterChange::Group:
-            obj = CTIDBG_new CounterChange(_variation);
+        case CounterEvent::Group:
+            obj = CTIDBG_new CounterEvent(_variation);
             break;
 
         case CounterFrozen::Group:
@@ -850,7 +850,7 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto 
         case BinaryInputChange::Group:
         case BinaryOutput::Group:
         case Counter::Group:
-        case CounterChange::Group:
+        case CounterEvent::Group:
         case CounterFrozen::Group:
         case CounterFrozenEvent::Group:
         {

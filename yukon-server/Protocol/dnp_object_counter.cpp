@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/03/10 21:23:04 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/03/30 19:42:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,10 +213,119 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 
 
 
-CounterChange::CounterChange(int variation) : Object(Group, variation)
+CounterEvent::CounterEvent(int variation) :
+    Counter(Group, variation),
+    _toc(Time::TimeAndDate)
 {
 
 }
+
+int CounterEvent::restore(const unsigned char *buf, int len)
+{
+    int pos = 0;
+
+    switch(getVariation())
+    {
+        case Binary32BitNoTime:
+        case Delta32BitNoTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, Counter::Binary32Bit);
+            break;
+        }
+        case Binary16BitNoTime:
+        case Delta16BitNoTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            break;
+        }
+        case Binary32BitWithTime:
+        case Delta32BitWithTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            pos += _toc.restore(buf + pos, len - pos);
+            break;
+        }
+        case Binary16BitWithTime:
+        case Delta16BitWithTime:
+        {
+            pos += restoreVariation(buf + pos, len - pos, Counter::Binary16Bit);
+            pos += _toc.restore(buf + pos, len - pos);
+            break;
+        }
+    }
+
+        //  ACH:  check minimum length, like the others
+    return pos;
+}
+
+
+int CounterEvent::serialize(unsigned char *buf) const
+{
+    return 0;
+}
+
+
+int CounterEvent::getSerializedLen(void) const
+{
+    int retVal;
+
+    switch(getVariation())
+    {
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - in CounterEvent::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            retVal = 0;
+
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
+CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
+{
+    CtiPointDataMsg *tmpMsg;
+
+    double val = 0;
+    int quality;
+
+    //  inherited types just add on to the parent's values
+    tmpMsg = Counter::getPoint(cto);
+
+    switch( getVariation() )
+    {
+        case Binary16BitWithTime:
+        case Delta16BitWithTime:
+        case Binary32BitWithTime:
+        case Delta32BitWithTime:
+        {
+            tmpMsg->setTime(_toc.getSeconds() + rwEpoch);
+            tmpMsg->setMillis(_toc.getMilliseconds());
+
+            break;
+        }
+    }
+
+    if( gDNPVerbose )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Counter Event object, value " << val << endl;
+    }
+
+    //  the ID will be replaced by the offset by the object block, which will then be used by the
+    //    device to figure out the true ID
+    //tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, PulseAccumulatorPointType);
+
+    return tmpMsg;
+}
+
 
 CounterFrozen::CounterFrozen(int variation) : Counter(Group, variation)
 {

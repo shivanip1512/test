@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/03/10 21:04:50 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/03/30 19:42:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 
 
 #include "dnp_objects.h"
+#include "dnp_object_time.h"
 
 namespace Cti       {
 namespace Protocol  {
@@ -100,12 +101,14 @@ public:
 };
 
 
-class CounterChange : public Object
+class CounterEvent : public Counter
 {
 protected:
 
+    Time _toc;
+
 public:
-    CounterChange(int variation);
+    CounterEvent(int variation);
 
     enum Variation
     {
@@ -123,6 +126,12 @@ public:
     {
         Group = 22
     };
+
+    virtual int restore(const unsigned char *buf, int len);
+    virtual int serialize(unsigned char *buf) const;
+    virtual int getSerializedLen(void) const;
+
+    virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
 
