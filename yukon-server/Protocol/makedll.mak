@@ -64,22 +64,10 @@ dnp_object_class.obj \
 dnp_object_counter.obj \
 dnp_object_time.obj \
 
-
-OBJS=\
-expresscom.obj \
-prot_emetcon.obj \
-prot_versacom.obj \
-prot_711.obj \
-prot_fpcbc.obj \
-prot_sixnet.obj \
-prot_base.obj \
-prot_dnp.obj \
-$(DNPOBJS) \
-prot_ion.obj \
-$(IONOBJS) \
-prot_ansi.obj \
+ANSIOBJS=\
 ansi_application.obj \
 ansi_datalink.obj \
+std_ansi_tbl_base.obj \
 ansi_billing_table.obj \
 std_ansi_tbl_zero_zero.obj \
 std_ansi_tbl_zero_one.obj \
@@ -94,6 +82,25 @@ std_ansi_tbl_two_one.obj \
 std_ansi_tbl_two_two.obj \
 std_ansi_tbl_two_three.obj \
 std_ansi_tbl_five_two.obj \
+ansi_kv2_mtable_zero.obj \
+ansi_kv2_mtable_seventy.obj \
+	
+
+OBJS=\
+expresscom.obj \
+prot_emetcon.obj \
+prot_versacom.obj \
+prot_711.obj \
+prot_fpcbc.obj \
+prot_sixnet.obj \
+prot_base.obj \
+prot_dnp.obj \
+$(DNPOBJS) \
+prot_ion.obj \
+$(IONOBJS) \
+prot_ansi_kv2.obj \
+prot_ansi.obj \
+$(ANSIOBJS) \
 dll_prot.obj \
 
 
