@@ -965,7 +965,6 @@ private javax.swing.JTable getJTableColumn() {
 			ivjJTableColumn = new javax.swing.JTable();
 			ivjJTableColumn.setName("JTableColumn");
 			getJScrollPaneTable().setColumnHeaderView(ivjJTableColumn.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
 			ivjJTableColumn.setToolTipText("Print out column info");
 			ivjJTableColumn.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
 			ivjJTableColumn.setBounds(0, 0, 200, 200);
