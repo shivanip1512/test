@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/11/04 21:41:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/12/21 02:38:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,8 +25,8 @@
 #include "prot_base.h"
 
 #include "ion_rootclasses.h"
-#include "ion_valuebasictypes.h"
-#include "ion_classtypes.h"
+//#include "ion_classtypes.h"
+#include "ion_value_datastream.h"
 #include "ion_net_application.h"
 
 

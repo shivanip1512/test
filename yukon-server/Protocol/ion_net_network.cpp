@@ -69,7 +69,7 @@ void CtiIONNetworkLayer::initInPacketReserved( void )
 }
 
 
-void CtiIONNetworkLayer::setOutPayload( CtiIONSerializable &payload )
+void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
 {
     int payloadSize, netSize;
 
@@ -108,6 +108,8 @@ void CtiIONNetworkLayer::setOutPayload( CtiIONSerializable &payload )
     {
         payload.putSerialized( _netOut.data );
 
+        _ioState = Output;
+
         _datalinkLayer.setToOutput(*this);
     }
     else
@@ -121,20 +123,143 @@ void CtiIONNetworkLayer::setOutPayload( CtiIONSerializable &payload )
 }
 
 
+void CtiIONNetworkLayer::setToInput( void )
+{
+    _ioState = Input;
+
+    freeInPacketMemory();
+    initInPacketReserved();
+
+    _datalinkLayer.setToInput();
+}
+
+
 int CtiIONNetworkLayer::generate( CtiXfer &xfer )
 {
-/*    if( _netLayer.isTransactionComplete() )
-    {
+    int retVal = -1;
 
+    switch( _ioState )
+    {
+        case Input:
+        case Output:
+        {
+            retVal = _datalinkLayer.generate( xfer );
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            xfer.setOutBuffer(NULL);
+            xfer.setOutCount(0);
+            xfer.setInBuffer(NULL);
+            xfer.setInCountExpected(0);
+        }
     }
-*/
-    return _datalinkLayer.generate( xfer );
+
+    return retVal;
 }
 
 
 int CtiIONNetworkLayer::decode( CtiXfer &xfer, int status )
 {
-    return _datalinkLayer.decode( xfer, status );
+    int retVal = -1;
+
+    retVal = _datalinkLayer.decode( xfer, status );
+
+    switch( _ioState )
+    {
+        case Input:
+        {
+            if( _datalinkLayer.isTransactionComplete() )
+            {
+                unsigned char *tmpData;
+
+                freeInPacketMemory();
+
+                tmpData = new unsigned char[_datalinkLayer.getPayloadLength()];
+
+                if( tmpData != NULL )
+                {
+                    int headerLen = sizeof(_netIn.header);
+
+                    _datalinkLayer.putPayload(tmpData);
+
+                    memcpy(&(_netIn.header), tmpData, headerLen);
+
+                    _netIn.data = new unsigned char[_datalinkLayer.getPayloadLength() - headerLen];
+
+                    if( _netIn.data != NULL )
+                    {
+                        memcpy(_netIn.data, tmpData + headerLen, _datalinkLayer.getPayloadLength() - headerLen);
+
+                        _ioState = Complete;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        _ioState = Failed;
+                    }
+
+                    delete tmpData;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    _ioState = Failed;
+                }
+            }
+
+            break;
+        }
+
+        case Output:
+        {
+            if( _datalinkLayer.isTransactionComplete() )
+            {
+                _ioState = Complete;
+            }
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            _ioState = Failed;
+        }
+    }
+
+    return retVal;
+}
+
+
+bool CtiIONNetworkLayer::isTransactionComplete( void )
+{
+    return _ioState == Complete || _ioState == Uninitialized;
+}
+
+
+bool CtiIONNetworkLayer::errorCondition( void )
+{
+    return _ioState == Failed;
 }
 
 
@@ -156,12 +281,19 @@ void CtiIONNetworkLayer::freeInPacketMemory( void )
 }
 
 
+//  these functions refer to the OUTBOUND packet
+
 void CtiIONNetworkLayer::putSerialized( unsigned char *buf ) const
 {
+    int tmpLength;
+
+    tmpLength  = _netOut.header.length.byte0;
+    tmpLength |= _netOut.header.length.byte1 << 8;
+
     //  copy the header
     memcpy( buf, &(_netOut.header), sizeof(_netOut.header) );
     //  then the data, offset after the header
-    memcpy( buf + sizeof(_netOut.header), _netOut.data, getPayloadLength( ) );
+    memcpy( buf + sizeof(_netOut.header), _netOut.data, tmpLength );
 }
 
 
@@ -172,9 +304,14 @@ unsigned int CtiIONNetworkLayer::getSerializedLength( void ) const
     tmpLength  = _netOut.header.length.byte0;
     tmpLength |= _netOut.header.length.byte1 << 8;
 
+    //  NO NO NO...  the network size bytes have already done this, see setToOutput()
+    //tmpLength += sizeof(_netOut.header);
+
     return tmpLength;
 }
 
+
+//  these functions refer to the INBOUND packet
 
 void CtiIONNetworkLayer::putPayload( unsigned char *buf )
 {
@@ -185,7 +322,14 @@ void CtiIONNetworkLayer::putPayload( unsigned char *buf )
 
 int CtiIONNetworkLayer::getPayloadLength( void ) const
 {
-    return getSerializedLength( ) - sizeof(_netIn.header);
+    int tmpLength;
+
+    tmpLength  = _netIn.header.length.byte0;
+    tmpLength |= _netIn.header.length.byte1 << 8;
+
+    tmpLength -= sizeof(_netIn.header);
+
+    return tmpLength;
 }
 
 

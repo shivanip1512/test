@@ -28,13 +28,13 @@ public:
     CtiIONClassType( ) { };
     ~CtiIONClassType( ) { };
 
-    void setHandle( int handle );
-    int getHandle( void );
-    int getParentHandle( void );
+    void setHandle( unsigned short handle );
+    unsigned short getHandle( void );
+    unsigned short getParentHandle( void );
 
 protected:
 
-    int _handle;
+    unsigned short _handle;
 };
 
 
@@ -48,9 +48,9 @@ public:
 
     void setContents( void );
     void getContents( void );
-    
+
 private:
-    
+
 //    T _registerContents;
 };
 
@@ -73,7 +73,7 @@ protected:
 class CtiIONModuleManager : public CtiIONClassType
 {
 public:
-    
+
     CtiIONModuleManager( )  { };
     ~CtiIONModuleManager( ) { };
 

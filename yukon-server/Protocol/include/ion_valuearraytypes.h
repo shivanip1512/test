@@ -17,22 +17,26 @@
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
-#include "ion_valuebasictypes.h"
+#include "ion_value_basic_array.h"
+#include "ion_value_basic_char.h"
+#include "ion_value_basic_boolean.h"
+#include "ion_value_basic_float.h"
+#include "ion_value_basic_intsigned.h"
+#include "ion_value_basic_intunsigned.h"
+
 
 
 class IM_EX_PROT CtiIONCharArray : public CtiIONArray
 {
 public:
-    CtiIONCharArray( ) :
-        CtiIONArray(IONCharArray)
-        { };
+    CtiIONCharArray( );
 
 protected:
 
     typedef CtiIONArray Inherited;
     friend Inherited;
 
-    CtiIONCharArray( unsigned long itemCount, unsigned long itemLength, unsigned char *byteStream );
+    CtiIONCharArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONCharArray( ) { };
 
     CtiIONChar *operator[]( unsigned long index );
@@ -40,27 +44,23 @@ protected:
 
 
 
-class IM_EX_PROT CtiIONBooleanArray : CtiIONArray
+class IM_EX_PROT CtiIONBooleanArray : public CtiIONArray
 {
 public:
-    CtiIONBooleanArray( ) :
-        CtiIONArray(IONBooleanArray)
-        { };
-    CtiIONBooleanArray( unsigned long itemCount, unsigned long itemLength, unsigned char *byteStream );
-    ~CtiIONBooleanArray( ) { };
+    CtiIONBooleanArray( );
+    CtiIONBooleanArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
+    ~CtiIONBooleanArray( );
 
     CtiIONBoolean *operator[]( unsigned long index );
 };
 
 
 
-class IM_EX_PROT CtiIONFloatArray : CtiIONArray
+class IM_EX_PROT CtiIONFloatArray : public CtiIONArray
 {
 public:
-    CtiIONFloatArray( ) :
-        CtiIONArray(IONFloatArray)
-        { };
-    CtiIONFloatArray( unsigned long itemCount, unsigned long itemLength, unsigned char *byteStream );
+    CtiIONFloatArray( );
+    CtiIONFloatArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONFloatArray( ) { };
 
     CtiIONFloat *operator[]( unsigned long index );
@@ -68,13 +68,11 @@ public:
 
 
 
-class IM_EX_PROT CtiIONSignedIntArray : CtiIONArray
+class IM_EX_PROT CtiIONSignedIntArray : public CtiIONArray
 {
 public:
-    CtiIONSignedIntArray( ) :
-        CtiIONArray(IONSignedIntArray)
-        { };
-    CtiIONSignedIntArray( unsigned long itemCount, unsigned long itemLength, unsigned char *byteStream );
+    CtiIONSignedIntArray( );
+    CtiIONSignedIntArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONSignedIntArray( ) { };
 
     CtiIONSignedInt *operator[]( unsigned long index );
@@ -82,13 +80,11 @@ public:
 
 
 
-class IM_EX_PROT CtiIONUnsignedIntArray : CtiIONArray
+class IM_EX_PROT CtiIONUnsignedIntArray : public CtiIONArray
 {
 public:
-    CtiIONUnsignedIntArray( ) :
-        CtiIONArray(IONUnsignedIntArray)
-        { };
-    CtiIONUnsignedIntArray( unsigned long itemCount, unsigned long itemLength, unsigned char *byteStream );
+    CtiIONUnsignedIntArray( );
+    CtiIONUnsignedIntArray( unsigned char *buf, unsigned long len, unsigned long itemCount, unsigned long itemLength, unsigned long *bytesUsed );
     ~CtiIONUnsignedIntArray( ) { };
 
     CtiIONUnsignedInt *operator[]( unsigned long index );
@@ -116,7 +112,7 @@ public:
     unsigned char getStructKey( void );
     IONStructTypes getStructType( void ) { return _structType; };
 
-    static CtiIONArray *restoreObject( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
+    static CtiIONArray *restoreObject( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
     virtual enum Elements
     {
@@ -161,7 +157,7 @@ public:
     unsigned char getStructArrayKey( void );
     IONStructArrayTypes getStructArrayType( void ) { return _structArrayType; };
 
-    static CtiIONArray *restoreObject( unsigned char classDescriptor, unsigned char *byteStream, unsigned long streamLength );
+    static CtiIONArray *restoreObject( unsigned char classDescriptor, unsigned char *buf, unsigned long len, unsigned long *bytesUsed );
 
     enum IONStructArrayTypes
     {

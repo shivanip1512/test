@@ -3,7 +3,7 @@
  * File:    ion_net_application.cpp
  *
  * Classes: CtiIONDataStream, CtiIONApplicationLayer, CtiIONNetworkLayer,
- *            CtiIONDataLinkLayer
+ *            CtiIONDatalinkLayer
  * Date:    07/06/2001
  *
  * Author:  Matthew Fisher
@@ -64,7 +64,7 @@ void CtiIONApplicationLayer::initInPacketReserved( void )
 }
 
 
-void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
+void CtiIONApplicationLayer::setToOutput( const CtiIONSerializable &payload )
 {
     int itemNum, dataOffset, dataLength;
 
@@ -77,7 +77,6 @@ void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
 
     //  fill up the header
     _appOut.header.service = 0x0F;  //  start, execute, and end the program in a single request
-    //  _applicationMessage.status = -1;      //  no status byte in requests (which are all we, the master, send via the application layer)
     _appOut.header.pid  = 1;        //  can be set to anything - only one program/PID per request
     _appOut.header.freq = 1;        //  programs can currently only be executed once
     _appOut.header.priority = 0;    //  only support default priority
@@ -91,7 +90,7 @@ void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
     {
         payload.putSerialized(_appOut.IONData);
 
-        _networkLayer.setOutPayload(*this);
+        _networkLayer.setToOutput(*this);
     }
     else
     {
@@ -105,71 +104,149 @@ void CtiIONApplicationLayer::setOutPayload( const CtiIONSerializable &payload )
 }
 
 
+void CtiIONApplicationLayer::setToInput( void )
+{
+    _ioState = Input;
+
+    _networkLayer.setToInput();
+}
+
+
 int CtiIONApplicationLayer::generate( CtiXfer &xfer )
 {
-    return _networkLayer.generate( xfer );
+    int retVal = -1;
+
+    switch( _ioState )
+    {
+        case Input:
+        case Output:
+        {
+            retVal = _networkLayer.generate( xfer );
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            xfer.setOutBuffer(NULL);
+            xfer.setOutCount(0);
+            xfer.setInBuffer(NULL);
+            xfer.setInCountExpected(0);
+        }
+    }
+
+    return retVal;
 }
 
 
 int CtiIONApplicationLayer::decode( CtiXfer &xfer, int status )
 {
-    int retVal;
-    int networkStatus;
+    int retVal = -1;
+    int nlStatus;
 
-    networkStatus = _networkLayer.decode(xfer, status);
-#if 0
-    if( _networkLayer.errorCondition() )
+    nlStatus = _networkLayer.decode(xfer, status);
+
+    switch( _ioState )
     {
-        //  ACH:  retries...
-        _ioState = Failed;
-        retVal   = networkStatus;
-    }
-    else if( _networkLayer.isTransactionComplete() )
-    {
-        switch( _ioState )
+        case Input:
         {
-            case Output:
-            {
-                /*if( isReplyExpected() )*/
-                {
-                    _networkLayer.initReply((unsigned char *)&_appIn);
-                    _ioState = Input;
-                }
-                /*else
-                {
-                    _ioState = Complete;
-                }*/
+            retVal = nlStatus;
 
-                break;
-            }
-
-            case Input:
+            if( _networkLayer.isTransactionComplete() )
             {
-                if( _networkLayer.getInputSize() >= sizeof( _app_layer_struct._app_layer_header ) )
+                unsigned char *tmpData;
+
+                freeInPacketMemory();
+
+                _ioState = Complete;
+
+                tmpData = new unsigned char[_networkLayer.getPayloadLength()];
+
+                if( tmpData != NULL )
                 {
-                    _appRspBytesUsed = _networkLayer.getInputSize() - sizeof( _app_layer_struct._app_layer_header );
-                    _ioState = Complete;
+                    int headerLen = sizeof(_appIn.header);
+
+                    _networkLayer.putPayload(tmpData);
+
+                    if( _networkLayer.getPayloadLength() >= headerLen )
+                    {
+                        memcpy(&(_appIn.header), tmpData, headerLen);
+
+                        _appIn.IONData = new unsigned char[_networkLayer.getPayloadLength() - headerLen];
+
+                        if( _appIn.IONData != NULL )
+                        {
+                            memcpy(_appIn.IONData, tmpData + headerLen, _networkLayer.getPayloadLength() - headerLen);
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            _ioState = Failed;
+                        }
+                    }
+                    else
+                    {
+                        memcpy(&(_appIn.header), tmpData, _networkLayer.getPayloadLength());
+
+                        _appIn.header.length.byte0 = 0;
+                        _appIn.header.length.byte1 = 0;
+                    }
+
+                    delete tmpData;
                 }
                 else
                 {
-                    _appRspBytesUsed = 0;
-                    _ioState = Failed;
-                    retVal = PORTREAD;  //  timeout reading from port
-                }
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
 
-                break;
+                    _ioState = Failed;
+                }
+            }
+            else if( _networkLayer.errorCondition() )
+            {
+                _ioState = Failed;
             }
 
-            default:
+            break;
+        }
+
+        case Output:
+        {
+            retVal = nlStatus;
+
+            if( _networkLayer.isTransactionComplete() )
+            {
+                _ioState = Complete;
+            }
+            else if( _networkLayer.errorCondition() )
+            {
+                _ioState = Failed;
+            }
+
+            break;
+        }
+
+        default:
+        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
-#endif
 
-    return networkStatus;
+    return retVal;
 }
 
 
@@ -222,33 +299,28 @@ unsigned int CtiIONApplicationLayer::getSerializedLength( void ) const
 {
     int appOutSize = 0;
 
-    //  add the payload length plus the header length
     appOutSize  = _appOut.header.length.byte1 << 8;
     appOutSize |= _appOut.header.length.byte0;
+
     appOutSize += sizeof( _appOut.header );
 
     return appOutSize;
 }
 
 
-#if 0
-
-//  replace with putOutbound and putInbound or something
-
-void CtiIONApplicationLayer::putPayload( unsigned char *buf )
+void CtiIONApplicationLayer::putPayload( unsigned char *buf ) const
 {
-    memcpy( buf, _alData.IONData, getPayloadLength( ) );
+    memcpy( buf, _appIn.IONData, getPayloadLength( ) );
 }
 
 
-int CtiIONApplicationLayer::getPayloadLength( void )
+unsigned int CtiIONApplicationLayer::getPayloadLength( void ) const
 {
-    int alSize;
+    unsigned int appInSize;
 
-    alSize  = _alData.header.length.byte1 << 8;
-    alSize |= _alData.header.length.byte0;
+    appInSize  = _appIn.header.length.byte1 << 8;
+    appInSize |= _appIn.header.length.byte0;
 
-    return alSize;
+    return appInSize;
 }
-#endif
 

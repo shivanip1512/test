@@ -7,7 +7,7 @@
  *
  * File:    ion_net_application.h
  *
- * Classes: CtiIONApplicationLayer, CtiIONNetworkLayer, CtiIONDataLinkLayer
+ * Classes: CtiIONApplicationLayer, CtiIONNetworkLayer, CtiIONDatalinkLayer
  * Date:    07/06/2001
  *
  * Author:  Matthew Fisher
@@ -22,8 +22,8 @@
 #include "dlldefs.h"
 #include "xfer.h"
 
-#include "ion_rootclasses.h"
-#include "ion_valuebasictypes.h"
+//#include "ion_rootclasses.h"
+//#include "ion_valuebasictypes.h"
 #include "ion_net_network.h"
 
 
@@ -115,7 +115,8 @@ public:
 
     void setAddresses( unsigned short srcID, unsigned short dstID );
 
-    void setOutPayload( const CtiIONSerializable &payload );
+    void setToOutput( const CtiIONSerializable &payload );
+    void setToInput( void );
 
     void putSerialized( unsigned char *buf ) const;
     unsigned int getSerializedLength( void ) const;
@@ -126,8 +127,8 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    void putPayload( unsigned char *buf );
-    int  getPayloadLength( void );
+    void putPayload( unsigned char *buf ) const;
+    unsigned int getPayloadLength( void ) const;
 
 };
 

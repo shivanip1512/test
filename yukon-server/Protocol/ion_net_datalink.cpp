@@ -2,7 +2,7 @@
  *
  * File:    ion_net_datalink.cpp
  *
- * Classes: CtiIONDataLinkLayer, CtiIONFrame
+ * Classes: CtiIONDatalinkLayer
  * Date:    2002-oct-02
  *
  * Author:  Matthew Fisher
@@ -18,52 +18,52 @@
 
 #include "ion_net_datalink.h"
 
+#include "numstr.h"
 
-CtiIONDataLinkLayer::CtiIONDataLinkLayer( )
+CtiIONDatalinkLayer::CtiIONDatalinkLayer( )
 {
-    _valid  = false;
-    _status = Uninitialized;
+    _ioState    = Uninitialized;
     _data       = NULL;
-    _tmpIOFrame = NULL;
 }
 
-CtiIONDataLinkLayer::~CtiIONDataLinkLayer( )
+CtiIONDatalinkLayer::~CtiIONDatalinkLayer( )
 {
     freeMemory( );
 }
 
 
-void CtiIONDataLinkLayer::setAddresses( unsigned short srcID, unsigned short dstID )
+void CtiIONDatalinkLayer::setAddresses( unsigned short srcID, unsigned short dstID )
 {
     _src = srcID;
     _dst = dstID;
 }
 
 
-CtiIONDataLinkLayer::DLLExternalStatus CtiIONDataLinkLayer::getStatus( void )
+bool CtiIONDatalinkLayer::isTransactionComplete( void )
 {
-    return _status;
-}
-
-bool CtiIONDataLinkLayer::isValid( void )
-{
-    return _valid;
+    return _ioState == Complete;
 }
 
 
-void CtiIONDataLinkLayer::setToOutput( CtiIONSerializable &payload )
+bool CtiIONDatalinkLayer::errorCondition( void )
+{
+    return _ioState == Failed;
+}
+
+
+void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
 {
     freeMemory( );
 
-    _valid = TRUE;
+    _dataSent       = 0;
 
-    _dataSent  = 0;
-    _status    = OutDataReady;
-    _direction = Output;
-    _retries   = IONRetries;
+    _ioState        = Output;
+
+    _commErrorCount     = 0;
+    _protocolErrorCount = 0;
 
     _dataLength = payload.getSerializedLength( );
-    _data = CTIDBG_new unsigned char[_dataLength];
+    _data       = CTIDBG_new unsigned char[_dataLength];
 
     if( _data != NULL )
     {
@@ -71,45 +71,41 @@ void CtiIONDataLinkLayer::setToOutput( CtiIONSerializable &payload )
     }
     else
     {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << _dataLength << " bytes in CtiIONDataLinkLayer ctor;"
-                                                                 << "  setting zero data length, valid = FALSE, status = Abort" << endl;
+        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << _dataLength << " bytes in CtiIONDatalinkLayer ctor;"
+                                                                 << "  setting zero data length, _ioState = Failed" << endl;
         _dataLength = 0;
-        _valid = FALSE;
-        _status = Abort;
+        _ioState    = Failed;
     }
 }
 
 
-void CtiIONDataLinkLayer::setToInput( void )
+void CtiIONDatalinkLayer::setToInput( void )
 {
     freeMemory( );
 
-    _valid = TRUE;
+    _dataLength         = 0;
+    _data               = NULL;
 
-    _dataLength = 0;
-    _data       = NULL;
-    _currentFrame = -1;
-    _status     = InDataReady;
-    _direction = Input;
-    _retries   = IONRetries;
+    _currentInputFrame  = -1;
+    _inTotal            =  0;
+
+    _ioState            = InputHeader;
+
+    _commErrorCount     = 0;
+    _protocolErrorCount = 0;
 }
 
 
-void CtiIONDataLinkLayer::freeMemory( void )
+void CtiIONDatalinkLayer::freeMemory( void )
 {
     int i;
 
     while( !_inputFrameVector.empty( ) )
     {
-        //  delete all CTIDBG_new'd instances
+        //  delete all new'd instances
         delete _inputFrameVector.back();
 
         _inputFrameVector.pop_back();
-    }
-
-    if( _tmpIOFrame != NULL )
-    {
-        delete _tmpIOFrame;
     }
 
     if( _data != NULL )
@@ -120,9 +116,9 @@ void CtiIONDataLinkLayer::freeMemory( void )
 }
 
 
-void CtiIONDataLinkLayer::putPayload( unsigned char *buf )
+void CtiIONDatalinkLayer::putPayload( unsigned char *buf )
 {
-    int i, offset;
+    int i, offset, dataLen;
 
     offset = 0;
 
@@ -130,371 +126,580 @@ void CtiIONDataLinkLayer::putPayload( unsigned char *buf )
 
     for( i = 0; i < _inputFrameVector.size( ); i++ )
     {
-        _inputFrameVector[i]->putPayload( buf + offset );
-        offset += _inputFrameVector[i]->getPayloadLength( );
+        dataLen = (_inputFrameVector[i])->header.len - EmptyPacketLength;
+
+        memcpy( (buf + offset), (_inputFrameVector[i])->data, dataLen );
+
+        offset += dataLen;
     }
 }
 
 
-int CtiIONDataLinkLayer::getPayloadLength( void )
+int CtiIONDatalinkLayer::getPayloadLength( void )
 {
     int i, payloadLength = 0;
 
     for( i = 0; i < _inputFrameVector.size( ); i++ )
     {
-        payloadLength += _inputFrameVector[i]->getPayloadLength( );
+        payloadLength += (_inputFrameVector[i])->header.len - EmptyPacketLength;
     }
 
     return payloadLength;
 }
 
 
-int CtiIONDataLinkLayer::inFrame( unsigned char *data, unsigned long dataLength )
-{
-    CtiIONFrame *tmpFrame;
-
-    tmpFrame = CTIDBG_new CtiIONFrame();
-
-    if( tmpFrame != NULL )
-    {
-        tmpFrame->initInputFrame( data, dataLength );
-
-        if( tmpFrame->crcIsValid( ) )
-        {
-            switch( _direction )
-            {
-                case Input:
-                {
-                    //  ADD CODE HERE:  do SRC and DST need checking?
-
-                    //  if claims to be the first frame and we're expecting the first frame
-                    if( tmpFrame->isFirstFrame( ) && _currentFrame < 0 )
-                    {
-                        //  frame count to expect
-                        _currentFrame = tmpFrame->getCounter( );
-                        //  put the frame in the list
-                        _inputFrameVector.push_back( tmpFrame );
-                        //  we're ready to send an ACK
-                        _status = OutAckReady;
-                    }
-                    //  if it's the right frame
-                    else if( _currentFrame == tmpFrame->getCounter( ) )
-                    {
-                        //  put the frame in the list
-                        _inputFrameVector.push_back( tmpFrame );
-                        //  we're ready to send an ACK
-                        _status = OutAckReady;
-                    }
-                    else
-                    {
-                        _retries--;
-                        _status = OutNakReady;
-                        delete tmpFrame;
-                    }
-                    break;
-                }
-
-                case Output:
-                {
-                    //  ADD CODE HERE:  do SRC and DST need checking?
-
-                    if( tmpFrame->getFrameType( ) == CtiIONFrame::AcknakACK &&  //  make sure it's an ACK frame
-                        tmpFrame->getCounter( ) == _currentFrame )          //  make sure they're ACKing the frame we just sent
-                    {
-                        _dataSent += _bytesInLastFrame;
-                        if( _currentFrame == 0 )
-                        {
-                            _status = OutDataComplete;
-                        }
-                        else
-                        {
-                            _currentFrame--;
-                            _status = OutDataReady;
-                        }
-                    }
-                    else
-                    {
-                        _retries--;
-                        _status = OutDataRetry;
-                    }
-
-                    delete tmpFrame;
-                }
-            }
-        }
-        else
-        {
-            _retries--;
-            _status = OutNakReady;
-            delete tmpFrame;
-        }
-
-        if( _retries < 0 )
-        {
-            _status = Abort;
-        }
-    }
-    else
-    {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << sizeof( CtiIONFrame ) << " bytes in CtiIONDataLinkLayer inFrame;"
-                                                                 << "  setting status = Abort" << endl;
-        _status = Abort;
-    }
-
-    return _status;
-}
-
-
-CtiIONFrame *CtiIONDataLinkLayer::outFrame( void )
-{
-    int bytesInNewFrame, numFrames, tmpCRC;
-
-    CtiIONFrame *tmpFrame;
-
-    //  all fields in here are set as master-oriented parameters (always setting frame to be
-    //    from master to slave, etc)
-
-    tmpFrame = CTIDBG_new CtiIONFrame();
-
-    if( tmpFrame != NULL )
-    {
-        tmpFrame->initOutputFrame();
-
-        switch( _direction )
-        {
-            case Output:
-            {
-                bytesInNewFrame = _dataLength - _dataSent;
-
-                if( bytesInNewFrame > CtiIONFrame::MaxPayloadLength )
-                {
-                    bytesInNewFrame = CtiIONFrame::MaxPayloadLength;
-                }
-
-                if( _dataSent == 0 )
-                {
-                    //  number of full frames
-                    _currentFrame = _dataLength / CtiIONFrame::MaxPayloadLength;
-                    //  plus a partial frame, if need be
-                    if( _dataLength % CtiIONFrame::MaxPayloadLength )
-                        _currentFrame++;
-                    //  then subtract 1 to make it zero-based
-                    _currentFrame--;
-
-                    tmpFrame->setFirstFrame( TRUE );
-                }
-
-                //  copy the struct over into the char buffer
-                tmpFrame->setPayload( _data + _dataSent, bytesInNewFrame );
-
-                tmpFrame->setFrameType( CtiIONFrame::DataAcknakEnbl );
-
-                tmpFrame->setSrcID( _src );
-                tmpFrame->setDstID( _dst );
-
-                tmpFrame->setCounter( _currentFrame );
-
-                tmpFrame->setCRC( );
-
-                _bytesInLastFrame = bytesInNewFrame;
-
-                break;
-            }
-
-            case Input:
-            {
-                switch( _status )
-                {
-                    case OutAckReady:
-                    case OutAckRetry:
-                        tmpFrame->setFrameType( CtiIONFrame::AcknakACK );
-                        break;
-
-                    case OutNakReady:
-                        tmpFrame->setFrameType( CtiIONFrame::AcknakNAK );
-                        break;
-                }
-
-                tmpFrame->setPayload( _data, 0 );
-
-                tmpFrame->setSrcID( _src );
-                tmpFrame->setDstID( _dst );
-
-                tmpFrame->setCounter( _currentFrame );
-
-                tmpFrame->setCRC( );
-
-                break;
-            }
-        }
-    }
-    else
-    {
-        dout << RWTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << sizeof( CtiIONFrame ) << " bytes in CtiIONDataLinkLayer inFrame" << endl;
-        _status = Abort;
-    }
-
-    return tmpFrame;
-}
-
-
-int CtiIONDataLinkLayer::generate( CtiXfer &xfer )
+int CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 {
     int retVal = NoError;
 
-    CtiIONFrame *tmpOutFrame;
+    _inActual = 0;
 
-    tmpOutFrame = outFrame();
-
-    if( tmpOutFrame != NULL )
+    switch( _ioState )
     {
-        tmpOutFrame->putSerialized(_outBuffer);
+        case InputHeader:
+        {
+            xfer.setOutBuffer((unsigned char *)&_outFrame);  //  placeholder, but it's nicer than passing NULL to the function
+            xfer.setOutCount(0);
+            xfer.setCRCFlag(0);
 
-        xfer.setOutBuffer(_outBuffer);
+            xfer.setInBuffer(_inBuffer);
+            xfer.setInCountExpected(EmptyPacketLength + UncountedHeaderBytes - _inTotal);
+            xfer.setInCountActual(&_inActual);
+            break;
+        }
 
-        xfer.setOutCount(tmpOutFrame->getSerializedLength());
-        xfer.setCRCFlag(0);
+        case InputPacket:
+        {
+            xfer.setOutBuffer((unsigned char *)&_outFrame);  //  placeholder, but it's nicer than passing NULL to the function
+            xfer.setOutCount(0);
+            xfer.setCRCFlag(0);
 
-        //  ACH: this will need to be changed when secondary ACK/NACK packets are included,
-        //    but for now we ignore any incoming until we're done sending
-        //  (er?  is this correct?)
-        xfer.setInBuffer(_inBuffer);
-        xfer.setInCountExpected(0);
-        xfer.setInCountActual(&_inActual);
-        xfer.setNonBlockingReads(false);
+            xfer.setInBuffer(((unsigned char *)&_inFrame) + _inTotal);
+            xfer.setInCountExpected(_inFrame.header.len + UncountedHeaderBytes - _inTotal);
+            xfer.setInCountActual(&_inActual);
+            break;
+        }
 
-        xfer.setInCountExpected(CtiIONFrame::EmptyPacketLength);
+        case InputSendAck:
+        {
+            retVal = generateAck(&_outFrame);
+
+            xfer.setOutBuffer((unsigned char *)&_outFrame);
+            xfer.setOutCount(EmptyPacketLength + UncountedHeaderBytes);
+            xfer.setCRCFlag(0);
+
+            xfer.setInBuffer((unsigned char *)&_inFrame);
+            xfer.setInCountExpected(0);
+            xfer.setInCountActual(&_inActual);
+            break;
+        }
+
+        case InputSendNack:
+        {
+            retVal = generateNack(&_outFrame);
+
+            xfer.setOutBuffer((unsigned char *)&_outFrame);
+            xfer.setOutCount(EmptyPacketLength + UncountedHeaderBytes);
+            xfer.setCRCFlag(0);
+
+            xfer.setInBuffer((unsigned char *)&_inFrame);
+            xfer.setInCountExpected(0);
+            xfer.setInCountActual(&_inActual);
+            break;
+        }
+
+        case Output:
+        {
+            retVal = generateOutputFrame(&_outFrame);
+
+            xfer.setOutBuffer((unsigned char *)&_outFrame);
+            xfer.setOutCount(_outFrame.header.len + UncountedHeaderBytes);
+            xfer.setCRCFlag(0);
+
+            xfer.setInBuffer((unsigned char *)&_inBuffer);
+
+            //  expect an ACK if DataAcknakEnbl is set
+            if( _outFrame.header.cntlframetype == DataAcknakEnbl )
+            {
+                xfer.setInCountExpected(EmptyPacketLength + UncountedHeaderBytes);
+
+                _ioState = OutputRecvAckNack;
+            }
+            else
+            {
+                xfer.setInCountExpected(0);
+            }
+
+            xfer.setInCountActual(&_inActual);
+
+            break;
+        }
+
+        case OutputRecvAckNack:
+        {
+            xfer.setOutBuffer((unsigned char *)&_outFrame);  //  placeholder, but it's nicer than passing NULL to the function
+            xfer.setOutCount(0);
+            xfer.setCRCFlag(0);
+
+            xfer.setInBuffer(((unsigned char *)&_inBuffer) + _inTotal);
+            xfer.setInCountExpected(EmptyPacketLength + UncountedHeaderBytes - _inTotal);
+            xfer.setInCountActual(&_inActual);
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
     }
-    else
+
     {
-        retVal = MemoryError;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        if( xfer.getOutCount() > 0 )
+        {
+            dout << "Datalink layer output (" << xfer.getOutCount() << " bytes)" << endl;
+            for( int i = 0; i < xfer.getOutCount(); i++ )
+            {
+                dout << CtiNumStr((xfer.getOutBuffer())[i]).hex().zpad(2) << " ";
+            }
+            dout << endl;
+        }
     }
 
     return retVal;
 }
 
 
-int CtiIONDataLinkLayer::decode( CtiXfer &xfer, int status )
+int CtiIONDatalinkLayer::generateOutputFrame( ion_frame *frame )
 {
-    int retVal = NoError;
+    int retVal = 0;
+    int payloadLen;
 
-    return inFrame(_inBuffer, *(xfer.getInCountActual()));
-}
+    frame->header.reserved     = 0;
+    frame->header.cntlreserved = 0;
+    frame->header.srcreserved  = 0;
+    frame->header.tranreserved = 0;
 
+    frame->header.sync = 0x14;
+    frame->header.fmt  = 0xAC;
 
+    frame->header.srcid = _src;
+    frame->header.dstid = _dst;
 
-CtiIONFrame::CtiIONFrame( )     {   }
+    frame->header.cntldirection = 0;
+    frame->header.cntlframetype = DataAcknakEnbl;
 
-CtiIONFrame::~CtiIONFrame( )    {   }
+    payloadLen = _dataLength - _dataSent;
 
-
-CtiIONFrame::initOutputFrame( )
-{
-    initReserved( );
-    _frame.header.sync = 0x14;  //  start of data
-    _frame.header.fmt  = 0xAC;  //  format = ION frame
-    _frame.header.len  = EmptyPacketLength;
-}
-
-
-CtiIONFrame::initInputFrame( unsigned char *rawFrame, int rawFrameLength )
-{
-    //  only copy what we have room for...
-    if( rawFrameLength > MaxFrameLength )
-        rawFrameLength = MaxFrameLength;
-
-    memcpy( &_frame, rawFrame, rawFrameLength );
-}
-
-
-void CtiIONFrame::initReserved( void )
-{
-    _frame.header.cntlreserved  = 0;
-    _frame.header.cntldirection = 0;  //  we're the master
-    _frame.header.srcreserved   = 0;
-    _frame.header.tranreserved  = 0;
-    _frame.header.reserved      = 0;
-}
-
-
-
-void CtiIONFrame::putSerialized( unsigned char *buf ) const
-{
-    memcpy( buf, &_frame, getSerializedLength( ) );
-}
-
-
-unsigned int CtiIONFrame::getSerializedLength( void ) const
-{
-    return _frame.header.len + UncountedHeaderBytes;
-}
-
-
-void CtiIONFrame::setPayload( unsigned char *buf, int len )
-{
-    if( len )
+    if( payloadLen > MaxPayloadLength )
     {
-        if( len > MaxPayloadLength )
-            len = MaxPayloadLength;
-
-        memcpy( _frame.data, buf, len );
+        payloadLen = MaxPayloadLength;
     }
 
-    _frame.header.len = len + EmptyPacketLength;
+    if( _dataSent == 0 )
+    {
+        //  number of full frames
+        _currentOutputFrame = _dataLength / MaxPayloadLength;
+
+        //  plus a partial frame, if need be
+        if( _dataLength % MaxPayloadLength )
+        {
+            _currentOutputFrame++;
+        }
+
+        //  then subtract 1 to make it zero-based
+        _currentOutputFrame--;
+
+        frame->header.tranfirstframe = 1;
+    }
+    else
+    {
+        frame->header.tranfirstframe = 0;
+    }
+
+    frame->header.trancounter = _currentOutputFrame;
+
+    //  copy the struct over into the char buffer
+    memcpy(frame->data, _data + _dataSent, payloadLen );
+
+    frame->header.len = EmptyPacketLength + payloadLen;
+
+    setCRC(frame);
+
+    _bytesInLastFrame = payloadLen;
+
+    //  set to 0 in anticipation of an ACK packet, if we expect one
+    _inTotal = 0;
+
+    return retVal;
 }
 
 
-void CtiIONFrame::putPayload( unsigned char *buf )
+int CtiIONDatalinkLayer::generateAck( ion_frame *frame )
 {
-    memcpy( _frame.data, buf, getPayloadLength( ) );
+    int retVal = 0;
+
+    frame->header.reserved     = 0;
+    frame->header.cntlreserved = 0;
+    frame->header.srcreserved  = 0;
+    frame->header.tranreserved = 0;
+
+    frame->header.sync = 0x14;
+    frame->header.fmt  = 0xAC;
+
+    frame->header.srcid = _src;
+    frame->header.dstid = _dst;
+
+    frame->header.cntldirection = 0;
+    frame->header.cntlframetype = AcknakACK;
+
+    frame->header.trancounter = _inFrame.header.trancounter;
+
+    frame->header.len = EmptyPacketLength;
+
+    setCRC(frame);
+
+    return retVal;
 }
 
 
-void CtiIONFrame::setFrameType( FrameType frameType )
+int CtiIONDatalinkLayer::generateNack( ion_frame *frame )
 {
-    _frame.header.cntlframetype = frameType;
+    int retVal = 0;
+
+    frame->header.reserved     = 0;
+    frame->header.cntlreserved = 0;
+    frame->header.srcreserved  = 0;
+    frame->header.tranreserved = 0;
+
+    frame->header.sync = 0x14;
+    frame->header.fmt  = 0xAC;
+
+    frame->header.srcid = _src;
+    frame->header.dstid = _dst;
+
+    frame->header.cntldirection = 0;
+    frame->header.cntlframetype = AcknakNAK;
+
+    frame->header.trancounter = _inFrame.header.trancounter;
+
+    frame->header.len = EmptyPacketLength;
+
+    setCRC(frame);
+
+    return retVal;
 }
 
 
-void CtiIONFrame::setCRC( void )
+int CtiIONDatalinkLayer::decode( CtiXfer &xfer, int status )
+{
+    int retVal = NoError;
+    int offset;
+
+    ion_frame *saveFrame;
+
+    if( status != NORMAL )
+    {
+        switch( status )
+        {
+            case BADPORT:
+            case PORTWRITE:
+            case PORTREAD:
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        if( ++_commErrorCount >= CommRetries )
+        {
+            _ioState = Failed;
+            retVal   = status;
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+            if( *(xfer.getInCountActual()) > 0 )
+            {
+                dout << "Datalink layer input (" << *(xfer.getInCountActual()) << " bytes)" << endl;
+                for( int i = 0; i < *(xfer.getInCountActual()); i++ )
+                {
+                    dout << CtiNumStr((xfer.getInBuffer())[i]).hex().zpad(2) << " ";
+                }
+                dout << endl;
+            }
+            else
+            {
+                dout << "No datalink layer input" << endl;
+            }
+        }
+
+        switch( _ioState )
+        {
+            case InputHeader:
+            {
+                if( _inTotal == 0 )
+                {
+                    //  still looking for the sync byte
+                    offset = 0;
+
+                    while( *(_inBuffer + offset) != 0x14 && offset < _inActual )
+                    {
+                        offset++;
+                    }
+
+                    if( offset < _inActual )
+                    {
+                        memcpy(((unsigned char *)&_inFrame), _inBuffer + offset, _inActual - offset);
+
+                        _inTotal += (_inActual - offset);
+                    }
+                }
+                else
+                {
+                    //  got the sync byte already, just copying header now
+                    memcpy(((unsigned char *)&_inFrame) + _inTotal, _inBuffer, _inActual);
+
+                    _inTotal += _inActual;
+
+                    if( _inTotal >= (EmptyPacketLength + UncountedHeaderBytes) )
+                    {
+                        _ioState = InputPacket;
+                    }
+                }
+
+                break;
+            }
+
+            case InputPacket:
+            {
+                _inTotal += _inActual;
+
+                if( _inTotal >= _inFrame.header.len + UncountedHeaderBytes )
+                {
+                    if( crcIsValid(&_inFrame) )
+                    {
+                        //  ACH:  do _src and _dst need checking?
+
+                        //  if it claims to be the first frame and we're expecting the first frame
+                        if( _inFrame.header.tranfirstframe && _currentInputFrame < 0 )
+                        {
+                            //  frame count to expect
+                            _currentInputFrame = _inFrame.header.trancounter;
+                        }
+
+                        if( _currentInputFrame == _inFrame.header.trancounter )
+                        {
+                            saveFrame = new ion_frame;
+
+                            if( saveFrame != NULL )
+                            {
+                                *saveFrame = _inFrame;
+
+                                //  put the frame in the list
+                                _inputFrameVector.push_back( saveFrame );
+
+                                if( _inFrame.header.cntlframetype == DataAcknakEnbl )
+                                {
+                                    //  we're ready to send an ACK
+                                    _ioState = InputSendAck;
+                                }
+                                else
+                                {
+                                    if( _currentInputFrame == 0 )
+                                    {
+                                        _ioState = Complete;
+                                    }
+                                    else
+                                    {
+                                        _ioState = InputHeader;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _ioState = Failed;
+                            }
+                        }
+                        else
+                        {
+                            _protocolErrorCount++;
+
+                            if( _inFrame.header.cntlframetype == DataAcknakEnbl )
+                            {
+                                //  send a NACK
+                                _ioState = InputSendNack;
+                            }
+                            else
+                            {
+                                _ioState = InputHeader;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _protocolErrorCount++;
+
+                        //  i have no way to accurately tell if they said this was going to be an ACK-enabled packet,
+                        //    what with the mangled data, so the best i can do is just try to read again
+                        _ioState = InputHeader;
+                    }
+                }
+
+                break;
+            }
+
+            case InputSendAck:
+            case InputSendNack:
+            {
+                if( _currentInputFrame == 0 )
+                {
+                    _ioState = Complete;
+                }
+                else
+                {
+                    _ioState = InputHeader;
+                }
+
+                break;
+            }
+
+            case Output:
+            {
+                _ioState = Complete;
+
+                break;
+            }
+
+            case OutputRecvAckNack:
+            {
+                //  ADD CODE HERE:  do SRC and DST need checking?
+
+                if( _inTotal == 0 )
+                {
+                    //  still looking for the sync byte
+                    offset = 0;
+
+                    while( *(_inBuffer + offset) != 0x14 && offset < _inActual )
+                    {
+                        offset++;
+                    }
+
+                    if( offset < _inActual )
+                    {
+                        memcpy(((unsigned char *)&_inFrame), _inBuffer + offset, _inActual - offset);
+
+                        _inTotal += (_inActual - offset);
+                    }
+                    else
+                    {
+                        _protocolErrorCount++;
+                    }
+                }
+                else
+                {
+                    //  got the sync byte already, just copying header now
+                    memcpy(((unsigned char *)&_inFrame) + _inTotal, _inBuffer, _inActual);
+
+                    _inTotal += _inActual;
+                }
+
+                if( _inTotal >= (EmptyPacketLength + UncountedHeaderBytes) )
+                {
+                    if( _inFrame.header.cntlframetype == AcknakACK &&   //  make sure it's an ACK frame
+                        _inFrame.header.trancounter == _currentOutputFrame )          //  make sure they're ACKing the frame we just sent
+                    {
+                        _dataSent += _bytesInLastFrame;
+
+                        if( _currentOutputFrame == 0 )
+                        {
+                            _ioState = Complete;
+                        }
+                        else
+                        {
+                            _ioState = Output;
+                        }
+                    }
+                    else
+                    {
+                        _protocolErrorCount++;
+                        _ioState = Output;
+                    }
+                }
+
+                break;
+            }
+
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                break;
+            }
+        }
+
+        if( _protocolErrorCount > ProtocolRetries )
+        {
+            _ioState = Failed;
+        }
+    }
+
+    return retVal;
+}
+
+
+
+void CtiIONDatalinkLayer::setCRC( ion_frame *frame )
 {
     unsigned int frameCRC;
     int dataLen;
 
-    dataLen = _frame.header.len - EmptyPacketLength;
+    dataLen  = frame->header.len - EmptyPacketLength;
 
-    frameCRC = crc16( _frame.data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
+    frameCRC = crc16( frame->data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
-    _frame.data[dataLen]   =  frameCRC & 0x00FF;        //  the bytes right after the data ends
-    _frame.data[dataLen+1] = (frameCRC & 0xFF00) >> 8;  //
+    frame->data[dataLen]   =  frameCRC & 0x00FF;        //  the bytes right after the data ends
+    frame->data[dataLen+1] = (frameCRC & 0xFF00) >> 8;  //
 }
 
 
-int CtiIONFrame::crcIsValid( void )
+bool CtiIONDatalinkLayer::crcIsValid( ion_frame *frame )
 {
     unsigned int frameCRC, computedCRC;
     int dataLen;
 
-    dataLen = _frame.header.len - EmptyPacketLength;  //  len = data length + 7
+    dataLen = frame->header.len - EmptyPacketLength;  //  len = data length + 7
 
 
-    frameCRC  = _frame.data[dataLen];         //  the bytes right after the data ends
-    frameCRC += _frame.data[dataLen+1] << 8;  //
+    frameCRC  = frame->data[dataLen];         //  the bytes right after the data ends
+    frameCRC += frame->data[dataLen+1] << 8;  //
 
-    computedCRC = crc16( _frame.data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
+    computedCRC = crc16( frame->data - PrePayloadCRCOffset, dataLen + PrePayloadCRCOffset );  //  CRC is computed on the data plus the 8 bytes preceding
 
     return frameCRC == computedCRC;
 }
 
 
-unsigned int CtiIONFrame::crc16( unsigned char *data, int length )
+unsigned int CtiIONDatalinkLayer::crc16( unsigned char *data, int length )
 {
     //  CRC-16 computation
     //    from http://www.programmingparadise.com/vs/?crc/crcfast.c.html
     //    original author unknown, so i figured it was okay to use.
 
-    unsigned short tmp,
-                   crc = 0xffff;
+    unsigned short tmp, crc;
 
     unsigned short crc16table[256] =
     {
@@ -531,6 +736,8 @@ unsigned int CtiIONFrame::crc16( unsigned char *data, int length )
         0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641,
         0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
     };
+
+    crc = 0xFFFF;
 
     for( int i = 0; i < length; i++ )
     {

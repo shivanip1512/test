@@ -7,7 +7,7 @@
  *
  * File:    ion_net_datalink.h
  *
- * Classes: CtiIONDataLinkLayer, CtiIONFrame
+ * Classes: CtiIONDatalinkLayer, CtiIONFrame
  * Date:    07/06/2001
  *
  * Author:  Matthew Fisher
@@ -23,63 +23,119 @@
 #include "xfer.h"
 
 #include "ion_rootclasses.h"
-#include "ion_valuebasictypes.h"
 
-
-class CtiIONFrame;
 
 //  necessary to preserve byte alignment;  makes for easy memcpy initialization and serialization
 #pragma pack(push, ion_packing, 1)
 
-class IM_EX_PROT CtiIONDataLinkLayer
+class IM_EX_PROT CtiIONDatalinkLayer
 {
-    enum DLLExternalStatus;
-
 private:
 
-    void freeMemory( void );
+    //  frame definitions
 
-    int _currentFrame;
-    int _src, _dst;
-
-    unsigned char _outBuffer[250], _inBuffer[250];
-
-    CtiIONFrame *_tmpIOFrame;
-
-    vector<CtiIONFrame *> _inputFrameVector;
-
-    unsigned char *_data;
-    int            _dataLength, _dataSent;
-    int            _bytesInLastFrame;
-    int            _retries;
-    unsigned long _inActual;
-
-    enum Direction
+    struct ion_frame
     {
-       Input,
-       Output
-    } _direction;
+        struct ion_frame_header
+        {
+            unsigned char sync;
+            unsigned char fmt;
+
+            unsigned char cntlreserved  : 5;
+            unsigned char cntlframetype : 2;
+            unsigned char cntldirection : 1;
+
+            unsigned char len;
+
+            unsigned short srcid        : 15;
+            unsigned short srcreserved  : 1;
+
+            unsigned short dstid;
+
+            unsigned char trancounter    : 6;
+            unsigned char tranfirstframe : 1;
+            unsigned char tranreserved   : 1;
+
+            unsigned char reserved;
+        } header;
+        unsigned char data[240];  //  238 + 2 byte CRC
+    };
 
     enum
     {
-        IONRetries = 5
+        MaxFrameLength       = 252,
+        MaxPayloadLength     = 238,
+        MinimumPacketSize    =  12,
+        PrePayloadCRCOffset  =   8,
+        EmptyPacketLength    =   7,
+        UncountedHeaderBytes =   5
     };
 
-    DLLExternalStatus _status;
+    enum FrameType
+    {
+        DataAcknakDsbl = 0,  //  00b
+        DataAcknakEnbl = 1,  //  01b
+        AcknakNAK = 2,       //  10b
+        AcknakACK = 3        //  11b
+    };
 
-    int _valid;
+    void initFrameReserved( ion_frame *frame );
+
+    initInputFrame( unsigned char *rawFrame, int rawFrameLength );
+    generateOutputFrame( ion_frame *targetFrame );
+    generateAck ( ion_frame *targetFrame );
+    generateNack( ion_frame *targetFrame );
+
+    bool crcIsValid( ion_frame *frame );
+    void setCRC( ion_frame *frame );
+
+    unsigned int crc16( unsigned char *data, int length );
+
+    void freeMemory( void );
+
+    int _currentInputFrame, _currentOutputFrame;
+    int _src, _dst;
+
+    ion_frame _outFrame, _inFrame;
+    unsigned char _inBuffer[250];
+
+    vector< ion_frame * > _inputFrameVector;
+
+    unsigned char  *_data;
+    int             _dataLength, _dataSent;
+    int             _bytesInLastFrame;
+    unsigned long   _inActual, _inTotal;
+    int             _commErrorCount, _protocolErrorCount;
+
+    enum IOState
+    {
+        Uninitialized,
+        InputHeader,
+        InputPacket,
+        InputSendAck,
+        InputSendNack,
+        Output,
+        OutputRecvAckNack,
+        Complete,
+        Failed
+    } _ioState;
+
+    enum
+    {
+        CommRetries     = 3,
+        ProtocolRetries = 3
+    };
 
 protected:
 
-    CtiIONFrame *outFrame( void );
-    int inFrame( unsigned char *data, unsigned long len );
-
 public:
 
-    CtiIONDataLinkLayer( );
-    ~CtiIONDataLinkLayer( );
+    CtiIONDatalinkLayer( );
+    ~CtiIONDatalinkLayer( );
 
     void setAddresses( unsigned short srcID, unsigned short dstID );
+
+    void resetConnection( void );
 
     void setToOutput( CtiIONSerializable &payload );
     void setToInput( void );
@@ -90,123 +146,12 @@ public:
     void putPayload( unsigned char *buf );
     int  getPayloadLength( void );
 
-    DLLExternalStatus getStatus( void );
+    bool isTransactionComplete( void );
+    bool errorCondition( void );
 
     bool isValid( void );
-
-    enum DLLExternalStatus
-    {
-        OutDataReady,
-        OutDataRetry,
-        OutAckReady,
-        OutAckRetry,
-        OutNakReady,
-        OutDataComplete,
-        OutStates,        //  to seperate the states
-        InDataReady,
-        InAckReady,
-        InDataComplete,
-        InStates,         //  ditto
-        Abort,
-        ErrorStates,      //  and again
-        Uninitialized
-    };
 };
 
-
-class CtiIONFrame : CtiIONSerializable
-{
-private:
-
-    unsigned int crc16( unsigned char *data, int length );
-
-    void initReserved( void );
-
-    struct _ionFrame
-    {
-        struct _ionFrameHeader
-        {
-            unsigned char sync;
-            unsigned char fmt;
-            unsigned char cntlreserved  : 5;
-            unsigned char cntlframetype : 2;
-            unsigned char cntldirection : 1;
-            unsigned char len;
-            unsigned short srcid        : 15;
-            unsigned short srcreserved  : 1;
-            unsigned short dstid;
-            unsigned char trancounter    : 6;
-            unsigned char tranfirstframe : 1;
-            unsigned char tranreserved   : 1;
-            unsigned char reserved;
-        } header;
-        unsigned char data[240];  //  238 + 2 byte CRC
-    } _frame;
-
-protected:
-
-public:
-
-    CtiIONFrame( );
-    ~CtiIONFrame( );
-
-    initInputFrame( unsigned char *rawFrame, int rawFrameLength );
-    initOutputFrame( void );
-
-    void putSerialized( unsigned char *buf ) const;
-    unsigned int getSerializedLength( void ) const;
-
-    int crcIsValid( void );
-    void setCRC( void );
-
-    enum FrameType;
-
-    void setFrameType( FrameType frameType );
-    FrameType getFrameType( void )
-    {
-        switch( _frame.header.cntlframetype )
-        {
-            default:  //  this should never happen...
-            case 0: return DataAcknakEnbl;
-            case 1: return DataAcknakDsbl;
-            case 2: return AcknakNAK;
-            case 3: return AcknakACK;
-        }
-    };
-
-    void setSrcID( unsigned short srcID ) { _frame.header.srcid = srcID; };
-    unsigned short getSrcID( void ) { return _frame.header.srcid; };
-
-    void setPayload( unsigned char *buf, int count );
-    void putPayload( unsigned char *buf );
-    int  getPayloadLength( void ) { return _frame.header.len - EmptyPacketLength; };  //  len = data length + 7
-
-    void setDstID( unsigned short dstID ) { _frame.header.dstid = dstID; };
-    unsigned short getDstID( void ) { return _frame.header.dstid; };
-
-    void setFirstFrame( int firstFrame ) { _frame.header.tranfirstframe = firstFrame; };
-    int  isFirstFrame( void ) { return _frame.header.tranfirstframe; };
-
-    int  getCounter( void ) { return _frame.header.trancounter; };
-    void setCounter( int counter ) { _frame.header.trancounter = counter; };
-
-    enum FrameType
-    {
-        DataAcknakEnbl = 0,  //  00b
-        DataAcknakDsbl = 1,  //  01b
-        AcknakNAK = 2,       //  10b
-        AcknakACK = 3        //  11b
-    };
-
-    enum
-    {
-        MaxFrameLength       = 252,
-        MaxPayloadLength     = 238,
-        EmptyPacketLength    =   7,
-        PrePayloadCRCOffset  =   8,
-        UncountedHeaderBytes =   5
-    };
-};
 
 #pragma pack(pop, ion_packing)
 

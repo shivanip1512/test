@@ -7,8 +7,8 @@
  *
  * File:   ion_structtypes.h
  *
- * Class:  CtiIONLogRecord, CtiIONAlarm, CtiIONEvent, CtiIONRange, CtiIONList, 
- *           CtiIONException, CtiIONWaveform, CtiIONDate, CtiIONCalendar, 
+ * Class:  CtiIONLogRecord, CtiIONAlarm, CtiIONEvent, CtiIONRange, CtiIONList,
+ *           CtiIONException, CtiIONWaveform, CtiIONDate, CtiIONCalendar,
  *           CtiIONProfile, CtiIONStringArray, CtiIONMultiArray, CtiIONStructArray
  * Date:   07/06/2001
  *
@@ -18,9 +18,12 @@
  *
  * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
- 
+
 
 #include "ion_valuearraytypes.h"
+#include "ion_value_basic_intunsigned.h"
+#include "ion_value_basic_time.h"
+
 
 
 class CtiIONLogRecord : public CtiIONStruct
@@ -28,8 +31,8 @@ class CtiIONLogRecord : public CtiIONStruct
 public:
 
     CtiIONLogRecord( vector< CtiIONValue * > structValues );
-    CtiIONLogRecord( CtiIONUnsignedInt *logPosition, 
-                     CtiIONTime        *timestamp, 
+    CtiIONLogRecord( CtiIONUnsignedInt *logPosition,
+                     CtiIONTime        *timestamp,
                      CtiIONStruct      *logValues );
 
     enum Elements
@@ -50,8 +53,8 @@ class CtiIONAlarm : public CtiIONStruct
 public:
 
     CtiIONAlarm( vector< CtiIONValue * > structValues );
-    CtiIONAlarm( CtiIONUnsignedInt *effectHandle, 
-                 CtiIONUnsignedInt *transitions, 
+    CtiIONAlarm( CtiIONUnsignedInt *effectHandle,
+                 CtiIONUnsignedInt *transitions,
                  CtiIONUnsignedInt *priority );
 
     enum Elements
@@ -72,9 +75,9 @@ class CtiIONEvent : public CtiIONStruct
 public:
 
     CtiIONEvent( vector< CtiIONValue * > structValues );
-    CtiIONEvent( CtiIONUnsignedInt *priority, 
-                 CtiIONUnsignedInt *eventState, 
-                 CtiIONUnsignedInt *causeHandle, 
+    CtiIONEvent( CtiIONUnsignedInt *priority,
+                 CtiIONUnsignedInt *eventState,
+                 CtiIONUnsignedInt *causeHandle,
                  CtiIONValue       *causeValue,
                  CtiIONUnsignedInt *effectHandle,
                  CtiIONValue       *effectValue );
@@ -100,9 +103,9 @@ class CtiIONRange : public CtiIONStruct
 public:
 
     CtiIONRange( vector< CtiIONValue * > structValues );
-    CtiIONRange( CtiIONUnsignedInt *rangeStart, 
+    CtiIONRange( CtiIONUnsignedInt *rangeStart,
                  CtiIONUnsignedInt *rangeEnd );
-    
+
     enum Elements
     {
         RangeStart,
@@ -137,7 +140,7 @@ public:
     CtiIONException( CtiIONUnsignedInt *exceptionCode,
                      CtiIONValue       *exceptionValue,
                      CtiIONCharArray   *reason );
-    
+
     enum Elements
     {
         ExceptionCode,
@@ -159,7 +162,7 @@ public:
     CtiIONWaveform( CtiIONNumeric *samplingFrequency,
                     CtiIONNumeric *offset,
                     CtiIONNumeric *scale );
-        
+
     enum Elements
     {
         SamplingFrequency,
@@ -183,14 +186,14 @@ public:
     CtiIONDate( CtiIONUnsignedInt *year,
                 CtiIONUnsignedInt *month,
                 CtiIONUnsignedInt *dayOfTheMonth );
-        
+
     enum Elements
     {
         Year,
         Month,
         DayOfTheMonth
     };
-    
+
 private:
 
 };
@@ -204,13 +207,13 @@ public:
     CtiIONCalendar( vector< CtiIONValue * > structValues );
     CtiIONCalendar( CtiIONDate             *startDate,
                     CtiIONUnsignedIntArray *listOfDays );
-        
+
     enum Elements
     {
         StartDate,
         ListOfDays
     };
-    
+
 private:
 
 };
@@ -224,12 +227,23 @@ public:
     CtiIONProfile( vector< CtiIONValue * > structValues );
     CtiIONProfile( CtiIONUnsignedIntArray *indexTable,
                    CtiIONUnsignedIntArray *activityList );
-        
+
     enum Elements
     {
         IndexTable,
         ActivityList
     };
+
+private:
+
+};
+
+
+class CtiIONStringArray : public CtiIONStruct
+{
+public:
+
+    CtiIONStringArray( vector< CtiIONValue * > structValues );
 
 private:
 

@@ -22,8 +22,8 @@
 #include "dlldefs.h"
 #include "xfer.h"
 
-#include "ion_rootclasses.h"
-#include "ion_valuebasictypes.h"
+//#include "ion_rootclasses.h"
+//#include "ion_valuebasictypes.h"
 #include "ion_net_datalink.h"
 
 
@@ -79,7 +79,18 @@ private:
 
     _net_layer_struct _netOut, _netIn;
 
-    CtiIONDataLinkLayer _datalinkLayer;
+    CtiIONDatalinkLayer _datalinkLayer;
+
+    enum IOState
+    {
+        Uninitialized,
+        Output,
+        Input,
+        Complete,
+        Failed
+    };
+
+    int _ioState;
 
     int   _valid, _srcID, _dstID;
     short _msgCount;
@@ -92,7 +103,8 @@ public:
 
     void setAddresses( unsigned short srcID, unsigned short dstID );
 
-    void setOutPayload( CtiIONSerializable &payload );
+    void setToOutput( CtiIONSerializable &payload );
+    void setToInput( void );
 
     void putPayload( unsigned char *buf );
     int  getPayloadLength( void ) const;
