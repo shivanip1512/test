@@ -101,7 +101,10 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
       }
       catch(const RWxmsg& x)
       {
-         cout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
+          {
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+          }
          break;
       }
    }

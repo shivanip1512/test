@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/08/22 21:43:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/08/24 13:51:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,6 +188,10 @@ void CtiPointClientManager::DumpList(void)
     catch(RWExternalErr e )
     {
         //Make sure the list is cleared
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
         cout << "Attempting to clear device list..." << endl;
 
         Map.clearAndDestroy();
@@ -413,7 +417,10 @@ void CtiPointClientManager::storeDirtyRecords()
                 }
                 catch(...)
                 {
-                    cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
             }
 

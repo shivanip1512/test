@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   exe_email
@@ -11,11 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_email.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:23 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2004/08/24 13:51:36 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+
+#pragma warning( disable : 4786)
 
 
 #include <windows.h>
@@ -31,53 +31,58 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 INT CtiEmailExecutor::ServerExecute(CtiServer *Svr)
 {
-   INT nRet = NoError;
+    INT nRet = NoError;
 
-   CtiVanGogh *VG = (CtiVanGogh *)Svr;
+    CtiVanGogh *VG = (CtiVanGogh *)Svr;
 
-   try
-   {
-      switch(getMessage()->isA())
-      {
-      case MSG_EMAIL:
-         {
-            try
+    try
+    {
+        switch(getMessage()->isA())
+        {
+        case MSG_EMAIL:
             {
-               nRet = VG->mail(*(CtiEmailMsg*)getMessage());
-            }
-            catch(...)
-            {
-               {
-                  cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
-            }
+                try
+                {
+                    nRet = VG->mail(*(CtiEmailMsg*)getMessage());
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
 
-            break;
-         }
-      default:
-         {
-            {
-               cout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                break;
             }
-            break;
-         }
-      }
-   }
-   catch(...)
-   {
-      {
-         cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
-   }
+        default:
+            {
+                {
+                    cout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                break;
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 
-   return nRet;
+    return nRet;
 }
 
 CtiEmailExecutor::CtiEmailExecutor(CtiMessage *p) :
-   CtiExecutor(p)
-{}
+CtiExecutor(p)
+{
+}
 
-CtiEmailExecutor::~CtiEmailExecutor() {}
+CtiEmailExecutor::~CtiEmailExecutor()
+{
+}
 
 
 

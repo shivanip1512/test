@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_ptchg.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/30 21:46:25 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/08/24 13:51:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,13 +43,13 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
             {
                nRet = VG->registration((CtiVanGoghConnectionManager*)(getMessage()->getConnectionHandle()),
                                        *(CtiPointRegistrationMsg*)getMessage());
-
             }
             catch(...)
             {
-               {
-                  cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
 
             break;
@@ -62,9 +62,10 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
             }
             catch(...)
             {
-               {
-                  cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
             break;
          }
@@ -80,9 +81,10 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
             }
             catch(...)
             {
-               {
-                  cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
             break;
          }
@@ -94,9 +96,10 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
             }
             catch(...)
             {
-               {
-                  cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
             break;
          }
@@ -116,9 +119,10 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
    }
    catch(...)
    {
-      {
-         cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       }
    }
 
    return nRet;

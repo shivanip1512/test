@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2003/09/02 18:40:11 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2004/08/24 13:51:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -178,12 +178,17 @@ void main(int argc, char **argv)
         }
         catch(RWxmsg &msg)
         {
-            cout << "Exception: ";
-            cout << msg.why() << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << msg.why() << endl;
+            }
         }
         catch(...)
         {
-            cout << "Exception. ";
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
     }

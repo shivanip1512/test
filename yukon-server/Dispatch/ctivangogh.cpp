@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2004/08/19 15:44:49 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2004/08/24 13:51:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -408,6 +408,7 @@ void CtiVanGogh::VGMainThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch(...)
@@ -813,6 +814,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
                 catch(const RWxmsg& x)
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
                     break;
                 }
@@ -914,6 +916,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     }
                     catch(const RWxmsg& x)
                     {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
                         break;
                     }
@@ -1204,6 +1207,7 @@ void CtiVanGogh::VGArchiverThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch(...)
@@ -1251,6 +1255,7 @@ void CtiVanGogh::VGTimedOperationThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch( ... )
@@ -1641,6 +1646,7 @@ INT CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
             }
             catch(const RWxmsg& x)
             {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
                 break;
             }
@@ -2748,6 +2754,7 @@ void CtiVanGogh::updateRuntimeDispatchTable(bool force)
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch(...)
@@ -2809,6 +2816,7 @@ void CtiVanGogh::refreshCParmGlobals(bool force)
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "**** EXCEPTION **** " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch(...)
@@ -5149,6 +5157,7 @@ void CtiVanGogh::VGRPHWriterThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch( ... )
@@ -5213,6 +5222,7 @@ void CtiVanGogh::VGDBWriterThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch( ... )
@@ -7108,6 +7118,7 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
         }
         catch(const RWxmsg& x)
         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
         }
     }
@@ -7159,6 +7170,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch( ... )
@@ -7223,6 +7235,7 @@ void CtiVanGogh::VGDBSignalEmailThread()
     }
     catch(RWxmsg& msg )
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     catch( ... )
