@@ -115,8 +115,8 @@ RWOrdered* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
-    {//is not valid and has been at .5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
+    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+ 90 )
+    {//is not valid and has been at 1 1/2 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
     }
 
