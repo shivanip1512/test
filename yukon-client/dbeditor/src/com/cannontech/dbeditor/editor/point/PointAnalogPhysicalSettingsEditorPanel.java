@@ -523,6 +523,7 @@ private javax.swing.JComboBox getTransducerTypeComboBox() {
 			ivjTransducerTypeComboBox = new javax.swing.JComboBox();
 			ivjTransducerTypeComboBox.setName("TransducerTypeComboBox");
 			// user code begin {1}
+			ivjTransducerTypeComboBox.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -548,6 +549,7 @@ private javax.swing.JLabel getTransducerTypeLabel() {
 			ivjTransducerTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTransducerTypeLabel.setMinimumSize(new java.awt.Dimension(113, 16));
 			// user code begin {1}
+			ivjTransducerTypeLabel.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
