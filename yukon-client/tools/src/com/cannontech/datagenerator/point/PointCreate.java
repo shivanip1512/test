@@ -15,6 +15,7 @@ abstract class PointCreate
 	private static boolean disconnectCreate = false;
 	private static boolean powerFailCreate = false;
 	private static boolean oneDeviceAnalogPointCreate = false;
+	private static boolean loadGroupPointCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -22,7 +23,7 @@ abstract class PointCreate
 	{
 		super();
 	}
-	abstract boolean create();
+	protected abstract boolean create();
 	/**
 	 * Main. Start the Power Fail Point creation/insertion process.
 	 * Creation date: (1/10/2001 11:18:55 PM)
@@ -51,6 +52,10 @@ abstract class PointCreate
 			{
 				powerFailCreate = true;	//Power Fail Points Will Be Created
 			}
+			else if( args[i].toLowerCase().startsWith("lg"))
+			{
+				loadGroupPointCreate = true;	//Load Group Control History Points Will Be Created
+			}
 		}
 			
 		java.util.Date timerStart = null;
@@ -63,6 +68,16 @@ abstract class PointCreate
 			timerStop = new java.util.Date();
 			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
 					" Secs for OneDevice_AnalogPointCreate to complete" );
+			
+		}
+		if(loadGroupPointCreate)
+		{
+			timerStart = new java.util.Date();
+			LoadGroup_ControlPointCreate loadGroupControlPointCreate= new LoadGroup_ControlPointCreate();
+			loadGroupControlPointCreate.create();
+			timerStop = new java.util.Date();
+			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
+					" Secs for LoadGroup_ControlPointCreate to complete" );
 			
 		}
 		if( powerFailCreate )
@@ -111,7 +126,7 @@ abstract class PointCreate
 		for (int i = 0; i < pointTempList.size(); i++)
 		{
 			com.cannontech.database.data.lite.LitePoint lp = (LitePoint)pointTempList.get(i);
-			if( isPointCreated(lp.getPointOffset(), lp.getPointType()))
+			if( isPointCreated(lp))
 				return false;
 		}
 		return true;
@@ -123,7 +138,7 @@ abstract class PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	protected boolean isDeviceValid( int type_ )
+	protected boolean isDeviceValid(com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_)
 	{
 		return true;
 	}
@@ -135,7 +150,7 @@ abstract class PointCreate
 	 * @param pointType_ int
 	 * @return boolean
 	 */
-	protected boolean isPointCreated(int pointOffset_, int pointType_)
+	protected boolean isPointCreated(LitePoint lp)
 	{
 		return false;
 	}
@@ -159,7 +174,7 @@ abstract class PointCreate
 			for (int i = 0; i < devices.size(); i++)
 			{
 				com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i));
-				if( isDeviceValid(litePaobject.getType()) )
+				if( isDeviceValid(litePaobject) )
 				{
 					int deviceDevID = litePaobject.getLiteID();
 					
@@ -174,18 +189,13 @@ abstract class PointCreate
 		} //synch
 	}
 	
-	/**
-	 * Returns true if multi is successfully inserted into the Database.
-	 * Creation date: (3/31/2001 12:07:17 PM)
-	 * @param multi com.cannontech.database.data.multi.MultiDBPersistent
-	 */
-	protected boolean writeToSQLDatabase(com.cannontech.database.data.multi.MultiDBPersistent multi) 
+	protected boolean writeToSQLDatabase(com.cannontech.database.data.multi.SmartMultiDBPersistent multi) 
 	{
 		//write all the collected data to the SQL database
 		try
 		{
 		  com.cannontech.clientutils.CTILogger.info("Creating Transaction to insert multi");
-	      multi = (com.cannontech.database.data.multi.MultiDBPersistent)com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, multi).execute();
+	      multi = (com.cannontech.database.data.multi.SmartMultiDBPersistent)com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, multi).execute();
 	
 			return true;
 		}
@@ -195,4 +205,5 @@ abstract class PointCreate
 			return false;
 		}
 	}
+	
 }
