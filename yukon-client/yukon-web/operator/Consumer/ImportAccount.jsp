@@ -68,7 +68,12 @@
                     </td>
                   </tr>
                   <tr align="center"> 
-                    <td colspan="2">Send me the import log by email: 
+                    <td colspan="2" class="MainText"> 
+                      <input type="checkbox" name="PreScan" value="true">
+                      Pre-scan the import file(s) to check for potential problems.</td>
+                  </tr>
+                  <tr align="center"> 
+                    <td colspan="2" class="MainText">Email (to receive log file): 
                       <input type="text" name="Email" size="35">
                     </td>
                   </tr>
