@@ -4,8 +4,15 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 abstract class PointCreate 
 {
 	//a mutable lite point used for comparisons
@@ -16,6 +23,7 @@ abstract class PointCreate
 	private static boolean powerFailCreate = false;
 	private static boolean oneDeviceAnalogPointCreate = false;
 	private static boolean loadGroupPointCreate = false;
+	private static boolean mct410PointCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -56,6 +64,10 @@ abstract class PointCreate
 			{
 				loadGroupPointCreate = true;	//Load Group Control History Points Will Be Created
 			}
+			else if( args[i].toLowerCase().startsWith("mct410"))
+			{
+				mct410PointCreate = true;	//MCT 410 Missing Points Will Be Created
+			}
 		}
 			
 		java.util.Date timerStart = null;
@@ -66,8 +78,7 @@ abstract class PointCreate
 			OneDevice_AnalogPointCreate analogPointCreator = new OneDevice_AnalogPointCreate(devID, count);
 			analogPointCreator.create();
 			timerStop = new java.util.Date();
-			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
-					" Secs for OneDevice_AnalogPointCreate to complete" );
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for OneDevice_AnalogPointCreate to complete" );
 			
 		}
 		if(loadGroupPointCreate)
@@ -76,8 +87,7 @@ abstract class PointCreate
 			LoadGroup_ControlPointCreate loadGroupControlPointCreate= new LoadGroup_ControlPointCreate();
 			loadGroupControlPointCreate.create();
 			timerStop = new java.util.Date();
-			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
-					" Secs for LoadGroup_ControlPointCreate to complete" );
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for LoadGroup_ControlPointCreate to complete" );
 			
 		}
 		if( powerFailCreate )
@@ -86,8 +96,7 @@ abstract class PointCreate
 			PowerFailPointCreate powerFailCreator = new PowerFailPointCreate();
 			powerFailCreator.create();
 			timerStop = new java.util.Date();
-			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
-					" Secs for PowerFailPointCreate to complete" );
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for PowerFailPointCreate to complete" );
 		}
 		if( disconnectCreate)
 		{
@@ -95,9 +104,17 @@ abstract class PointCreate
 			DisconnectPointCreate disconnectCreator = new DisconnectPointCreate();
 			disconnectCreator.create();
 			timerStop = new java.util.Date();
-			com.cannontech.clientutils.CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
-					" Secs for DisconnectPointCreate to complete" );
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for DisconnectPointCreate to complete" );
+		}
+		if( mct410PointCreate)
+		{
+			timerStart = new java.util.Date();
+			MCT410AllPointCreate mct410Creator = new MCT410AllPointCreate();
+			mct410Creator.create();
+			timerStop = new java.util.Date();
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for MCT410AllPointCreate to complete" );
 		}		
+
 		System.exit(0);
 	}
 
@@ -117,15 +134,15 @@ abstract class PointCreate
 		DUMMY_LITE_POINT.setPaobjectID(deviceDevID);	//needed for binarySearchRepetition
 		
 		//searches and sorts the list!
-		com.cannontech.common.util.CtiUtilities.binarySearchRepetition( 
-						points,
-						DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-						com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator,
-						pointTempList );
+		CtiUtilities.binarySearchRepetition( 
+			points,
+			DUMMY_LITE_POINT, //must have the needed DeviceID set!!
+			LiteComparators.litePointDeviceIDComparator,
+			pointTempList );
 					
 		for (int i = 0; i < pointTempList.size(); i++)
 		{
-			com.cannontech.database.data.lite.LitePoint lp = (LitePoint)pointTempList.get(i);
+			LitePoint lp = (LitePoint)pointTempList.get(i);
 			if( isPointCreated(lp))
 				return false;
 		}
@@ -138,7 +155,7 @@ abstract class PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	protected boolean isDeviceValid(com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_)
+	protected boolean isDeviceValid(LiteYukonPAObject litePaobject_)
 	{
 		return true;
 	}
@@ -161,19 +178,18 @@ abstract class PointCreate
 	 */
 	protected void getDeviceVector(java.util.Vector deviceVector)
 	{
-		com.cannontech.database.cache.DefaultDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)
 		{
 			java.util.List devices = cache.getAllDevices();
-			java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
+			java.util.Collections.sort(devices, LiteComparators.liteYukonPAObjectIDComparator);
 			java.util.List points = cache.getAllPoints();
-			java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
+			java.util.Collections.sort(points, LiteComparators.litePointDeviceIDComparator);
 			
 			for (int i = 0; i < devices.size(); i++)
 			{
-				com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i));
+				LiteYukonPAObject litePaobject = ((LiteYukonPAObject)devices.get(i));
 				if( isDeviceValid(litePaobject) )
 				{
 					int deviceDevID = litePaobject.getLiteID();
@@ -185,23 +201,23 @@ abstract class PointCreate
 					}
 				}
 			}
-			com.cannontech.clientutils.CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
+			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
 		} //synch
 	}
 	
-	protected boolean writeToSQLDatabase(com.cannontech.database.data.multi.SmartMultiDBPersistent multi) 
+	protected boolean writeToSQLDatabase(SmartMultiDBPersistent multi) 
 	{
 		//write all the collected data to the SQL database
 		try
 		{
-		  com.cannontech.clientutils.CTILogger.info("Creating Transaction to insert multi");
-	      multi = (com.cannontech.database.data.multi.SmartMultiDBPersistent)com.cannontech.database.Transaction.createTransaction( com.cannontech.database.Transaction.INSERT, multi).execute();
+		  CTILogger.info("Creating Transaction to insert multi");
+	      multi = (SmartMultiDBPersistent)Transaction.createTransaction( Transaction.INSERT, multi).execute();
 	
 			return true;
 		}
-		catch( com.cannontech.database.TransactionException t )
+		catch( TransactionException t )
 		{
-			com.cannontech.clientutils.CTILogger.error( t.getMessage(), t );
+			CTILogger.error( t.getMessage(), t );
 			return false;
 		}
 	}
