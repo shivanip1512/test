@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2002/05/17 15:23:21 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2002/06/13 22:38:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1259,6 +1259,10 @@ static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool
     }
 
     BuildRequestSet(interp, cmd_line,req_set);
+
+    // Nothing to do get outta here
+    if( req_set.entries() == 0 )
+        return TCL_OK;
 
     //Make a copy of the request set so we can match return messages
     //and write out all of the requests
