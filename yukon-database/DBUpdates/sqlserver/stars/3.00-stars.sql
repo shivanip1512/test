@@ -32,6 +32,12 @@ go
 update YukonUserRole set Value=(select GroupID from YukonGroup where GroupName=YukonUserRole.Value or GroupName=YukonUserRole.Value + ' Grp') where RolePropertyID in (-1105,-1106) and Value <> '(none)';
 go
 
+update YukonWebConfiguration set LogoLocation='yukon/Icons/' + LogoLocation where LogoLocation in (
+	'AC.gif', 'DualFuel.gif', 'Electric.gif', 'Generation.gif', 'GrainDryer.gif', 'HeatPump.gif', 'HotTub.gif',
+	'Irrigation.gif', 'Load.gif', 'Pool.gif', 'SetBack.gif', 'StorageHeat.gif', 'WaterHeater.gif');
+go
+
+
 
 /* Stars tables initialization script */
 INSERT INTO ServiceCompany VALUES (0,'(none)',0,'(none)','(none)',0,'(none)');
