@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:27 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/04/21 22:07:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,24 +44,13 @@ public:
 
    CtiSignalMsg(long       pid   = 0,
                 int        soe   = 0,
-                RWCString  text  = RWCString(),
-                RWCString  addl  = RWCString(),
+                RWCString  text  = RWCString("(none)"),
+                RWCString  addl  = RWCString("(none)"),
                 int        lt    = GeneralLogType,
                 unsigned   cls   = SignalEvent,
-                RWCString  usr   = RWCString(""),
+                RWCString  usr   = RWCString("(none)"),
                 unsigned   tag   = 0,
-                int        pri   = 7 );/* :
-      Inherited(pri),
-      _id(pid),
-      _logType(lt),
-      _signalGroup(cls),
-      _text(text),
-      _additional(addl),
-      _tags(tag)
-   {
-      Inherited::setSOE(soe);
-      Inherited::setUser(usr);
-   }                                     */
+                int        pri   = 7 );
 
    CtiSignalMsg(const CtiSignalMsg& aRef);
    virtual ~CtiSignalMsg();
