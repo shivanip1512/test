@@ -471,7 +471,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 	pageLinks[<%= num %>] = new Array(3);
 	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][1] = "ConfigMeter.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][2] = "CommandMeter.jsp?InvNo=<%= num %>";
+	pageLinks[<%= num %>][2] = "CommandInv.jsp?InvNo=<%= num %>";
 <%
 	}
 	int invCnt = inventories.getStarsInventoryCount();
