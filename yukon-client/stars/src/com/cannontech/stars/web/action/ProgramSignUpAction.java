@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
@@ -144,12 +145,30 @@ public class ProgramSignUpAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
             
+            String progEnrBefore = null;
+            for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
+            	LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+            	if (progEnrBefore == null)
+            		progEnrBefore = liteProg.getLmProgram().getProgramName();
+            	else
+					progEnrBefore += ", " + liteProg.getLmProgram().getProgramName();
+            }
+            
 			// If there is only one hardware in this account, use it as the default hardware, assign all programs to it
 			Integer dftInvID = null;
 			if (liteAcctInfo.getInventories().size() == 1)
 				dftInvID = (Integer) liteAcctInfo.getInventories().get(0);
 	        
 	        updateProgramEnrollment( progSignUp, liteAcctInfo, dftInvID, energyCompany, conn );
+	        
+	        String progEnrNow = null;
+			for (int i = 0; i < liteAcctInfo.getLmPrograms().size(); i++) {
+				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getLmPrograms().get(i);
+				if (progEnrNow == null)
+					progEnrNow = liteProg.getLmProgram().getProgramName();
+				else
+					progEnrNow += ", " + liteProg.getLmProgram().getProgramName();
+			}
 	        
     		// Go through the list of hardware "to be disabled", and move the fake ones to the "to be configured" list
     		for (int i = 0; i < hwIDsToDisable.size(); i++) {
@@ -175,7 +194,7 @@ public class ProgramSignUpAction implements ActionBase {
 				// Send the reenable command if hardware status is unavailable,
 				// whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
 				if (ServerUtils.isOperator(user) && AuthFuncs.checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-					|| AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))
+					|| ServerUtils.isResidentialCustomer(user) && AuthFuncs.checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))
 					YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, false, conn);
 				else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 					YukonSwitchCommandAction.sendEnableCommand(energyCompany, liteHw, conn);
@@ -193,6 +212,12 @@ public class ProgramSignUpAction implements ActionBase {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
 				starsInvs.addStarsInventory( starsInv );
 			}
+			
+			// Log activity
+			String logMsg = "Program Enrolled Before:" + ((progEnrBefore != null)? progEnrBefore : "(None)") +
+					"; Now:" + ((progEnrNow != null)? progEnrNow : "(Not Enrolled)");
+			ActivityLogger.log(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
+					"Program Enrollment", logMsg );
             
             if (user == null) {	// Probably from the sign up wizard?
 	            StarsSuccess success = new StarsSuccess();
@@ -334,6 +359,9 @@ public class ProgramSignUpAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
+	/**
+	 * Returns a description of the program enrollment changes (used in activity log)
+	 */
 	public static void updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
 		Integer invID, LiteStarsEnergyCompany energyCompany, java.sql.Connection conn) throws java.sql.SQLException
 	{
@@ -553,7 +581,7 @@ public class ProgramSignUpAction implements ActionBase {
 				newAppList.add( liteApp );
 			}
 		}
-    	
+		
 		// Remove enrolled program for all the remaining appliances
 		for (int i = 0; i < appList.size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) appList.get(i);
