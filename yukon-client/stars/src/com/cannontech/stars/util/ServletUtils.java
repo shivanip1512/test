@@ -56,6 +56,7 @@ public class ServletUtils {
 	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
 	public static final String ATT_ACCOUNT_SEARCH_RESULTS = "ACCOUNT_SEARCH_RESULTS";
 	public static final String ATT_EXIT_INTERVIEW_QUESTIONS = "EXIT_INTERVIEW_QUESTIONS";
+	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
 
     private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     

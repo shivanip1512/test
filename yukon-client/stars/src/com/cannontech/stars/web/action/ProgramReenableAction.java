@@ -273,7 +273,7 @@ public class ProgramReenableAction implements ActionBase {
             	}
             }
             
-        	user.removeAttribute( ServletUtils.TRANSIENT_ATT_LEADING + "LM_PROGRAM_HISTORY" );
+        	user.removeAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_LM_PROGRAM_HISTORY );
             
             if (ServerUtils.isOperator( user )) {
 				Hashtable selectionLists = (Hashtable) user.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
