@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/04/30 16:30:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -310,28 +310,38 @@ double CtiPointNumeric::getDefaultValue( ) const
 
 DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 {
-   INT uom = getPointUnits().getCalcType();
+    int calcType = getPointUnits().getUnitMeasure().getCalcType();
 
-   switch( uom )
-   {
-   case CalcTypeNormal:
-      {
-         Value = (Value * getMultiplier()) + getDataOffset();
-         break;
-      }
-   case CalcTypeVoltsFromV2H:
-      {
-         /* the base value is from V2H */
-         Value = (DOUBLE) sqrt (fabs ((DOUBLE) (Value * getMultiplier())));
-         break;
-      }
-   default:
-      {
-         Value = (Value * getMultiplier()) + getDataOffset();
-         break;
-      }
-   }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "trying to use " << calcType << endl;
+    }
 
-   return Value;
+    switch( calcType )
+    {
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "Don't know about CalcType " << calcType << ".  Defaulting to CalcTypeNormal" << endl;
+            }
+            //  fall through
+        }
+        case CalcTypeNormal:
+        {
+            Value = (Value * getMultiplier()) + getDataOffset();
+            break;
+        }
+        case CalcTypeVoltsFromV2H:
+        {
+            /* the base value is from V2H */
+            Value = (DOUBLE) sqrt (fabs ((DOUBLE) (Value * getMultiplier())));
+            break;
+        }
+    }
+
+    return Value;
 }
 
