@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/03/02 20:01:07 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/06/23 15:24:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,8 @@ void defaultExecute(int argc, char **argv);
 void defaultHelp();
 void notifEmailExecute( int argc, char **argv );
 void seasonExecute(int argc, char **argv);
+void lmExecute(int argc, char **argv);
+void lmHelp();
 
 typedef void (*XFUNC)(int argc, char **argv);       // Execution function
 typedef void (*HFUNC)();                           // Help Function
@@ -76,35 +78,11 @@ TESTFUNC_t testfunction[] = {
     {"tags", tagExecute, tagHelp},
     {"default", defaultExecute, defaultHelp},
     {"notif", notifEmailExecute, defaultHelp},
+    {"lm", lmExecute, lmHelp},
     {"", 0, 0}
 };
 
 
-
-BOOL MyCtrlHandler(DWORD fdwCtrlType)
-{
-    switch(fdwCtrlType)
-    {
-
-    /* Handle the CTRL+C signal. */
-
-    case CTRL_C_EVENT:
-
-    case CTRL_CLOSE_EVENT:
-
-    case CTRL_BREAK_EVENT:
-
-    case CTRL_LOGOFF_EVENT:
-
-    case CTRL_SHUTDOWN_EVENT:
-
-    default:
-
-        bQuit = TRUE;
-        return TRUE;
-
-    }
-}
 
 void DoTheNasty(int argc, char **argv);
 
@@ -147,13 +125,6 @@ void main(int argc, char **argv)
     dout.setOutputFile(argv[0]);
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
-
-    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
-    {
-        cerr << "Could not install control handler" << endl;
-        return;
-    }
-
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -253,7 +224,7 @@ void notifEmailExecute( int argc, char **argv )
    }
    Sleep(5000);
    #endif
-   
+
    CtiConnection Connect( 1515, argv[2] );
 
    CtiNotifEmailMsg  *message = new CtiNotifEmailMsg;
@@ -270,15 +241,15 @@ void notifEmailExecute( int argc, char **argv )
 
 
    Sleep( 1000 );
-   
-      
+
+
    Connect.ShutdownConnection();
    Sleep( 2500 );
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
-   
+
    return;
 }
 
@@ -347,7 +318,7 @@ void tagExecute(int argc, char **argv)
         message->setMessagePriority(15);
         Connect.WriteConnQue( message->replicateMessage() );
         Connect.WriteConnQue( message );
-        
+
         #if 0
         CtiTagMsg *pTag = 0;
 
@@ -880,3 +851,151 @@ void seasonExecute(int argc, char **argv)
 
     return;
 }
+
+void lmHelp()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Arg 1:   vangogh server machine name" << endl;
+        dout << "Arg 2:   this app's registration name" << endl;
+        dout << "Arg 3:   # of loops to send data     " << endl;
+        dout << "Arg 4:   sleep duration between loops" << endl;
+    }
+
+    return;
+}
+
+void lmExecute(int argc, char **argv)
+{
+    CtiPointManager PointMgr;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Running the LM ramp module" << endl;
+    }
+
+    if(argc < 7)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Arg 2:   vangogh server machine name" << endl;
+        dout << "Arg 3:   this app's registration name" << endl;
+        dout << "Arg 4:   Point Id to tickle" << endl;
+        dout << "Arg 5:   steps 1 to n to send as point value" << endl;
+        dout << "Arg 6:   max seconds randomization on sleep (5 min + 0 to n rand)" << endl;
+    }
+
+    if(argc == 7)
+    {
+        RWWinSockInfo info;
+
+        try
+        {
+            int i, steps, k;
+
+            unsigned    timeCnt = rwEpoch;
+            unsigned    pt = atoi(argv[4]);
+            CtiMessage  *pMsg;
+
+
+            steps = atoi(argv[5]);
+            int maxrand = atoi(argv[6]);
+
+            srand(1);   // This is replicable.
+
+            PointMgr.refreshList();     // This should give me all the points in the box.
+
+            CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+
+            CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+            pM->setMessagePriority(15);
+
+            Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg(argv[3], rwThreadId(), FALSE));
+            CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+            PtRegMsg->setMessagePriority(15);
+
+            Connect.WriteConnQue( PtRegMsg );
+
+            while( NULL != (pMsg = Connect.ReadConnQue(1000)))
+            {
+                delete pMsg;
+            }
+
+            CtiPointDataMsg  *pData = NULL;
+            CtiMultiMsg   *pChg  = CTIDBG_new CtiMultiMsg();
+
+            CtiPoint *pPoint = PointMgr.getEqual( pt );
+
+
+            for(i = 1; i <= steps && !bQuit; i++ )
+            {
+                pData = CTIDBG_new CtiPointDataMsg( pPoint->getID(), i, NormalQuality,  pPoint->getType(), __FILE__);
+
+                if(pData != NULL)
+                {
+                    if(pChg != NULL)
+                    {
+                        // Add a single point change to the message
+                        pChg->getData().insert(pData);
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Message Sent: Id " << pData->getId() << " value = " << pData->getValue() << endl;
+                        }
+
+                        Connect.WriteConnQue(pChg);
+
+                        pChg = NULL;
+                        pChg = CTIDBG_new CtiMultiMsg();
+                    }
+
+                    while( NULL != (pMsg = Connect.ReadConnQue(0)))
+                    {
+                        delete pMsg;
+                    }
+
+                    unsigned long stime = 300 * 1000 + (((double)rand() / (double)RAND_MAX) * maxrand) * 1000.0;
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Sleeping for " << stime << " millis" << endl;
+                    }
+
+                    Sleep(stime);
+                }
+            }
+
+
+            INT cnt;
+            while( (cnt = Connect.outQueueCount()) > 0 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** OutQueue has **** " << cnt << " entries" << endl;
+                }
+                Sleep(1000);
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime()  << " **** OutQueue is cleared" << endl;
+            }
+
+            while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+            {
+                delete pMsg;
+            }
+
+            Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
+
+            Sleep(5000);
+        }
+        catch(RWxmsg &msg)
+        {
+            cout << "Tester Exception: ";
+            cout << msg.why() << endl;
+        }
+
+    }
+}
+
