@@ -324,12 +324,11 @@ public class ServerUtils {
 		return null;
 	}
 	
-	public static File getUploadFile(List items, String fieldName) {
-		try {
-			for (int i = 0; i < items.size(); i++) {
-				FileItem item = (FileItem) items.get(i);
-				if (item.isFormField() || !item.getFieldName().equals(fieldName))
-					continue;
+	public static File getUploadFile(List items, String fieldName) throws WebClientException {
+		for (int i = 0; i < items.size(); i++) {
+			FileItem item = (FileItem) items.get(i);
+			if (!item.isFormField() && item.getFieldName().equals(fieldName)) {
+				if (item.getName().equals("")) break;
 				
 				Date uploadDate = new Date();
 				String uploadFileName = fieldName + "_" + starsDateFormat.format(uploadDate) +
@@ -339,13 +338,15 @@ public class ServerUtils {
 				if (!uploadPath.exists()) uploadPath.mkdirs();
 				
 				File uploadFile = new File(uploadPath, uploadFileName);
-				item.write( uploadFile );
+				try {
+					item.write( uploadFile );
+				}
+				catch (Exception e) {
+					throw new WebClientException("Failed to upload file '" + item.getName() + "'");
+				}
 				
 				return uploadFile;
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 		return null;
