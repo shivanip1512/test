@@ -515,7 +515,7 @@ public class InventoryBean {
 		htmlBuf.append("          <td class='HeaderCell' width='15%'>Install Date</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td class='HeaderCell'>Location</td>").append(LINE_SEPARATOR);
 		if (showEnergyCompany)
-			htmlBuf.append("          <td class='HeaderCell' width='17%'>Energy Company</td>").append(LINE_SEPARATOR);
+			htmlBuf.append("          <td class='HeaderCell' width='17%'>Member</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
 		for (int i = minInvNo; i <= maxInvNo; i++) {
