@@ -1,10 +1,37 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
-	int itemNo = Integer.parseInt(request.getParameter("Item"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
-	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
+	StarsThermoSettings thermoSettings = null;
+	StarsThermostatDynamicData curSettings = null;
+	int invID = 0;
+	int[] invIDs = null;
 	
-	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
+	int itemNo = Integer.parseInt(request.getParameter("Item"));
+	if (itemNo == -1) {
+		// Setup for multiple thermostats
+		String[] invIDStrs = request.getParameterValues("InvID");
+		if (invIDStrs != null) {
+			invIDs = new int[invIDStrs.length];
+			for (int i = 0; i < invIDs.length; i++)
+				invIDs[i] = Integer.parseInt(invIDStrs[i]);
+			
+			Arrays.sort(invIDs);
+			session.setAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS, invIDs);
+		}
+		else {
+			invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+			if (invIDs == null) {
+				response.sendRedirect("AllTherm.jsp");
+				return;
+			}
+		}
+	}
+	else {
+		// Setup for a single thermostat
+		StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
+		thermoSettings = thermostat.getStarsThermostatSettings();
+		curSettings = thermoSettings.getStarsThermostatDynamicData();
+		invID = thermostat.getInventoryID();
+	}
 
 	String dayStr = request.getParameter("day");
 	StarsThermoDaySettings daySetting = null;
@@ -20,13 +47,14 @@
 	if (modeStr != null)
 		modeSetting = StarsThermoModeSettings.valueOf(modeStr);
 	if (modeStr == null) {
-		modeSetting = curSettings.getMode();
+		if (curSettings != null)
+			modeSetting = curSettings.getMode();
 		if (modeSetting == null)
 			modeSetting = StarsThermoModeSettings.COOL;
 		modeStr = modeSetting.toString();
 	}
 	
-	if (ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
 		if (request.getParameter("OmitTimeout") != null)
 			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
 		
@@ -105,10 +133,8 @@
 	}
 	
 	char tempUnit = 'F';
-	if (curSettings != null) {
-		if (curSettings.getDisplayedTempUnit() != null)
-			tempUnit = curSettings.getDisplayedTempUnit().charAt(0);
-	}
+	if (curSettings != null && curSettings.getDisplayedTempUnit() != null)
+		tempUnit = curSettings.getDisplayedTempUnit().charAt(0);
 %>
 <html>
 <head>
@@ -260,7 +286,7 @@ function init() {
 	toggleThermostat(4, <%= !skip4 %>);
 
 	document.getElementById('Default').value = '<cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
-<%	if (thermoSettings.getStarsThermostatDynamicData() != null) { %>
+<%	if (curSettings != null) { %>
 	timeoutId = setTimeout("location.reload()", 60000);
 <%	} %>
 }
@@ -338,21 +364,36 @@ MM_reloadPage(true);
 			  
 			<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
-			  <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
+			  <input type="hidden" name="InvID" value="<%= invID %>">
+<%	if (invIDs != null) {
+		for (int i = 0; i < invIDs.length; i++) {
+%>
+			  <input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
+<%		}
+	}
+%>
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule2.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="isTwoWay" value="true">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
 			  <input type="hidden" name="tempval4">
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-<%	if (!ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) { %>
+<%	if (curSettings != null) {
+		if (!ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+%>
                   <td align="right" class="TitleHeader">Last Updated Time: <%= histDateFormat.format(curSettings.getLastUpdatedTime()) %></td>
-<%	} else { %>
+<%		} else { %>
                   <td align="right" class="ErrorMsg">Last Updated Time: <%= (curSettings.getLastUpdatedTime() != null)? histDateFormat.format(curSettings.getLastUpdatedTime()) : "N/A" %></td>
+<%		}
+	}
+	else {
+%>
+                  <td align="right" class="MainText"><a href="AllTherm.jsp" class="Link1">Change Thermostat Selection</a></td>
 <%	} %>
                 </tr>
               </table>

@@ -1,9 +1,36 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
+	StarsThermoSettings thermoSettings = null;
+	int invID = 0;
+	int[] invIDs = null;
+	
 	int itemNo = Integer.parseInt(request.getParameter("Item"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
-	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
-
+	if (itemNo == -1) {
+		// Setup for multiple thermostats
+		String[] invIDStrs = request.getParameterValues("InvID");
+		if (invIDStrs != null) {
+			invIDs = new int[invIDStrs.length];
+			for (int i = 0; i < invIDs.length; i++)
+				invIDs[i] = Integer.parseInt(invIDStrs[i]);
+			
+			Arrays.sort(invIDs);
+			session.setAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS, invIDs);
+		}
+		else {
+			invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+			if (invIDs == null) {
+				response.sendRedirect("AllTherm.jsp");
+				return;
+			}
+		}
+	}
+	else {
+		// Setup for a single thermostat
+		StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
+		thermoSettings = thermostat.getStarsThermostatSettings();
+		invID = thermostat.getInventoryID();
+	}
+	
 	String dayStr = request.getParameter("day");
 	StarsThermoDaySettings daySetting = null;
 	if (dayStr != null)
@@ -268,15 +295,30 @@ MM_reloadPage(true);
 			  
 			<form name="form1" method="POST" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="prepareSubmit(this)">
 			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
-			  <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
+			  <input type="hidden" name="InvID" value="<%= invID %>">
+<%	if (invIDs != null) {
+		for (int i = 0; i < invIDs.length; i++) {
+%>
+			  <input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
+<%		}
+	}
+%>
 			  <input type="hidden" name="day" value="<%= dayStr %>">
 			  <input type="hidden" name="mode" value="<%= modeStr %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/ThermSchedule.jsp?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>&day=<%= dayStr %>&mode=<%= modeStr %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
 			  <input type="hidden" name="tempval3">
 			  <input type="hidden" name="tempval4">
+<%	if (itemNo == -1) { %>
+              <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td align="right" class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
+                    Thermostat Selection</a></td>
+                </tr>
+              </table>
+<%	} %>
               <table width="80%" border="1" cellspacing = "0" cellpadding = "2">
                 <tr> 
                     <td align = "center"  valign = "bottom" class = "Background"> 

@@ -24,15 +24,61 @@ function selectSingle(form) {
 	form.All.checked = allChecked;
 }
 
-function goToSchedule(form) {
+function goToSchedule() {
+	var checkboxes = document.getElementsByName("InvID");
+	var elements = document.getElementsByName("IsTwoWay");
+	
+	var anyChecked = false;
+	for (i = 0; i < checkboxes.length; i++)
+		if (checkboxes[i].checked) {
+			anyChecked = true;
+			break;
+		}
+	if (!anyChecked) return;
+	
+	var hasTwoWay = false;
+	for (i = 0; i < checkboxes.length; i++)
+		if (checkboxes[i].checked && elements[i].value == "true") {
+			hasTwoWay = true;
+			break;
+		}
+	
+	if (hasTwoWay)
+		document.form1.attributes["action"].value = "ThermSchedule2.jsp?Item=-1";
+	else
+		document.form1.attributes["action"].value = "ThermSchedule.jsp?Item=-1";
+	document.form1.submit();
 }
 
-function goToManual(form) {
+function goToManual() {
+	var checkboxes = document.getElementsByName("InvID");
+	var elements = document.getElementsByName("IsTwoWay");
+	
+	var anyChecked = false;
+	for (i = 0; i < checkboxes.length; i++)
+		if (checkboxes[i].checked) {
+			anyChecked = true;
+			break;
+		}
+	if (!anyChecked) return;
+	
+	var hasTwoWay = false;
+	for (i = 0; i < checkboxes.length; i++)
+		if (checkboxes[i].checked && elements[i].value == "true") {
+			hasTwoWay = true;
+			break;
+		}
+	
+	if (hasTwoWay)
+		document.form1.attributes["action"].value = "Thermostat2.jsp?Item=-1";
+	else
+		document.form1.attributes["action"].value = "Thermostat.jsp?Item=-1";
+	document.form1.submit();
 }
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="selectSingle(document.form1)">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -99,13 +145,17 @@ function goToManual(form) {
                     <td width="256" class="TableCell">All</td>
                   </tr>
 <%
+	int[] invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+	
 	for (int i = 0; i < thermostats.getStarsLMHardwareCount(); i++) {
 		StarsLMHardware thermostat = thermostats.getStarsLMHardware(i);
+		String checked = (invIDs != null && Arrays.binarySearch(invIDs, thermostat.getInventoryID()) >= 0)? "checked" : "";
 %>
                   <tr> 
                     <td width="32"> 
                       <div align="right"> 
-                        <input type="checkbox" name="InvID" value="<%= thermostat.getInventoryID() %>" onclick="selectSingle(this.form)">
+                        <input type="checkbox" name="InvID" value="<%= thermostat.getInventoryID() %>" onclick="selectSingle(this.form)" <%= checked %>>
+                        <input type="hidden" name="IsTwoWay" value="<%= thermostat.getStarsThermostatSettings().getStarsThermostatDynamicData() != null %>">
                       </div>
                     </td>
                     <td width="256" class="TableCell"><%= thermostat.getDeviceLabel() %></td>
@@ -118,12 +168,12 @@ function goToManual(form) {
                 <table width="200" border="0" cellspacing="5" cellpadding="0" align="center">
                   <tr> 
                     <td> 
-                      <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToSchedule(this.form)">
+                      <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToSchedule()">
 					    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %></span>
 					  </div>
                     </td>
                     <td> 
-                      <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToManual(this.form)">
+                      <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="goToManual()">
 					    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %></span>
 					  </div>
                     </td>

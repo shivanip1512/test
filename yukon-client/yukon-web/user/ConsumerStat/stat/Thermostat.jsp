@@ -1,12 +1,39 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
+	StarsThermoSettings thermoSettings = null;
+	int invID = 0;
+	int[] invIDs = null;
+	
 	int itemNo = Integer.parseInt(request.getParameter("Item"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
-	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
-
+	if (itemNo == -1) {
+		// Setup for multiple thermostats
+		String[] invIDStrs = request.getParameterValues("InvID");
+		if (invIDStrs != null) {
+			invIDs = new int[invIDStrs.length];
+			for (int i = 0; i < invIDs.length; i++)
+				invIDs[i] = Integer.parseInt(invIDStrs[i]);
+			
+			Arrays.sort(invIDs);
+			session.setAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS, invIDs);
+		}
+		else {
+			invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+			if (invIDs == null) {
+				response.sendRedirect("AllTherm.jsp");
+				return;
+			}
+		}
+	}
+	else {
+		// Setup for a single thermostat
+		StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
+		thermoSettings = thermostat.getStarsThermostatSettings();
+		invID = thermostat.getInventoryID();
+	}
+	
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
-	if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
+	if (thermoSettings != null && thermoSettings.getStarsThermostatManualEventCount() > 0) {
 		lastEvent = thermoSettings.getStarsThermostatManualEvent(
 				thermoSettings.getStarsThermostatManualEventCount() - 1);
 	}
@@ -42,9 +69,8 @@ else if (navigator.appName.indexOf("Microsoft") != -1)
 	browser.isMicrosoft = true;
 
 function checkTemp(n, type) {
-if (n.value >10) {
-confirm("Are you sure you would like to " + type + " the temperature " + n.value + " degrees?");
-}
+	if (n.value >10)
+		confirm("Are you sure you would like to " + type + " the temperature " + n.value + " degrees?");
 }
 
 function incTemp() {
@@ -61,21 +87,21 @@ function decTemp() {
 
 function holdTemp() {
 	if (document.MForm.holdSetting.value == "off") {
-			document.MForm.hold.src = "../../../Images/ThermImages/HoldGray.gif";
-			document.MForm.holdSetting.value = "on";
-			document.MForm.resetSetting.value = "on";
-			document.MForm.rst.src = "../../../Images/ThermImages/ResetBk.gif";
-			document.MForm.msg.src = "../../../Images/ThermImages/HoldMsg.gif";
-			}
+		document.MForm.hold.src = "../../../Images/ThermImages/HoldGray.gif";
+		document.MForm.holdSetting.value = "on";
+		document.MForm.resetSetting.value = "on";
+		document.MForm.rst.src = "../../../Images/ThermImages/ResetBk.gif";
+		document.MForm.msg.src = "../../../Images/ThermImages/HoldMsg.gif";
+	}
 }
 
 function resetTemp() {
 	if ( document.MForm.resetSetting.value == "on") {
-			document.MForm.hold.src = "../../../Images/ThermImages/HoldBk.gif";
-			document.MForm.holdSetting.value = "off";
-			document.MForm.resetSetting.value = "off";
-			document.MForm.rst.src = "../../../Images/ThermImages/ResetGray.gif";
-			document.MForm.msg.src = "../../../Images/ThermImages/SchedMsg.gif";
+		document.MForm.hold.src = "../../../Images/ThermImages/HoldBk.gif";
+		document.MForm.holdSetting.value = "off";
+		document.MForm.resetSetting.value = "off";
+		document.MForm.rst.src = "../../../Images/ThermImages/ResetGray.gif";
+		document.MForm.msg.src = "../../../Images/ThermImages/SchedMsg.gif";
 	}
 }
 
@@ -218,9 +244,16 @@ if (text.length == 2) {
               </div>
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateThermostatOption">
-              <input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
-			  <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?Item=<%= itemNo %>">
-			  <input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat.jsp?Item=<%= itemNo %>">
+			  <input type="hidden" name="InvID" value="<%= invID %>">
+<%	if (invIDs != null) {
+		for (int i = 0; i < invIDs.length; i++) {
+%>
+			  <input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
+<%		}
+	}
+%>
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
 			  <input type="hidden" name="mode" value="">
 			  <input type="hidden" name="fan" value="">
 			  <input type="hidden" name="RunProgram" value="false">
@@ -338,14 +371,18 @@ if (text.length == 2) {
                         <br>
                       </td>
                       <td width="27%" height="40" class="TableCell" valign="top"> 
+<%	if (itemNo == -1) { %>
+                        <p class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
+                          Thermostat Selection</a></p> 
+<%	} %>
                         <p><b>1)</b> Select the new temperature to maintain until 
                           the next program scheduled change. Check <b>HOLD</b> 
                           to maintain this setting across program changes. <br>
                           <b>2)</b> Adjust <b>MODE</b> and <b>FAN</b> settings. 
                           <br>
                           <b>3)</b> Click <b>SUBMIT</b>.</p>
-                        <p><b><i>or</i></b></p>
-                        <p>Click <b>RUN PROGRAM</b> to revert to your thermostat 
+                        <p><b><i>or</i></b><br>
+                          Click <b>RUN PROGRAM</b> to revert to your thermostat 
                           program. </p>
                         <p>&nbsp;</p>
                       </td>

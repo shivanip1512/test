@@ -1,12 +1,39 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
-	int itemNo = Integer.parseInt(request.getParameter("Item"));
-	StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
-	StarsThermostatSettings thermoSettings = thermostat.getStarsThermostatSettings();
-
-	StarsThermostatDynamicData curSettings = thermoSettings.getStarsThermostatDynamicData();
+	StarsThermoSettings thermoSettings = null;
+	StarsThermostatDynamicData curSettings = null;
+	int invID = 0;
+	int[] invIDs = null;
 	
-	if (ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+	int itemNo = Integer.parseInt(request.getParameter("Item"));
+	if (itemNo == -1) {
+		// Setup for multiple thermostats
+		String[] invIDStrs = request.getParameterValues("InvID");
+		if (invIDStrs != null) {
+			invIDs = new int[invIDStrs.length];
+			for (int i = 0; i < invIDs.length; i++)
+				invIDs[i] = Integer.parseInt(invIDStrs[i]);
+			
+			Arrays.sort(invIDs);
+			session.setAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS, invIDs);
+		}
+		else {
+			invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
+			if (invIDs == null) {
+				response.sendRedirect("AllTherm.jsp");
+				return;
+			}
+		}
+	}
+	else {
+		// Setup for a single thermostat
+		StarsLMHardware thermostat = thermostats.getStarsLMHardware(itemNo);
+		thermoSettings = thermostat.getStarsThermostatSettings();
+		curSettings = thermoSettings.getStarsThermostatDynamicData();
+		invID = thermostat.getInventoryID();
+	}
+	
+	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
 		if (request.getParameter("OmitTimeout") != null)
 			user.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
 		
@@ -19,7 +46,7 @@
 	
 	StarsThermostatManualEvent lastEvent = null;
 	boolean useDefault = false;
-	if (thermoSettings.getStarsThermostatManualEventCount() > 0) {
+	if (thermoSettings != null && thermoSettings.getStarsThermostatManualEventCount() > 0) {
 		lastEvent = thermoSettings.getStarsThermostatManualEvent(
 				thermoSettings.getStarsThermostatManualEventCount() - 1);
 	}
@@ -103,7 +130,9 @@ var dftSetpoint = <%= setpoint %>;
 
 function setTemp(curTemp) {
 	var mode = document.MForm.mode.value;
+<%	if (curSettings != null) { %>
 	if (mode == "") mode = "<%= curSettings.getMode() %>";
+<%	} %>
 	if (mode == "<%= StarsThermoModeSettings.COOL.toString() %>")
 		coolSetpoint = curTemp;
 	else if (mode == "<%= StarsThermoModeSettings.HEAT.toString() %>")
@@ -114,7 +143,9 @@ function setTemp(curTemp) {
 
 function getTemp() {
 	var mode = document.MForm.mode.value;
+<%	if (curSettings != null) { %>
 	if (mode == "") mode = "<%= curSettings.getMode() %>";
+<%	} %>
 	if (mode == "<%= StarsThermoModeSettings.COOL.toString() %>")
 		return coolSetpoint;
 	else if (mode == "<%= StarsThermoModeSettings.HEAT.toString() %>")
@@ -326,9 +357,16 @@ function prepareSubmit() {
               </div>
 			  <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
 				<input type="hidden" name="action" value="UpdateThermostatOption">
-				<input type="hidden" name="invID" value="<%= thermostat.getInventoryID() %>">
-				<input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?Item=<%= itemNo %>">
-				<input type="hidden" name="REFERRER" value="<%=request.getContextPath()%>/user/ConsumerStat/stat/Thermostat2.jsp?Item=<%= itemNo %>">
+				<input type="hidden" name="InvID" value="<%= invID %>">
+<%	if (invIDs != null) {
+		for (int i = 0; i < invIDs.length; i++) {
+%>
+				<input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
+<%		}
+	}
+%>
+				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
+				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?Item=<%= itemNo %>">
 				<input type="hidden" name="mode" value="">
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">
@@ -369,37 +407,43 @@ function prepareSubmit() {
                               <table width="130" height="80" border="0">
                                 <tr> 
                                   <td class="TableCell" valign="top" bordercolor="#FFFFFF"> 
+<%	if (curSettings != null) { %>
                                     <div id="CurrentSettings" style="display:none"> 
 <%
-	String unit = "F";
-	if (curSettings.getDisplayedTempUnit() != null)
-		unit = curSettings.getDisplayedTempUnit().substring(0,1);
-	String displayTemp = "(Unknown)";
-	if (curSettings.getDisplayedTemperature() > 0)
-		displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
+		String unit = "F";
+		if (curSettings.getDisplayedTempUnit() != null)
+			unit = curSettings.getDisplayedTempUnit().substring(0,1);
+		String displayTemp = "(Unknown)";
+		if (curSettings.getDisplayedTemperature() > 0)
+			displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
 %>
                                       <span class="TitleHeader">Room: <%= displayTemp %></span><br>
 <%
-	for (int i = 0; i < curSettings.getInfoStringCount(); i++) {
-		String infoString = (String) curSettings.getInfoString(i);
+		for (int i = 0; i < curSettings.getInfoStringCount(); i++) {
+			String infoString = (String) curSettings.getInfoString(i);
 %>
                                       <%= infoString %><br>
-<%	} %>
+<%		} %>
                                     </div>
+<%	} %>
                                     <div id="LastSettings" style="display:none"> 
                                       <b>Last Settings:</b><br>
-                                      <%	if (useDefault) { %>
+<%	if (useDefault) { %>
                                       (None) 
-                                      <%	} else { %>
+<%	}
+	else {
+%>
                                       Time: <%= histDateFormat.format(lastEvent.getEventDateTime()) %><br>
-                                      <%		if (lastEvent.getThermostatManualOption().getTemperature() == -1) { %>
+<%		if (lastEvent.getThermostatManualOption().getTemperature() == -1) { %>
                                       Run Program 
-                                      <%		} else { %>
+<%		}
+		else {
+%>
                                       Temp: <%= lastEvent.getThermostatManualOption().getTemperature() %>&deg; 
                                       <%= (hold)? "(HOLD)" : "" %><br>
                                       Mode: <%= modeStr %><br>
                                       Fan: <%= fanStr %> 
-                                      <%		}
+<%		}
 	}
 %>
                                     </div>
@@ -464,13 +508,25 @@ function prepareSubmit() {
                         <br>
                       </td>
                       <td width="27%" height="40" class="TableCell" valign="top"> 
-                        <%	if (!ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) { %>
+<%	if (curSettings != null) {
+		if (!ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+%>
                         <p class="TitleHeader">Last Updated Time: <br>
                           <%= histDateFormat.format(curSettings.getLastUpdatedTime()) %></p>
-                        <%	} else { %>
+<%		}
+		else {
+%>
                         <p class="ErrorMsg">Last Updated Time: 
 						  <%= (curSettings.getLastUpdatedTime() != null)? "<br>" + histDateFormat.format(curSettings.getLastUpdatedTime()) : "N/A" %></p>
-                        <%	} %>
+<%		}
+	}
+	else {
+%>
+                        <p class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
+                          Thermostat Selection</a></p> 
+<%
+	}
+%>
                         <p><b>1)</b> Select the new temperature to maintain until 
                           the next program scheduled change. Check <b>HOLD</b> 
                           to maintain this setting across program changes. <br>
@@ -486,22 +542,17 @@ function prepareSubmit() {
                   </table>
                 </div>
               </form>
-                
               <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
                 &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
               </p>
               <p align="center" class="MainText">&nbsp; </p>
-                </div>
-			
+            </div>
           </td>
-		  
-		  
-        <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td width="1" bgcolor="#000000"><img src="../../../Images/Icons/VerticalRule.gif" width="1"></td>
+        </tr>
       </table>
-	  
     </td>
-	</tr>
+  </tr>
 </table>
 <br>
 <div align="center"></div>
