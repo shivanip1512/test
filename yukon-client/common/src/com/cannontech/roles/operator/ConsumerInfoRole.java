@@ -32,6 +32,8 @@ public interface ConsumerInfoRole {
 	public static final int IMPORT_CUSTOMER_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
 	public static final int INVENTORY_CHECKING_TIME = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
 	public static final int AUTOMATIC_CONFIGURATION = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
+	public static final int ORDER_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
+	public static final int CALL_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
 	
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;
