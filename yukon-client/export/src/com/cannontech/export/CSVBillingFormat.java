@@ -30,109 +30,72 @@ public class CSVBillingFormat extends ExportFormatBase
 public CSVBillingFormat() {
 	super();
 }
-public String appendBatchFileParms(String batchString)
+
+
+public void parseDatFile()
 {
-	batchString += "com.cannontech.export.ExportFormatBase ";
-
-	batchString += "FORMAT=" + ExportFormatTypes.CSVBILLING_FORMAT+" ";
+	com.cannontech.message.util.ConfigParmsFile cpf = new com.cannontech.message.util.ConfigParmsFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
 	
-	batchString += "FILE="+ getDirectory() + " " ;
-
-	batchString += "START=" + COMMAND_LINE_FORMAT.format(getExportProperties().getMinTimestamp().getTime()) + " ";
+	String[][] keysAndValues = cpf.getKeysAndValues();
 	
-	batchString += "STOP=" + COMMAND_LINE_FORMAT.format(getExportProperties().getMaxTimestamp().getTime()) + " ";
-	
-	batchString += "DELIMITER=\"" + getExportProperties().getDelimiter() +"\" ";
-	
-	return batchString;
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (3/18/2002 4:13:26 PM)
- * @return java.lang.String
- */
-public String getFileName()
-{
-	String name = new String();
-	name += filePrefix;
-	name += FILENAME_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
-	name += fileExtension;
-
-	return name;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/18/2002 3:36:13 PM)
- * @param args java.lang.String[]
- */
-public void parseCommandLineArgs(String[] args)
-{
-	if( args.length > 0 )
+	if( keysAndValues != null )
 	{
 		boolean gotStart = false;
 		boolean gotStop = false;
-		
-		for ( int i = 0; i < args.length; i++)
-		{
-			String argString = ((String)args[i]).toUpperCase();
-			
-			if( argString.startsWith("FILE"))
-			{
-				int startIndex = argString.indexOf("=") + 1;
-				String subString = argString.substring(startIndex);
 
-				setDirectory(subString);
+		String keys[] = keysAndValues[0];
+		String values[] = keysAndValues[1];
+		for (int i = 0; i < keys.length; i++)
+		{
+			if(keys[i].equalsIgnoreCase("DIR"))
+			{
+				setDirectory(values[i].toString());
 				java.io.File file = new java.io.File( getDirectory() );
 				file.mkdirs();
 			}
-			else if( argString.startsWith("DELIMITER"))
+			else if( keys[i].equalsIgnoreCase("ENERGYFILE"))
 			{
-				int startIndex = argString.indexOf("=") + 1;
-				String subString = argString.substring(startIndex);
-				for (int j = 0; j < subString.length(); j++)
-				{
-					char tempChar = subString.charAt(j);
-					if (tempChar != '"')
-						getExportProperties().setDelimiter(new Character(tempChar));
-				}
+				getExportProperties().setEnergyFileName(values[i]);
 			}
-			else if( argString.startsWith("START"))
+			else if( keys[i].equalsIgnoreCase("DELIMITER"))
 			{
-				int startIndex = argString.indexOf("=") + 1;
-				String subString = argString.substring(startIndex);
+				getExportProperties().setDelimiter(new Character(values[i].charAt(0)));
+			}
+			else if( keys[i].equalsIgnoreCase("HEADINGS"))
+			{
+				getExportProperties().setShowColumnHeadings(Boolean.valueOf(values[i]).booleanValue());
+			}
+			else if( keys[i].equalsIgnoreCase("START"))
+			{
 				java.util.Date date = null;
 				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-				try 
+				try
 				{
-					date = COMMAND_LINE_FORMAT.parse(subString);
+					date = COMMAND_LINE_FORMAT.parse(values[i]);
 				}
-				catch (java.text.ParseException pe)
+				catch( java.text.ParseException pe)
 				{
 					date = new java.util.Date();
-					long time = date.getTime()  - 84600000;
+					long time = date.getTime() - 84600000;
 					date.setTime(time);
-					cal.setTime( date );
+					cal.setTime(date);
 					cal.set(java.util.GregorianCalendar.HOUR_OF_DAY, 0);
 					cal.set(java.util.GregorianCalendar.MINUTE, 0);
 					cal.set(java.util.GregorianCalendar.SECOND, 0);
 				}
-				
 				cal.setTime(date);
-				
+			
 				getExportProperties().setMinTimestamp(cal);
 				gotStart = true;
 			}
-			else if( argString.startsWith("STOP"))
+			else if( keys[i].equalsIgnoreCase("STOP"))
 			{
-				int startIndex = argString.indexOf("=") + 1;
-				String subString = argString.substring(startIndex);
 				java.util.Date date = null;
 				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 
 				try 
 				{
-					date = COMMAND_LINE_FORMAT.parse(subString);
+					date = COMMAND_LINE_FORMAT.parse(values[i]);
 				}
 				catch (java.text.ParseException pe)
 				{
@@ -171,14 +134,61 @@ public void parseCommandLineArgs(String[] args)
 				cal.setTime(date);
 				getExportProperties().setMaxTimestamp(cal);
 			}
-		}
+		}			
 	}
 	else
 	{
-		logEvent("Usage:  format=<formatID> FILE=FileDirectory START=mmddyyyy STOP=mmddyyyy", com.cannontech.common.util.LogWriter.INFO);
-		logEvent("Ex.	   format=0 FILE=c:/yukon/export/ START=02/28/2002 STOP=03/01/2002", com.cannontech.common.util.LogWriter.INFO);
-		logEvent("Parameters not specifed will be defaulted to c:/yukon/export and \"yesterday\" run date.", com.cannontech.common.util.LogWriter.INFO);
+		// MODIFY THE LOG EVENT HERE!!!
+		logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ int=30", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
 	}
+	
+}		
+
+public String[][] buildKeysAndValues()
+{
+	String[] keys = new String[7];
+	String[] values = new String[7];
+	
+	int i = 0; 
+	keys[i] = "FORMAT";
+	values[i++] = String.valueOf(ExportFormatTypes.CSVBILLING_FORMAT);
+	
+	keys[i] = "DIR";
+	values[i++] = getDirectory();
+
+	keys[i] = "ENERGYFILE";
+	values[i++] = getExportProperties().getEnergyFileName();
+
+	keys[i] = "START";
+	values[i++] = COMMAND_LINE_FORMAT.format(getExportProperties().getMinTimestamp().getTime());
+
+	keys[i] = "STOP";
+	values[i++] = COMMAND_LINE_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
+
+	keys[i] = "DELIMITER";
+	values[i++] = getExportProperties().getDelimiter().toString();
+
+	keys[i] = "HEADINGS";
+	values[i++] = String.valueOf(getExportProperties().isShowColumnHeadings());
+	
+	return new String[][]{keys, values};
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/18/2002 4:13:26 PM)
+ * @return java.lang.String
+ */
+public String getFileName()
+{
+	String name = new String();
+	name += filePrefix;
+	name += FILENAME_FORMAT.format(getExportProperties().getMaxTimestamp().getTime());
+	name += fileExtension;
+
+	return name;
 }
 /**
  * Insert the method's description here.
@@ -201,7 +211,6 @@ public void retrieveBaselineData(int baselinePointID)
 	java.sql.PreparedStatement stmt = null;
 	java.sql.ResultSet rset = null;
 
-//	System.out.println("retrieveBaselineData: Min = " + getMinTimestamp().getTime() + " Max = " + getMaxTimestamp().getTime());
 	//Initialize baselineValues for 24 vals and value = 0;
 	baselineValues = new Double[24];
 	for( int i = 0; i < baselineValues.length; i++)
@@ -496,6 +505,7 @@ public java.util.Hashtable retrieveEnergyNumbers(String dbAlias)
 		
 	try
 	{
+		logEvent("ENERGYFILENAME " + getExportProperties().getEnergyFileName(), com.cannontech.common.util.LogWriter.INFO);		
 		java.io.FileReader energyNumbersFileReader = new java.io.FileReader(getExportProperties().getEnergyFileName());
 		java.io.BufferedReader readBuffer = new java.io.BufferedReader(energyNumbersFileReader);
 

@@ -18,6 +18,21 @@ public class ExportFormatTypes
 		"IONEventLog"
 	};
 
+
+	public static String [] formatWrapperConf = 
+	{
+		"\\csvwrapper.conf",
+		"\\dbwrapper.conf",
+		"\\ionwrapper.conf"
+	};
+
+	public static String [] formatDatFileName = 
+	{
+		"\\csvprop.dat",
+		"\\dbprop.dat",
+		"\\ionprop.dat"
+	};
+
 /**
  * ExportFormatTypes constructor comment.
  */
@@ -43,4 +58,21 @@ public static String getFormatTypeName(int format)
 		
 	return formatTypeNames[format];
 }
+
+public static String getFormatWrapperConf(int format)
+{
+	if( format < 0 || format > formatWrapperConf.length)
+		return null;	//does not exist
+		
+	return formatWrapperConf[format];
+}
+
+public static String getFormatDatFileName(int format)
+{
+	if( format < 0 || format > formatDatFileName.length)
+		return null;	//does not exist
+		
+	return formatDatFileName[format];
+}
+
 }

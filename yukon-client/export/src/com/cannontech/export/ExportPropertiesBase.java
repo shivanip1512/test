@@ -189,17 +189,26 @@ public class ExportPropertiesBase
 	{
 		if( runTimeHour == null )
 		{
-			try
+			if( getFormatID() == ExportFormatTypes.IONEVENTLOG_FORMAT)
 			{
-				java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-				runTimeHour = new Integer(bundle.getString("dbpurge_runtime_hour"));
-				com.cannontech.clientutils.CTILogger.info("  (config.prop)  Hour of Day (0-23) to run is " + runTimeHour.intValue());
+				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+				int nowHour = cal.get(java.util.GregorianCalendar.HOUR_OF_DAY);
+				setRunTimeHour(nowHour);
 			}
-			catch( Exception e)
+			else
 			{
-				runTimeHour = new Integer(1);
-				com.cannontech.clientutils.CTILogger.error("  Hour of Day (0-23) was NOT found, DEFAULTED TO " + runTimeHour.intValue());
-				com.cannontech.clientutils.CTILogger.info("  Add 'dbpurge_runtime_hour' to config.properties.");
+				try
+				{
+					java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
+					runTimeHour = new Integer(bundle.getString("dbpurge_runtime_hour"));
+					com.cannontech.clientutils.CTILogger.info("  (config.prop)  Hour of Day (0-23) to run is " + runTimeHour.intValue());
+				}
+				catch( Exception e)
+				{
+					runTimeHour = new Integer(1);
+					com.cannontech.clientutils.CTILogger.error("  Hour of Day (0-23) was NOT found, DEFAULTED TO " + runTimeHour.intValue());
+					com.cannontech.clientutils.CTILogger.info("  Add 'dbpurge_runtime_hour' to config.properties.");
+				}
 			}
 		}
 		return runTimeHour;		

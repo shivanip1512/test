@@ -27,23 +27,7 @@ public DBPurge()
 	super();
 
 }
-public String appendBatchFileParms(String batchString)
-{
-	batchString += "com.cannontech.export.ExportFormatBase ";
 
-	batchString += "FORMAT=" + ExportFormatTypes.DBPURGE_FORMAT + " ";
-	
-	batchString += "FILE="+ getDirectory() + " " ;
-
-	batchString += "-d" + getExportProperties().getDaysToRetain() + " ";
-
-	batchString += "-h" + getExportProperties().getRunTimeHour().intValue() + " ";
-
-	if( !getExportProperties().isPurgeData() )
-		batchString += "-NOPURGE ";
-
-	return batchString;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/18/2002 4:13:26 PM)
@@ -57,6 +41,75 @@ public String getFileName()
 	name += fileExtension;
 
 	return name;
+}
+	/**
+	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
+	 */
+public void parseDatFile()
+{
+	com.cannontech.message.util.ConfigParmsFile cpf = new com.cannontech.message.util.ConfigParmsFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
+	
+	String[][] keysAndValues = cpf.getKeysAndValues();
+	
+	if( keysAndValues != null )
+	{
+		String keys[] = keysAndValues[0];
+		String values[] = keysAndValues[1];
+		for (int i = 0; i < keys.length; i++)
+		{
+			if( keys[i].equalsIgnoreCase("DAYS"))
+			{
+				getExportProperties().setDaysToRetain( Integer.parseInt(values[i]) );
+				setMaxDateToPurge();
+			}				
+			else if(keys[i].equalsIgnoreCase("DIR"))
+			{
+				setDirectory(values[i].toString());
+				java.io.File file = new java.io.File( getDirectory() );
+				file.mkdirs();
+			}
+			else if( keys[i].equalsIgnoreCase("HOUR"))
+			{
+				getExportProperties().setRunTimeHour(Integer.parseInt(values[i]));
+			}
+			else if( keys[i].equalsIgnoreCase("PURGE"))
+			{
+				getExportProperties().setPurgeData(Boolean.valueOf(values[i]).booleanValue());
+			}
+		}
+	}
+	else
+	{
+		// MODIFY THE LOG EVENT HERE!!!
+		logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ int=30", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
+	}
+	
+}		
+
+public String[][] buildKeysAndValues()
+{
+	String[] keys = new String[5];
+	String[] values = new String[5];
+	
+	int i = 0; 
+	keys[i] = "FORMAT";
+	values[i++] = String.valueOf(ExportFormatTypes.DBPURGE_FORMAT);
+	
+	keys[i] = "DIR";
+	values[i++] = getDirectory();
+	
+	keys[i] = "DAYS";
+	values[i++] = String.valueOf(getExportProperties().getDaysToRetain());
+
+	keys[i] = "HOUR";
+	values[i++] = String.valueOf(getExportProperties().getRunTimeHour().intValue());
+	
+	keys[i] = "PURGE";
+	values[i++] = String.valueOf(getExportProperties().isPurgeData());
+	
+	return new String[][]{keys, values};
 }
 /**
  * Insert the method's description here.
@@ -76,59 +129,8 @@ private java.util.GregorianCalendar getMaxDateToPurge()
 public void initialize()
 {
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/18/2002 3:36:13 PM)
- * @param args java.lang.String[]
- */
-public void parseCommandLineArgs(String[] args)
-{
-	if( args.length > 0 )
-	{
-		for ( int i = 0; i < args.length; i++)
-		{
-			String argSubString = (String)args[i].substring(2);
-			String argUpper = (String)args[i].toUpperCase();
-			
-			if( args[i].startsWith("-d") )//|| args[i].startsWith("-D")
-			{
-				getExportProperties().setDaysToRetain( Integer.parseInt(argSubString) );
-				setMaxDateToPurge();
-			}
-			else if( argUpper.startsWith("FILE"))
-			{
-				int startIndex = argUpper.indexOf("=") + 1;
-				String subString = argUpper.substring(startIndex);
 
-				setDirectory(subString);
-				java.io.File file = new java.io.File( getDirectory() );
-				file.mkdirs();
-			}
-			else if( args[i].startsWith("-f") || args[i].startsWith("-F"))
-			{
-				setDirectory( argSubString );
-				java.io.File file = new java.io.File( getDirectory() );
-				file.mkdirs();
-			}
-			else if( args[i].startsWith("-h") || args[i].startsWith("-H"))
-			{
-				getExportProperties().setRunTimeHour(Integer.parseInt(argSubString));
-			}
-			else if( argUpper.startsWith("-NOPURGE"))
-			{
-				getExportProperties().setPurgeData(false);
-			}
 
-		}
-	}
-	else
-	{
-		logEvent("Usage:  format=<formatID> -dNumDaysToRetain -fFileDirectory -hrunTimeHour", com.cannontech.common.util.LogWriter.INFO);
-		logEvent("Ex.		format=1 -d90 -fc:/yukon/dbpurge/ -h1 {optional: -NOPURGE}", com.cannontech.common.util.LogWriter.INFO);
-		logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
-	}
-
-}
 /**
  * Insert the method's description here.
  * Creation date: (2/20/2002 9:45:04 AM)

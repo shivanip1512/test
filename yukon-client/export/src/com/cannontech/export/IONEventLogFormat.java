@@ -11,14 +11,14 @@ package com.cannontech.export;
 public class IONEventLogFormat extends ExportFormatBase
 {
 	private final char[] ignoreChars = new char[]{',', ' '};
-	
+		
 	private final int VALID_PRIORITY = 51;
-	private final int VALID_POINTID = 2600;
+	private final int VALID_POINTOFFSET = 2600;
 	private String fileName = "ioneventlog.csv";	//"c2000_control.csv";
-	
+	private String DAT_FILENAME = "\\ionconf.dat";
 	public static final String LASTLOGID_FILENAME = "\\IONELID.DAT";	//ION Event Log ID (last read).dat
 	public static final String DIRECTORY = com.cannontech.common.util.CtiUtilities.getConfigDirPath();
-	private long runTimeInterval = 1800000;	//30mins
+	private long runTimeIntervalInMillis = 1800000;	//30mins
 
 	private class IONDescription
 	{
@@ -41,25 +41,7 @@ public class IONEventLogFormat extends ExportFormatBase
 	public IONEventLogFormat()
 	{
 		super();
-		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-		int nowHour = cal.get(java.util.GregorianCalendar.HOUR_OF_DAY);
-		System.out.println("NOW HOUR = " + nowHour);
-		super.getExportProperties().setRunTimeHour(nowHour);
-		super.setRunTimeInterval(runTimeInterval);
-	}
-
-	/**
-	 * @see com.cannontech.export.ExportFormatBase#appendBatchFileParms(String)
-	 */
-	public String appendBatchFileParms(String batchString)
-	{
-		batchString += "com.cannontech.export.ExportFormatBase ";
-	
-		batchString += "FORMAT=" + ExportFormatTypes.IONEVENTLOG_FORMAT + " ";
-		
-		batchString += "FILE="+ getDirectory() + " " ;
-	
-		return batchString;
+		super.setRunTimeIntervalInMillis(runTimeIntervalInMillis);
 	}
 
 	/**
@@ -71,146 +53,170 @@ public class IONEventLogFormat extends ExportFormatBase
 	}
 
 	/**
-	 * @see com.cannontech.export.ExportFormatBase#parseCommandLineArgs(String[])
+	 * @see com.cannontech.export.ExportFormatBase#parseDatFile()
 	 */
-	public void parseCommandLineArgs(String[] args)
-	{		
-		if( args.length > 0 )
+	public void parseDatFile()
+	{
+		com.cannontech.message.util.ConfigParmsFile cpf = new com.cannontech.message.util.ConfigParmsFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
+		
+		String[][] keysAndValues = cpf.getKeysAndValues();
+		
+		if( keysAndValues != null )
 		{
-			for ( int i = 0; i < args.length; i++)
+			String keys[] = keysAndValues[0];
+			String values[] = keysAndValues[1];
+			for (int i = 0; i < keys.length; i++)
 			{
-				String argSubString = (String)args[i].substring(2);
-				String argUpper = (String)args[i].toUpperCase();
-				
-				if( argUpper.startsWith("FILE"))
+				if(keys[i].equalsIgnoreCase("DIR"))
 				{
-					int startIndex = argUpper.indexOf("=") + 1;
-					String subString = argUpper.substring(startIndex);
-	
-					setDirectory(subString);
+					setDirectory(values[i].toString());
 					java.io.File file = new java.io.File( getDirectory() );
 					file.mkdirs();
 				}
-				else if( args[i].startsWith("-f") || args[i].startsWith("-F"))
+				else if(keys[i].equalsIgnoreCase("INT"))
 				{
-					setDirectory( argSubString );
-					java.io.File file = new java.io.File( getDirectory() );
-					file.mkdirs();
+					//INT parameter is in MINUTES but we need millis					
+					long minuteInterval = Long.valueOf(values[i].trim()).longValue();
+					long millisPerMinute  = 60L * 1000L;	//60 seconds * 1000 millis
+					setRunTimeIntervalInMillis( minuteInterval * millisPerMinute);
 				}
 			}
 		}
 		else
 		{
-			logEvent("Usage:  format=<formatID> -fFileDirectory", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("Ex.		format=2 -fc:/yukon/client/export/", com.cannontech.common.util.LogWriter.INFO);
+			// MODIFY THE LOG EVENT HERE!!!
+			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ int=30", com.cannontech.common.util.LogWriter.INFO);
 			logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
 		}
 		
+	}		
+	
+	public String[][] buildKeysAndValues()
+	{
+		String[] keys = new String[3];
+		String[] values = new String[3];
+		
+		int i = 0; 
+		keys[i] = "FORMAT";
+		values[i++] = String.valueOf(ExportFormatTypes.IONEVENTLOG_FORMAT);
+		
+		keys[i] = "DIR";
+		values[i++] = getDirectory();
+		
+		long millisPerMinute = 60L * 1000L;	//60 seconds * 1000millis
+		keys[i] = "INT";
+		values[i++] = String.valueOf(getRunTimeIntervalInMillis()/millisPerMinute);
+		
+		return new String[][]{keys, values};
 	}
-
-		/**
-		 * @see com.cannontech.export.ExportFormatBase#retrieveExportData()
-		 */
-		public void retrieveExportData()
+	/**
+	 * @see com.cannontech.export.ExportFormatBase#retrieveExportData()
+	 */
+	public void retrieveExportData()
+	{
+		long timer = System.currentTimeMillis();
+	
+		StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME, DMG.METERNUMBER, DMG.BILLINGGROUP ");
+		sql.append(" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG ");
+		sql.append(" WHERE P.POINTOFFSET = "+ VALID_POINTOFFSET);
+		sql.append(" AND SL.POINTID = P.POINTID ");
+		sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+		sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+		sql.append(" AND LOGID > " + getLastEventLogID());
+		sql.append(" ORDER BY LOGID");
+					
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		logEvent("ION Event Log for Max Log ID = " + getLastEventLogID(), com.cannontech.common.util.LogWriter.INFO);
+		
+		try
 		{
-			long timer = System.currentTimeMillis();
-		
-			StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME ");
-			sql.append(" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO ");
-			sql.append(" WHERE SL.POINTID = "+ VALID_POINTID);
-			sql.append(" AND SL.POINTID = P.POINTID ");
-			sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
-			sql.append(" AND LOGID > " + getLastEventLogID());
-			sql.append(" ORDER BY LOGID");
+			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			if( conn == null )
+			{
+				logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
+				return;
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				rset = pstmt.executeQuery();
+	
+				logEvent(" *Start looping through return resultset", com.cannontech.common.util.LogWriter.INFO);
+	
+				int lastLogID = -1;
+				while (rset.next())
+				{
+					String action = rset.getString(4);	
+					//Parse action here!
+					IONAction ionAction = getIONAction(action);
+					Integer record = ionAction.record;
+					String causeIon = ionAction.ion_cause_handle;
+					String effectIon = ionAction.ion_effect_handle;					
+					
+					String desc = rset.getString(5);
+					IONDescription ionDesc = getIONDescription(desc);
+					//Parse description here!
+					Integer priority = ionDesc.ion_pri;
+					String causeValue = ionDesc.ion_cause;
+					String effectValue = ionDesc.ion_effect;
+					String nLog = ionDesc.ion_nlog;
+
+					if (isValid(ionDesc) )
+					{
+						//ONLY continue on if we pass one of the checks:
+						//effect like 'Control%' 
+						//effect_ion like 'Notify%'
+						//priority  == 51
 						
-			java.sql.Connection conn = null;
-			java.sql.PreparedStatement pstmt = null;
-			java.sql.ResultSet rset = null;
-		
-			logEvent("ION Event Log for Max Log ID = " + getLastEventLogID(), com.cannontech.common.util.LogWriter.INFO);
-			
+						int logid = rset.getInt(1);
+						lastLogID = logid;
+						
+						int pointid = rset.getInt(2);
+						
+						java.sql.Timestamp timestamp = rset.getTimestamp(3);
+						java.util.Date tsDate = new java.util.Date();
+						tsDate.setTime(timestamp.getTime());
+						
+						String user = rset.getString(6);
+						String paoName = rset.getString(7);
+						String meterNum = rset.getString(8);
+						String billGroup = rset.getString(9);
+						String node = billGroup + "." + paoName + "_" + meterNum;
+						
+						com.cannontech.export.record.IONEventLogRecord ionRecord =
+							new com.cannontech.export.record.IONEventLogRecord(node, nLog, tsDate, priority, record, null, causeIon, causeValue, effectIon, effectValue);
+	
+						getRecordVector().addElement(ionRecord.dataToString());
+					}
+				}
+				
+				if( lastLogID > 0)	//only write to file if we have actually collected new data.
+					writeLastLogIDToFile(lastLogID);
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
 			try
 			{
-				conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-				if( conn == null )
-				{
-					logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
-					return;
-				}
-				else
-				{
-					pstmt = conn.prepareStatement(sql.toString());
-					rset = pstmt.executeQuery();
-		
-					logEvent(" *Start looping through return resultset", com.cannontech.common.util.LogWriter.INFO);
-		
-					int lastLogID = -1;
-					while (rset.next())
-					{
-						String action = rset.getString(4);	
-						//Parse action here!
-						IONAction ionAction = getIONAction(action);
-						Integer record = ionAction.record;
-						String causeIon = ionAction.ion_cause_handle;
-						String effectIon = ionAction.ion_effect_handle;					
-						
-						String desc = rset.getString(5);
-						IONDescription ionDesc = getIONDescription(desc);
-						//Parse description here!
-						Integer priority = ionDesc.ion_pri;
-						String causeValue = ionDesc.ion_cause;
-						String effectValue = ionDesc.ion_effect;
-						String nLog = ionDesc.ion_nlog;
-	
-						if (isValid(ionDesc) )
-						{
-							//ONLY continue on if we pass one of the checks:
-							//effect like 'Control%' 
-							//effect_ion like 'Notify%'
-							//priority  == 51
-							
-							int logid = rset.getInt(1);
-							lastLogID = logid;
-							
-							int pointid = rset.getInt(2);
-							
-							java.sql.Timestamp timestamp = rset.getTimestamp(3);
-							java.util.Date tsDate = new java.util.Date();
-							tsDate.setTime(timestamp.getTime());
-							
-							String user = rset.getString(6);
-							String node = rset.getString(7);
-							
-							com.cannontech.export.record.IONEventLogRecord ionRecord =
-								new com.cannontech.export.record.IONEventLogRecord(node, nLog, tsDate, priority, record, null, causeIon, causeValue, effectIon, effectValue);
-		
-							getRecordVector().addElement(ionRecord.dataToString());
-						}
-					}
-					
-					if( lastLogID > 0)	//only write to file if we have actually collected new data.
-						writeLastLogIDToFile(lastLogID);
-				}
-			}
-			catch( java.sql.SQLException e )
+				if( rset != null ) rset.close();
+				if( pstmt != null ) pstmt.close();
+				if( conn != null ) conn.close();
+			} 
+			catch( java.sql.SQLException e2 )
 			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				try
-				{
-					if( rset != null ) rset.close();
-					if( pstmt != null ) pstmt.close();
-					if( conn != null ) conn.close();
-				} 
-				catch( java.sql.SQLException e2 )
-				{
-					e2.printStackTrace();//sometin is up
-				}	
-			}
-			logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);
+				e2.printStackTrace();//sometin is up
+			}	
 		}
+		logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);
+	}
 
 	private int getLastEventLogID()
 	{
@@ -274,14 +280,18 @@ public class IONEventLogFormat extends ExportFormatBase
 	
 	private boolean isValid(IONDescription desc)
 	{
-		if (desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) != 0)
-			return false;
-		else if (! desc.ion_effect.toLowerCase().startsWith("control"))
-			return false;
-		else if (! desc.ion_cause.toLowerCase().startsWith("notify"))
-			return false;
-			
-		return true;
+		if(desc != null)
+		{
+			if (desc.ion_pri == null || desc.ion_pri.compareTo(new Integer(VALID_PRIORITY)) != 0)
+				return false;
+	/*		else if (desc.ion_effect == null || (! desc.ion_effect.toLowerCase().startsWith("control")))
+				return false;
+			else if (desc.ion_cause == null || (! desc.ion_cause.toLowerCase().startsWith("notify")))
+				return false;
+	*/			
+			return true;
+		}
+		return false;
 	}
 	
 	private java.util.Vector getKeysAndValuesVector(String valueString)
@@ -341,13 +351,13 @@ public class IONEventLogFormat extends ExportFormatBase
 			String key = keyAndValue.substring(0, separatorIndex);
 			String value = keyAndValue.substring(separatorIndex + 1, keyAndValue.length());
 				
-			if( key.equalsIgnoreCase("ion_pri"))
+			if( key.equalsIgnoreCase("pri"))
 				ion_desc.ion_pri = Integer.valueOf(value.trim());
-			else if( key.equalsIgnoreCase("ion_cause"))
+			else if( key.equalsIgnoreCase("cause"))
 				ion_desc.ion_cause = value.toString();
-			else if( key.equalsIgnoreCase("ion_effect"))
+			else if( key.equalsIgnoreCase("effect"))
 				ion_desc.ion_effect = value.toString();
-			else if( key.equalsIgnoreCase("ion_nlog"))
+			else if( key.equalsIgnoreCase("nlog"))
 				ion_desc.ion_nlog = value.toString();
 		}
 
@@ -374,11 +384,11 @@ public class IONEventLogFormat extends ExportFormatBase
 			String key = keyAndValue.substring(0, separatorIndex);
 			String value = keyAndValue.substring(separatorIndex + 1, keyAndValue.length());
 				
-			if( key.equalsIgnoreCase("record"))
+			if( key.equalsIgnoreCase("rec"))
 				ion_action.record = Integer.valueOf(value.trim());
-			else if( key.equalsIgnoreCase("ion_cause_handle"))
+			else if( key.equalsIgnoreCase("c_h"))
 				ion_action.ion_cause_handle = value.toString();
-			else if( key.equalsIgnoreCase("ion_effect_handle"))
+			else if( key.equalsIgnoreCase("e_h"))
 				ion_action.ion_effect_handle = value.toString();
 		}
 

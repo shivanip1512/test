@@ -34,10 +34,11 @@ public class ExportGui extends javax.swing.JFrame implements java.awt.event.Acti
 	private javax.swing.JCheckBox ivjInstallServiceCheckBox = null;
 	private javax.swing.JPanel ivjRunPanel = null;
 	private com.cannontech.export.ExportFormatBase formatBase = null;
+	
 	private AdvancedOptionsPanel advOptsPanel = null;
-	private String batchFileName = "export.bat";
-	private String jarFileName = "export.jar";
-	private String serviceName = "Yukon Export Service";
+	private final String BATCHFILENAME= "export.bat";
+	private final String JARFILENAME = "export.jar";
+
 	private final java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	private int RUN_ONCE = 0;
 	private int RUN_CONSOLE = 1;
@@ -133,9 +134,9 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 		formatBase.setExportProperties(getExportProperties());
 		formatBase.setDirectory(getFileDirectoryTextField().getText());
 		formatBase.setIsService(false);
-
-		serviceName = getFileFormatComboBox().getSelectedItem().toString();
+		System.out.println("NEXT RUN TIME = " + formatBase.getNextRunTime().getTime());
 		generateFile();
+		System.out.println("NEXT RUN TIME(after generate) = " + formatBase.getNextRunTime().getTime());
 	}
 }
 /**
@@ -150,7 +151,7 @@ public void createBatchFile(String batchString)
 	{
 		try
 		{
-			java.io.FileWriter writer = new java.io.FileWriter( batchFileName );
+			java.io.FileWriter writer = new java.io.FileWriter( BATCHFILENAME );
 
 			for( int i = 0; i < text.length; i++ )
 			{
@@ -176,58 +177,46 @@ public void generateFile()
 	if( getSelectedRunAsButton() == RUN_ONCE)
 	{
 		ExportFormatBase.runMainWithGui(formatBase);
+		return;
 	}
-	else if( getSelectedRunAsButton() == RUN_CONSOLE)
+	
+	String string = "";
+	if( getSelectedRunAsButton() == RUN_CONSOLE)
 	{
-		String string = new String("java ");
-		string += "-cp .;" + jarFileName + " ";
-		
-		string = formatBase.appendBatchFileParms(string);
-		createBatchFile(string);
-
-		try
-		{
-			Runtime.getRuntime().exec("cmd /c\"start " + batchFileName + "\"");
-		}
-		catch(java.io.IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		System.exit(0);
-
+		string += "Wrapper.exe -c " + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
 	}
 	else if( getSelectedRunAsButton() == RUN_AS_SERVICE)
 	{
-		String string = new String("JNT ");
-		
 		if( getInstallServiceCheckBox().isSelected())
 		{
-			string += "\"/InstallAsService:" + serviceName + "\" ";
-			string += "\"/SD" + System.getProperty("user.dir") +  "\" ";
-//			string += "-Dshutdown.method=stopApplication ";
-			string += "-cp .;" + jarFileName + " ";
+			string += "Wrapper.exe -i " + ExportFormatTypes.getFormatWrapperConf(getExportProperties().getFormatID());
 		}
-		
-		string = formatBase.appendBatchFileParms(string);
-				
+	
 		if( getStartServiceCheckBox().isSelected())
 		{
 			string += "\r\n";
-			string += "net start \"" + serviceName + "\" ";
+			string += "net start \"" + getServiceName() + "\" ";
 		}
-		createBatchFile(string);
-			
-		try
-		{
-			Runtime.getRuntime().exec("cmd /c\"start " + batchFileName + "\"");
-		}
-		catch(java.io.IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		System.exit(0);
 	}
 
+	formatBase.writeDatFile();
+	createBatchFile(string);
+
+	try
+	{
+		Runtime.getRuntime().exec("cmd /c\"start " + BATCHFILENAME + "\"");
+	}
+	catch(java.io.IOException ioe)
+	{
+		ioe.printStackTrace();
+	}
+	System.exit(0);
+
+}
+
+private String getServiceName()
+{
+	return com.cannontech.export.ExportFormatTypes.getFormatTypeName(getExportProperties().getFormatID());
 }
 /**
  * Return the AboutMenuItem property value.

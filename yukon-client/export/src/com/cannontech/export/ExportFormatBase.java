@@ -20,14 +20,13 @@ public abstract class ExportFormatBase //extends com.ms.service.Service
 	private static Thread sleepThread = new Thread();
 	private com.cannontech.database.db.notification.NotificationGroup emailGroup = null;
 	
-	private long runTimeInterval = 86400000;
+	private long runTimeIntervalInMillis = 86400000;
 /**
  * ExportFormatBase constructor comment.
  */
 public ExportFormatBase() {
 	super();
 }
-public abstract String appendBatchFileParms(String batchString);
 /**
  * Insert the method's description here.
  * Creation date: (5/18/00 3:50:38 PM)
@@ -51,7 +50,7 @@ public final static ExportFormatBase createFileFormat(int formatID)
 	}
 	else
 	{
-		com.cannontech.clientutils.CTILogger.info("No file format found - Unrecognized file format type");
+		com.cannontech.clientutils.CTILogger.info("Unrecognized file formatID " + formatID);
 	}
 	returnFormat.getExportProperties().setFormatID(formatID);
 	return returnFormat;
@@ -65,7 +64,6 @@ public void figureNextRunTime()
 	if( nextRunTime == null )
 	{
 		nextRunTime = new java.util.GregorianCalendar();
-
 		//First time this will run is at 1:00 AM.  Taking a chance that the program
 		// is not getting started up around this time.
 		nextRunTime.set(java.util.GregorianCalendar.HOUR_OF_DAY, getExportProperties().getRunTimeHour().intValue());
@@ -75,10 +73,9 @@ public void figureNextRunTime()
 	else
 	{
 		long lastRunTime = getNextRunTime().getTime().getTime();
-		nextRunTime.setTime(new java.util.Date( lastRunTime + getRunTimeInterval()));
+		nextRunTime.setTime(new java.util.Date( lastRunTime + getRunTimeIntervalInMillis()));
 	}	
-	logEvent("...Next RunTime to occur at: " + nextRunTime.getTime()+ " ...", com.cannontech.common.util.LogWriter.INFO );
-	logEvent("", com.cannontech.common.util.LogWriter.NONE);
+	logEvent("Next RunTime will occur at: " + nextRunTime.getTime(), com.cannontech.common.util.LogWriter.INFO );
 }
 	
 /**
@@ -93,14 +90,14 @@ public String getDirectory()
 		try
 		{
 			java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("config");
-			directory = bundle.getString("dbpurge_file_directory");
-			logEvent("  (config.prop)  File Directory to store exported files in is " + directory, com.cannontech.common.util.LogWriter.INFO);
+			directory = bundle.getString("export_file_directory");
+			logEvent("Export File Directory (config.prop): " + directory, com.cannontech.common.util.LogWriter.INFO);
 		}
 		catch( Exception e)
 		{
-			directory = "c:/yukon/client/export";
-			logEvent("  File Directory was NOT found, DEFAULTED TO " + directory, com.cannontech.common.util.LogWriter.ERROR);
-			logEvent("  Add 'dbpurge_file_directory' to config.properties.", com.cannontech.common.util.LogWriter.INFO);
+			directory = com.cannontech.common.util.CtiUtilities.getExportDirPath();
+			logEvent("Config.properties export_file_directory key NOT found.", com.cannontech.common.util.LogWriter.ERROR);
+			logEvent("Export File Directory  default value: " + directory, com.cannontech.common.util.LogWriter.INFO);
 		}
 		java.io.File file = new java.io.File( directory );
 		file.mkdirs();
@@ -112,6 +109,11 @@ private com.cannontech.database.db.notification.NotificationGroup getEmailGroup(
 	return emailGroup;
 }
 public abstract String getFileName();
+
+public String getDatFileName()
+{
+	return  ExportFormatTypes.getFormatDatFileName(getExportProperties().getFormatID());
+}
 /**
  * Insert the method's description here.
  * Creation date: (10/24/2001 12:01:31 PM)
@@ -185,10 +187,11 @@ public static void main(String[] args)
 {
 	ExportFormatBase formatBase = null;
 	int format = -1;
+
 	for ( int i = 0; i < args.length; i++)
 	{
 		String argLowerCase = (String)args[i].toLowerCase();
-	
+
 		if( argLowerCase.startsWith("format"))
 		{
 			int startIndex = argLowerCase.indexOf("=") + 1;
@@ -210,7 +213,7 @@ public static void main(String[] args)
 	else
 	{
 		formatBase = createFileFormat(format);
-		formatBase.parseCommandLineArgs(args);
+		formatBase.parseDatFile();
 		
 	}
 
@@ -261,7 +264,13 @@ public static void main(String[] args)
 
 	System.exit(0);
 }
-public abstract void parseCommandLineArgs(String [] args);
+
+/**
+ * Insert the method's description here.
+ * Creation date: (5/13/2002 9:53:47 AM)
+ */
+public abstract void parseDatFile();
+	
 abstract public void retrieveExportData();
 /**
  * Insert the method's description here.
@@ -271,7 +280,7 @@ public static void runMainWithGui(ExportFormatBase formatBase)
 {
 	if( formatBase.getExportProperties().getFormatID() < 0)
 	{
-		formatBase.logEvent("** Missing FORMAT=<format type> from commandline.", com.cannontech.common.util.LogWriter.INFO);
+		formatBase.logEvent("** Missing format=<format type> from commandline.", com.cannontech.common.util.LogWriter.INFO);
 		formatBase.logEvent("** No File Format Specified, Exporting process will exit...", com.cannontech.common.util.LogWriter.INFO);
 		System.exit(0);
 	}
@@ -367,22 +376,51 @@ public void writeToFile()
 		logEvent("...Exported * 0 * Records.  No file generated.", com.cannontech.common.util.LogWriter.INFO);
 	}
 }
+
+	public abstract String[][] buildKeysAndValues();
+
+	public void writeDatFile()
+	{
+		try
+		{
+			java.io.File file = new java.io.File( com.cannontech.common.util.CtiUtilities.getConfigDirPath());
+			file.mkdirs();
+
+			java.io.FileWriter writer = new java.io.FileWriter( file.getCanonicalFile() + getDatFileName());
+			String[][] keysAndValues = buildKeysAndValues();
+			String keys[] = keysAndValues[0];
+			String values[] = keysAndValues[1];
+
+			String endline = "\r\n";
+
+			for (int i = 0; i < keys.length; i++)
+			{
+				writer.write(keys[i] + "=" + values[i] + endline);
+			}
+			writer.close();
+		}
+		catch ( java.io.IOException e )
+		{
+			System.out.print(" IOException in writeDatFile");
+			e.printStackTrace();
+		}
+	}		
 	/**
 	 * Returns the runTimeInterval.
 	 * @return long
 	 */
-	public long getRunTimeInterval()
+	public long getRunTimeIntervalInMillis()
 	{
-		return runTimeInterval;
+		return runTimeIntervalInMillis;
 	}
 
 	/**
 	 * Sets the runTimeInterval.
 	 * @param runTimeInterval The runTimeInterval to set
 	 */
-	public void setRunTimeInterval(long runTimeInterval)
+	public void setRunTimeIntervalInMillis(long millis)
 	{
-		this.runTimeInterval = runTimeInterval;
+		this.runTimeIntervalInMillis = millis;
 	}
 
 	public String toString()
