@@ -18,8 +18,12 @@ import java.util.Hashtable;
 import org.apache.commons.fileupload.FileItem;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -52,7 +56,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	
 	private static final String[] CUST_COLUMNS = {
 		"ACCOUNT_NO",
-		"ACTION",
+		"CUST_ACTION",
 		"LAST_NAME",
 		"FIRST_NAME",
 		"HOME_PHONE",
@@ -77,7 +81,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	
 	private static final String[] HW_COLUMNS = {
 		"ACCOUNT_NO",
-		"ACTION",
+		"HW_ACTION",
 		"DEVICE_TYPE",
 		"SERIAL_NO",
 		"INSTALL_DATE",
@@ -92,7 +96,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	// Column indices of the generic customer info file
 	private static int acct_col = 0;
 	private static final int COL_ACCOUNT_NO = acct_col++;
-	private static final int COL_ACCOUNT_ACTION = acct_col++;
+	private static final int COL_CUST_ACTION = acct_col++;
 	private static final int COL_LAST_NAME = acct_col++;
 	private static final int COL_FIRST_NAME = acct_col++;
 	private static final int COL_HOME_PHONE = acct_col++;
@@ -117,7 +121,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	// Column indices of the generic hardware info file
 	private static int hw_col = 0;
 	private static final int COL_HW_ACCOUNT_NO = hw_col++;
-	private static final int COL_HARDWARE_ACTION = hw_col++;
+	private static final int COL_HW_ACTION = hw_col++;
 	private static final int COL_DEVICE_TYPE = hw_col++;
 	private static final int COL_SERIAL_NO = hw_col++;
 	private static final int COL_INSTALL_DATE = hw_col++;
@@ -288,19 +292,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (custFields[ImportManagerUtil.IDX_ACCOUNT_NO].trim().length() == 0)
 						throw new WebClientException( "Account # cannot be empty" );
 					
-					// If serial # field is not empty, then the action field is the hardware action
-					if (hwInfoContained && columns[hwColIdx[COL_SERIAL_NO]].trim().length() > 0)
-						custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = "";
+					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 					
 					if (!preScan) {
-						if (!custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
-							// Determine the action field automatically
-							LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
-							if (liteAcctInfo != null)
-								custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = "UPDATE";
-							else
-								custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = "INSERT";
-						}
+						liteAcctInfo = importAccount( custFields, energyCompany );
 					}
 					else {
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -320,7 +315,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 										custFieldsList.add( custFields );
 									custFieldsMap.put( custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields );
 									
-									LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 									if (liteAcctInfo != null) {
 										LiteYukonUser login = ContactFuncs.getYukonUser( liteAcctInfo.getCustomer().getPrimaryContactID() );
 										if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains( login.getUsername() ))
@@ -332,7 +326,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								}
 							}
 							else {
-								LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 								if (liteAcctInfo != null) {
 									// Found the account in the database, add the "REMOVE" record to the list
 									custFieldsList.add( custFields );
@@ -387,7 +380,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							}
 							else {
 								// Add the new record to the list with the action field set accordingly
-								LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 								if (liteAcctInfo != null) {
 									custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = "UPDATE";
 									
@@ -425,10 +417,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 					}
 					
-					LiteStarsCustAccountInformation liteAcctInfo = null;
-					if (!preScan)
-						liteAcctInfo = importAccount( custFields, energyCompany );
-					
 					if (hwInfoContained) {
 						if (preScan) {
 							if (hwFieldsList == null) hwFieldsList = new ArrayList();
@@ -440,8 +428,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						hwFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 						setHardwareFields( hwFields, columns, hwColIdx );
 						
-						if (hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0) {
-							// If serial # field is empty, this record is for customer action only
+						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")
+							|| hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0)
+						{
+							// If customer action is "REMOVE", or serial # field is empty, this record is for customer action only
 							if (preScan) {
 								hwFieldsList.add( null );
 								if (appFieldsList != null) appFieldsList.add( null );
@@ -452,55 +442,15 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0)
 							throw new WebClientException("Device type cannot be empty");
 						
-						String acctNo = null;
-						if (preScan)
-							acctNo = (String) hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
-						if (acctNo == null) {
-							ArrayList hardwares = energyCompany.searchInventoryBySerialNo( hwFields[ImportManagerUtil.IDX_SERIAL_NO], false );
-							if (hardwares != null && hardwares.size() > 0) {
-								LiteInventoryBase hardware = (LiteInventoryBase) hardwares.get(0);
-								if (hardware.getAccountID() > 0)
-									acctNo = energyCompany.getBriefCustAccountInfo( hardware.getAccountID(), true ).getCustomerAccount().getAccountNumber();
-							}
-						}
-						
-						if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-							// Remove a hardware from an account, if hardware doesn't exist in the account, report a warning
-							if (acctNo == null || !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )) {
-								importLog.println( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account" );
-								if (preScan) {
-									hwFieldsList.add( null );
-									if (appFieldsList != null) appFieldsList.add( null );
-								}
-								continue;
-							}
-							
-							if (preScan) {
-								hwFieldsList.add( hwFields );
-								hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], "" );
-							}
-						}
-						else {
-							// Insert/update a hardware in an account, if hardware already exists in another account, report an error 
-							if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
-								throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account");
-							
-							if (acctNo != null && acctNo.equals( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
-								hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "UPDATE";
-							else
-								hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "INSERT";
-							
-							if (preScan) {
-								hwFieldsList.add( hwFields );
-								hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
-							}
-						}
+						YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+						YukonListEntry deviceType = YukonListFuncs.getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
+						if (deviceType == null)
+							throw new WebClientException("Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"");
 						
 						String[] appFields = null;
 						if (hwColIdx[COL_APP_TYPE] != -1) {
 							appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
 							setApplianceFields( appFields, columns, hwColIdx );
-							if (preScan) appFieldsList.add( appFields );
 						}
 						
 						if (!preScan) {
@@ -513,6 +463,48 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								if (programs != null)
 									programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
 							}
+						}
+						else {
+							String acctNo = (String) hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
+							if (acctNo == null) {
+								LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType.getEntryID(), hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
+								if (liteHw != null && liteHw.getAccountID() > 0)
+									acctNo = energyCompany.getBriefCustAccountInfo( liteHw.getAccountID(), true ).getCustomerAccount().getAccountNumber();
+							}
+							
+							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+								// Remove a hardware from an account, if hardware doesn't exist in the account, report a warning
+								if (acctNo == null || !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )) {
+									importLog.println( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account" );
+									if (preScan) {
+										hwFieldsList.add( null );
+										if (appFieldsList != null) appFieldsList.add( null );
+									}
+									continue;
+								}
+								
+								if (preScan) {
+									hwFieldsList.add( hwFields );
+									hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], "" );
+								}
+							}
+							else {
+								// Insert/update a hardware in an account, if hardware already exists in another account, report an error 
+								if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
+									throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in account #" + acctNo);
+								
+								if (acctNo != null && acctNo.equals( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
+									hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "UPDATE";
+								else
+									hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "INSERT";
+								
+								if (preScan) {
+									hwFieldsList.add( hwFields );
+									hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
+								}
+							}
+							
+							if (appFieldsList != null) appFieldsList.add( appFields );
 						}
 					}
 					
@@ -583,6 +575,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0)
 						throw new WebClientException( "Device type cannot be empty" );
 					
+					YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
+					YukonListEntry deviceType = YukonListFuncs.getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
+					if (deviceType == null)
+						throw new WebClientException("Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"");
+					
 					String[] custFields = null;
 					if (preScan)
 						custFields = (String[]) custFieldsMap.get( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
@@ -612,52 +609,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 					}
 					
-					String acctNo = null;
-					if (preScan)
-						acctNo = (String) hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
-					if (acctNo == null) {
-						ArrayList hardwares = energyCompany.searchInventoryBySerialNo( hwFields[ImportManagerUtil.IDX_SERIAL_NO], false );
-						if (hardwares != null && hardwares.size() > 0) {
-							LiteInventoryBase hardware = (LiteInventoryBase) hardwares.get(0);
-							if (hardware.getAccountID() > 0)
-								acctNo = energyCompany.getBriefCustAccountInfo( hardware.getAccountID(), true ).getCustomerAccount().getAccountNumber();
-						}
-					}
-					
-					if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-						if (acctNo == null || !acctNo.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] )) {
-							importLog.println( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account, record ignored" );
-							continue;
-						}
-						
-						if (preScan) {
-							hwFieldsList.add( hwFields );
-							hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], "" );
-						}
-					}
-					else {
-						if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
-							throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account");
-						
-						if (acctNo != null && acctNo.equals( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] ))
-							hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "UPDATE";
-						else
-							hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "INSERT";
-						
-						if (preScan) {
-							hwFieldsList.add( hwFields );
-							hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
-						}
-					}
-					
 					String[] appFields = null;
 					if (hwColIdx[COL_APP_TYPE] != -1) {
 						appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
 						setApplianceFields( appFields, columns, hwColIdx );
-						if (preScan) {
-							if (appFieldsList == null) appFieldsList = new ArrayList();
-							appFieldsList.add( appFields );
-						} 
+						if (preScan && appFieldsList == null)
+							appFieldsList = new ArrayList();
 					}
 					
 					if (!preScan) {
@@ -670,6 +627,42 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							if (programs != null)
 								programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
 						}
+					}
+					else {
+						String acctNo = (String) hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
+						if (acctNo == null) {
+							LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType.getEntryID(), hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
+							if (liteHw != null && liteHw.getAccountID() > 0)
+								acctNo = energyCompany.getBriefCustAccountInfo( liteHw.getAccountID(), true ).getCustomerAccount().getAccountNumber();
+						}
+						
+						if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+							if (acctNo == null || !acctNo.equalsIgnoreCase( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] )) {
+								importLog.println( "WARNING at " + position + ": serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account, record ignored" );
+								continue;
+							}
+							
+							if (preScan) {
+								hwFieldsList.add( hwFields );
+								hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], "" );
+							}
+						}
+						else {
+							if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))
+								throw new WebClientException("Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account");
+							
+							if (acctNo != null && acctNo.equals( hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] ))
+								hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "UPDATE";
+							else
+								hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION] = "INSERT";
+							
+							if (preScan) {
+								hwFieldsList.add( hwFields );
+								hwFieldsMap.put( hwFields[ImportManagerUtil.IDX_SERIAL_NO], hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] );
+							}
+						}
+						
+						if (appFieldsList != null) appFieldsList.add( appFields );
 					}
 					
 					if (isCanceled) {
@@ -830,8 +823,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private void setCustomerFields(String[] fields, String[] columns, int[] colIdx) {
 		if (colIdx[COL_ACCOUNT_NO] >= 0 && colIdx[COL_ACCOUNT_NO] < columns.length)
 			fields[ImportManagerUtil.IDX_ACCOUNT_NO] = columns[ colIdx[COL_ACCOUNT_NO] ];
-		if (colIdx[COL_ACCOUNT_ACTION] >= 0 && colIdx[COL_ACCOUNT_ACTION] < columns.length)
-			fields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = columns[ colIdx[COL_ACCOUNT_ACTION] ];
+		if (colIdx[COL_CUST_ACTION] >= 0 && colIdx[COL_CUST_ACTION] < columns.length)
+			fields[ImportManagerUtil.IDX_ACCOUNT_ACTION] = columns[ colIdx[COL_CUST_ACTION] ];
 		if (colIdx[COL_LAST_NAME] >= 0 && colIdx[COL_LAST_NAME] < columns.length)
 			fields[ImportManagerUtil.IDX_LAST_NAME] = columns[ colIdx[COL_LAST_NAME] ];
 		if (colIdx[COL_FIRST_NAME] >= 0 && colIdx[COL_FIRST_NAME] < columns.length)
@@ -879,8 +872,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private void setHardwareFields(String[] fields, String[] columns, int[] colIdx) {
 		if (colIdx[COL_HW_ACCOUNT_NO] >= 0 && colIdx[COL_HW_ACCOUNT_NO] < columns.length)
 			fields[ImportManagerUtil.IDX_ACCOUNT_ID] = columns[ colIdx[COL_HW_ACCOUNT_NO] ];	// Use account ID field to store account #
-		if (colIdx[COL_HARDWARE_ACTION] >= 0 && colIdx[COL_HARDWARE_ACTION] < columns.length)
-			fields[ImportManagerUtil.IDX_HARDWARE_ACTION] = columns[ colIdx[COL_HARDWARE_ACTION] ];
+		if (colIdx[COL_HW_ACTION] >= 0 && colIdx[COL_HW_ACTION] < columns.length)
+			fields[ImportManagerUtil.IDX_HARDWARE_ACTION] = columns[ colIdx[COL_HW_ACTION] ];
 		if (colIdx[COL_SERIAL_NO] >= 0 && colIdx[COL_SERIAL_NO] < columns.length)
 			fields[ImportManagerUtil.IDX_SERIAL_NO] = columns[ colIdx[COL_SERIAL_NO] ];
 		if (colIdx[COL_DEVICE_TYPE] >= 0 && colIdx[COL_DEVICE_TYPE] < columns.length)
@@ -954,25 +947,20 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			}
 		}
 		
-		String action = hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION];
-		if (action.equalsIgnoreCase( "INSERT" )) {
-			liteInv = ImportManagerUtil.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true, problem );
-			numHwAdded++;
-		}
-		else if (action.equalsIgnoreCase( "UPDATE" )) {
-			if (liteInv == null)
-				throw new WebClientException("Cannot update hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account");
-			liteInv = ImportManagerUtil.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany, problem );
-			numHwUpdated++;
-		}
-		else if (action.equalsIgnoreCase( "REMOVE" )) {
+		if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase( "REMOVE" )) {
 			if (liteInv == null)
 				throw new WebClientException("Cannot remove hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account");
 			ImportManagerUtil.removeLMHardware( hwFields, liteAcctInfo, energyCompany, problem );
 			numHwRemoved++;
 		}
-		else
-			throw new WebClientException( "Unrecognized action type '" + action + "'" );
+		else if (liteInv == null) {
+			liteInv = ImportManagerUtil.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true, problem );
+			numHwAdded++;
+		}
+		else {
+			liteInv = ImportManagerUtil.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany, problem );
+			numHwUpdated++;
+		}
 		
 		if (problem.getProblem() != null)
 			importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
@@ -984,36 +972,35 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private LiteStarsCustAccountInformation importAccount(String[] custFields, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
-		LiteStarsCustAccountInformation liteAcctInfo = null;
-		ImportProblem problem = new ImportProblem();
+		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 		
-		String action = custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION];
-		if (action.equalsIgnoreCase( "INSERT" )) {
-			liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
-			numAcctAdded++;
-		}
-		else if (action.equalsIgnoreCase( "UPDATE" )) {
-			liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
-			if (liteAcctInfo == null)
-				throw new WebClientException( "Cannot update customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist" );
-			ImportManagerUtil.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem );
-			numAcctUpdated++;
-		}
-		else if (action.equalsIgnoreCase( "REMOVE" )) {
-			liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
+		if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase( "REMOVE" )) {
 			if (liteAcctInfo == null)
 				throw new WebClientException( "Cannot delete customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist" );
 			DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+			
 			numAcctRemoved++;
+			numAcctImported++;
+			return null;
 		}
-		else
-			throw new WebClientException( "Unrecognized action type '" + action + "'" );
-		
-		if (problem.getProblem() != null)
-			importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
-		
-		numAcctImported++;
-		return liteAcctInfo;
+		else {
+			ImportProblem problem = new ImportProblem();
+			
+			if (liteAcctInfo == null) {
+				liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
+				numAcctAdded++;
+			}
+			else {
+				ImportManagerUtil.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem );
+				numAcctUpdated++;
+			}
+			
+			if (problem.getProblem() != null)
+				importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
+			
+			numAcctImported++;
+			return liteAcctInfo;
+		}
 	}
 	
 	private void programSignUp(int[][] programs, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo,

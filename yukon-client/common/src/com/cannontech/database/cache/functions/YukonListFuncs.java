@@ -368,4 +368,13 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		return null;
 	}
 	
+	public static YukonListEntry getYukonListEntry(YukonSelectionList list, String entryText) {
+		for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+			YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+			if (entry.getEntryText().equalsIgnoreCase( entryText ))
+				return entry;
+		}
+		return null;
+	}
+	
 }

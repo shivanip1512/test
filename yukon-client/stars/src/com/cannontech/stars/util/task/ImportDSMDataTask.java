@@ -633,12 +633,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				if (fields[3].length() > 0) {
 					YukonSelectionList list = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
-					int devTypeID = getListEntryID( list, fields[3] );
-					if (devTypeID == 0)
+					YukonListEntry deviceType = YukonListFuncs.getYukonListEntry( list, fields[3] );
+					if (deviceType == null)
 						throw new WebClientException( "Device type \"" + fields[3] + "\" was not defined in STARS" );
 					
 					ReceiverType rt = new ReceiverType( fields[0], fields[1], fields[2] );
-					receiverTypeMap.put( rt, new Integer(devTypeID) );
+					receiverTypeMap.put( rt, new Integer(deviceType.getEntryID()) );
 				}
 			}
 		}
@@ -735,15 +735,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			}
 		}
 		return programTable;
-	}
-	
-	private int getListEntryID(YukonSelectionList list, String entryText) {
-		for (int i = 0; i < list.getYukonListEntries().size(); i++) {
-			YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
-			if (entry.getEntryText().equals( entryText ))
-				return entry.getEntryID();
-		}
-		return 0;
 	}
 	
 	private int[] getMatchingProgram(Integer code, int applianceCategoryID) throws Exception {
@@ -1595,7 +1586,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					ac.setTonnage( new Tonnage() );
 					
 					ACType type = new ACType();
-					type.setEntryID( getListEntryID(coolTypeList, coolType) );
+					YukonListEntry acType = YukonListFuncs.getYukonListEntry(coolTypeList, coolType);
+					if (acType != null) type.setEntryID( acType.getEntryID() );
 					ac.setACType( type );
 					
 					app.setAirConditioner( ac );
@@ -1637,8 +1629,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						df.setSwitchOverType( new SwitchOverType() );
 						
 						SecondaryEnergySource energySrc = new SecondaryEnergySource();
-						if (fields[14].trim().length() > 0)
-							energySrc.setEntryID( getListEntryID(backupTypeList, fields[14].trim()) );
+						if (fields[14].trim().length() > 0) {
+							YukonListEntry es = YukonListFuncs.getYukonListEntry(backupTypeList, fields[14].trim());
+							if (es != null) energySrc.setEntryID( es.getEntryID() );
+						}
 						df.setSecondaryEnergySource( energySrc );
 						
 						if (fields[15].trim().length() > 0)
