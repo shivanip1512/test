@@ -18,6 +18,7 @@ import com.cannontech.tdc.fonteditor.*;
 import com.cannontech.clientutils.CommonUtils;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.io.StringReader;
@@ -1109,12 +1110,10 @@ public void destroySpawn()
  * @return boolean
  * @param dialog javax.swing.JDialog
  */
-private boolean dialogCanceled(javax.swing.JDialog dialog) 
+private boolean compCanceled(Component comp_) 
 {
-	if( dialog.isDisplayable() )
-		return false;
-	else
-		return true;
+	//canceled comps are NOT displayable
+	return !comp_.isDisplayable();
 }
 
 
@@ -3052,7 +3051,7 @@ public void jMenuItemCreate_ActionPerformed(java.awt.event.ActionEvent actionEve
 		if( !createDisplay.getDisplayName().equalsIgnoreCase("") )
 			previousItem = createDisplay.getDisplayName();
 	
-		if( !dialogCanceled(createDisplay) )
+		if( !compCanceled(createDisplay) )
 		{
 			if( !getJRadioButtonCustomDisplays().isSelected() )
 				getJRadioButtonCustomDisplays().doClick();
@@ -3117,7 +3116,7 @@ public void jMenuItemEdit_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		display.setLocationRelativeTo( this );	
 		display.show();
 
-		if( !dialogCanceled(display) && originalDisplayNumber >= (Display.BEGINNING_USER_DISPLAY_NUMBER-1) )
+		if( !compCanceled(display) && originalDisplayNumber >= (Display.BEGINNING_USER_DISPLAY_NUMBER-1) )
 		{
 			if( !getJRadioButtonCustomDisplays().isSelected() )
 				getJRadioButtonCustomDisplays().doClick();
@@ -3316,7 +3315,8 @@ public void jMenuItemMakeCopy_ActionPerformed(java.awt.event.ActionEvent actionE
 		Object previousItem = getMainPanel().getJComboCurrentDisplay().getSelectedItem();
 		
 		com.cannontech.tdc.editdisplay.EditDisplayDialog display = 
-								new com.cannontech.tdc.editdisplay.EditDisplayDialog( this, previousItem.toString() );
+								new com.cannontech.tdc.editdisplay.EditDisplayDialog( 
+								this, previousItem.toString() );
 								
 		setCursor( original );							
 		display.setModal(true);
@@ -3569,7 +3569,7 @@ public void jMenuItemRemove_ActionPerformed(java.awt.event.ActionEvent actionEve
 		display.show();
 		
 		
-		if( !dialogCanceled(display) && originalDisplayNumber >= Display.BEGINNING_USER_DISPLAY_NUMBER )
+		if( !compCanceled(display) && originalDisplayNumber >= Display.BEGINNING_USER_DISPLAY_NUMBER )
 		{
 			setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 

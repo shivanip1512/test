@@ -5,22 +5,36 @@ package com.cannontech.common.gui.dnd;
  * Creation date: (3/7/00 2:09:37 PM)
  * @author: 
  */
-
-
-
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DropTarget;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd.DropTargetListener
-{
-	DropTarget dropTarget;
-	DropTarget viewDropTarget;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+
+public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
+{
+	private DropTarget dropTarget;
+	private DropTarget viewDropTarget;
+
+	private DAndDJTableRendererWrapper rendererWrapper;
+	private int lastDragOrigination = -1;
+
+
+	//draggable components
+	protected transient DragAndDropListener dndEventMulticaster = null;
+	private DragSource dragSource = DragSource.getDefaultDragSource();
+	private final static DragSourceListener DRAG_SOURCE_LISTENER =
+			new DragSourceListenerClass();
 
 
 /**
@@ -29,8 +43,36 @@ public class DragAndDropTable extends javax.swing.JTable implements java.awt.dnd
 public DragAndDropTable() 
 {
 	super();
-	dropTarget = new DropTarget( this, DnDConstants.ACTION_MOVE, this, true );
+	initialize();
+
+	//getRightTable().addDragAndDropListener(this);
 }
+
+
+private void initialize()
+{
+	dropTarget = new DropTarget( this, DnDConstants.ACTION_MOVE, this, true );
+	
+	dragSource.createDefaultDragGestureRecognizer( 
+				this, 
+				DnDConstants.ACTION_MOVE, 
+				this );	
+				
+	setDefaultRenderer( Object.class, new DefaultTableCellRenderer() );
+}
+
+
+/**
+ * 
+ */
+public void addDragAndDropListener(DragAndDropListener newListener) 
+{
+	dndEventMulticaster = 
+			DragAndDropListenerMulticaster.add(dndEventMulticaster, newListener);
+
+	return;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/31/00 2:08:42 PM)
@@ -85,6 +127,33 @@ public void addPoint( final String pointid )
 
 	tableModel.insertNewRow( pointid ); 
 }
+
+/**
+ * 
+ * @param newListener com.cannontech.common.gui.util.AddRemovePanelListener
+ */
+public void removeDragAndDropListener(DragAndDropListener newListener) 
+{
+	dndEventMulticaster = 
+		DragAndDropListenerMulticaster.remove(dndEventMulticaster, newListener);
+
+	return;
+}
+
+
+/**
+ * Method to support listener events.
+ * @param newEvent java.util.EventObject
+ */
+protected void fireDrop_actionPerformed(java.util.EventObject newEvent) 
+{
+	if (dndEventMulticaster == null) 
+		return;
+	
+	dndEventMulticaster.drop_actionPerformed(newEvent);
+}
+
+
 /**
  * dragEnter method comment.
  */
@@ -92,17 +161,70 @@ public void dragEnter(java.awt.dnd.DropTargetDragEvent dtde)
 {
 	dtde.acceptDrag( DnDConstants.ACTION_MOVE  );
 }
+
 /**
  * dragExit method comment.
  */
-public void dragExit(java.awt.dnd.DropTargetEvent dte) {}
+public void dragExit(java.awt.dnd.DropTargetEvent dte)
+{
+	updateDragBorder( -1 );
+}
+
+
 /**
  * dragOver method comment.
  */
-public void dragOver(java.awt.dnd.DropTargetDragEvent dtde) {}
+public void dragOver(java.awt.dnd.DropTargetDragEvent dtde)
+{
+	updateDragBorder( rowAtPoint(dtde.getLocation()) );
+}
+
+
 /**
- * drop method comment.
+ * AddPointsTree constructor comment.
+ * @param value java.util.Vector
  */
+public void dragGestureRecognized(java.awt.dnd.DragGestureEvent dge) 
+{
+	int row = rowAtPoint( dge.getDragOrigin() );
+
+	if( row >= 0 )
+	{
+		lastDragOrigination = row;
+		
+		Object o = ((IDroppableTableModel)getModel()).getRowAt(row);
+
+		//create a legit trasferable flavor
+		TransferableObjects trans = new TransferableObjects(o);
+
+		dragSource.startDrag(
+				dge,
+				DragSource.DefaultMoveDrop,
+				trans, 
+				DRAG_SOURCE_LISTENER );
+	}
+
+}
+
+
+private synchronized void insertObjectAt( final Object obj, int newRow, int origRow )
+{
+
+	if( getModel() != null && newRow != -1 )
+	{
+		//lock down the data model
+		synchronized( getModel() )
+		{
+			((IDroppableTableModel)getModel()).removeRow( origRow );
+			((IDroppableTableModel)getModel()).insertRowAt( obj, newRow );
+
+			repaint();
+		}
+	}
+	
+}
+
+
 public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde) 
 {	
 	try
@@ -114,59 +236,33 @@ public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde)
 			dtde.acceptDrop( DnDConstants.ACTION_MOVE );
 			Object userObject = tr.getTransferData( TransferableTreeNode.DEFAULT_MUTABLE_TREENODE_FLAVOR );
 
-			if( userObject instanceof com.cannontech.database.data.lite.LiteYukonPAObject )  // insert device
+			if( userObject instanceof LiteYukonPAObject )  // insert device
 			{
-				com.cannontech.database.data.lite.LiteYukonPAObject device = (com.cannontech.database.data.lite.LiteYukonPAObject)userObject;
+				LiteYukonPAObject device = (LiteYukonPAObject)userObject;
 				addDevice( device );
 			}
-			else if(userObject instanceof com.cannontech.database.data.lite.LitePoint)  //insert point
+			else if(userObject instanceof LitePoint)  //insert point
 			{
 				addPoint( String.valueOf(
-						((com.cannontech.database.data.lite.LitePoint)userObject).getPointID() ) );
+						((LitePoint)userObject).getPointID() ) );
 			}
 
 			dtde.getDropTargetContext().dropComplete( true );			
 		}
-		else if( tr.isDataFlavorSupported( DataFlavor.stringFlavor ) )
+		else if( tr.isDataFlavorSupported(TransferableObjects.OBJECT_FLAVOR) )
 		{
-			dtde.acceptDrop( DnDConstants.ACTION_MOVE );
-			String str = (String)tr.getTransferData( DataFlavor.stringFlavor );
+			dtde.acceptDrop( DnDConstants.ACTION_MOVE );			
+			Object obj = tr.getTransferData(TransferableObjects.OBJECT_FLAVOR);
 
-			//addElement()
+
+			//insert our object here into the JList
+			insertObjectAt( 
+					obj,
+					rowAtPoint(dtde.getLocation()),
+					lastDragOrigination );
+
+			
 			dtde.getDropTargetContext().dropComplete( true );			
-		}
-		else if( tr.isDataFlavorSupported( DataFlavor.plainTextFlavor ) )
-		{
-			dtde.acceptDrop( DnDConstants.ACTION_MOVE );
-			Object stream = tr.getTransferData( DataFlavor.plainTextFlavor );
-
-			if( stream instanceof InputStream )
-			{
-				InputStreamReader isr = new InputStreamReader((InputStream)stream);
-				BufferedReader reader = new BufferedReader( isr );
-				String line;
-
-				while( (line = reader.readLine()) != null )
-					//addElement()
-				
-				dtde.getDropTargetContext().dropComplete( true );
-			}
-			else if( stream instanceof Reader )
-			{
-				BufferedReader reader = new BufferedReader((Reader)stream);
-				String line;
-
-				while( (line = reader.readLine()) != null )
-					//addElement()
-				
-				dtde.getDropTargetContext().dropComplete( true );
-			}
-			else
-			{
-				System.err.println("Unknown type in Drag&Drop drop() : " + stream.getClass() );
-				dtde.rejectDrop();
-			}
-				
 		}
 		else
 		{
@@ -185,8 +281,12 @@ public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde)
 		handleException( ufe );
 		dtde.rejectDrop();		
 	}
-		
+	
+
+	lastDragOrigination = -1;
+	updateDragBorder( -1 );
 }
+
 /**
  * dropActionChanged method comment.
  */
@@ -218,6 +318,21 @@ public void resizeTable()
 	repaint();
 
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (2/13/2002 1:18:49 PM)
+ * @return javax.swing.ListCellRenderer
+ */
+public void setDefaultRenderer( Class clazz, TableCellRenderer re )
+{
+	if( rendererWrapper == null )
+		rendererWrapper = new DAndDJTableRendererWrapper();
+
+	rendererWrapper.setRealRenderer( re );
+	super.setDefaultRenderer( clazz, rendererWrapper );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:33:57 PM)
@@ -227,4 +342,18 @@ public void setViewDropTarget(javax.swing.JComponent comp)
 {
 	viewDropTarget = new java.awt.dnd.DropTarget(comp, java.awt.dnd.DnDConstants.ACTION_MOVE, this, true);
 }
+
+
+/**
+ * Insert the method's description here.
+ * Creation date: (2/13/2002 4:00:32 PM)
+ */
+private void updateDragBorder( int row )
+{
+	//remove the boarder line we have in our JList
+	rendererWrapper.setDragOverRow( row );
+	revalidate();
+	repaint();
+}
+
 }

@@ -82,13 +82,13 @@ public java.awt.datatransfer.DataFlavor[] getTransferDataFlavors()
 /**
  * isDataFlavorSupported method comment.
  */
-public boolean isDataFlavorSupported(java.awt.datatransfer.DataFlavor flavor) 
+public boolean isDataFlavorSupported(java.awt.datatransfer.DataFlavor flavor_) 
 {
 	boolean returnValue = false;
 
-	for( int i = 0, n = flavors.length; i < n; i++ )
+	for( int i = 0; i < flavors.length; i++ )
 	{
-		if( flavors.equals( flavors[i] ) )
+		if( flavors[i].equals( flavor_ ) )
 		{
 			returnValue = true;
 			break;

@@ -4,6 +4,7 @@ package com.cannontech.tdc.addpoints;
  * Creation date: (3/13/00 11:44:56 AM)
  * @author: 
  */
+import java.io.Serializable;
 import java.util.Vector;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -23,10 +24,10 @@ public class RightTableModel extends javax.swing.table.AbstractTableModel implem
 	private static final String[] COLUMN_NAMES = {"Device Name", "Point Name"};
 
 	//data for the rows in the table
-	private Vector	rows = new Vector(10);
+	private Vector rows = null;
 
 
-	public class Line
+	public class Line implements Serializable
 	{
 		private long pointID = -1;
 		private String deviceName = null;
@@ -77,6 +78,14 @@ public RightTableModel()
 	super();
 }
 
+private Vector getRows()
+{
+	if( rows == null )
+		rows = new Vector(10);
+		
+	return rows;
+}
+
 
 /**
  * This method add a Blank row to the table
@@ -89,13 +98,13 @@ public void addBlankRow( int location )
 	
 	Vector newRow = new Vector();
 	
-	if( location >= rows.size() )
+	if( location >= getRowCount() )
 	{		
-		rows.addElement( new Line( TDCDefines.ROW_BREAK_ID, "BLANK", "BLANK" ) );
+		getRows().addElement( new Line( TDCDefines.ROW_BREAK_ID, "BLANK", "BLANK" ) );
 	}
 	else
 	{
-		rows.insertElementAt( new Line( TDCDefines.ROW_BREAK_ID, "BLANK", "BLANK" ), location );
+		getRows().insertElementAt( new Line( TDCDefines.ROW_BREAK_ID, "BLANK", "BLANK" ), location );
 	}
 	
 	fireTableRowsInserted( location, location ); // Tell the listeners a new row has arrived.	
@@ -160,7 +169,12 @@ public String getColumnName(int column)
  */
 public long getPointID( int loc ) 
 {
-	return getRowAt(loc).getPointID();
+	return getLineAt(loc).getPointID();
+}
+
+private Line getLineAt( int row_ )
+{
+	return (Line)getRowAt(row_);
 }
 
 
@@ -168,19 +182,36 @@ public long getPointID( int loc )
  * Insert the method's description here.
  * Creation date: (6/19/2002 9:12:46 AM)
  */
-protected Line getRowAt( int row )
+public Object getRowAt( int row )
 {
-	return (Line)rows.get(row);
+	return getRows().get(row);
 }
 
+public void insertRowAt( Object value, int row )
+{
+	if( value instanceof Line )
+	{
+		getRows().insertElementAt( value, row );
+		fireTableDataChanged();
+	}
+
+}
 
 /**
  * getRowCount method comment.
  */
 public int getRowCount() 
 {
-	return rows.size();
+	return getRows().size();
 }
+
+public void removeRow( int row )
+{
+	getRows().remove( row );
+	
+	fireTableRowsDeleted( row, row ); // Tell the listeners a new row has arrived.
+}
+
 
 
 /**
@@ -188,7 +219,7 @@ public int getRowCount()
  */
 public Object getValueAt(int aRow, int aColumn) 
 {
-	Line value = getRowAt(aRow);
+	Line value = getLineAt(aRow);
 
 	if( value.getPointID() == TDCDefines.ROW_BREAK_ID )
 		return "";
@@ -236,7 +267,7 @@ public void insertNewRow ( String ptId )
 	
 	LitePoint point = PointFuncs.getLitePoint( (int)pointid );
 	
-	rows.addElement( 
+	getRows().addElement( 
 			new Line( pointid, 
 					PAOFuncs.getYukonPAOName(point.getPaobjectID()), 
 					point.getPointName() ) );
@@ -292,7 +323,7 @@ public void makeTable ( )
 
 			}
 
-			rows.addElement( new Line( Long.parseLong(ptID), devName, ptName ) );
+			getRows().addElement( new Line( Long.parseLong(ptID), devName, ptName ) );
 		}				
 
 		fireTableDataChanged(); // Tell the listeners a new table has arrived.			
@@ -327,25 +358,12 @@ public boolean pointExists(String ptID)
  
 public void removeAllRows()
 {
-	if( rows != null )
-	{
-		rows.removeAllElements();
-	}
+	getRows().removeAllElements();
 
 	fireTableDataChanged();
 }
 
 
-/**
- * This method add a Blank row to the table
- */
- 
-public void removeSingleRow( int location )
-{
-	rows.removeElementAt( location );
-	
-	fireTableRowsDeleted( location, location ); // Tell the listeners a new row has arrived.
-}
 
 
 /**

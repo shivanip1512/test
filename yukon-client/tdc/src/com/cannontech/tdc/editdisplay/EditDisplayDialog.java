@@ -15,7 +15,8 @@ import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
 
-public class EditDisplayDialog extends javax.swing.JDialog {
+public class EditDisplayDialog extends javax.swing.JDialog 
+{
 	private String displayName = null;
 	private java.util.Vector displayNumbers = null;
 	private long currentDisplayNumber = 0;
@@ -51,14 +52,7 @@ public EditDisplayDialog() {
 	super();
 	initialize();
 }
-/**
- * EditDisplayDialog constructor comment.
- * @param owner java.awt.Dialog
- * @param title java.lang.String
- */
-public EditDisplayDialog(java.awt.Dialog owner, String title) {
-	super(owner, title);
-}
+
 /**
  * EditDisplayDialog constructor comment.
  * @param owner java.awt.Frame
@@ -71,30 +65,7 @@ public EditDisplayDialog(java.awt.Frame owner, String currentDisplay )
 	displayName = currentDisplay;
 	initialize();
 }
-/**
- * EditDisplayDialog constructor comment.
- * @param owner java.awt.Frame
- * @param title java.lang.String
- * @param modal boolean
- */
-public EditDisplayDialog(java.awt.Frame owner, String currentDisplay, boolean enabledComboBox) 
-{
-	super(owner);
-	
-	displayName = currentDisplay;
-	initialize();
-	getJComboBoxCurrentDisplay().setEnabled( enabledComboBox );
-}
-/**
- * EditDisplayDialog constructor comment.
- * @param owner java.awt.Frame
- */
-public EditDisplayDialog(String currentDisplay ) 
-{
-	super();
-	displayName = currentDisplay;
-	initialize();
-}
+
 /**
  * connEtoC3:  (JComboBoxCurrentDisplay.action.actionPerformed(java.awt.event.ActionEvent) --> EditDisplayDialog.jComboBoxCurrentDisplay_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -320,8 +291,8 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsJPanel2.gridx = 1; constraintsJPanel2.gridy = 1;
 			constraintsJPanel2.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJPanel2.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJPanel2.weightx = 1.0;
-			constraintsJPanel2.weighty = 1.0;
+			constraintsJPanel2.weightx = 0.0;
+			constraintsJPanel2.weighty = 0.0;
 			constraintsJPanel2.insets = new java.awt.Insets(5, 6, 2, 6);
 			getJDialogContentPane().add(getJPanel2(), constraintsJPanel2);
 
@@ -329,8 +300,8 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsTopPanel.gridx = 1; constraintsTopPanel.gridy = 2;
 			constraintsTopPanel.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsTopPanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsTopPanel.weightx = 1.0;
-			constraintsTopPanel.weighty = 1.0;
+			constraintsTopPanel.weightx = 0.0;
+			constraintsTopPanel.weighty = 0.0;
 			constraintsTopPanel.insets = new java.awt.Insets(3, 0, 0, 0);
 			getJDialogContentPane().add(getTopPanel(), constraintsTopPanel);
 
@@ -338,8 +309,8 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsTemplatePanel.gridx = 1; constraintsTemplatePanel.gridy = 3;
 			constraintsTemplatePanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsTemplatePanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsTemplatePanel.weightx = 1.0;
-			constraintsTemplatePanel.weighty = 1.0;
+			constraintsTemplatePanel.weightx = 0.0;
+			constraintsTemplatePanel.weighty = 0.0;
 			constraintsTemplatePanel.insets = new java.awt.Insets(3, 0, 2, 0);
 			getJDialogContentPane().add(getTemplatePanel(), constraintsTemplatePanel);
 
@@ -356,8 +327,8 @@ private javax.swing.JPanel getJDialogContentPane() {
 			constraintsOkCancelPanel.gridx = 1; constraintsOkCancelPanel.gridy = 5;
 			constraintsOkCancelPanel.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsOkCancelPanel.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsOkCancelPanel.weightx = 1.0;
-			constraintsOkCancelPanel.weighty = 1.0;
+			constraintsOkCancelPanel.weightx = 0.0;
+			constraintsOkCancelPanel.weighty = 0.0;
 			constraintsOkCancelPanel.insets = new java.awt.Insets(3, 6, 0, 6);
 			getJDialogContentPane().add(getOkCancelPanel(), constraintsOkCancelPanel);
 			// user code begin {1}
@@ -579,10 +550,14 @@ private void initConnections() throws java.lang.Exception {
  * Initialize the class.
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
+private void initialize() 
+{
+	try 
+	{
 		// user code begin {1}
 		
+		setResizable( true );
+
 		// user code end
 		setName("EditDisplayDialog");
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -590,11 +565,12 @@ private void initialize() {
 		setTitle("Edit Display");
 		setContentPane(getJDialogContentPane());
 		initConnections();
-	} catch (java.lang.Throwable ivjExc) {
+	}
+	catch (java.lang.Throwable ivjExc) 
+	{
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	
 	// user code end
 }
 /**
@@ -725,7 +701,6 @@ public static void main(java.lang.String[] args) {
 	try {
 		EditDisplayDialog aEditDisplayDialog;
 		aEditDisplayDialog = new EditDisplayDialog();
-		aEditDisplayDialog.setModal(true);
 		aEditDisplayDialog.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);

@@ -26,6 +26,7 @@ public class DragAndDropJlist extends javax.swing.JList implements java.awt.dnd.
 	private int lastDragOrigination = -1;
 
 	protected transient DragAndDropListener dndEventMulticaster = null;
+	
 /**
  * DragAndDropTree constructor comment.
  */
@@ -124,8 +125,6 @@ public void dragOver(java.awt.dnd.DropTargetDragEvent dtde)
  */
 public synchronized void drop(java.awt.dnd.DropTargetDropEvent dtde) 
 {
-
-
 	try
 	{
 		java.awt.datatransfer.Transferable tr = dtde.getTransferable();

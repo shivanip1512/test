@@ -8,10 +8,12 @@ package com.cannontech.tdc.addpoints;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 
+import javax.swing.ListSelectionModel;
+
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class AddPointsCenterPanel extends javax.swing.JPanel implements javax.swing.event.TableModelListener
+public class AddPointsCenterPanel extends javax.swing.JPanel implements javax.swing.event.TableModelListener, com.cannontech.common.gui.dnd.DragAndDropListener
 {
 	private long currentDisplayNumber = com.cannontech.tdc.data.Display.UNKNOWN_DISPLAY_NUMBER;
 	private java.util.Vector selectedPoints = null;
@@ -62,6 +64,16 @@ public AddPointsCenterPanel( long displayNum )
 	currentDisplayNumber = displayNum;
 	initialize();
 }
+
+public void drop_actionPerformed(java.util.EventObject newEvent)
+{
+	//just act like a user pressed the add button
+	//fireAddButtonAction_actionPerformed( new java.util.EventObject(this) );
+	
+	System.out.println("   drop_actionPerformed() occured int CenterPanel");
+}
+
+
 /**
  * connEtoC1:  (JButtonRemove.action.actionPerformed(java.awt.event.ActionEvent) --> AddPointsCenterPanel.jButtonRemove_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
@@ -226,8 +238,8 @@ private javax.swing.JPanel getJPanelRight() {
 			constraintsJLabelSelected.gridx = 1; constraintsJLabelSelected.gridy = 1;
 			constraintsJLabelSelected.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsJLabelSelected.anchor = java.awt.GridBagConstraints.NORTH;
-			constraintsJLabelSelected.weightx = 1.0;
-			constraintsJLabelSelected.weighty = 1.0;
+			constraintsJLabelSelected.weightx = 0.0;
+			constraintsJLabelSelected.weighty = 0.0;
 			constraintsJLabelSelected.ipadx = 133;
 			constraintsJLabelSelected.insets = new java.awt.Insets(1, 1, 1, 50);
 			getJPanelRight().add(getJLabelSelected(), constraintsJLabelSelected);
@@ -342,12 +354,17 @@ private com.cannontech.common.gui.dnd.DragAndDropTable getRightTable() {
 			ivjRightTable = new com.cannontech.common.gui.dnd.DragAndDropTable();
 			ivjRightTable.setName("RightTable");
 			getJScrollPaneRightTable().setColumnHeaderView(ivjRightTable.getTableHeader());
-			getJScrollPaneRightTable().getViewport().setBackingStoreEnabled(true);
 			ivjRightTable.setToolTipText("Dbl Click to create seperators");
 			ivjRightTable.setBounds(0, 0, 450, 400);
 			// user code begin {1}
 
+			ivjRightTable.setToolTipText("Dbl-Click to create seperators, click-and-drag to reorder");
+			
 			ivjRightTable.setModel( new RightTableModel() );
+			ivjRightTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+			//ivjRightTable.setShowVerticalLines( false );
+			ivjRightTable.setShowHorizontalLines( false );
+			
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -405,6 +422,8 @@ private void initConnections() throws java.lang.Exception {
 
 	getRightTableModel().addTableModelListener(this);
 
+	getRightTable().addDragAndDropListener(this);
+
 	// user code end
 	getJButtonAdd().addActionListener(ivjEventHandler);
 	getJButtonRemove().addActionListener(ivjEventHandler);
@@ -438,8 +457,8 @@ private void initialize() {
 		java.awt.GridBagConstraints constraintsJPanel2 = new java.awt.GridBagConstraints();
 		constraintsJPanel2.gridx = 2; constraintsJPanel2.gridy = 1;
 		constraintsJPanel2.fill = java.awt.GridBagConstraints.VERTICAL;
-		constraintsJPanel2.weightx = 1.0;
-		constraintsJPanel2.weighty = 1.0;
+		constraintsJPanel2.weightx = 0.0;
+		constraintsJPanel2.weighty = 0.0;
 		constraintsJPanel2.ipadx = 118;
 		constraintsJPanel2.ipady = 241;
 		constraintsJPanel2.insets = new java.awt.Insets(26, 2, 16, 2);
@@ -548,7 +567,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 			int smallestLocation = getRightTable().getSelectedRow();
 				
 			for( int i = (getRightTable().getSelectedRows().length - 1); i >= 0; i-- )
-				tableModel.removeSingleRow( getRightTable().getSelectedRows()[i] );
+				tableModel.removeRow( getRightTable().getSelectedRows()[i] );
 
 			
 			if( getRightTable().getSelectedRows().length > 0 )
@@ -654,7 +673,7 @@ public void rightTable_MouseClicked(java.awt.event.MouseEvent mouseEvent)
 		RightTableModel model = (RightTableModel)getRightTable().getModel();
 			
 		if( model.isRowSelectedBlank( getRightTable().getSelectedRow() ) )
-			model.removeSingleRow( getRightTable().getSelectedRow() );
+			model.removeRow( getRightTable().getSelectedRow() );
 		else
 			model.addBlankRow( getRightTable().getSelectedRow() );
 
