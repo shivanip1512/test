@@ -1827,3 +1827,320 @@ bool fillModuleListTH32( ModuleList& modules, DWORD pid )
 
 
 
+ULONG StrToUlong(UCHAR* buffer, ULONG len)
+{
+   int i;
+   ULONG temp=0;
+
+   for(i = 0; i < (INT)len; i++)
+   {
+      temp <<= 8;
+      temp += buffer[i];
+   }
+
+   return temp;
+}
+
+
+ULONG BCDtoBase10(UCHAR* buffer, ULONG len)
+{
+
+   int i, j;
+   ULONG temp;
+   ULONG scratch = 0;
+
+   for(i = (INT)len, j = 0; i > 0; j++, i--)
+   {
+      temp = 0;
+
+      /* The high nibble */
+      temp += (((buffer[j] & 0xf0) >> 4)  * 10);
+
+      /* The Low nibble */
+      temp += (buffer[j] & 0x0f);
+
+      scratch = scratch * 100 + temp ;
+   }
+
+   return scratch;
+}
+
+USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
+{
+   ULONG       i,j;
+   BYTEUSHORT   CRC;
+
+   BYTE CRCMSB = 0xff;
+   BYTE CRCLSB = 0xff;
+   BYTE Temp;
+   BYTE Acc;
+
+   CRC.sh = 0;
+
+   if(length > 0)
+   {
+      switch(Id)
+      {
+      default:
+      case TYPE_ALPHA_A1:
+      case TYPE_ALPHA_PPLUS:
+         {
+            // printf("Alpha Computation\n");
+            for(i = 0; i < (ULONG)length; i++)
+            {
+               CRC.ch[1] ^= buffer[i];
+
+               for(j = 0; j < 8; j++)
+               {
+                  if(CRC.sh & 0x8000)
+                  {
+                     CRC.sh = CRC.sh << 1;
+                     CRC.sh ^= 0x1021;
+                  }
+                  else
+                  {
+                     CRC.sh = CRC.sh << 1;
+                  }
+               }
+
+            }
+
+            if(bAdd)
+            {
+               buffer[length]     = CRC.ch[1];
+               buffer[length + 1] = CRC.ch[0];
+            }
+
+            break;
+         }
+      case TYPE_VECTRON:
+      case TYPE_FULCRUM:
+      case TYPE_QUANTUM:
+         {
+            // printf("Schlumberger Computation\n");
+            for(i = 0; i < (ULONG)length; i++)
+            {
+               Acc = buffer[i];     // a
+               Acc ^= CRCMSB;       // b
+               Temp = Acc;          // c
+               Acc >>= 4;           // d
+               Acc ^= Temp;         // e
+               Temp = Acc;          // f
+               Acc <<= 4;           // g
+               Acc ^= CRCLSB;       // h
+               CRCMSB = Acc;        // i
+               Acc = Temp;          // j
+               Acc >>= 3;           // k
+               Acc ^= CRCMSB;       // l
+               CRCMSB = Acc;        // m
+               Acc = Temp;          // n
+               Acc <<= 5;           // o
+               Acc ^= Temp;         // p
+               CRCLSB = Acc;        // q
+            }
+
+            CRC.ch[0] = CRCLSB;
+            CRC.ch[1] = CRCMSB;
+
+            if(bAdd)
+            {
+               buffer[length]     = CRC.ch[1];
+               buffer[length + 1] = CRC.ch[0];
+            }
+
+            break;
+         }
+      case TYPE_LGS4:
+         {
+            // check sum is addition of messages 9 bytes
+            for(i=0; i < length; i++)
+               CRC.sh = CRC.sh + buffer[i];
+
+            if(bAdd)
+            {
+               // add the checksum here for now
+               buffer[9]=CRC.ch[0];
+               buffer[10]=CRC.ch[1];
+            }
+            break;
+         }
+      case TYPE_KV2:
+          {
+
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for kv2 implemented here" << endl;
+              break;
+          }
+      }
+
+   }
+
+   return CRC.sh;
+}
+
+INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
+{
+   BYTEUSHORT  CRC;
+   INT         retval = NOTNORMAL;
+
+
+   switch(Id)
+   {
+   case TYPE_LGS4:
+      {
+         CRC.sh = CCITT16CRC(Id, InBuffer, InCount - 2, FALSE);
+
+         if(
+           CRC.ch[0] == InBuffer[InCount - 2] &&
+           CRC.ch[1] == InBuffer[InCount - 1]
+           )
+         {
+            retval = NORMAL;
+         }
+         break;
+      }
+   default:
+
+      if(InCount < 3)
+      {
+         retval = NORMAL;
+      }
+      else
+      {
+         CRC.sh = CCITT16CRC(Id, InBuffer, InCount - 2, FALSE);
+
+         if(
+           CRC.ch[0] == InBuffer[InCount - 1] &&
+           CRC.ch[1] == InBuffer[InCount - 2]
+           )
+         {
+            retval = NORMAL;
+         }
+      }
+   }
+
+   return retval;
+}
+
+USHORT ShortLittleEndian(USHORT *ShortEndianFloat)
+{
+   /* This guy is in charge of doing the shuffle royale */
+
+   union
+   {
+      USHORT sh;
+      CHAR   ch[2];
+   } Flipper;
+
+   USHORT *sptr = ShortEndianFloat;    // We point at the first byte of the destination.
+   CHAR  *cptr = (CHAR *) ShortEndianFloat;
+
+   Flipper.ch[1] = *cptr++;
+   Flipper.ch[0] = *cptr++;
+
+   *sptr = Flipper.sh;
+
+   return *sptr;
+
+}
+
+
+FLOAT FltLittleEndian(FLOAT *BigEndianFloat)
+{
+   /* This guy is in charge of doing the shuffle royale */
+
+   union
+   {
+      FLOAT fl;
+      CHAR  ch[4];
+   } Flipper;
+
+   FLOAT *fptr = (FLOAT*) BigEndianFloat;    // We point at the first byte of the destination.
+
+   CHAR  *cptr = (CHAR *) BigEndianFloat;
+
+   Flipper.ch[3] = *cptr++;
+   Flipper.ch[2] = *cptr++;
+   Flipper.ch[1] = *cptr++;
+   Flipper.ch[0] = *cptr++;
+
+   *fptr = Flipper.fl;
+
+   return *fptr;
+
+}
+
+DOUBLE DblLittleEndian(DOUBLE *BigEndianDouble)
+{
+   /* This guy is in charge of doing the shuffle royale */
+
+   union
+   {
+      DOUBLE   db;
+      CHAR     ch[8];
+   } Flipper;
+
+   DOUBLE *dptr = (DOUBLE*) BigEndianDouble;    // We point at the first byte of the destination.
+
+   CHAR   *cptr = (CHAR *) BigEndianDouble;
+
+   Flipper.ch[7] = *cptr++;
+   Flipper.ch[6] = *cptr++;
+   Flipper.ch[5] = *cptr++;
+   Flipper.ch[4] = *cptr++;
+   Flipper.ch[3] = *cptr++;
+   Flipper.ch[2] = *cptr++;
+   Flipper.ch[1] = *cptr++;
+   Flipper.ch[0] = *cptr++;
+
+   *dptr = Flipper.db;
+
+   return *dptr;
+}
+
+VOID BDblLittleEndian(CHAR *BigEndianBDouble)
+{
+   /* This guy is in charge of doing the shuffle royale */
+
+   CHAR     Flipper[9];
+   CHAR   *cptr = BigEndianBDouble;
+
+   Flipper[8] = *cptr++;
+   Flipper[7] = *cptr++;
+   Flipper[6] = *cptr++;
+   Flipper[5] = *cptr++;
+   Flipper[4] = *cptr++;
+   Flipper[3] = *cptr++;
+   Flipper[2] = *cptr++;
+   Flipper[1] = *cptr++;
+   Flipper[0] = *cptr++;
+
+   memcpy(BigEndianBDouble, Flipper, 9);
+}
+
+/* Function to return system time in milliseconds */
+ULONG MilliTime (PULONG MilliSeconds)
+{
+   struct timeb TimeB;
+
+   UCTFTime (&TimeB);
+
+   if(MilliSeconds != NULL)
+   {
+      *MilliSeconds = TimeB.time * 1000L + TimeB.millitm;
+   }
+
+   return(TimeB.time * 1000L + TimeB.millitm);
+}
+
+
+
+
+
+
+
+
+
+
+
+
