@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2004/05/05 15:31:46 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2004/07/02 16:30:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ using namespace std;
 #define WINDOW_OPENS    3
 #define MAX_SCAN_TYPE   4
 
-static INT     SCANNER_RELOAD_RATE = 900;
+static INT     SCANNER_RELOAD_RATE = 86400;
 static RWTime  LastPorterOutTime;
 static RWTime  LastPorterInTime;
 
@@ -689,6 +689,13 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
             NextScan[WINDOW_OPENS] = TimeOfNextWindow();
         }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
 
         //  check if we need to do any DLC load profile scans
         if(!SuspendLoadProfile && TimeNow >= NextScan[DLC_LP_SCAN])
@@ -1037,6 +1044,7 @@ static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, voi
 
         if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
         {
+            #if 0
             if( DeviceRecord->getNextScan(ScanRateGeneral)     < TimeNow ||
                 DeviceRecord->getNextScan(ScanRateAccum)       < TimeNow ||
                 DeviceRecord->getNextScan(ScanRateIntegrity)   < TimeNow)
@@ -1048,10 +1056,16 @@ static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, voi
                     return;
                 }
             }
+            #endif
 
             TempTime = DeviceRecord->nextRemoteScan();
 
-            if(nextRemoteScanTime > TempTime)
+            if(TempTime < TimeNow)
+            {
+                nextRemoteScanTime = TempTime + 1;
+                barkAboutCurrentTime( Device, TempTime, __LINE__ );
+            }
+            else if( TempTime < nextRemoteScanTime )
             {
                 nextRemoteScanTime = TempTime;
                 barkAboutCurrentTime( Device, TempTime, __LINE__ );
@@ -1067,6 +1081,12 @@ RWTime TimeOfNextRemoteScan()
 
     CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextRemoteScan, (void*)&nextRemoteScanTime);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " Next Remote " << nextRemoteScanTime << endl;
+    }
 
     /* Do not let this get out of hand, check once a minute if nothing else is looking */
     if(nextRemoteScanTime == MAXTime || (nextRemoteScanTime.seconds() - TimeNow.seconds()) > 60L)

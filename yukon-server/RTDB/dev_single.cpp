@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2004/04/29 20:06:12 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2004/07/02 16:30:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,16 +210,18 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
                 setScanFreezePending();
             }
         }
-#if 0 // 041102 CGP This does nothing.
         else
         {
-            /* Check to be sure we have not gone tardy... */
+            if( getScanRate(ScanRateAccum) < 60 )
+            {
+                setNextScan(ScanRateAccum, firstScan(Now, ScanRateAccum));
+            }
+            else            /* Check to be sure we have not gone tardy... */
             if(Now.seconds() - getNextScan(ScanRateAccum).seconds() > 300)
             {
                 resetForScan( ScanRateAccum );
             }
         }
-#endif
     }
     else
     {
@@ -356,6 +358,14 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
                 }
+                if( getScanRate(ScanRateIntegrity) < 60 )
+                {
+                    setNextScan(ScanRateIntegrity, firstScan(Now, ScanRateIntegrity));
+                }
+                else if(Now.seconds() - getNextScan(ScanRateIntegrity).seconds() > 300)
+                {
+                    resetForScan( ScanRateIntegrity );
+                }
             }
         }
     }
@@ -470,16 +480,17 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                         setNextScan(ScanRateGeneral, firstScan(Now, ScanRateGeneral));
                     }
                 }
-#if 0 // 041102 CGP This does nothing.
                 else
                 {
-                    /* Check to be sure we have not gone tardy... */
-                    if(Now.seconds() - getNextScan(ScanRateGeneral).seconds() > 300)
+                    if( getScanRate(ScanRateGeneral) < 60 )
+                    {
+                        setNextScan(ScanRateGeneral, firstScan(Now, ScanRateGeneral));
+                    }
+                    else if(Now.seconds() - getNextScan(ScanRateGeneral).seconds() > 300) /* Check to be sure we have not gone tardy... */
                     {
                         resetForScan(ScanRateGeneral);
                     }
                 }
-#endif
             }
         }
     }
@@ -492,7 +503,6 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
      *  Calculate the next time we see this guy...
      *  But only if we are about to do something now (as indicated by OutMessages in the list!).
      */
-
     if(!isScanForced() && outList.entries() > 0)
     {
         adjustNextScanTime(ScanRateGeneral);
