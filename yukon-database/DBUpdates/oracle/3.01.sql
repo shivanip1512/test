@@ -113,7 +113,7 @@ where u.ConstraintID = t.ConstraintID;
 insert into LMProgramConstraints 
 select deviceid, CONCAT('Constraint: ', LTRIM(deviceid) ), AvailableSeasons, AvailableWeekdays, MaxHoursDaily,
 MaxHoursMonthly, MaxHoursSeasonal, MaxHoursAnnually, MinActivateTime, MinRestartTime,
-0, 0, HolidayScheduleID, SeasonScheduleID from LMProgram;
+0, 0, HolidayScheduleID, SeasonScheduleID from LMProgram where deviceid > 0;
 
 
 update LMProgram set constraintid = deviceid;
