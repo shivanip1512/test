@@ -255,7 +255,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			 || DeviceTypesFuncs.isMCT(devType) )
 		{
 			getDeviceMeterNumberPanel().setValue(null);
-			if( DeviceTypesFuncs.isMCTiORMCT2XX(devType) )
+			if( DeviceTypesFuncs.isMCTiORMCT2XX(devType) || DeviceTypesFuncs.isMCT410KWHONLY(devType) )
 			{
 				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
 			}

@@ -135,6 +135,7 @@ public final static boolean isCarrier(int deviceType)
 		case MCT248:
 		case MCT250:
 		case MCT310:
+		case MCT410_KWH_ONLY:
 		case MCT310ID:
 		case MCT310IDL:
 		case MCT310IL:
@@ -349,6 +350,7 @@ public final static boolean isMCTOnly(int deviceType)
 	{
 		case MCT213:
 		case MCT310:
+		case MCT410_KWH_ONLY:
 		case MCT318:
 		case MCT360:
 		case MCT370:
@@ -381,6 +383,7 @@ public final static boolean isMCT(int deviceType)
 	{
 		case MCT213:
 		case MCT310:
+		case MCT410_KWH_ONLY:
 		case MCT318:
 		case MCT360:
 		case MCT370:
@@ -449,6 +452,18 @@ public static boolean isMCTiORMCT2XX( int type )
 		case MCT310IL :
       case MCT310CT:
       case MCT310IM:      
+			return true;
+		default :
+			return false;
+	}
+
+}
+
+public static boolean isMCT410KWHONLY( int type )
+{
+	switch (type)
+	{
+		case MCT410_KWH_ONLY:  
 			return true;
 		default :
 			return false;

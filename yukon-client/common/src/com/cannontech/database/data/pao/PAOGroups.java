@@ -157,6 +157,8 @@ public final static int getDeviceType(String typeString)
 	  return MCT310IDL;
    else if (isStringDevice(compareString, STRING_MCT_310))
 	  return MCT310;
+   else if (isStringDevice(compareString, STRING_MCT_410_KWH_ONLY))
+   	  return MCT410_KWH_ONLY;
    else if (isStringDevice(compareString, STRING_MCT_318))
 	  return MCT318;
    else if (isStringDevice(compareString, STRING_MCT_360))
@@ -313,6 +315,10 @@ public final static String getDeviceTypeString(int type)
 		  return STRING_MCT_250[0];
 	  case MCT210:
 		  return STRING_MCT_210[0];
+		  
+	  case MCT410_KWH_ONLY:
+	  		return STRING_MCT_410_KWH_ONLY[0];
+		  
 	  case REPEATER:
 		  return STRING_REPEATER[0];
      case RTU_DNP:

@@ -38,7 +38,7 @@ public interface DeviceTypes extends TypeBase
 	public final static int RTUWELCO      = DEVICE_OFFSET + 30;
 	public final static int DCT_501       = DEVICE_OFFSET + 31;
    public final static int RTU_DNP       = DEVICE_OFFSET + 32;
-	
+   		
 	public final static int TAPTERMINAL    = DEVICE_OFFSET + 33;
 	public final static int MCT310ID       = DEVICE_OFFSET + 34;
 	public final static int MCT310IL       = DEVICE_OFFSET + 35;
@@ -73,6 +73,8 @@ public interface DeviceTypes extends TypeBase
    public final static int RTU_DART                     = DEVICE_OFFSET + 62;
    public final static int MCT310IDL                    = DEVICE_OFFSET + 63;
 	public final static int LM_GROUP_MCT					  = DEVICE_OFFSET + 64;
+	
+	public final static int MCT410_KWH_ONLY 			= DEVICE_OFFSET + 65;
 
 
 	//all the possible text representation of each device type.
@@ -100,6 +102,7 @@ public interface DeviceTypes extends TypeBase
    public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
    public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
+	public static final String[] STRING_MCT_410_KWH_ONLY = {"MCT-410 KWH Only", "MCT410 KWH Only", "MCT410KWHOnly"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};

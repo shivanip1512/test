@@ -13,6 +13,7 @@ import com.cannontech.database.data.device.MCT310;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
+import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -158,7 +159,8 @@ public class DeviceRoutePanel
 		if( val instanceof MCT310 
 			 || val instanceof MCT310IL 
 			 || val instanceof MCT310ID
-			 || val instanceof MCT310IDL ) {
+			 || val instanceof MCT310IDL
+			 || val instanceof MCT410_KWH_Only ) {
 
 			com.cannontech.database.data.multi.MultiDBPersistent newVal = new com.cannontech.database.data.multi.MultiDBPersistent();
 			((DeviceBase) val).setDeviceID(com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID());
