@@ -28,8 +28,8 @@ public final class LiteTypes
 
 	
 	// Stars lite types
-	public final static int STARS_CUSTOMER_CONTACT = 101;
-	public final static int STARS_CUSTOMER_ADDRESS = 102;
+	public final static int STARS_CUSTOMER = 101;
+	public final static int STARS_ADDRESS = 102;
 	public final static int STARS_LMPROGRAM = 103;
 	public final static int STARS_LMHARDWARE = 104;
 	public final static int STARS_LMCUSTOMER_EVENT = 105;
@@ -44,11 +44,10 @@ public final class LiteTypes
 	public final static int STARS_CALL_REPORT_BASE = 114;
 	public final static int STARS_ACCOUNT_SITE = 115;
 	public final static int STARS_SITE_INFORMATION = 116;
-	public final static int STARS_CUSTOMER_BASE = 117;
-	public final static int STARS_SERVICE_COMPANY = 118;
-	public final static int STARS_THERMOSTAT_SEASON = 119;
-	public final static int STARS_THERMOSTAT_SEASON_ENTRY = 120;
-	public final static int STARS_THERMOSTAT_MANUAL_OPTION = 121;
-	public final static int STARS_INTERVIEW_QUESTION = 122;
-	public final static int STARS_APPLIANCE = 123;
+	public final static int STARS_SERVICE_COMPANY = 117;
+	public final static int STARS_THERMOSTAT_SEASON = 118;
+	public final static int STARS_THERMOSTAT_SEASON_ENTRY = 119;
+	public final static int STARS_THERMOSTAT_MANUAL_OPTION = 120;
+	public final static int STARS_INTERVIEW_QUESTION = 121;
+	public final static int STARS_APPLIANCE = 122;
 }
