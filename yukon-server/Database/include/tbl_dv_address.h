@@ -1,5 +1,5 @@
-#ifndef __TBL_DV_DNP_H__
-#define __TBL_DV_DNP_H__
+#ifndef __TBL_DV_ADDRESS_H__
+#define __TBL_DV_ADDRESS_H__
 
 /*-----------------------------------------------------------------------------*
 *
@@ -10,7 +10,7 @@
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
 * REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/08/29 16:31:12 $
+* DATE         :  $Date: 2004/04/14 16:36:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@
 #include "desolvers.h"
 #include "yukon.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceDNP : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceAddress : public CtiMemDBObject
 {
 protected:
 
@@ -55,12 +55,12 @@ private:
 
 public:
 
-   CtiTableDeviceDNP();
-   CtiTableDeviceDNP(const CtiTableDeviceDNP& aRef);
+   CtiTableDeviceAddress();
+   CtiTableDeviceAddress(const CtiTableDeviceAddress& aRef);
 
-   virtual ~CtiTableDeviceDNP();
+   virtual ~CtiTableDeviceAddress();
 
-   CtiTableDeviceDNP& operator=(const CtiTableDeviceDNP& aRef);
+   CtiTableDeviceAddress& operator=(const CtiTableDeviceAddress& aRef);
 
    LONG getMasterAddress() const;
    void setMasterAddress(LONG a);
@@ -77,7 +77,7 @@ public:
    static RWCString getTableName();
 
    LONG getDeviceID() const;
-   CtiTableDeviceDNP& setDeviceID(const LONG did);
+   CtiTableDeviceAddress& setDeviceID(const LONG did);
 
    virtual RWDBStatus Restore();
    virtual RWDBStatus Insert();
@@ -85,4 +85,4 @@ public:
    virtual RWDBStatus Delete();
 
 };
-#endif // #ifndef __TBL_DV_DNP_H__
+#endif // #ifndef __TBL_DV_ADDRESS_H__

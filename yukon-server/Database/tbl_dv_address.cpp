@@ -2,39 +2,39 @@
 
 /*-----------------------------------------------------------------------------*
 *
-* File:   tbl_dv_dnp
+* File:   tbl_dv_address
 *
-* Date:   2002-aug-27
+* Date:   2004-apr-14
 *
 * Author : Matt Fisher
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_idlcremote.cpp-arc  $
+* ARCHIVE      :  $Archive: $
 * REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2002/08/29 16:31:12 $
+* DATE         :  $Date: 2004/04/14 16:36:40 $
 *
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
+* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include "tbl_dv_dnp.h"
+#include "tbl_dv_address.h"
 
-CtiTableDeviceDNP::CtiTableDeviceDNP() :
+CtiTableDeviceAddress::CtiTableDeviceAddress() :
 _deviceID(-1),
 _masterAddress(-1),
 _slaveAddress(-1),
 _postdelay(-1)
 {}
 
-CtiTableDeviceDNP::CtiTableDeviceDNP(const CtiTableDeviceDNP& aRef)
+CtiTableDeviceAddress::CtiTableDeviceAddress(const CtiTableDeviceAddress& aRef)
 {
     *this = aRef;
 }
 
-CtiTableDeviceDNP::~CtiTableDeviceDNP()
+CtiTableDeviceAddress::~CtiTableDeviceAddress()
 {
 }
 
-CtiTableDeviceDNP& CtiTableDeviceDNP::operator=(const CtiTableDeviceDNP& aRef)
+CtiTableDeviceAddress& CtiTableDeviceAddress::operator=(const CtiTableDeviceAddress& aRef)
 {
     if(this != &aRef)
     {
@@ -47,48 +47,48 @@ CtiTableDeviceDNP& CtiTableDeviceDNP::operator=(const CtiTableDeviceDNP& aRef)
     return *this;
 }
 
-LONG CtiTableDeviceDNP::getDeviceID() const
+LONG CtiTableDeviceAddress::getDeviceID() const
 {
     return _deviceID;
 }
 
-CtiTableDeviceDNP& CtiTableDeviceDNP::setDeviceID( const LONG deviceID )
+CtiTableDeviceAddress& CtiTableDeviceAddress::setDeviceID( const LONG deviceID )
 {
     _deviceID = deviceID;
     return *this;
 }
 
-LONG CtiTableDeviceDNP::getMasterAddress() const
+LONG CtiTableDeviceAddress::getMasterAddress() const
 {
     return _masterAddress;
 }
 
-void CtiTableDeviceDNP::setMasterAddress(LONG a)
+void CtiTableDeviceAddress::setMasterAddress(LONG a)
 {
     _masterAddress = a;
 }
 
-LONG CtiTableDeviceDNP::getSlaveAddress() const
+LONG CtiTableDeviceAddress::getSlaveAddress() const
 {
     return _slaveAddress;
 }
 
-void CtiTableDeviceDNP::setSlaveAddress(LONG a)
+void CtiTableDeviceAddress::setSlaveAddress(LONG a)
 {
     _slaveAddress = a;
 }
 
-INT  CtiTableDeviceDNP::getPostDelay() const
+INT  CtiTableDeviceAddress::getPostDelay() const
 {
     return _postdelay;
 }
 
-void CtiTableDeviceDNP::setPostDelay(int d)
+void CtiTableDeviceAddress::setPostDelay(int d)
 {
     _postdelay = d;
 }
 
-void CtiTableDeviceDNP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiTableDeviceAddress::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     RWDBTable devTbl = db.table(getTableName() );
 
@@ -102,7 +102,7 @@ void CtiTableDeviceDNP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
     // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
 }
 
-void CtiTableDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceAddress::DecodeDatabaseReader(RWDBReader &rdr)
 {
     RWCString rwsTemp;
 
@@ -118,22 +118,12 @@ void CtiTableDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["postcommwait"]  >> _postdelay;
 }
 
-RWCString CtiTableDeviceDNP::getTableName()
+RWCString CtiTableDeviceAddress::getTableName()
 {
-    return "DeviceDNP";
+    return "DeviceAddress";
 }
 
-RWDBStatus CtiTableDeviceDNP::Restore()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableDeviceDNP::Insert()
+RWDBStatus CtiTableDeviceAddress::Restore()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -143,7 +133,7 @@ RWDBStatus CtiTableDeviceDNP::Insert()
     return RWDBStatus::notSupported;
 }
 
-RWDBStatus CtiTableDeviceDNP::Update()
+RWDBStatus CtiTableDeviceAddress::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -153,7 +143,17 @@ RWDBStatus CtiTableDeviceDNP::Update()
     return RWDBStatus::notSupported;
 }
 
-RWDBStatus CtiTableDeviceDNP::Delete()
+RWDBStatus CtiTableDeviceAddress::Update()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return RWDBStatus::notSupported;
+}
+
+RWDBStatus CtiTableDeviceAddress::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
