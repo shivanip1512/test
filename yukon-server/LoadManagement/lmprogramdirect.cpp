@@ -1906,9 +1906,18 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                         }
                     }
                 }
-                if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                if( getProgramState() == CtiLMProgramBase::ActiveState )
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
+                    for(LONG j=0;j<_lmprogramdirectgroups.entries();j++)
+                    {
+                        CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[j];
+                        if( currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActiveState )
+                        {
+                            setProgramState(CtiLMProgramBase::ActiveState);
+                            break;
+                        }
+                    }
                 }
             }
             else if( previousGearObject->getControlMethod() == CtiLMProgramDirectGear::TimeRefreshMethod )
