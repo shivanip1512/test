@@ -57,6 +57,8 @@ public:
     LONG getMaxHoursAnnually() const;
     LONG getMinActivateTime() const;
     LONG getMinRestartTime() const;
+    LONG getHolidayScheduleId() const;
+    LONG getSeasonScheduleId() const;
     LONG getProgramStatusPointId() const;
     LONG getProgramState() const;
     LONG getReductionAnalogPointId() const;
@@ -85,6 +87,8 @@ public:
     CtiLMProgramBase& setMaxHoursAnnually(LONG annually);
     CtiLMProgramBase& setMinActivateTime(LONG activate);
     CtiLMProgramBase& setMinRestartTime(LONG restart);
+    CtiLMProgramBase& setHolidayScheduleId(LONG schdid);
+    CtiLMProgramBase& setSeasonScheduleId(LONG schdid);
     CtiLMProgramBase& setProgramStatusPointId(LONG statuspointid);
     CtiLMProgramBase& setProgramState(LONG progstate);
     CtiLMProgramBase& setReductionAnalogPointId(LONG reductionpointid);
@@ -101,8 +105,9 @@ public:
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
     virtual CtiLMProgramBase* replicate() const = 0;
     virtual BOOL hasControlHoursAvailable() const = 0;
-    virtual void stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901) = 0;
     virtual BOOL handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg) = 0;
+    virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -153,6 +158,8 @@ private:
     LONG _maxhoursannually;
     LONG _minactivatetime;
     LONG _minrestarttime;
+    LONG _holidayscheduleid;
+    LONG _seasonscheduleid;
     LONG _programstatuspointid;
     LONG _programstate;
     LONG _reductionanalogpointid;
