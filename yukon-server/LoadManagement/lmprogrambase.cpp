@@ -1174,4 +1174,5 @@ int CtiLMProgramBase::NotifiedState = STATEFOUR;
 int CtiLMProgramBase::FullyActiveState = STATEFIVE;
 int CtiLMProgramBase::StoppingState = STATESIX;
 int CtiLMProgramBase::AttemptingControlState = STATESEVEN;
+int CtiLMProgramBase::NonControllingState = STATEEIGHT;
 

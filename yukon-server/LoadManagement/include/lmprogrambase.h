@@ -134,6 +134,7 @@ public:
     static int FullyActiveState;
     static int StoppingState;
     static int AttemptingControlState;
+    static int NonControllingState;
 
 protected:
 

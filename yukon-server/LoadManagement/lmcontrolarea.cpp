@@ -1266,7 +1266,8 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             numberOfFullyActivePrograms++;
             numberOfActivePrograms++;
         }
-        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState )
+        else if( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
+                 currentLMProgram->getProgramState() == CtiLMProgramBase::NonControllingState )
         {
             numberOfActivePrograms++;
         }
@@ -1328,7 +1329,8 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
             ( !currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) ||
               !currentLMProgram->getControlType().compareTo("Enabled",RWCString::ignoreCase) ) &&
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
-              currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )
+              currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+              currentLMProgram->getProgramState() == CtiLMProgramBase::NonControllingState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             if( ((CtiLMProgramDirect*)currentLMProgram)->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901 ) )
             {

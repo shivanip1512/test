@@ -645,6 +645,16 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
+                else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
+                {
+                    if( _LM_DEBUG & LM_DEBUG_EXTENDED )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - NO control gear, LM Program: " << getPAOName() << endl;
+                    }
+
+                    setProgramState(CtiLMProgramBase::NonControllingState);
+                }
                 else
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1213,6 +1223,16 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
+            }
+            else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
+            {
+                if( _LM_DEBUG & LM_DEBUG_EXTENDED )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - NO control gear, LM Program: " << getPAOName() << endl;
+                }
+
+                setProgramState(CtiLMProgramBase::NonControllingState);
             }
             else
             {
@@ -1795,11 +1815,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) ||
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ||
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) ||
-                !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::LatchingMethod,RWCString::ignoreCase) )
+                !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::LatchingMethod,RWCString::ignoreCase) ||
+                ( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) &&
+                  getManualControlReceivedFlag() ) )
             {
                 // Normally we would only take the commented out "numberOfGroupsToTake" but when we
-                // switch gears to refresh from smart cycle or rotation there is the possibility
-                // that all groups need to be shed so that's what we'll do
+                // switch gears to refresh from smart cycle or rotation or a manually controlled non control
+                // there is the possibility that all groups need to be shed so that's what we'll do
                 LONG refreshRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
                 //LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
@@ -1868,7 +1890,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                         }
                     }
                 }
-                if( getProgramState() == CtiLMProgramBase::ActiveState )
+                if( getProgramState() == CtiLMProgramBase::ActiveState ||
+                    getProgramState() == CtiLMProgramBase::NonControllingState )
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                     for(LONG j=0;j<_lmprogramdirectgroups.entries();j++)
@@ -1882,7 +1905,9 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     }
                 }
             }
-            else if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) )
+            else if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
+                     ( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) &&
+                       !getManualControlReceivedFlag() ) )
             {
                 LONG refreshRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
@@ -1950,7 +1975,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     }
                 }
 
-                if( getProgramState() == CtiLMProgramBase::ActiveState )
+                if( getProgramState() == CtiLMProgramBase::ActiveState ||
+                    getProgramState() == CtiLMProgramBase::NonControllingState )
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                     for(LONG j=0;j<_lmprogramdirectgroups.entries();j++)
@@ -2113,7 +2139,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
         }
         else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) )
         {
-            if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) )
+            if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
+                !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
             {
                 LONG sendRate = currentGearObject->getMethodRate();
                 LONG shedTime = currentGearObject->getMethodPeriod();
@@ -2362,6 +2389,191 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
             {
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
+        }
+        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
+        {
+            if( _LM_DEBUG & LM_DEBUG_EXTENDED )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Entering NO control gear, LM Program: " << getPAOName() << endl;
+            }
+
+            RWCString tempControlMethod = previousGearObject->getControlMethod();
+            RWCString tempMethodStopType = previousGearObject->getMethodStopType();
+
+            for(LONG i=0;i<_lmprogramdirectgroups.entries();i++)
+            {
+                CtiLMGroupBase* currentLMGroup = (CtiLMGroupBase*)_lmprogramdirectgroups[i];
+                if( RWDBDateTime().seconds() > currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
+                    getManualControlReceivedFlag() )
+                {
+                    if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::SmartCycleMethod,RWCString::ignoreCase) ||
+                        !tempControlMethod.compareTo(CtiLMProgramDirectGear::TrueCycleMethod,RWCString::ignoreCase) )
+                    {
+                        if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RestoreStopType,RWCString::ignoreCase) )
+                        {
+                            int priority = 11;
+                            RWCString controlString = "control restore";
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            }
+                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
+                            multiPilMsg->insert( requestMsg );
+                            setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setLastControlSent(RWDBDateTime());
+                            RWDBDateTime nowPlusRandom = RWDBDateTime();
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EMETCON )
+                            {
+                                nowPlusRandom.addMinutes(2);
+                            }
+                            else
+                            {
+                                nowPlusRandom.addMinutes(1);
+                            }
+                            currentLMGroup->setControlCompleteTime(nowPlusRandom);
+                        }
+                        else if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::StopCycleStopType,RWCString::ignoreCase) ||
+                                 !tempMethodStopType.compareTo(CtiLMProgramDirectGear::TimeInStopType,RWCString::ignoreCase) ||
+                                 !tempMethodStopType.compareTo("Time-In",RWCString::ignoreCase) )
+                        {//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
+                            int priority = 11;
+                            RWCString controlString = "control terminate";
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                            {
+                                controlString = "control xcom terminate";
+                            }
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Sending terminate command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            }
+                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
+                            multiPilMsg->insert( requestMsg );
+                            setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setLastControlSent(RWDBDateTime());
+                            RWDBDateTime nowPlusRandom = RWDBDateTime();
+                            nowPlusRandom.addMinutes(previousGearObject->getMethodPeriod()/60/2);
+                            currentLMGroup->setControlCompleteTime(nowPlusRandom);
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                    else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
+                             !tempControlMethod.compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) ||
+                             !tempControlMethod.compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ||
+                             !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                    {
+                        if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RestoreStopType,RWCString::ignoreCase) )
+                        {
+                            int priority = 11;
+                            RWCString controlString = "control restore";
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            }
+                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
+                            multiPilMsg->insert( requestMsg );
+                            setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setLastControlSent(RWDBDateTime());
+                            RWDBDateTime nowPlusRandom = RWDBDateTime();
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EMETCON )
+                            {
+                                nowPlusRandom.addMinutes(2);
+                            }
+                            else
+                            {
+                                nowPlusRandom.addMinutes(1);
+                            }
+                            currentLMGroup->setControlCompleteTime(nowPlusRandom);
+                        }
+                        else if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::TimeInStopType,RWCString::ignoreCase) || !tempMethodStopType.compareTo("Time-In",RWCString::ignoreCase) )
+                        {
+                            //"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
+                            //CtiLockGuard<CtiLogger> logger_guard(dout);
+                            //dout << RWTime() << " - Stopping control on LM Group: " << currentLMGroup->getPAOName() << " with Stop Type of (Time In) in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            //I don't know if I should do anything unique here yet?
+                            //multiPilMsg->insert(new CtiRequestMsg(currentLMGroup->getPAOId(), "control terminate"));
+                            //setLastControlSent(RWDBDateTime());
+                            //currentLMGroup->setLastControlSent(RWDBDateTime());
+                            RWDBDateTime timeToTimeIn = RWDBDateTime(1990,1,1,0,0,0,0);//put in a bogus time stamp
+                            if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) )
+                            {
+                                timeToTimeIn = currentLMGroup->getLastControlSent();
+                                LONG offTimeInSeconds = previousGearObject->getMethodPeriod() * (previousGearObject->getMethodRate() / 100.0);
+                                timeToTimeIn.addMinutes(offTimeInSeconds/60);
+                            }
+                            else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                            {
+                                timeToTimeIn = currentLMGroup->getLastControlSent();
+                                CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)previousGearObject;
+                                int minutesToAdd = 0;
+                                minutesToAdd += (thermostatGear->getRandom()/2+thermostatGear->getRandom()%2);
+                                minutesToAdd += thermostatGear->getValueTa();
+                                minutesToAdd += thermostatGear->getValueTb();
+                                minutesToAdd += thermostatGear->getValueTc();
+                                minutesToAdd += thermostatGear->getValueTd();
+                                minutesToAdd += thermostatGear->getValueTe();
+                                minutesToAdd += thermostatGear->getValueTf();
+                                timeToTimeIn.addMinutes(minutesToAdd);
+                            }
+                            else
+                            {
+                                timeToTimeIn = currentLMGroup->getLastControlSent();
+                                timeToTimeIn.addMinutes(previousGearObject->getMethodPeriod()/60);
+                            }
+                            currentLMGroup->setControlCompleteTime(timeToTimeIn);
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Invalid current gear method stop type: " << tempMethodStopType << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                    else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::LatchingMethod,RWCString::ignoreCase) )
+                    {
+                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                        {
+                            multiDispatchMsg->insert( currentLMGroup->createLatchingRequestMsg( (((CtiLMGroupPoint*)currentLMGroup)->getStartControlRawState()?0:1), defaultLMRefreshPriority ) );
+                        }
+                        else
+                        {
+                            multiDispatchMsg->insert( currentLMGroup->createLatchingRequestMsg( (previousGearObject->getMethodRateCount()?0:1), defaultLMRefreshPriority ) );
+                        }
+                        setLastControlSent(RWDBDateTime());
+                        currentLMGroup->setLastControlSent(RWDBDateTime());
+                    }
+                    else if( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
+                    {
+                        // Its not controlling so a stop method doesn't much matter, does it?
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Invalid current gear control method: " << tempControlMethod << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
+    
+                    currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+                    currentLMGroup->setControlStartTime(RWDBDateTime(1990,1,1,0,0,0,0));
+                }
+                else
+                {
+                    currentLMGroup->setGroupControlState(CtiLMGroupBase::InactivePendingState);
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Group cannot be set inactive yet because of minimum active time Group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+            }
+    
+            setReductionTotal(0.0);
+            setProgramState(CtiLMProgramBase::NonControllingState);
         }
         else
         {
@@ -2984,9 +3196,10 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             /*CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Gear Control Method: " << getPAOName() << " Gear#: " << currentGearObject->getGearNumber() << " control method isn't supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;*/
         }
-        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) ||
+                 !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
         {
-            //we don't refresh set point commands
+            //we don't refresh set point commands or no control gears
         }
         else
         {
@@ -3172,6 +3385,10 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     }
                     setLastControlSent(RWDBDateTime());
                     currentLMGroup->setLastControlSent(RWDBDateTime());
+                }
+                else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
+                {
+                    // Its not controlling so a stop method doesn't much matter, does it?
                 }
                 else
                 {
