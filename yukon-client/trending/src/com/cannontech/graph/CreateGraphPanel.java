@@ -1246,6 +1246,9 @@ private void setGraphDefinitionValue(com.cannontech.database.data.graph.GraphDef
  */
 public void setValue(Object val) 
 {
+	if( val == null)
+		return;
+		
 	com.cannontech.database.data.graph.GraphDefinition gDef = (com.cannontech.database.data.graph.GraphDefinition) val;
 	setGraphDefinitionValue(gDef);
 
