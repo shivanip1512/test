@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/06/02 20:59:54 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2004/12/16 16:59:49 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -271,8 +271,8 @@ int CtiProtocolSeriesV::generate( CtiXfer &xfer )
 
                 break;
             }
-        /*  case Command_ScanException:
-            case Command_ScanIntegrity:  */
+            case Command_ScanException:
+            case Command_ScanIntegrity:
             case Command_ScanAccumulator:
             {
                 switch( _state )
