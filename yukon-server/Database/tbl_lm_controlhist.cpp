@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/05/15 22:35:33 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2004/02/16 20:57:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -597,7 +597,7 @@ RWDBStatus CtiTableLMControlHistory::Delete()
     return deleter.status();
 }
 
-CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime &now, const LONG increment )
+CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime &now, const LONG increment, bool season_reset )
 {
     RWDate prevdate(getPreviousLogTime());
     RWDate today(now);
@@ -605,13 +605,57 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
     bool newday = false;
     bool newmonth = false;
     bool newyear = false;
-    bool newseason = false;
+    bool newseason = season_reset;
 
-    if(today.day() != prevdate.day())       newday = true;
-    if(today.month() != prevdate.month())   newmonth = true;
-    if(today.year() != prevdate.year())     newyear = true;
+    LONG partialIncrement = 0;              // This is the component of the log that should have been allocated into yesterday, and last month and last year.
 
-    LONG newincrement = ( (double)getReductionRatio() * (double)increment / 100.0);
+    if(today.day() != prevdate.day())
+    {
+        RWTime lastTimePrevious(prevdate, 23,59,59);
+        ULONG todaysSeconds = now.seconds() - lastTimePrevious.seconds();
+        partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " lastTimePrevious() = " << lastTimePrevious << endl;
+            dout << " now()              = " << now << endl;
+            dout << " todaysSeconds      = " << todaysSeconds << endl;
+            dout << " partialIncrement   = " << partialIncrement << endl;
+      }
+
+        if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
+        {
+            LONG offtime = ( (double)getReductionRatio() * (double)(partialIncrement) / 100.0 );
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " Partial Increment = " << partialIncrement << endl;
+            }
+
+            CtiTableLMControlHistory closeLog(*this);       // make a copy
+            closeLog.setActiveRestore(LMAR_PERIOD_TRANSITION);
+            closeLog.setCurrentDailyTime   ( closeLog.getCurrentDailyTime()    + offtime );
+            closeLog.setCurrentMonthlyTime ( closeLog.getCurrentMonthlyTime()  + offtime );
+            closeLog.setCurrentSeasonalTime( closeLog.getCurrentSeasonalTime() + offtime );
+            closeLog.setCurrentAnnualTime  ( closeLog.getCurrentAnnualTime()   + offtime );
+            closeLog.setStopTime( lastTimePrevious );
+            closeLog.Insert();
+        }
+
+        newday = true;
+    }
+    if(today.month() != prevdate.month())
+    {
+        newmonth = true;
+    }
+    if(today.year() != prevdate.year())
+    {
+        newyear = true;
+    }
+
+    LONG newincrement = ( (double)getReductionRatio() * (double)(increment - partialIncrement) / 100.0 );
 
     setCurrentDailyTime   ( newday      ? newincrement : getCurrentDailyTime()    + newincrement );
     setCurrentMonthlyTime ( newmonth    ? newincrement : getCurrentMonthlyTime()  + newincrement );

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/04/30 17:17:27 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2004/02/16 20:57:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,7 +41,8 @@ public:
         datachange,             // Point went to the alter state either by force, or restore.
         newcontrol,             // Any time a control occurs which starts a control.  Requires time.
         control,                // Already controlling. Deal with new input information. Requires time.
-        repeatcontrol           // Already controlling, message has been repeated. Requires time.
+        repeatcontrol,          // Already controlling, message has been repeated. Requires time.
+        seasonReset             // Controlling or not, a season control reset message arrived for processing.  Requires time.
     }
     CtiPendingControlUpdateCause_t;
 
@@ -54,7 +55,8 @@ public:
         controlCompleteCommanded,
         controlCompleteTimedIn,
         controlCompleteManual,
-        controlComplete
+        controlComplete,
+        controlSeasonalReset
     }
     CtiPendingControlState_t;
 

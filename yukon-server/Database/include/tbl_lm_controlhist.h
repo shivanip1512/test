@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/04/30 17:17:27 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2004/02/16 20:57:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -147,7 +147,7 @@ public:
    int getReductionRatio() const;
    CtiTableLMControlHistory& setReductionRatio( int redrat );
 
-   CtiTableLMControlHistory& incrementTimes( const RWTime &now, const LONG increment );
+   CtiTableLMControlHistory& incrementTimes( const RWTime &now, const LONG increment, bool season_reset = false );
 
    bool isNewControl() const;
    CtiTableLMControlHistory& setNotNewControl( );
