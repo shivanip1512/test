@@ -839,6 +839,8 @@ void CtiLMCommandExecutor::EnableGroup()
                                 dout << RWTime() << " - " << text << ", " << additional << endl;
                             }
                         }
+
+                        currentLMGroup->setDisableFlag(FALSE);
                         CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
@@ -880,6 +882,7 @@ void CtiLMCommandExecutor::DisableGroup()
 
                     if( currentLMGroup->getPAOId() == groupID )
                     {
+                        if( !found )
                         {
                             char tempchar[80];
                             RWCString text = RWCString("Disabling Group: ");
@@ -895,7 +898,8 @@ void CtiLMCommandExecutor::DisableGroup()
                             }
                         }
 
-                        if( currentLMGroup->getGroupControlState() != CtiLMGroupBase::InactiveState )
+                        if( !found &&
+                            currentLMGroup->getGroupControlState() != CtiLMGroupBase::InactiveState )
                         {
                             {
                                 char tempchar[80];
@@ -912,35 +916,35 @@ void CtiLMCommandExecutor::DisableGroup()
                                     dout << RWTime() << " - " << text << ", " << additional << endl;
                                 }
                             }
+
+                            int priority = 11;
+                            RWCString controlString = "control restore";
+                            CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            }
+
+                            currentLMGroup->setLastControlString(requestMsg->CommandString());
+                            CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
+                            currentLMGroup->setLastControlSent(RWDBDateTime());
                         }
 
-                        int priority = 11;
-                        RWCString controlString = "control restore";
-                        CtiRequestMsg* requestMsg = new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
-
-                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                        currentLMGroup->setDisableFlag(TRUE);
+                        if( !found )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                            CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
                         }
-
-                        currentLMGroup->setLastControlString(requestMsg->CommandString());
-                        CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
-                        currentLMGroup->setLastControlSent(RWDBDateTime());
-                        CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
                         found = TRUE;
-                        break;
                     }
                 }
-                if( found )
-                    break;
             }
         }
-        if( found )
-            break;
     }
 }
 
