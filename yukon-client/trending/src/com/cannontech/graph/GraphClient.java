@@ -12,8 +12,8 @@ import com.cannontech.message.dispatch.message.*;
 import com.cannontech.graph.model.*;
 import com.cannontech.graph.menu.*;
 import com.cannontech.graph.buffer.html.*;
+import com.cannontech.common.util.*;
 import com.cannontech.util.*;
- 
 public class GraphClient extends javax.swing.JPanel implements com.cannontech.database.cache.DBChangeListener, GraphDataFormats, GraphDefines, GraphModelType, com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, ChangeListener, TreeSelectionListener {
 private class PointDataUpdater extends Thread
 {
@@ -57,7 +57,7 @@ private class PointDataUpdater extends Thread
 							{
 								frame.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 								// Set to currentDate - always want this date to be TODAY!
-								GraphClient.this.getStartDatePopupField().getValueModel().setValue(com.cannontech.web.util.ServletUtil.getToday());
+								GraphClient.this.getStartDatePopupField().getValueModel().setValue(com.cannontech.util.ServletUtil.getToday());
 								GraphClient.this.setGraphDefinitionDates( null, null );
 								updateCurrentPane();
 								long timer = (System.currentTimeMillis());
@@ -75,7 +75,7 @@ private class PointDataUpdater extends Thread
 }
 	private static Graph graphClass = null;
 	private static javax.swing.JFrame graphClientFrame = null;
-	private final java.lang.String DB_ALIAS = com.cannontech.util.CtiUtilities.getDatabaseAlias();
+	private final java.lang.String DB_ALIAS = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	private String directory = null;
 	private static boolean isGraphDefinitionEditable = true;
 	public static final String TREE_PARENT_LABEL = "Trends";
@@ -111,7 +111,7 @@ private class PointDataUpdater extends Thread
 	private HelpMenu helpMenu = null;
 	//private static boolean removeMultiplier = false;
 	private static boolean showPointLabels = true;
-	private com.cannontech.vangogh.ClientConnection connToDispatch;
+	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	private PointDataUpdater pointDataUpdater;
 	private javax.swing.JRadioButton ivjCurrentRadioButton = null;
 	private javax.swing.JPanel ivjGraphSetupPanel = null;
@@ -124,7 +124,7 @@ private class PointDataUpdater extends Thread
 	private javax.swing.JComboBox ivjTimePeriodComboBox = null;
 	private javax.swing.JLabel ivjTimePeriodLabel = null;
 	private javax.swing.JSplitPane ivjTopBottomSplitPane = null;
-	private com.cti.gui.util.TreeViewPanel ivjTreeViewPanel = null;
+	private com.cannontech.common.gui.util.TreeViewPanel ivjTreeViewPanel = null;
 	private javax.swing.JTabbedPane ivjTrendingTabbedPane = null;
 	private javax.swing.JEditorPane ivjTabularEditorPane = null;
 	private javax.swing.JSlider ivjTabularSlider = null;
@@ -212,7 +212,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getHelpMenu().getHelpTopicsMenuItem())
 	{
-		com.cannontech.util.CtiUtilities.showHelp( HELP_FILE );
+		com.cannontech.common.util.CtiUtilities.showHelp( HELP_FILE );
 	}
 
 	else if(event.getSource() == getHelpMenu().getAboutMenuItem())
@@ -250,7 +250,7 @@ public void actionPerformed_CreateMenuItem( )
 {
 
 	createPanel =  new CreateGraphPanel();
-	com.cannontech.data.graph.GraphDefinition gDef = createPanel.showCreateGraphPanelDialog( getGraphParentFrame());
+	com.cannontech.database.data.graph.GraphDefinition gDef = createPanel.showCreateGraphPanelDialog( getGraphParentFrame());
 
 	if( gDef != null )
 	{
@@ -268,10 +268,10 @@ public void actionPerformed_DeleteMenuItem( )
 {
 	Object selected = getTreeViewPanel().getSelectedItem();
 
-	if (selected != null && selected instanceof com.cti.data.lite.LiteGraphDefinition)
+	if (selected != null && selected instanceof com.cannontech.database.data.lite.LiteGraphDefinition)
 	{
-		com.cannontech.data.graph.GraphDefinition gDef =
-			retrieveGraphDefinition((com.cti.data.lite.LiteGraphDefinition) selected);
+		com.cannontech.database.data.graph.GraphDefinition gDef =
+			retrieveGraphDefinition((com.cannontech.database.data.lite.LiteGraphDefinition) selected);
 
 		int option = javax.swing.JOptionPane.showConfirmDialog( getGraphParentFrame(),
 	        		"Are you sure you want to permanently delete '" + gDef.getGraphDefinition().getName() + "'?",
@@ -302,10 +302,10 @@ public void actionPerformed_EditMenuItem( )
 		savedCursor = this.getCursor();
 		this.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 		
-		if (selected instanceof com.cti.data.lite.LiteGraphDefinition)
+		if (selected instanceof com.cannontech.database.data.lite.LiteGraphDefinition)
 		{
-			com.cannontech.data.graph.GraphDefinition gDef =
-				retrieveGraphDefinition((com.cti.data.lite.LiteGraphDefinition) selected);
+			com.cannontech.database.data.graph.GraphDefinition gDef =
+				retrieveGraphDefinition((com.cannontech.database.data.lite.LiteGraphDefinition) selected);
 
 			//CreateGraphPanel panel = new CreateGraphPanel();
 			createPanel.setValue(gDef);
@@ -345,10 +345,10 @@ public void actionPerformed_ExitMenuItem()
 	{
 		if ( connToDispatch!= null && connToDispatch.isValid() )  // free up Dispatchs resources
 		{
-			com.cannontech.vangogh.messages.Command command = new com.cannontech.vangogh.messages.Command();
+			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
 			command.setPriority(15);
 			
-			command.setOperation( com.cannontech.vangogh.messages.Command.CLIENT_APP_SHUTDOWN );
+			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
 
 			connToDispatch.write( command );
 
@@ -458,9 +458,9 @@ public void actionPerformed_GetTimePeriodComboBox( )
 {
 	getGraph().setCurrentTimePeriod( ServletUtil.getIntValue( getTimePeriodComboBox().getSelectedItem().toString() ) );
 	if (getCurrentRadioButton().isSelected()
-		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.web.util.ServletUtil.ONEDAY.toString())
-		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.web.util.ServletUtil.THREEDAYS.toString())
-		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.web.util.ServletUtil.ONEWEEK.toString()))
+		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.ONEDAY.toString())
+		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.THREEDAYS.toString())
+		|| getTimePeriodComboBox().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.util.ServletUtil.ONEWEEK.toString()))
 		currentWeek = NO_WEEK;
 	else
 		currentWeek = FIRST_WEEK;
@@ -501,7 +501,7 @@ public void actionPerformed_GetToggleButton( )
 			getTimePeriodComboBox().addItem(ServletUtil.currentPeriods[i]);
 
 		getTimePeriodComboBox().setSelectedIndex(currIndex); //set to saved currentPeriod
-		getStartDatePopupField().getValueModel().setValue(com.cannontech.web.util.ServletUtil.getToday()); //set to currentDate
+		getStartDatePopupField().getValueModel().setValue(com.cannontech.util.ServletUtil.getToday()); //set to currentDate
 		currentWeek = NO_WEEK;
 	}
 	else if ( getHistoricalRadioButton().isSelected() )
@@ -519,7 +519,7 @@ public void actionPerformed_GetToggleButton( )
 
 		getTimePeriodComboBox().setSelectedIndex(histIndex); //set to saved histPeriod
 		if( histDate != null)
-			getStartDatePopupField().getValueModel().setValue( com.cannontech.web.util.ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
+			getStartDatePopupField().getValueModel().setValue( com.cannontech.util.ServletUtil.parseDateStringLiberally( (dateFormat.format( histDate)).toString() )); //set to saved histDate
 		else
 			System.out.println(" %%% hist date null!!! ");
 	}
@@ -574,9 +574,9 @@ public void actionPerformed_PrintMenuItem( )
 /**
  * Insert the method's description here.
  * Creation date: (10/27/00 12:57:26 PM)
- * @param gDef com.cannontech.data.graph.GraphDefinition
+ * @param gDef com.cannontech.database.data.graph.GraphDefinition
  */
-private void addGraphDefinition(com.cannontech.data.graph.GraphDefinition gDef) 
+private void addGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
 {
 	java.sql.Connection conn = null;
 
@@ -615,7 +615,7 @@ private void addGraphDefinition(com.cannontech.data.graph.GraphDefinition gDef)
 		}
 	}
 
-	com.cannontech.vangogh.messages.DBChangeMsg dbChange = new com.cannontech.vangogh.messages.DBChangeMsg(
+	com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
 		gDef.getGraphDefinition().getGraphDefinitionID().intValue(),
 		DBChangeMsg.CHANGE_GRAPH_DB,
 		DBChangeMsg.CAT_GRAPH,
@@ -657,7 +657,7 @@ public void addMenuItemActionListeners(javax.swing.JMenu menu)
  * Insert the method's description here.
  * Creation date: (10/31/00 1:53:46 PM)
  */
-private void deleteGraphDefinition(com.cannontech.data.graph.GraphDefinition gDef) 
+private void deleteGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
 {
 	java.sql.Connection conn = null;
 	try
@@ -678,7 +678,7 @@ private void deleteGraphDefinition(com.cannontech.data.graph.GraphDefinition gDe
 		try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
 	}
 
-	com.cannontech.vangogh.messages.DBChangeMsg dbChange = new com.cannontech.vangogh.messages.DBChangeMsg(
+	com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
 		gDef.getGraphDefinition().getGraphDefinitionID().intValue(),
 		DBChangeMsg.CHANGE_GRAPH_DB,
 		DBChangeMsg.CAT_GRAPH,
@@ -708,10 +708,10 @@ public void exit()
 	{
 		if ( connToDispatch!= null && connToDispatch.isValid() )  // free up Dispatchs resources
 		{
-			com.cannontech.vangogh.messages.Command command = new com.cannontech.vangogh.messages.Command();
+			com.cannontech.message.dispatch.message.Command command = new com.cannontech.message.dispatch.message.Command();
 			command.setPriority(15);
 			
-			command.setOperation( com.cannontech.vangogh.messages.Command.CLIENT_APP_SHUTDOWN );
+			command.setOperation( com.cannontech.message.dispatch.message.Command.CLIENT_APP_SHUTDOWN );
 
 			connToDispatch.write( command );
 
@@ -854,9 +854,9 @@ public JCChart getChart()
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 5:14:03 PM)
- * @return com.cannontech.client.util.ClientConnection
+ * @return com.cannontech.message.util.ClientConnection
  */
-public com.cannontech.client.util.ClientConnection getClientConnection() {
+public com.cannontech.message.util.ClientConnection getClientConnection() {
 	return connToDispatch;
 }
 /**
@@ -1096,16 +1096,16 @@ private StringBuffer getHTMLBuffer( String seriesType)
 	int sliderValueSelected = 0;
 	try
 	{
-		if ( seriesType.equalsIgnoreCase( com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES) )
+		if ( seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES) )
 		{
 			htmlData = new TabularHtml();
 			getTabularSlider().getModel().setValueIsAdjusting(true);
 		}
-		else if ( seriesType.equalsIgnoreCase( com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES) )
+		else if ( seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) )
 		{
 			htmlData = new PeakHtml();
 		}
-		else if (seriesType.equalsIgnoreCase( com.cannontech.db.graph.GraphDataSeries.USAGE_SERIES) )
+		else if (seriesType.equalsIgnoreCase( com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) )
 		{
 			htmlData = new UsageHtml();
 		}
@@ -1246,7 +1246,7 @@ private com.klg.jclass.field.JCPopupField getStartDatePopupField() {
 			ivjStartDatePopupField.setEnabled(false);
 			// user code begin {1}
 			com.klg.jclass.util.value.DateValueModel dateModel = new com.klg.jclass.util.value.DateValueModel();
-			dateModel.setValue( com.cannontech.web.util.ServletUtil.getToday() );
+			dateModel.setValue( com.cannontech.util.ServletUtil.getToday() );
 			ivjStartDatePopupField.setValueModel(dateModel);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1449,10 +1449,10 @@ private javax.swing.JSplitPane getTopBottomSplitPane() {
  * Creation date: (5/17/2001 10:57:58 AM)
  * @return javax.swing.JButton
  */
-public com.cti.gui.util.TreeViewPanel getTreeViewPanel() {
+public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 	if (ivjTreeViewPanel == null) {
 		try {
-			ivjTreeViewPanel = new com.cti.gui.util.TreeViewPanel();
+			ivjTreeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
 			ivjTreeViewPanel.setName("TreeViewPanel");
 			// user code begin {1}
 			ivjTreeViewPanel.setTreeModels( new com.cannontech.database.model.LiteBaseTreeModel[] { new GraphDefinitionTreeModel() } );
@@ -1506,7 +1506,7 @@ private TrendMenu getTrendMenu()
  */
 public static String getVersion()
 {
-	return (com.cannontech.version.VersionTools.getYUKON_VERSION() + VERSION);
+	return (com.cannontech.common.version.VersionTools.getYUKON_VERSION() + VERSION);
 }
 private ViewMenu getViewMenu()
 {
@@ -1520,11 +1520,11 @@ private ViewMenu getViewMenu()
 /**
  * Insert the method's description here.
  * Creation date: (12/20/2001 5:12:47 PM)
- * @param msg com.cannontech.vangogh.messages.DBChangeMsg
+ * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  */
-public void handleDBChangeMsg(com.cannontech.vangogh.messages.DBChangeMsg msg, com.cti.data.lite.LiteBase treeObject)
+public void handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg msg, com.cannontech.database.data.lite.LiteBase treeObject)
 {
-	if (!((DBChangeMsg)msg).getSource().equals(com.cannontech.util.CtiUtilities.DEFAULT_MSG_SOURCE))
+	if (!((DBChangeMsg)msg).getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
 	{
 		System.out.println(" ## DBChangeMsg ##\n" + msg);
 
@@ -1581,9 +1581,9 @@ private void initDispatchConnection()
 		port = 1510;
 	}
 
-	connToDispatch = new com.cannontech.vangogh.ClientConnection();
+	connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
 
-	com.cannontech.vangogh.messages.Registration reg = new com.cannontech.vangogh.messages.Registration();
+	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName("Yukon Trending");
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
@@ -1617,8 +1617,8 @@ private void initDispatchConnection()
 private void initialize() {
 	try {
 		// user code begin {1}
-		histDate = com.cannontech.web.util.ServletUtil.getToday();
-		currDate = com.cannontech.web.util.ServletUtil.getToday();
+		histDate = com.cannontech.util.ServletUtil.getToday();
+		currDate = com.cannontech.util.ServletUtil.getToday();
 		// user code end
 		setName("GraphClient");
 		setLayout(new java.awt.GridBagLayout());
@@ -1790,9 +1790,9 @@ public static void main(String[] args)
  * Insert the method's description here.
  * Creation date: (10/31/00 1:53:46 PM)
  */
-private com.cannontech.data.graph.GraphDefinition retrieveGraphDefinition(com.cti.data.lite.LiteGraphDefinition lGDef) 
+private com.cannontech.database.data.graph.GraphDefinition retrieveGraphDefinition(com.cannontech.database.data.lite.LiteGraphDefinition lGDef) 
 {
-	com.cannontech.data.graph.GraphDefinition gDef = (com.cannontech.data.graph.GraphDefinition) com.cti.data.lite.LiteFactory.createDBPersistent(lGDef);
+	com.cannontech.database.data.graph.GraphDefinition gDef = (com.cannontech.database.data.graph.GraphDefinition) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(lGDef);
 
 	java.sql.Connection conn = null;
 	try
@@ -1848,10 +1848,10 @@ public void setGraphDefinitionDates(java.util.Date newStart, java.util.Date newS
 
 	if (newStop == null)
 	{
-		newStop = com.cannontech.web.util.ServletUtil.getEndingDateOfInterval( newStart, getTimePeriodComboBox().getSelectedItem().toString() );
+		newStop = com.cannontech.util.ServletUtil.getEndingDateOfInterval( newStart, getTimePeriodComboBox().getSelectedItem().toString() );
 	}
 
-	newStart = com.cannontech.web.util.ServletUtil.getStartingDateOfInterval( newStart, getTimePeriodComboBox().getSelectedItem().toString() );
+	newStart = com.cannontech.util.ServletUtil.getStartingDateOfInterval( newStart, getTimePeriodComboBox().getSelectedItem().toString() );
 
 	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStartDate(newStart);
 	getGraph().getCurrentGraphDefinition().getGraphDefinition().setStopDate(newStop);
@@ -2037,7 +2037,7 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			{
 				showPopupMessage("Please Select a Trend From the list", javax.swing.JOptionPane.WARNING_MESSAGE);
 			}
-			getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES);
+			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 			getGraph().update();
 			getFreeChart();
 			//getGraph().updateChart();
@@ -2054,10 +2054,10 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 			}
 			if (!getTabularSlider().getModel().getValueIsAdjusting())
 			{
-				getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES);
+				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);
 				getGraph().update();
 				StringBuffer buf = new StringBuffer();
-				buf.append (getHTMLBuffer( com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES ));
+				buf.append (getHTMLBuffer( com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES ));
 
 				buf.append("</CENTER></HTML>");
 				getTabularEditorPane().setText( buf.toString() );
@@ -2076,13 +2076,13 @@ public void stateChanged(javax.swing.event.ChangeEvent event)
 				StringBuffer buf = new StringBuffer();
 				currentGraphPeak = selectedItem;
 	
-				getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES);			
+				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);			
 				getGraph().update();
-				buf.append( getHTMLBuffer( com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES) );
+				buf.append( getHTMLBuffer( com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) );
 
-				getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.USAGE_SERIES);
+				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES);
 				getGraph().update();
-				buf.append( getHTMLBuffer(com.cannontech.db.graph.GraphDataSeries.USAGE_SERIES) );
+				buf.append( getHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) );
 				
 				buf.append("</CENTER></HTML>");
 				getSummaryTabEditorPane().setText(buf.toString());
@@ -2123,7 +2123,7 @@ public void updateCurrentPane()
 	{
 		if( selectedItem != null)
 		{
-			getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES);					
+			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);					
 			getGraph().update();
 			getFreeChart();
 			//getGraph().updateChart();
@@ -2135,10 +2135,10 @@ public void updateCurrentPane()
 	{
 		if( selectedItem != null)
 		{
-			getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES);							
+			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES);							
 			getGraph().update();
 			StringBuffer buf = new StringBuffer();
-			buf.append (getHTMLBuffer(com.cannontech.db.graph.GraphDataSeries.GRAPH_SERIES));
+			buf.append (getHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.GRAPH_SERIES));
 
 			buf.append("</CENTER></HTML>");
 			getTabularEditorPane().setText( buf.toString() );
@@ -2156,14 +2156,14 @@ public void updateCurrentPane()
 			
 			if( getGraph().getHasPeakSeries() )
 			{
-				getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES);			
+				getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES);			
 				getGraph().update();
-				buf.append( getHTMLBuffer(com.cannontech.db.graph.GraphDataSeries.PEAK_SERIES) );
+				buf.append( getHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.PEAK_SERIES) );
 			}
 
-			getGraph().setSeriesType(com.cannontech.db.graph.GraphDataSeries.USAGE_SERIES);
+			getGraph().setSeriesType(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES);
 			getGraph().update();
-			buf.append( getHTMLBuffer(com.cannontech.db.graph.GraphDataSeries.USAGE_SERIES) );
+			buf.append( getHTMLBuffer(com.cannontech.database.db.graph.GraphDataSeries.USAGE_SERIES) );
 			
 			buf.append("</CENTER></HTML>");
 			getSummaryTabEditorPane().setText(buf.toString());
@@ -2186,9 +2186,9 @@ public void updateCurrentPane()
 /**
  * Insert the method's description here.
  * Creation date: (10/31/00 1:59:14 PM)
- * @param gDef com.cannontech.data.graph.GraphDefinition
+ * @param gDef com.cannontech.database.data.graph.GraphDefinition
  */
-private com.cannontech.data.graph.GraphDefinition updateGraphDefinition(com.cannontech.data.graph.GraphDefinition gDef) 
+private com.cannontech.database.data.graph.GraphDefinition updateGraphDefinition(com.cannontech.database.data.graph.GraphDefinition gDef) 
 {
 	java.sql.Connection conn = null;
 	try
@@ -2209,7 +2209,7 @@ private com.cannontech.data.graph.GraphDefinition updateGraphDefinition(com.cann
 		try { if( conn != null ) conn.close(); } catch( java.sql.SQLException e2 ) { e2.printStackTrace(); };
 	}
 
-	com.cannontech.vangogh.messages.DBChangeMsg dbChange = new com.cannontech.vangogh.messages.DBChangeMsg(
+	com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
 		gDef.getGraphDefinition().getGraphDefinitionID().intValue(),
 		DBChangeMsg.CHANGE_GRAPH_DB,
 		DBChangeMsg.CAT_GRAPH,
@@ -2263,12 +2263,12 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 
 		//Find the selected graph definition and display it
 		Object item = getTreeViewPanel().getSelectedItem();
-		if( item == null || !( item instanceof com.cti.data.lite.LiteGraphDefinition) )
+		if( item == null || !( item instanceof com.cannontech.database.data.lite.LiteGraphDefinition) )
 			return;
 
 		// Item is an instance of LiteGraphDefinition...(from previous statement)	
-		com.cannontech.data.graph.GraphDefinition selection = 
-					retrieveGraphDefinition( (com.cti.data.lite.LiteGraphDefinition) item );
+		com.cannontech.database.data.graph.GraphDefinition selection = 
+					retrieveGraphDefinition( (com.cannontech.database.data.lite.LiteGraphDefinition) item );
 		if( selection == null )
 			return;
 
@@ -2276,7 +2276,7 @@ public void valueChanged(javax.swing.event.TreeSelectionEvent event)
 
 		for (int i = 0; i < selection.getGraphDataSeries().size(); i++)
 		{
-			com.cannontech.db.graph.GraphDataSeries gds = (com.cannontech.db.graph.GraphDataSeries) getGraph().getCurrentGraphDefinition().getGraphDataSeries().get(i);
+			com.cannontech.database.db.graph.GraphDataSeries gds = (com.cannontech.database.db.graph.GraphDataSeries) getGraph().getCurrentGraphDefinition().getGraphDataSeries().get(i);
 
 			if ( getGraph().isPeakSeries( gds.getType()) )
 			{

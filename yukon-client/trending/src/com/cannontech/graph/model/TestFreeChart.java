@@ -18,7 +18,7 @@ import com.jrefinery.chart.TextTitle;
 
 public class TestFreeChart //extends com.jrefinery.chart.JFreeChart// com.jrefinery.ui.ApplicationFrame
 {
-	private static com.cannontech.data.graph.GraphDefinition gDef;
+	private static com.cannontech.database.data.graph.GraphDefinition gDef;
     protected static BasicTimeSeries series;
     protected static FreeChartModel dataModels[] = null;
 /**
@@ -36,7 +36,7 @@ public static FreeChartModel[] hitDatabase()
 		
 	//for ( int i = 0; i < dataSeries.size(); i ++)
 	//{
-		//((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(i)).getPointID();
+		//((com.cannontech.database.db.graph.GraphDataSeries)dataSeries.get(i)).getPointID();
 	
 	//java.util.Vector dataSeriesVec = new java.util.Vector(gDef.get
 	
@@ -48,9 +48,9 @@ public static FreeChartModel[] hitDatabase()
 		int pointIdIndex = 0;
 		for (pointIdIndex = 0; pointIdIndex < dataSeries.size();pointIdIndex++ )
 		{
-			if( ((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(pointIdIndex)).getType().equalsIgnoreCase("graph"))
+			if( ((com.cannontech.database.db.graph.GraphDataSeries)dataSeries.get(pointIdIndex)).getType().equalsIgnoreCase("graph"))
 			{
-				sql.append(((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(pointIdIndex)).getPointID().toString());
+				sql.append(((com.cannontech.database.db.graph.GraphDataSeries)dataSeries.get(pointIdIndex)).getPointID().toString());
 				pointIdIndex++;
 				break;
 			}
@@ -58,12 +58,12 @@ public static FreeChartModel[] hitDatabase()
 	
 		for ( int i = pointIdIndex; i < dataSeries.size(); i ++)
 		{
-			if(((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(i)).getType().equalsIgnoreCase("graph"))
+			if(((com.cannontech.database.db.graph.GraphDataSeries)dataSeries.get(i)).getType().equalsIgnoreCase("graph"))
 			{
-				sql.append(", " + ((com.cannontech.db.graph.GraphDataSeries)dataSeries.get(i)).getPointID().toString());
+				sql.append(", " + ((com.cannontech.database.db.graph.GraphDataSeries)dataSeries.get(i)).getPointID().toString());
 			}
 		}
-		sql.append(") AND TIMESTAMP > '" + format.format(com.cannontech.web.util.ServletUtil.getYesterday()) + "' ");
+		sql.append(") AND TIMESTAMP > '" + format.format(com.cannontech.util.ServletUtil.getYesterday()) + "' ");
 		sql.append(" ORDER BY POINTID, TIMESTAMP");
 			
 	java.sql.Connection conn = null;
@@ -73,7 +73,7 @@ public static FreeChartModel[] hitDatabase()
 	FreeChartModel[] chartModelsArray = null;
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.util.CtiUtilities.getDatabaseAlias());
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 
 		if( conn == null )
 		{
@@ -177,7 +177,7 @@ public static FreeChartModel[] hitDatabase()
  * Insert the method's description here.
  * Creation date: (6/20/2002 8:01:46 AM)
  */
-public static void showFreeChart(com.jrefinery.chart.JFreeChart fChart, com.cannontech.data.graph.GraphDefinition graphDef)
+public static void showFreeChart(com.jrefinery.chart.JFreeChart fChart, com.cannontech.database.data.graph.GraphDefinition graphDef)
 {
 	gDef = graphDef;
 	FreeChartModel [] dataModels = null;
