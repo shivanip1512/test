@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     2/3/2003 1:10:27 PM                          */
+/* Created on:     2/4/2003 1:42:19 PM                          */
 /*==============================================================*/
 
 
@@ -1293,6 +1293,8 @@ constraint PK_ADDRESS primary key  (AddressID)
 go
 
 
+insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' )
+
 /*==============================================================*/
 /* Table : AlarmCategory                                        */
 /*==============================================================*/
@@ -1661,23 +1663,23 @@ constraint PK_CONTACT primary key  (ContactID)
 go
 
 
-insert into CustomerContact(contactID, contFirstName, contLastName, contPhone1, contPhone2, locationID,loginID)
-values (-1,'(none)','(none)','(none)','(none)',0,-1)
+insert into contact values ( 0, '(none)', '(none)', -1, 0 )
 
 /*==============================================================*/
 /* Table : ContactNotification                                  */
 /*==============================================================*/
 create table ContactNotification (
+ContactNotifID       numeric              not null,
 ContactID            numeric              not null,
 NotificationCategoryID numeric              not null,
 DisableFlag          char(1)              not null,
 Notification         varchar(130)         not null,
-constraint PK_CONTACTNOTIFICATION primary key  (ContactID, NotificationCategoryID, Notification)
+constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
 )
 go
 
 
-insert into ContactNotification values( 0, 0, 'N', '(none)' );
+insert into ContactNotification values( 0, 0, 0, 'N', '(none)' )
 
 
 /*==============================================================*/
@@ -1687,7 +1689,7 @@ create table Customer (
 CustomerID           numeric              not null,
 PrimaryContactID     numeric              not null,
 CustomerTypeID       numeric              not null,
-TimeZone             varchar(6)           not null,
+TimeZone             varchar(40)          not null,
 constraint PK_CUSTOMER primary key  (CustomerID)
 )
 go
@@ -4676,13 +4678,13 @@ go
 
 alter table NotificationDestination
    add constraint FK_CntNt_NtDst foreign key (RecipientID)
-      references ContactNotification (ContactID)
+      references ContactNotification (ContactNotifID)
 go
 
 
 alter table PointAlarming
    add constraint FK_CntNt_PtAl foreign key (RecipientID)
-      references ContactNotification (ContactID)
+      references ContactNotification (ContactNotifID)
 go
 
 
@@ -4749,6 +4751,12 @@ go
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID)
+go
+
+
+alter table Customer
+   add constraint FK_Cst_Cnt foreign key (PrimaryContactID)
+      references Contact (ContactID)
 go
 
 

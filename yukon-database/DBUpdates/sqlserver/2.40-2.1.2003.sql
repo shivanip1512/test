@@ -48,22 +48,23 @@ go
 
 /******************* START CONTACTNOTIFICATION CHANGES *******************/
 create table ContactNotification (
+ContactNotifID       numeric              not null,
 ContactID            numeric              not null,
 NotificationCategoryID numeric              not null,
 DisableFlag          char(1)              not null,
 Notification         varchar(130)         not null,
-constraint PK_CONTACTNOTIFICATION primary key  (ContactID, NotificationCategoryID)
+constraint PK_CONTACTNOTIFICATION primary key  (ContactNotifID)
 )
 go
-insert into ContactNotification values( 0, 0, 'N', '(none)' )
+insert into ContactNotification values( 0, 0, 'N', '(none)', 0 )
 go
 /*****DO NOT ADD ANY REFERENCES TO THIS TABLE UNTIL THE END*****/
 insert into ContactNotification
-select r.recipientid, 1, r.disableflag, r.emailaddress
+select r.recipientid, r.recipientid, 1, r.disableflag, r.emailaddress
 from NotificationRecipient r where r.recipientid > 0
 go
 insert into ContactNotification
-select r.contactid, 2, 'N', r.contphone1
+select r.contactid, r.contactid, 2, 'N', r.contphone1
 from CustomerContact r where r.contactid > 0
 go
 
@@ -107,6 +108,8 @@ go
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID)
+go
+alter table Customer alter column TimeZone VARCHAR(40)
 go
 
 
@@ -172,13 +175,12 @@ drop table NotificationRecipient
 go
 alter table NotificationDestination
    add constraint FK_CntNt_NtDst foreign key (RecipientID)
-      references ContactNotification (ContactID)
+      references ContactNotification (ContactNotifID)
 go
 alter table PointAlarming
    add constraint FK_CntNt_PtAl foreign key (RecipientID)
-      references ContactNotification (ContactID)
+      references ContactNotification (ContactNotifID)
 go
-
 
 
 /******************* START FINAL MISC CHANGES *******************/
