@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     6/6/2003 4:09:23 PM                          */
+/* Created on:     6/23/2003 3:31:36 PM                         */
 /*==============================================================*/
 
 
@@ -888,6 +888,23 @@ if exists (select 1
            where  id = object_id('DeviceCBC')
             and   type = 'U')
    drop table DeviceCBC
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PK_DEVICECUSTOMERLIST')
+            and   type = 'K')
+alter table DeviceCustomerList
+   drop constraint PK_DEVICECUSTOMERLIST
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DeviceCustomerList')
+            and   type = 'U')
+   drop table DeviceCustomerList
 go
 
 
@@ -3966,6 +3983,21 @@ go
 
 
 /*==============================================================*/
+/* Table : DeviceCustomerList                                   */
+/*==============================================================*/
+create table DeviceCustomerList (
+CustomerID           numeric              not null,
+DeviceID             numeric              not null
+)
+go
+
+
+alter table DeviceCustomerList
+   add constraint PK_DEVICECUSTOMERLIST primary key  (DeviceID, CustomerID)
+go
+
+
+/*==============================================================*/
 /* Table : DeviceDNP                                            */
 /*==============================================================*/
 create table DeviceDNP (
@@ -4337,8 +4369,10 @@ insert into FDRInterface values ( 8, 'RDEX', 'Send,Send for control,Receive,Rece
 insert into FDRInterface values (9,'SYSTEM','Link Status','f');
 insert into FDRInterface values (10,'DSM2IMPORT','Receive,Receive for control','f');
 insert into FDRInterface values (11,'TELEGYR','Receive,Receive for control','f');
-insert into fdrinterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
-insert into fdrinterface values (13,'TEXTEXPORT','Send','f');
+insert into FDRInterface values (12,'TEXTIMPORT','Receive,Receive for control','f');
+insert into FDRInterface values (13,'TEXTEXPORT','Send','f');
+insert into FDRInterface values (14, 'LODESTAR', 'Receive', 'f' );
+
 
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
@@ -4377,8 +4411,9 @@ insert into FDRInterfaceOption values(9,'Client',1,'Text','(none)');
 insert into FDRInterfaceOption values(10,'Point',1,'Text','(none)');
 insert into FDRInterfaceOption values(11, 'Point', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(11, 'Group', 2, 'Query', 'select GroupName from FDRTelegyrGroup' );
-insert into fdrinterfaceoption values (12,'Point ID',1,'Text','(none)');
-insert into fdrinterfaceoption values (13,'Point ID',1,'Text','(none)');
+insert into FDRInterfaceOption values(12,'Point ID',1,'Text','(none)');
+insert into FDRInterfaceOption values(13,'Point ID',1,'Text','(none)');
+insert into FDRInterfaceOption values(14, 'Point', 1, 'Text', '(none)' );
 
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
@@ -7440,6 +7475,18 @@ go
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)
       references YukonPAObject (PAObjectID)
+go
+
+
+alter table DeviceCustomerList
+   add constraint FK_DvStLsCst foreign key (CustomerID)
+      references Customer (CustomerID)
+go
+
+
+alter table DeviceCustomerList
+   add constraint FK_DvStLsDev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
 go
 
 

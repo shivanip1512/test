@@ -2,6 +2,35 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+create table DeviceCustomerList (
+CustomerID           numeric              not null,
+DeviceID             numeric              not null
+);
+go
+alter table DeviceCustomerList
+   add constraint PK_DEVICECUSTOMERLIST primary key  (DeviceID, CustomerID);
+go
+alter table DeviceCustomerList
+   add constraint FK_DvStLsCst foreign key (CustomerID)
+      references Customer (CustomerID);
+go
+alter table DeviceCustomerList
+   add constraint FK_DvStLsDev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+go
+
+insert into DeviceCustomerList
+select OwnerID, ChildID from PAOOwner
+where ownerid in (select PAObjectid from YukonPAObject where Category = 'CUSTOMER')
+and childid in (select PAObjectid from YukonPAObject where PAOClass = 'METER');
+go
+
+delete from paoowner where ownerid in (select PAObjectid from YukonPAObject where Category = 'CUSTOMER');
+go
+delete from yukonpaobject where Category = 'CUSTOMER';
+go
+
+
 /* @error ignore */
 alter table FDRTRANSLATION drop constraint PK_FDRTRANSLATION;
 go

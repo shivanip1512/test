@@ -2,6 +2,28 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+create table DeviceCustomerList  (
+   CustomerID           NUMBER                           not null,
+   DeviceID             NUMBER                           not null
+);
+alter table DeviceCustomerList
+   add constraint PK_DEVICECUSTOMERLIST primary key (DeviceID, CustomerID);
+alter table DeviceCustomerList
+   add constraint FK_DvStLsCst foreign key (CustomerID)
+      references Customer (CustomerID);
+alter table DeviceCustomerList
+   add constraint FK_DvStLsDev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+
+insert into DeviceCustomerList
+select OwnerID, ChildID from PAOOwner
+where ownerid in (select PAObjectid from YukonPAObject where Category = 'CUSTOMER')
+and childid in (select PAObjectid from YukonPAObject where PAOClass = 'METER');
+
+delete from paoowner where ownerid in (select PAObjectid from YukonPAObject where Category = 'CUSTOMER');
+delete from yukonpaobject where Category = 'CUSTOMER';
+
+
 /* @error ignore */
 alter table FDRTRANSLATION drop primary key;
 alter table FDRTRANSLATION add 
