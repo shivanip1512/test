@@ -65,6 +65,8 @@ public class CtiProperties extends java.util.Properties implements ClientRights
    
    public static final String KEY_DISPATCH_MACHINE = "dispatch_machine";
    public static final String KEY_DISPATCH_PORT = "dispatch_port";
+
+   public static final String KEY_TDC_ALARM_COUNT = "tdc_alarm_count";   
    
 	public static final String[] ALL_CONFIG_KEYS =
 	{
@@ -96,7 +98,9 @@ public class CtiProperties extends java.util.Properties implements ClientRights
 		KEY_ACTIVATE_BILLING,
       KEY_CBC_CREATION_NAME,
 		KEY_BILLING_INPUT,
-      KEY_LOG_LEVEL
+      KEY_LOG_LEVEL,
+      
+      KEY_TDC_ALARM_COUNT
 	};
 
 
@@ -232,8 +236,8 @@ private void initialize()
 
       /******************  ERROR HANDLING BELOW *****************/
       //oops we failed, list the properties for this reflective class
-      com.cannontech.clientutils.CTILogger.info("*** PROPERTY TRANSLATION ERROR: " + key_ + " key/value not stored.");
-      com.cannontech.clientutils.CTILogger.info("Available REFLECTIVE properties for: " + value_.getClass().getName());
+      com.cannontech.clientutils.CTILogger.info("*** PROPERTY REFLECTIVE TRANSLATION ERROR: " + key_ + " key/value not stored.");
+      com.cannontech.clientutils.CTILogger.debug("Available REFLECTIVE properties for: " + value_.getClass().getName());
 
       for( int i = 0; i < methods.length; i++ )
       {
@@ -256,7 +260,7 @@ private void initialize()
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isCreateable( final int readOnlyInteger )
+public static boolean isCreateable( final long readOnlyInteger )
 {
 	return ( (readOnlyInteger & CREATABLE) == CREATABLE);
 }
@@ -266,55 +270,55 @@ public static boolean isCreateable( final int readOnlyInteger )
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isEnableable( final int readOnlyInteger )
+public static boolean isEnableable( final long readOnlyInteger )
 {
 	return ( (readOnlyInteger & ENABLEABLE) == ENABLEABLE);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isHiddenAll( final int readOnlyInteger )
+public static boolean isHiddenCapControl( final long readOnlyInteger )
 {
-	return (readOnlyInteger & HIDE_ALL) == HIDE_ALL;
+	return (readOnlyInteger & HIDE_CAPCONTROL) != 0;
 }
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isHiddenCapControl( final int readOnlyInteger )
+public static boolean isHiddenLoadControl( final long readOnlyInteger )
 {
-	return isHiddenAll(readOnlyInteger)
-			 || ((readOnlyInteger & HIDE_CAPCONTROL) == HIDE_CAPCONTROL);
+	return (readOnlyInteger & HIDE_LOADCONTROL) != 0;
 }
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isHiddenLoadControl( final int readOnlyInteger )
+public static boolean isHiddenMACS( final long readOnlyInteger )
 {
-	return isHiddenAll(readOnlyInteger)
-			 || ((readOnlyInteger & HIDE_LOADCONTROL) == HIDE_LOADCONTROL);
+	return (readOnlyInteger & HIDE_MACS) != 0;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isHiddenMACS( final int readOnlyInteger )
+public static boolean isAlarmColorHidden( final long readOnlyInteger )
 {
-	return isHiddenAll(readOnlyInteger)
-			 || ((readOnlyInteger & HIDE_MACS) == HIDE_MACS);
+   return (readOnlyInteger & HIDE_ALARM_COLORS) != 0;
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (3/5/2001 11:32:59 AM)
  * @return boolean
  */
-public static boolean isStartable( final int readOnlyInteger )
+public static boolean isStartable( final long readOnlyInteger )
 {
 	return ( (readOnlyInteger & STARTABLE) == STARTABLE);
 }

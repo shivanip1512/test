@@ -17,4 +17,7 @@ public interface ClientRights
 	public static final int HIDE_CAPCONTROL   = 0x00002000;
 	public static final int HIDE_LOADCONTROL  = 0x00004000;
 	public static final int HIDE_ALL          = 0x0000F000;
+   
+   /* miscealanous params */
+   public static final int HIDE_ALARM_COLORS = 0x80000000;
 }
