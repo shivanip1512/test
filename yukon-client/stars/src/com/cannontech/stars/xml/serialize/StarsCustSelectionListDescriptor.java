@@ -100,6 +100,43 @@ public class StarsCustSelectionListDescriptor extends org.exolab.castor.xml.util
         }
         desc.setValidator(fieldValidator);
         
+        //-- _listName
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_listName", "listName", NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsCustSelectionList target = (StarsCustSelectionList) object;
+                return target.getListName();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsCustSelectionList target = (StarsCustSelectionList) object;
+                    target.setListName( (java.lang.String) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        } );
+        desc.setHandler(handler);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _listName
+        fieldValidator = new FieldValidator();
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
+        desc.setValidator(fieldValidator);
+        
         //-- initialize element descriptors
         
         //-- _starsSelectionListEntryList

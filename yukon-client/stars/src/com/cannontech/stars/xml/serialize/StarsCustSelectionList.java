@@ -41,6 +41,8 @@ public class StarsCustSelectionList implements java.io.Serializable {
     **/
     private boolean _has_listID;
 
+    private java.lang.String _listName;
+
     private java.util.Vector _starsSelectionListEntryList;
 
 
@@ -104,6 +106,16 @@ public class StarsCustSelectionList implements java.io.Serializable {
     {
         return this._listID;
     } //-- int getListID() 
+
+    /**
+     * Returns the value of field 'listName'.
+     * 
+     * @return the value of field 'listName'.
+    **/
+    public java.lang.String getListName()
+    {
+        return this._listName;
+    } //-- java.lang.String getListName() 
 
     /**
      * 
@@ -213,6 +225,16 @@ public class StarsCustSelectionList implements java.io.Serializable {
         this._listID = listID;
         this._has_listID = true;
     } //-- void setListID(int) 
+
+    /**
+     * Sets the value of field 'listName'.
+     * 
+     * @param listName the value of field 'listName'.
+    **/
+    public void setListName(java.lang.String listName)
+    {
+        this._listName = listName;
+    } //-- void setListName(java.lang.String) 
 
     /**
      * 

@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
-import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.util.CommonUtils;
+import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsFailure;
@@ -81,44 +81,50 @@ public class GetServiceHistoryAction implements ActionBase {
             		com.cannontech.database.db.stars.report.WorkOrderBase.getAllSiteWorkOrders(
             			account.getAccountSite().getAccountSite().getAccountSiteID(), conn );
             if (orders == null) return null;
+        	
+        	Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
+        			new Integer((int) operator.getEnergyCompanyID()) );        			
+        	StarsCustSelectionList servTypeList = (StarsCustSelectionList)
+        			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
+        	StarsCustSelectionList statusList = (StarsCustSelectionList)
+        			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
+        	StarsCustSelectionList servCompanyList = (StarsCustSelectionList)
+        			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
             
             StarsGetServiceRequestHistoryResponse getServHistResp = new StarsGetServiceRequestHistoryResponse();
             for (int i = 0; i < orders.length; i++) {
             	StarsServiceRequestHistory servHist = new StarsServiceRequestHistory();
             	
-            	com.cannontech.database.db.stars.CustomerListEntry entry = new com.cannontech.database.db.stars.CustomerListEntry();
-            	entry.setEntryID( orders[i].getWorkTypeID() );
-               
-               entry = (com.cannontech.database.db.stars.CustomerListEntry)
-            	     Transaction.createTransaction( Transaction.RETRIEVE, entry ).execute();
-               
-            	ServiceType servType = new ServiceType();
-            	servType.setEntryID( entry.getEntryID().intValue() );
-            	servType.setContent( entry.getEntryText() );
-            	servHist.setServiceType( servType );
+            	for (int j = 0; j < servTypeList.getStarsSelectionListEntryCount(); j++) {
+            		StarsSelectionListEntry entry = servTypeList.getStarsSelectionListEntry(j);
+            		if (entry.getEntryID() == orders[i].getWorkTypeID().intValue()) {
+            			ServiceType servType = (ServiceType) StarsCustListEntryFactory.newStarsCustListEntry( entry, ServiceType.class );
+            			servHist.setServiceType( servType );
+            			break;
+            		}
+            	}
             	
-            	entry.setEntryID( orders[i].getCurrentStateID() );
-               
-               entry = (com.cannontech.database.db.stars.CustomerListEntry)
-                  	Transaction.createTransaction( Transaction.RETRIEVE, entry ).execute();
-               
-            	servHist.setCurrentState( entry.getEntryText() );
-            	
-            	Hashtable selectionLists = com.cannontech.stars.util.CommonUtils.getSelectionListTable(
-            			new Integer((int) operator.getEnergyCompanyID()) );
-            			
-            	StarsCustSelectionList serviceCompanyList = (StarsCustSelectionList)
-            			selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
-            	for (int j = 0; j < serviceCompanyList.getStarsSelectionListEntryCount(); j++) {
-            		StarsSelectionListEntry starsEntry = serviceCompanyList.getStarsSelectionListEntry(j);
-            		if (starsEntry.getEntryID() == orders[i].getServiceCompanyID().intValue()) {
-            			ServiceCompany servCompany = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry( starsEntry, ServiceCompany.class );
+            	for (int j = 0; j < statusList.getStarsSelectionListEntryCount(); j++) {
+            		StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(j);
+            		if (entry.getEntryID() == orders[i].getCurrentStateID().intValue()) {
+            			CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry( entry, CurrentState.class );
+            			servHist.setCurrentState( status );
+            			break;
+            		}
+            	}
+
+            	for (int j = 0; j < servCompanyList.getStarsSelectionListEntryCount(); j++) {
+            		StarsSelectionListEntry entry = servCompanyList.getStarsSelectionListEntry(j);
+            		if (entry.getEntryID() == orders[i].getServiceCompanyID().intValue()) {
+            			ServiceCompany servCompany = (ServiceCompany) StarsCustListEntryFactory.newStarsCustListEntry( entry, ServiceCompany.class );
             			servHist.setServiceCompany( servCompany );
+            			break;
             		}
             	}
             	
             	servHist.setOrderNumber( orders[i].getOrderNumber().toString() );
             	servHist.setDateReported( orders[i].getDateReported() );
+            	servHist.setOrderedBy( orders[i].getOrderedBy() );
             	servHist.setDescription( orders[i].getDescription() );
             	servHist.setDateScheduled( orders[i].getDateScheduled() );
             	servHist.setDateCompleted( orders[i].getDateCompleted() );

@@ -124,7 +124,9 @@ public class CustomerAccount extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	getBillingAddress().setAddressID( getBillingAddress().getNextAddressID2() );
         getBillingAddress().add();
+        
         getCustomerAccount().setBillingAddressID( getBillingAddress().getAddressID() );
         int addrID = getBillingAddress().getAddressID().intValue();
         

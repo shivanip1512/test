@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Date;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,9 +10,14 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.util.CommonUtils;
+import com.cannontech.stars.xml.StarsCallReportFactory;
 import com.cannontech.stars.xml.serialize.CallType;
+import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReport;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.serialize.StarsFailure;
+import com.cannontech.stars.xml.serialize.StarsGetCallReportHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -32,23 +38,26 @@ public class CreateCallAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsCreateCallReport createCall = new StarsCreateCallReport();
-
-			/*
-			String dateStr = req.getParameter("CallDate");
-			if (dateStr != null)
-				createCall.setCallDate( new org.exolab.castor.types.Date(dateFormat.parse(dateStr)) );
-			else
-				createCall.setCallDate( new org.exolab.castor.types.Date(Calendar.getInstance().getTime()) );
-			*/
-			String callNumber = req.getParameter("CallNumber");
-			if (callNumber == null || callNumber.equals("")) return null;
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			if (operator == null) return null;
+			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
 			
-			createCall.setCallNumber( callNumber );
+			StarsCreateCallReport createCall = new StarsCreateCallReport();			
+			createCall.setCallNumber( req.getParameter("CallNumber") );
 			createCall.setCallDate( new Date() );
+			
 			CallType callType = new CallType();
 			callType.setEntryID( Integer.parseInt(req.getParameter("CallType")) );
+			StarsCustSelectionList callTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_CALLTYPE );
+			for (int i = 0; i < callTypeList.getStarsSelectionListEntryCount(); i++) {
+				StarsSelectionListEntry entry = callTypeList.getStarsSelectionListEntry(i);
+				if (entry.getEntryID() == callType.getEntryID()) {
+					callType.setContent( entry.getContent() );
+					break;
+				}
+			}
 			createCall.setCallType( callType );
+			
 			createCall.setTakenBy( req.getParameter("TakenBy") );
 			createCall.setDescription( req.getParameter("Description") );
 			
@@ -88,15 +97,11 @@ public class CreateCallAction implements ActionBase {
             com.cannontech.database.data.stars.report.CallReportBase callReport = new com.cannontech.database.data.stars.report.CallReportBase();
             com.cannontech.database.db.stars.report.CallReportBase callReportDB = callReport.getCallReportBase();
             
-            callReportDB.setCallNumber( createCall.getCallNumber() );
-            callReportDB.setCallTypeID( new Integer(createCall.getCallType().getEntryID()) );
-            callReportDB.setDateTaken( createCall.getCallDate() );
-            callReportDB.setDescription( createCall.getDescription() );
+            StarsCallReportFactory.setCallReportBase( callReportDB, createCall );
             callReportDB.setAccountID( account.getCustomerAccount().getAccountID() );
             callReportDB.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID() );
             
             callReport.setCustomerAccount( account );
-            callReport.setCallReportBase( callReportDB );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, callReport );
             callReport = (com.cannontech.database.data.stars.report.CallReportBase)transaction.execute();
@@ -124,9 +129,18 @@ public class CreateCallAction implements ActionBase {
 			
             if (operation.getStarsSuccess() == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            	
+			
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsCreateCallReport createCall = reqOper.getStarsCreateCallReport();
+			StarsCallReportHistory callHist = (StarsCallReportHistory) StarsCallReportFactory.newStarsCallReport( createCall, StarsCallReportHistory.class );
+			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.removeAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING");
+			StarsGetCallReportHistoryResponse callHists = (StarsGetCallReportHistoryResponse) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" );
+			if (callHists == null) {
+				callHists = new StarsGetCallReportHistoryResponse();
+				operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING", callHists );
+			}
+			callHists.addStarsCallReportHistory( 0, callHist );
 			
             return 0;
         }

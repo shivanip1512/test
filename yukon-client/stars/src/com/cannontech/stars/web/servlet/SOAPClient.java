@@ -9,12 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.PILConnectionServlet;
+import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.web.action.CallTrackingAction;
+import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateCallAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
+import com.cannontech.stars.web.action.GetCustSelListsAction;
 import com.cannontech.stars.web.action.GetEnrollmentProgramsAction;
 import com.cannontech.stars.web.action.GetLMCtrlHistAction;
 import com.cannontech.stars.web.action.GetServiceHistoryAction;
@@ -25,6 +29,7 @@ import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
+import com.cannontech.stars.web.util.CommonUtils;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
@@ -59,9 +64,9 @@ public class SOAPClient extends HttpServlet {
             operation.marshal( sw );
             String reqStr = XMLUtil.removeXMLDecl( sw.toString() );
 
-            log( "*** Sent Message ***  " + reqStr );
+            CTILogger.debug( "*** Sent Message ***  " + reqStr );
             String respStr = soapMsgr.call( reqStr );
-            log( "*** Received Message ***  " + respStr );
+            CTILogger.debug( "*** Received Message ***  " + respStr );
 
             StringReader sr = new StringReader( respStr );
             return StarsOperation.unmarshal( sr );
@@ -123,16 +128,32 @@ public class SOAPClient extends HttpServlet {
                     + "&REFERRER=" + req.getParameter("REFERRER");
         }
         else if (action.equalsIgnoreCase("CreateCall")) {
-        	clientAction = new CreateCallAction();
-        	destURL = "/OperatorDemos/Consumer/Update.jsp";
+        	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
+        	if (operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "CALL_TRACKING" ) != null)
+	        	clientAction = new CreateCallAction();
+	        else {
+	        	MultiAction actions = new MultiAction();
+	        	actions.getActionVector().addElement( new CallTrackingAction() );
+	        	actions.getActionVector().addElement( new CreateCallAction() );
+	        	clientAction = (ActionBase) actions;
+	        }
+        	destURL = "/OperatorDemos/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("CallTracking")) {
         	clientAction = new CallTrackingAction();
         	destURL = "/OperatorDemos/Consumer/Calls.jsp";
         }
         else if (action.equalsIgnoreCase("CreateOrder")) {
-        	clientAction = new CreateServiceRequestAction();
-        	destURL = "/OperatorDemos/Consumer/Update.jsp";
+        	StarsOperator operator = (StarsOperator) session.getAttribute( "OPERATOR" );
+        	if (operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" ) != null)
+	        	clientAction = new CreateServiceRequestAction();
+	        else {
+	        	MultiAction actions = new MultiAction();
+	        	actions.getActionVector().addElement( new GetServiceHistoryAction() );
+	        	actions.getActionVector().addElement( new CreateServiceRequestAction() );
+	        	clientAction = (ActionBase) actions;
+	        }
+        	destURL = "/OperatorDemos/Consumer/ServiceSummary.jsp";
         }
         else if (action.equalsIgnoreCase("GetServiceHistory")) {
         	clientAction = new GetServiceHistoryAction();
@@ -143,6 +164,10 @@ public class SOAPClient extends HttpServlet {
         	destURL = req.getParameter("REDIRECT");
         	nextURL = errorURL = req.getParameter("REFERRER");
         }
+        else if (action.equalsIgnoreCase("CreateAppliance")) {
+        	clientAction = new CreateApplianceAction();
+        	destURL = "/OperatorDemos/Consumer/Appliance.jsp?AppNo=" + req.getParameter("AppNo");
+        }
         else if (action.equalsIgnoreCase("OperatorLogin")) {
         	session.removeAttribute("OPERATOR");
         	session.removeAttribute("USER");
@@ -150,6 +175,7 @@ public class SOAPClient extends HttpServlet {
         	MultiAction actions = new MultiAction();
         	actions.getActionVector().addElement( new LoginAction() );
         	actions.getActionVector().addElement( new GetEnrollmentProgramsAction() );
+        	actions.getActionVector().addElement( new GetCustSelListsAction() );
 
         	clientAction = (ActionBase) actions;
         	destURL = req.getParameter("REDIRECT");
@@ -174,7 +200,7 @@ public class SOAPClient extends HttpServlet {
             destURL = "/OperatorDemos/Consumer/Update.jsp";
         }
         else {
-            XMLUtil.getLogger( SOAPClient.class ).error( "SOAPClient: Invalid action type: " + action );
+            CTILogger.debug( "SOAPClient: Invalid action type: " + action );
         }
 
         if (clientAction != null) {

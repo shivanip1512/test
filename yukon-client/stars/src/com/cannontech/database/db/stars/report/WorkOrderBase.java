@@ -28,10 +28,11 @@ public class WorkOrderBase extends DBPersistent {
     private java.util.Date dateScheduled = new java.util.Date(0);
     private java.util.Date dateCompleted = new java.util.Date(0);
     private String actionTaken = "";
+    private String orderedBy = "";
 
     public static final String[] SETTER_COLUMNS = {
         "OrderNumber", "WorkTypeID", "CurrentStateID", "CustomerID", "SiteID", "ServiceCompanyID",
-        "DateReported", "Description", "DateScheduled", "DateCompleted", "ActionTaken"
+        "DateReported", "Description", "DateScheduled", "DateCompleted", "ActionTaken", "OrderedBy"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "OrderID" };
@@ -56,9 +57,9 @@ public class WorkOrderBase extends DBPersistent {
     		setOrderID( getNextOrderID() );
     		
         Object[] addValues = {
-            getOrderID(), getOrderNumber(), getWorkTypeID(), getCurrentStateID(),
-            getCustomerID(), getSiteID(), getServiceCompanyID(), getDateReported(),
-            getDescription(), getDateScheduled(), getDateCompleted(), getActionTaken()
+            getOrderID(), getOrderNumber(), getWorkTypeID(), getCurrentStateID(), getCustomerID(),
+            getSiteID(), getServiceCompanyID(), getDateReported(), getDescription(),
+            getDateScheduled(),getDateCompleted(), getActionTaken(), getOrderedBy()
         };
 
         add( TABLE_NAME, addValues );
@@ -68,7 +69,7 @@ public class WorkOrderBase extends DBPersistent {
         Object[] setValues = {
             getOrderNumber(), getWorkTypeID(), getCurrentStateID(), getCustomerID(),
             getSiteID(), getServiceCompanyID(), getDateReported(), getDescription(),
-            getDateScheduled(), getDateCompleted(), getActionTaken()
+            getDateScheduled(), getDateCompleted(), getActionTaken(), getOrderedBy()
         };
 
         Object[] constraintValues = { getOrderID() };
@@ -93,6 +94,7 @@ public class WorkOrderBase extends DBPersistent {
             setDateScheduled( new java.util.Date(((java.sql.Timestamp) results[8]).getTime()) );
             setDateCompleted( new java.util.Date(((java.sql.Timestamp) results[9]).getTime()) );
             setActionTaken( (String) results[10] );
+            setOrderedBy( (String) results[11] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -161,6 +163,7 @@ public class WorkOrderBase extends DBPersistent {
                     order.setDateScheduled( new java.util.Date(rset.getTimestamp("DateScheduled").getTime()) );
                     order.setDateCompleted( new java.util.Date(rset.getTimestamp("DateCompleted").getTime()) );
                     order.setActionTaken( rset.getString("ActionTaken") );
+                    order.setOrderedBy( rset.getString("OrderedBy") );
 
                     orderList.add(order);
                 }
@@ -223,6 +226,7 @@ public class WorkOrderBase extends DBPersistent {
                     order.setDateScheduled( new java.util.Date(rset.getTimestamp("DateScheduled").getTime()) );
                     order.setDateCompleted( new java.util.Date(rset.getTimestamp("DateCompleted").getTime()) );
                     order.setActionTaken( rset.getString("ActionTaken") );
+                    order.setOrderedBy( rset.getString("OrderedBy") );
 
                     orderList.add(order);
                 }
@@ -440,6 +444,22 @@ public class WorkOrderBase extends DBPersistent {
 	 */
 	public void setWorkTypeID(Integer workTypeID) {
 		this.workTypeID = workTypeID;
+	}
+
+	/**
+	 * Returns the orderedBy.
+	 * @return String
+	 */
+	public String getOrderedBy() {
+		return orderedBy;
+	}
+
+	/**
+	 * Sets the orderedBy.
+	 * @param orderedBy The orderedBy to set
+	 */
+	public void setOrderedBy(String orderedBy) {
+		this.orderedBy = orderedBy;
 	}
 
 }

@@ -108,12 +108,19 @@ public class GetEnrollmentProgramsAction implements ActionBase {
 			
             StarsGetEnrollmentProgramsResponse programs = operation.getStarsGetEnrollmentProgramsResponse();
             if (programs == null) return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
+            
+            StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+            String category = reqOper.getStarsGetEnrollmentPrograms().getCategory();
+            StringBuffer attName = new StringBuffer( "ENROLLMENT_PROGRAMS" );
+            if (category != null && category.length() > 0)
+            	attName.append("_").append( category.toUpperCase() );
 
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			if (operator != null)
-	            operator.setAttribute("ENROLLMENT_PROGRAMS", programs);
+			// Use (category == null) to tell apart operator and user as a compromise method
+			if (operator != null && category == null)
+	            operator.setAttribute(attName.toString(), programs);
 	        else
-	        	session.setAttribute("ENROLLMENT_PROGRAMS", programs);
+	        	session.setAttribute(attName.toString(), programs);
             
             return 0;
         }

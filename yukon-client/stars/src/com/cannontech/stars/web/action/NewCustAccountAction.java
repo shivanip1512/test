@@ -155,9 +155,9 @@ public class NewCustAccountAction implements ActionBase {
             com.cannontech.database.data.company.EnergyCompanyBase energyCompany =
             		new com.cannontech.database.data.company.EnergyCompanyBase();
             energyCompany.setEnergyCompanyID( energyCompanyID );            
-
+            
             energyCompany = (com.cannontech.database.data.company.EnergyCompanyBase)
-                  Transaction.createTransaction( Transaction.RETRIEVE, energyCompany ).execute();
+            		Transaction.createTransaction( Transaction.RETRIEVE, energyCompany ).execute();
 
             StarsNewCustomerAccount newAccount = reqOper.getStarsNewCustomerAccount();
             StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
@@ -249,7 +249,6 @@ public class NewCustAccountAction implements ActionBase {
             //account.setCustomerLogin( login );
             /* End set CustomerAccount information */
             
-            account = (com.cannontech.database.data.stars.customer.CustomerAccount)
             Transaction.createTransaction( Transaction.INSERT, account ).execute();
 
             StarsSuccess success = new StarsSuccess();

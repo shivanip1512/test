@@ -23,9 +23,10 @@ public class CallReportBase extends DBPersistent {
     private String description = "";
     private Integer accountID = new Integer( com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT );
     private Integer customerID = new Integer( com.cannontech.database.db.stars.customer.CustomerBase.NONE_INT );
+    private String takenBy = "";
 
     public static final String[] SETTER_COLUMNS = {
-        "CallNumber", "CallTypeID", "DateTaken", "Description", "AccountID", "CustomerID"
+        "CallNumber", "CallTypeID", "DateTaken", "Description", "AccountID", "CustomerID", "TakenBy"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "CallID" };
@@ -51,7 +52,7 @@ public class CallReportBase extends DBPersistent {
     		
         Object[] addValues = {
             getCallID(), getCallNumber(), getCallTypeID(), getDateTaken(),
-            getDescription(), getAccountID(), getCustomerID()
+            getDescription(), getAccountID(), getCustomerID(), getTakenBy()
         };
 
         add( TABLE_NAME, addValues );
@@ -60,7 +61,7 @@ public class CallReportBase extends DBPersistent {
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getCallNumber(), getCallTypeID(), getDateTaken(),
-            getDescription(), getAccountID(), getCustomerID()
+            getDescription(), getAccountID(), getCustomerID(), getTakenBy()
         };
 
         Object[] constraintValues = { getCallID() };
@@ -80,6 +81,7 @@ public class CallReportBase extends DBPersistent {
             setDescription( (String) results[3] );
             setAccountID( (Integer) results[4] );
             setCustomerID( (Integer) results[5] );
+            setTakenBy( (String) results[6] );
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -143,6 +145,7 @@ public class CallReportBase extends DBPersistent {
                     report.setDescription( rset.getString("Description") );
                     report.setAccountID( new Integer(rset.getInt("AccountID")) );
                     report.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+                    report.setTakenBy( rset.getString("TakenBy") );
 
                     reportList.add( report );
                 }
@@ -200,6 +203,7 @@ public class CallReportBase extends DBPersistent {
                     report.setDescription( rset.getString("Description") );
                     report.setAccountID( new Integer(rset.getInt("AccountID")) );
                     report.setCustomerID( new Integer(rset.getInt("CustomerID")) );
+                    report.setTakenBy( rset.getString("TakenBy") );
 
                     reportList.add( report );
                 }
@@ -346,6 +350,22 @@ public class CallReportBase extends DBPersistent {
 	 */
 	public void setCallTypeID(Integer callTypeID) {
 		this.callTypeID = callTypeID;
+	}
+
+	/**
+	 * Returns the takenBy.
+	 * @return String
+	 */
+	public String getTakenBy() {
+		return takenBy;
+	}
+
+	/**
+	 * Sets the takenBy.
+	 * @param takenBy The takenBy to set
+	 */
+	public void setTakenBy(String takenBy) {
+		this.takenBy = takenBy;
 	}
 
 }

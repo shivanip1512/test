@@ -35,9 +35,6 @@ public class WorkOrderBase extends DBPersistent {
         getWorkOrderBase().setDbConnection(conn);
         getWorkType().setDbConnection(conn);
         getCurrentState().setDbConnection(conn);
-        getSite().setDbConnection(conn);
-        getServiceCompany().setDbConnection(conn);
-        getCustomerBase().setDbConnection(conn);
     }
 
     public void delete() throws java.sql.SQLException {
@@ -79,18 +76,21 @@ public class WorkOrderBase extends DBPersistent {
         if (getSite() == null) {
         	site = new com.cannontech.database.data.stars.customer.AccountSite();
         	site.setAccountSiteID( getWorkOrderBase().getSiteID() );
+        	site.setDbConnection( getDbConnection() );
         	site.retrieve();
         }
         
         if (getServiceCompany() == null) {
         	serviceCompany = new ServiceCompany();
         	serviceCompany.setCompanyID( getWorkOrderBase().getServiceCompanyID() );
+        	serviceCompany.setDbConnection( getDbConnection() );
         	serviceCompany.retrieve();
         }
         
         if (getCustomerBase() == null) {
         	customerBase = new com.cannontech.database.data.stars.customer.CustomerBase();
         	customerBase.setCustomerID( getWorkOrderBase().getCustomerID() );
+        	customerBase.setDbConnection( getDbConnection() );
         	customerBase.retrieve();
         }
     }

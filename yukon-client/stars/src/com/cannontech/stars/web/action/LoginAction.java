@@ -74,28 +74,11 @@ public class LoginAction implements ActionBase {
                 return SOAPUtil.buildSOAPMessage( respOper );
             }
             
-            Integer energyCompanyID = null;
-            if (operator != null)
-            	energyCompanyID = new Integer( (int)operator.getEnergyCompanyID() );
-            else
-            	energyCompanyID = new Integer( user.getEnergyCompanyID() );
-        	if (energyCompanyID.intValue() == 0) {
-                StarsFailure failure = new StarsFailure();
-                failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
-                failure.setDescription("No account information has been found for the current login");
-                respOper.setStarsFailure( failure );
-                return SOAPUtil.buildSOAPMessage( respOper );
-        	}
-            
-            java.util.Hashtable selectionListTable = com.cannontech.stars.util.CommonUtils.getSelectionListTable( energyCompanyID );
-            
             if (operator != null) {
             	session.setAttribute( "OPERATOR", operator );
-	            operator.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
             }
             else {
             	session.setAttribute( "USER", user );
-	            user.setAttribute( "CUSTOMER_SELECTION_LIST", selectionListTable );
 	            user.setDatabaseAlias( login.getDbAlias() );
             }
             

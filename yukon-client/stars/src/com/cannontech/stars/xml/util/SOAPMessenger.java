@@ -3,6 +3,7 @@ package com.cannontech.stars.xml.util;
 import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 
+import com.cannontech.clientutils.CTILogger;
 import javax.xml.messaging.URLEndpoint;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeader;
@@ -14,8 +15,6 @@ import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
-
-import org.apache.commons.logging.Log;
 
 /**
  * <p>Title: </p>
@@ -48,8 +47,6 @@ public class SOAPMessenger {
 
     private void log(String str, SOAPMessage msg) {
         try {
-            Log logger = XMLUtil.getLogger( SOAPMessenger.class.getName() );
-
             String msgStr = null;
             if (msg != null) {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -57,7 +54,7 @@ public class SOAPMessenger {
                 msgStr = bos.toString();
             }
 
-            logger.info("SOAPMessenger: " + str + msgStr);
+            CTILogger.debug("SOAPMessenger: " + str + msgStr);
         }
         catch (Exception e) {
             e.printStackTrace();

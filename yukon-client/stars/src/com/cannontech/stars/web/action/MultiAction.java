@@ -21,7 +21,6 @@ import com.cannontech.stars.xml.util.StarsConstants;
 public class MultiAction implements ActionBase {
 	
 	private Vector actionVector = new Vector();
-	private Vector reqMsgVector = new Vector();
 	
 	public Vector getActionVector() {
 		return actionVector;
@@ -40,7 +39,6 @@ public class MultiAction implements ActionBase {
 			for (int i = 0; i < actionVector.size(); i++) {
 				ActionBase action = (ActionBase) actionVector.get(i);
 				SOAPMessage message = action.build(req, session);
-				reqMsgVector.addElement( message );
 				SOAPUtil.mergeSOAPMsgOfOperation( reqMsg, message );
 			}
 			
@@ -92,8 +90,7 @@ public class MultiAction implements ActionBase {
         try {
             for (int i = 0; i < actionVector.size(); i++) {
             	ActionBase action = (ActionBase) actionVector.get(i);
-            	SOAPMessage message = (SOAPMessage) reqMsgVector.get(i);
-            	int res = action.parse(message, respMsg, session);
+            	int res = action.parse(reqMsg, respMsg, session);
             	if (res != 0) return res;
             }
             

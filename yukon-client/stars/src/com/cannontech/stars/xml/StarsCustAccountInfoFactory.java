@@ -113,7 +113,8 @@ public class StarsCustAccountInfoFactory {
             accountInfo.setStarsLMPrograms( new StarsLMPrograms() );
 
             StarsAppliances appliances = new StarsAppliances();
-            Vector applianceVector = account.getApplianceVector();
+            Vector applianceVector = account.getApplianceVector();            
+            StarsCustSelectionList appCatList = (StarsCustSelectionList) selectionList.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_APPLIANCECATEGORY );
 
             for (int i = 0; i < applianceVector.size(); i++) {
                 com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
@@ -123,13 +124,26 @@ public class StarsCustAccountInfoFactory {
 
                 StarsAppliance starsApp = new StarsAppliance();
                 starsApp.setApplianceID( appliance.getApplianceBase().getApplianceID().intValue() );
+                starsApp.setApplianceCategoryID( category.getApplianceCategoryID().intValue() );
                 if (config.getInventoryID() != null)
                     starsApp.setInventoryID( config.getInventoryID().intValue() );
                 else
                     starsApp.setInventoryID( -1 );
                 starsApp.setLmProgramID( appliance.getApplianceBase().getLMProgramID().intValue() );
-                starsApp.setApplianceCategoryID( category.getApplianceCategoryID().intValue() );
-                starsApp.setCategoryDescription( category.getDescription() );
+                
+                starsApp.setCategoryName( "" );
+                for (int j = 0; j < appCatList.getStarsSelectionListEntryCount(); j++) {
+                	StarsSelectionListEntry entry = appCatList.getStarsSelectionListEntry(j);
+                	if (entry.getEntryID() == category.getCategoryID().intValue()) {
+                		starsApp.setCategoryName( entry.getContent() );
+                		break;
+                	}
+                }
+                starsApp.setManufacturer( "" );
+                starsApp.setManufactureYear( "" );
+                starsApp.setLocation( "" );
+                starsApp.setServiceCompany( new ServiceCompany() );
+                starsApp.setNotes( "" );
 
                 if (appliance.getApplianceBase().getNotes() != null)
                     starsApp.setNotes( appliance.getApplianceBase().getNotes() );

@@ -15,13 +15,25 @@ import com.cannontech.database.db.DBPersistent;
 public class CustomerContact extends DBPersistent {
 	
 	private com.cannontech.database.db.customer.CustomerContact customerContact = null;
+	
+	public CustomerContact(com.cannontech.database.db.customer.CustomerContact contact) {
+		customerContact = contact;
+	}
 
+	public void setDbConnection(java.sql.Connection conn) {
+		if (customerContact != null)
+			customerContact.setDbConnection( conn );
+	}
+	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		if (customerContact != null)
+		if (customerContact != null) {
+			if (customerContact.getContactID() == null)
+				customerContact.setContactID( customerContact.getNextContactID2() );
 			customerContact.add();
+		}
 	}
 
 	/**

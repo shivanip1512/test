@@ -131,42 +131,39 @@ public class StarsServiceRequestDescriptor extends org.exolab.castor.xml.util.XM
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _currentState
-        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_currentState", "CurrentState", NodeType.Element);
-        desc.setImmutable(true);
+        //-- _dateReported
+        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_dateReported", "DateReported", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsServiceRequest target = (StarsServiceRequest) object;
-                return target.getCurrentState();
+                return target.getDateReported();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsServiceRequest target = (StarsServiceRequest) object;
-                    target.setCurrentState( (java.lang.String) value);
+                    target.setDateReported( (java.util.Date) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
+                return new java.util.Date();
             }
         } );
-        desc.setHandler(handler);
+        desc.setHandler( new DateFieldHandler(handler));
+        desc.setImmutable(true);
+        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _currentState
+        //-- validation code for: _dateReported
         fieldValidator = new FieldValidator();
-        { //-- local scope
-            StringValidator sv = new StringValidator();
-            sv.setWhiteSpace("preserve");
-            fieldValidator.setValidator(sv);
-        }
+        fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
         //-- _serviceCompany
@@ -203,39 +200,44 @@ public class StarsServiceRequestDescriptor extends org.exolab.castor.xml.util.XM
         fieldValidator.setMinOccurs(1);
         desc.setValidator(fieldValidator);
         
-        //-- _dateReported
-        desc = new XMLFieldDescriptorImpl(java.util.Date.class, "_dateReported", "DateReported", NodeType.Element);
+        //-- _orderedBy
+        desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_orderedBy", "OrderedBy", NodeType.Element);
+        desc.setImmutable(true);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 StarsServiceRequest target = (StarsServiceRequest) object;
-                return target.getDateReported();
+                return target.getOrderedBy();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
                     StarsServiceRequest target = (StarsServiceRequest) object;
-                    target.setDateReported( (java.util.Date) value);
+                    target.setOrderedBy( (java.lang.String) value);
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new java.util.Date();
+                return null;
             }
         } );
-        desc.setHandler( new DateFieldHandler(handler));
-        desc.setImmutable(true);
+        desc.setHandler(handler);
         desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _dateReported
+        //-- validation code for: _orderedBy
         fieldValidator = new FieldValidator();
         fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            StringValidator sv = new StringValidator();
+            sv.setWhiteSpace("preserve");
+            fieldValidator.setValidator(sv);
+        }
         desc.setValidator(fieldValidator);
         
         //-- _description
@@ -276,6 +278,38 @@ public class StarsServiceRequestDescriptor extends org.exolab.castor.xml.util.XM
             sv.setWhiteSpace("preserve");
             fieldValidator.setValidator(sv);
         }
+        desc.setValidator(fieldValidator);
+        
+        //-- _currentState
+        desc = new XMLFieldDescriptorImpl(CurrentState.class, "_currentState", "CurrentState", NodeType.Element);
+        handler = (new XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StarsServiceRequest target = (StarsServiceRequest) object;
+                return target.getCurrentState();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StarsServiceRequest target = (StarsServiceRequest) object;
+                    target.setCurrentState( (CurrentState) value);
+                }
+                catch (Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new CurrentState();
+            }
+        } );
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _currentState
+        fieldValidator = new FieldValidator();
         desc.setValidator(fieldValidator);
         
         //-- _dateScheduled

@@ -11,6 +11,7 @@ import javax.xml.soap.SOAPElementFactory;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.db.stars.LMControlHistory;
 import com.cannontech.stars.honeywell.serialize.CustomerContact;
@@ -38,7 +39,6 @@ import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.util.SOAPMessenger;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.stars.xml.util.XMLUtil;
 
 /**
  * <p>Title: SearchCustAccountAction.java</p>
@@ -120,7 +120,7 @@ public class SearchCustAccountAction implements ActionBase {
 			}
 			
 			if (element == null) { 
-				XMLUtil.getLogger( SearchCustAccountAction.class ).debug("GetALLResponse Not Found");
+				CTILogger.debug("GetALLResponse Not Found");
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
@@ -136,7 +136,7 @@ public class SearchCustAccountAction implements ActionBase {
 			}
 			
 			if (element == null) { 
-				XMLUtil.getLogger( SearchCustAccountAction.class ).debug("GetALLResult Not Found");
+				CTILogger.debug("GetALLResult Not Found");
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
@@ -152,7 +152,7 @@ public class SearchCustAccountAction implements ActionBase {
 			}
 			
 			if ( element == null ) { 
-				XMLUtil.getLogger( SearchCustAccountAction.class ).debug("diffgram Not Found");
+				CTILogger.debug("diffgram Not Found");
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
@@ -168,7 +168,7 @@ public class SearchCustAccountAction implements ActionBase {
 			}
 			
 			if ( dataSetElmt == null ) { 
-				XMLUtil.getLogger( SearchCustAccountAction.class ).debug("DataSetALL Not Found");
+				CTILogger.debug("DataSetALL Not Found");
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
@@ -176,7 +176,7 @@ public class SearchCustAccountAction implements ActionBase {
 			StringReader sr = new StringReader( elemStr );
 			DataSetALL dataSet = DataSetALL.unmarshal( sr );
 			if ( dataSet.getDataSetALLItemCount() == 0 ) { 
-				XMLUtil.getLogger( SearchCustAccountAction.class ).debug("DataSetALL is empty");
+				CTILogger.debug("DataSetALL is empty");
 				return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
 			}
 			
@@ -284,13 +284,13 @@ public class SearchCustAccountAction implements ActionBase {
 					}
 					
 					app.setInventoryID( invID.intValue() );
-					app.setCategoryDescription( hnwlApp.getDESCRIPTION() );
+					app.setCategoryName( hnwlApp.getDESCRIPTION() );
 					String category = HoneywellToYukonApplianceCategoryMapping.getYukonApplianceCategory( hnwlApp.getTYPE_CD() );
 					if ( category != null ) {
-						app.setCategoryDescription( category );
+						app.setCategoryName( category );
 					}
 					else { 
-						app.setCategoryDescription("(Unknown)");
+						app.setCategoryName("(Unknown)");
 					}
 					
 					StarsAppliances appliances = acctInfo.getStarsAppliances();

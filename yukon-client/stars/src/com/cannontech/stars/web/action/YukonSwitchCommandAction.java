@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.message.porter.ClientConnection;
 import com.cannontech.servlet.PILConnectionServlet;
@@ -44,8 +45,6 @@ import com.cannontech.stars.xml.util.XMLUtil;
  */
 
 public class YukonSwitchCommandAction implements ActionBase {
-
-    private org.apache.commons.logging.Log logger = XMLUtil.getLogger( YukonSwitchCommandAction.class );
 
     // increment this for every message
     private static long userMessageIDCounter = 1;
@@ -210,7 +209,7 @@ public class YukonSwitchCommandAction implements ActionBase {
             PILConnectionServlet connContainer = (PILConnectionServlet)
                     session.getAttribute( PILConnectionServlet.SERVLET_CONTEXT_ID );
             if (connContainer == null) {
-                logger.error("YukonSwitchCommandAction: Failed to retrieve PILConnectionServlet from servlet context");
+                CTILogger.debug("YukonSwitchCommandAction: Failed to retrieve PILConnectionServlet from servlet context");
 
                 StarsFailure failure = new StarsFailure();
                 failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
@@ -221,7 +220,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 
             ClientConnection conn = connContainer.getConnection();
             if (conn == null) {
-                logger.error( "YukonSwitchCommandAction: Failed to retrieve a connection" );
+                CTILogger.debug( "YukonSwitchCommandAction: Failed to retrieve a connection" );
 
                 StarsFailure failure = new StarsFailure();
                 failure.setStatusCode( StarsConstants.FAILURE_CODE_OPERATION_FAILED );
@@ -358,9 +357,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			                }
 	                		
 	                		Transaction transaction = Transaction.createTransaction( Transaction.INSERT, multiDB );
-                        
-	                		multiDB = 
-                           (com.cannontech.database.data.multi.MultiDBPersistent)transaction.execute();
+	                		transaction.execute();
 							
 	                		break;
 	                	}
@@ -401,9 +398,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 	                			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastHwEvent.getLMCustomerEventBase();
 	                			eventBase.setActionID( actCompEntryID );
 		                		eventBase.setEventDateTime( now );
-                           
-                           lastHwEvent = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-		                		    Transaction.createTransaction( Transaction.UPDATE, lastHwEvent ).execute();
+		                		lastHwEvent = (com.cannontech.database.data.stars.event.LMHardwareEvent)
+		                				Transaction.createTransaction( Transaction.UPDATE, lastHwEvent ).execute();
 	                		}
 	                		else {	
 		                		com.cannontech.database.data.stars.event.LMHardwareEvent event =
@@ -417,9 +413,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 		                		eventBase.setEventDateTime( now );
 		                		
 	                			event.setEnergyCompanyBase( energyCompany );
-                           
-                           event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-		                		    Transaction.createTransaction( Transaction.INSERT, event ).execute();
+		                		Transaction.createTransaction( Transaction.INSERT, event ).execute();
 	                		}
 	                		
 			                Vector appVct = account.getApplianceVector();
@@ -440,9 +434,8 @@ public class YukonSwitchCommandAction implements ActionBase {
 			                			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastProgEvent.getLMCustomerEventBase();
 							            eventBase.setActionID( actCompEntryID );
 							            eventBase.setEventDateTime( now );
-                                 
-                                 lastProgEvent = (com.cannontech.database.data.stars.event.LMProgramEvent)
-					                	     Transaction.createTransaction( Transaction.UPDATE, lastProgEvent ).execute();
+					                	lastProgEvent = (com.cannontech.database.data.stars.event.LMProgramEvent)
+					                			Transaction.createTransaction( Transaction.UPDATE, lastProgEvent ).execute();
 						            }
 						            else {
 							            com.cannontech.database.data.stars.event.LMProgramEvent event =
@@ -457,9 +450,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 							            eventBase.setEventDateTime( now );
 							            
 							            event.setEnergyCompanyBase( energyCompany );
-                                 
-                                 event = (com.cannontech.database.data.stars.event.LMProgramEvent)
-				                		     Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				                		Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				                	}
 				                }
 			                }
@@ -502,7 +493,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 
         conn.write(req);
 
-        logger.info( "YukonSwitchCommandAction: Sent command to PIL: " + command );
+        CTILogger.debug( "YukonSwitchCommandAction: Sent command to PIL: " + command );
     }
     
     boolean isInService(com.cannontech.database.data.stars.event.LMHardwareEvent[] events) {

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsOperation.java,v 1.10 2002/09/26 22:26:33 zyao Exp $
+ * $Id: StarsOperation.java,v 1.11 2002/10/03 15:55:52 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * Root element
  * 
- * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:33 $
+ * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:52 $
 **/
 public class StarsOperation implements java.io.Serializable {
 
@@ -92,6 +92,12 @@ public class StarsOperation implements java.io.Serializable {
 
     private StarsGetEnrollmentProgramsResponse _starsGetEnrollmentProgramsResponse;
 
+    private StarsGetCustSelectionLists _starsGetCustSelectionLists;
+
+    private StarsGetCustSelectionListsResponse _starsGetCustSelectionListsResponse;
+
+    private StarsCreateAppliance _starsCreateAppliance;
+
 
       //----------------/
      //- Constructors -/
@@ -105,6 +111,16 @@ public class StarsOperation implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'starsCreateAppliance'.
+     * 
+     * @return the value of field 'starsCreateAppliance'.
+    **/
+    public StarsCreateAppliance getStarsCreateAppliance()
+    {
+        return this._starsCreateAppliance;
+    } //-- StarsCreateAppliance getStarsCreateAppliance() 
 
     /**
      * Returns the value of field 'starsCreateCallReport'.
@@ -157,6 +173,28 @@ public class StarsOperation implements java.io.Serializable {
     {
         return this._starsGetCallReportHistoryResponse;
     } //-- StarsGetCallReportHistoryResponse getStarsGetCallReportHistoryResponse() 
+
+    /**
+     * Returns the value of field 'starsGetCustSelectionLists'.
+     * 
+     * @return the value of field 'starsGetCustSelectionLists'.
+    **/
+    public StarsGetCustSelectionLists getStarsGetCustSelectionLists()
+    {
+        return this._starsGetCustSelectionLists;
+    } //-- StarsGetCustSelectionLists getStarsGetCustSelectionLists() 
+
+    /**
+     * Returns the value of field
+     * 'starsGetCustSelectionListsResponse'.
+     * 
+     * @return the value of field
+     * 'starsGetCustSelectionListsResponse'.
+    **/
+    public StarsGetCustSelectionListsResponse getStarsGetCustSelectionListsResponse()
+    {
+        return this._starsGetCustSelectionListsResponse;
+    } //-- StarsGetCustSelectionListsResponse getStarsGetCustSelectionListsResponse() 
 
     /**
      * Returns the value of field 'starsGetCustomerAccount'.
@@ -402,6 +440,17 @@ public class StarsOperation implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
+     * Sets the value of field 'starsCreateAppliance'.
+     * 
+     * @param starsCreateAppliance the value of field
+     * 'starsCreateAppliance'.
+    **/
+    public void setStarsCreateAppliance(StarsCreateAppliance starsCreateAppliance)
+    {
+        this._starsCreateAppliance = starsCreateAppliance;
+    } //-- void setStarsCreateAppliance(StarsCreateAppliance) 
+
+    /**
      * Sets the value of field 'starsCreateCallReport'.
      * 
      * @param starsCreateCallReport the value of field
@@ -454,6 +503,29 @@ public class StarsOperation implements java.io.Serializable {
     {
         this._starsGetCallReportHistoryResponse = starsGetCallReportHistoryResponse;
     } //-- void setStarsGetCallReportHistoryResponse(StarsGetCallReportHistoryResponse) 
+
+    /**
+     * Sets the value of field 'starsGetCustSelectionLists'.
+     * 
+     * @param starsGetCustSelectionLists the value of field
+     * 'starsGetCustSelectionLists'.
+    **/
+    public void setStarsGetCustSelectionLists(StarsGetCustSelectionLists starsGetCustSelectionLists)
+    {
+        this._starsGetCustSelectionLists = starsGetCustSelectionLists;
+    } //-- void setStarsGetCustSelectionLists(StarsGetCustSelectionLists) 
+
+    /**
+     * Sets the value of field
+     * 'starsGetCustSelectionListsResponse'.
+     * 
+     * @param starsGetCustSelectionListsResponse the value of field
+     * 'starsGetCustSelectionListsResponse'.
+    **/
+    public void setStarsGetCustSelectionListsResponse(StarsGetCustSelectionListsResponse starsGetCustSelectionListsResponse)
+    {
+        this._starsGetCustSelectionListsResponse = starsGetCustSelectionListsResponse;
+    } //-- void setStarsGetCustSelectionListsResponse(StarsGetCustSelectionListsResponse) 
 
     /**
      * Sets the value of field 'starsGetCustomerAccount'.

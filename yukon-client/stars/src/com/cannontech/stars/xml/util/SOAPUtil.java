@@ -15,8 +15,7 @@ import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
 
-import org.apache.commons.logging.Log;
-
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 
 /**
@@ -215,11 +214,10 @@ public class SOAPUtil {
     
     public static void logSOAPMsgForOperation(SOAPMessage msg, String leading) {
     	try {
-	    	Log logger = XMLUtil.getLogger( SOAPUtil.class );
 	    	StarsOperation operation = parseSOAPMsgForOperation( msg );
 	    	StringWriter sw = new StringWriter();
 	    	operation.marshal( sw );
-	    	logger.debug( leading + sw.toString() );
+	    	CTILogger.debug( leading + sw.toString() );
     	}
     	catch (Exception e) {
     		e.printStackTrace();

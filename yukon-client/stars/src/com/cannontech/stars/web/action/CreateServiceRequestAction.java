@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Date;
+import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,12 +10,19 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.database.Transaction;
 import com.cannontech.stars.web.StarsOperator;
 import com.cannontech.stars.web.util.CommonUtils;
+import com.cannontech.stars.xml.StarsServiceRequestFactory;
+import com.cannontech.stars.xml.StarsCustListEntryFactory;
+import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
+import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
+import com.cannontech.stars.xml.serialize.StarsGetServiceRequestHistoryResponse;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
+import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
+import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 
@@ -33,22 +41,51 @@ public class CreateServiceRequestAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
+			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
+			if (operator == null) return null;
+			Hashtable selectionLists = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LIST" );
+
 			StarsCreateServiceRequest createOrder = new StarsCreateServiceRequest();
 
-			String orderNumber = req.getParameter("OrderNumber");
-			if (orderNumber == null || orderNumber.equals("")) return null;
-			createOrder.setOrderNumber( orderNumber );
+			createOrder.setOrderNumber( req.getParameter("OrderNumber") );
+			createOrder.setDateReported( new Date() );
 			
 			ServiceType servType = new ServiceType();
 			servType.setEntryID( Integer.parseInt(req.getParameter("ServiceType")) );
+			StarsCustSelectionList servTypeList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICETYPE );
+			for (int i = 0; i < servTypeList.getStarsSelectionListEntryCount(); i++) {
+				StarsSelectionListEntry entry = servTypeList.getStarsSelectionListEntry(i);
+				if (entry.getEntryID() == servType.getEntryID()) {
+					servType.setContent( entry.getContent() );
+					break;
+				}
+			}
 			createOrder.setServiceType( servType );
 			
-			ServiceCompany servCompany = new ServiceCompany();
-			servCompany.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
-			createOrder.setServiceCompany( servCompany );
+			ServiceCompany company = new ServiceCompany();
+			company.setEntryID( Integer.parseInt(req.getParameter("ServiceCompany")) );
+			StarsCustSelectionList companyList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICECOMPANY );
+			for (int i = 0; i < companyList.getStarsSelectionListEntryCount(); i++) {
+				StarsSelectionListEntry entry = companyList.getStarsSelectionListEntry(i);
+				if (entry.getEntryID() == company.getEntryID()) {
+					company.setContent( entry.getContent() );
+					break;
+				}
+			}			
+			createOrder.setServiceCompany( company );
 			
-			createOrder.setDateReported( new Date() );
+			createOrder.setOrderedBy( req.getParameter("OrderedBy") );
 			createOrder.setDescription( req.getParameter("Notes") );
+            
+            StarsCustSelectionList statusList = (StarsCustSelectionList) selectionLists.get( com.cannontech.database.db.stars.CustomerSelectionList.LISTNAME_SERVICESTATUS );
+            for (int i = 0; i < statusList.getStarsSelectionListEntryCount(); i++) {
+            	StarsSelectionListEntry entry = statusList.getStarsSelectionListEntry(i);
+            	if (entry.getContent().equalsIgnoreCase( "To be scheduled" )) {
+            		CurrentState status = (CurrentState) StarsCustListEntryFactory.newStarsCustListEntry( entry, CurrentState.class );
+            		createOrder.setCurrentState( status );
+            		break;
+            	}
+            }
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsCreateServiceRequest( createOrder );
@@ -85,18 +122,12 @@ public class CreateServiceRequestAction implements ActionBase {
             StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
             com.cannontech.database.data.stars.report.WorkOrderBase workOrder = new com.cannontech.database.data.stars.report.WorkOrderBase();
             com.cannontech.database.db.stars.report.WorkOrderBase workOrderDB = workOrder.getWorkOrderBase();
-            
-            workOrderDB.setOrderNumber( createOrder.getOrderNumber() );
-            workOrderDB.setWorkTypeID( new Integer(createOrder.getServiceType().getEntryID()) );
-            workOrderDB.setCurrentStateID( new Integer(19) );	// "To be scheduled"
+
+            StarsServiceRequestFactory.setWorkOrderBase( workOrderDB, createOrder );
             workOrderDB.setCustomerID( account.getCustomerBase().getCustomerBase().getCustomerID() );
-            workOrderDB.setSiteID( account.getAccountSite().getAccountSite().getAccountSiteID() );
-            workOrderDB.setServiceCompanyID( new Integer(createOrder.getServiceCompany().getEntryID()) );
-            workOrderDB.setDateReported( createOrder.getDateReported() );
-            workOrderDB.setDescription( createOrder.getDescription() );
-            
+            workOrderDB.setSiteID( account.getAccountSite().getAccountSite().getAccountSiteID() );            
+
             workOrder.setCustomerBase( account.getCustomerBase() );
-            workOrder.setWorkOrderBase( workOrderDB );
             
             Transaction transaction = Transaction.createTransaction( Transaction.INSERT, workOrder );
             workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)transaction.execute();
@@ -124,9 +155,18 @@ public class CreateServiceRequestAction implements ActionBase {
 			
             if (operation.getStarsSuccess() == null)
             	return StarsConstants.FAILURE_CODE_NODE_NOT_FOUND;
-            	
+			
+			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
+			StarsCreateServiceRequest createOrder = reqOper.getStarsCreateServiceRequest();
+			StarsServiceRequestHistory orderHist = (StarsServiceRequestHistory) StarsServiceRequestFactory.newStarsServiceRequest( createOrder, StarsServiceRequestHistory.class );
+			
 			StarsOperator operator = (StarsOperator) session.getAttribute("OPERATOR");
-			operator.removeAttribute(CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY");
+			StarsGetServiceRequestHistoryResponse orderHists = (StarsGetServiceRequestHistoryResponse) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY" );
+			if (orderHists == null) {
+				orderHists = new StarsGetServiceRequestHistoryResponse();
+				operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "SERVICE_HISTORY", orderHists );
+			}
+			orderHists.addStarsServiceRequestHistory( 0, orderHist );
 			
             return 0;
         }

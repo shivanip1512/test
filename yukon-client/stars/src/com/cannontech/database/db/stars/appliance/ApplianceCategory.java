@@ -104,6 +104,46 @@ public class ApplianceCategory extends DBPersistent {
 
         return new Integer( nextCategoryID );
     }
+    
+    public static ApplianceCategory[] getAllApplianceCategories(Integer categoryID, java.sql.Connection conn) {
+    	String sql = "SELECT * FROM " + TABLE_NAME + " WHERE CategoryID = ?";
+    	
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        java.util.ArrayList appCatList = new java.util.ArrayList();
+
+        try {
+            pstmt = conn.prepareStatement( sql );
+            pstmt.setInt( 1, categoryID.intValue() );
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+            	ApplianceCategory appCat = new ApplianceCategory();
+            	
+            	appCat.setApplianceCategoryID( new Integer(rset.getInt("ApplianceCategoryID")) );
+            	appCat.setDescription( rset.getString("Description") );
+            	appCat.setCategoryID( new Integer(rset.getInt("CategoryID")) );
+            	appCat.setWebConfigurationID( new Integer(rset.getInt("WebConfigurationID")) );
+            	
+            	appCatList.add( appCat );
+            }
+        }
+        catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            }
+            catch (java.sql.SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+        
+        ApplianceCategory[] appCats = new ApplianceCategory[ appCatList.size() ];
+        appCatList.toArray( appCats );
+        return appCats;
+    }
 
     public Integer getApplianceCategoryID() {
         return applianceCategoryID;

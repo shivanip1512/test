@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsAppliance.java,v 1.10 2002/09/26 22:26:29 zyao Exp $
+ * $Id: StarsAppliance.java,v 1.11 2002/10/03 15:55:48 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,21 +23,16 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:29 $
+ * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:48 $
 **/
-public class StarsAppliance implements java.io.Serializable {
+public class StarsAppliance extends com.cannontech.stars.xml.serialize.StarsApp 
+implements java.io.Serializable
+{
 
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
-
-    private int _applianceID;
-
-    /**
-     * keeps track of state for field: _applianceID
-    **/
-    private boolean _has_applianceID;
 
     private int _inventoryID;
 
@@ -52,17 +47,6 @@ public class StarsAppliance implements java.io.Serializable {
      * keeps track of state for field: _lmProgramID
     **/
     private boolean _has_lmProgramID;
-
-    private int _applianceCategoryID;
-
-    /**
-     * keeps track of state for field: _applianceCategoryID
-    **/
-    private boolean _has_applianceCategoryID;
-
-    private java.lang.String _categoryDescription;
-
-    private java.lang.String _notes;
 
 
       //----------------/
@@ -80,20 +64,6 @@ public class StarsAppliance implements java.io.Serializable {
 
     /**
     **/
-    public void deleteApplianceCategoryID()
-    {
-        this._has_applianceCategoryID= false;
-    } //-- void deleteApplianceCategoryID() 
-
-    /**
-    **/
-    public void deleteApplianceID()
-    {
-        this._has_applianceID= false;
-    } //-- void deleteApplianceID() 
-
-    /**
-    **/
     public void deleteInventoryID()
     {
         this._has_inventoryID= false;
@@ -105,36 +75,6 @@ public class StarsAppliance implements java.io.Serializable {
     {
         this._has_lmProgramID= false;
     } //-- void deleteLmProgramID() 
-
-    /**
-     * Returns the value of field 'applianceCategoryID'.
-     * 
-     * @return the value of field 'applianceCategoryID'.
-    **/
-    public int getApplianceCategoryID()
-    {
-        return this._applianceCategoryID;
-    } //-- int getApplianceCategoryID() 
-
-    /**
-     * Returns the value of field 'applianceID'.
-     * 
-     * @return the value of field 'applianceID'.
-    **/
-    public int getApplianceID()
-    {
-        return this._applianceID;
-    } //-- int getApplianceID() 
-
-    /**
-     * Returns the value of field 'categoryDescription'.
-     * 
-     * @return the value of field 'categoryDescription'.
-    **/
-    public java.lang.String getCategoryDescription()
-    {
-        return this._categoryDescription;
-    } //-- java.lang.String getCategoryDescription() 
 
     /**
      * Returns the value of field 'inventoryID'.
@@ -155,30 +95,6 @@ public class StarsAppliance implements java.io.Serializable {
     {
         return this._lmProgramID;
     } //-- int getLmProgramID() 
-
-    /**
-     * Returns the value of field 'notes'.
-     * 
-     * @return the value of field 'notes'.
-    **/
-    public java.lang.String getNotes()
-    {
-        return this._notes;
-    } //-- java.lang.String getNotes() 
-
-    /**
-    **/
-    public boolean hasApplianceCategoryID()
-    {
-        return this._has_applianceCategoryID;
-    } //-- boolean hasApplianceCategoryID() 
-
-    /**
-    **/
-    public boolean hasApplianceID()
-    {
-        return this._has_applianceID;
-    } //-- boolean hasApplianceID() 
 
     /**
     **/
@@ -232,40 +148,6 @@ public class StarsAppliance implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'applianceCategoryID'.
-     * 
-     * @param applianceCategoryID the value of field
-     * 'applianceCategoryID'.
-    **/
-    public void setApplianceCategoryID(int applianceCategoryID)
-    {
-        this._applianceCategoryID = applianceCategoryID;
-        this._has_applianceCategoryID = true;
-    } //-- void setApplianceCategoryID(int) 
-
-    /**
-     * Sets the value of field 'applianceID'.
-     * 
-     * @param applianceID the value of field 'applianceID'.
-    **/
-    public void setApplianceID(int applianceID)
-    {
-        this._applianceID = applianceID;
-        this._has_applianceID = true;
-    } //-- void setApplianceID(int) 
-
-    /**
-     * Sets the value of field 'categoryDescription'.
-     * 
-     * @param categoryDescription the value of field
-     * 'categoryDescription'.
-    **/
-    public void setCategoryDescription(java.lang.String categoryDescription)
-    {
-        this._categoryDescription = categoryDescription;
-    } //-- void setCategoryDescription(java.lang.String) 
-
-    /**
      * Sets the value of field 'inventoryID'.
      * 
      * @param inventoryID the value of field 'inventoryID'.
@@ -286,16 +168,6 @@ public class StarsAppliance implements java.io.Serializable {
         this._lmProgramID = lmProgramID;
         this._has_lmProgramID = true;
     } //-- void setLmProgramID(int) 
-
-    /**
-     * Sets the value of field 'notes'.
-     * 
-     * @param notes the value of field 'notes'.
-    **/
-    public void setNotes(java.lang.String notes)
-    {
-        this._notes = notes;
-    } //-- void setNotes(java.lang.String) 
 
     /**
      * 

@@ -37,13 +37,15 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
 
     private ServiceType _serviceType;
 
-    private java.lang.String _currentState;
+    private java.util.Date _dateReported;
 
     private ServiceCompany _serviceCompany;
 
-    private java.util.Date _dateReported;
+    private java.lang.String _orderedBy;
 
     private java.lang.String _description;
+
+    private CurrentState _currentState;
 
     private java.util.Date _dateScheduled;
 
@@ -80,10 +82,10 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
      * 
      * @return the value of field 'currentState'.
     **/
-    public java.lang.String getCurrentState()
+    public CurrentState getCurrentState()
     {
         return this._currentState;
-    } //-- java.lang.String getCurrentState() 
+    } //-- CurrentState getCurrentState() 
 
     /**
      * Returns the value of field 'dateCompleted'.
@@ -134,6 +136,16 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
     {
         return this._orderNumber;
     } //-- java.lang.String getOrderNumber() 
+
+    /**
+     * Returns the value of field 'orderedBy'.
+     * 
+     * @return the value of field 'orderedBy'.
+    **/
+    public java.lang.String getOrderedBy()
+    {
+        return this._orderedBy;
+    } //-- java.lang.String getOrderedBy() 
 
     /**
      * Returns the value of field 'serviceCompany'.
@@ -199,10 +211,10 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
      * 
      * @param currentState the value of field 'currentState'.
     **/
-    public void setCurrentState(java.lang.String currentState)
+    public void setCurrentState(CurrentState currentState)
     {
         this._currentState = currentState;
-    } //-- void setCurrentState(java.lang.String) 
+    } //-- void setCurrentState(CurrentState) 
 
     /**
      * Sets the value of field 'dateCompleted'.
@@ -253,6 +265,16 @@ public abstract class StarsServiceRequest implements java.io.Serializable {
     {
         this._orderNumber = orderNumber;
     } //-- void setOrderNumber(java.lang.String) 
+
+    /**
+     * Sets the value of field 'orderedBy'.
+     * 
+     * @param orderedBy the value of field 'orderedBy'.
+    **/
+    public void setOrderedBy(java.lang.String orderedBy)
+    {
+        this._orderedBy = orderedBy;
+    } //-- void setOrderedBy(java.lang.String) 
 
     /**
      * Sets the value of field 'serviceCompany'.

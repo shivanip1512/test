@@ -139,8 +139,7 @@ public class UpdateCustAccountAction implements ActionBase {
             }
             customer.setCustomerContactVector( contactVct );
             
-            customer = (com.cannontech.database.data.stars.customer.CustomerBase)
-                  Transaction.createTransaction( Transaction.UPDATE, customer ).execute();
+            Transaction.createTransaction( Transaction.UPDATE, customer ).execute();
             
             com.cannontech.database.db.stars.customer.CustomerAccount accountDB = account.getCustomerAccount();
             accountDB.setAccountNumber( starsAccount.getAccountNumber() );
@@ -169,8 +168,7 @@ public class UpdateCustAccountAction implements ActionBase {
             com.cannontech.database.db.stars.Substation substation = siteInfo.getSubstation();
             substation.setSubstationName( starsSiteInfo.getSubstation().getContent() );
 */            
-         account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-               Transaction.createTransaction( Transaction.UPDATE, account ).execute();
+			Transaction.createTransaction( Transaction.UPDATE, account ).execute();
 
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account information updated successfully" );

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsApplianceCategory.java,v 1.10 2002/09/26 22:26:32 zyao Exp $
+ * $Id: StarsApplianceCategory.java,v 1.11 2002/10/03 15:55:51 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.10 $ $Date: 2002/09/26 22:26:32 $
+ * @version $Revision: 1.11 $ $Date: 2002/10/03 15:55:51 $
 **/
 public class StarsApplianceCategory implements java.io.Serializable {
 
@@ -41,7 +41,7 @@ public class StarsApplianceCategory implements java.io.Serializable {
     **/
     private boolean _has_applianceCategoryID;
 
-    private java.lang.String _categoryName;
+    private java.lang.String _description;
 
     private StarsWebConfig _starsWebConfig;
 
@@ -110,14 +110,14 @@ public class StarsApplianceCategory implements java.io.Serializable {
     } //-- int getApplianceCategoryID() 
 
     /**
-     * Returns the value of field 'categoryName'.
+     * Returns the value of field 'description'.
      * 
-     * @return the value of field 'categoryName'.
+     * @return the value of field 'description'.
     **/
-    public java.lang.String getCategoryName()
+    public java.lang.String getDescription()
     {
-        return this._categoryName;
-    } //-- java.lang.String getCategoryName() 
+        return this._description;
+    } //-- java.lang.String getDescription() 
 
     /**
      * 
@@ -240,14 +240,14 @@ public class StarsApplianceCategory implements java.io.Serializable {
     } //-- void setApplianceCategoryID(int) 
 
     /**
-     * Sets the value of field 'categoryName'.
+     * Sets the value of field 'description'.
      * 
-     * @param categoryName the value of field 'categoryName'.
+     * @param description the value of field 'description'.
     **/
-    public void setCategoryName(java.lang.String categoryName)
+    public void setDescription(java.lang.String description)
     {
-        this._categoryName = categoryName;
-    } //-- void setCategoryName(java.lang.String) 
+        this._description = description;
+    } //-- void setDescription(java.lang.String) 
 
     /**
      * 

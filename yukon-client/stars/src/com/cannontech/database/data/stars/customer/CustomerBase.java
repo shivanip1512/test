@@ -77,7 +77,9 @@ public class CustomerBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
+    	getPrimaryContact().setContactID( getPrimaryContact().getNextContactID2() );
         getPrimaryContact().add();
+        
         getCustomerBase().setPrimaryContactID( getPrimaryContact().getContactID() );
         int contactID = getPrimaryContact().getContactID().intValue();
         

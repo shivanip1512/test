@@ -35,7 +35,7 @@ public class StarsGetEnrollmentProgramsResponseFactory {
             		response.addStarsApplianceCategory( appCategory );
             	
 	            	appCategory.setApplianceCategoryID( categoryID.intValue() );
-	            	appCategory.setCategoryName( webPub.getApplianceCategory().getApplianceCategory().getDescription() );
+	            	appCategory.setDescription( webPub.getApplianceCategory().getApplianceCategory().getDescription() );
 	            	appCategory.setStarsWebConfig(
 	            			StarsWebConfigFactory.newStarsWebConfig(webPub.getApplianceCategory().getWebConfiguration()) );
             	}

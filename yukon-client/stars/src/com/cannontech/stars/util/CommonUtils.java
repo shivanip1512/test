@@ -36,6 +36,7 @@ public class CommonUtils {
         			com.cannontech.database.data.stars.CustomerListEntry.getAllListEntries( selectionLists[i].getListID() );
         	StarsCustSelectionList starsList = new StarsCustSelectionList();
         	starsList.setListID( selectionLists[i].getListID().intValue() );
+        	starsList.setListName( selectionLists[i].getListName() );
         	
         	for (int j = 0; j < entries.length; j++) {
         		StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
@@ -52,6 +53,8 @@ public class CommonUtils {
         com.cannontech.database.db.stars.Substation[] subs =
         		com.cannontech.database.data.stars.Substation.getAllSubstations( energyCompanyID );
         StarsCustSelectionList starsList = new StarsCustSelectionList();
+        starsList.setListID( -1 );
+        starsList.setListName( "Substation" );
         
         for (int i = 0; i < subs.length; i++) {
         	StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
