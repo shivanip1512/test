@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2003/03/13 19:36:03 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2003/08/19 13:54:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,6 +409,8 @@ void CtiPointManager::RefreshPoint(LONG pointID)
                         dout << " database had a return code of " << getErrorCode() << endl;
                     }
                 }
+
+                RefreshAlarming(rowFound, pointID);
             }   // Temporary results are destroyed to free the connection
         }
     }
@@ -946,7 +948,7 @@ CtiPoint* CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
     return pRet;
 }
 
-void CtiPointManager::RefreshAlarming(bool &rowFound)
+void CtiPointManager::RefreshAlarming(bool &rowFound, LONG pid)
 {
     LockGuard  guard(monitor());
 
@@ -960,6 +962,12 @@ void CtiPointManager::RefreshAlarming(bool &rowFound)
 
 
     CtiTablePointAlarming::getSQL( db, keyTable, selector );
+
+    if(pid)
+    {
+        selector.where( selector.where() && keyTable["pointid"] == pid);
+    }
+
     rdr = selector.reader( conn );
 
     if(setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
