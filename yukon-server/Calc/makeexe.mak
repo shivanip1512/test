@@ -224,13 +224,13 @@ lurk.obj:	yukon.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
 		connection.h exchange.h logger.h thread.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_signal.h msg_ptreg.h msg_reg.h \
 		queue.h ctinexus.h msg_cmd.h msg_dbchg.h
-newval.obj:	queue.h dlldefs.h exchange.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+newval.obj:	queue.h dlldefs.h logger.h thread.h mutex.h guard.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		netports.h message.h collectable.h msg_cmd.h msg_reg.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h connection.h pointtypes.h
-newvalrng.obj:	queue.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h \
+newvalrng.obj:	queue.h dlldefs.h logger.h thread.h mutex.h guard.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		netports.h message.h collectable.h msg_cmd.h msg_reg.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		msg_signal.h yukon.h msg_ptreg.h connection.h pointtypes.h

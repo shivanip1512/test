@@ -110,8 +110,8 @@ tabletest.obj:	tbl_pthist.h yukon.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h dbmemobject.h \
 		resolvers.h pointtypes.h db_entry_defines.h ctibase.h \
 		ctinexus.h tbl_rtroute.h rtdb.h hashkey.h
-tbl.obj:	tbl.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h sema.h
+tbl.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
+		dsm2.h mutex.h guard.h sema.h
 tbl_2way.obj:	tbl_2way.h dbmemobject.h dbaccess.h dlldefs.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h sema.h \
 		resolvers.h pointtypes.h yukon.h db_entry_defines.h logger.h \
@@ -150,6 +150,10 @@ tbl_dv_cbc.obj:	tbl_dv_cbc.h dlldefs.h dllbase.h os2_2w32.h types.h \
 tbl_dv_cicust.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h logger.h thread.h \
 		tbl_dv_cicust.h yukon.h
+tbl_dv_dnp.obj:	tbl_dv_dnp.h types.h logger.h thread.h mutex.h \
+		dlldefs.h guard.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
+		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
+		yukon.h db_entry_defines.h desolvers.h
 tbl_dv_emetcon.obj:	tbl_dv_emetcon.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h dbmemobject.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h yukon.h \
