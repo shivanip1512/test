@@ -265,7 +265,7 @@ private javax.swing.JTable getCommandTable() {
 			ivjCommandTable = new javax.swing.JTable();
 			ivjCommandTable.setName("CommandTable");
 			getCommandTableScrollPane().setColumnHeaderView(ivjCommandTable.getTableHeader());
-			getCommandTableScrollPane().getViewport().setBackingStoreEnabled(true);
+			getCommandTableScrollPane().getViewport().setScrollMode(javax.swing.JViewport.BACKINGSTORE_SCROLL_MODE);
 			ivjCommandTable.setModel(new com.cannontech.common.util.KeysAndValuesTableModel());
 			ivjCommandTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
 			ivjCommandTable.setCellSelectionEnabled(true);
