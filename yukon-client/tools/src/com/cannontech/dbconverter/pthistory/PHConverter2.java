@@ -20,11 +20,11 @@ import com.cannontech.database.db.DBPersistent;
  */
 class PHConverter2 {
 	private static final String usage =
-		"PHConverter srcdir [ pointidbase ]\r\nsrcdir= DSM2 root";
+		"PHConverter srcdir [ FORCE (insert timestamps ignoring RPH maxTimestamp) ]\r\nsrcdir=<DSM2 root> FORCE";
 
 	private long lastTimestamp = 0;
 	private int changeID = 0;
-	
+	private boolean forceInsert = false;
 	
 /**
  * PHConverter constructor comment.
@@ -291,14 +291,20 @@ private static int getQuality(short dsmQuality) {
  */
 public static void main(String[] args) throws Exception {
 
-	if( args.length != 1 ) {
+	if( args.length < 1  ) {
 		System.out.println(usage);
 		System.exit(1);
 	}
-
 	PHConverter2 p = new PHConverter2();
+
+	// Forcing allows us to insert Point History independently of lastTimestamp.	
+	if( args.length == 2)
+	{
+		if( args[1].startsWith("FORCE"))
+			p.forceInsert = true;
+	}
+	System.out.println(" FORCE = " + p.forceInsert);
 	p.convert(args[0]);
-	
 	System.exit(0);
 }
 /**
@@ -355,7 +361,9 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 			double value = (double) Math.round(data[i].value*multiplier*100.0) / 100.0;
 			int quality = getQuality(data[i].quality);
 
-			if(timestamp.getTime() <= lastTimestamp)	
+			if( forceInsert )
+				System.out.println("Forcing inserts, ignoring maxTimestamp of pointhistory.");
+			else if(timestamp.getTime() <= lastTimestamp)
 				continue;
 
 			pstmt.setInt(1, changeID++);
