@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:52 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2002/06/11 16:50:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,10 +168,7 @@ INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTME
 
    if( aOutTemplate.Buffer.BSt.IO & IO_READ )
    {
-      /* build preamble message
-       *
-       *  At this point wordCount represents the number of outbound cwords (it is zero for a read!)
-       */
+      /* build preamble message.  At this point wordCount represents the number of outbound cwords (it is zero for a read!) */
 
       BPreamble (curOutMessage->Buffer.OutMessage + PREIDLEN, aOutTemplate.Buffer.BSt, wordCount);
 
@@ -181,7 +178,8 @@ INT CtiProtocolEmetcon::buildBWordMessages(CtiCommandParser  &parse, const OUTME
       wordCount = determineDWordCount(curOutMessage->Buffer.BSt.Length);
       curOutMessage->InLength = 3 + wordCount * (DWORDLEN + 1);                     // InLength is based upon the read request/function requested.
       curOutMessage->OutLength = PREAMLEN + BWORDLEN + 3;                           // OutLength is fixed (only the B read request)
-      curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.BSt.DlcRoute.Stages;   // Therefore trx time is too
+      // 20020611 CGP Hep the repeaters? // curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.BSt.DlcRoute.Stages;   // Therefore trx time is too
+      curOutMessage->TimeOut = TIMEOUT + aOutTemplate.Buffer.BSt.DlcRoute.Stages * (wordCount + 1);   // Therefore trx time is too
 
       /*  build the b word
        *

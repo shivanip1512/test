@@ -431,7 +431,7 @@ ModemReset (HFILE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
 
       if(!(ModemCTS (PortHandle)))
       {
-         return TIMEOUT;
+         return READTIMEOUT;
       }
    }
 
@@ -460,7 +460,7 @@ ModemReset (HFILE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
 
          if(!(ModemCTS (PortHandle)))
          {
-            return TIMEOUT;
+            return READTIMEOUT;
          }
       }
 
@@ -541,7 +541,7 @@ ModemReset (HFILE PortHandle, USHORT Port, USHORT Trace, BOOL dcdTest)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
          }
-         return(TIMEOUT);
+         return(READTIMEOUT);
       }
       else if(Trace)
       {
@@ -698,7 +698,7 @@ ModemConnect (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL d
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
       }
-      return(TIMEOUT);
+      return(READTIMEOUT);
    }
 
    if(Trace)
@@ -812,7 +812,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize, PCHAR Response, ULONG Ti
       }
    }
 
-   return(TIMEOUT);
+   return(READTIMEOUT);
 }
 
 
@@ -1192,7 +1192,7 @@ WaitForResponse (HFILE PortHandle, PULONG ResponseSize,  PCHAR Response, ULONG T
 
    ULONG   i , j;
    ULONG   BytesRead;
-   INT     status = TIMEOUT;
+   INT     status = READTIMEOUT;
 
    i = 0;        // i represents the count of bytes in response.
    j = 0;
@@ -1364,7 +1364,7 @@ ModemHangup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dc
                dout << RWTime() << " Port " << Port << " Modem Response Timeout (will re-try)" << endl;
             }
 
-            status = TIMEOUT;
+            status = READTIMEOUT;
             continue;   // We are not getting anything here!
          }
          else if(Trace)
@@ -1410,7 +1410,7 @@ ModemHangup (HFILE PortHandle, PCHAR Message, USHORT Port, USHORT Trace, BOOL dc
                dout << RWTime() << " Port " << Port << " Modem Response Timeout" << endl;
             }
 
-            status = TIMEOUT;     // Hangup Failed
+            status = READTIMEOUT;     // Hangup Failed
             continue;
          }
          else

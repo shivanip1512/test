@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_modem.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/06/05 17:42:01 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2002/06/11 16:50:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
 
         if(!(isCTS()))
         {
-            return TIMEOUT;
+            return READTIMEOUT;
         }
     }
 
@@ -126,7 +126,7 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
 
             if(!(isCTS()))
             {
-                return TIMEOUT;
+                return READTIMEOUT;
             }
         }
 
@@ -208,7 +208,7 @@ INT CtiPortModem::modemReset(USHORT Trace, BOOL dcdTest)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Port " << getName() << " Modem Response Timeout" << endl;
             }
-            return(TIMEOUT);
+            return(READTIMEOUT);
         }
         else if(Trace)
         {
@@ -366,7 +366,7 @@ INT CtiPortModem::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdTest)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Port " << getName() << " Modem Response Timeout" << endl;
         }
-        status = TIMEOUT;
+        status = READTIMEOUT;
     }
     else
     {
@@ -541,7 +541,7 @@ INT CtiPortModem::modemHangup(USHORT Trace, BOOL dcdTest)
                         dout << RWTime() << " " << getName()  << " Modem Response Timeout (will re-try)" << endl;
                     }
 
-                    status = TIMEOUT;
+                    status = READTIMEOUT;
                     continue;   // We are not getting anything here!
                 }
                 else if(Trace)
@@ -587,7 +587,7 @@ INT CtiPortModem::modemHangup(USHORT Trace, BOOL dcdTest)
                         dout << RWTime() << " " << getName()  << " Modem Response Timeout" << endl;
                     }
 
-                    status = TIMEOUT;     // Hangup Failed
+                    status = READTIMEOUT;     // Hangup Failed
                     continue;
                 }
                 else
