@@ -15,9 +15,12 @@ public class SystemLog extends com.cannontech.database.db.DBPersistent
 	private String description = null;
 	private String userName = null;
 
-
+	/* Log types, match this with log types in yukon.h */
+	public static final int TYPE_GENERAL = 1;
+	public static final int TYPE_POINT_CHANGE = 2; //May not be used
+	public static final int TYPE_LOADMANAGEMENT = 3;
+	public static final int TYPE_USER = 4; 
 	public static final int TYPE_ALARM = 8;
-
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LogID" };
 	public static final String COLUMNS[] = { "PointID", 
