@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/18 15:02:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,6 +183,10 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
 
    if( _transdataProtocol.getCommand() == GENERAL )
    {
+      memcpy( &_llp, InMessage->Buffer.InMessage, sizeof( _llp ));
+      setLastLPTime( RWTime( _llp.lastLP ));
+      memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + sizeof( _llp ), InMessage->InLength-sizeof( _llp ));
+
       transVector = _transdataProtocol.resultDecode( InMessage );
 
       if( transVector.size() )
@@ -886,7 +890,13 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
          }
       }
 
+
       retList.insert( pPIL );
+      
+      {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----Scanner Message Inserted----" << endl;
+      }
    }
 
    resetScanPending();
@@ -974,6 +984,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    BYTE                             *storage = NULL;
    int                              index;
    int                              numEnabledChannels = 0;
+   bool                             firstLoop = true;
 
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -983,9 +994,9 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    storage = new BYTE[10000];
    _transdataProtocol.retreiveData( storage );
    lp = ( CtiTransdataTracker::mark_v_lp *)storage;
-
+   _llp.lastLP = lp->meterTime;
    RWTime mTime( lp->meterTime );
-
+   
    for( index = 0; index < lp->numLpRecs; )
    {
       if( lp->enabledChannels[0] == true )
@@ -1000,8 +1011,22 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
             pData->setQuality( NormalQuality );             //just for now
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setMessageTime( mTime );
+            pData->setType( pPoint->getType() );
 
             msgMulti->getData().insert( pData );
+
+            if( firstLoop )
+            {
+               //stick this pData into something for scanner
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( lp->lpData[index].value );
+               pData->setQuality( NormalQuality );             //just for now
+               pData->setMessageTime( mTime );
+               pData->setType( pPoint->getType() );
+               
+               msgMulti->getData().insert( pData );
+            }
 
             index += 2;
          }
@@ -1019,9 +1044,23 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
             pData->setQuality( NormalQuality );             //just for now
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setMessageTime( mTime );
+            pData->setType( pPoint->getType() );
 
             msgMulti->getData().insert( pData );
-
+            
+            if( firstLoop )
+            {
+               //stick this pData into something for scanner
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( lp->lpData[index].value );
+               pData->setQuality( NormalQuality );             //just for now
+               pData->setMessageTime( mTime );
+               pData->setType( pPoint->getType() );
+               
+               msgMulti->getData().insert( pData );
+            }
+            
             index += 2;
          }
       }
@@ -1038,8 +1077,22 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
             pData->setQuality( NormalQuality );             //just for now
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setMessageTime( mTime );
+            pData->setType( pPoint->getType() );
 
             msgMulti->getData().insert( pData );
+
+            if( firstLoop )
+            {
+               //stick this pData into something for scanner
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( lp->lpData[index].value );
+               pData->setQuality( NormalQuality );             //just for now
+               pData->setMessageTime( mTime );
+               pData->setType( pPoint->getType() );
+               
+               msgMulti->getData().insert( pData );
+            }
 
             index += 2;
          }
@@ -1057,11 +1110,30 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
             pData->setQuality( NormalQuality );             //just for now
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
             pData->setMessageTime( mTime );
+            pData->setType( pPoint->getType() );
 
             msgMulti->getData().insert( pData );
-
+            
+            if( firstLoop )
+            {
+               //stick this pData into something for scanner
+               pData = new CtiPointDataMsg();
+               pData->setId( pPoint->getID() );
+               pData->setValue( lp->lpData[index].value );
+               pData->setQuality( NormalQuality );             //just for now
+               pData->setMessageTime( mTime );
+               pData->setType( pPoint->getType() );
+               
+               msgMulti->getData().insert( pData );
+            }
+            
             index += 2;
          }
+      }
+      
+      if( firstLoop )
+      {
+         firstLoop = false;
       }
       
       //decrement the time to the interval previous to the current one...
@@ -1069,7 +1141,29 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiConnection &conn )
    }
 
    conn.WriteConnQue( msgMulti );
+   {
+      CtiLockGuard<CtiLogger> doubt_guard(dout);
+      dout << RWTime() << " ----Dispatch Message Inserted----" << endl;
+   }
+
 }
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
+{
+   CtiProtocolTransdata::llp  *lLP = NULL;
+   
+   lLP = &_llp;
+
+   //insert lastlptime struct into inmess
+   memcpy( InMessage->Buffer.InMessage, lLP, sizeof( _llp ) );
+   _transdataProtocol.sendCommResult( InMessage );
+              
+   return( 1 );
+}
+
 /*
 //=====================================================================================================================
 //=====================================================================================================================

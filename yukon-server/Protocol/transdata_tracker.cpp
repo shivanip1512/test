@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/12/18 15:02:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -417,12 +417,12 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
    }
 
    RWTime t( RWDate( timeBits[3], timeBits[4], timeBits[5] + 2000 ), timeBits[2], timeBits[1], timeBits[0] );
-   
+   /*
    {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " tracker got time " << t << endl;
    }
-
+   */
    _lp->meterTime = t.seconds();
 
    return( true );
@@ -821,7 +821,7 @@ int CtiTransdataTracker::retreiveData( BYTE *data )
       memcpy( ( void *)data, ( void *)(_meterData + 3 ), _meterBytes );
    else
       memcpy( ( void *)data, ( void *)(_meterData ), _meterBytes );
-
+   
    _meterBytes = 0;
    
    _goodCRC = false;

@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/18 15:02:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,6 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
          if( _command == LOADPROFILE )
          {
             processLPData( _storage );
-   //         _finished = true;
          }
          else
          {
@@ -155,7 +154,7 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 
 int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
-   memcpy( InMessage->Buffer.InMessage, _billingBytes, _numBytes );
+   memcpy( InMessage->Buffer.InMessage + sizeof( llp ), _billingBytes, _numBytes );
    InMessage->InLength = _numBytes;
    
    _numBytes = 0;
@@ -175,6 +174,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
    vector<CtiTransdataData *> transVector;
 
    ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
+   ptr += 3;
 
    while( *ptr != NULL )
    {

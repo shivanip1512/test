@@ -14,18 +14,18 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2003/12/18 15:02:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
+
 #include "prot_transdata.h"  
 #include "dev_meter.h"
 #include "dlldefs.h"
-#include "prot_transdata.h"
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
@@ -35,40 +35,7 @@
 #include "connection.h"      
 
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
-{   
-  /* enum
-   {
-      TOTAL_USAGE      = 1,
-      CURRENT_DEMAND,
-      PEAK_DEMAND,
-      PEAK_TIME,
-      PEAK_DATE,
-      RATEA_USAGE,
-      RATEB_USAGE,
-      RATEC_USAGE,
-      RATED_USAGE,
-      RATEA_PEAK_DEMAND,
-      RATEB_PEAK_DEMAND,
-      RATEC_PEAK_DEMAND,
-      RATED_PEAK_DEMAND,
-      RATEA_PEAK_TIME,
-      RATEB_PEAK_TIME,
-      RATEC_PEAK_TIME,
-      RATED_PEAK_TIME,
-      RATEA_PEAK_DATE,
-      RATEB_PEAK_DATE,
-      RATEC_PEAK_DATE,
-      RATED_PEAK_DATE,
-      PREVIOUS_DEMAND,
-      LOAD_PROFILE,
-      CH1_OFFSET       = 200,
-      CH2_OFFSET       = 250,
-      CH3_OFFSET       = 300,
-      CH4_OFFSET       = 350
-   };
-    */
-protected:
-
+{                                        
 private:
 
   enum
@@ -103,8 +70,13 @@ private:
   };
 
 
-   CtiProtocolTransdata    _transdataProtocol;
-   CtiTransdataData        *_converted;
+   CtiProtocolTransdata       _transdataProtocol;
+   CtiTransdataData           *_converted;
+   CtiProtocolTransdata::llp  _llp;
+   
+//   CtiMultiMsg             *_scannerMulti;
+
+protected:
 
 public:
 
@@ -115,15 +87,6 @@ public:
    CtiDeviceMarkV( const CtiDeviceMarkV& aRef );
 
    virtual ~CtiDeviceMarkV();
-/*
-   CtiDeviceMarkV& operator=(const CtiDeviceMarkV& aRef)
-   {
-     if(this != &aRef)
-     {
-     }
-     return *this;
-   }
-*/
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
@@ -168,7 +131,8 @@ public:
                           vector<CtiTransdataData *> transVector );
 
    void processDispatchReturnMessage( CtiConnection &conn );
-   
+   int sendCommResult( INMESS *InMessage );
+
    CtiProtocolTransdata & getProtocol( void );
    RWTime getMsgTime( int timeID, int dateID, vector<CtiTransdataData *> transVector );
    
@@ -179,7 +143,6 @@ public:
                                int dateID );
 
 //   void DecodeDatabaseReader( RWDBReader &rdr );
-
 
 };
 

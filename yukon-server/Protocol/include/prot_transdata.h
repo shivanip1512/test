@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/12/16 17:23:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/12/18 15:02:11 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -37,6 +37,10 @@ class IM_EX_PROT CtiProtocolTransdata
          bool  getLP;
       };
 
+      struct llp
+      {
+         ULONG    lastLP;
+      };
 
       CtiProtocolTransdata();
       virtual ~CtiProtocolTransdata();
@@ -68,7 +72,6 @@ class IM_EX_PROT CtiProtocolTransdata
          Billing_size      = 1200,
          Storage_size      = 4500,
          Loadprofile_size  = 4500
-
       };
 
       bool                       _finished;
