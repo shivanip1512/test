@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/10/12 20:12:27 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/29 19:58:24 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -40,22 +40,22 @@ private:
         bool retransmit;
     };
 
-    typedef multimap< long, association >   association_map;
-    typedef association_map::iterator       association_itr;
+    typedef multimap< long, association >  association_map;
+    typedef association_map::iterator      association_itr;
 
     association_map _associations;
 
     unsigned long _sequence;
 
-    typedef vector< CtiVerificationWork * > pending_vector;  //  this could also be made to a map if iterating is too slow
-    typedef map< long, pending_vector >     receiver_map;    //  maps receivers to their work vectors
+    typedef deque< CtiVerificationWork * > pending_queue;  //  this could also be made to a map if iterating is too slow
+    typedef map< long, pending_queue >     receiver_map;    //  maps receivers to their work queues
 
-    typedef pending_vector::iterator        pending_itr;
-    typedef receiver_map::iterator          receiver_itr;
+    typedef pending_queue::iterator        pending_itr;
+    typedef receiver_map::iterator         receiver_itr;
 
     receiver_map _receiver_work;
 
-    priority_queue< CtiVerificationWork *, pending_vector, CtiVerificationWork::later > _work_queue;
+    priority_queue< CtiVerificationWork *, pending_queue, CtiVerificationWork::earlier > _work_queue;
 
     static const string _table_name;
 
