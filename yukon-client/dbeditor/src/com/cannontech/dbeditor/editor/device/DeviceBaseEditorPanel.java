@@ -1547,7 +1547,12 @@ public Object getValue(Object val)
 	com.cannontech.database.data.device.DeviceBase d = (com.cannontech.database.data.device.DeviceBase)val;
 
 	d.setPAOName( getNameTextField().getText() );
-   int devType = PAOGroups.getDeviceType( d.getPAOType() );
+    int devType = PAOGroups.getDeviceType( d.getPAOType() );
+
+    //just in case, set our String type data to the exact String type expected
+    // used to ensure the type string in the DB is the same as the code
+    d.setDeviceType( PAOGroups.getPAOTypeString(devType) );
+
 
 	if( getDisableFlagCheckBox().isSelected() )
 		d.setDisableFlag( new Character('Y') );
