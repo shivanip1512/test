@@ -64,6 +64,19 @@ void CtiIONApplicationLayer::initInPacketReserved( void )
 }
 
 
+void CtiIONApplicationLayer::setToTimeSync( void )
+{
+    CtiIONTimeSync ts(RWTime().seconds() - rwEpoch);
+
+    freeOutPacketMemory();
+    initOutPacketReserved();
+
+    _ioState = Output;
+
+    _networkLayer.setToOutput(ts, true);
+}
+
+
 void CtiIONApplicationLayer::setToOutput( const CtiIONSerializable &payload )
 {
     int itemNum, dataOffset, dataLength;

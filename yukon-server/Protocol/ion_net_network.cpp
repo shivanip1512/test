@@ -69,7 +69,7 @@ void CtiIONNetworkLayer::initInPacketReserved( void )
 }
 
 
-void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
+void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload, bool timeSync )
 {
     int payloadSize, netSize;
 
@@ -90,7 +90,15 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
 
     _netOut.header.desc.msgtype    = 1;
     _netOut.header.desc.passwdsize = 0;
-    _netOut.header.desc.timesetmsg = 0;
+
+    if( timeSync )
+    {
+        _netOut.header.desc.timesetmsg = 1;
+    }
+    else
+    {
+        _netOut.header.desc.timesetmsg = 0;
+    }
 
     _netOut.header.src.byte1 = (_srcID & 0xFF00) >> 8;
     _netOut.header.src.byte0 = (_srcID & 0x00FF);
@@ -100,7 +108,14 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload )
 
     _netOut.header.service = 1;  //  only supported value
 
-    _netOut.header.msgType = 0;  //  ION message
+    if( timeSync )
+    {
+        _netOut.header.msgType = MessageType_TimeSync;
+    }
+    else
+    {
+        _netOut.header.msgType = MessageType_IONMessage;
+    }
 
     _netOut.data = CTIDBG_new unsigned char[payloadSize];
 

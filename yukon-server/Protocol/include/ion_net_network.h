@@ -97,6 +97,12 @@ private:
         NetworkLayerLengthBytes = 2
     };
 
+    enum MessageType
+    {
+        MessageType_IONMessage = 0,
+        MessageType_TimeSync   = 17
+    };
+
 protected:
 
 public:
@@ -105,7 +111,7 @@ public:
 
     void setAddresses( unsigned short srcID, unsigned short dstID );
 
-    void setToOutput( CtiIONSerializable &payload );
+    void setToOutput( CtiIONSerializable &payload, bool timeSync=false );
     void setToInput( void );
 
     void putPayload( unsigned char *buf );
@@ -121,12 +127,6 @@ public:
     unsigned int getSerializedLength( void ) const;
 
     int isValid( void ) { return _valid; };
-
-    enum MessageType
-    {
-        IONMessage = 0,
-        TimeSync   = 17
-    };
 };
 
 #pragma pack(pop, ion_packing)

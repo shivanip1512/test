@@ -112,6 +112,7 @@ public:
 
     void setAddresses( unsigned short srcID, unsigned short dstID );
 
+    void setToTimeSync( void );
     void setToOutput( const CtiIONSerializable &payload );
     void setToInput( void );
 
@@ -128,6 +129,37 @@ public:
     unsigned int getPayloadLength( void ) const;
 
 };
+
+
+class CtiIONTimeSync : public CtiIONSerializable
+{
+    friend class CtiIONApplicationLayer;
+
+protected:
+
+    unsigned long _utcSeconds;
+
+    CtiIONTimeSync( unsigned long utcSeconds ) :
+        _utcSeconds(utcSeconds)
+    {
+    }
+
+    unsigned int getSerializedLength( void ) const
+    {
+        return 4;
+    }
+
+    void putSerialized( unsigned char *buf ) const
+    {
+        unsigned char *ptr = (unsigned char *)&_utcSeconds;
+
+        buf[0] = ptr[3];
+        buf[1] = ptr[2];
+        buf[2] = ptr[1];
+        buf[3] = ptr[0];
+    }
+};
+
 
 #pragma pack(pop, ion_packing)
 
