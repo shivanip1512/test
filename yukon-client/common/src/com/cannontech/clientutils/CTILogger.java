@@ -101,6 +101,16 @@ public class CTILogger
       return logger;
    }
    
+	public static Level getLogLevel()
+	{      
+		return getLogger().getLevel();
+	}
+
+	public static void setLogLevel( int level )
+	{      
+		getLogger().setLevel( Level.toLevel(level, getLogger().getLevel()) );
+	}
+
    public static void debug( Object msg )
    {      
       getLogger().debug( msg );
