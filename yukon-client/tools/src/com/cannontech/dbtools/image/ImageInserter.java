@@ -94,6 +94,13 @@ public class ImageInserter extends MessageFrameAdaptor
 			// Not sure why this was here
 			//pstmt.executeBatch();
 		}
+		catch(StringIndexOutOfBoundsException se) {
+		    getIMessageFrame().addOutput(" Error: Ensure the image file name is in the following format:");
+		    getIMessageFrame().addOutput("   <id>-<name>.<extension> ");
+		    getIMessageFrame().addOutput("   example: 12-Breaker.gif");
+			se.printStackTrace();
+			throw se;
+		}
 		catch(Exception e) {
 			e.printStackTrace();
 			throw e;
