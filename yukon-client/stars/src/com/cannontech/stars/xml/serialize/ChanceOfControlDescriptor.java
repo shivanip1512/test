@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventoriesDescriptor.java,v 1.38 2003/04/17 22:16:59 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,9 +25,9 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.38 $ $Date: 2003/04/17 22:16:59 $
+ * @version $Revision$ $Date$
 **/
-public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class ChanceOfControlDescriptor extends StarsCustListEntryDescriptor {
 
 
       //--------------------------/
@@ -47,53 +47,18 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
      //- Constructors -/
     //----------------/
 
-    public StarsInventoriesDescriptor() {
+    public ChanceOfControlDescriptor() {
         super();
-        xmlName = "stars-Inventories";
+        setExtendsWithoutFlatten(new StarsCustListEntryDescriptor());
+        xmlName = "ChanceOfControl";
         XMLFieldDescriptorImpl  desc           = null;
         XMLFieldHandler         handler        = null;
         FieldValidator          fieldValidator = null;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
         //-- initialize attribute descriptors
         
         //-- initialize element descriptors
         
-        //-- _starsLMHardwareList
-        desc = new XMLFieldDescriptorImpl(StarsLMHardware.class, "_starsLMHardwareList", "stars-LMHardware", NodeType.Element);
-        handler = (new XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                StarsInventories target = (StarsInventories) object;
-                return target.getStarsLMHardware();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    StarsInventories target = (StarsInventories) object;
-                    target.addStarsLMHardware( (StarsLMHardware) value);
-                }
-                catch (Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new StarsLMHardware();
-            }
-        } );
-        desc.setHandler(handler);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _starsLMHardwareList
-        fieldValidator = new FieldValidator();
-        fieldValidator.setMinOccurs(0);
-        desc.setValidator(fieldValidator);
-        
-    } //-- com.cannontech.stars.xml.serialize.StarsInventoriesDescriptor()
+    } //-- com.cannontech.stars.xml.serialize.ChanceOfControlDescriptor()
 
 
       //-----------/
@@ -111,13 +76,15 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
     **/
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
     **/
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -125,7 +92,7 @@ public class StarsInventoriesDescriptor extends org.exolab.castor.xml.util.XMLCl
     **/
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.stars.xml.serialize.StarsInventories.class;
+        return com.cannontech.stars.xml.serialize.ChanceOfControl.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -201,7 +201,7 @@ function changeProgram(radioBtn, index) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(j);
-			if (enrProg.getChanceOfControlID() == com.cannontech.common.util.CtiUtilities.NONE_ID) continue;
+			if (enrProg.getChanceOfControl() == null) continue;
 			
 			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
 				if (programs.getStarsLMProgram(k).getProgramID() == enrProg.getProgramID()) {

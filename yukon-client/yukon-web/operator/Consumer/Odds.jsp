@@ -89,7 +89,7 @@
 		ArrayList progList = new ArrayList();	// List of programs that're eligible for notification
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
-			if (program.getChanceOfControlID() != com.cannontech.common.util.CtiUtilities.NONE_ID)
+			if (program.getChanceOfControl() != null)
 				progList.add( program );
 		}
 		
@@ -116,7 +116,7 @@
 <%
 			for (int k = 0; k < oddsList.getStarsSelectionListEntryCount(); k++) {
 				StarsSelectionListEntry entry = oddsList.getStarsSelectionListEntry(k);
-				String selectedStr = (entry.getEntryID() == program.getChanceOfControlID()) ? "selected" : "";
+				String selectedStr = (entry.getEntryID() == program.getChanceOfControl().getEntryID()) ? "selected" : "";
 %>
 									  <option value="<%= entry.getEntryID() %>" <%= selectedStr %>><%= entry.getContent() %></option>
 <%

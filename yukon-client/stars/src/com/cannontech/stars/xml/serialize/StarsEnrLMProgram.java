@@ -41,18 +41,13 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     **/
     private boolean _has_programID;
 
-    private int _chanceOfControlID;
-
-    /**
-     * keeps track of state for field: _chanceOfControlID
-    **/
-    private boolean _has_chanceOfControlID;
-
     private java.lang.String _programName;
 
     private StarsWebConfig _starsWebConfig;
 
     private java.util.Vector _addressingGroupList;
+
+    private ChanceOfControl _chanceOfControl;
 
 
       //----------------/
@@ -91,13 +86,6 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         _addressingGroupList.insertElementAt(vAddressingGroup, index);
     } //-- void addAddressingGroup(int, AddressingGroup) 
-
-    /**
-    **/
-    public void deleteChanceOfControlID()
-    {
-        this._has_chanceOfControlID= false;
-    } //-- void deleteChanceOfControlID() 
 
     /**
     **/
@@ -149,14 +137,14 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     } //-- int getAddressingGroupCount() 
 
     /**
-     * Returns the value of field 'chanceOfControlID'.
+     * Returns the value of field 'chanceOfControl'.
      * 
-     * @return the value of field 'chanceOfControlID'.
+     * @return the value of field 'chanceOfControl'.
     **/
-    public int getChanceOfControlID()
+    public ChanceOfControl getChanceOfControl()
     {
-        return this._chanceOfControlID;
-    } //-- int getChanceOfControlID() 
+        return this._chanceOfControl;
+    } //-- ChanceOfControl getChanceOfControl() 
 
     /**
      * Returns the value of field 'programID'.
@@ -187,13 +175,6 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     {
         return this._starsWebConfig;
     } //-- StarsWebConfig getStarsWebConfig() 
-
-    /**
-    **/
-    public boolean hasChanceOfControlID()
-    {
-        return this._has_chanceOfControlID;
-    } //-- boolean hasChanceOfControlID() 
 
     /**
     **/
@@ -289,16 +270,14 @@ public class StarsEnrLMProgram implements java.io.Serializable {
     } //-- void setAddressingGroup(AddressingGroup) 
 
     /**
-     * Sets the value of field 'chanceOfControlID'.
+     * Sets the value of field 'chanceOfControl'.
      * 
-     * @param chanceOfControlID the value of field
-     * 'chanceOfControlID'.
+     * @param chanceOfControl the value of field 'chanceOfControl'.
     **/
-    public void setChanceOfControlID(int chanceOfControlID)
+    public void setChanceOfControl(ChanceOfControl chanceOfControl)
     {
-        this._chanceOfControlID = chanceOfControlID;
-        this._has_chanceOfControlID = true;
-    } //-- void setChanceOfControlID(int) 
+        this._chanceOfControl = chanceOfControl;
+    } //-- void setChanceOfControl(ChanceOfControl) 
 
     /**
      * Sets the value of field 'programID'.

@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: ControlSummaryDescriptor.java,v 1.37 2003/04/17 21:32:32 zyao Exp $
+ * $Id: ControlSummaryDescriptor.java,v 1.38 2003/04/17 22:17:03 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.37 $ $Date: 2003/04/17 21:32:32 $
+ * @version $Revision: 1.38 $ $Date: 2003/04/17 22:17:03 $
 **/
 public class ControlSummaryDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 

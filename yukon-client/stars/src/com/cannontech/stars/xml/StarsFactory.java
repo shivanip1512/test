@@ -78,6 +78,20 @@ public class StarsFactory {
 		return null;
 	}
 	
+	public static StarsCustListEntry newEmptyStarsCustListEntry(Class type) {
+		try {
+			StarsCustListEntry newEntry = (StarsCustListEntry) type.newInstance();
+			newEntry.setEntryID( 0 );
+			newEntry.setContent( "(none)" );
+			return newEntry;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	
 	/* StarsApp factory methods */
 

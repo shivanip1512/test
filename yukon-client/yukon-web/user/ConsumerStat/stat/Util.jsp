@@ -75,12 +75,16 @@
 			  <%= ServletUtils.getFormattedAddress( energyCompany.getCompanyAddress() ) %><br>
               <br>
               Ph: <%= energyCompany.getMainPhoneNumber() %><br>
+<% if (energyCompany.getMainFaxNumber().length() > 0) { %>
               Fax: <%= energyCompany.getMainFaxNumber() %><br>
+<% } %>
 <cti:checkRole roleid="<%= RoleTypes.CUSTOMIZED_EMAIL_LINK %>">
 			  <a href='<cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_LINK_EMAIL %>"/>' class="Link1" target="new">Click here for trouble shooting</a>
 </cti:checkRole>
 <cti:checkNoRole roleid="<%= RoleTypes.CUSTOMIZED_EMAIL_LINK %>">
+<% if (energyCompany.getEmail().length() > 0) { %>
               <a href="mailto: <%= energyCompany.getEmail() %>" class = "Link1">Email: <%= energyCompany.getEmail() %></a><br>
+<% } %>
 </cti:checkNoRole>
               <br>
             </div>

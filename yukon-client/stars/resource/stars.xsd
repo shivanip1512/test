@@ -834,9 +834,9 @@
 			<xs:sequence>
 				<xs:element name="ProgramName" type="xs:string" minOccurs="0"/>
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
-			<xs:element name="AddressingGroup" minOccurs="0" maxOccurs="unbounded" type="stars-CustListEntry"/></xs:sequence>
+			<xs:element name="AddressingGroup" minOccurs="0" maxOccurs="unbounded" type="stars-CustListEntry"/><xs:element name="ChanceOfControl" minOccurs="0" type="stars-CustListEntry"/></xs:sequence>
 			<xs:attribute name="programID" type="xs:int"/>
-			<xs:attribute name="chanceOfControlID" type="xs:int"/>
+			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CustSelectionList">
@@ -1012,9 +1012,9 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="CompanyName" type="xs:string"/>
-				<xs:element name="MainPhoneNumber" type="xs:string"/>
-				<xs:element name="MainFaxNumber" type="xs:string"/>
-				<xs:element name="CompanyAddress" type="stars-CustomerAddress"/>
+				<xs:element name="MainPhoneNumber" type="xs:string" minOccurs="0"/>
+				<xs:element name="MainFaxNumber" type="xs:string" minOccurs="0"/>
+				<xs:element name="CompanyAddress" type="stars-CustomerAddress" minOccurs="0"/>
 				<xs:element name="PrimaryContact" type="stars-CustomerContact" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="companyID" type="xs:int"/>

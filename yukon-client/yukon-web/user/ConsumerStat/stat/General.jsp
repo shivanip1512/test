@@ -78,7 +78,7 @@
 								<p class="Main"><%= ecWebSettings.getDescription() %></p></td>
                               <td valign="top"> 
                                 <div align="center" class="MainHeader"><b>Your 
-                                  Control Programs</b> </div>
+                                  Enrolled Programs</b> </div>
                                 <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                                   <tr> 
                                     <td colspan="3" background="dot.gif" height="8"></td>
@@ -87,12 +87,22 @@
 	for (int i = 0; i < programs.getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = programs.getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
+		String ctrlOdds = null;
 		StarsLMControlHistory todayCtrlHist = ServletUtils.getTodaysControlHistory( program.getStarsLMControlHistory() );
 		
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
 			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
 				category = appCat;
+				
+				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+					StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(k);
+					if (enrProg.getProgramID() == program.getProgramID()) {
+						if (enrProg.getChanceOfControl() != null)
+							ctrlOdds = enrProg.getChanceOfControl().getContent();
+						break;
+					}
+				}
 				break;
 			}
 		}
@@ -109,39 +119,28 @@
                                       <table width="128" border="0" cellspacing="0" cellpadding="0" class="TableCell" height="80">
                                         <tr> 
                                           <td> <div align="center">
-                                            <%
-		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
-%>
+<%		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { %>
                                             Out of Service 
-                                              <%
-		}
-		else if (todayCtrlHist.getBeingControlled()) {
-%>
+<%		} else if (todayCtrlHist.getBeingControlled()) { %>
                                               Currently<br>
                                               <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLING %>"/> 
-                                              <%
-		}
-		else if (todayCtrlHist.getControlHistoryCount() > 0) {
-%>
+<%		} else if (todayCtrlHist.getControlHistoryCount() > 0) { %>
                                               You have<br>
                                               been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> since midnight
-                                              <%
-		}
-		else {
-%>
+<%		} else { %>
                                               You have not<br>
                                               been <cti:getProperty file="<%= ecWebSettings.getURL() %>" name="<%= ServletUtils.WEB_TEXT_CONTROLLED %>"/> since midnight
-                                              <%
-		}
-%>
+<%		} %>
                                             </div>
                                           </td>
                                         </tr>
                                         <tr> 
-                                          <td> 
-                                            <div align="center">Control today 
-                                              is<b><i> likely</i></b> </div>
-                                          </td>
+                                          <td>
+<%		if (ctrlOdds != null) { %>
+                                            <div align="center">Control odds:<b><i> 
+                                              <%= ctrlOdds %></i></b> </div>
+<%		} %>
+                                          &nbsp;</td>
                                         </tr>
                                       </table>
                                     </td>
@@ -161,13 +160,13 @@
                     <p><cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>"></cti:checkRole> 
                     </p>
                     <cti:checkRole roleid="<%= RoleTypes.NOTIFICATION_ON_GENERAL_PAGE %>"> 
-                    <%
+<%
 	boolean showNotification = false;
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
 			StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(j);
-			if (enrProg.getChanceOfControlID() == com.cannontech.common.util.CtiUtilities.NONE_ID) continue;
+			if (enrProg.getChanceOfControl() == null) continue;
 			
 			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
 				if (programs.getStarsLMProgram(k).getProgramID() == enrProg.getProgramID()) {

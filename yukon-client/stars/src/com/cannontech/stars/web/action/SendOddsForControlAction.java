@@ -15,6 +15,7 @@ import com.cannontech.stars.util.timertask.SendControlOddsTimerTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.servlet.SOAPServer;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.xml.serialize.ChanceOfControl;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
@@ -61,7 +62,10 @@ public class SendOddsForControlAction implements ActionBase {
         				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
         					StarsEnrLMProgram program = category.getStarsEnrLMProgram(k);
         					if (program.getProgramID() == progID) {
-			        			program.setChanceOfControlID( Integer.parseInt(controlOdds[i]) );
+        						ChanceOfControl ctrlOdds = new ChanceOfControl();
+        						ctrlOdds.setEntryID( Integer.parseInt(controlOdds[i]) );
+			        			program.setChanceOfControl( ctrlOdds );
+			        			
 			        			sendCtrlOdds.addStarsEnrLMProgram( program );
 			        			break;
         					}
@@ -116,7 +120,7 @@ public class SendOddsForControlAction implements ActionBase {
             			for (int k = 0; k < liteAppCat.getPublishedPrograms().length; k++) {
             				LiteLMProgram liteProg = liteAppCat.getPublishedPrograms()[k];
             				if (liteProg.getProgramID() == starsProg.getProgramID()) {
-            					liteProg.setChanceOfControlID( starsProg.getChanceOfControlID() );
+            					liteProg.setChanceOfControlID( starsProg.getChanceOfControl().getEntryID() );
             					progList.add( liteProg );
             					
 			        			com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =

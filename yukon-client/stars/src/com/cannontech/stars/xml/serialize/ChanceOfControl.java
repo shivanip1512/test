@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerAccount.java,v 1.38 2003/04/17 22:17:01 zyao Exp $
+ * $Id$
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,9 +23,9 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.38 $ $Date: 2003/04/17 22:17:01 $
+ * @version $Revision$ $Date$
 **/
-public class StarsCustomerAccount extends StarsCustAccount 
+public class ChanceOfControl extends StarsCustListEntry 
 implements java.io.Serializable
 {
 
@@ -34,9 +34,9 @@ implements java.io.Serializable
      //- Constructors -/
     //----------------/
 
-    public StarsCustomerAccount() {
+    public ChanceOfControl() {
         super();
-    } //-- com.cannontech.stars.xml.serialize.StarsCustomerAccount()
+    } //-- com.cannontech.stars.xml.serialize.ChanceOfControl()
 
 
       //-----------/
@@ -85,11 +85,11 @@ implements java.io.Serializable
      * 
      * @param reader
     **/
-    public static com.cannontech.stars.xml.serialize.StarsCustomerAccount unmarshal(java.io.Reader reader)
+    public static com.cannontech.stars.xml.serialize.ChanceOfControl unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.stars.xml.serialize.StarsCustomerAccount) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsCustomerAccount.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsCustomerAccount unmarshal(java.io.Reader) 
+        return (com.cannontech.stars.xml.serialize.ChanceOfControl) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.ChanceOfControl.class, reader);
+    } //-- com.cannontech.stars.xml.serialize.ChanceOfControl unmarshal(java.io.Reader) 
 
     /**
     **/

@@ -1396,7 +1396,6 @@ public class StarsLiteFactory {
 				starsProg.setProgramID( liteProg.getProgramID() );
 				starsProg.setProgramName( liteProg.getProgramName() );
 				starsProg.setStarsWebConfig( energyCompany.getStarsWebConfig(liteProg.getWebSettingsID()) );
-				starsProg.setChanceOfControlID( liteProg.getChanceOfControlID() );
 				
 				for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
         			String groupName = com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName( liteProg.getGroupIDs()[j] );
@@ -1404,6 +1403,11 @@ public class StarsLiteFactory {
         			group.setEntryID( liteProg.getGroupIDs()[j] );
         			group.setContent( groupName );
         			starsProg.addAddressingGroup( group );
+				}
+				
+				if (liteProg.getChanceOfControlID() != 0) {
+					starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
+							YukonListFuncs.getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
 				}
 				
 				starsAppCat.addStarsEnrLMProgram( starsProg );
@@ -1677,10 +1681,8 @@ public class StarsLiteFactory {
 		ArrayList entries = yukonList.getYukonListEntries();
 		if (entries.size() == 0) {
 			// Assign the list a "default" entry if the list is empty
-			StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
-			starsEntry.setEntryID( CtiUtilities.NONE_ID );
-			starsEntry.setContent( "(none)" );
-			starsList.addStarsSelectionListEntry( starsEntry );
+			starsList.addStarsSelectionListEntry( (StarsSelectionListEntry)
+					StarsFactory.newEmptyStarsCustListEntry(StarsSelectionListEntry.class) );
 		}
 		else {
 			for (int i = 0; i < entries.size(); i++) {
