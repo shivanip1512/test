@@ -1,14 +1,25 @@
 <%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.cache.functions.DBPersistentFuncs"%>
+<%@ page import="com.cannontech.database.cache.functions.DeviceFuncs"%>
+<%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
+<%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>
+<%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
+<%@ page import="com.cannontech.database.data.device.CarrierBase"%>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
+
+
+<jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
+<%-- Grab the search criteria --%>
+<jsp:setProperty name="commandDeviceBean" property="filterBy" param="FilterBy"/>
+<jsp:setProperty name="commandDeviceBean" property="sortBy" param="SortBy"/>
+<jsp:setProperty name="commandDeviceBean" property="sortOrder" param="SortOrder"/>
+<jsp:setProperty name="commandDeviceBean" property="deviceClass" param="DeviceClass"/>
+<jsp:setProperty name="commandDeviceBean" property="collGroup" param="CollGroup"/>
 <%
-String sortBy = "";
-String sortOrder = "asc";
-int filterBy = 0;
-int member = 0;	//user.getEnergyCompanyID()
 int page_ = 1;
 if( request.getParameter("page_") != null)
 	page_ = Integer.valueOf(request.getParameter("page_")).intValue();
-
-%>
+	%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -17,11 +28,8 @@ if( request.getParameter("page_") != null)
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function changeFilter(filterBy) {
-	document.getElementById("DivDeviceType").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE %>)? "" : "none";
-	document.getElementById("DivServiceCompany").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY %>)? "" : "none";
-	document.getElementById("DivLocation").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)? "" : "none";
-	document.getElementById("DivAddressingGroup").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG %>)? "" : "none";
-	document.getElementById("DivDeviceStatus").style.display = (filterBy == <%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS %>)? "" : "none";
+	document.getElementById("DivDeviceClass").style.display = (filterBy == <%= CommandDeviceBean.DEVICE_CLASS_FILTER %>)? "" : "none";
+	document.getElementById("DivCollectionGroup").style.display = (filterBy == <%= CommandDeviceBean.COLLECTION_GROUP_FILTER%>)? "" : "none";
 }
 
 function init() {
@@ -38,7 +46,7 @@ function showAll(form) {
 </script>
 </head>
 
-<body class="Background" leftmargin="0" topmargin="0">
+<body class="Background" leftmargin="0" topmargin="0" onload="init()">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
 	<td> 
@@ -51,7 +59,7 @@ function showAll(form) {
                	<td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
 			  </tr>
 			  <tr>
-				<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commercial Metering&nbsp;&nbsp;</td>
+				<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Commander&nbsp;&nbsp;</td>
 				<td width="253" valign="middle">&nbsp;</td>
 				<td width="58" valign="middle">
                   <div align="center"><span class="MainText"><a href="../operator/Operations.jsp" class="Link3">Home</a></span></div>
@@ -82,9 +90,98 @@ function showAll(form) {
           </td>
           <td width="1" bgcolor="#000000"><img src="../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
-            <div align="center"> 
+          <div align="center"> 
               <% String header = "COMMAND - DEVICE SELECTION"; %>
               <br>
+<%--    TODO          <%@ include file="../operator/Hardware/include/SearchBar.jsp" %>--%>
+              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <form name="MForm" method="post" action="">
+			    <input type="hidden" name="page" value="1">
+			    
+                <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="75%"> 
+                      <table width="100%" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+                        <tr> 
+                          <td width="15%"> 
+                            <div align="right">Sort by:</div>
+                          </td>
+                          <td width="35%"> 
+                            <select name="SortBy">
+                            <% for (int i = 0; i < CommandDeviceBean.sortByStrings.length; i++)
+                            {%>
+                              <option value="<%=i%>"  <% if (commandDeviceBean.getSortBy() == i) out.print("selected"); %>><%=CommandDeviceBean.sortByStrings[i]%></option>
+                          <%}%>
+                            </select>
+                          </td>
+                          <td width="50%"> 
+                            <select name="SortOrder">
+                              <option value="<%= CommandDeviceBean.SORT_ORDER_ASCENDING %>" <% if (commandDeviceBean.getSortOrder() == CommandDeviceBean.SORT_ORDER_ASCENDING) out.print("selected"); %>>Ascending</option>
+                              <option value="<%= CommandDeviceBean.SORT_ORDER_DESCENDING %>" <% if (commandDeviceBean.getSortOrder() == CommandDeviceBean.SORT_ORDER_DESCENDING) out.print("selected"); %>>Descending</option>
+                            </select>
+                          </td>
+                        </tr>
+                        <tr valign="top"> 
+                          <td width="15%"> 
+                            <div align="right">Filter by:</div>
+                          </td>
+                          <td width="35%"> 
+                            <select name="FilterBy" onChange="changeFilter(this.value)">
+                              <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
+                              <option value="<%=CommandDeviceBean.DEVICE_CLASS_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.DEVICE_CLASS_FILTER) ?  "selected" : ""%>>Device Class</option>
+                              <option value="<%=CommandDeviceBean.COLLECTION_GROUP_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COLLECTION_GROUP_FILTER) ?  "selected" : ""%>>Collection Group</option>
+                            </select>
+                          </td>
+                          <td width="50%"> 
+                            <div id="DivDeviceClass" style="display:none"> 
+                              <select name="DeviceClass">
+                              <% for (int i = 0; i < commandDeviceBean.getValidDeviceClasses().size(); i++)
+                              {
+                              	int id = ((Integer)commandDeviceBean.getValidDeviceClasses().get(i)).intValue();
+                              	%>
+                                <option value="<%=id%>" <%=(commandDeviceBean.getDeviceClass() == id ? "selected" :"")%>><%=com.cannontech.database.data.pao.DeviceClasses.getClass(id)%></option>
+                                <%}%>
+                              </select>
+                            </div>
+                            <div id="DivCollectionGroup" style="display:none"> 
+                              <select name="CollGroup">
+                              <% for (int i = 0; i < commandDeviceBean.getValidCollGroups().size(); i++)
+                              {
+                              	String val = (String)commandDeviceBean.getValidCollGroups().get(i);
+                              	%>
+                                <option value="<%=val%>" <%=(commandDeviceBean.getCollGroup().equalsIgnoreCase(val) ? "selected" :"")%>><%=val%></option>
+                                <%}%>
+                              </select>
+                            </div>
+                            <div id="DivAlternateGroup" style="display:none"> 
+                              <select name="FilterValue">
+                                <option value="Default" selected>Default</option>
+                              </select>
+                            </div>
+                            <div id="DivRoute" style="display:none"> 
+                              <select name="FilterValue">
+                                <option value="SomeRoute" selected>Some Route</option>
+                              </select>
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width="25%"> 
+                      <input type="submit" name="Submit" value="Show">
+						<% if (true) { %>
+                      <input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
+						<% } %>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+			  <table width="80%" border="0" cellspacing="0" cellpadding="0" class="MainText">
+                <tr>
+                  <td align="center">Click on an item to select it for sending commands.</td>
+                </tr>
+              </table>
+			  <br>          
               <table width="100%" border="0" cellspacing="0" cellpadding="3">
                 <tr> 
                   <td align="center" class="TitleHeader"><%= header %></td>
@@ -97,13 +194,9 @@ function showAll(form) {
         		<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <input type='hidden' name='action' value='SelectDevice'>
                 
-                <table width='80%' border='0' cellspacing='0' cellpadding='3'>
+                <table width='95%' border='0' cellspacing='0' cellpadding='3'>
                 <%
-				  DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-				  synchronized( cache )
-				  { 
-				  	java.util.List allDevices = cache.getAllDevices();
-				  	java.util.Collections.sort( allDevices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+				  	java.util.List allDevices =	commandDeviceBean.getDeviceList();
 
 				    int displaySize = 25;
 				    int endIndex = (page_ * displaySize);
@@ -139,32 +232,9 @@ function showAll(form) {
                     </td>
                   </tr>
                   <tr> 
-                    <td> 
-                      <table width='100%' border='1' cellspacing='0' cellpadding='3'>
-                        <tr> 
-                          <td class='HeaderCell' width='10%'>&nbsp;</td>
-                          <td class='HeaderCell' width='30%'>Device Name</td>
-                          <td class='HeaderCell' width='20%'>Device Type</td>
-						  <td class='HeaderCell' width='20%'>Address</td>
-                          <td class='HeaderCell' width='20%'>Route</td>						  
-                        </tr>
-						<% 
-						  boolean first = true;
-						  for (int i = startIndex; i < endIndex; i++)
-						  {
-							LiteYukonPAObject lPao = (LiteYukonPAObject) allDevices.get(i);%>
-                        <tr> 
-                          <td class='TableCell' width='10%'>
-                            <input type='radio' name='deviceID' value='<%=lPao.getYukonID()%>' <%if (first){first=false;%>checked<%}%>>
-                          </td>
-                          <td class='TableCell' width='30%'><%= lPao.getPaoName()%></td>
-                          <td class='TableCell' width='20%'><%= com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(lPao.getType())%></td>
-                          <td class='TableCell' width='20%'><%if(lPao.getAddress()!=com.cannontech.database.data.pao.PAOGroups.INVALID)%><%=lPao.getAddress()%><%else{%>---<%}%></td>
-                     	  <td class='TableCell' width='20%'><%if(lPao.getRouteID()!=com.cannontech.database.data.pao.PAOGroups.INVALID)%><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(lPao.getRouteID())%><%else{%>---<%}%></td>
-                        </tr>
-						<%}%>
-                      </table>
-                    </td>
+                    <td>
+                    	<%=commandDeviceBean.getDeviceTableHTML(startIndex, endIndex)%>
+					</td>
                   </tr>
                   <tr> 
                     <td> 
@@ -188,7 +258,6 @@ function showAll(form) {
                       </table>
                     </td>
                   </tr>
-                <%}%>
                 </table>
                 <br>
                 <table width='200' border='0' cellspacing='0' cellpadding='3'>
