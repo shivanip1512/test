@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.tdc.custom.CustomDisplay;
 
@@ -61,7 +62,15 @@ public static Object[][] queryResults( String query, Object[] parameters, boolea
 	{
 		for( int i = 0; i < parameters.length; i++ )
 			parameters[i] = substituteObject(parameters[i]);
+
+		//Debug purposes
+		StringBuffer buf = new StringBuffer(query);
+		for( int i = 0; i < parameters.length; i++ )
+			buf.replace( buf.indexOf("?"), buf.indexOf("?")+1, parameters[i].toString() );
+		CTILogger.debug(" TDC Query = " + buf.toString());
 	}
+
+
 
 	
 	if( query.length() >= 30000 ) //way to big of a query!!!
