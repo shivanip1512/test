@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/11/08 16:24:54 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/11/09 06:15:34 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.16  2004/11/09 06:15:34  cplender
+* Improved the destructor if the verificationobjects are not empty..
+*
 * Revision 1.15  2004/11/08 16:24:54  mfisher
 * implemented getVerificationObjects() instead of just thinking about it
 *
@@ -103,6 +106,13 @@ CtiDeviceRTC::~CtiDeviceRTC()
 
         CtiOutMessage *pOM = repeat.second;
         delete pOM;
+    }
+
+    while(!_verification_objects.empty())
+    {
+        CtiVerificationBase * pV = (CtiVerificationBase *)_verification_objects.front();
+        _verification_objects.pop();
+        delete pV;
     }
 }
 
