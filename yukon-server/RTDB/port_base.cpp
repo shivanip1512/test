@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2005/02/25 20:16:22 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.51  2005/02/25 20:16:22  cplender
+* Changed from list to set for queuedDevices.
+*
 * Revision 1.50  2005/02/17 19:02:58  mfisher
 * Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 *
@@ -1571,13 +1574,13 @@ bool CtiPort::getDeviceQueued() const
 
 CtiPort& CtiPort::setDeviceQueued(LONG id)
 {
-    _devicesQueued.push_back( id );
+    _devicesQueued.insert( id );
     return *this;
 }
 
 CtiPort& CtiPort::resetDeviceQueued(LONG id)
 {
-    _devicesQueued.remove( id );
+    _devicesQueued.erase( id );
     return *this;
 }
 
