@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/10/12 20:16:20 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/10/19 20:26:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,32 +51,32 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
 int DispatchMainFunction(int argc, char **argv)
 {
-   try
-   {
-      CtiVanGogh VanGogh;
+    try
+    {
+        CtiVanGogh VanGogh;
 
-      SET_CRT_OUTPUT_MODES;
-      if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
-          ENABLE_CRT_SHUTDOWN_CHECK;
+        SET_CRT_OUTPUT_MODES;
+        if(gConfigParms.isOpt("DEBUG_MEMORY") && !gConfigParms.getValueAsString("DEBUG_MEMORY").compareTo("true", RWCString::ignoreCase) )
+            ENABLE_CRT_SHUTDOWN_CHECK;
 
-      pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
+        pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
 
-      VanGogh.CmdLine(argc, argv);      // Record the Command line options for the world to see.
+        VanGogh.CmdLine(argc, argv);      // Record the Command line options for the world to see.
 
-      int i = VanGogh.execute();
+        int i = VanGogh.execute();
 
-      VanGogh.join();
+        VanGogh.join();
 
-      _CrtSetAllocHook(pfnOldCrtAllocHook);
+        _CrtSetAllocHook(pfnOldCrtAllocHook);
 
-      return(i);
-   }
-   catch(const RWxmsg& x)
-   {
-      cout << "main() Exception: " << x.why() << endl;
-   }
+        return(i);
+    }
+    catch(const RWxmsg& x)
+    {
+        cout << "main() Exception: " << x.why() << endl;
+    }
 
-   return 0;
+    return 0;
 }
 
 
@@ -90,7 +90,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
     int twnetyfourcnt = 0;
 
-    if(lRequest > 1000000 && (nSize == 24 || nSize == 52 || nSize == 1316 || nSize == 68) )
+    if(lRequest > 1000000)
     {
         if( (nSize == 24) )
         {
@@ -119,15 +119,27 @@ static int MyAllocHook(int nAllocType, void *pvData,
         {
             twnetyfourcnt++;
         }
-        else if( (nSize == 53) )
+        else if( (nSize == 176) )
         {
             twnetyfourcnt++;
         }
-        else if( (nSize == 63) )
+        else if( (nSize == 52) )
         {
             twnetyfourcnt++;
         }
-        else if( (nSize == 164) )
+        else if( (nSize == 416) )
+        {
+            twnetyfourcnt++;
+        }
+        else if( (nSize == 76) )
+        {
+            twnetyfourcnt++;
+        }
+        else if( (nSize == 88) )
+        {
+            twnetyfourcnt++;
+        }
+        else if( (nSize == 80) )
         {
             twnetyfourcnt++;
         }
@@ -153,3 +165,5 @@ static int MyAllocHook(int nAllocType, void *pvData,
         pfnOldCrtAllocHook(nAllocType, pvData, nSize, nBlockUse, lRequest, szFileName, nLine);
     return TRUE; // allow the memory operation to proceed
 }
+
+
