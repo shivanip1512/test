@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2003/10/28 18:06:50 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/02/16 21:03:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -580,7 +580,13 @@ CtiPoint* CtiPointManager::getEqual (LONG Pt)
     LockGuard  guard(monitor());
     CtiHashKey key(Pt);
     return Map.findValue(&key);
+}
 
+bool CtiPointManager::isIdValid(LONG Pt)
+{
+    LockGuard  guard(monitor());
+    CtiHashKey key(Pt);
+    return Map.contains(&key);
 }
 
 CtiPoint* CtiPointManager::getEqualByName(LONG pao, RWCString pname)
