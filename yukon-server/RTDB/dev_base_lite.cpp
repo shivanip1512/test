@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/11/14 15:40:14 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/04 14:29:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,6 @@ void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
 void CtiDeviceBaseLite::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    LockGuard guard( monitor() );
     rdr["paobjectid"] >> _deviceID;
     rdr["paoname"] >> _name;
     rdr["type"] >> _objectType;
@@ -159,16 +158,19 @@ RWCString CtiDeviceBaseLite::getTableName()
 
 RWDBStatus CtiDeviceBaseLite::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBSelector selector;
+    RWDBStatus dbstat = selector.status(); // Make it a not initialized ....
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema, 5000);
+
+    if(cg.isAcquired())
+    {
     RWDBConnection conn = getConnection();
 
-    RWDBStatus dbstat;
-
-    {
+        {
         RWDBTable table = getDatabase().table( getTableName() );
         RWDBTable devtable = getDatabase().table( "Device" );
 
-        RWDBSelector selector = getDatabase().selector();
+            selector = getDatabase().selector();
 
         selector << table["paobjectid"];
         selector << table["paoname"];
@@ -187,9 +189,9 @@ RWDBStatus CtiDeviceBaseLite::Restore()
 
         if( reader() )
         {
-            LockGuard guard( monitor() );
             DecodeDatabaseReader( reader );
         }
+    }
     }
 
     return dbstat;
@@ -199,7 +201,6 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
 {
     if(this != &aRef)
     {
-        LockGuard guard( monitor() );
         _deviceID = aRef.getID();
         _name = aRef.getName();
         _objectType = aRef.getObjectType();
