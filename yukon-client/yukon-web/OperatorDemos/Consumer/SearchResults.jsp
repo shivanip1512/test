@@ -70,7 +70,7 @@ function selectAccount(accountID) {
               
             <div align="center"><% String header = "SEARCH RESULTS"; %><%@ include file="InfoSearchBar2.jsp" %></div> 
 <%
-	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) operator.getAttribute( "ACCOUNT_SEARCH_RESULTS" );
+	StarsSearchCustomerAccountResponse resp = (StarsSearchCustomerAccountResponse) operator.getAttribute( ServletUtils.ATT_ACCOUNT_SEARCH_RESULTS );
 	if (resp.getStarsFailure() != null) {
 %>
             <div align="center">

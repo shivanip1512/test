@@ -14,5 +14,7 @@
     <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/lib/jasper-runtime.jar"/>
     <classpathentry kind="output" path="WEB-INF\classes"/>
 </classpath>

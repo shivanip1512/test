@@ -1,6 +1,6 @@
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%
-	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute("ENROLLMENT_PROGRAMS");
+	StarsGetEnrollmentProgramsResponse categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute(ServletUtils.ATT_ENROLLMENT_PROGRAMS);
 	if (categories == null)
 		response.sendRedirect("/UserDemos/ConsumerSwitch/login.jsp");
 %>

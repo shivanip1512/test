@@ -32,7 +32,7 @@
 	StarsLMPrograms programs = null;
 	StarsGetEnrollmentProgramsResponse categories = null;
 	
-	accountInfo = (StarsCustAccountInfo) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+	accountInfo = (StarsCustAccountInfo) user.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
 		account = accountInfo.getStarsCustomerAccount();
 		propAddr = account.getStreetAddress();
@@ -43,6 +43,6 @@
 		appliances = accountInfo.getStarsAppliances();
 		inventories = accountInfo.getStarsInventories();
 		programs = accountInfo.getStarsLMPrograms();
-		categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute( "ENROLLMENT_PROGRAMS" );
+		categories = (StarsGetEnrollmentProgramsResponse) session.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	}
 %>

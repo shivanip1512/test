@@ -20,7 +20,7 @@
 	}
 	
     String dbAlias = operator.getDatabaseAlias();	
-	Hashtable selectionListTable = (Hashtable) operator.getAttribute( "CUSTOMER_SELECTION_LISTS" );
+	Hashtable selectionListTable = (Hashtable) operator.getAttribute( ServletUtils.ATT_CUSTOMER_SELECTION_LISTS );
 	
 	StarsCustAccountInformation accountInfo = null;
 	StarsCustomerAccount account = null;
@@ -38,7 +38,7 @@
 	StarsUser userLogin = null;
 	StarsGetEnrollmentProgramsResponse categories = null;
 	
-	accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + "CUSTOMER_ACCOUNT_INFORMATION");
+	accountInfo = (StarsCustAccountInformation) operator.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	if (accountInfo != null) {
 		account = accountInfo.getStarsCustomerAccount();
 		propAddr = account.getStreetAddress();
@@ -53,7 +53,7 @@
 		callHist = accountInfo.getStarsCallReportHistory();
 		serviceHist = accountInfo.getStarsServiceRequestHistory();
 		userLogin = accountInfo.getStarsUser();
-		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( "ENROLLMENT_PROGRAMS" );
+		categories = (StarsGetEnrollmentProgramsResponse) operator.getAttribute( ServletUtils.ATT_ENROLLMENT_PROGRAMS );
 	}
 %>
 	<jsp:useBean id="graphBean" class="com.cannontech.graph.GraphBean" scope="session">

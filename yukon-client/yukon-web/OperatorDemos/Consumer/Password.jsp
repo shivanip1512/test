@@ -66,9 +66,14 @@ function checkPasswords(form) {
               <% String header = "ADMINISTRATION - CHANGE PASSWORD"; %>
               <%@ include file="InfoSearchBar.jsp" %>
               <br>
+<%
+	String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+	session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+%>
+			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			
             <form method="POST" action="/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateLogin">
-			   
               <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
                 <tr> 
                   <td width="100" class="TableCell"> 
