@@ -11,8 +11,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2003/02/28 16:01:00 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2003/03/06 18:05:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1009,23 +1009,6 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
                                    parse.getiValue("xcdsf", 0),
                                    hold);
     }
-    else if(parse.isKeyValid("xcsetstate"))
-    {
-        BYTE fanstate = (BYTE)parse.getiValue("xcfanstate", 0);
-        BYTE sysstate = (BYTE)parse.getiValue("xcsysstate", 0);;
-        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
-        bool restore = parse.isKeyValid("xcrunprog") ? true : false;
-        bool temporary = parse.isKeyValid("xcholdprog") ? false : true;
-
-        thermostatSetState( relaymask,
-                            temporary,
-                            restore,
-                            parse.getiValue("xctimeout", -1),
-                            parse.getiValue("xcsettemp", -1),
-                            fanstate,
-                            sysstate,
-                            delay);
-    }
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1041,6 +1024,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     INT status = NORMAL;
 
     int serial = parse.getiValue("xc_serial", 0);
+    int relaymask  = parse.getiValue("relaymask", 0x00000001);
 
 
     if(serial != 0 && parse.isKeyValid("xcaddress"))
@@ -1101,6 +1085,25 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         status = parseSchedule(parse);
     }
+
+    if(parse.isKeyValid("xcsetstate"))
+    {
+        BYTE fanstate = (BYTE)parse.getiValue("xcfanstate", 0);
+        BYTE sysstate = (BYTE)parse.getiValue("xcsysstate", 0);;
+        INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+        bool restore = parse.isKeyValid("xcrunprog") ? true : false;
+        bool temporary = parse.isKeyValid("xcholdprog") ? false : true;
+
+        thermostatSetState( relaymask,
+                            temporary,
+                            restore,
+                            parse.getiValue("xctimeout", -1),
+                            parse.getiValue("xcsettemp", -1),
+                            fanstate,
+                            sysstate,
+                            delay);
+    }
+
 
     return status;
 }

@@ -3037,9 +3037,41 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
             }
         }
     }
-    else if(CmdStr.contains(" setstate"))
+}
+
+
+void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
+{
+    CHAR *p;
+    INT         _num;
+    UINT        flag   = 0;
+    UINT        offset = 0;
+    UINT        iValue = 0;
+    DOUBLE      dValue = 0.0;
+    CHAR        tbuf[80];
+
+    RWCString   str;
+    RWCString   temp;
+    RWCString   valStr;
+    RWCString   token;
+
+    RWCTokenizer   tok(CmdStr);
+
+    token = tok(); // Get the first one into the hopper....
+
+    if(CmdStr.contains(" sync"))
+    {
+        _cmd["xcsync"] = CtiParseValue( TRUE );
+    }
+
+    if(CmdStr.contains(" setstate"))
     {
         _cmd["xcsetstate"] = CtiParseValue( TRUE );
+
+        if( !isKeyValid("relaymask") )
+        {
+            _cmd["relaymask"] = CtiParseValue( 0x01 );
+        }
 
         if(CmdStr.contains("run"))
         {
@@ -3105,34 +3137,8 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
             }
         }
     }
-}
 
-
-void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
-{
-    CHAR *p;
-    INT         _num;
-    UINT        flag   = 0;
-    UINT        offset = 0;
-    UINT        iValue = 0;
-    DOUBLE      dValue = 0.0;
-    CHAR        tbuf[80];
-
-    RWCString   str;
-    RWCString   temp;
-    RWCString   valStr;
-    RWCString   token;
-
-    RWCTokenizer   tok(CmdStr);
-
-    token = tok(); // Get the first one into the hopper....
-
-    if(CmdStr.contains(" sync"))
-    {
-        _cmd["xcsync"] = CtiParseValue( TRUE );
-    }
-
-    if(CmdStr.contains(" time"))
+    if(CmdStr.contains(" timesync"))
     {
         _cmd["xctimesync"] = CtiParseValue( TRUE );
 
@@ -3191,11 +3197,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
     if(!(token = CmdStr.match("main(tenance)?( +(0x)?[0-9a-f]+)+")).isNull())
     {
         // Translates to a maintenance function
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         if(!(str = token.match("( +(0x)?[0-9a-f]+)+")).isNull())
         {
             _cmd["xcrawmaint"] = CtiParseValue( str );
