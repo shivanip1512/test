@@ -5,7 +5,7 @@ package com.cannontech.database.data.lite;
  */
 public class LiteEnergyCompany extends LiteBase {
 	private String name;
-	
+
 	public LiteEnergyCompany() {
 		initialize(0,null);
 	}
@@ -38,6 +38,22 @@ public class LiteEnergyCompany extends LiteBase {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Returns the energyCompanyID.
+	 * @return int
+	 */
+	public int getEnergyCompanyID() {
+		return getLiteID();
+	}
+
+	/**
+	 * Sets the energyCompanyID.
+	 * @param energyCompanyID The energyCompanyID to set
+	 */
+	public void setEnergyCompanyID(int energyCompanyID) {
+		setLiteID(energyCompanyID);
 	}
 
 }
