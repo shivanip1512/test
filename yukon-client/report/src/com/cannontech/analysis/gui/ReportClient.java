@@ -19,18 +19,19 @@ import javax.swing.JMenuItem;
 
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.CapBankReport;
-import com.cannontech.analysis.report.DatabaseReport;
+import com.cannontech.analysis.report.CarrierDBReport;
 import com.cannontech.analysis.report.DisconnectReport;
 import com.cannontech.analysis.report.ECActivityLogReport;
 import com.cannontech.analysis.report.LGAccountingReport;
-import com.cannontech.analysis.report.MissedMeterReport;
+import com.cannontech.analysis.report.MeterReadReport;
 import com.cannontech.analysis.report.PowerFailReport;
 import com.cannontech.analysis.report.RouteMacroReport;
 import com.cannontech.analysis.report.StatisticReport;
 import com.cannontech.analysis.report.SystemLogReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ActivityModel;
-import com.cannontech.analysis.tablemodel.DatabaseModel;
+import com.cannontech.analysis.tablemodel.CapBankListModel;
+import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
@@ -60,7 +61,6 @@ import com.cannontech.message.dispatch.message.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.util.ClientConnection;
-import com.cannontech.report.cbc.CapBankListModel;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.util.ServletUtil;
 
@@ -90,7 +90,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 	private Date endDate = ServletUtil.getTomorrow();
 	
 	//String representing the statType for StatisticModel type ONLY
-	private String statTypeString = StatisticModel.DAILY_STAT_TYPE_STRING;
+	private String statTypeString = StatisticModel.DAILY_STAT_PERIOD_TYPE_STRING;
 	private int [] currentModels = null;
 	private static final int[] STATISTIC_MODELS = {
 		ModelFactory.MCT_CHECKBOX,
@@ -164,128 +164,131 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 	{
 		//show the root node by default
 		getCheckBoxTreeViewPanel().getTree().setRootVisible(true);
-
+		ReportModelBase tempModel = null;
 		if (event.getSource() == getReportsMenu().getTodayMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(STATISTIC_MODELS);
-			setModel(new StatisticModel(StatisticModel.DAILY_STAT_TYPE_STRING));
+			tempModel = new StatisticModel(StatisticModel.DAILY_STAT_PERIOD_TYPE_STRING);
 		}
 		else if (event.getSource() == getReportsMenu().getYesterdayMenuItem())
 		{
 			enableComponents(false, false);			
 			loadTreeModels(STATISTIC_MODELS);
-			setModel(new StatisticModel(StatisticModel.YESTERDAY_STAT_TYPE_STRING));
+			tempModel = new StatisticModel(StatisticModel.YESTERDAY_STAT_PERIOD_TYPE_STRING);
 		}
 		else if (event.getSource() == getReportsMenu().getMonthlyMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(STATISTIC_MODELS);
-			setModel(model = new StatisticModel(StatisticModel.MONTHLY_STAT_TYPE_STRING));
+			tempModel = new StatisticModel(StatisticModel.MONTHLY_STAT_PERIOD_TYPE_STRING);
 		}
 		else if (event.getSource() == getReportsMenu().getPrevMonthMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(STATISTIC_MODELS);
-			setModel(new StatisticModel(StatisticModel.LASTMONTH_STAT_TYPE_STRING));
+			tempModel = new StatisticModel(StatisticModel.LASTMONTH_STAT_PERIOD_TYPE_STRING);
 		}
 		else if (event.getSource() == getReportsMenu().getLoadGroupAcctMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(LOADGROUP_MODELS);
-			setModel(new LoadGroupModel());
+			tempModel = new LoadGroupModel();
 		}
 		else if (event.getSource() == getReportsMenu().getLMControlLogMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(LOADGROUP_MODELS);
-			setModel(new LMControlLogModel());
+			tempModel = new LMControlLogModel();
 		}
 		else if (event.getSource() == getReportsMenu().getPowerFailMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(POWERFAIL_MODELS);
-			setModel(new PowerFailModel());
+			tempModel = new PowerFailModel();
 		}
 		else if ( event.getSource() == getReportsMenu().getHistoryMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(DISCONNECT_MODELS);
-			setModel(new DisconnectModel(DisconnectModel.HISTORY_STRING));
+			tempModel = new DisconnectModel(true);
 		}
 		else if ( event.getSource() == getReportsMenu().getConnectedMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(DISCONNECT_MODELS);
-			setModel(new DisconnectModel(DisconnectModel.CONNECTED_STRING));
+			tempModel = new DisconnectModel();
+			((DisconnectModel)tempModel).setShowConnected(true);
 		}
 		else if ( event.getSource() == getReportsMenu().getDisconnectedMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(DISCONNECT_MODELS);
-			setModel(new DisconnectModel(DisconnectModel.DISCONNECTED_STRING));
+			tempModel = new DisconnectModel();
+			((DisconnectModel)tempModel).setShowDisconnected(true);
 		}
 		else if ( event.getSource() == getReportsMenu().getCurrentStateMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(DISCONNECT_MODELS);
-			setModel(new DisconnectModel(DisconnectModel.CURRENT_STRING));
+			tempModel = new DisconnectModel(false);	//to show current, set showHistory=false
 		}
 		else if (event.getSource() == getReportsMenu().getMissedMeterMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(AMR_MODELS);
-			setModel(new MeterReadModel(ReportTypes.MISSED_METER_DATA));
+			tempModel = new MeterReadModel(MeterReadModel.MISSED_METER_READ_TYPE);
 		}
 		else if (event.getSource() == getReportsMenu().getSuccessMeterMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(AMR_MODELS);
-			setModel(new MeterReadModel(ReportTypes.SUCCESS_METER_DATA));
+			tempModel = new MeterReadModel(MeterReadModel.SUCCESS_METER_READ_TYPE);
 		}
 		else if (event.getSource() == getReportsMenu().getCarrierMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(DB_REPORTS_MODELS);
-			setModel(new DatabaseModel());
+			tempModel = new CarrierDBModel();
 		}
 		else if (event.getSource() == getReportsMenu().getSystemLogMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(SYSTEM_LOG_MODELS);
-			setModel(new SystemLogModel());
+			tempModel = new SystemLogModel();
 		}
 		else if (event.getSource() == getReportsMenu().getActivityLogMenuItem())
 		{
 			enableComponents(true, true);
 			loadTreeModels(EC_MODELS);
-			setModel(new ActivityModel(ReportTypes.EC_ACTIVITY_LOG_DATA));
+			tempModel = new ActivityModel();
 		}
 //		else if (event.getSource() == getReportsMenu().getActivityDetailMenuItem())
 //		{
 //			enableComponents(true, true);
 //			loadTreeModels(EC_MODELS);
-//			setModel(new ActivityModel(ReportTypes.EC_ACTIVITY_DETAIL_DATA));
+//			tempModel = new ActivityModel();
 //		}
 		else if (event.getSource() == getReportsMenu().getLoadProfileMenuItem())
 		{
 			//TODO
 			//loadTreeModels(EC_MODELS);
-			//setModel(new LoadProfile(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA));
+//			tempModel = new LoadProfileModel();
 		}
 		else if (event.getSource() == getReportsMenu().getRouteMacroMenuItem())
 		{
 			//TODO
 			loadTreeModels(DB_REPORTS_MODELS);
-			setModel(new RouteMacroModel(DeviceClasses.STRING_CLASS_CARRIER, ReportTypes.CARRIER_ROUTE_MACRO_DATA));
+			tempModel = new RouteMacroModel(DeviceClasses.STRING_CLASS_CARRIER);
 		}
 		else if (event.getSource() == getReportsMenu().getCBCCapBankMenuItem())
 		{
 			getCheckBoxTreeViewPanel().getTree().setRootVisible(false);
 			enableComponents(false, false);
 			loadTreeModels(CABBANK_MODELS);
-			setModel( new CapBankListModel() );
-		}		
+			tempModel = new CapBankListModel();
+		}
+		setModel(tempModel);
 	}
 
 	public void actionPerformed(ActionEvent event)
@@ -311,11 +314,11 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 					((ActivityModel)model).setECIDs(ecIDs);
 				report = new ECActivityLogReport();
 			}
-			else if (model instanceof DatabaseModel)
+			else if (model instanceof CarrierDBModel)
 			{
 				int[] paoIDs = getLiteIDsFromNodes();
 				model.setPaoIDs(paoIDs);
-				report = new DatabaseReport();
+				report = new CarrierDBReport();
 			}
 			else if (model instanceof DisconnectModel)
 			{
@@ -333,7 +336,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			{
 				String[] collGrps = getStringsFromNodes();
 				model.setCollectionGroups(collGrps);
-				report = new MissedMeterReport();
+				report = new MeterReadReport();
 			}
 			else if (model instanceof PowerFailModel)
 			{
@@ -354,18 +357,16 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 								
 				getCheckBoxTreeViewPanel().getSortByComboBox().getSelectedItem();
 				Object selected = getCheckBoxTreeViewPanel().getSortByComboBox().getSelectedItem();
-				int rptType = ReportTypes.STAT_CARRIER_COMM_DATA;	//default
 				
 				if( selected instanceof MCTCheckBoxTreeModel)
-					rptType = ReportTypes.STAT_CARRIER_COMM_DATA;
+					((StatisticModel)getModel()).setStatType(StatisticModel.STAT_CARRIER_COMM_DATA);
 				else if (selected instanceof TransmitterCheckBoxTreeModel)
-					rptType = ReportTypes.STAT_TRANS_COMM_DATA;
+					((StatisticModel)getModel()).setStatType(StatisticModel.STAT_TRANS_COMM_DATA);
 				else if (selected instanceof CommChannelCheckBoxTreeModel)
-					rptType = ReportTypes.STAT_COMM_CHANNEL_DATA;
+					((StatisticModel)getModel()).setStatType(StatisticModel.STAT_COMM_CHANNEL_DATA);
 				else if (selected instanceof DeviceCheckBoxTreeModel)
-					rptType = ReportTypes.STAT_DEVICE_COMM_DATA;
+					((StatisticModel)getModel()).setStatType(StatisticModel.STAT_DEVICE_COMM_DATA);
 
-				((StatisticModel)model).setReportType(rptType);
 				report = new StatisticReport();
 			}
 			else if (model instanceof LMControlLogModel)
