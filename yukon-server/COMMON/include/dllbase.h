@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2002/06/25 20:00:27 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2002/07/22 19:48:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,7 @@ using namespace std;
 #define DEBUGLEVEL_SIXNET_DEVICE    0x10000000
 #define DEBUGLEVEL_SIXNET_PROTOCOL  0x20000000
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
+#define DEBUGLEVEL_WCTP_PROTOCOL    0x80000000
 
 IM_EX_CTIBASE extern CTINEXUS        PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock     coutMux;
