@@ -2,5 +2,5 @@
 - In the DynamicTextEditorPanel, update the point attributes based on the type of point selected.
   i.e. don't allow the user to select State when an analog point is selected.
 - If a drawing is requested via the web and has a graph on it that has been deleted, the svg won't 
-  appear for like 15 seconds.  Why?
+  appear for like 15 seconds.  Why? l
   
