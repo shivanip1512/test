@@ -2823,6 +2823,9 @@ public class ImportManager extends HttpServlet {
 					String[] invFields = (String[]) invIDFields.get( fields[IDX_INV_ID] );
 					
 					if (invFields != null) {
+						// Make sure the device name field is empty (which will be used to decide the device type later)
+						invFields[IDX_DEVICE_NAME] = "";
+						
 						for (int j = 0; j < invFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_INV_NOTES && invFields[j].length() > 0)
@@ -2890,7 +2893,9 @@ public class ImportManager extends HttpServlet {
 					String[] appFields = (String[]) appIDFields.get( fields[IDX_APP_ID] );
 					
 					if (appFields != null) {
+						// Set the appliance category field (which will be used to decide the appliance type later)
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -2919,6 +2924,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -2947,6 +2953,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -2975,6 +2982,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -3003,6 +3011,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -3031,6 +3040,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -3059,6 +3069,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -3087,6 +3098,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
@@ -3115,6 +3127,7 @@ public class ImportManager extends HttpServlet {
 					
 					if (appFields != null) {
 						appFields[IDX_APP_CAT_DEF_ID] = String.valueOf(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DEFAULT);
+						
 						for (int j = 0; j < appFields.length; j++) {
 							if (fields[j].length() > 0) {
 								if (j == IDX_APP_NOTES && appFields[j].length() > 0)
