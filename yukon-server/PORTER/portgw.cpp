@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2003/08/05 12:47:20 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2003/08/07 15:42:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ void KeepAliveThread (void *Dummy)
 
         if(!(now.seconds() % 60))
         {
-            CtiLockGuard< CtiMutex > guard(gwmux, 15000);
+            CtiLockGuard< CtiMutex > guard(gwmux, 1000);
 
             if(guard.isAcquired())
             {
@@ -143,6 +143,7 @@ void KeepAliveThread (void *Dummy)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "   Unable to acquire gwmux" << endl;
             }
         }
 
@@ -158,6 +159,7 @@ VOID GWConnectionThread(VOID *Arg)
         dout << RWTime() << " GWConnectionThread started as TID  " << CurrentTID() << endl;
     }
 
+    int address_request;
     unsigned short port=DEFAULT_PORT;
     int fromlen;
     int ioctl_opt = 1;
@@ -213,6 +215,8 @@ VOID GWConnectionThread(VOID *Arg)
 
     while(!PorterQuit)
     {
+        CtiDeviceGateway *pGW = 0;
+
         msgsock= accept (listen_socket, (struct sockaddr*)&from, &fromlen);
         if(msgsock == INVALID_SOCKET && WSAGetLastError() == WSAEWOULDBLOCK)
         {
@@ -230,12 +234,50 @@ VOID GWConnectionThread(VOID *Arg)
         }
 
         {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " New gateway initiating connection." << endl;
+        }
+
+        pGW = new CtiDeviceGateway(msgsock);
+        pGW->start();
+        pGW->sendGet( TYPE_GETADDRESSING, 0 );
+
+        address_request = 0;
+
+        while(!PorterQuit && pGW->getMACAddress().isNull())
+        {
+            Sleep(5000);
+
+            if(!(++address_request % 1) && pGW->getMACAddress().isNull())
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Asking new gateway for addressing information again." << endl;
+                }
+                pGW->sendGet( TYPE_GETADDRESSING, 0 );  // send it again. every 15 secconds
+            }
+
+            if( address_request >= 3 )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " New gateway never provided addressing information." << endl;
+                }
+
+                delete pGW;
+                pGW = 0;
+                break;      // Give up.
+            }
+        }
+
+        if(pGW && !pGW->getMACAddress().isNull())
+        {
+            pGW->sendGet( TYPE_GETALL, 0 );  // send it again. every 15 secconds
+
             CtiLockGuard< CtiMutex > guard(gwmux, 15000);
 
             if(guard.isAcquired())
             {
-                CtiDeviceGateway *pGW = 0;
-
                 GWMAP_t::iterator itr = gwMap.find( msgsock );
                 if( itr != gwMap.end() )
                 {
@@ -248,18 +290,7 @@ VOID GWConnectionThread(VOID *Arg)
                 }
                 else
                 {
-                    pGW = new CtiDeviceGateway(msgsock);
-                    pGW->start();
-
-                    Sleep(2500);
-
-                    pGW->sendGet( TYPE_GETALL, 0 );
                     gwMap.insert( GWMAP_t::value_type(msgsock, pGW) );
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " New gateway is connected." << endl;
-                    }
                 }
             }
             else

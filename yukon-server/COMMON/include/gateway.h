@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/05 12:47:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/08/07 15:42:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,6 +289,7 @@ typedef struct {
 typedef struct
 {
     unsigned char   Mac[6];
+    unsigned long   IPAddress;
     unsigned short  Spid;
     unsigned short  Geo;
     unsigned short  Feeder;

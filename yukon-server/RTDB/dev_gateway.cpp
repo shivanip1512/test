@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/05 12:47:19 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/08/07 15:42:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,12 +39,24 @@ void CtiDeviceGateway::postPorter()
 }
 
 CtiDeviceGateway::CtiDeviceGateway(SOCKET msgsock) :
+ _ipaddr(0),
  _socketConnected(false),
  _msgsock(msgsock)
-{}
-
-CtiDeviceGateway::CtiDeviceGateway(const CtiDeviceGateway& aRef)
 {
+    for(int i = 0; i < 6; i++)
+    {
+        _mac[i] = 0;
+    }
+}
+
+CtiDeviceGateway::CtiDeviceGateway(const CtiDeviceGateway& aRef) :
+  _ipaddr(0)
+{
+    for(int i = 0; i < 6; i++)
+    {
+        _mac[i] = 0;
+    }
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -54,6 +66,12 @@ CtiDeviceGateway::CtiDeviceGateway(const CtiDeviceGateway& aRef)
 
 CtiDeviceGateway::~CtiDeviceGateway()
 {
+    interrupt(CtiThread::SHUTDOWN);
+    join();
+
+    shutdown(_msgsock, 0x02);
+    closesocket(_msgsock);
+
 }
 
 CtiDeviceGateway& CtiDeviceGateway::operator=(const CtiDeviceGateway& aRef)
@@ -169,11 +187,6 @@ int CtiDeviceGateway::sendGet(USHORT Type, LONG dev)
     if(dev == 0)
     {
         cnt = _statMap.size();      // This is our best guess at this point.  We might want to improve this in the future??
-
-        if(cnt == 0 && Type == TYPE_GETALL)     // This is our first collection of all the data out there.. Go get 'em.
-        {
-            cnt = 1;
-        }
     }
     else
     {
@@ -185,7 +198,7 @@ int CtiDeviceGateway::sendGet(USHORT Type, LONG dev)
         }
     }
 
-    if( cnt > 0 )
+    if( dev == 0 || cnt > 0 )
     {
         GET Get;
 
@@ -764,7 +777,10 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
         }
     case TYPE_ADDRESSING:
         {
+            IN_ADDR ipaddr;
+
             memcpy(_mac, GatewayRX.Addressing.Mac, 6);
+            _ipaddr = ntohl(GatewayRX.Addressing.IPAddress);
             _spid = ntohs(GatewayRX.Addressing.Spid);
             _geo = ntohs(GatewayRX.Addressing.Geo);
             _feeder = ntohs(GatewayRX.Addressing.Feeder);
@@ -772,6 +788,8 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
             _uda = ntohs(GatewayRX.Addressing.Uda);
             _program = GatewayRX.Addressing.Program;
             _splinter = GatewayRX.Addressing.Splinter;
+
+            ipaddr.S_un.S_addr = (ULONG)_ipaddr;
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -783,6 +801,7 @@ void CtiDeviceGateway::processGatewayMessage(GATEWAYRXSTRUCT &GatewayRX)
                 }
                 dout << hex << (int)GatewayRX.Addressing.Mac[5] << dec << endl;
 
+                dout << "Local IP               " << getIPAddress() << endl;
                 dout << "SPID                   " << ntohs(GatewayRX.Addressing.Spid) << endl;
                 dout << "GEO                    " << ntohs(GatewayRX.Addressing.Geo) << endl;
                 dout << "FEEDER                 " << ntohs(GatewayRX.Addressing.Feeder) << endl;
@@ -820,5 +839,46 @@ bool CtiDeviceGateway::getCompletedOperation( CtiPendingStatOperation &op )
     }
 
     return gotone;
+}
+
+RWCString CtiDeviceGateway::getMACAddress() const
+{
+    bool ismaced = false;
+    int i;
+    RWCString maddr;
+
+    for(i = 0; i < 6; i++)
+    {
+        if(_mac[i] != 0)
+        {
+            ismaced = true;
+            break;
+        }
+    }
+
+    if(ismaced)
+    {
+        for(i = 0; i < 5; i++)
+        {
+            maddr.append(CtiNumStr(_mac[i]).hex().zpad(2) + ":");
+        }
+        maddr.append(CtiNumStr(_mac[5]).hex().zpad(2));
+    }
+
+    return maddr;
+}
+
+RWCString CtiDeviceGateway::getIPAddress() const
+{
+    RWCString ipstr;
+    IN_ADDR ipaddr;
+
+    if(_ipaddr != 0)
+    {
+        ipaddr.S_un.S_addr = (ULONG)_ipaddr;
+        ipstr = CtiNumStr(ipaddr.S_un.S_un_b.s_b4) + "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b3) + "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b2) + "." + CtiNumStr(ipaddr.S_un.S_un_b.s_b1);
+    }
+
+    return ipstr;
 }
 

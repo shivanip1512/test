@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/08/05 12:47:19 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2003/08/07 15:42:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2352,6 +2352,48 @@ int CtiDeviceGatewayStat::checkPendingOperations(  )
 
                         break;
                     }
+                case TYPE_RESTARTFILTER:
+                    {
+                        RWTime arrival(_filter._utime);
+                        RWTime confirm(_filter._ch_utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            generateReplyVector(valtype, TYPE_FILTER);
+                        }
+
+                        if( !valtype.isConfirmed() && theend != confirm && confirm >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeConfirmed( confirm );
+                            generateReplyVector(valtype, TYPE_FILTER_CH);
+                        }
+
+                        break;
+                    }
+                case TYPE_QUERYRUNTIME:
+                    {
+                        RWTime arrival(_runtime._utime);
+                        RWTime confirm(_runtime._utime);
+
+                        if(!valtype.isResponded() && theend != arrival && arrival >= valtype.getTimeSubmitted() )
+                        {
+                            valtype.setTimeResponded( arrival );
+                            generateReplyVector(valtype, TYPE_RUNTIME);
+                        }
+
+                        if( !valtype.isConfirmed()                      &&
+                            valtype.isResponded()                       &&
+                            confirm >= valtype.getTimeSubmitted()       &&
+                            confirm > valtype.getTimeResponded())
+                        {
+                            valtype.setTimeConfirmed( confirm );
+                            generateReplyVector(valtype, TYPE_RUNTIME);
+                        }
+
+
+                        break;
+                    }
                 case TYPE_GETSCHEDULE:
                 default:
                     {
@@ -2617,6 +2659,18 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
                                          0);                        // Vacation hold period N/A
                     }
                 }
+            }
+            else if(parse.getiValue("epresetfilter", FALSE) != FALSE)
+            {
+                processed = 1;
+                operation = TYPE_RESTARTFILTER;
+                sendRestartFilter(msgsock);
+            }
+            else if(parse.getiValue("epresetruntimes", FALSE) != FALSE)
+            {
+                processed = 1;
+                operation = TYPE_QUERYRUNTIME;
+                sendQueryRuntime(msgsock, TRUE);
             }
             else
             {
@@ -3221,37 +3275,45 @@ int CtiDeviceGatewayStat::parsePutConfigRequest(CtiCommandParser &parse)
     RWCString CmdStr = parse.getCommandStr();
     CmdStr.toLower();
 
-    if(CmdStr.contains(" reset filter"))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** ACH **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
     return status;
 }
 
 
 
-void CtiDeviceGatewayStat::generateReplyVector(CtiDeviceGatewayStat::OpCol_t::value_type &valtype)
+void CtiDeviceGatewayStat::generateReplyVector(CtiDeviceGatewayStat::OpCol_t::value_type &valtype, UINT operation)
 {
-    if(valtype.getOperation() >= 4000)
+    UINT op = operation;
+
+    if(op == 0)
     {
-        generatePacketData(valtype.getOperation() - 1000);
-    }
-#if 0
-    else if(valtype.getOperation() < 2000)
-    {
+        if(valtype.getOperation() >= 4000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Operation " << valtype.getOperation() << " too low" << endl;
+            op = valtype.getOperation() - 1000;
+        }
+        else if(valtype.getOperation() < 2000)
+        {
+            switch(valtype.getOperation())
+            {
+            default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Operation " << valtype.getOperation() << " too low" << endl;
+                    }
+                    break;
+                }
+            }
         }
     }
-#endif
+
+    if(op != 0)
+    {
+        generatePacketData(op);
+    }
+
+
     // Add the reply data into the pending op.
-    if(1)
     {
         CtiLockGuard< CtiMutex > gd(_collMux);
         StatPrintList_t::iterator itr;
@@ -3315,27 +3377,30 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_BATTERY:
         {
-            now = RWTime(_battery._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Received Battery Status: "));
-
-            astr += (" Battery Status:  ");
             switch(_battery._battery)
             {
             case 0:
-                astr += RWCString("BAD");
+                astr = RWCString("BAD");
                 break;
 
             case 1:
-                astr += RWCString("GOOD");
+                astr = RWCString("GOOD");
                 break;
 
             case 2:
-                astr += RWCString("UNKNOWN");
+                astr = RWCString("(UNKNOWN)");
                 break;
 
             default:
-                astr += RWCString("INVALID");
+                astr += RWCString("(UNKNOWN)");
                 break;
+            }
+
+            if(!astr.isNull())
+            {
+                ged.setDataType(ID_BATTERY);
+                ged.setDataValue(astr);
+                error = false;
             }
 
             break;
@@ -3346,10 +3411,15 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
         }
     case TYPE_RUNTIME:
         {
-            now = RWTime(_runtime._utime);
-            astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Runtimes: "));
-            astr += (RWCString("Cool Runtime:  " + CtiNumStr(_runtime._coolRuntime)+ " Minutes / "));
-            astr += (RWCString("Heat Runtime:  " + CtiNumStr(_runtime._heatRuntime)+ " Minutes"));
+            astr = RWCString(CtiNumStr(_runtime._coolRuntime)+ ",");
+            astr += CtiNumStr(_runtime._heatRuntime);
+
+            if(!astr.isNull())
+            {
+                ged.setDataType(ID_RUNTIMES);
+                ged.setDataValue(astr);
+                error = false;
+            }
 
             break;
         }
@@ -3849,123 +3919,133 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     case TYPE_UTILSETPOINT_CH:
     case TYPE_UTILSETPOINT:
         {
-            if(Type == TYPE_UTILSETPOINT_CH)
-            {
-                now = RWTime(_utilSetpoint._ch_utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Utility Setpoints Confirmed"));
-            }
-            else
-            {
-                now = RWTime(_utilSetpoint._utime);
-                astr = (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
-            }
-
-            astr += (" Cool Setpoint: ");
             if(_utilSetpoint._utilCoolSetpoint == 0x7fff)
             {
-                astr += (RWCString("Unknown"));
+                astr = RWCString("(UNKNOWN),");
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + getUnitName(true, true)));
+                astr = RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilCoolSetpoint)) + ",");
             }
 
-            astr += (RWCString(" Heat Setpoint: "));
             if(_utilSetpoint._utilHeatSetpoint == 0x7fff)
             {
-                astr += (RWCString("Unknown\n"));
+                astr += RWCString("(UNKNOWN),");
             }
             else
             {
-                astr += (RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + getUnitName(true, true) + "\n"));
+                astr += RWCString(CtiNumStr(convertFromStatTemp(_utilSetpoint._utilHeatSetpoint)) + ",");
             }
-
-            //
-
-            astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
-            astr += (RWCString(" Util Mode: "));
-            switch(_utilSetpoint._utilMode)
-            {
-            case 0:
-                astr += (RWCString(" Inactive"));
-                break;
-
-            case 1:
-                astr += (RWCString(" Price tier "));
-                break;
-
-            case 2:
-                astr += (RWCString(" Temperature offset "));
-                break;
-
-            case 3:
-                astr += (RWCString(" Precondition "));
-                break;
-
-            case 255:
-                astr += (RWCString(" Unknown "));
-                break;
-
-            default:
-                astr += (RWCString(" Invalid "));
-                break;
-            }
-
-            astr += (" for ");
 
             if(_utilSetpoint._utilDuration == 0)
             {
-                astr += (RWCString("Inactive"));
+                astr += (RWCString("INACTIVE,"));
             }
             else if(_utilSetpoint._utilDuration <= 1440)
             {
-                astr += CtiNumStr(_utilSetpoint._utilDuration);
+                astr += RWCString(CtiNumStr(_utilSetpoint._utilDuration) + ",");
             }
             else
             {
-                astr += (RWCString("Invalid"));
+                astr += (RWCString("INVALID,"));
             }
 
-            astr += " Minutes.\n";
-
-            //
-            astr += (now.asString() + RWCString(" Stat ") + CtiNumStr(getDeviceSerialNumber()).spad(3) + RWCString(" Util Setpoint Received: "));
-            if(_utilSetpoint._utilMode == 1)
+            switch(_utilSetpoint._utilMode)
             {
-                astr += RWCString("Tier: ");
-                switch(_utilSetpoint._utilPriceTier)
-                {
-                case 0:
-                    astr += (RWCString("None"));
-                    break;
+            case 0:
+                astr += (RWCString("INACTIVE,"));
+                break;
 
-                case 1:
-                    astr += (RWCString("Low"));
-                    break;
+            case 1:
+                astr += (RWCString("PRICE TIER,"));
+                break;
 
-                case 2:
-                    astr += (RWCString("Medium"));
-                    break;
+            case 2:
+                astr += (RWCString("TEMPERATURE OFFSET,"));
+                break;
 
-                case 3:
-                    astr += (RWCString("High"));
-                    break;
+            case 3:
+                astr += (RWCString("PRECONDITION,"));
+                break;
 
-                case 4:
-                    astr += (RWCString("Critical"));
-                    break;
+            case 255:
+                astr += (RWCString("UNKNOWN,"));
+                break;
 
-                case 255:
-                    astr += (RWCString("Unknown"));
-                    break;
-
-                default:
-                    astr += (RWCString("Invalid"));
-                    break;
-                }
+            default:
+                astr += (RWCString("INVALID,"));
+                break;
             }
 
-            astr += RWCString(" AIR: ");
+            switch(_utilSetpoint._utilPriceTier)
+            {
+            case 0:
+                astr += (RWCString("NONE,"));
+                break;
+
+            case 1:
+                astr += (RWCString("LOW,"));
+                break;
+
+            case 2:
+                astr += (RWCString("MEDIUM,"));
+                break;
+
+            case 3:
+                astr += (RWCString("HIGH,"));
+                break;
+
+            case 4:
+                astr += (RWCString("CRITICAL,"));
+                break;
+
+            case 255:
+                astr += (RWCString("UNKNOWN,"));
+                break;
+
+            default:
+                astr += (RWCString("INVALID,"));
+                break;
+            }
+
+            switch(_utilSetpoint._utilUserOverride)
+            {
+            case 0:
+                astr += (RWCString("No Override,"));
+                break;
+
+            case 1:
+                astr += (RWCString("User Override Active,"));
+                break;
+
+            case 255:
+                astr += (RWCString("User Override Unknown,"));
+                break;
+
+            default:
+                astr += (RWCString("User Override Invalid,"));
+                break;
+            }
+
+            switch(_utilSetpoint._utilUserOverrideDisable)
+            {
+            case 0:
+                astr += (RWCString("Prohibited,"));
+                break;
+
+            case 1:
+                astr += (RWCString("Available,"));
+                break;
+
+            case 255:
+                astr += (RWCString("Unknown,"));
+                break;
+
+            default:
+                astr += (RWCString("Invalid,"));
+                break;
+            }
+
             switch(_utilSetpoint._utilAIRDisable)
             {
             case 0:
@@ -3985,46 +4065,12 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
                 break;
             }
 
-            astr += RWCString(".  ");
-            switch(_utilSetpoint._utilUserOverride)
+            if(!astr.isNull())
             {
-            case 0:
-                astr += (RWCString("No Override"));
-                break;
-
-            case 1:
-                astr += (RWCString("Override Active"));
-                break;
-
-            case 255:
-                astr += (RWCString("Override Unknown"));
-                break;
-
-            default:
-                astr += (RWCString("Override Invalid"));
-                break;
+                ged.setDataType(ID_UTILITY_SETPOINTS);
+                ged.setDataValue(astr);
+                error = false;
             }
-
-            switch(_utilSetpoint._utilUserOverrideDisable)
-            {
-            case 0:
-                astr += (RWCString(" / Prohibited."));
-                break;
-
-            case 1:
-                astr += (RWCString(" / Available."));
-                break;
-
-            case 255:
-                astr += (RWCString(" / Unknown."));
-                break;
-
-            default:
-                astr += (RWCString(" / Invalid."));
-                break;
-            }
-
-
 
             break;
         }

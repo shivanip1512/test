@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/08/05 12:47:20 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2003/08/07 15:42:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ using namespace std;
 
 #define EP_PERIODS_PER_DAY          4   // Number of schedule periods per day
 
-#define ID_TIMESTAMP             3201   // e.g. "2003/07/11 10:39:09 CDT"
+#define ID_TIMESTAMP             3201   // e.g. "2003/07/11 10:39:09 GMT"
 #define ID_SETPOINTS             3202   // CoolSetpoint,HeatSetpoint,SetpointStatus
 #define ID_FAN_SWITCH            3203   // FanSwitch
 #define ID_SYSTEM_SWITCH         3204   // SystemSwitch
@@ -76,6 +76,11 @@ using namespace std;
 #define ID_DLC                   3235   // CycleDuration,CyclePeriod,Duration,Override,OverrideDisable
 #define ID_FILTER                3236   // FilterRemaining,FilterRestart
 #define ID_SETPOINT_LIMITS       3237   // LowerCoolSetpointLimit,UpperHeatSetpointLimit
+
+#define ID_RUNTIMES              3238   // CoolRuntime Minutes, HeatRuntime Minutes.  Value -1 indicates unknown.
+#define ID_BATTERY               3239   // Battery Status (GOOD,BAD,(UNKNOWN))
+#define ID_UTILITY_SETPOINTS     3240   // CoolSetpoint,HeatSetpoint,Duration,Mode,Tier,Override,OverrideDisable,AIRDisable
+
 #define ID_STRING                3299   // (Any string that you want to throw in here, could have multiple entries in the table)
 
 
@@ -362,7 +367,7 @@ private:
 
     int parseGetValueRequest(CtiCommandParser &parse);
     int parsePutConfigRequest(CtiCommandParser &parse);
-    void generateReplyVector(OpCol_t::value_type &valtype);
+    void generateReplyVector(OpCol_t::value_type &valtype, UINT operation = 0);
     bool generateTidbitToDatabase( USHORT Type, int day, int period );
     RWCString generateTidbitScheduleToDatabase(int day, int period);
 
