@@ -26,7 +26,6 @@ import com.cannontech.common.util.FileMessageLog;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.dbeditor.regenerate.RegenerateDialog;
 
 public class DatabaseEditor
 	implements
