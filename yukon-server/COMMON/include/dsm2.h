@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/06/20 21:03:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/07/30 21:14:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -759,12 +759,13 @@ typedef struct
  * making things require this though....
  *----------------------------------------------------------------------------*/
 
+#define COMMAND_STR_SIZE 255
 typedef struct
 {
    INT      BuildIt;          // 022801 CGP If !FALSE porter will analyze the CommandStr and make his own assumptions.
 
    VOID     *Connection;
-   CHAR     CommandStr[256];   // First 80 characters of the request string.
+   CHAR     CommandStr[COMMAND_STR_SIZE + 1];   // First COMMAND_STR_SIZE characters of the request string.
    INT      RouteID;          // The ID of the route which is currently being addressed
    INT      MacroOffset;      // On request, the macro offset to try.  On reply, the macro offset to try next (or zero if no more exist)
    INT      Attempt;          // On request, the number of attempts to make for this route specification. On reply, the number of attempts remaining.
