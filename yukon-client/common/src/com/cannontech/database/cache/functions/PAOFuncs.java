@@ -173,5 +173,52 @@ public static String getYukonPAOName( int paoID )
 	else
 		return null;
 }
+public static LiteYukonPAObject[] getAllLiteRoutes()
+{
+	//Get an instance of the cache.
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	java.util.ArrayList routeList = new java.util.ArrayList(10);
+	synchronized(cache)
+	{
+		java.util.List routes = cache.getAllRoutes();
+		java.util.Collections.sort( routes, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		
+		for (int i = 0; i < routes.size(); i++)
+		{
+			LiteYukonPAObject litePao = (LiteYukonPAObject)routes.get(i);
+			routeList.add(litePao);	
+		}
+	}
+	LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];
+	routeList.toArray( retVal );
+	return retVal;
+}
 
+public static LiteYukonPAObject[] getRoutesByType(int[] routeTypes) 
+{   
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	java.util.ArrayList routeList = new java.util.ArrayList(10);
+	synchronized(cache)
+	{
+		java.util.List routes = cache.getAllRoutes();
+		java.util.Collections.sort( routes, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+      
+		for( int i = 0; i < routes.size(); i++ )
+		{      
+			LiteYukonPAObject litePao = (LiteYukonPAObject)routes.get(i);
+			
+			for( int j = 0; j < routeTypes.length; j++ )
+				if( litePao.getType() != routeTypes[j] )
+				{
+					routeList.add( litePao);
+					break;
+				}
+		}
+	}
+
+	LiteYukonPAObject retVal[] = new LiteYukonPAObject[ routeList.size() ];
+	routeList.toArray( retVal );
+   
+	return retVal;
+}
 }
