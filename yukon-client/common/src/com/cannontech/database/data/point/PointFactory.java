@@ -137,4 +137,40 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
 	return point;	
 }
 
+
+public static PointBase createDmdAccumPoint( String pointName, Integer paoID, 
+      Integer pointID, int pointOffset, int pointUnit, double multiplier )
+{
+   com.cannontech.database.data.point.PointBase point =
+      com.cannontech.database.data.point.PointFactory.createPoint(
+            com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT );
+   
+   point = com.cannontech.database.data.point.PointBase.createNewPoint(    
+         pointID,
+         com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT,
+         pointName,
+         paoID,
+         new Integer(pointOffset) );
+   
+   point.getPoint().setStateGroupID( 
+      new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ACCUMULATOR) );
+
+   //defaults - pointAccumulator   
+   com.cannontech.database.db.point.PointAccumulator accumPt = 
+      new com.cannontech.database.db.point.PointAccumulator(
+         pointID, new Double(multiplier), new Double(0.0) );
+   
+   ((AccumulatorPoint)point).setPointAccumulator( accumPt );  
+   
+   //defaults - pointUnit
+   ((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
+      new com.cannontech.database.db.point.PointUnit(
+         pointID,
+         new Integer(pointUnit),
+         new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
+         new Double(0.0),
+         new Double(0.0)));
+   
+   return point;  
+}
 }

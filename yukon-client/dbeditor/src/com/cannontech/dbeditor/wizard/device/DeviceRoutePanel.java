@@ -15,6 +15,8 @@ import com.cannontech.database.data.device.MCT310IL;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
@@ -155,28 +157,21 @@ public class DeviceRoutePanel
 
 			newVal.getDBPersistentVector().add(val);
 
-			//accumulator point is automatically added
 
+			//accumulator point is automatically added
 			com.cannontech.database.data.point.PointBase newPoint = com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT);
 
 			Integer pointID = new Integer(com.cannontech.database.cache.functions.PointFuncs.getMaxPointID()+ 1);
-			//newPoint.getPoint().getNextPointID() );
 
-			//set defaults for accumulator point tables
-			newPoint = com.cannontech.database.data.point.PointBase.createNewPoint(pointID,com.cannontech.database.data.point.PointTypes.PULSE_ACCUMULATOR_POINT,"KWH",((DeviceBase) val).getDevice().getDeviceID(),new Integer(1));
+         newVal.getDBPersistentVector().add( 
+            PointFactory.createDmdAccumPoint(
+               "KW-LP",
+               ((DeviceBase) val).getDevice().getDeviceID(),
+               pointID,
+               PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+               com.cannontech.database.data.point.PointUnits.UOMID_KW,
+               .01) );
 
-			newPoint.getPoint().setStateGroupID(new Integer(-2));
-
-			(
-				(
-					com.cannontech.database.data.point.AccumulatorPoint) newPoint).setPointAccumulator(new com.cannontech.database.db.point.PointAccumulator(pointID,new Double(.01),new Double(0.0)));
-			(
-				(
-					com.cannontech.database.data.point.ScalarPoint) newPoint).setPointUnit(
-				new com.cannontech.database.db.point.PointUnit(pointID,new Integer(com.cannontech.database.data.point.PointUnits.UOMID_KWH),
-					new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),new Double(0.0),new Double(0.0)));
-
-			newVal.getDBPersistentVector().add(newPoint);
 
 			if (val instanceof MCT310ID) {
 				//an automatic status point is created for 310ID

@@ -17,6 +17,9 @@ public interface IPointOffsets
    public static final int PT_OFFSET_KVAR_DEMAND			= 35;
 	
 	
+   public static final int PT_OFFSET_LPROFILE_KW_DEMAND   = 101;
+
+	
 	public static final int PT_OFFSET_TRANS_STATUS			= 2000;
 	
    public static final int PT_OFFSET_DAILY_HISTORY			= 2500;

@@ -23,7 +23,7 @@ public class DeviceAddressRange
          new RangeBase( 464, 4302, "Valid range for " + DeviceTypes.STRING_REPEATER[0] + " addresses is 464 to 4302" );
 
    private static final RangeBase RANGE_CCU711 = 
-         new RangeBase( 0, 99, "Valid range for " + DeviceTypes.STRING_CCU_711[0] + " addresses is 0 to 99" );
+         new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_CCU_711[0] + " addresses is 0 to 127" );
 
    private static final RangeBase RANGE_RTU_WELCO = 
          new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_RTU_WELCO[0] + " addresses is 0 to 127" );
