@@ -34,7 +34,7 @@ public static String getTagString(int tags)
 {
 	StringBuffer buff = new StringBuffer();
 	
-	if( isAnyAlarm(tags) )
+	if( isAlarmActive(tags) )
 		buff.append( buff.length() > 0 ? "|ALRM" : "ALRM" );
 		
 	if( !isControlEnabled(tags) )

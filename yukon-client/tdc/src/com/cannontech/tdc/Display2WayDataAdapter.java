@@ -1881,7 +1881,7 @@ private void setCorrectRowValue( PointValues point, int location )
 			{
 	 			dataRow.setElementAt(
 			 			PointQualities.getQualityAbreviation( (int)point.getPointQuality() )
-			 				+ (TagUtils.isAnyAlarm((int)point.getTags()) ? "-(ALM)" : ""),
+			 				+ (TagUtils.isAlarmActive((int)point.getTags()) ? "-(ALM)" : ""),
 						getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ); 
 			}
 			catch( CTIPointQuailtyException ex )

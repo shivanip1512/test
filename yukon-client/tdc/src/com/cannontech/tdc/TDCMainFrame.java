@@ -1561,7 +1561,7 @@ private javax.swing.JMenu getJMenuAlarms() {
 			ivjJMenuAlarms = new javax.swing.JMenu();
 			ivjJMenuAlarms.setName("JMenuAlarms");
 			ivjJMenuAlarms.setMnemonic('m');
-			ivjJMenuAlarms.setText("Alarms: 0");
+			ivjJMenuAlarms.setText("Unacked Alarms: 0");
 			ivjJMenuAlarms.setBackground(java.awt.SystemColor.control);
 			ivjJMenuAlarms.setForeground(java.awt.SystemColor.controlText);
 			ivjJMenuAlarms.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);

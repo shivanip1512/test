@@ -178,7 +178,7 @@ class SignalAlarmHandler
          
          
       //update the text of our menu
-      getJMenuAlarms().setText( "Alarms: " + getAlarmVector().size() );
+      getJMenuAlarms().setText( "Unacked Alarms: " + getAlarmVector().size() );
       
       
       updateAlarmMenu();
