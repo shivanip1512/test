@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2003/10/30 17:38:40 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/01/26 21:58:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,21 +24,49 @@
 
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
 {
+public:
+    enum Channels
+    {
+        ChannelCount = 3
+    };
+
 private:
 
     static DLCCommandSet _commandStore;
 
 protected:
 
-    INT _magicNumber;
-    INT _retryCount;
+    enum WireConfig
+    {
+        WireConfigInvalid   = 0,
+        WireConfigTwoWire   = 2,
+        WireConfigThreeWire = 3
+    } _wireConfig[ChannelCount];
 
-    INT _queueStat;
-    RWTime _queueTime;
+    double _mpkh[ChannelCount];
+
+    enum PeakMode
+    {
+        PeakModeInvalid       = 0,
+        PeakModeOnPeakOffPeak = 1,
+        PeakModeMinMax        = 2
+    } _peakMode;
+
+    enum ConfigType
+    {
+        ConfigInvalid = 0,
+        Config2XX     = 2,
+        Config3XX     = 3
+    } _configType;
+
+    RWCString _configName;
+
     ULONG _nextLPScanTime;
-    ULONG _lpIntervalSent;
+    bool  _lpIntervalSent;
 
-    bool _scanGeneralPending, _scanIntegrityPending, _scanAccumulatorPending;
+    bool _scanGeneralPending,
+         _scanIntegrityPending,
+         _scanAccumulatorPending;
 
     enum
     {
@@ -151,6 +179,8 @@ public:
     RWCString sspecIsFrom( int sspec );
     bool isLoadProfile( int type );
     bool hasVariableDemandRate( int type, int sspec );
+
+    void setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[ChannelCount], const double mpkh[ChannelCount] );
 
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
