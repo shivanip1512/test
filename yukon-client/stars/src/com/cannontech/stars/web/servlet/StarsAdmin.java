@@ -1326,6 +1326,9 @@ public class StarsAdmin extends HttpServlet {
 				appCat.setDbConnection( conn );
 				appCat.delete();
 				
+				SOAPServer.deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
+				energyCompany.deleteStarsWebConfig( liteAppCat.getWebConfigurationID() );
+				
 				for (int j = 0; j < accountIDs.length; j++) {
 					energyCompany.deleteStarsCustAccountInformation( accountIDs[j] );
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[j], true );
