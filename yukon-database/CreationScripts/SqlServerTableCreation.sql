@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      CTI SqlServer 2000                           */
-/* Created on:     12/20/2002 3:05:26 PM                        */
+/* Created on:     1/6/2003 12:09:15 PM                         */
 /*==============================================================*/
 
 
@@ -1090,14 +1090,6 @@ if exists (select 1
            where  id = object_id('PointAlarming')
             and   type = 'U')
    drop table PointAlarming
-go
-
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('PortDialBack')
-            and   type = 'U')
-   drop table PortDialBack
 go
 
 
@@ -2501,7 +2493,7 @@ POINTID              numeric              not null,
 Label                varchar(40)          not null,
 Axis                 char(1)              not null,
 Color                numeric              not null,
-Type                 varchar(12)          not null,
+Type                 numeric              not null,
 Multiplier           float                not null,
 constraint SYS_GrphDserID primary key  (GRAPHDATASERIESID)
 )
@@ -3492,18 +3484,6 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
 	1, 0  from point;
-
-/*==============================================================*/
-/* Table : PortDialBack                                         */
-/*==============================================================*/
-create table PortDialBack (
-PortID               numeric              not null,
-ModemType            varchar(30)          not null,
-InitializationString varchar(50)          not null,
-constraint PK_PORTDIALBACK primary key  (PortID)
-)
-go
-
 
 /*==============================================================*/
 /* Table : PortStatistics                                       */
@@ -4642,12 +4622,6 @@ go
 alter table CustomerBaseLine
    add constraint FK_CICst_CstBsLne foreign key (CustomerID)
       references CICustomerBase (DeviceID)
-go
-
-
-alter table PortDialBack
-   add constraint FK_CmPrt_PrtDBk foreign key (PortID)
-      references CommPort (PORTID)
 go
 
 
