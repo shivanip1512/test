@@ -129,7 +129,7 @@ function setCommand(cmd)
 <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
   <input type="hidden" name="deviceID" value="<%=deviceID%>">
   <input type="hidden" name="command" value="">
-  <input type="hidden" name="timeOut" value="5000">
+  <input type="hidden" name="timeOut" value="8000">
   <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
   <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
   <td width="657" valign="top" bgcolor="#FFFFFF"> 
