@@ -9,11 +9,8 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberAxis3D;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberAxis3D;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.CategoryItemRenderer;
 import org.jfree.chart.renderer.DefaultDrawingSupplier;
@@ -154,8 +151,44 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 	for (int i = 0; i < newPoints.length; i++)
 	{
 		TrendSerie tempSerie = new TrendSerie();
+		tempSerie.setTypeMask( GraphDataSeries.BASIC_GRAPH_TYPE );
 		tempSerie.setPointId(((Point)newPoints[i]).getPointID());
 		tempSerie.setLabel(((Point)newPoints[i]).getPointName());
+		tempSerie.setColor(com.cannontech.common.gui.util.Colors.getColor(i));	//some distinct color (valid 1-10 only)
+
+		trendSeries[i] = tempSerie;
+	}		
+	hitDatabase_Basic(GraphDataSeries.BASIC_GRAPH_TYPE);
+}
+
+/**
+ * Takes parallel arrays representing point ids with their point names 
+ * @param newStartDate
+ * @param newStopDate
+ * @param newChartName
+ * @param ptID_
+ * @param ptNames_
+ */
+public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, String newChartName, int[] ptID_, String[] ptNames_ )
+{
+	if( ptID_ == null || ptNames_ == null 
+	    || (ptID_.length != ptNames_.length) )
+		return;
+
+	// Inititialize chart properties
+	setStartDate(newStartDate);
+	setStopDate(newStopDate);
+	setChartName(newChartName);
+
+	// Inititialize series properties	
+	trendSeries = new TrendSerie[ptID_.length];
+	for (int i = 0; i < ptID_.length; i++)
+	{
+		TrendSerie tempSerie = new TrendSerie();
+		tempSerie.setPointId( new Integer(ptID_[i]) );
+		tempSerie.setTypeMask( GraphDataSeries.BASIC_GRAPH_TYPE );
+
+		tempSerie.setLabel( ptNames_[i] );
 		tempSerie.setColor(com.cannontech.common.gui.util.Colors.getColor(i));	//some distinct color (valid 1-10 only)
 
 		trendSeries[i] = tempSerie;
