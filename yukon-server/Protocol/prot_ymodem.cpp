@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2004/02/09 16:50:52 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2004/02/16 19:09:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -109,10 +109,19 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 {
    if( xfer.getInCountActual() >= _bytesExpected )
    {
-      if( _bytesExpected )
+      if( _bytesExpected < Storage_size )
       {
          memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
+         _ASSERTE( _CrtCheckMemory( ) );
          _bytesReceived = xfer.getInCountActual();
+      }
+      else
+      {
+         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+         }
       }
       
       _finished = true;
@@ -142,6 +151,7 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
    {
       //do the 'front & end shaving' here instead of in tracker....
       memcpy( data, _storage + 3, _bytesReceived - 5 );
+      _ASSERTE( _CrtCheckMemory( ) );
       *bytes = _bytesReceived - 5;
 
       memset( _storage, '\0', Storage_size );
@@ -208,6 +218,7 @@ bool CtiProtocolYmodem::isCrcValid( void )
    {
       memset( temp, '\0', sizeof( temp ) );
       memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
+      _ASSERTE( _CrtCheckMemory( ) );
 
       crc.ch[0] = _storage[_bytesReceived - 1];
       crc.ch[1] = _storage[_bytesReceived - 2];

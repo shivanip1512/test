@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2004/02/09 16:48:42 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2004/02/16 19:09:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -31,6 +31,8 @@ class IM_EX_PROT CtiTransdataTracker
 {
    public:
       
+      #pragma pack( push, 1 )
+      
       struct lpRecord
       {
          BYTE     rec[2];
@@ -42,9 +44,10 @@ class IM_EX_PROT CtiTransdataTracker
          int      lpFormat[3];
          int      numLpRecs;
          ULONG    meterTime;
-         lpRecord lpData[9999];
+         lpRecord lpData[10240];
       };
 
+      #pragma pack( pop )
 
       CtiTransdataTracker();
       ~CtiTransdataTracker();
@@ -121,7 +124,7 @@ class IM_EX_PROT CtiTransdataTracker
          Recs_Fitable   = 512,
          Storage_size   = 4500,
          Meter_size     = 50000,
-         Max_lp_recs    = 5000//9999
+         Max_lp_recs    = 9999
       };
 
       //these are the transdata commands that are defined by the doc 22A204E

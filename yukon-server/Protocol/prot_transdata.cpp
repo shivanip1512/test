@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2004/01/16 22:44:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2004/02/16 19:09:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,10 +110,21 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
 void CtiProtocolTransdata::processBillingData( BYTE *data )
 {
    _numBilling = _numBytes;
-
-   memcpy( _billingBytes, _storage, _numBilling );
    
-   _billingDone = true;
+   if( _numBilling > Billing_size )
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << RWTime() << " Whoa! The billing bytes are too big! # bytes = " << _numBilling << endl;
+      }
+   }
+   else
+   {
+      memcpy( _billingBytes, _storage, _numBilling );
+      _ASSERTE( _CrtCheckMemory( ) );
+      _billingDone = true;
+   }
 }
 
 //=====================================================================================================================
@@ -125,10 +136,22 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
 {
    _numLoadProfile = _numBytes;
 
-   memcpy( _lpBytes, data, _numLoadProfile );
+   if( _numLoadProfile > Loadprofile_size )
+   {
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << RWTime() << " Whoa! The lp bytes are too big! # bytes = " << _numLoadProfile << endl;
+      }
+   }
+   else
+   {
+      memcpy( _lpBytes, data, _numLoadProfile );
+      _ASSERTE( _CrtCheckMemory( ) );
    
-   _reallyDidProcessLP = true;
-   _lpDone = true;
+      _reallyDidProcessLP = true;
+      _lpDone = true;
+   }
 }
 
 //=====================================================================================================================
@@ -154,15 +177,28 @@ int CtiProtocolTransdata::recvOutbound( OUTMESS *OutMessage )
 //=====================================================================================================================
 //=====================================================================================================================
 
+RWTime CtiProtocolTransdata::getLastLoadProfileTime( void )
+{
+   return( _lastLPTime );
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
 int CtiProtocolTransdata::sendCommResult( INMESS *InMessage )
 {
-   int length = _numBilling;
-
-   memcpy( InMessage->Buffer.DUPSt.DUPRep.Message + sizeof( llp ), _billingBytes, length );
-   
-   InMessage->InLength = length + sizeof( llp );
-      
-   _numBytes = 0;
+   if( _billingDone )
+   {
+      memcpy( InMessage->Buffer.InMessage + sizeof( ULONG ), _billingBytes, _numBilling );
+      InMessage->InLength = _numBilling + sizeof( ULONG );
+      InMessage->EventCode = NORMAL;
+      _numBytes = 0;
+   }
+   else
+   {
+      InMessage->EventCode = NOTNORMAL;
+      InMessage->InLength = 0;   //matt says this is the way to know failure
+   }
 
    return( NORMAL );
 }
@@ -176,9 +212,20 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
 {
    CtiTransdataData           *converted = NULL;
    BYTE                       *ptr = NULL;
+   ULONG                      temp;
    vector<CtiTransdataData *> transVector;
 
    ptr = ( unsigned char*)( InMessage->Buffer.InMessage );
+   
+   temp = ( ULONG)ptr;
+   _lastLPTime == temp;
+   ptr += sizeof( ULONG );
+
+   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   {
+       CtiLockGuard<CtiLogger> doubt_guard(dout);
+       dout << RWTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
+   }
 
    while( *ptr != NULL )
    {
@@ -235,7 +282,7 @@ void CtiProtocolTransdata::reinitalize( void )
    _billingDone = false;
    _lpDone = false;
    _reallyDidProcessLP = false;
-
+   
    //could probably get away with using destroy()
    if( _storage != NULL )
    {
@@ -318,8 +365,10 @@ int CtiProtocolTransdata::retreiveData( BYTE *data )
    int temp = _numBytes;
 
    if(( data != NULL ) && ( _lpBytes != NULL ))
+   {
       memcpy( data, _lpBytes, _numBytes );
-
+      _ASSERTE( _CrtCheckMemory( ) );
+   }
    return( temp );
 }
 

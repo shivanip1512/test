@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2004/02/09 16:49:28 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2004/02/16 19:09:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,6 +83,14 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       OutMessage->TargetID  = getID();
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
+      
+      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      {
+         RWTime p( getLastLPTime().seconds() );
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << RWTime() << " ----test test test----" << p << endl;
+      }
+      
       OutMessage->Buffer.DUPReq.LP_Time = getLastLPTime().seconds();
       OutMessage->TimeOut   = 2;
       OutMessage->EventCode = RESULT | ENCODED;
@@ -169,36 +177,41 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
 
    try
    {
-      if( InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] == 0 )
+      if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
       {
-         if( _transdataProtocol.getCommand() == CtiTransdataApplication::General )
+         /*
+         
+         memcpy( &_llp, InMessage->Buffer.InMessage, sizeof( _llp ));
+         
+         RWTime x( _llp.lastLP );
+         setLastLPTime( x );
+         
+         memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.InMessage + sizeof( _llp ), InMessage->InLength - sizeof( _llp ));
+         
+         */
+         transVector = _transdataProtocol.resultDecode( InMessage );
+
+//         setLastLPTime( _transdataProtocol.getLastLoadProfileTime() ); 
+
+         if( transVector.size() )
          {
-            memcpy( &_llp, InMessage->Buffer.DUPSt.DUPRep.Message, sizeof( _llp ));
-            RWTime x( _llp.lastLP );
-            setLastLPTime( x );
-            memcpy( InMessage->Buffer.InMessage, InMessage->Buffer.DUPSt.DUPRep.Message + sizeof( _llp ), InMessage->InLength-sizeof( _llp ));
+            setLastLPTime( _transdataProtocol.getLastLoadProfileTime() ); 
+            decodeResultScan( InMessage, TimeNow, vgList, retList, transVector );
 
-            transVector = _transdataProtocol.resultDecode( InMessage );
-
-            if( transVector.size() )
+            for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
             {
-               decodeResultScan( InMessage,TimeNow, vgList, retList, transVector );
-
-               for( int count = 0; count < transVector.size() - 1; count++ )    //matt say use iterator!
-               {
-                  delete transVector[count];
-               }
-
-               transVector.erase( transVector.begin(), transVector.end() );
+               delete transVector[count];
             }
-         }
-         else 
-         {
-            //LOADPROFILE
-         }
 
-         retCode = NORMAL;
+            transVector.erase( transVector.begin(), transVector.end() );
+         }
       }
+      else 
+      {
+         //LOADPROFILE
+      }
+
+      retCode = NORMAL;
    }
    catch(...)
    {
@@ -931,7 +944,7 @@ CtiProtocolTransdata & CtiDeviceMarkV::getProtocol( void )
 void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 {
    CtiTransdataTracker::mark_v_lp   *lp = NULL;
-   CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg; //create where needed
+   CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg; 
    CtiPointDataMsg                  *pData = NULL;
    CtiPointBase                     *pPoint = NULL;
    BYTE                             *storage = NULL; 
@@ -953,6 +966,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       storage = CTIDBG_new BYTE[50000];
       _transdataProtocol.retreiveData( storage );
 
+      //move this down a layer
       lp = ( CtiTransdataTracker::mark_v_lp *)storage;
       _llp.lastLP = lp->meterTime;
       RWTime mTime( lp->meterTime );
@@ -983,6 +997,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   pData->setTime( mTime );
                   pData->setType( pPoint->getType() );
                   
+//                  msgMulti = CTIDBG_new CtiMultiMsg;
                   msgMulti->getData().insert( pData );
                   pData = NULL;
 
@@ -1014,7 +1029,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   }
 
                   index += 2;
-               
                   pPoint = NULL;
                }
             }
@@ -1083,11 +1097,11 @@ int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
    if( lLP != NULL )
    {
       //insert lastlptime struct into inmess
-      memcpy( InMessage->Buffer.DUPSt.DUPRep.Message, lLP, sizeof( _llp ) );
+      memcpy( InMessage->Buffer.InMessage, lLP, sizeof( _llp ) );
+      _ASSERTE( _CrtCheckMemory() );
 
-      //we have succeeded in communicating
-      InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[1] = _transdataProtocol.sendCommResult( InMessage );
-   
+      _transdataProtocol.sendCommResult( InMessage );
+      
       lLP = NULL;
    }
    

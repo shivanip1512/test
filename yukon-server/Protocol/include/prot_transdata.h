@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2004/02/09 16:50:17 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2004/02/16 19:09:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -64,6 +64,7 @@ class IM_EX_PROT CtiProtocolTransdata
       void setError( int err );
       int getError( void );
       bool getDidProcess( void );
+      RWTime getLastLoadProfileTime( void );
 
       vector<CtiTransdataData *> resultDecode( INMESS *InMessage );
 
@@ -83,6 +84,8 @@ class IM_EX_PROT CtiProtocolTransdata
          Working     = 0,
          Failed
       };
+
+      RWTime                     _lastLPTime;
 
       bool                       _finished;
       bool                       _collectLP;

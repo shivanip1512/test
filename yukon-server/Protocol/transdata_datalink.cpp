@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/02/09 16:48:42 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2004/02/16 19:09:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,6 +110,7 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
       if( _received.contains( ( const char*)_lookFor, RWCString::exact ) )
       {
          memcpy( _storage, _received, _received.length() );
+         _ASSERTE( _CrtCheckMemory( ) );
          _bytesReceived += _received.length();
 
          //clear what we've got in there
@@ -144,8 +145,12 @@ void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 {
    if( _storage != NULL )
    {
-      memcpy( data, _storage, _bytesReceived );
-      *bytes = _bytesReceived;
+      if( data != NULL )
+      {
+         memcpy( data, _storage, _bytesReceived );
+         _ASSERTE( _CrtCheckMemory( ) );
+         *bytes = _bytesReceived;
+      }
 
       memset( _storage, '\0', Storage_size );
 
