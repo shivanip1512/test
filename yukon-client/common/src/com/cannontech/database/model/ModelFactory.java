@@ -25,7 +25,7 @@ public final class ModelFactory
 	public static final int CONTACT = 16;
 	public static final int ALARM_STATES = 17;
 	public static final int LMPROGRAM = 18;
-	public static final int EDITABLELCRSERIAL = 19;
+	public static final int EDITABLE_LCR_SERIAL = 19;
 	public static final int LMCONTROLAREA = 20;
 
 	public static final int CICUSTOMER = 21;
@@ -57,6 +57,11 @@ public final class ModelFactory
 	
 	public static final int LMCONSTRAINT = 41;
 	public static final int LMSCENARIO = 42;
+	
+	public static final int EDITABLE_VERSACOM_SERIAL = 43;
+	public static final int EDITABLE_EXPRESSCOM_SERIAL = 44;
+	public static final int EDITABLE_SA305_SERIAL = 45;
+	public static final int EDITABLE_SA205_SERIAL = 46;
 
 	//The above is an enumeration of indices into
 	//the following array
@@ -104,7 +109,11 @@ public final class ModelFactory
 		CommChannelCheckBoxTreeModel.class,
 		CollectionGroupCheckBoxTreeModel.class,
 		LMConstraintModel.class,
-		LMScenarioModel.class
+/* 42*/LMScenarioModel.class,
+		EditableVersacomModel.class,
+		EditableExpresscomModel.class,
+		EditableSA305Model.class,
+		EditableSA205Model.class
 	};
 
 /**
@@ -140,4 +149,27 @@ public static DBTreeModel create(int type) {
 	return returnVal;
 
 }
+
+	/**
+	 * @return
+	 */
+	public static Class getModelClass(int type)
+	{
+		return typeToClassMap[type];
+	}
+	
+	/**
+	 * @param type
+	 * @return
+	 */
+	public static boolean isEditableSerial(int type)
+	{
+		if( type == EDITABLE_SA205_SERIAL ||
+			type == EDITABLE_SA305_SERIAL || 
+			type == EDITABLE_VERSACOM_SERIAL || 
+			type == EDITABLE_EXPRESSCOM_SERIAL || 
+			type == EDITABLE_LCR_SERIAL)
+				return true;
+		return false; 
+	}
 }

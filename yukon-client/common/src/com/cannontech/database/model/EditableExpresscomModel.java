@@ -4,21 +4,21 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 
-public class EditableLCRSerialModel extends EditableTextModel
+public class EditableExpresscomModel extends EditableTextModel
 {
-	private static String title = "LCR Serial #";
+	private static String title = "Expresscom Serial";
 	/**
 	 * EditableLCRSerialModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
-	public EditableLCRSerialModel() {
+	public EditableExpresscomModel() {
 		super(title);
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
-	public EditableLCRSerialModel(String sortByTitle) {
+	public EditableExpresscomModel(String sortByTitle) {
 		super(sortByTitle);
 	}
 	/**
@@ -27,5 +27,5 @@ public class EditableLCRSerialModel extends EditableTextModel
 	 */
 	public String toString() {
 		return title;
-	}
+	}	
 }
