@@ -88,7 +88,7 @@ public DeviceTypeCommandSetupPanel() {
 				if( o instanceof Command)
 				{
 					((Command)o).setCategory(getDeviceType());
-					saveObject((Command)o, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD );
+					writeDBChange((Command)o, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD );
 					Command cmd = (Command)o;
 					if( CommandCategory.isCommandCategory(getDeviceType()))
 					{
@@ -104,7 +104,7 @@ public DeviceTypeCommandSetupPanel() {
 							dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
 							dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
 							dbP.setCommand(cmd);
-							saveObject(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
+							writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
 						}
 						if( dbP  != null)
 							((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).addRowToEnd(dbP);						
@@ -118,7 +118,7 @@ public DeviceTypeCommandSetupPanel() {
 						dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
 						dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
 						dbP.setCommand(cmd);
-						saveObject(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
+						writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
 
 						((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).addRowToEnd(dbP);						
 					}
@@ -141,7 +141,7 @@ public DeviceTypeCommandSetupPanel() {
 
 				DeviceTypeCommand dbP = ((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).getRow(rowToRemove);
 				Command cmd = dbP.getCommand();
-				saveObject(cmd, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);			
+				writeDBChange(cmd, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);			
 				((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).removeRow(rowToRemove);
 				getDandDCommandTable().getSelectionModel().clearSelection();
 			}
@@ -728,18 +728,20 @@ constraintsDeviceTypeCommandSetupPanel.gridheight = 6;
 				int newIndex = i+1;
 				DeviceTypeCommand tempValue = model.getRow(i);
 				
+				//Get the deviceTypeCommand from cache to see if it has changed at all.
+				LiteDeviceTypeCommand cacheLdtc = CommandFuncs.getDeviceTypeCommand(tempValue.getDeviceCommandID().intValue());
 				//store the original value for comparison, this way we only save to db those that have actually changed
 				int origOrder = tempValue.getDeviceTypeCommand().getDisplayOrder().intValue();
-				if( origOrder != newIndex)
+				if(origOrder != newIndex  || tempValue.getVisibleFlag().charValue() != cacheLdtc.getVisibleFlag())
 				{
 					//Set the DisplayOrder of the objects based on their order in the table.
 					tempValue.getDeviceTypeCommand().setDisplayOrder(new Integer (newIndex));
-					saveObject(tempValue, Transaction.UPDATE, DBChangeMsg.CHANGE_TYPE_UPDATE);
+					writeDBChange(tempValue, Transaction.UPDATE, DBChangeMsg.CHANGE_TYPE_UPDATE);
 				}
 			}
 		}
 	}
-	public void saveObject(DBPersistent item, int transType, int changeType) 
+	public void writeDBChange(DBPersistent item, int transType, int changeType) 
 	{
 		if( item != null )
 		{
