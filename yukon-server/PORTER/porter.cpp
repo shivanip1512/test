@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2002/08/05 20:44:17 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2002/08/06 19:04:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -954,6 +954,11 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                 {
                     RWMutexLock::LockGuard  guard(coutMux);
                     PortManager.apply( applyPortQueueReport, NULL );
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << endl << RWTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
+                    }
                     break;
                 }
             default:
@@ -1640,5 +1645,3 @@ void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, b
         traceList.clearAndDestroy();
     }
 }
-
-
