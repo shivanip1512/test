@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/01/07 21:21:28 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/02/12 01:16:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,6 +50,12 @@ CtiProtocolDNP &CtiProtocolDNP::operator=(const CtiProtocolDNP &aRef)
 }
 
 
+void CtiProtocolDNP::initLayers( void )
+{
+    //_appLayer.setOptions(_options);
+}
+
+
 void CtiProtocolDNP::setMasterAddress( unsigned short address )
 {
     _masterAddress = address;
@@ -59,6 +65,14 @@ void CtiProtocolDNP::setMasterAddress( unsigned short address )
 void CtiProtocolDNP::setSlaveAddress( unsigned short address )
 {
     _slaveAddress = address;
+}
+
+
+void CtiProtocolDNP::setOptions( int options )
+{
+    _options = options;
+
+    _appLayer.setOptions(options);
 }
 
 
@@ -80,6 +94,27 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
                 dob.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
 
                 _appLayer.addObjectBlock(dob);
+
+                break;
+            }
+        case DNP_Class0123Read:
+            {
+                _appLayer.setCommand(CtiDNPApplication::RequestRead);
+
+                CtiDNPObjectBlock dob0(CtiDNPObjectBlock::NoIndex_NoRange),
+                                  dob1(CtiDNPObjectBlock::NoIndex_NoRange),
+                                  dob2(CtiDNPObjectBlock::NoIndex_NoRange),
+                                  dob3(CtiDNPObjectBlock::NoIndex_NoRange);
+
+                dob0.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class0));
+                dob1.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class1));
+                dob2.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class2));
+                dob3.addObject(CTIDBG_new CtiDNPClass(CtiDNPClass::Class3));
+
+                _appLayer.addObjectBlock(dob0);
+                _appLayer.addObjectBlock(dob1);
+                _appLayer.addObjectBlock(dob2);
+                _appLayer.addObjectBlock(dob3);
 
                 break;
             }
@@ -188,9 +223,9 @@ int CtiProtocolDNP::decode( CtiXfer &xfer, int status )
 }
 
 
-int CtiProtocolDNP::commOut( OUTMESS *&OutMessage )
+int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
 {
-    int retVal = NoError;
+    int retVal;
 
     if( _appLayer.getLengthReq() < sizeof( OutMessage->Buffer ) )
     {
@@ -215,26 +250,6 @@ int CtiProtocolDNP::commOut( OUTMESS *&OutMessage )
         retVal = MemoryError;
     }
 
-    return retVal;
-}
-
-
-int CtiProtocolDNP::commIn( INMESS *InMessage )
-{
-    int retVal = NoError;
-
-    _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
-
-    return retVal;
-}
-
-
-int CtiProtocolDNP::sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
-{
-    int retVal;
-
-    retVal = commOut(OutMessage);
-
     if( OutMessage != NULL )
     {
         outList.append(OutMessage);
@@ -249,7 +264,7 @@ int CtiProtocolDNP::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 {
     int retVal;
 
-    retVal = commIn(InMessage);
+    _appLayer.restoreRsp(InMessage->Buffer.InMessage, InMessage->InLength);
 
     if( _appLayer.hasOutput() )
     {
@@ -271,6 +286,8 @@ int CtiProtocolDNP::recvCommResult( INMESS *InMessage, RWTPtrSlist< OUTMESS > &o
 int CtiProtocolDNP::recvCommRequest( OUTMESS *OutMessage )
 {
     int retVal = NoError;
+
+    _appLayer.resetLink();
 
     _appLayer.restoreReq(OutMessage->Buffer.OutMessage, OutMessage->OutLength);
 

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2003/01/07 21:21:05 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2003/02/12 01:16:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,6 +47,24 @@ CtiDNPTransport &CtiDNPTransport::operator=(const CtiDNPTransport &aRef)
     }
 
     return *this;
+}
+
+
+void CtiDNPTransport::setAddresses(unsigned short dst, unsigned short src)
+{
+    _datalink.setAddresses(dst, src);
+}
+
+
+void CtiDNPTransport::setOptions(int options)
+{
+    _datalink.setOptions(options);
+}
+
+
+void CtiDNPTransport::resetLink( void )
+{
+    _datalink.resetLink();
 }
 
 
@@ -138,7 +156,7 @@ int CtiDNPTransport::generate( CtiXfer &xfer )
                 //  copy the app layer chunk into the outbound packet
                 memcpy( (void *)_outPacket.data, (void *)&(_outPayload[_outPayloadSent]), dataLen );
 
-                _datalink.setToOutput((unsigned char *)&_outPacket, packetLen, _dstAddr, _srcAddr);
+                _datalink.setToOutput((unsigned char *)&_outPacket, packetLen);
 
                 break;
             }
@@ -194,7 +212,7 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
             {
                 int transportPayloadLen;
 
-                transportPayloadLen = _datalink.getOutPayloadLength() - TransportHeaderLen;
+                transportPayloadLen = _datalink.getPayloadLength() - TransportHeaderLen;
 
                 _seq++;
                 _outPayloadSent += transportPayloadLen;
@@ -220,10 +238,10 @@ int CtiDNPTransport::decode( CtiXfer &xfer, int status )
                 int dataLen;
 
                 //  copy out the data
-                if( _datalink.getInPayloadLength() >= TransportHeaderLen )
+                if( _datalink.getPayloadLength() >= TransportHeaderLen )
                 {
-                    dataLen = _datalink.getInPayloadLength() - TransportHeaderLen;
-                    _datalink.getInPayload((unsigned char *)&_inPacket);
+                    dataLen = _datalink.getPayloadLength() - TransportHeaderLen;
+                    _datalink.getPayload((unsigned char *)&_inPacket);
 
                     memcpy(&_inPayload[_inPayloadRecv], _inPacket.data, dataLen);
 

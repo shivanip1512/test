@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/25 20:53:20 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/12 01:16:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,6 +120,10 @@ public:
 
     //  initialization functions
     void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
+    void setOptions( int options );
+
+    void resetLink( void );
+
     void setCommand( AppFuncCode func );
     void addObjectBlock( const CtiDNPObjectBlock &obj );
 

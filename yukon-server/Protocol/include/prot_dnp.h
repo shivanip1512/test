@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/10/09 19:31:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/12 01:16:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,11 +38,11 @@ private:
     CtiDNPApplication _appLayer;
     unsigned short    _masterAddress, _slaveAddress;
     DNPCommand        _currentCommand;
+    int               _options;
+
+    void initLayers( void );
 
 protected:
-
-    int commOut( OUTMESS *&OutMessage );
-    int commIn ( INMESS   *InMessage  );
 
 public:
 
@@ -55,6 +55,7 @@ public:
 
     void setMasterAddress( unsigned short address );
     void setSlaveAddress( unsigned short address );
+    void setOptions( int options );
 
     void setCommand( DNPCommand command, dnp_output_point *points = NULL, int numPoints = 0 );
 
@@ -112,8 +113,16 @@ public:
         DNP_Class2Read,
         DNP_Class3Read,
         DNP_Class123Read,
+        DNP_Class0123Read,
         DNP_SetAnalogOut,
         DNP_SetDigitalOut
+    };
+
+    enum DNPOptions
+    {
+        //  to be logically OR'd together - keep bit patterns unique
+        None            = 0x00,
+        DatalinkConfirm = 0x01
     };
 
     enum

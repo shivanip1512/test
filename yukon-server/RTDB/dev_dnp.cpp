@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/12/12 17:33:00 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/02/12 01:16:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "porter.h"
 
 #include "pt_base.h"
+#include "pt_numeric.h"
 #include "master.h"
 
 #include "pointtypes.h"
@@ -182,13 +183,13 @@ INT CtiDeviceDNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
                 case ScanRateAccum:
                 {
-                    nRet = NoMethod;
-                    break;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "Accumulator scanrates not defined for DNP devices - check the DeviceScanRate table" << endl;
                 }
-
                 case ScanRateIntegrity:
                 {
-                    _dnp.setCommand(CtiProtocolDNP::DNP_Class0Read);
+                    _dnp.setCommand(CtiProtocolDNP::DNP_Class0123Read);
                     nRet = NoError;
                     break;
                 }
@@ -280,12 +281,24 @@ void CtiDeviceDNP::processInboundPoints(RWTPtrSlist<CtiPointDataMsg> &points, RW
     while( !points.isEmpty() )
     {
         CtiPointDataMsg *tmpMsg = points.removeFirst();
-        CtiPointBase *point;
+        CtiPointBase    *point;
+        CtiPointNumeric *pNumeric;
+
+        double tmpValue;
 
         //  !!! tmpMsg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
         if( (point = getDevicePointOffsetTypeEqual(tmpMsg->getId(), tmpMsg->getType())) != NULL )
         {
             tmpMsg->setId(point->getID());
+
+            if( point->isNumeric() )
+            {
+                pNumeric = (CtiPointNumeric *)point;
+
+                tmpValue = pNumeric->computeValueForUOM(tmpMsg->getValue());
+
+                tmpMsg->setValue(tmpValue);
+            }
 
             retList.append(tmpMsg);
         }
@@ -374,6 +387,8 @@ void CtiDeviceDNP::DecodeDatabaseReader(RWDBReader &rdr)
 
    _dnp.setSlaveAddress(_dnpAddress.getSlaveAddress());
    _dnp.setMasterAddress(_dnpAddress.getMasterAddress());
+
+   _dnp.setOptions(CtiProtocolDNP::DatalinkConfirm);
 }
 
 

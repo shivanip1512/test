@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2003/01/07 21:19:22 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2003/02/12 01:16:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,20 @@ void CtiDNPApplication::setAddresses( unsigned short dstAddr, unsigned short src
 {
     _dstAddr = dstAddr;
     _srcAddr = srcAddr;
+
+    _transport.setAddresses(_dstAddr, _srcAddr);
+}
+
+
+void CtiDNPApplication::setOptions( int options )
+{
+    _transport.setOptions(options);
+}
+
+
+void CtiDNPApplication::resetLink( void )
+{
+    _transport.resetLink();
 }
 
 
@@ -200,6 +214,7 @@ void CtiDNPApplication::processInput( void )
         dout << endl << endl;
     }
 
+    //  real code
     if( _appRsp.ctrl.app_confirm )
     {
         setCommand(RequestConfirm);

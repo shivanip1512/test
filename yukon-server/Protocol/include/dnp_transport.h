@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2002/10/18 20:22:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2003/02/12 01:16:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,11 @@ public:
     virtual ~CtiDNPTransport();
 
     CtiDNPTransport &operator=(const CtiDNPTransport &aRef);
+
+    void setAddresses(unsigned short dst, unsigned short src);
+    void setOptions( int options );
+
+    void resetLink( void );
 
     int initForOutput(unsigned char *buf, int len, unsigned short dstAddr, unsigned short srcAddr);
     int initForInput(unsigned char *buf);
