@@ -66,20 +66,8 @@
 			<xs:element name="StreetAddr1" type="xs:string"/>
 			<xs:element name="StreetAddr2" type="xs:string"/>
 			<xs:element name="City" type="xs:string"/>
-			<xs:element name="State">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:length value="2"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="Zip">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:pattern value="[0-9]{5}(-[0-9]{4})?"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
+			<xs:element name="State" type="xs:string"/>
+			<xs:element name="Zip" type="xs:string"/>
 		</xs:sequence>
 		<xs:attribute name="addressID" type="xs:int"/>
 	</xs:complexType>
@@ -96,7 +84,7 @@
 			<xs:element name="BillingAddress" type="stars-CustomerAddress"/>
 			<xs:element name="PrimaryContact" type="stars-CustomerContact"/>
 			<xs:element name="AdditionalContact" type="stars-CustomerContact" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="TimeZone" type="xs:string"/>
+			<xs:element name="TimeZone" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="accountID" type="xs:int"/>
 		<xs:attribute name="customerID" type="xs:int"/>
@@ -211,12 +199,12 @@
 		<xs:complexType>
 			<xs:all>
 				<xs:element ref="stars-Login" minOccurs="0"/>
-				<xs:element ref="stars-LoginResponse" minOccurs="0"/>
+
 				<xs:element ref="stars-Logoff" minOccurs="0"/>
 				<xs:element ref="stars-Success" minOccurs="0"/>
 				<xs:element ref="stars-Failure" minOccurs="0"/>
 				<xs:element ref="stars-NewCustomerAccount" minOccurs="0"/>
-				<xs:element ref="stars-NewCustomerAccountResponse" minOccurs="0"/>
+
 				<xs:element ref="stars-ProgramSignUp" minOccurs="0"/>
 				<xs:element ref="stars-SearchCustomerAccount" minOccurs="0"/>
 				<xs:element ref="stars-SearchCustomerAccountResponse" minOccurs="0"/>
@@ -224,6 +212,9 @@
 
 				<xs:element ref="stars-GetCustomerAccount" minOccurs="0"/>
 				<xs:element ref="stars-GetCustomerAccountResponse" minOccurs="0"/>
+				<xs:element ref="stars-ReloadCustomerAccount" minOccurs="0"/>
+				<xs:element ref="stars-ReloadCustomerAccountResponse" minOccurs="0"/>
+				<xs:element ref="stars-DeleteCustomerAccount" minOccurs="0"/>
 				<xs:element ref="stars-UpdateCustomerAccount" minOccurs="0"/>
 				<xs:element ref="stars-UpdateCustomerAccountResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateLMPrograms" minOccurs="0"/>
@@ -237,6 +228,9 @@
 				<xs:element ref="stars-GetLMControlHistoryResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateCallReport" minOccurs="0"/>
 				<xs:element ref="stars-CreateCallReportResponse" minOccurs="0"/>
+				<xs:element ref="stars-GetNextCallNumber" minOccurs="0"/>
+				<xs:element ref="stars-GetNextCallNumberResponse" minOccurs="0"/>
+				<xs:element ref="stars-UpdateCallReport" minOccurs="0"/>
 				<xs:element ref="stars-GetCallReportHistory" minOccurs="0"/>
 				<xs:element ref="stars-GetCallReportHistoryResponse" minOccurs="0"/>
 				<xs:element ref="stars-CreateServiceRequest" minOccurs="0"/>
@@ -292,13 +286,7 @@
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-NewCustomerAccountResponse">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-CustAccountInformation"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+
 	<xs:element name="stars-ProgramSignUp">
 		<xs:complexType>
 			<xs:sequence>
@@ -395,6 +383,27 @@
 			<xs:sequence>
 				<xs:element ref="stars-CustAccountInformation"/>
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-ReloadCustomerAccount">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-ReloadCustomerAccountResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="stars-CustAccountInformation"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-DeleteCustomerAccount">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string"/>
+			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stars-CustomerAccount" type="stars-CustAccount"/>
@@ -549,6 +558,20 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="stars-GetNextCallNumber">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stars-GetNextCallNumberResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CallNumber" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="stars-CreateCallReport" type="stars-CallRprt"/>
 	<xs:element name="stars-CallReport" type="stars-CallRprt"/>
 	<xs:element name="stars-CreateCallReportResponse">
@@ -558,6 +581,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="stars-UpdateCallReport" type="stars-CallRprt"/>
 	<xs:element name="stars-CallReportHistory">
 		<xs:complexType>
 			<xs:sequence>
