@@ -61,6 +61,7 @@
 #define TAG_DISABLE_DEVICE_BY_DEVICE         0x00000010        // point/device out of service.
 #define TAG_DISABLE_ALARM_BY_DEVICE          0x00000020        // point/device will not cause alarms.
 #define TAG_DISABLE_CONTROL_BY_DEVICE        0x00000040        // point/device cannot be controled.
+#define TAG_INVALID_LODESTAR_READING         0x00000080        // Lodestar Reading Invalid **000009**
 
 #define TAG_POINT_MOA_REPORT                 0x00000400        // This point data message is the result of a registration
 #define TAG_POINT_DELAYED_UPDATE             0x00000800        // Dispatch delay this point data until the time specified in the message!
