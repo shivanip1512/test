@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2003/05/13 20:45:06 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2003/10/01 19:30:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -798,8 +798,7 @@ void CtiMCScheduler::calcAbsoluteTimeStop(const RWTime& start, const CtiMCSchedu
     // consider it tomorrow
     if( stop_time < start )
     {
-        stop_tm.tm_mday++;
-        stop_time = RWTime(&stop_tm);
+        stop_time += 86400;
     }
 
     return;
