@@ -67,13 +67,13 @@ public StringBuffer getHtml(StringBuffer buf)
 				{
 					if( times.length > 0 && values.length > 0 )
 					{
-						boolean addNote = false;
+						boolean addNote = true;
 				
 						//Make sure the first xSeries timestamp if on the
 						//FIRST day of the interval
 						endCompare.setTime(model.getStartDate());
 						endCompare.set( java.util.Calendar.DAY_OF_YEAR, endCompare.get(java.util.Calendar.DAY_OF_YEAR) + 1 );
-						if( endCompare.getTime().getTime() < times[0] )	// *1000
+						if( endCompare.getTime().getTime() < times[0] )
 						{					
 							addNote = true;
 						}
@@ -87,7 +87,7 @@ public StringBuffer getHtml(StringBuffer buf)
 							//on the LAST day of the interval
 							endCompare.setTime(model.getStopDate());
 							endCompare.set( java.util.Calendar.DAY_OF_YEAR, endCompare.get(java.util.Calendar.DAY_OF_YEAR) - 1 );
-							if( endCompare.getTime().getTime() > times[ times.length-1 ])//*1000 )													
+							if( endCompare.getTime().getTime() > times[ times.length-1 ])
 							{
 								addNote = true;
 	
