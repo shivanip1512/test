@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.esub.editor.element.PointAttributes;
+import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 

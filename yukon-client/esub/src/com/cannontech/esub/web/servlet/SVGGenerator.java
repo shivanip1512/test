@@ -14,7 +14,7 @@ import com.cannontech.common.constants.RoleTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.esub.EsubRoles;
+import com.cannontech.esub.EsubConstants;
 import com.cannontech.esub.editor.Drawing;
 import com.cannontech.esub.editor.element.DrawingMetaElement;
 import com.cannontech.esub.web.SessionInfo;

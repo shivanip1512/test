@@ -3,7 +3,7 @@ package com.cannontech.esub;
 /**
  * @author alauinger
  */
-public class EsubRoles {
+public class EsubConstants {
 	
 	// The esub category of roles (category column yukonrole)
 	public static final String ROLE_CATEGORY = "Esub";
