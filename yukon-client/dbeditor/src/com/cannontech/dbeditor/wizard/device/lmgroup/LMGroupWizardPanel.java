@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.common.util.ClientRights;
 /**
  * This type was created in VisualAge.
  */
@@ -27,6 +28,11 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private SA305EditorPanel aSA305EditorPanel = null;
 	private SA205EditorPanel aSA205EditorPanel = null;
 	private SADigitalEditorPanel aSADigitalEditorPanel = null;
+	
+	//hex value representing some privileges of the user on this machine
+	public static final long SPECIAL_RIPPLE = Long.parseLong( 
+		ClientSession.getInstance().getRolePropertyValue(
+		DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
 
 /**
  * LMDeviceWizardPanel constructor comment.
@@ -247,9 +253,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 				&& getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE )
 	{
 		//this is specifically for Minnkota
-		boolean allowSpecialRipple = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.ACTIVATE_ALTERNATE_RIPPLE, "FALSE").trim().equalsIgnoreCase("TRUE");
-		if(allowSpecialRipple)
+		if((SPECIAL_RIPPLE & ClientRights.SHOW_SPECIAL_RIPPLE) != 0)
 			return getSpecialRippleMessagePanel();
 		else
 			return getRippleMessageShedPanel();

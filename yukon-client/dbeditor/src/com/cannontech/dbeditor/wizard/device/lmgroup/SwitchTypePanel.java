@@ -6,12 +6,18 @@ import java.awt.Dimension;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.device.lm.LMFactory;
+import com.cannontech.common.util.ClientRights;
 
 public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPanel 
 {
 	private javax.swing.JLabel ivjSelectLabel = null;
 	private javax.swing.JList ivjSwitchList = null;
 	private javax.swing.JScrollPane ivjSwitchListScrollPane = null;
+	
+	//hex value representing some privileges of the user on this machine
+	public static final long SHOW_PROTOCOL = Long.parseLong( 
+		ClientSession.getInstance().getRolePropertyValue(
+		DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
 
 	private static final String[] SWITCH_LIST = 
 	{
@@ -125,9 +131,7 @@ public Object[] connEtoM1_ListData() {
 	
 	//normally we cannot show SA protocol groups, this checks the 
 	//specific property.
-	boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
-	if(allowSA)
+	if((SHOW_PROTOCOL & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0)
 		return SwitchTypePanel.SWITCH_LIST_SA;
 	return SwitchTypePanel.SWITCH_LIST;
 		
@@ -278,9 +282,7 @@ public int getTypeOfSwitchSelected() {
 	
 	//normally we cannot show SA protocol groups, this checks the 
 	//specific property.
-	boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
-	if(allowSA)
+	if((SHOW_PROTOCOL & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0)
 		return SwitchTypePanel.VALUE_LIST_SA[getSwitchList().getSelectedIndex()];
 	return SwitchTypePanel.VALUE_LIST[getSwitchList().getSelectedIndex()];
 }
@@ -294,9 +296,7 @@ public String getTypeOfSwitchSelectedString()
 {	
 	//normally we cannot show SA protocol groups, this checks the 
 	//specific property.
-	boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
-	if(allowSA)
+	if((SHOW_PROTOCOL & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0)
 		return com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(
 			SwitchTypePanel.VALUE_LIST_SA[getSwitchList().getSelectedIndex()]);
 		

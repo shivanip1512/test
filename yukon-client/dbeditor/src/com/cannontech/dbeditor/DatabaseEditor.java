@@ -51,6 +51,7 @@ import com.cannontech.roles.application.BillingRole;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.common.util.ClientRights;
 
 import java.awt.Dimension;
 
@@ -2753,9 +2754,11 @@ public void setDatabase(int whichDatabase)
 		case DatabaseTypes.LM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.lmRadioButtonMenuItem.setSelected(true);
-				boolean allowSA = ClientSession.getInstance().getRolePropertyValue(
-					DBEditorRole.FUTURE_PROTOCOL_DEV, "FALSE").trim().equalsIgnoreCase("TRUE");
-				if(allowSA)
+				//hex value representing some privileges of the user on this machine
+				long show_protocol = Long.parseLong( 
+					ClientSession.getInstance().getRolePropertyValue(
+					DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
+				if((show_protocol & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0)
 					models = LM_MODELS_WITH_SA;
 				else
 					models = LM_MODELS;

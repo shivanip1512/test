@@ -21,7 +21,10 @@ public interface ClientRights
 	/* Enable clients by name */
 	public static final int ENABLE_SERVICES	= 0x00010000;
 
+   //Enable some company specific paramenters   
+   public static final int SHOW_SPECIAL_RIPPLE = 0x10000000;
+   public static final int SHOW_ADDITIONAL_PROTOCOLS = 0x20000000;
    
-   /* miscealanous params */
+   /* miscellaneous params */
    public static final int HIDE_ALARM_COLORS	= 0x80000000;
 }
