@@ -47,271 +47,6 @@ CtiLMGroupExpresscom::~CtiLMGroupExpresscom()
 {
 }
 
-/*---------------------------------------------------------------------------
-    getRouteId
-
-    Returns the route id of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getRouteId() const
-{
-
-    return _routeid;
-}
-
-/*---------------------------------------------------------------------------
-    getSerialNumber
-
-    Returns the serial number of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupExpresscom::getSerialNumber() const
-{
-
-    return _serialnumber;
-}
-
-/*---------------------------------------------------------------------------
-    getServiceAddress
-
-    Returns the service address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getServiceAddress() const
-{
-
-    return _serviceaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getGeoAddress
-
-    Returns the geo address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getGeoAddress() const
-{
-
-    return _geoaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getSubstationAddress
-
-    Returns the substation address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getSubstationAddress() const
-{
-
-    return _substationaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getFeederAddress
-
-    Returns the feeder address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getFeederAddress() const
-{
-
-    return _feederaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getZipCodeAddress
-
-    Returns the zip code address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getZipCodeAddress() const
-{
-
-    return _zipcodeaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getUDAddress
-
-    Returns the ud address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getUDAddress() const
-{
-
-    return _udaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getProgramAddress
-
-    Returns the program address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getProgramAddress() const
-{
-
-    return _programaddress;
-}
-
-/*---------------------------------------------------------------------------
-    getSplinterAddress
-
-    Returns the splinter address of the group
----------------------------------------------------------------------------*/
-ULONG CtiLMGroupExpresscom::getSplinterAddress() const
-{
-
-    return _splinteraddress;
-}
-
-/*---------------------------------------------------------------------------
-    getAddressUsage
-
-    Returns the address usage of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupExpresscom::getAddressUsage() const
-{
-
-    return _addressusage;
-}
-
-/*---------------------------------------------------------------------------
-    getRelayUsage
-
-    Returns the relay usage of the group
----------------------------------------------------------------------------*/
-const RWCString& CtiLMGroupExpresscom::getRelayUsage() const
-{
-
-    return _relayusage;
-}
-
-
-/*---------------------------------------------------------------------------
-    setRouteId
-
-    Sets the route id of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setRouteId(ULONG rteid)
-{
-    _routeid = rteid;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setSerialNumber
-
-    Sets the serial number of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setSerialNumber(const RWCString& sernum)
-{
-    _serialnumber = sernum;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setServiceAddress
-
-    Sets the service address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setServiceAddress(ULONG add)
-{
-    _serviceaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setGeoAddress
-
-    Sets the geo address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setGeoAddress(ULONG add)
-{
-    _geoaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setSubstationAddress
-
-    Sets the substation address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setSubstationAddress(ULONG add)
-{
-    _substationaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setFeederAddress
-
-    Sets the feeder address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setFeederAddress(ULONG add)
-{
-    _feederaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setZipCodeAddress
-
-    Sets the zip code address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setZipCodeAddress(ULONG add)
-{
-    _zipcodeaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setUDAddress
-
-    Sets the ud address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setUDAddress(ULONG add)
-{
-    _udaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setProgramAddress
-
-    Sets the program address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setProgramAddress(ULONG add)
-{
-    _programaddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setSplinterAddress
-
-    Sets the splinter address of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setSplinterAddress(ULONG add)
-{
-    _splinteraddress = add;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setAddressUsage
-
-    Sets the address usage of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setAddressUsage(const RWCString& adduse)
-{
-    _addressusage = adduse;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setRelayUsage
-
-    Sets the relay usage of the group
----------------------------------------------------------------------------*/
-CtiLMGroupExpresscom& CtiLMGroupExpresscom::setRelayUsage(const RWCString& relayuse)
-{
-    _relayusage = relayuse;
-    return *this;
-}
-
 
 /*-------------------------------------------------------------------------
     createTimeRefreshRequestMsg
@@ -321,7 +56,7 @@ CtiLMGroupExpresscom& CtiLMGroupExpresscom::setRelayUsage(const RWCString& relay
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(ULONG refreshRate, ULONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
     if( _LM_DEBUG )
@@ -336,16 +71,54 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(ULONG refreshRa
     createSmartCycleRequestMsg
 
     Creates a new CtiRequestMsg pointer for a program gear with a control
-    method of smart cycle with the appropriate cycle percent, period length,
-    and the default count of periods.
+    method of smart cycle with the appropriate cycle percent, period length
+    in minutes, and the default count of periods.
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
 {
+    char tempchar[64];
+    RWCString controlString = RWCString("control xcom cycle ");
+    _ultoa(percent,tempchar,10);
+    controlString += tempchar;
+    controlString += " count ";
+    _ultoa(defaultCount,tempchar,10);
+    controlString += tempchar;
+    controlString += " period ";
+    controlString += convertSecondsToEvenTimeString(period);
+
+    if( _LM_DEBUG )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Can not smart cycle an Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << RWTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return NULL;
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+}
+
+/*-------------------------------------------------------------------------
+    createTrueCycleRequestMsg
+
+    Creates true cycle request msg which is exactly like a smart cycle but
+    with the "truecycle" string at the end of the control string.
+--------------------------------------------------------------------------*/
+CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(ULONG percent, ULONG period, ULONG defaultCount, int priority) const
+{
+    char tempchar[64];
+    RWCString controlString = RWCString("control xcom cycle ");
+    _ultoa(percent,tempchar,10);
+    controlString += tempchar;
+    controlString += " count ";
+    _ultoa(defaultCount,tempchar,10);
+    controlString += tempchar;
+    controlString += " period ";
+    controlString += convertSecondsToEvenTimeString(period);
+    controlString += " truecycle";
+
+    if( _LM_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -356,7 +129,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(ULONG percent, U
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(ULONG sendRate, ULONG shedTime, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    RWCString controlString = RWCString("control xcom shed ");
     controlString += convertSecondsToEvenTimeString(shedTime);
 
     if( _LM_DEBUG )
@@ -375,7 +148,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(ULONG sendRate, UL
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(ULONG offTime, ULONG period, int priority) const
 {
-    RWCString controlString = RWCString("control shed ");
+    RWCString controlString = RWCString("control xcom shed ");
     ULONG shedTime = 450;
     if( offTime > 570 && offTime <= 1220 )
     {
@@ -400,31 +173,6 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(ULONG offTime, 
     return new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
-/*---------------------------------------------------------------------------
-    doesMasterCycleNeedToBeUpdated
-
-    
----------------------------------------------------------------------------*/
-BOOL CtiLMGroupExpresscom::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime)
-{
-    BOOL returnBOOL = FALSE;
-
-    ULONG controlTimeLeft = groupControlDone - secondsFrom1901;
-    if( !_refreshsent &&
-        controlTimeLeft < 572 &&
-        controlTimeLeft >= 569 )
-    {
-        returnBOOL = TRUE;
-        _refreshsent = TRUE;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed." << endl;
-        }
-    }
-
-    return returnBOOL;
-}
-
 /*-------------------------------------------------------------------------
     restoreGuts
     
@@ -433,19 +181,6 @@ BOOL CtiLMGroupExpresscom::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901,
 void CtiLMGroupExpresscom::restoreGuts(RWvistream& istrm)
 {
     CtiLMGroupBase::restoreGuts( istrm );
-
-    istrm >> _routeid
-          >> _serialnumber
-          >> _serviceaddress
-          >> _geoaddress
-          >> _substationaddress
-          >> _feederaddress
-          >> _zipcodeaddress
-          >> _udaddress
-          >> _programaddress
-          >> _splinteraddress
-          >> _addressusage
-          >> _relayusage;
 }
 
 /*---------------------------------------------------------------------------
@@ -456,20 +191,6 @@ void CtiLMGroupExpresscom::restoreGuts(RWvistream& istrm)
 void CtiLMGroupExpresscom::saveGuts(RWvostream& ostrm ) const  
 {
     CtiLMGroupBase::saveGuts( ostrm );
-
-    ostrm << _routeid          
-          << _serialnumber     
-          << _serviceaddress   
-          << _geoaddress       
-          << _substationaddress
-          << _feederaddress    
-          << _zipcodeaddress   
-          << _udaddress        
-          << _programaddress   
-          << _splinteraddress  
-          << _addressusage     
-          << _relayusage;      
-
     return;
 }
 
@@ -481,18 +202,6 @@ CtiLMGroupExpresscom& CtiLMGroupExpresscom::operator=(const CtiLMGroupExpresscom
     if( this != &right )
     {
         CtiLMGroupBase::operator=(right);
-        _routeid           = right._routeid          ;
-        _serialnumber      = right._serialnumber     ;
-        _serviceaddress    = right._serviceaddress   ;
-        _geoaddress        = right._geoaddress       ;
-        _substationaddress = right._substationaddress;
-        _feederaddress     = right._feederaddress    ;
-        _zipcodeaddress    = right._zipcodeaddress   ;
-        _udaddress         = right._udaddress        ;
-        _programaddress    = right._programaddress   ;
-        _splinteraddress   = right._splinteraddress  ;
-        _addressusage      = right._addressusage     ;
-        _relayusage        = right._relayusage       ;
     }
 
     return *this;
@@ -534,29 +243,5 @@ CtiLMGroupBase* CtiLMGroupExpresscom::replicate() const
 void CtiLMGroupExpresscom::restore(RWDBReader& rdr)
 {
     CtiLMGroupBase::restore(rdr);
-}
-
-/*---------------------------------------------------------------------------
-    restoreExpresscomSpecificDatabaseEntries
-    
-    Restores the database entries for a expresscom group that are not contained
-    in the base table.
----------------------------------------------------------------------------*/
-void CtiLMGroupExpresscom::restoreExpresscomSpecificDatabaseEntries(RWDBReader& rdr)
-{
-    rdr["routeid"] >> _routeid          ;
-    rdr["serialnumber"] >> _serialnumber     ;
-    rdr["serviceaddress"] >> _serviceaddress   ;
-    rdr["geoaddress"] >> _geoaddress       ;
-    rdr["substationaddress"] >> _substationaddress;
-    rdr["feederaddress"] >> _feederaddress    ;
-    rdr["zipcodeaddress"] >> _zipcodeaddress   ;
-    rdr["udaddress"] >> _udaddress        ;
-    rdr["programaddress"] >> _programaddress   ;
-    rdr["splinteraddress"] >> _splinteraddress  ;
-    rdr["addressusage"] >> _addressusage     ;
-    rdr["relayusage"] >> _relayusage       ;
-
-    _refreshsent = FALSE;
 }
 
