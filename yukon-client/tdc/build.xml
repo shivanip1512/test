@@ -17,18 +17,20 @@
 	      </classpath> 
      	</javac>
 
-       <jar jarfile="${yukon.lib}/tdc.jar"
-            basedir="build/" 
-            manifest="resource/manifest.mf" />       
+	<jar jarfile="${yukon.lib}/tdc.jar" basedir="build/" manifest="resource/manifest.mf">
+ 	    <fileset dir="resource">
+			<include name="**/*.gif"/>
+	 		<include name="**/*.ico"/>       	
+	 		<include name="**/*.au"/>
+		</fileset>
+	</jar>
 
 	<copy todir="${yukon.lib}">
  	    <fileset dir="resource">
-		<include name="**/*.gif"/>
- 		<include name="**/*.ico"/>
  		<include name="**/*.dll"/>
- 		<include name="**/*.au"/>
 	    </fileset>
-       </copy>
+	</copy>
+
    </target>
    
    <target name="install" depends="build">
