@@ -860,10 +860,12 @@ public void executeDefaultButton_ActionPerformed(ActionEvent event) {
 
 	java.util.Vector routes = (Vector)defaults.get(0);
 	java.util.Vector originalDefaults = (Vector)defaults.get(1);
+	int totalRecDefaults = ((Integer)defaults.get(2)).intValue();
+	int totalOrigDefaults = ((Integer)defaults.get(3)).intValue();
 	
 	java.util.Vector displayRoutes = DefaultRoutes.getDisplayReady(routes, originalDefaults);
 	
-	DefaultRoutesDialog r = new DefaultRoutesDialog(f,"Default Routes", true);
+	DefaultRoutesDialog r = new DefaultRoutesDialog(f,"Default Routes", true, totalRecDefaults, totalOrigDefaults);
 	
 	for (int i =0; i<displayRoutes.size(); i++) {
 		
