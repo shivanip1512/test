@@ -347,8 +347,17 @@ public GraphDefinition getGraphDefinition()
  */
 public void setGraphDefinition(GraphDefinition newGraphDefinition)
 {
+	if( getGraphDefinition() == null ||
+		getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue() != newGraphDefinition.getGraphDefinition().getGraphDefinitionID().intValue())
+	{
+		setUpdateTrend(true);
+	}
+	else
+	{
+		System.out.println( "SAME GRAPH DEFs");
+	}
 	graphDefinition = newGraphDefinition;
-	setUpdateTrend(true);
+	getTrendProperties().setGdefName(graphDefinition.getGraphDefinition().getName());
 }
 
 /**
