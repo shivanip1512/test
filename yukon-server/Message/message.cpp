@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:07:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/19 14:48:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include "collectable.h"
 #include "dllbase.h"
 #include "logger.h"
+#include "numstr.h"
 
 
 RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
@@ -58,7 +59,7 @@ void CtiMessage::dump() const
 {
    CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-   dout << " ------- Message -------       " << isA() << endl;
+   dout << " ------- Message -------       " << typeString() << endl;
    dout << "Time                           " << MessageTime << endl;
    dout << "Priority                       " << MessagePriority << endl;
    dout << "SOE                            " << _soe << endl;
@@ -242,3 +243,125 @@ bool CtiMessage::isValid()
     return true;
 }
 
+RWCString CtiMessage::typeString() const
+{
+    RWCString rstr(CtiNumStr(isA()));
+    /*
+    #define MSG_BASE                          1500
+    #define MSG_NULL                          (MSG_BASE)
+    #define MSG_DEFAULT                       ((MSG_BASE) + 5 )
+    #define MSG_TRACE                         ((MSG_BASE) + 20)
+    #define MSG_COMMAND                       ((MSG_BASE) + 30)
+    #define MSG_REGISTER                      ((MSG_BASE) + 40)
+    #define MSG_SERVER_REQUEST                ((MSG_BASE) + 50)
+    #define MSG_SERVER_RESPONSE               ((MSG_BASE) + 51)
+    #define MSG_POINTREGISTRATION             ((MSG_BASE) + 70)
+    #define MSG_DBCHANGE                      ((MSG_BASE) + 80)
+    #define MSG_PCREQUEST                     ((MSG_BASE) + 85)
+    #define MSG_PCRETURN                      ((MSG_BASE) + 90)
+
+    #define MSG_MULTI                         ((MSG_BASE) + 91)
+    #define MSG_TAG                           ((MSG_BASE) + 94)
+    #define MSG_POINTDATA                     ((MSG_BASE) + 95)
+    #define MSG_SIGNAL                        ((MSG_BASE) + 96)
+    #define MSG_EMAIL                         ((MSG_BASE) + 97)
+    #define MSG_LMCONTROLHISTORY              ((MSG_BASE) + 98)
+    #define MSG_COMMERRORHISTORY              ((MSG_BASE) + 99)
+    */
+
+    switch(isA())
+    {
+    case MSG_BASE:
+        {
+            rstr += ": MSG_BASE";
+            break;
+        }
+    case MSG_DEFAULT:
+        {
+            rstr += ": MSG_DEFAULT";
+            break;
+        }
+    case MSG_TRACE:
+        {
+            rstr += ": MSG_TRACE";
+            break;
+        }
+    case MSG_COMMAND:
+        {
+            rstr += ": MSG_COMMAND";
+            break;
+        }
+    case MSG_REGISTER:
+        {
+            rstr += ": MSG_REGISTER";
+            break;
+        }
+    case MSG_SERVER_REQUEST:
+        {
+            rstr += ": MSG_SERVER_REQUEST";
+            break;
+        }
+    case MSG_SERVER_RESPONSE:
+        {
+            rstr += ": MSG_SERVER_RESPONSE";
+            break;
+        }
+    case MSG_POINTREGISTRATION:
+        {
+            rstr += ": MSG_POINTREGISTRATION";
+            break;
+        }
+    case MSG_DBCHANGE:
+        {
+            rstr += ": MSG_DBCHANGE";
+            break;
+        }
+    case MSG_PCREQUEST:
+        {
+            rstr += ": MSG_PCREQUEST";
+            break;
+        }
+    case MSG_PCRETURN:
+        {
+            rstr += ": MSG_PCRETURN";
+            break;
+        }
+    case MSG_MULTI:
+        {
+            rstr += ": MSG_MULTI";
+            break;
+        }
+    case MSG_TAG:
+        {
+            rstr += ": MSG_TAG";
+            break;
+        }
+    case MSG_POINTDATA:
+        {
+            rstr += ": MSG_POINTDATA";
+            break;
+        }
+    case MSG_SIGNAL:
+        {
+            rstr += ": MSG_SIGNAL";
+            break;
+        }
+    case MSG_EMAIL:
+        {
+            rstr += ": MSG_EMAIL";
+            break;
+        }
+    case MSG_LMCONTROLHISTORY:
+        {
+            rstr += ": MSG_LMCONTROLHISTORY";
+            break;
+        }
+    case MSG_COMMERRORHISTORY:
+        {
+            rstr += ": MSG_COMMERRORHISTORY";
+            break;
+        }
+    }
+
+    return rstr;
+}

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2002/11/15 14:07:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2004/05/19 14:48:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,6 +109,7 @@ public:
    virtual void PreInsert();
 
    virtual void dump() const;
+   RWCString typeString() const;
 
    virtual bool isValid();
 };
