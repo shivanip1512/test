@@ -18,6 +18,7 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 
 
@@ -705,6 +706,10 @@ private void setRowAlarmed( int rowNumber )
 		sig.setAction("Automatically created signal from CBC Client");
 		sig.setDescription("Alarm signal used in CBC client table");
 		sig.setUserName( CtiUtilities.getUserName() );
+		
+		//since we are creating our own Signal to emulate an alarm, we need to assign
+		// it a valid Condition
+		sig.setCondition( IAlarmDefs.MIN_CONDITION_ID );
 		
 		synchronized( getAlarmingRowVector() )
 		{
