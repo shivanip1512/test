@@ -83,6 +83,7 @@ public class DefineCollectableTagMsg extends DefineCollectableMessage implements
 		Date tagTime = (Date) vstr.restoreObject(SimpleMappings.Time);
 		String referenceStr = (String) vstr.restoreObject(SimpleMappings.CString);
 		String taggedForStr = (String) vstr.restoreObject(SimpleMappings.CString);
+		int msgID = vstr.extractInt();
 		
 		TagMsg msg = (TagMsg) obj;
 		msg.setInstanceID(instanceID);
@@ -93,6 +94,7 @@ public class DefineCollectableTagMsg extends DefineCollectableMessage implements
 		msg.setTagTime(tagTime);
 		msg.setReferenceStr(referenceStr);
 		msg.setTaggedForStr(taggedForStr);
+		msg.setClientMessageID(msgID);
 	}
 
 	/* (non-Javadoc)
@@ -115,6 +117,7 @@ public class DefineCollectableTagMsg extends DefineCollectableMessage implements
 		vstr.saveObject(msg.getTagTime(), SimpleMappings.Time);
 		vstr.saveObject(msg.getReferenceStr(), SimpleMappings.CString);
 		vstr.saveObject(msg.getTaggedForStr(), SimpleMappings.CString);
+		vstr.insertInt(msg.getClientMessageID());
 	}
 
 }

@@ -22,6 +22,7 @@ public class TagMsg extends Message {
 	
 	private Tag _tag;
 	private int _action;
+	private int _clientMessageID;
 	
 	/**
 	 * @return one of ADD_TAG_ACTION, REMOVE_TAG_ACTION, or UPDATE_TAG_ACTION
@@ -168,4 +169,18 @@ public class TagMsg extends Message {
 	public void setTag(Tag tag) {
 		_tag = tag;
 	}
+	/**
+	 * @return
+	 */
+	public int getClientMessageID() {
+		return _clientMessageID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setClientMessageID(int i) {
+		_clientMessageID = i;
+	}
+
 }
