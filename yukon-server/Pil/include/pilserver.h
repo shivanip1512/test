@@ -67,8 +67,8 @@ public:
    void  nexusThread();
    void  vgConnThread();
 
-   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList);
-   INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList);
+   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
+   INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList);
 
 };
 

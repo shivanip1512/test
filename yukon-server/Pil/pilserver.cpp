@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2002/09/16 13:49:10 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2002/09/30 14:56:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1108,7 +1108,7 @@ void CtiPILServer::vgConnThread()
 
 }
 
-INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList)
+INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList)
 {
     INT status = NORMAL;
     INT i;
@@ -1372,7 +1372,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
     return;
 }
 
-INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > retList)
+INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList)
 {
     INT status = NORMAL;
     int i;
@@ -1393,94 +1393,12 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
 
             try
             {
-                // RouteManager->buildRoleVector( pRepeaterToRole->getID(), roleVector );
-                CtiRouteManager::spiterator itr_rte;
-
-                long id = pRepeaterToRole->getID();
-                int rolenum = 1;
-                int stagestofollow;
-                bool foundit;
-                CtiRouteSPtr route;
-
-                for(itr_rte = RouteManager->begin(); itr_rte != RouteManager->end(); CtiRouteManager::nextPos(itr_rte))
                 {
-                    route = itr_rte->second;
-                    foundit = false;
-                    stagestofollow = 0;
-
-                    if(route && route->getType() == CCURouteType)
-                    {
-                        CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
-
-                        if( ccuroute->getRepeaterList().entries() > 0 )
-                        {
-                            // This CCURoute has repeater entries.
-                            if(ccuroute->getCarrier().getCCUVarBits() == 7)
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " " << ccuroute->getName() << " Has variable bits set to 7 AND has repeaters. " << endl;
-                                }
-
-                                break;
-                            }
-                            else
-                            {
-                                int i;
-                                CtiDeviceRepeaterRole role;
-
-                                for(i = 0; i < ccuroute->getRepeaterList().length(); i++)
-                                {
-
-                                    role.setRouteID( ccuroute->getRouteID() );
-                                    role.setRoleNumber( rolenum++ );
-
-                                    if(!foundit)
-                                    {
-                                        if( ccuroute->getRepeaterList()[i].getDeviceID() == id )   // Is our repeater in there?
-                                        {
-                                            foundit = true;
-
-                                            if(i == 0)
-                                            {
-                                                // Use the route to build up the Role object
-                                                role.setOutBits( ccuroute->getCarrier().getCCUVarBits() );
-                                            }
-                                            else
-                                            {
-                                                // Use the previous repeater to build up the role object.
-                                                role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
-                                            }
-                                            role.setFixBits(ccuroute->getCarrier().getCCUFixBits());
-                                            role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
-
-                                            if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
-                                            {
-                                                break;      // The for... It is kaput!
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // We have found it in this route.  We need to count the additional stages in the route.
-                                        stagestofollow++;
-                                        if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
-                                        {
-                                            break;      // The for... no more routes!
-                                        }
-                                    }
-                                }
-
-                                role.setStages(stagestofollow);
-
-                                if(foundit)
-                                {
-                                    roleVector.push_back( role );
-                                }
-                            }
-                        }
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Looking for " << pRepeaterToRole->getName() << " in all routes" << endl;
                 }
+
+                RouteManager->buildRoleVector( pRepeaterToRole->getID(), Req, retList, roleVector );
             }
             catch(...)
             {
@@ -1492,11 +1410,6 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, R
             {
                 RWCString newReqString = RWCString("putconfig emetcon mrole 1");       // We always write 1 through whatever.
                 RWCString roleStr;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Looking for " << pRepeaterToRole->getName() << " in all routes" << endl;
-                }
 
                 for(i = 0; i < roleVector.size(); i++)
                 {
