@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2003/06/10 21:03:32 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2003/07/21 22:10:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -531,7 +531,7 @@ void CtiPILServer::resultThread()
         // Find the device..
         DeviceRecord = DeviceManager->RemoteGetEqual(id);
 
-        if(DeviceRecord != NULL)
+        if(DeviceRecord != NULL && !(InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD))
         {
             if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
             {
@@ -556,7 +556,35 @@ void CtiPILServer::resultThread()
                     dout << RWTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
                 }
             }
+        }
+        else if( InMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_GATEWAY_THREAD )
+        {
+            // We need response strings from someone.  How can we get a list of results back?
 
+            RWCString bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
+            retList.insert( CTIDBG_new CtiReturnMsg(0,
+                                                    RWCString(InMessage->Return.CommandStr),
+                                                    bufstr,
+                                                    InMessage->EventCode,
+                                                    InMessage->Return.RouteID,
+                                                    InMessage->Return.MacroOffset,
+                                                    InMessage->Return.Attempt,
+                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.UserID,
+                                                    InMessage->Return.SOE,
+                                                    RWOrdered()));
+
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
+            dout << " Port listed as                                   : " << InMessage->Port     << endl;
+            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+        }
+
+        try
+        {
             if(outList.entries())
             {
                 for( i = outList.entries() ; i > 0; i-- )
@@ -659,12 +687,12 @@ void CtiPILServer::resultThread()
                 VanGoghConnection.WriteConnQue(pVg);
             }
         }
-        else
+        catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
-            dout << " Port listed as                                   : " << InMessage->Port     << endl;
-            dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
         if(InMessage)
