@@ -32,7 +32,11 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, RWTime &n
             dout << RWTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime << " Quality: " << newQuality << endl;
         }
     
-        if( newTime > pointPtr->getPointTime() || pointPtr->getPointQuality() == NonUpdatedQuality || pointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
+        if( newTime.seconds() > pointPtr->getPointTime().seconds() ||
+            ( pointPtr->getNumUpdates() > 0 &&
+              ( newQuality != pointPtr->getPointQuality() ||
+                newValue != pointPtr->getPointValue() ||
+                newTags != pointPtr->getPointTags() ) ) )
         {
             pointPtr->setPointValue( newValue, newTime, newQuality, newTags );
             dependentIterator = pointPtr->getDependents( );
