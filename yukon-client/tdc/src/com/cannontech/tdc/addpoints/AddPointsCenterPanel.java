@@ -9,6 +9,7 @@ import java.awt.Cursor;
 
 import javax.swing.ListSelectionModel;
 
+import com.cannontech.common.gui.dnd.DAndDDevicePointTable;
 import com.cannontech.common.gui.tree.TreeFindDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -34,7 +35,7 @@ public class AddPointsCenterPanel extends javax.swing.JPanel implements javax.sw
 	private AddPointsLeftTree ivjLeftTree = null;
 	private javax.swing.JPanel ivjJPanel2 = null;
 	private javax.swing.JLabel ivjJLabelSelected = null;
-	private com.cannontech.common.gui.dnd.DragAndDropTable ivjRightTable = null;
+	private DAndDDevicePointTable ivjRightTable = null;
 	private javax.swing.JScrollPane ivjJScrollPaneRightTable = null;
 	private javax.swing.JPanel ivjJPanelRight = null;
 
@@ -342,13 +343,13 @@ private AddPointsLeftTree getLeftTree() {
 }
 /**
  * Return the RightTable property value.
- * @return com.cannontech.common.gui.dnd.DragAndDropTable
+ * @return com.cannontech.common.gui.dnd.DAndDDevicePointTable
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private com.cannontech.common.gui.dnd.DragAndDropTable getRightTable() {
+private DAndDDevicePointTable getRightTable() {
 	if (ivjRightTable == null) {
 		try {
-			ivjRightTable = new com.cannontech.common.gui.dnd.DragAndDropTable();
+			ivjRightTable = new DAndDDevicePointTable();
 			ivjRightTable.setName("RightTable");
 			getJScrollPaneRightTable().setColumnHeaderView(ivjRightTable.getTableHeader());
 			ivjRightTable.setToolTipText("Dbl Click to create seperators");

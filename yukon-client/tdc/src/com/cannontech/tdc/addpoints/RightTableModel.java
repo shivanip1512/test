@@ -251,17 +251,19 @@ private void handleException(java.lang.Throwable exception) {
 
 /**
  * This method creates the table
+ * The object should be of type LitePoint
  */
- 
-public void insertNewRow ( LitePoint litePoint_ )
+public void insertNewRow ( Object litePoint_ )
 {
+	if (! (litePoint_ instanceof LitePoint))
+		return;
+		
 	if( exceededMaxRows() )
 		return;
 
-	getRows().addElement( 
-			new Line( litePoint_.getPointID(), 
-					PAOFuncs.getYukonPAOName(litePoint_.getPaobjectID()), 
-					litePoint_.getPointName() ) );
+	getRows().addElement( new Line( ((LitePoint)litePoint_).getPointID(), 
+					PAOFuncs.getYukonPAOName(((LitePoint)litePoint_).getPaobjectID()), 
+					((LitePoint)litePoint_).getPointName() ) );
 
 
 	fireTableDataChanged(); // Tell the listeners a new table has arrived.
@@ -325,20 +327,20 @@ public void makeTable ( )
 
 
 /**
- * Insert the method's description here.
- * Creation date: (3/7/00 2:40:18 PM)
+ * Object should be of type LitePoint
  * @return boolean
  * @param ptID java.lang.String
  */
-public boolean pointExists( LitePoint litePoint_ ) 
+public boolean objectExists( Object litePoint_ ) 
 {
-
-	for( int i = 0; i < getRowCount(); i++ )
+	if( litePoint_ instanceof LitePoint )
 	{
-		if( getPointID(i) == litePoint_.getPointID() )
-			return true;
-	}
-			
+		for( int i = 0; i < getRowCount(); i++ )
+		{
+			if( getPointID(i) == ((LitePoint)litePoint_).getPointID() )
+				return true;
+		}
+	}			
 	return false;
 }
 
