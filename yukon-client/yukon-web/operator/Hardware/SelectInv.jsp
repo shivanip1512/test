@@ -7,26 +7,20 @@
 	<jsp:setProperty name="selectInvBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 	<jsp:setProperty name="selectInvBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO %>"/>
 	<jsp:setProperty name="selectInvBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_SELECT_INVENTORY %>"/>
-	<%-- intialize bean properties --%>
 </jsp:useBean>
 
 <%
 	if (request.getParameter("SerialNo") != null) {
-/*		StarsLMHardware hardware = new StarsLMHardware();
-		InventoryManager.setStarsLMHardware(hardware, request);
-		session.setAttribute(InventoryManager.STARS_LM_HARDWARE_TEMP, hardware);
-		session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));*/
 		session.setAttribute(ServletUtils.ATT_REFERRER, request.getHeader("referer"));
 		session.setAttribute(ServletUtils.ATT_REDIRECT, request.getParameter(ServletUtils.ATT_REDIRECT));
 	}
 	String referer = (String) session.getAttribute(ServletUtils.ATT_REFERRER);
-	
-	// Initialize filterBy and location at start of the page
-	// If the parameters are submitted to the page, then their values will be overwrited later
-	selectInvBean.setFilterBy(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION);
-	selectInvBean.setLocation(InventoryBean.INV_LOCATION_WAREHOUSE);
-	selectInvBean.setPage(1);
 %>
+	
+<%-- intialize bean properties --%>
+<jsp:setProperty name="selectInvBean" property="filterBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>"/>
+<jsp:setProperty name="selectInvBean" property="location" value="<%= InventoryBean.INV_LOCATION_WAREHOUSE %>"/>
+<jsp:setProperty name="selectInvBean" property="page" value="1"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="selectInvBean" property="filterBy" param="FilterBy"/>
@@ -105,12 +99,14 @@ function submitIt(filterBy) {
                     <td width="85%">
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
-                          <td class="MainText"> 
+                          <td class="MainText" width="80%">Check the radio button 
+                            of the hardware you want to select, then click Submit.</td>
+                          <td class="MainText" align="right" width="20%"> 
                             <% if (selectInvBean.getFilterBy() != 0) { %>
-                            <span class="Clickable" style="color:blue" onclick="submitIt(0)">Show 
+                            <span class="Clickable" style="color:blue" onClick="submitIt(0)">Show 
                             All</span> 
                             <%	} else { %>
-                            <span class="Clickable" style="color:blue" onclick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)">Show 
+                            <span class="Clickable" style="color:blue" onClick="submitIt(<%= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_LOCATION %>)">Show 
                             Warehouse</span> 
                             <%	} %>
                           </td>
@@ -127,10 +123,10 @@ function submitIt(filterBy) {
                   </td>
                 </tr>
               </table>
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
-			    <input type="hidden" name="action" value="SelectInventory">
-                <%= selectInvBean.getHTML(request) %> 
-                <!--<table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
+              <%= selectInvBean.getHTML(request) %> 
+<!--              <form name='form1' method='post' action='<%= request.getContextPath() %>/servlet/InventoryManager'>
+			    <input type='hidden' name='action' value='SelectInventory'>
+                <table width='80%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>
                   <tr> 
                     <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
                       | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
@@ -147,11 +143,11 @@ function submitIt(filterBy) {
                         </tr>
                         <tr> 
                           <td class='TableCell' width='5%'><input type='radio' name='InvID' value='0'></td>
-                          <td class='TableCell' width='17%'><a href='InventoryDetail.jsp'>500000000</a></td>
+                          <td class='TableCell' width='17%'><a href='InventoryDetail.jsp?InvId=7'>500000000</a></td>
                           <td class='TableCell' width='17%'>LCR-5000</td>
                           <td class='TableCell' width='17%'>08/24/2003</td>
-                          <td class='TableCell' width='49%'>Acct #12345 (8301 
-                            Golden Valley Rd, Suite 300...)</td>
+                          <td class='TableCell' width='49%'><a href='' onclick='selectAccount(7); return false;'>Acct 
+						    # 12345</a> (8301 Golden Valley Rd, Suite 300...)</td>
                         </tr>
                       </table>
                     </td>
@@ -160,19 +156,32 @@ function submitIt(filterBy) {
                     <td>1-4 of 4 | <font color='#CCCCCC'>First</font> | <font color='#CCCCCC'>Previous</font> 
                       | <font color='#CCCCCC'>Next</font> | <font color='#CCCCCC'>Last</font></td>
                   </tr>
-                </table>-->
+                </table>
                 <br>
-                <table width="200" border="0" cellspacing="0" cellpadding="3">
+                <table width='200' border='0' cellspacing='0' cellpadding='3'>
                   <tr> 
-                    <td align="right">
-                      <input type="submit" name="Submit" value="Submit">
+                    <td align='right'>
+                      <input type='submit' name='Submit' value='Submit'>
                     </td>
                     <td>
-                      <input type="button" name="Cancel" value="Cancel" onclick="location.href='<%= referer %>'">
+                      <input type='button' name='Cancel' value='Cancel' onclick='location.href="<%= referer %>"'>
                     </td>
                   </tr>
                 </table>
               </form>
+			  <form name='cusForm' method='post' action='/servlet/SOAPClient'>
+                <input type='hidden' name='action' value='GetCustAccount'>
+                <input type='hidden' name='AccountID' value=''>
+                <input type='hidden' name='REDIRECT' value='/operator/Consumer/Update.jsp'>
+                <input type='hidden' name='REFERRER' value='/operator/Hardware/Inventory.jsp'>
+			  </form>
+<script language='JavaScript'>
+function selectAccount(accountID) {
+  var form = document.cusForm;
+  form.AccountID.value = accountID;
+  form.submit();
+}
+</script>-->
               <p>&nbsp; </p>
             </div>
           </td>
