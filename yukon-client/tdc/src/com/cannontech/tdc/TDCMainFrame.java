@@ -5,13 +5,17 @@ package com.cannontech.tdc;
  * @author: 
  */
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
+import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.removedisplay.RemoveDisplayDialog;
 import com.cannontech.tdc.removedisplay.RemoveDisplayPanel;
 import com.cannontech.tdc.spawn.SpawnTDCMainFrameEvent;
 import com.cannontech.tdc.bookmark.BookMarkBase;
+
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -4011,6 +4015,24 @@ public static void main(final java.lang.String[] args)
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       
+		ClientSession session = ClientSession.getInstance(); 
+
+		if(!session.establishSession(null))
+		{
+			System.exit(-1);			
+		}
+	  	
+		if(session == null) 
+		{
+			System.exit(-1);
+		}
+			 
+		if(!session.checkRole(TDCRole.ROLEID)) 
+		{
+		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+		  System.exit(-1);				
+		}
+		
 		javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
 
 		final CommandLineParser parser;
@@ -4030,8 +4052,7 @@ public static void main(final java.lang.String[] args)
 		else
 		{
 			aTDCFrame = overSeer.createTDCMainFrame();
-		}
-		
+		}		
 		
 		aTDCFrame.visibilityInitialization();
 	}
