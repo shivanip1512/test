@@ -393,6 +393,7 @@ insert into YukonListEntry values (1704,1021,0,'Manufactured Home',0);
 insert into YukonListEntry values (1705,1021,0,'Apartment',0);
 insert into YukonListEntry values (1706,1021,0,'Duplex',0);
 insert into YukonListEntry values (1707,1021,0,'Townhome',0);
+insert into YukonListEntry values (1710,1022,0,'',0);
 insert into YukonListEntry values (1711,1022,0,'Frame',0);
 insert into YukonListEntry values (1712,1022,0,'Brick',0);
 insert into YukonListEntry values (1720,1023,0,'',0);
