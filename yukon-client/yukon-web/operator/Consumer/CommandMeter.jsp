@@ -5,15 +5,8 @@
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 
-<SCRIPT>
-function disableButton(x)
-{
-	x.disabled = true;
-	document.commandForm.submit();
-}
-</SCRIPT>
-
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsMCT starsMCT = inventories.getStarsMCT(invNo - inventories.getStarsLMHardwareCount());
 	int deviceID = starsMCT.getDeviceID();
@@ -67,6 +60,13 @@ String[] disconnectValues = {
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>"/>" type="text/css">
+<SCRIPT language="JavaScript">
+function disableButton(x)
+{
+	x.disabled = true;
+	document.commandForm.submit();
+}
+</SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
