@@ -38,7 +38,8 @@ public class StatisticReport extends YukonReportBase
 	 */
 	public StatisticReport()
 	{
-		super();
+		//We must default the model to something!
+		this(new StatisticModel());
 	}
 	/**
 	 * Constructor for Report.
@@ -48,7 +49,7 @@ public class StatisticReport extends YukonReportBase
 	public StatisticReport(StatisticModel model_)
 	{
 		super();
-		model = model_;
+		setModel(model_);
 	}
 	/**
 	 * Constructor for Report.
@@ -60,21 +61,21 @@ public class StatisticReport extends YukonReportBase
 	 * 	comm[channel] - StatisticalCommChannelData
 	 * @param statType_ - DYNAMICPAOSTATISTICS.statType
 	 */
-	public StatisticReport(String reportTypeString, String statType_)
+	public StatisticReport(String modelTypeString, String statType_)
 	{
 		super();
-		int statReportType = ReportTypes.CARRIER_COMM_DATA;	//something for a default value!
-		
-		if( reportTypeString.startsWith("carr"))
-			statReportType = ReportTypes.CARRIER_COMM_DATA;
-		else if( reportTypeString.startsWith("trans"))
-			statReportType = ReportTypes.TRANS_COMM_DATA;
-		else if( reportTypeString.startsWith("dev"))
-			statReportType = ReportTypes.DEVICE_COMM_DATA;
-		else if( reportTypeString.startsWith("comm"))
-			statReportType = ReportTypes.COMM_CHANNEL_DATA;
+		StatisticModel model = (StatisticModel)ReportTypes.create(ReportTypes.STATISTIC_DATA);
+		if( modelTypeString.startsWith("carr"))
+			model.setStatModelType(StatisticModel.CARRIER_COMM_DATA);
+		else if( modelTypeString.startsWith("trans"))
+			model.setStatModelType(StatisticModel.TRANS_COMM_DATA);
+		else if( modelTypeString.startsWith("dev"))
+			model.setStatModelType(StatisticModel.DEVICE_COMM_DATA);
+		else if( modelTypeString.startsWith("comm"))
+			model.setStatModelType(StatisticModel.COMM_CHANNEL_DATA);
 
-		setModel(new StatisticModel(statType_, statReportType));
+		model.setStatType(statType_);
+		setModel(model);
    }
 	/**
 	 * Runs this report and shows a preview dialog.
@@ -88,25 +89,18 @@ public class StatisticReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		String reportType = "carrier";	//default
+		String modelType = "carrier";	//default
 		if( args.length > 0)
-				reportType = args[0].toLowerCase();	//StatisticData report type
+				modelType = args[0].toLowerCase();	//StatisticData report type
 		String statType = "Monthly";
 		if( args.length >= 2)	//DynamicPaoStatistics.statisticType
 			statType = args[1];
 		
-		StatisticReport statReport = new StatisticReport(reportType, statType);
+		YukonReportBase statReport = new StatisticReport(modelType, statType);
 		statReport.getModel().collectData();
 
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-		
 		//Create the report
 		JFreeReport report = statReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
 		report.setData(statReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);

@@ -18,13 +18,14 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 
 /**
@@ -41,7 +42,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	 */
 	public EnergyCompanyActivityLogReport()
 	{
-		super();
+		this(new ActivityModel());
 	}
 	/**
 	 * Constructor for Report.
@@ -51,8 +52,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	public EnergyCompanyActivityLogReport(ActivityModel model_)
 	{
 		super();
-		model = model_;
-		model.setReportType(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA);
+		setModel(model_);
 	}
 	/**
 	 * Constructor for Report.
@@ -78,7 +78,8 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
-		EnergyCompanyActivityLogReport ecActivityLogReport= new EnergyCompanyActivityLogReport();
+		YukonReportBase report = ReportFuncs.createYukonReport(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA);
+		
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
 		cal.set(java.util.Calendar.MINUTE, 0);
@@ -89,25 +90,16 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 		cal.add(java.util.Calendar.DATE, -90);
 		long start = cal.getTimeInMillis();
 
-		//Initialize the report data and populate the TableModel (collectData).
-		ActivityModel model = new ActivityModel(start, stop);
+		report.getModel().setStartTime(start);
+		report.getModel().setStopTime(stop);
 //		model.setEnergyCompanyID(new Integer(1004));
-		ecActivityLogReport.setModel(model);
-		ecActivityLogReport.getModel().setReportType(ReportTypes.ENERGY_COMPANY_ACTIVITY_LOG_DATA); 
-		ecActivityLogReport.getModel().collectData();
+		report.getModel().collectData();
 
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-		
 		//Create the report
-		JFreeReport report = ecActivityLogReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
-		report.setData(ecActivityLogReport.getModel());
+		JFreeReport freeReport = report.createReport();
+		freeReport.setData(report.getModel());
 		
-		final PreviewDialog dialog = new PreviewDialog(report);
+		final PreviewDialog dialog = new PreviewDialog(freeReport);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
 		dialog.addWindowListener(new java.awt.event.WindowAdapter()
 		{
@@ -130,37 +122,27 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
 		super.getExpressions();
+
+		ItemHideFunction hideItem = new ItemHideFunction();
+		hideItem.setName(ActivityModel.CONTACT_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityModel.CONTACT_STRING);
+		hideItem.setProperty("element", ActivityModel.CONTACT_STRING+" Element");
+		expressions.add(hideItem);
+
+		hideItem = new ItemHideFunction();
+		hideItem.setName(ActivityModel.ACCOUNT_NUMBER_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityModel.ACCOUNT_NUMBER_STRING);
+		hideItem.setProperty("element", ActivityModel.ACCOUNT_NUMBER_STRING+" Element");
+		expressions.add(hideItem);
+
+		hideItem = new ItemHideFunction();
+		hideItem.setName(ActivityModel.USERNAME_STRING + " Hidden");
+		hideItem.setProperty("field", ActivityModel.USERNAME_STRING);
+		hideItem.setProperty("element", ActivityModel.USERNAME_STRING+" Element");
+		expressions.add(hideItem);
+				
 //		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		return expressions;
-	}
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getFunctions() throws FunctionInitializeException
-	{
-		super.getFunctions();
-		
-		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
-		hideItem.setName(ActivityLog.CONTACT_STRING + "Hidden");
-		hideItem.setProperty("field", ActivityLog.CONTACT_STRING);
-		hideItem.setProperty("element", ActivityLog.CONTACT_STRING+" Element");
-		functions.add(hideItem);
-		
-		hideItem = new org.jfree.report.function.ItemHideFunction();
-		hideItem.setName(ActivityLog.ACCOUNT_NUMBER_STRING + " Hidden");
-		hideItem.setProperty("field", ActivityLog.ACCOUNT_NUMBER_STRING);
-		hideItem.setProperty("element", ActivityLog.ACCOUNT_NUMBER_STRING+" Element");
-		functions.add(hideItem);
-		
-		hideItem = new org.jfree.report.function.ItemHideFunction();
-		hideItem.setName(ActivityLog.USERNAME_STRING + " Hidden");
-		hideItem.setProperty("field", ActivityLog.USERNAME_STRING);
-		hideItem.setProperty("element", ActivityLog.USERNAME_STRING+" Element");
-		functions.add(hideItem);
-		
-		return functions;
 	}
 
 	/**
@@ -170,21 +152,21 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	private Group createECGroup()
 	{
 		final Group ecGroup = new Group();
-		ecGroup.setName(ActivityLog.ENERGY_COMPANY_STRING +" Group");
-		ecGroup.addField(getModel().getColumnName(ActivityLog.ENERGY_COMPANY_COLUMN));
+		ecGroup.setName(ActivityModel.ENERGY_COMPANY_STRING +" Group");
+		ecGroup.addField(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
 
 		final GroupHeader header = new GroupHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 30));
 		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 9, true, false, false, false));
 
 		final TextFieldElementFactory tfactory = new TextFieldElementFactory();
-		tfactory.setName(ActivityLog.ENERGY_COMPANY_COLUMN + " Group Element");
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getPositionX(), getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getPositionY()));
-		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getWidth(), getModel().getColumnProperties(ActivityLog.ENERGY_COMPANY_COLUMN).getHeight()));
+		tfactory.setName(ActivityModel.ENERGY_COMPANY_COLUMN + " Group Element");
+		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getPositionX(), getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getPositionY()));
+		tfactory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getWidth(), getModel().getColumnProperties(ActivityModel.ENERGY_COMPANY_COLUMN).getHeight()));
 		tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 		tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		tfactory.setNullString("<null>");
-		tfactory.setFieldname(getModel().getColumnName(ActivityLog.ENERGY_COMPANY_COLUMN));
+		tfactory.setFieldname(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
 	  	header.addElement(tfactory.createElement());
 		
 		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
@@ -219,9 +201,9 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 	private Group createContactGroup()
 	{
 		final Group contGroup = new Group();
-		contGroup.setName(ActivityLog.CONTACT_STRING +" Group");
-		contGroup.addField(getModel().getColumnName(ActivityLog.ENERGY_COMPANY_COLUMN));
-		contGroup.addField(getModel().getColumnName(ActivityLog.CONTACT_COLUMN));
+		contGroup.setName(ActivityModel.CONTACT_STRING +" Group");
+		contGroup.addField(getModel().getColumnName(ActivityModel.ENERGY_COMPANY_COLUMN));
+		contGroup.addField(getModel().getColumnName(ActivityModel.CONTACT_COLUMN));
 
 		final GroupHeader header = new GroupHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 5));
@@ -288,7 +270,7 @@ public class EnergyCompanyActivityLogReport extends YukonReportBase
 				factory.setName(getModel().getColumnNames()[i]+ " Element");
 				factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(i).getPositionX(),getModel().getColumnProperties(i).getPositionY()));
 				factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(i).getWidth(), 10));
-				if( i == ActivityLog.ACTION_COUNT_COLUMN )
+				if( i == ActivityModel.ACTION_COUNT_COLUMN )
 					factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 				else 
 					factory.setHorizontalAlignment(ElementAlignment.LEFT);

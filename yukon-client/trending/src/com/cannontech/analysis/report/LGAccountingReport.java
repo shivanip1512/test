@@ -21,7 +21,8 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
-import com.cannontech.analysis.data.lm.LGAccounting;
+import com.cannontech.analysis.ReportFuncs;
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
 
 /**
@@ -38,7 +39,7 @@ public class LGAccountingReport extends YukonReportBase
 	 */
 	public LGAccountingReport()
 	{
-		super();
+		this(new LoadGroupModel());
 	}
 
 	/**
@@ -49,8 +50,7 @@ public class LGAccountingReport extends YukonReportBase
 	 */
 	public LGAccountingReport(long startTime_, long stopTime_)
 	{
-		super();
-		model = new LoadGroupModel( startTime_, stopTime_);
+		this(new LoadGroupModel( startTime_, stopTime_));
 	}
 	
 	/**
@@ -61,7 +61,7 @@ public class LGAccountingReport extends YukonReportBase
 	public LGAccountingReport(LoadGroupModel model_)
 	{
 		super();
-		model = model_;
+		setModel(model_);
 	}
 
 	/**
@@ -86,18 +86,13 @@ public class LGAccountingReport extends YukonReportBase
 		long start = cal.getTimeInMillis();
 
 		//Initialize the report data and populate the TableModel (collectData).
-		LGAccountingReport lgaReport = new LGAccountingReport(start, stop);
+		YukonReportBase lgaReport = ReportFuncs.createYukonReport(ReportTypes.LG_ACCOUNTING_DATA);
+		lgaReport.getModel().setStartTime(start);
+		lgaReport.getModel().setStopTime(stop);
 		lgaReport.getModel().collectData();
 
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-	
 		//Create the report
 		JFreeReport report = lgaReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
 		report.setData(lgaReport.getModel());
 	
 		final PreviewDialog dialog = new PreviewDialog(report);
@@ -125,7 +120,7 @@ public class LGAccountingReport extends YukonReportBase
 	{
 	  final Group collGrpGroup = new Group();
 	  collGrpGroup.setName("Load Group");
-	  collGrpGroup.addField(LGAccounting.PAO_NAME_STRING);
+	  collGrpGroup.addField(LoadGroupModel.PAO_NAME_STRING);
 
 	  final GroupHeader header = new GroupHeader();
 
@@ -149,7 +144,7 @@ public class LGAccountingReport extends YukonReportBase
 	  tfactory.setHorizontalAlignment(ElementAlignment.LEFT);
 	  tfactory.setVerticalAlignment(ElementAlignment.BOTTOM);
 	  tfactory.setNullString("<null>");
-	  tfactory.setFieldname(LGAccounting.PAO_NAME_STRING);
+	  tfactory.setFieldname(LoadGroupModel.PAO_NAME_STRING);
 	  header.addElement(tfactory.createElement());
 	  
 	  for (int i = 1; i < getModel().getColumnNames().length; i++)

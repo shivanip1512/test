@@ -12,7 +12,6 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.NumberFieldElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.modules.gui.base.PreviewDialog;
@@ -20,6 +19,8 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFuncs;
+import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
 
 /**
@@ -37,7 +38,7 @@ public class RouteMacroReport extends YukonReportBase
 	 */
 	public RouteMacroReport()
 	{
-		super();
+		this(new RouteMacroModel());
 	}
 	
 	/**
@@ -47,8 +48,7 @@ public class RouteMacroReport extends YukonReportBase
 	 */
 	public RouteMacroReport(String paoClass_)
 	{
-		super();
-		model = new RouteMacroModel(paoClass_);
+		this( new RouteMacroModel(paoClass_));
 	}
 	/**
 	 * Constructor for Report.
@@ -58,7 +58,7 @@ public class RouteMacroReport extends YukonReportBase
 	public RouteMacroReport(RouteMacroModel model_)
 	{
 		super();
-		model = model_;
+		setModel(model_);
 	}
 
 	/**
@@ -72,18 +72,11 @@ public class RouteMacroReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 		
-		RouteMacroReport dbReport = new RouteMacroReport("CARRIER");
+		YukonReportBase dbReport = ReportFuncs.createYukonReport(ReportTypes.CARRIER_ROUTE_MACRO_DATA);
 		dbReport.getModel().collectData();
 
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-	
 		//Create the report
 		JFreeReport report = dbReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
 		report.setData(dbReport.getModel());
 	
 		final PreviewDialog dialog = new PreviewDialog(report);

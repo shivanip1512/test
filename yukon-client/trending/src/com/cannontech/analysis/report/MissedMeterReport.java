@@ -15,14 +15,15 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.data.device.MissedMeter;
-import com.cannontech.analysis.tablemodel.MissedMeterModel;
+import com.cannontech.analysis.tablemodel.MeterReadModel;
 
 /**
  * Created on Dec 15, 2003
@@ -37,11 +38,10 @@ public class MissedMeterReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf MissedMeterModel.
 	 * @param data_ - PowerFailModel TableModel data
 	 */
-	public MissedMeterReport(MissedMeterModel model_)
+	public MissedMeterReport(MeterReadModel model_)
 	{
 		super();
-		model = model_;
-		model.setReportType(ReportTypes.MISSED_METER_DATA);
+		setModel(model_);
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class MissedMeterReport extends YukonReportBase
 	 */
 	public MissedMeterReport()
 	{
-		this(new MissedMeterModel());
+		this(new MeterReadModel());
 	}	
 	
 	/**
@@ -76,19 +76,12 @@ public class MissedMeterReport extends YukonReportBase
 		cal.add(java.util.Calendar.DATE, -90);
 		long start = cal.getTimeInMillis();
 		
-		MissedMeterReport missedMeterReport = new MissedMeterReport();
+		YukonReportBase missedMeterReport = ReportFuncs.createYukonReport(ReportTypes.MISSED_METER_DATA);
 		missedMeterReport.getModel().setStartTime(start);
 		missedMeterReport.getModel().collectData();
 		
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-		
 		//Create the report
 		JFreeReport report = missedMeterReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
 		report.setData(missedMeterReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
@@ -203,17 +196,17 @@ public class MissedMeterReport extends YukonReportBase
 	 * @return the functions.
 	 * @throws FunctionInitializeException if there is a problem initialising the functions.
 	 */
-	protected ExpressionCollection getFunctions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
-		super.getFunctions();
+		super.getExpressions();
 		
-		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
+		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName("hideItem");
-		hideItem.setProperty("field", MissedMeter.DEVICE_NAME_STRING);
+		hideItem.setProperty("field", MeterReadModel.DEVICE_NAME_STRING);
 		hideItem.setProperty("element", "Device Element");
-		functions.add(hideItem);
+		expressions.add(hideItem);
 
-		return functions;
+		return expressions;
 	}
 
 
@@ -261,7 +254,7 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.DEVICE_NAME_STRING);
+		factory.setFieldname(MeterReadModel.DEVICE_NAME_STRING);
 		items.addElement(factory.createElement());
 
 		factory = new TextFieldElementFactory();
@@ -271,7 +264,7 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.POINT_NAME_STRING);
+		factory.setFieldname(MeterReadModel.POINT_NAME_STRING);
 		items.addElement(factory.createElement());
 		
 		factory = new TextFieldElementFactory();
@@ -281,7 +274,7 @@ public class MissedMeterReport extends YukonReportBase
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(MissedMeter.ROUTE_NAME_STRING);
+		factory.setFieldname(MeterReadModel.ROUTE_NAME_STRING);
 		items.addElement(factory.createElement());
 	
 		return items;

@@ -12,10 +12,10 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
@@ -24,7 +24,6 @@ import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.tablemodel.DisconnectModel;
-//import com.cannontech.analysis.data.device.Disconnect;
 
 /**
  * Created on Feb 06, 2003
@@ -36,6 +35,34 @@ import com.cannontech.analysis.tablemodel.DisconnectModel;
 public class DisconnectReport extends YukonReportBase
 {
 	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf DatabaseModel.
+	 */
+	public DisconnectReport()
+	{
+		this(new DisconnectModel());
+	}
+	
+	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf DatabaseModel.
+	 * @param String paoClass_ (YukonPaoclass.paoclass)
+	 */
+	public DisconnectReport(String disconnectType_)
+	{
+		this(new DisconnectModel(disconnectType_));
+	}
+	/**
+	 * Constructor for Report.
+	 * Data Base for this report type is instanceOf DatabaseModel.
+	 * @param data_ - DatabaseModel TableModel data
+	 */
+	public DisconnectReport(DisconnectModel model_)
+	{
+		super();
+		setModel(model_);
+	}	
+	/**
 	 * Runs this report and shows a preview dialog.
 	 * @param args the arguments (ignored).
 	 * @throws Exception if an error occurs (default: print a stack trace)
@@ -46,31 +73,20 @@ public class DisconnectReport extends YukonReportBase
 		Boot.start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		DisconnectReport DisconnectReport = new DisconnectReport();
-		
-		DisconnectReport.setModel( new DisconnectModel("History"));
+		YukonReportBase disconnectReport = new DisconnectReport(DisconnectModel.HISTORY_STRING);
+
 		GregorianCalendar cal = new GregorianCalendar();
-		DisconnectReport.getModel().setStopTime(cal.getTime().getTime());
+		disconnectReport.getModel().setStopTime(cal.getTime().getTime());
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 	
-		DisconnectReport.getModel().setStartTime(cal.getTime().getTime());
-		DisconnectReport.getModel().setCollectionGroups(new String[] {"Cycle 1"});
-		
-		DisconnectReport.getModel().collectData();
-		
-		
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
+		disconnectReport.getModel().setStartTime(cal.getTime().getTime());
+		disconnectReport.getModel().setCollectionGroups(new String[] {"Cycle 1"});
+		disconnectReport.getModel().collectData();
 		
 		//Create the report
-		JFreeReport report = DisconnectReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
-		report.setData(DisconnectReport.getModel());
-		
+		JFreeReport report = disconnectReport.createReport();
+		report.setData(disconnectReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
@@ -191,9 +207,9 @@ public class DisconnectReport extends YukonReportBase
 	 * @return the functions.
 	 * @throws FunctionInitializeException if there is a problem initialising the functions.
 	 */
-	protected ExpressionCollection getFunctions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
-		super.getFunctions();
+		super.getExpressions();
 		
 		/*org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
 		hideItem.setName("hideItem");
@@ -201,7 +217,7 @@ public class DisconnectReport extends YukonReportBase
 		hideItem.setProperty("element", "Device Element");
 		functions.add(hideItem);
 */
-		return functions;
+		return expressions;
 	}
 
 

@@ -15,13 +15,14 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
 
 /**
@@ -40,8 +41,7 @@ public class PowerFailReport extends YukonReportBase
 	public PowerFailReport(PowerFailModel model_)
 	{
 		super();
-		model = model_;
-		model.setReportType(ReportTypes.POWER_FAIL_DATA);
+		setModel(model_);
 	}
 
 	/**
@@ -76,19 +76,12 @@ public class PowerFailReport extends YukonReportBase
 		cal.add(java.util.Calendar.DATE, -90);
 		long start = cal.getTimeInMillis();
 
-		PowerFailReport powerFailReport = new PowerFailReport();
+		YukonReportBase powerFailReport = ReportFuncs.createYukonReport(ReportTypes.POWER_FAIL_DATA);
 		powerFailReport.getModel().setStartTime(start);
 		powerFailReport.getModel().collectData();
 		
-		//Define the report Paper properties and format.
-		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
-		java.awt.print.PageFormat pageFormat = new java.awt.print.PageFormat();
-		pageFormat.setPaper(reportPaper);
-		
 		//Create the report
 		JFreeReport report = powerFailReport.createReport();
-		report.setDefaultPageFormat(pageFormat);
 		report.setData(powerFailReport.getModel());
 				
 		final PreviewDialog dialog = new PreviewDialog(report);
@@ -199,21 +192,21 @@ public class PowerFailReport extends YukonReportBase
 
 
 	/**
-	 * Creates the function collection. The xml definition for this construct:
+	 * Creates the expression collection. The xml definition for this construct:
 	 * @return the functions.
 	 * @throws FunctionInitializeException if there is a problem initialising the functions.
 	 */
-	protected ExpressionCollection getFunctions() throws FunctionInitializeException
+	protected ExpressionCollection getExpressions() throws FunctionInitializeException
 	{
-		super.getFunctions();
+		super.getExpressions();
 		
-		org.jfree.report.function.ItemHideFunction hideItem = new org.jfree.report.function.ItemHideFunction();
+		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName("hideItem");
-		hideItem.setProperty("field", PowerFail.DEVICE_NAME_STRING);
+		hideItem.setProperty("field", PowerFailModel.DEVICE_NAME_STRING);
 		hideItem.setProperty("element", "Device Element");
-		functions.add(hideItem);
+		expressions.add(hideItem);
 
-		return functions;
+		return expressions;
 	}
 
 
@@ -255,33 +248,33 @@ public class PowerFailReport extends YukonReportBase
 		}
 
 		TextFieldElementFactory factory = new TextFieldElementFactory();
-		factory.setName("Device Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(0, 1));
-		factory.setMinimumSize(new FloatDimension(200, 10));
+		factory.setName(getModel().getColumnName(PowerFailModel.DEVICE_NAME_COLUMN)+ " Element");		
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(PowerFailModel.DEVICE_NAME_COLUMN).getPositionX(),getModel().getColumnProperties(PowerFailModel.DEVICE_NAME_COLUMN).getPositionY()));
+		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(PowerFailModel.DEVICE_NAME_COLUMN).getWidth(), 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(PowerFail.DEVICE_NAME_STRING);
+		factory.setFieldname(getModel().getColumnName(PowerFailModel.DEVICE_NAME_COLUMN));
 		items.addElement(factory.createElement());
 
 		factory = new TextFieldElementFactory();
-		factory.setName("Point Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(200, 1));
-		factory.setMinimumSize(new FloatDimension(200, 10));
+		factory.setName(getModel().getColumnName(PowerFailModel.POINT_NAME_COLUMN)+ " Element");
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(PowerFailModel.POINT_NAME_COLUMN).getPositionX(),getModel().getColumnProperties(PowerFailModel.POINT_NAME_COLUMN).getPositionY()));
+		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(PowerFailModel.POINT_NAME_COLUMN).getWidth(), 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(PowerFail.POINT_NAME_STRING);
+		factory.setFieldname(getModel().getColumnName(PowerFailModel.POINT_NAME_COLUMN));
 		items.addElement(factory.createElement());
 		
 		factory = new TextFieldElementFactory();
-		factory.setName("Power Fail Element");
-		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(300, 1));
-		factory.setMinimumSize(new FloatDimension(200, 10));
+		factory.setName(getModel().getColumnName(PowerFailModel.POWER_FAIL_COUNT_COLUMN)+ " Element");		
+		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(getModel().getColumnProperties(PowerFailModel.POWER_FAIL_COUNT_COLUMN).getPositionX(),getModel().getColumnProperties(PowerFailModel.POWER_FAIL_COUNT_COLUMN).getPositionY()));
+		factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties(PowerFailModel.POWER_FAIL_COUNT_COLUMN).getWidth(), 10));
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.MIDDLE);
 		factory.setNullString("<null>");
-		factory.setFieldname(PowerFail.POWER_FAIL_COUNT_STRING);
+		factory.setFieldname(getModel().getColumnName(PowerFailModel.POWER_FAIL_COUNT_COLUMN));
 		items.addElement(factory.createElement());
 	
 		return items;
