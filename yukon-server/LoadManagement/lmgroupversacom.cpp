@@ -79,10 +79,10 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
 {
     char tempchar[64];
     RWCString controlString = RWCString("control cycle ");
-    _ultoa(percent,tempchar,10);
+    _ltoa(percent,tempchar,10);
     controlString += tempchar;
     controlString += " count ";
-    _ultoa(defaultCount,tempchar,10);
+    _ltoa(defaultCount,tempchar,10);
     controlString += tempchar;
     controlString += " period ";
     controlString += convertSecondsToEvenTimeString(period);
