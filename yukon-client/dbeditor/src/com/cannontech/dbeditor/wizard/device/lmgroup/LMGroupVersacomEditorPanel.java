@@ -1019,45 +1019,30 @@ public Object getValue(Object o)
 
 		if( getUtilityAddressCheckBox().isSelected() )
 			addressUsage.append('U');
-		else
-			addressUsage.append(' ');
 		
 		if( getSectionAddressCheckBox().isSelected() )
 			addressUsage.append('S');
-		else
-			addressUsage.append(' ');
 		
 		if( getClassAddressCheckBox().isSelected() )
 			addressUsage.append('C');
-		else
-			addressUsage.append(' ');
 		
 		if( getDivisionAddressCheckBox().isSelected() )
 			addressUsage.append('D');			
-		else
-			addressUsage.append(' ');
 
 		StringBuffer relayUsage = new StringBuffer();
 
 		if( getRelay1CheckBox().isSelected() )
 			relayUsage.append('1');
-		else
-			relayUsage.append(' ');
 		
 		if( getRelay2CheckBox().isSelected() )
 			relayUsage.append('2');
-		else
-			relayUsage.append(' ');
 		
 		if( getRelay3CheckBox().isSelected() )
 			relayUsage.append('3');
-		else
-			relayUsage.append(' ');
 
 		if( getRelay4CheckBox().isSelected() )
 			relayUsage.append('4');
-		else
-			relayUsage.append(' ');
+
 
 		group.getLmGroupVersacom().setUtilityAddress(utilityAddr);
 		group.getLmGroupVersacom().setSectionAddress(sectionAddr);
@@ -1311,14 +1296,14 @@ public void setValue(Object o)
 		getClassAddressSingleLineBitTogglePanel().setValue(classAddr.intValue());
 		getDivisionAddressSingleLineBitTogglePanel().setValue(divisionAddr.intValue());
 
-		getUtilityAddressCheckBox().setSelected(addressUsage.charAt(0) == 'U');
-		getSectionAddressCheckBox().setSelected(addressUsage.charAt(1) == 'S');
-		getClassAddressCheckBox().setSelected(addressUsage.charAt(2) == 'C');
-		getDivisionAddressCheckBox().setSelected(addressUsage.charAt(3) == 'D');
-		getRelay1CheckBox().setSelected(relayUsage.charAt(0) == '1');
-		getRelay2CheckBox().setSelected(relayUsage.charAt(1) == '2');
-		getRelay3CheckBox().setSelected(relayUsage.charAt(2) == '3');
-		getRelay4CheckBox().setSelected(relayUsage.charAt(3) == '4');
+		getUtilityAddressCheckBox().setSelected( (addressUsage.indexOf('U') >= 0) );
+		getSectionAddressCheckBox().setSelected( (addressUsage.indexOf('S') >= 0) );
+		getClassAddressCheckBox().setSelected( (addressUsage.indexOf('C') >= 0) );
+		getDivisionAddressCheckBox().setSelected( (addressUsage.indexOf('D') >= 0) );
+		getRelay1CheckBox().setSelected( (relayUsage.indexOf('1') >= 0) );
+		getRelay2CheckBox().setSelected( (relayUsage.indexOf('2') >= 0) );
+		getRelay3CheckBox().setSelected( (relayUsage.indexOf('3') >= 0) );
+		getRelay4CheckBox().setSelected( (relayUsage.indexOf('4') >= 0) );
 
 		if( !group.getLmGroupVersacom().getSerialAddress().equalsIgnoreCase("0") )
 		{

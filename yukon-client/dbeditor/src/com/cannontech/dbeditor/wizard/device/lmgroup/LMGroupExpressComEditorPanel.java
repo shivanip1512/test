@@ -2353,29 +2353,59 @@ public Object getValue(Object o)
 			group.getLMGroupExpressComm().setSerialNumber( getJTextFieldSerialAddress().getText() );
 		}
 
-		StringBuffer addressUsage = new StringBuffer("        ");  //8 possible locations
-		StringBuffer relayUsage = new StringBuffer("        ");  //8 for now
+		StringBuffer addressUsage = new StringBuffer();
+		StringBuffer relayUsage = new StringBuffer();
 
 		//get our address usage
-		addressUsage.setCharAt( 0, (getJCheckBoxSPID().isSelected() ? 'S' : ' ') );		
-		addressUsage.setCharAt( 1, (getJCheckBoxGEO().isSelected()  ? 'G' : ' ') );
-		addressUsage.setCharAt( 2, (getJCheckBoxSUB().isSelected()  ? 'B' : ' ') );
-		addressUsage.setCharAt( 3, (getJCheckBoxFEED().isSelected() ? 'F' : ' ') );
-		addressUsage.setCharAt( 4, (getJCheckBoxZIP().isSelected()  ? 'Z' : ' ') );
-		addressUsage.setCharAt( 5, (getJCheckBoxUSER().isSelected() ? 'U' : ' ') );
-		addressUsage.setCharAt( 6, (getJCheckBoxPROG().isSelected() ? 'P' : ' ') );
-		addressUsage.setCharAt( 7, (getJCheckBoxSPLINTER().isSelected() ? 'R' : ' ') );
+      if( getJCheckBoxSPID().isSelected() )
+         addressUsage.append( 'S' );
+       
+      if( getJCheckBoxGEO().isSelected() )
+         addressUsage.append( 'G' );
 
+      if( getJCheckBoxSUB().isSelected() )
+         addressUsage.append( 'B' );
+
+      if( getJCheckBoxFEED().isSelected() )
+         addressUsage.append( 'F' );
+
+      if( getJCheckBoxZIP().isSelected() )
+         addressUsage.append( 'Z' );
+
+      if( getJCheckBoxUSER().isSelected() )
+         addressUsage.append( 'U' );
+
+      if( getJCheckBoxPROG().isSelected() )
+         addressUsage.append( 'P' );
+
+      if( getJCheckBoxSPLINTER().isSelected() )
+         addressUsage.append( 'R' );
 
 		//get our relay usage
-		relayUsage.setCharAt( 0, (getJCheckBoxRelay1().isSelected() ? '1' : ' ') );		
-		relayUsage.setCharAt( 1, (getJCheckBoxRelay2().isSelected() ? '2' : ' ') );
-		relayUsage.setCharAt( 2, (getJCheckBoxRelay3().isSelected() ? '3' : ' ') );
-		relayUsage.setCharAt( 3, (getJCheckBoxRelay4().isSelected() ? '4' : ' ') );
-		relayUsage.setCharAt( 4, (getJCheckBoxRelay5().isSelected() ? '5' : ' ') );
-		relayUsage.setCharAt( 5, (getJCheckBoxRelay6().isSelected() ? '6' : ' ') );
-		relayUsage.setCharAt( 6, (getJCheckBoxRelay7().isSelected() ? '7' : ' ') );
-		relayUsage.setCharAt( 7, (getJCheckBoxRelay8().isSelected() ? '8' : ' ') );
+      if( getJCheckBoxRelay1().isSelected() )
+         relayUsage.append( '1' );
+
+      if( getJCheckBoxRelay2().isSelected() )
+         relayUsage.append( '2' );
+
+      if( getJCheckBoxRelay3().isSelected() )
+         relayUsage.append( '3' );
+
+      if( getJCheckBoxRelay4().isSelected() )
+         relayUsage.append( '4' );
+
+      if( getJCheckBoxRelay5().isSelected() )
+         relayUsage.append( '5' );
+
+      if( getJCheckBoxRelay6().isSelected() )
+         relayUsage.append( '6' );
+
+      if( getJCheckBoxRelay7().isSelected() )
+         relayUsage.append( '7' );
+
+      if( getJCheckBoxRelay8().isSelected() )
+         relayUsage.append( '8' );
+
 
 		group.getLMGroupExpressComm().setAddressUsage( addressUsage.toString() );
 		group.getLMGroupExpressComm().setRelayUsage( relayUsage.toString() );
