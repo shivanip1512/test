@@ -1233,6 +1233,9 @@ private javax.swing.JLabel getMinResponseTimeLabel() {
 			ivjMinResponseTimeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjMinResponseTimeLabel.setText("Min Response Time:");
 			// user code begin {1}
+			
+			ivjMinResponseTimeLabel.setText("Max Confirm Time:");
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
