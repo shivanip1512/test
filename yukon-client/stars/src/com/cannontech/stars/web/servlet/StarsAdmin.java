@@ -382,9 +382,9 @@ public class StarsAdmin extends HttpServlet {
 		 * 14		INSTALLDATE
 		 * 15		REMOVEDATE
 		 * ----		(Additional required fields)
-		 * 16		HARDWAREACTION
-		 * 17		USERNAME
-		 * 18		PASSWORD
+		 * 16		USERNAME
+		 * 17		PASSWORD
+		 * 18		HARDWAREACTION
 		 */
     	parsers.put("San Antonio", new ImportFileParser() {
     		public String[] populateFields(String line) throws Exception {
@@ -453,14 +453,13 @@ public class StarsAdmin extends HttpServlet {
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_REMOVE_DATE] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
-				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_HARDWARE_ACTION] = st.sval;
-				if (st.ttype != ',') st.nextToken();
-				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_USERNAME] = st.sval;
 				if (st.ttype != ',') st.nextToken();
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_PASSWORD] = st.sval;
-				
+				if (st.ttype != ',') st.nextToken();
+				st.nextToken();
+				if (st.ttype == StreamTokenizer.TT_WORD) fields[IDX_HARDWARE_ACTION] = st.sval;
 				fields[IDX_DEVICE_TYPE] = "Thermostat";
 				
     			return fields;
@@ -1019,25 +1018,30 @@ public class StarsAdmin extends HttpServlet {
 						
 						if (liteAcctInfo == null) {
 							liteAcctInfo = newCustomerAccount( fields, user, energyCompany, session );
-							insertLMHardware( fields, liteAcctInfo, energyCompany, session );
+							if (! fields[IDX_SERIAL_NO].equalsIgnoreCase(""))
+								insertLMHardware( fields, liteAcctInfo, energyCompany, session );
 							programSignUp( fields, liteAcctInfo, energyCompany, req, session );
 							numAdded++;
 						}
 						else {
 							updateCustomerAccount( fields, energyCompany, session );
 							//updateLogin( fields, liteAcctInfo, energyCompany, session );
-							if (fields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_INSERT ))
-								insertLMHardware( fields, liteAcctInfo, energyCompany, session );
-							else if (fields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_UPDATE ))
-								updateLMHardware( fields, liteAcctInfo, energyCompany, session );
-							else if (fields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_REMOVE ))
-								removeLMHardware( fields, liteAcctInfo, energyCompany, session );
-							else {	// Hardware action field not specified
-								if (liteAcctInfo.getInventories().size() == 0)
+							if (! fields[IDX_SERIAL_NO].equalsIgnoreCase(""))
+							{
+								if (fields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_INSERT ))
 									insertLMHardware( fields, liteAcctInfo, energyCompany, session );
-								else
+								else if (fields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_UPDATE ))
 									updateLMHardware( fields, liteAcctInfo, energyCompany, session );
+								else if (fields[IDX_HARDWARE_ACTION].equalsIgnoreCase( HARDWARE_ACTION_REMOVE ))
+									removeLMHardware( fields, liteAcctInfo, energyCompany, session );
+								else {	// Hardware action field not specified
+									if (liteAcctInfo.getInventories().size() == 0)
+										insertLMHardware( fields, liteAcctInfo, energyCompany, session );
+									else
+										updateLMHardware( fields, liteAcctInfo, energyCompany, session );
+								}
 							}
+							
 							if (liteAcctInfo.getInventories().size() > 0)
 					    		programSignUp( fields, liteAcctInfo, energyCompany, req, session );
 					    	numUpdated++;
@@ -2120,12 +2124,12 @@ public class StarsAdmin extends HttpServlet {
 	}
 	
 	private void updateCustomerSelectionList(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
-        LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
+		LiteStarsEnergyCompany energyCompany = SOAPServer.getEnergyCompany( user.getEnergyCompanyID() );
         
-        java.sql.Connection conn = null;
-        boolean autoCommit = true;
+		java.sql.Connection conn = null;
+		boolean autoCommit = true;
         
-        try {
+		try {
 			String listName = req.getParameter("ListName");
 			String ordering = req.getParameter("Ordering");
 			String label = req.getParameter("Label");
@@ -2215,8 +2219,8 @@ public class StarsAdmin extends HttpServlet {
 				StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 				selectionListTable.put( starsList.getListName(), starsList );
 				
-	        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation list updated successfully");
-	        	return;
+				session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation list updated successfully");
+				return;
 			}
 			
 			// Handle customer opt out period list
@@ -2243,8 +2247,8 @@ public class StarsAdmin extends HttpServlet {
 					
 					selectionListTable.remove( cList.getListName() );
 					
-		        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
-		        	return;
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
+					return;
 				}
 				
 				if (!sameAsOp && cList == null) {
@@ -2351,28 +2355,28 @@ public class StarsAdmin extends HttpServlet {
 			StarsCustSelectionList starsList = StarsLiteFactory.createStarsCustSelectionList( cList );
 			selectionListTable.put( starsList.getListName(), starsList );
 			
-        	session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
-        }
-        catch (java.sql.SQLException e) {
-        	if (e.getErrorCode() != -9999) {
+			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
+		}
+		catch (java.sql.SQLException e) {
+			if (e.getErrorCode() != -9999) {
 				e.printStackTrace();
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update customer selection list");
-        	}
+			}
 			
 			try {
 				if (conn != null) conn.rollback();
 			}
 			catch (java.sql.SQLException e2) {}
-        }
-        finally {
-        	try {
-	        	if (conn != null) {
-	        		conn.setAutoCommit( autoCommit );
-	        		conn.close();
-	        	} 
-        	}
-        	catch (java.sql.SQLException e) {}
-        }
+		}
+		finally {
+			try {
+				if (conn != null) {
+					conn.setAutoCommit( autoCommit );
+					conn.close();
+				} 
+			}
+			catch (java.sql.SQLException e) {}
+		}
 	}
 	
 	private void updateThermostatSchedule(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
@@ -2385,7 +2389,7 @@ public class StarsAdmin extends HttpServlet {
         	SOAPMessage reqMsg = action.build( req, session );
         	StarsUpdateThermostatSchedule updateSched = SOAPUtil.parseSOAPMsgForOperation( reqMsg ).getStarsUpdateThermostatSchedule();
         	
-        	LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( dftSettings.getInventoryID(), true );
+        	LiteStarsLMHardware liteHw = energyCompany.getDefaultLMHardware();
         	StarsUpdateThermostatScheduleResponse resp = UpdateThermostatScheduleAction.updateThermostatSchedule( updateSched, liteHw, energyCompany );
 			UpdateThermostatScheduleAction.parseResponse( resp, dftSettings );
 			
@@ -2558,16 +2562,27 @@ public class StarsAdmin extends HttpServlet {
 			String sql = "SELECT InventoryID FROM ECToInventoryMapping WHERE EnergyCompanyID = ?";
 			java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
 			stmt.setInt( 1, user.getEnergyCompanyID() );
-			
 			java.sql.ResultSet rset = stmt.executeQuery();
-			while (rset.next()) {
-				int inventoryID = rset.getInt(1);
-				com.cannontech.database.data.stars.hardware.InventoryBase inventory =
-						new com.cannontech.database.data.stars.hardware.InventoryBase();
-				inventory.setInventoryID( new Integer(inventoryID) );
-				inventory.setDbConnection( conn );
-				inventory.delete();
+			
+			java.sql.Connection conn2 = null;
+			try {
+				conn2 = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+				
+				while (rset.next()) {
+					int inventoryID = rset.getInt(1);
+					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
+							new com.cannontech.database.data.stars.hardware.InventoryBase();
+					inventory.setInventoryID( new Integer(inventoryID) );
+					inventory.setDbConnection( conn2 );
+					inventory.delete();
+				}
 			}
+			finally {
+				if (conn2 != null) conn2.close();
+			}
+			
+			rset.close();
+			stmt.close();
 			
 			// Delete all substations
 			ECToGenericMapping[] substations = ECToGenericMapping.getAllMappingItems(
@@ -2659,18 +2674,28 @@ public class StarsAdmin extends HttpServlet {
 			stmt.setInt(1, energyCompany.getLiteID());
 			rset = stmt.executeQuery();
 			
-			while (rset.next()) {
-				int userID = rset.getInt(1);
-				if (userID == energyCompany.getUserID()) continue;
+			try {
+				conn2 = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 				
-				com.cannontech.database.data.user.YukonUser yukonUser =
-						new com.cannontech.database.data.user.YukonUser();
-				yukonUser.setUserID( new Integer(userID) );
-				yukonUser.setDbConnection( conn );
-				yukonUser.deleteOperatorLogin();
-				
-				ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+				while (rset.next()) {
+					int userID = rset.getInt(1);
+					if (userID == energyCompany.getUserID()) continue;
+					
+					com.cannontech.database.data.user.YukonUser yukonUser =
+							new com.cannontech.database.data.user.YukonUser();
+					yukonUser.setUserID( new Integer(userID) );
+					yukonUser.setDbConnection( conn2 );
+					yukonUser.deleteOperatorLogin();
+					
+					ServerUtils.handleDBChange( YukonUserFuncs.getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
+				}
 			}
+			finally {
+				if (conn2 != null) conn2.close();
+			}
+			
+			rset.close();
+			stmt.close();
 			
 			// Delete the energy company!
 			com.cannontech.database.data.company.EnergyCompanyBase ec =
