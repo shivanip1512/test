@@ -164,6 +164,7 @@ resolvers.obj:	dsm2.h mutex.h dlldefs.h guard.h resolvers.h types.h \
 		numstr.h
 rtdb.obj:	dlldefs.h rtdb.h hashkey.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h
+rwutil.obj:	rwutil.h boost_time.h dlldefs.h
 sema.obj:	sema.h dlldefs.h
 statistics.obj:	dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h sema.h dsm2err.h logger.h \
@@ -177,6 +178,8 @@ utility.obj:	ctinexus.h dlldefs.h dbaccess.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h sema.h porter.h \
 		dsm2err.h devicetypes.h queues.h logger.h thread.h numstr.h \
 		pointdefs.h utility.h yukon.h ctidbgmem.h
+verification_objects.obj:	verification_objects.h dlldefs.h dsm2.h \
+		mutex.h guard.h boost_time.h ctidbgmem.h
 wordbuilder.obj:	wordbuilder.h
 words.obj:	os2_2w32.h dlldefs.h types.h cticalls.h cti_asmc.h queues.h \
 		dsm2.h mutex.h guard.h dsm2err.h device.h devicetypes.h \
