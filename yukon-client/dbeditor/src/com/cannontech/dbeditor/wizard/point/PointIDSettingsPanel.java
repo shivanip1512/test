@@ -528,7 +528,10 @@ public void setValueCore(Object val, Integer initialPAOId )
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllDevices();
+		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		
 		java.util.List points = cache.getAllPoints();
+		
 		if( getDeviceComboBox().getModel().getSize() > 0 )
 			getDeviceComboBox().removeAllItems();
 

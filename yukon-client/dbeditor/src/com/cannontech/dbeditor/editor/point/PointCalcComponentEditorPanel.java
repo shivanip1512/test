@@ -1118,14 +1118,14 @@ public void setValue(Object val)
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized (cache)
-{
-
+	{
 		//this code makes copies of points in the cache and sets the "showPointOffset" variable to
 		//false so that the point offsets are not shown  -- this is done so the points in the cache
 		//remained unchanged 
 
 		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort(devices);
+		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+
 		points = new java.util.Vector();
 		java.util.List cachePoints = cache.getAllPoints();
 		com.cannontech.database.data.lite.LitePoint point = null;

@@ -362,19 +362,19 @@ public void setValue(Object val)
 public void setValueCore(Object val)
 {
 	//Load the device list
-
-	if (getDeviceComboBox().getModel().getSize() > 0)
-		getDeviceComboBox().removeAllItems();
+	getDeviceComboBox().removeAllItems();
 	com.cannontech.database.cache.DefaultDatabaseCache cache =
 		com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+
 	synchronized (cache)
-{
+	{
 		java.util.List devices = cache.getAllDevices();
+		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		
 		for (int i = 0; i < devices.size(); i++)
-		{
 			getDeviceComboBox().addItem(((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)));
-		}
 
 	}
 }
+
 }
