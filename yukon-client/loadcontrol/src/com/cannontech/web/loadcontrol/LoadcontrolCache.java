@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
@@ -237,13 +238,17 @@ public double[] getCustomerBaseLine(long customerID, Date start, Date end) {
 	//get point id of baseline point
 	Integer baseLineID = (Integer) customerBaseLine.get( new Integer((int)customerID));
 	
+	if(baseLineID == null) {
+		CTILogger.info("No customer baseline ID found for customer id: " + customerID);
+		return null;
+	}
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;	
 	java.sql.ResultSet rset = null;
 	
 	try
 	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(getDbAlias());
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 		pstmt = conn.prepareStatement(baseLineSql);
 
 		pstmt.setInt(1, baseLineID.intValue());
