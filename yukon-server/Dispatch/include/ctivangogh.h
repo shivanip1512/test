@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2003/12/30 21:46:28 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2004/02/16 20:59:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,6 +102,10 @@ private:
     RWThreadFunction  _archiveThread;
     RWThreadFunction  _timedOpThread;
     RWThreadFunction  _dbThread;
+    RWThreadFunction  _dbSigThread;
+    RWThreadFunction  _dbSigEmailThread;
+
+    CtiQueue< CtiSignalMsg, less<CtiSignalMsg> > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
     CtiQueue< CtiSignalMsg, less<CtiSignalMsg> > _signalMsgQueue;
     CtiQueue< CtiTableRawPointHistory, less<CtiTableRawPointHistory> > _archiverQueue;
@@ -165,10 +169,11 @@ public:
     int   execute();
     void  VGMainThread();
     void  VGConnectionHandlerThread();
-    void  VGSignalThread();
     void  VGArchiverThread();
     void  VGTimedOperationThread();
     void  VGDBWriterThread();
+    void  VGDBSignalWriterThread();
+    void  VGDBSignalEmailThread();
     void  VGRPHWriterThread();
 
     INT   archivePointDataMessage(const CtiPointDataMsg &aPD);
@@ -246,6 +251,8 @@ public:
     RWCString resolveDeviceName(const CtiPointBase &aPoint);
     RWCString resolveDeviceObjectType(const LONG devid);
     RWCString resolveDeviceDescription(LONG PAO);
+    bool isDeviceIdValid(const LONG devid);
+    bool isDeviceGroupType(const LONG devid);
     CtiTableContactNotification* getContactNotification(LONG notifID);
     CtiTableCICustomerBase* getCustomer( LONG custid );
     void sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig);

@@ -1,4 +1,5 @@
 
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   ctivangogh
@@ -7,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2004/01/16 16:52:29 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2004/02/16 20:59:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -902,28 +903,60 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
     case (CtiCommandMsg::ResetControlHours):
         {
             // Vector contains token? ? ? ? ?
-            LONG token      = Cmd->getOpArgList().at(0);
+            // LONG token = Cmd->getOpArgList().at(0);
 
-            #if 0
-            CtiLockGuard<CtiMutex> pmguard(server_mux);
-            CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
-
-            for(;itr();)
+            try
             {
-                CtiPoint *TempPoint = itr.value();
+                CtiLockGuard<CtiMutex> pmguard(server_mux);
+                CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
+
+                for(;itr();)
                 {
-                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
+                    CtiPoint *TempPoint = itr.value();
+                    if( TempPoint &&
+                        TempPoint->getType() == AnalogPointType &&
+                        SEASONALCONTROLHISTOFFSET == TempPoint->getPointOffset() &&   // (DAILYCONTROLHISTOFFSET <= TempPoint->getPointOffset() && TempPoint->getPointOffset() <= ANNUALCONTROLHISTOFFSET) &&
+                        isDeviceGroupType(TempPoint->getDeviceID()))
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " " << resolveDeviceName( *TempPoint ) << " resetting seasonal hours" << endl;
+                        }
+
+                        CtiPoint *pControlPoint = PointMgr.getControlOffsetEqual( TempPoint->getDeviceID(), 1);     // This is the control status control point which keeps control in play.
+
+                        if(pControlPoint)
+                        {
+                            CtiPendingPointOperations pendingSeasonReset(pControlPoint->getID());
+                            pendingSeasonReset.setType(CtiPendingPointOperations::pendingControl);                  // Must be a pendingControl Type to help us if we are currently controlling this group!
+                            pendingSeasonReset.setControlState(CtiPendingPointOperations::controlSeasonalReset);    // control state clues the guts on what we are trying to do for this command.
+                            pendingSeasonReset.setTime( Cmd->getMessageTime() );
+
+                            pendingSeasonReset.getControl().setPAOID(TempPoint->getDeviceID());
+                            pendingSeasonReset.getControl().setActiveRestore(LMAR_PERIOD_TRANSITION);
+                            pendingSeasonReset.getControl().setDefaultActiveRestore(LMAR_PERIOD_TRANSITION);
+                            pendingSeasonReset.getControl().setControlDuration(0);
+                            pendingSeasonReset.getControl().setControlType("Season Reset");
+                            pendingSeasonReset.getControl().setReductionValue(0);
+                            pendingSeasonReset.getControl().setReductionRatio(0);
+                            pendingSeasonReset.getControl().setStartTime(Cmd->getMessageTime());
+                            pendingSeasonReset.getControl().setStopTime(Cmd->getMessageTime());
+                            pendingSeasonReset.getControl().setControlCompleteTime(Cmd->getMessageTime());
+                            pendingSeasonReset.getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
+
+                            verifyControlTimesValid(pendingSeasonReset);
+                            addToPendingSet(pendingSeasonReset, Cmd->getMessageTime());
+                        }
+                    }
                 }
             }
-            #else
-
+            catch(...)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
-
-            #endif
-
 
             break;
         }
@@ -2328,13 +2361,20 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
         }
 
         {
-            RWOrderedIterator itr( postList );
-            for(;NULL != (sigMsg = (CtiSignalMsg*)itr());)
+            for(;NULL != (sigMsg = (CtiSignalMsg*)postList.pop());)
             {
-                postSignalAsEmail( *sigMsg );
-            }
+                bool done = _signalMsgPostQueue.putQueue(sigMsg, 5000);           // Place them on the email queue and let him clean them up!
+                if(!done)
+                {
+                    delete sigMsg;
 
-            postList.clearAndDestroy();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "   Failed to queue signal message for emailing. " << endl;
+                    }
+                }
+            }
         }
 
         if(!_signalManager.empty() && _signalManager.dirty())
@@ -2510,8 +2550,11 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
 
                     while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
                     {
-                        panicCounter++;
-                        pTblEntry->Insert(conn);
+                        if(isDeviceIdValid(pTblEntry->getPAOID()))
+                        {
+                            panicCounter++;
+                            pTblEntry->Insert(conn);
+                        }
                         delete pTblEntry;
                     }
 
@@ -3855,7 +3898,14 @@ void CtiVanGogh::doPendingOperations()
                     {
                         ULONG prevLogSec = ppo.getControl().getPreviousLogTime().seconds();
 
-                        if(ppo.getControlState() == CtiPendingPointOperations::controlPending &&
+                        if(ppo.getControlState() == CtiPendingPointOperations::controlSeasonalReset)
+                        {
+                            updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::seasonReset, now);
+
+                            it = _pendingPointInfo.erase(it);
+                            continue;   // iterator has been repositioned!
+                        }
+                        else if(ppo.getControlState() == CtiPendingPointOperations::controlPending &&
                            now.seconds() > ppo.getTime().seconds() + (ULONG)ppo.getControlTimeout())
                         {
                             // Post a message about the time out situation.
@@ -3920,8 +3970,7 @@ void CtiVanGogh::doPendingOperations()
                                     }
                                 }
                             }
-                            else
-                                if(ppo.getControl().getControlDuration() < 0)
+                            else if(ppo.getControl().getControlDuration() < 0)
                             {
                                 /*
                                  *  Do NOTHING.  This is a restore command.
@@ -3937,21 +3986,24 @@ void CtiVanGogh::doPendingOperations()
                                     }
                                 }
                             }
-                            else if(now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
+                            else
                             {
-                                // We have accumulated enough time against this control to warrant a new log entry!
-                                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalcrossing, now);
-                            }
-                            else if(CntlHistPointPostInterval && !(now.seconds() % CntlHistPointPostInterval))
-                            {
-                                // This rate posts history points and stop point.
-                                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalpointpostcrossing, now);
-                            }
-                            else if(ppo.getControl().getControlDuration() > 0 &&
-                                    now.seconds() >= ppo.getControl().getPreviousStopReportTime().seconds() - (ppo.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval)
-                            {
-                                // This rate posts stop point.
-                                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::stopintervalcrossing, now);
+                                if(now.seconds() >= prevLogSec - (prevLogSec % CntlHistInterval) + CntlHistInterval)
+                                {
+                                    // We have accumulated enough time against this control to warrant a new log entry!
+                                    updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalcrossing, now);
+                                }
+                                else if(CntlHistPointPostInterval && !(now.seconds() % CntlHistPointPostInterval))
+                                {
+                                    // This rate posts history points and stop point.
+                                    updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::intervalpointpostcrossing, now);
+                                }
+                                else if(ppo.getControl().getControlDuration() > 0 &&
+                                        now.seconds() >= ppo.getControl().getPreviousStopReportTime().seconds() - (ppo.getControl().getPreviousStopReportTime().seconds() % CntlStopInterval) + CntlStopInterval)
+                                {
+                                    // This rate posts stop point.
+                                    updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::stopintervalcrossing, now);
+                                }
                             }
                         }
                     }
@@ -4286,6 +4338,57 @@ RWCString CtiVanGogh::resolveDeviceObjectType(const LONG devid)
     }
 
     return rStr;
+}
+
+bool CtiVanGogh::isDeviceIdValid(const LONG devid)
+{
+    bool bret = false;
+
+    if(devid > 0)
+    {
+        try
+        {
+            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
+            bret = (dliteit != _deviceLiteSet.end() );
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return bret;
+}
+
+bool CtiVanGogh::isDeviceGroupType(const LONG devid)
+{
+    bool bret = false;
+
+    if(devid > 0)
+    {
+        try
+        {
+            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
+            if( dliteit != _deviceLiteSet.end() )
+            {
+                // dliteit should be an iterator which represents the lite device now!
+                CtiDeviceBaseLite &dLite = *dliteit;
+                bret = (dLite.getClass().compareTo("group", RWCString::ignoreCase) == 0);
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+
+    return bret;
 }
 
 /*
@@ -5509,6 +5612,54 @@ void CtiVanGogh::updateControlHistory( long pendid, int cause, const RWTime &the
                 }
                 break;
             }
+        case (CtiPendingPointOperations::seasonReset):
+            {
+                /*
+                 *  seasonreset.  No matter the state of the control, the seasonal hours should be reset...
+                 */
+
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        verifyControlTimesValid(ppc);   // Make sure ppc has been primed.
+
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+
+                        // Create some lies
+                        ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                         // Record this as a continuation.
+                        insertControlHistoryRow(ppc, now);
+                        postControlHistoryPoints(ppc,now);
+
+                        // OK, set them out for the next run ok. Undo the lies.
+                        ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
+
+                        postControlStopPoint(ppc,now);
+                    }
+                }
+                else
+                {
+                    verifyControlTimesValid(ppc);                                                       // Make sure ppc has been primed.
+
+                    RWTime writetime = ppc.getControl().getStopTime();
+                    ppc.getControl().incrementTimes( thetime, 0, true );                                // This effectively primes the entry for the write.  Seasonal hours are reset.  Critical.
+                    ppc.getControl().setStopTime( writetime );
+                    ppc.getControl().setControlCompleteTime( writetime );                               // This is when we think this control should complete.
+
+                    ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                       // Record this as a control adjustment.
+
+                    insertControlHistoryRow(ppc, now);                                                  // Drop the row in there!
+                    postControlHistoryPoints(ppc,now);
+                    postControlStopPoint(ppc,now);                                                      // Let everyone know when control should end.
+
+                    ppc.getControl().setStopTime( thetime );
+                    ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );    // Reset to the original completion state.
+                }
+
+                break;
+            }
         default:
             {
                 {
@@ -6388,11 +6539,21 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
          */
         if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
         {
-            if( pendingControlRequest.getControl().getControlDuration() <= 0 )
+            if( pendingControlRequest.getControlState() == CtiPendingPointOperations::controlSeasonalReset )
+            {
+                RWCString origType = ppo.getControl().getControlType();
+                ppo.getControl().setControlType(pendingControlRequest.getControl().getControlType());
+                ppo.getControl().setCurrentSeasonalTime(0);
+                updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::seasonReset, updatetime );
+
+                ppo.getControl().setControlType(origType);
+            }
+            else if( pendingControlRequest.getControl().getControlDuration() <= 0 )
             {
                 // The incoming control information is a RESTORE type operation.
                 ppo.getControl().setActiveRestore(LMAR_MANUAL_RESTORE);
                 updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
+                ppo = pendingControlRequest;    // Copy it to update the control state.
             }
             else if( pendingControlRequest.getControl().getControlType() == ppo.getControl().getControlType() )
             {
@@ -6404,6 +6565,7 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
                 pendingControlRequest.getControl().setStartTime(ppo.getControl().getStartTime());
                 pendingControlRequest.getControl().setPreviousLogTime(ppo.getControl().getPreviousLogTime());
                 pendingControlRequest.getControl().setNotNewControl();
+                ppo = pendingControlRequest;    // Copy it to update the control state.
             }
             else
             {
@@ -6411,10 +6573,13 @@ bool CtiVanGogh::addToPendingSet(CtiPendingPointOperations &pendingControlReques
                 // been overridden.
                 ppo.getControl().setActiveRestore(LMAR_OVERRIDE_CONTROL);
                 updateControlHistory( ppo.getPointID(), CtiPendingPointOperations::control, updatetime );
+                ppo = pendingControlRequest;    // Copy it to update the control state.
             }
         }
-
-        ppo = pendingControlRequest;    // Copy it to update the control state.
+        else
+        {
+            ppo = pendingControlRequest;    // Copy it to update the control state.
+        }
     }
 
     return bRet;
@@ -6711,3 +6876,132 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 
     return status;
 }
+
+void CtiVanGogh::VGDBSignalWriterThread()
+{
+    UINT sanity = 0;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Dispatch DB Signal Writer Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+    }
+
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+
+    try
+    {
+        for(;!bGCtrlC;)
+        {
+            try
+            {
+                if(!(++sanity % SANITY_RATE))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Dispatch DB Signal Writer Thread Active " << endl;
+                    }
+                    reportOnThreads();
+                }
+
+                rwSleep(1000);
+
+                writeSignalsToDB();
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+
+        // Make sure no one snuck in under the wire..
+        writeSignalsToDB(true);
+    }
+    catch(RWxmsg& msg )
+    {
+        dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    // And let'em know were A.D.
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Dispatch DB Signal Writer Thread shutting down" << endl;
+    }
+
+    return;
+}
+
+void CtiVanGogh::VGDBSignalEmailThread()
+{
+    UINT sanity = 0;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Dispatch DB Signal Email Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+    }
+
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+
+    try
+    {
+        for(;!bGCtrlC;)
+        {
+            try
+            {
+                if(!(++sanity % SANITY_RATE))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Dispatch DB Signal Email Thread Active " << endl;
+                    }
+                    reportOnThreads();
+                }
+
+                CtiSignalMsg *sigMsg = 0;
+
+                while(0 != (sigMsg = _signalMsgPostQueue.getQueue(1000)))
+                {
+                    postSignalAsEmail( *sigMsg );
+                    delete sigMsg;
+                    sigMsg = 0;
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+    }
+    catch(RWxmsg& msg )
+    {
+        dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    // And let'em know were A.D.
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Dispatch DB Signal Email Thread shutting down" << endl;
+    }
+
+    return;
+}
+
+
+
