@@ -61,6 +61,8 @@ tbl_dv_versacom.obj \
 tbl_dv_wnd.obj \
 tbl_gateway_end_device.obj \
 tbl_lm_controlhist.obj \
+tbl_lmg_sasimple.obj \
+tbl_lmg_sa205105.obj \
 tbl_lmg_sa305.obj \
 tbl_loadprofile.obj \
 tbl_metergrp.obj \
@@ -97,8 +99,6 @@ tbl_stats.obj \
 tbl_tag.obj \
 tbl_taglog.obj \
 tbl_unitmeasure.obj \
-tbl_lmg_sa_simple.obj \
-tbl_lmg_sa_205105.obj \
 
 
 
