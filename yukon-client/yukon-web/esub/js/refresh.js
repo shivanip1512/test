@@ -9,8 +9,8 @@ var alarmTextID = 'alarmText';
 
 /* refresh rates of various elements in milliseconds */
 var graphRefreshRate = 120 * 1000;
-var pointRefreshRate  = 15 * 1000;
-var tableRefreshRate  = 30 * 1000;
+var pointRefreshRate  = 2 * 1000; //15 * 1000;
+var tableRefreshRate  = 2 * 1000; // * 1000;
 
 /* rectangle to indicate an image is a link */
 var selectedRect = null;
