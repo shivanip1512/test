@@ -6,6 +6,7 @@ package com.cannontech.database.db.point;
 import java.sql.Connection;
 
 import com.cannontech.database.data.point.PointLogicalGroups;
+import com.cannontech.database.data.lite.LitePoint;
 
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
@@ -113,20 +114,10 @@ public final static Integer getNextCachedPointID()
 		java.util.List points = cache.getAllPoints();
 		java.util.Collections.sort(points);
 
-		int counter = 1;
-		int currentID;
-		 														
-		for(int i=0;i<points.size();i++)
-		{
-			currentID = ((com.cannontech.database.data.lite.LitePoint)points.get(i)).getPointID();
-
-			if( currentID > counter )
-				break;
-			else
-				counter = currentID + 1;
-		}		
-		
-		return new Integer( counter );
+		if(points == null || points.size() <= 0)
+			return new Integer(0);
+		else	
+			return new Integer(((LitePoint)points.get(points.size() - 1)).getPointID() );
 	}
 }
 /**
