@@ -31,7 +31,16 @@ public class ServerResponseMsg extends Message {
 	private int _status;
 	private String _message;
 	private Object _payload;
-		
+
+	/**
+	 * @return String
+	 */
+	public static String getStatusStr( int status ) 
+	{	
+		return STATUS_STRS[status];
+	}
+
+
 	/**
 	 * @return
 	 */

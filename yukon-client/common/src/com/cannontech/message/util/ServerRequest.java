@@ -41,7 +41,24 @@ import com.cannontech.message.server.ServerResponseMsg;
  * }
  * @author aaron
  */
-public class ServerRequest implements MessageListener {
+public class ServerRequest implements MessageListener 
+{
+	// wait this many millis by default for a response message
+	private final static long DEFAULT_TIMEOUT = 30L*1000L;
+	
+	// used to generate a request id
+	private static int _currentRequestID;
+
+	static { 
+		Random r = new Random(System.currentTimeMillis());
+		_currentRequestID = r.nextInt();
+	}
+
+	private ClientConnection _connection;
+	private ServerRequestMsg _requestMsg;
+	private ServerResponseMsg _responseMsg;
+	private int _requestID;
+
 	
 	/**
 	 * Factory method to create a ServerRequest
@@ -54,7 +71,25 @@ public class ServerRequest implements MessageListener {
 		requestMsg.setPayload(msg);
 		return new ServerRequest(conn, requestMsg);
 	}
-	
+
+	/**
+	 * Factory method to create a ServerRequest
+	 * @param conn - Connection to a Yukon server
+	 * @param msg - Some type of message that represents a request
+	 * @return
+	 */
+	public static ServerRequest[] makeServerRequests(ClientConnection conn, Message[] msg) 
+	{
+		ServerRequest[] srvrReq = new ServerRequest[ msg.length ];
+		for( int i = 0; i < msg.length; i++ )
+		{
+			srvrReq[i] = makeServerRequest(conn, msg[i]);
+		}
+
+		return srvrReq;
+	}
+
+
 	/**
 	 * Returns a ServerResponseMsg that matches the request.
 	 * If no matching response is received an exception will be thrown after
@@ -106,27 +141,11 @@ public class ServerRequest implements MessageListener {
 		_requestMsg.setId(_requestID);
 	}
 	
-	// wait this many millis by default for a response message
-	private final static long DEFAULT_TIMEOUT = 30L*1000L;
-	
-	// used to generate a request id
-	private static int _currentRequestID;
-
-	static { 
-		Random r = new Random(System.currentTimeMillis());
-		_currentRequestID = r.nextInt();
-	}
-	
-	private ClientConnection _connection;
-	private ServerRequestMsg _requestMsg;
-	private ServerResponseMsg _responseMsg;
-	private int _requestID;
-	
-/**
- * Called by the connection.
- * If we receive a response with the id we expect then notify the thread
- * blocked in execute.
- */
+	/**
+	 * Called by the connection.
+	 * If we receive a response with the id we expect then notify the thread
+	 * blocked in execute.
+	 */
 	public synchronized void messageReceived(MessageEvent e) {
 		Message msg = e.getMessage();
 		if(msg instanceof ServerResponseMsg) {
