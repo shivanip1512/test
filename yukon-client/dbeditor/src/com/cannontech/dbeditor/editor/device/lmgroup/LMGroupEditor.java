@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.editor.device.lmgroup;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.application.DBEditorRole;
 
 /**
  * This type was created in VisualAge.
@@ -91,7 +93,12 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 3:
-			objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.RippleMessageShedPanel();
+			boolean allowSpecialRipple = ClientSession.getInstance().getRolePropertyValue(
+				DBEditorRole.ACTIVATE_ALTERNATE_RIPPLE, "FALSE").trim().equalsIgnoreCase("TRUE");
+			if(allowSpecialRipple)
+				objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.SpecialRippleMessagePanel();
+			else
+				objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.RippleMessageShedPanel();
 			objs[1] = "Message";
 			break;
 

@@ -1,4 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
+
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.application.DBEditorRole;
 /**
  * This type was created in VisualAge.
  */
@@ -14,6 +17,7 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private LMGroupVersacomEditorPanel lmGroupVersacomEditorPanel = null;
 	private LMGroupEmetconPanel lmGroupEmetconPanel = null;	
 	private RippleMessageShedPanel rippleMessageShedPanel = null;
+	private SpecialRippleMessagePanel specialRippleMessagePanel = null;
 	private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
 	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
 	
@@ -242,7 +246,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	else if ( currentInputPanel == getLMGroupBasePanel()
 				&& getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE )
 	{
-		return getRippleMessageShedPanel();
+		//this is specifically for Minnkota
+		boolean allowSpecialRipple = ClientSession.getInstance().getRolePropertyValue(
+			DBEditorRole.ACTIVATE_ALTERNATE_RIPPLE, "FALSE").trim().equalsIgnoreCase("TRUE");
+		if(allowSpecialRipple)
+			return getSpecialRippleMessagePanel();
+		else
+			return getRippleMessageShedPanel();
 	}
 
 	//Start emetcon specific
@@ -315,6 +325,15 @@ public RippleMessageShedPanel getRippleMessageShedPanel() {
 	}
 	
 	return rippleMessageShedPanel;
+}
+
+public SpecialRippleMessagePanel getSpecialRippleMessagePanel() {
+	if( specialRippleMessagePanel == null )
+	{
+		specialRippleMessagePanel = new SpecialRippleMessagePanel();
+	}
+	
+	return specialRippleMessagePanel;
 }
 
 
