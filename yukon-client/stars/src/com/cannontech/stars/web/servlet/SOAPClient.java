@@ -78,7 +78,9 @@ public class SOAPClient extends HttpServlet {
         if (action == null) return;
 
         HttpSession session = req.getSession(false);
-        if (session == null) resp.sendRedirect( loginURL );
+        if (session == null && !action.endsWith("Login")) {
+        	resp.sendRedirect( loginURL ); return;
+        }
 
         SOAPMessage reqMsg = null;
         SOAPMessage respMsg = null;

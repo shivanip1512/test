@@ -112,7 +112,7 @@ public class CustomerAccount extends DBPersistent {
             load.delete();
         }
 
-        com.cannontech.database.db.stars.event.LMProgramEvent.deleteAllProgramEvents(
+        com.cannontech.database.db.stars.event.LMProgramEvent.deleteAllLMProgramEvents(
             getCustomerAccount().getAccountID(), getDbConnection() );
 
         // delete from the mapping table

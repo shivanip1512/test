@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMProgram.java,v 1.7 2002/09/19 15:26:45 zyao Exp $
+ * $Id: StarsLMProgram.java,v 1.8 2002/09/23 00:20:43 zyao Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.7 $ $Date: 2002/09/19 15:26:45 $
+ * @version $Revision: 1.8 $ $Date: 2002/09/23 00:20:43 $
 **/
 public class StarsLMProgram implements java.io.Serializable {
 
@@ -51,6 +51,8 @@ public class StarsLMProgram implements java.io.Serializable {
     private java.lang.String _status;
 
     private StarsLMControlHistory _starsLMControlHistory;
+
+    private StarsLMProgramHistory _starsLMProgramHistory;
 
 
       //----------------/
@@ -112,6 +114,16 @@ public class StarsLMProgram implements java.io.Serializable {
     {
         return this._starsLMControlHistory;
     } //-- StarsLMControlHistory getStarsLMControlHistory() 
+
+    /**
+     * Returns the value of field 'starsLMProgramHistory'.
+     * 
+     * @return the value of field 'starsLMProgramHistory'.
+    **/
+    public StarsLMProgramHistory getStarsLMProgramHistory()
+    {
+        return this._starsLMProgramHistory;
+    } //-- StarsLMProgramHistory getStarsLMProgramHistory() 
 
     /**
      * Returns the value of field 'status'.
@@ -216,6 +228,17 @@ public class StarsLMProgram implements java.io.Serializable {
     {
         this._starsLMControlHistory = starsLMControlHistory;
     } //-- void setStarsLMControlHistory(StarsLMControlHistory) 
+
+    /**
+     * Sets the value of field 'starsLMProgramHistory'.
+     * 
+     * @param starsLMProgramHistory the value of field
+     * 'starsLMProgramHistory'.
+    **/
+    public void setStarsLMProgramHistory(StarsLMProgramHistory starsLMProgramHistory)
+    {
+        this._starsLMProgramHistory = starsLMProgramHistory;
+    } //-- void setStarsLMProgramHistory(StarsLMProgramHistory) 
 
     /**
      * Sets the value of field 'status'.

@@ -65,8 +65,7 @@ public class LMHardwareEvent extends DBPersistent {
     }
 
     public static LMHardwareEvent[] getAllLMHardwareEvents(Integer inventoryID, java.sql.Connection conn) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ? "
-        		   + "ORDER BY EventID DESC";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = ?";
 
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;

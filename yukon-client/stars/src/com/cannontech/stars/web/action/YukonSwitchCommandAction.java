@@ -230,6 +230,8 @@ public class YukonSwitchCommandAction implements ActionBase {
             		actCompEntryID = new Integer( entry.getEntryID() );
             }
             
+            Date now = new Date();
+            
             if (command.getStarsDisableService() != null) {
                 StarsDisableService service = command.getStarsDisableService();
 
@@ -262,7 +264,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 		eventDB.setInventoryID( hwDB.getInventoryID() );
                 		eventBase.setEventTypeID( hwEventEntryID );
                 		eventBase.setActionID( tempTermEntryID );
-                		eventBase.setEventDateTime( new Date() );
+                		eventBase.setEventDateTime( now );
                 		
                 		event.setEnergyCompanyBase( energyCompany );
                 		multiDB.getDBPersistentVector().addElement( event );
@@ -298,7 +300,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 					            eventDB1.setAccountID( account.getCustomerAccount().getAccountID() );
 					            eventBase1.setEventTypeID( progEventEntryID );
 					            eventBase1.setActionID( tempTermEntryID );
-					            eventBase1.setEventDateTime( new Date() );
+					            eventBase1.setEventDateTime( now );
 					            
 					            event1.setEnergyCompanyBase( energyCompany );
 					            multiDB.getDBPersistentVector().addElement( event1 );
@@ -359,7 +361,7 @@ public class YukonSwitchCommandAction implements ActionBase {
                 		if (update) {
                 			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastHwEvent.getLMCustomerEventBase();
                 			eventBase.setActionID( actCompEntryID );
-	                		eventBase.setEventDateTime( new Date() );
+	                		eventBase.setEventDateTime( now );
 	                		Transaction.createTransaction( Transaction.UPDATE, lastHwEvent ).execute();
                 		}
                 		else {	
@@ -371,7 +373,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 	                		eventDB.setInventoryID( hwDB.getInventoryID() );
 	                		eventBase.setEventTypeID( hwEventEntryID );
 	                		eventBase.setActionID( actCompEntryID );
-	                		eventBase.setEventDateTime( new Date() );
+	                		eventBase.setEventDateTime( now );
 	                		
                 			event.setEnergyCompanyBase( energyCompany );
 	                		Transaction.createTransaction( Transaction.INSERT, event ).execute();
@@ -393,7 +395,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 					            if (update && lastProgEvent != null) {
 		                			com.cannontech.database.db.stars.event.LMCustomerEventBase eventBase = lastProgEvent.getLMCustomerEventBase();
 						            eventBase.setActionID( actCompEntryID );
-						            eventBase.setEventDateTime( new Date() );
+						            eventBase.setEventDateTime( now );
 				                	Transaction.createTransaction( Transaction.UPDATE, lastProgEvent ).execute();
 					            }
 					            else {
@@ -406,7 +408,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 						            eventDB.setAccountID( account.getCustomerAccount().getAccountID() );
 						            eventBase.setEventTypeID( progEventEntryID );
 						            eventBase.setActionID( actCompEntryID );
-						            eventBase.setEventDateTime( new Date() );
+						            eventBase.setEventDateTime( now );
 						            
 						            event.setEnergyCompanyBase( energyCompany );
 			                		Transaction.createTransaction( Transaction.INSERT, event ).execute();

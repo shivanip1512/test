@@ -118,46 +118,31 @@ function confirmSubmit(form) { //v1.0
                   <td class="HeaderCell">Program</td>
                 </tr>
 <%
-	boolean optOut = false;
-	Calendar startCal = Calendar.getInstance();
-	Calendar stopCal = Calendar.getInstance();
+	CommonUtils.ProgramHistory[] progHist = (CommonUtils.ProgramHistory[]) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	if (progHist == null) {
+		progHist = CommonUtils.createProgramHistory( programs );
+		operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
+	}
 	
-	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
-		if (event.getEventAction().equals("Future Activation") || event.getEventAction().equals("Activation Completed")) {
-			optOut = true;
-			stopCal.setTime( event.getEventDateTime() );
-		}
-		else if (event.getEventAction().equals("Temporary Termination") && optOut) {
-			optOut = false;
-			startCal.setTime( event.getEventDateTime() );
-			int duration = stopCal.get(Calendar.DATE) - startCal.get(Calendar.DATE);
-			
-			String durStr = String.valueOf(duration);
-			if (duration > 1)
-				durStr += " Days";
-			else
-				durStr += " Day";
+	for (int i = 0; i < progHist.length; i++) {
 %>
                   <tr> 
-                    <td class="TableCell" width="100" ><%= dateFormat.format(event.getEventDateTime()) %></td>
-                    <td class="TableCell" width="100" ><%= event.getEventAction() %> - <%= durStr %></td>
+                    <td class="TableCell" width="100" ><%= dateFormat.format(progHist[i].getDate()) %></td>
+                    <td class="TableCell" width="100" ><%= progHist[i].getAction() %>
+					<% if (progHist[i].getDuration() != null) { %> - <%= progHist[i].getDuration() %><% } %>
+					</td>
                     <td class="TableCell" width="100" >
 <%
-			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-				StarsLMProgram program = programs.getStarsLMProgram(j);
+		String[] progNames = progHist[i].getPrograms();
+		for (int j = 0; j < progNames.length; j++) {
 %>
-					<%= program.getProgramName() %><br>
+					<%= progNames[j] %><br>
 <%
-			}
+		}
 %>
 					</td>
                   </tr>
 <%
-		}
-		else {
-			optOut = false;
-		}
 	}
 %>
               </table>

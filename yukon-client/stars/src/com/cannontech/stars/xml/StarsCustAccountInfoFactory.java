@@ -197,6 +197,9 @@ public class StarsCustAccountInfoFactory {
                 StarsLMControlHistory ctrlHist = LMControlHistory.getStarsLMControlHistory(
                         appliance.getLMHardwareConfig().getAddressingGroupID(), com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod.PASTDAY, true);
                 starsProg.setStarsLMControlHistory( ctrlHist );
+                
+                starsProg.setStarsLMProgramHistory( com.cannontech.database.data.stars.event.LMProgramEvent.getStarsLMProgramHistory(
+                		account.getCustomerAccount().getAccountID(), program.getPAObjectID()) );
 
                 progTable.put(program.getPAObjectID(), starsProg);
             }

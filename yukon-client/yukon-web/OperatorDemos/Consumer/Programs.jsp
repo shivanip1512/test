@@ -1,20 +1,4 @@
 <%@ include file="StarsHeader.jsp" %>
-<%
-	StarsLMHardwareHistory hwHist = null;
-	if (inventories.getStarsLMHardwareCount() > 0) {
-		StarsLMHardware hw = inventories.getStarsLMHardware(0);
-		hwHist = hw.getStarsLMHardwareHistory();
-	}
-	
-	String programStatus = "Not Enrolled";
-	if (hwHist != null && hwHist.getLMHardwareEventCount() > 0) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(0);
-		if (event.getEventAction().equals("Activation Completed"))
-			programStatus = "In Service";
-		else
-			programStatus = "Out of Service";
-	}
-%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -96,6 +80,33 @@ function MM_popupMsg(msg) { //v1.0
   alert(msg);
 }
 //-->
+
+
+function changeCategory(checkbox, index) {
+	form = checkbox.form;
+	if (checkbox.checked) {
+		radioBtns = eval("form.Program" + index);
+		if (radioBtns != null)
+			radioBtns[0].checked = true;
+		form.CatID[index].value = checkbox.value;
+		form.ProgID[index].value = form.DefProgID[index].value;
+	}
+	else {
+		radioBtns = eval("form.Program" + index);
+		if (radioBtns != null)
+			for (i = 0; i < radioBtns.length; i++)
+				radioBtns[i].checked = false;
+		form.CatID[index].value = "";
+		form.ProgID[index].value = "";
+	}
+}
+
+function changeProgram(radioBtn, index) {
+	form = radioBtn.form;
+	form.AppCat[index].checked = true;
+	form.CatID[index].value = form.AppCat[index].value;
+	form.ProgID[index].value = radioBtn.value;
+}
 </script>
 </head>
 
@@ -168,8 +179,45 @@ function MM_popupMsg(msg) { //v1.0
                     <div align="center">Status</div>
                   </td>
                 </tr>
+<%
+	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+		StarsAppliance appliance = null;
+		StarsLMProgram program = null;
+		String programStatus = "Not Enrolled";
+		
+		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
+			StarsAppliance app = appliances.getStarsAppliance(j);
+			if (app.getApplianceCategoryID() == category.getApplianceCategoryID()) {
+				appliance = app;
+				
+				for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
+					StarsLMProgram prog = programs.getStarsLMProgram(k);
+					if (prog.getProgramID() == appliance.getLmProgramID()) {
+						program = prog;
+						StarsLMProgramHistory progHist = program.getStarsLMProgramHistory();
+						programStatus = "Out of Service";
+						
+						for (int l = progHist.getLMProgramEventCount() - 1; l >= 0 ; l--) {	// search the program history in reverse order
+							LMProgramEvent event = progHist.getLMProgramEvent(l);
+							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
+								programStatus = "In Service";
+								break;
+							}
+							if (event.getYukonDefinition().equalsIgnoreCase( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )) {
+								programStatus = "Out of Service";
+								break;
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+		}
+%>
                 <tr>
-                  <td width="83" align = "center"><img id = "0" src="AC.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 0, 350, 90)"> 
+                  <td width="83" align = "center"><img id="<%= i %>" src="<%= category.getStarsWebConfig().getLogoLocation() %>" width="60" height="59" onclick = "toolTipAppear(event, 'tool', <%= i %>, 350, 150)"> 
                     <br>
                     <span class = "TableCell">Click 
                     Above</span></td>
@@ -177,168 +225,49 @@ function MM_popupMsg(msg) { //v1.0
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
                       <tr> 
                         <td width="23"> 
-                          <input type="checkbox" name="ApplianceCategory" value="checkbox" checked>
+						  <input type="checkbox" name="AppCat" value="<%= category.getApplianceCategoryID() %>"
+						  onclick="changeCategory(this, <%= i %>)" <% if (program != null) out.print("checked"); %>>
+						  <input type="hidden" name="CatID" value="<% if (program != null) out.print(category.getApplianceCategoryID()); %>">
+						  <input type="hidden" name="ProgID" value="<% if (program != null) out.print(program.getProgramID()); %>">
+						  <input type="hidden" name="DefProgID" value="<%= category.getStarsEnrollmentLMProgram(0).getProgramID() %>">
                         </td>
-                        <td width="84" class="TableCell">Cycle AC</td>
+                        <td width="84" class="TableCell"><%= category.getStarsWebConfig().getAlternateDisplayName() %></td>
                       </tr>
                     </table>
+<%
+		if (category.getStarsEnrollmentLMProgramCount() > 1) {
+			/* If more than one program under this category, show the program list */
+%>
                     <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
+<%
+			for (int j = 0; j < category.getStarsEnrollmentLMProgramCount(); j++) {
+				StarsEnrollmentLMProgram prog = category.getStarsEnrollmentLMProgram(j);
+				/* Each row is a program in this category */
+%>
                       <tr> 
                         <td width="37"> 
                           <div align="right"> 
-                            <input type="radio" name="Program0" value="radiobutton" checked>
+							<input type="radio" name="Program<%= i %>" value="<%= prog.getProgramID() %>" onclick="changeProgram(this, <%= i %>)"
+							<% if (program != null && prog.getProgramID() == program.getProgramID()) out.print("checked"); %>>
                           </div>
                         </td>
-                        <td width="70" class="TableCell">Medium</td>
+                        <td width="70" class="TableCell"><%= prog.getStarsWebConfig().getAlternateDisplayName() %></td>
                       </tr>
-                      <tr> 
-                        <td width="37"> 
-                          <div align="right"> 
-                            <input type="radio" name="Program0" value="radiobutton">
-                          </div>
-                        </td>
-                        <td width="70" class="TableCell">Light</td>
-                      </tr>
+<%
+			}	// End of program
+%>
                     </table>
+<%
+		}	// End of program list
+%>
                   </td>
                   <td width="125" valign="top" class="TableCell"> 
                     <div align="center"><%= programStatus %></div>
                   </td>
                 </tr>
-                <tr>
-                  <td width="83" align = "center"><img src="WaterHeater.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 1, 350, 150)" ><br>
-                    <span class = "TableCell">Click 
-                    Above</span></td>
-                  <td width="132"> 
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="23"> 
-                          <input type="checkbox" name="ApplianceCategory2" value="checkbox" checked>
-                        </td>
-                        <td width="84" class="TableCell">Water Heater</td>
-                      </tr>
-                    </table>
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="37"> 
-                          <div align="right"> 
-                            <input type="radio" name="Program1" value="radiobutton" checked>
-                          </div>
-                        </td>
-                        <td width="70" class="TableCell">8 Hours</td>
-                      </tr>
-                      <tr> 
-                        <td width="37"> 
-                          <div align="right"> 
-                            <input type="radio" name="Program1" value="radiobutton">
-                          </div>
-                        </td>
-                        <td width="70" class="TableCell">4 Hours</td>
-                      </tr>
-                      <tr> 
-                        <td width="37"> 
-                          <div align="right"> 
-                            <input type="radio" name="Program1" value="radiobutton">
-                          </div>
-                        </td>
-                        <td width="70" class="TableCell">ETS</td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="125" valign="top" class="TableCell"> 
-                    <div align="center"><%= programStatus %></div>
-                  </td>
-                </tr>
-                <tr>
-                  <td width="83" align = "center"><img src="DualFuel.gif" width="60" height="59" onClick = "toolTipAppear(event, 'tool', 2, 350, 120)"><br>
-                    <span class = "TableCell">Click 
-                    Above</span></td>
-                  <td width="132"> 
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="23"> 
-                          <input type="checkbox" name="ApplianceCategory2" value="checkbox">
-                        </td>
-                        <td width="84" class="TableCell">Duel Fuel</td>
-                      </tr>
-                    </table>
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="37"> 
-                          <div align="right"> 
-                            <input type="radio" name="Program2" value="radiobutton">
-                          </div>
-                        </td>
-                        <td width="70" class="TableCell">Unlimited</td>
-                      </tr>
-                      <tr> 
-                        <td width="37"> 
-                          <div align="right"> 
-                            <input type="radio" name="Program2" value="radiobutton">
-                          </div>
-                        </td>
-                        <td width="70" class="TableCell">Limited</td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="125" valign="top" class="TableCell"> 
-                    <div align="center">Not Enrolled</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td width="83" align = "center"><img src="Electric.gif" width="60" height="59"  onclick = "toolTipAppear(event, 'tool', 3, 350, 60)"><br>
-                    <span class = "TableCell">Click 
-                    Above</span></td>
-                  <td width="132"> 
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="23"> 
-                          <input type="checkbox" name="ApplianceCategory2" value="checkbox">
-                        </td>
-                        <td width="84" class="TableCell">Electrical Heat ETS</td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="125" valign="top" class="TableCell"> 
-                    <div align="center">Not Enrolled</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td width="83" align = "center"><img src="HotTub.gif" width="60" height="59" onclick ="toolTipAppear(event, 'tool', 5, 350, 45)"><br>
-                    <span class = "TableCell">Click 
-                    Above</span></td>
-                  <td width="132"> 
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="23"> 
-                          <input type="checkbox" name="ApplianceCategory2" value="checkbox">
-                        </td>
-                        <td width="84" class="TableCell">Hot Tub</td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="125" valign="top" class="TableCell"> 
-                    <div align="center">Not Enrolled</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td width="83" align = "center"><img src="Pool.gif" width="60" height="59" onclick = "toolTipAppear(event, 'tool', 4, 350, 45)"><br>
-                    <span class = "TableCell">Click 
-                    Above</span></td>
-                  <td width="132"> 
-                    <table width="110" border="0" cellspacing="0" cellpadding="0" align="center">
-                      <tr> 
-                        <td width="23"> 
-                          <input type="checkbox" name="ApplianceCategory2" value="checkbox">
-                        </td>
-                        <td width="84" class="TableCell">Pool Pump</td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="125" valign="top" class="TableCell"> 
-                    <div align="center">Not Enrolled</div>
-                  </td>
-                </tr>
+<%
+	}
+%>
               </table>
              
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
@@ -365,47 +294,31 @@ function MM_popupMsg(msg) { //v1.0
                     <td class="HeaderCell" width="100" >Program</td>
                   </tr>
 <%
-	boolean optOut = false;
-	Calendar startCal = Calendar.getInstance();
-	Calendar stopCal = Calendar.getInstance();
+	CommonUtils.ProgramHistory[] progHist = (CommonUtils.ProgramHistory[]) operator.getAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY" );
+	if (progHist == null) {
+		progHist = CommonUtils.createProgramHistory( programs );
+		operator.setAttribute( CommonUtils.TRANSIENT_ATT_LEADING + "PROGRAM_HISTORY", progHist );
+	}
 	
-	for (int i = 0; i < hwHist.getLMHardwareEventCount(); i++) {
-		LMHardwareEvent event = hwHist.getLMHardwareEvent(i);
-		if (event.getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_FUTUREACTIVATION )
-			|| event.getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_COMPLETED )) {
-			optOut = true;
-			stopCal.setTime( event.getEventDateTime() );
-		}
-		else if (event.getYukonDefinition().equals( com.cannontech.database.db.stars.CustomerListEntry.YUKONDEF_ACT_TEMPTERMINATION ) && optOut) {
-			optOut = false;
-			startCal.setTime( event.getEventDateTime() );
-			int duration = stopCal.get(Calendar.DATE) - startCal.get(Calendar.DATE);
-			
-			String durStr = String.valueOf(duration);
-			if (duration > 1)
-				durStr += " Days";
-			else
-				durStr += " Day";
+	for (int i = 0; i < progHist.length; i++) {
 %>
                   <tr> 
-                    <td class="TableCell" width="100" ><%= dateFormat.format(event.getEventDateTime()) %></td>
-                    <td class="TableCell" width="100" ><%= event.getEventAction() %> - <%= durStr %></td>
+                    <td class="TableCell" width="100" ><%= dateFormat.format(progHist[i].getDate()) %></td>
+                    <td class="TableCell" width="100" ><%= progHist[i].getAction() %>
+					<% if (progHist[i].getDuration() != null) { %> - <%= progHist[i].getDuration() %><% } %>
+					</td>
                     <td class="TableCell" width="100" >
 <%
-			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-				StarsLMProgram program = programs.getStarsLMProgram(j);
+		String[] progNames = progHist[i].getPrograms();
+		for (int j = 0; j < progNames.length; j++) {
 %>
-					<%= program.getProgramName() %><br>
+					<%= progNames[j] %><br>
 <%
-			}
+		}
 %>
 					</td>
                   </tr>
 <%
-		}
-		else {
-			optOut = false;
-		}
 	}
 %>
                 </table>
