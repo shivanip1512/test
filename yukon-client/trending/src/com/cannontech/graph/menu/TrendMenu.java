@@ -10,6 +10,9 @@ public class TrendMenu extends javax.swing.JMenu
 	private javax.swing.JMenuItem ivjCreateMenuItem = null;
 	private javax.swing.JMenuItem ivjDeleteMenuItem = null;
 	private javax.swing.JMenuItem ivjEditMenuItem = null;
+	
+	private javax.swing.JSeparator separator = null;
+	private javax.swing.JMenuItem getDataNowMenuItem = null;
 /**
  * YukonCommanderFileMenu constructor comment.
  */
@@ -131,10 +134,40 @@ private void initialize() {
 		add(getCreateMenuItem());
 		add(getEditMenuItem());
 		add(getDeleteMenuItem());
+		add(getSeparator());
+		add(getGetDataNowMenuItem());
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
 	// user code end
 }
+	/**
+	 * Returns the getDataNowMenuItem.
+	 * @return javax.swing.JMenuItem
+	 */
+	public javax.swing.JMenuItem getGetDataNowMenuItem()
+	{
+		if( getDataNowMenuItem == null)
+		{
+			getDataNowMenuItem = new javax.swing.JMenuItem();
+			getDataNowMenuItem.setName("GetDataNowMenuItem");
+			getDataNowMenuItem.setMnemonic('n');
+			getDataNowMenuItem.setText("Get Data Now");
+		}
+		return getDataNowMenuItem;
+	}
+
+	/**
+	 * Returns the sep.
+	 * @return javax.swing.JSeparator
+	 */
+	public javax.swing.JSeparator getSeparator()
+	{
+		if( separator == null)
+			separator = new javax.swing.JSeparator();
+			
+		return separator;
+	}
+
 }
