@@ -221,7 +221,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             StarsCustAccountInformation accountInfo = (StarsCustAccountInformation)
             		user.getAttribute( ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
-            String confirmMsg = "Command has been sent.";
+            String confirmMsg = "Thermostat settings has been sent.";
             
             for (int i = 0; i < accountInfo.getStarsInventories().getStarsLMHardwareCount(); i++) {
             	StarsLMHardware hardware = accountInfo.getStarsInventories().getStarsLMHardware(i);
@@ -229,7 +229,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
             		hardware.getStarsThermostatSettings().addStarsThermostatManualEvent( event );
             		
 		            if (hardware.getStarsThermostatSettings().getStarsThermostatDynamicData() != null)
-		            	confirmMsg += " Changes may take a few minutes to get to the thermostat.";
+		            	confirmMsg += " It may take a few minutes before the thermostat gets it.";
             		break;
             	}
             }
