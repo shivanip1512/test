@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2003/11/06 22:53:31 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2004/01/26 21:58:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,9 +42,16 @@ set< CtiDLCCommandStore > CtiDeviceMCT::_commandStore;
 
 
 CtiDeviceMCT::CtiDeviceMCT() :
-    _magicNumber(0),
-    _lpIntervalSent(0)
+    _lpIntervalSent(false),
+    _configType(ConfigInvalid),
+    _peakMode(PeakModeInvalid)
 {
+    for( int i = 0; i < ChannelCount; i++ )
+    {
+        _mpkh[i] = -1.0;
+        _wireConfig[i] = WireConfigInvalid;
+    }
+
     resetMCTScansPending();
 }
 
@@ -359,7 +366,7 @@ void CtiDeviceMCT::sendLPInterval( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > 
     outList.insert(OutMessage);
     OutMessage = NULL;
 
-    _lpIntervalSent = TRUE;
+    _lpIntervalSent = true;
 }
 
 
@@ -418,96 +425,96 @@ int CtiDeviceMCT::checkLoadProfileQuality( unsigned long &pulses, PointQuality_t
 //
 bool CtiDeviceMCT::initCommandStore()
 {
-   bool failed = false;
-   CtiDLCCommandStore cs;
+    bool failed = false;
+    CtiDLCCommandStore cs;
 
-   //  initialize any pan-MCT operations
-   cs._cmd     = CtiProtocolEmetcon::GetConfig_Model;
-   cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_ModelPos,
-                            (int)MCT_ModelLen );   // Decode happens in the children please...
-   _commandStore.insert( cs );
+    //  initialize any pan-MCT operations
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_Model;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT_ModelPos,
+                             (int)MCT_ModelLen );   // Decode happens in the children please...
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Command_Loop;
-   cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_ModelPos, 1 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Command_Loop;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT_ModelPos, 1 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::PutConfig_Install;
-   cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_ModelPos,
-                            (int)MCT_SspecLen );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_Install;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT_ModelPos,
+                             (int)MCT_SspecLen );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Function_GroupAddrEnable, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrEnable;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_GroupAddrEnable, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Function_GroupAddrInhibit, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::PutConfig_GroupAddrInhibit;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_GroupAddrInhibit, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::GetConfig_Raw;
-   cs._io      = IO_READ;
-   cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeGetConfig
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_Raw;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeGetConfig
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::PutConfig_Raw;
-   cs._io      = IO_WRITE | Q_ARMC;
-   cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executePutConfig
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Control_Shed;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeControl
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Control_Shed;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( 0, 0 );  //  this will be filled in by executeControl
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Control_Restore;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Restore, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Control_Restore;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Restore, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Control_Close;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Control_Close;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Control_Open;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Control_Open;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Control_Conn;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Control_Conn;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Function_Close, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = CtiProtocolEmetcon::Control_Disc;
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = CtiProtocolEmetcon::Control_Disc;
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( (int)MCT_Function_Open, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = (CtiProtocolEmetcon::Control_ARMS);     // Just here to make this OK.
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( 0, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = (CtiProtocolEmetcon::Control_ARMS);     // Just here to make this OK.
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( 0, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = (CtiProtocolEmetcon::Control_ARML);
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( 0, 0 );
+    _commandStore.insert( cs );
 
-   cs._cmd     = (CtiProtocolEmetcon::Control_ARML);
-   cs._io      = IO_WRITE;
-   cs._funcLen = make_pair( 0, 0 );
-   _commandStore.insert( cs );
+    cs._cmd     = (CtiProtocolEmetcon::PutConfig_ARMC);
+    cs._io      = IO_WRITE;
+    cs._funcLen = make_pair( (int)MCT_Function_ARMC, 0);
+    _commandStore.insert( cs );
 
-   //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
-   //    also, the getconfig time location is different for 2XX and 3XX, so that's in each's base as well
-   cs._cmd     = CtiProtocolEmetcon::GetConfig_TSync;
-   cs._io      = IO_READ;
-   cs._funcLen = make_pair( (int)MCT_TSyncPos,
-                            (int)MCT_TSyncLen );
-   _commandStore.insert( cs );
+    //  putconfig_tsync is in MCT2XX and MCT310 because the 2XX requires an ARMC
+    //    also, the getconfig time location is different for 2XX and 3XX, so that's in each's base as well
+    cs._cmd     = CtiProtocolEmetcon::GetConfig_TSync;
+    cs._io      = IO_READ;
+    cs._funcLen = make_pair( (int)MCT_TSyncPos,
+                             (int)MCT_TSyncLen );
+    _commandStore.insert( cs );
 
-   return failed;
+    return failed;
 }
 
 
@@ -519,52 +526,53 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                   RWTPtrSlist< OUTMESS >     &outList )
 {
     int nRet = NoError;
+    RWTPtrSlist< OUTMESS > tmpOutList;
 
     switch( parse.getCommand( ) )
     {
         case LoopbackRequest:
         {
-            nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case ScanRequest:
         {
-            nRet = executeScan( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case GetValueRequest:
         {
-            nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case PutValueRequest:
         {
-            nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case ControlRequest:
         {
-            nRet = executeControl( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case GetStatusRequest:
         {
-            nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case PutStatusRequest:
         {
-            nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case GetConfigRequest:
         {
-            nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         case PutConfigRequest:
         {
-            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, outList );
+            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
         default:
@@ -607,11 +615,11 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
     {
         if(OutMessage != NULL)
         {
-            outList.append( OutMessage );
+            tmpOutList.append( OutMessage );
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, vgList, retList, outList, true);
+        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
     }
 
     return nRet;
@@ -851,11 +859,11 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     switch( InMessage->Sequence )
     {
-        case CtiProtocolEmetcon::Command_ARMC:
         case CtiProtocolEmetcon::Control_ARMS:
         case CtiProtocolEmetcon::Control_ARML:
         case CtiProtocolEmetcon::Control_Open:
         case CtiProtocolEmetcon::Control_Close:
+        case CtiProtocolEmetcon::PutConfig_ARMC:
         {
             break;
         }
@@ -1685,6 +1693,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
 
        OutMessage->Request.RouteID   = getRouteID();
 
+       //  fix/ach this, it's ugly
        if( OutMessage->Buffer.BSt.Function == 0x06 )  //  easiest way to tell it's an MCT3xx
        {
            tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
@@ -1918,7 +1927,12 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
     {
         //  does a read of 2 bytes or so
         function = CtiProtocolEmetcon::PutConfig_Install;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+    }
+    else if( parse.isKeyValid("armc") )
+    {
+        function = CtiProtocolEmetcon::PutConfig_ARMC;
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if( parse.isKeyValid("groupaddress_enable") )
     {
@@ -1940,7 +1954,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int gold, silver;
 
             function = CtiProtocolEmetcon::PutConfig_GroupAddr_GoldSilver;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
             gold   = parse.getiValue("groupaddress_gold");
             silver = parse.getiValue("groupaddress_silver");
@@ -1973,7 +1987,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int bronze;
 
             function = CtiProtocolEmetcon::PutConfig_GroupAddr_Bronze;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
             bronze = parse.getiValue("groupaddress_bronze");
 
@@ -2003,7 +2017,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             int lead_load, lead_meter;
 
             function = CtiProtocolEmetcon::PutConfig_GroupAddr_Lead;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
             lead_load  = parse.getiValue("groupaddress_lead_load");
             lead_meter = parse.getiValue("groupaddress_lead_meter");
@@ -2686,7 +2700,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                 }
 
 
-                if( getDebugLevel() & 0x01 )
+                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2939,10 +2953,16 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                     if( pReq != NULL )
                     {
+                        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                        {
+                            pReq->setCommandString(pReq->CommandString() + " noqueue");
+                        }
+
                         pReq->setConnectionHandle( InMessage->Return.Connection );
 
                         CtiCommandParser parse(pReq->CommandString());
                         CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+
                         delete pReq;
                     }
 
@@ -2951,10 +2971,16 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                     if( pReq != NULL )
                     {
+                        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                        {
+                            pReq->setCommandString(pReq->CommandString() + " noqueue");
+                        }
+
                         pReq->setConnectionHandle( InMessage->Return.Connection );
 
                         CtiCommandParser parse(pReq->CommandString());
                         CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+
                         delete pReq;
                     }
 
@@ -2965,10 +2991,16 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                         if( pReq != NULL )
                         {
+                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                            {
+                                pReq->setCommandString(pReq->CommandString() + " noqueue");
+                            }
+
                             pReq->setConnectionHandle( InMessage->Return.Connection );
 
                             CtiCommandParser parse(pReq->CommandString());
                             CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+
                             delete pReq;
                         }
                     }
@@ -2980,12 +3012,115 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
                         if( pReq != NULL )
                         {
+                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                            {
+                                pReq->setCommandString(pReq->CommandString() + " noqueue");
+                            }
+
                             pReq->setConnectionHandle( InMessage->Return.Connection );
 
                             CtiCommandParser parse(pReq->CommandString());
                             CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                             delete pReq;
                         }
+                    }
+
+                    //  We've already checked for the validity of this config in the setConfigData call, so it's safe to just forge ahead
+                    if( _configType == Config2XX )
+                    {
+                        if( _mpkh[0] > 0 )
+                        {
+                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+
+                            if( pReq != NULL )
+                            {
+                                if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                                {
+                                    pReq->setCommandString(pReq->CommandString() + " noqueue");
+                                }
+
+                                pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                                CtiCommandParser parse(pReq->CommandString());
+                                CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                                delete pReq;
+                            }
+
+                            resultString += getName() + " / Sent config \"" + _configName + "\" to MCT\n";
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }
+                    else if( _configType == Config3XX )
+                    {
+                        unsigned char config_byte = 0xc0;
+                        int num_channels = 3;
+
+                        if( getType() == TYPEMCT310   ||
+                            getType() == TYPEMCT310ID ||
+                            getType() == TYPEMCT310IL )
+                        {
+                            num_channels = 1;
+                        }
+
+                        if( _peakMode == PeakModeOnPeakOffPeak )    config_byte |= 0x04;
+
+                        //  negative logic so we default to three-wire
+                        if( _wireConfig[0] != WireConfigTwoWire )   config_byte |= 0x08;
+                        if( _wireConfig[1] != WireConfigTwoWire )   config_byte |= 0x10;
+                        if( _wireConfig[2] != WireConfigTwoWire )   config_byte |= 0x20;
+
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+
+                        if( pReq != NULL )
+                        {
+                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                            {
+                                pReq->setCommandString(pReq->CommandString() + " noqueue");
+                            }
+
+                            pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                            CtiCommandParser parse(pReq->CommandString());
+                            CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            delete pReq;
+                        }
+
+                        for( int i = 0; i < num_channels; i++ )
+                        {
+                            if( _mpkh[i] > 0 )
+                            {
+                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + " " + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+
+                                if( pReq != NULL )
+                                {
+                                    if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                                    {
+                                        pReq->setCommandString(pReq->CommandString() + " noqueue");
+                                    }
+
+                                    pReq->setConnectionHandle( InMessage->Return.Connection );
+
+                                    CtiCommandParser parse(pReq->CommandString());
+                                    CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                                    delete pReq;
+                                }
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
+                        }
+
+                        resultString += getName() + " / Sent config \"" + _configName + "\" to MCT \"" + getName() + "\"\n";
                     }
 
                     if( OutTemplate != NULL )
@@ -3747,11 +3882,11 @@ bool CtiDeviceMCT::getOperation( const UINT &cmd, USHORT &function, USHORT &leng
 
    DLCCommandSet::iterator itr = _commandStore.find(CtiDLCCommandStore(cmd));
 
-   if( itr != _commandStore.end() )    // It's prego!
+   if( itr != _commandStore.end() )     // It's prego!
    {
       CtiDLCCommandStore &cs = *itr;
-      function = cs._funcLen.first;           // Copy over the found funcLen pair!
-      length = cs._funcLen.second;           // Copy over the found funcLen pair!
+      function = cs._funcLen.first;     // Copy over the found funcLen pair!
+      length = cs._funcLen.second;      // Copy over the found funcLen pair!
       io = cs._io;
       found = true;
    }
@@ -3791,3 +3926,106 @@ bool CtiDeviceMCT::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     return false;
 }
 
+
+void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[ChannelCount], const double mpkh[ChannelCount] )
+{
+    _configName = configName;
+
+    switch( getType() )
+    {
+        case TYPELMT2:
+        case TYPEMCT210:
+        case TYPEMCT212:
+        case TYPEMCT213:
+        case TYPEMCT224:
+        case TYPEMCT226:
+        case TYPEMCT240:
+        case TYPEMCT242:
+        case TYPEMCT248:
+        case TYPEMCT250:
+        case TYPEMCT260:
+        {
+            if( configType == Config2XX )
+            {
+                _configType = Config2XX;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            break;
+        }
+        case TYPEMCT310:
+        case TYPEMCT310ID:
+        case TYPEMCT318:
+        case TYPEMCT310IL:
+        case TYPEMCT318L:
+        case TYPEMCT360:
+        case TYPEMCT370:
+        {
+            if( configType == Config3XX )
+            {
+                _configType = Config3XX;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            break;
+        }
+
+        //case TYPEDCT501
+        //case TYPEMCT410
+        //case TYPE_REPEATER900
+        //case TYPE_REPEATER800
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            _configType = ConfigInvalid;
+
+            break;
+        }
+    }
+
+    if( !configMode.compareTo("peakoffpeak", RWCString::ignoreCase) )    _peakMode = PeakModeOnPeakOffPeak;
+    else if( !configMode.compareTo("minmax", RWCString::ignoreCase) )    _peakMode = PeakModeMinMax;
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - invalid peak mode string \"" + configMode + "\" - defaulting to minmax **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        _peakMode = PeakModeInvalid;
+    }
+
+    for( int i = 0; i < ChannelCount; i++ )
+    {
+        _mpkh[i] = mpkh[i];
+
+        if     ( mctwire[i] == WireConfigThreeWire )    _wireConfig[i] = WireConfigThreeWire;
+        else if( mctwire[i] == WireConfigTwoWire )      _wireConfig[i] = WireConfigTwoWire;
+        else
+        {
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - invalid wire config \"" << mctwire[i] << " for channel " << i+1 << " - defaulting to three-wire **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            _wireConfig[i] = WireConfigInvalid;
+        }
+    }
+}
