@@ -2697,6 +2697,11 @@ void  CtiCommandParser::doParseExpresscomControl(const RWCString &CmdStr)
 
     token = tok(); // Get the first one into the hopper....
 
+    if(CmdStr.contains(" truecycle"))
+    {
+        _cmd["xctruecycle"] = CtiParseValue( TRUE );
+    }
+
     if(CmdStr.contains(" delta"))
     {
         _cmd["xcdelta"] = CtiParseValue( TRUE );    // Temperatures are delta offsets
