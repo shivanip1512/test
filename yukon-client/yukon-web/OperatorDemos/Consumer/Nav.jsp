@@ -1,27 +1,3 @@
-<%@ page import="java.util.*" %>
-<%@ page import="com.cannontech.stars.xml.serialize.*" %>
-<%@ page import="com.cannontech.stars.web.util.Mappings" %>
-<%@ page import="com.cannontech.stars.web.util.CommonUtils" %>
-<%@ page import="com.cannontech.database.db.starshardware.LMHardwareBase" %>
-
-<%
-	java.text.SimpleDateFormat histDateFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	java.text.SimpleDateFormat dateFormat1 = new java.text.SimpleDateFormat("MM/dd/yyyy");
-	
-	StarsCustomerAccountInformation accountInfo = (StarsCustomerAccountInformation) session.getAttribute("CUSTOMER_ACCOUNT_INFORMATION");
-	if (accountInfo == null) response.sendRedirect("/login.jsp");
-	
-	StarsCustomerAccount account = accountInfo.getStarsCustomerAccount();
-    StreetAddress propAddr = account.getStreetAddress();
-    StarsSiteInformation siteInfo = account.getStarsSiteInformation();
-    BillingAddress billAddr = account.getBillingAddress();
-    PrimaryContact primContact = account.getPrimaryContact();
-	
-	StarsAppliances appliances = accountInfo.getStarsAppliances();
-	StarsInventories inventories = accountInfo.getStarsInventories();
-	StarsLMPrograms programs = accountInfo.getStarsLMPrograms();
-%>
-
 <%
 	// Map of page name / link text
 	String linkMap[][] = {{"Update.jsp", "General"},
@@ -32,16 +8,6 @@
 						  {"ProgramHist.jsp", "Control History"},
 						  {"Programs.jsp", "Enrollment"},
 						  {"OptOut.jsp", "Opt Out"},
-					
-						  /* Appliances are generated dynamically
-						  {"Air.jsp", "Air Conditioner"},
-						  {"WH.jsp", "Water Heater"},
-						  */
-						  /* Inventories are generated dynamically
-						  {"LCR5000.jsp", "LCR 5000"},
-						  {"Thermostat.jsp", "Thermostat"},
-						  {"Meter.jsp", "Meter"},
-						  */
 						  {"CreateCalls.jsp", "Create Call"},
 						  {"Service.jsp", "Service Request"},
 						  {"ServiceSummary.jsp", "Service History"},
@@ -64,9 +30,9 @@
 	String[] appLinks = new String[ appliances.getStarsApplianceCount() ];
 	
     for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
-        StarsAppliance appliance = appliances.getStarsAppliance(i);
+        StarsAppliance app = appliances.getStarsAppliance(i);
 		
-		String linkText = Mappings.getApplianceName( appliance.getStarsApplianceCategory().getCategory() );
+		String linkText = app.getCategoryDescription();
 		if (linkText == null) linkText = "Appliance";
 			
 		if (pageName.equalsIgnoreCase("Appliance.jsp?AppNo=" + i))
@@ -78,9 +44,9 @@
 	String[] invLinks = new String[ inventories.getStarsLMHardwareCount() ];
 	
 	for (int i = 0; i < inventories.getStarsLMHardwareCount(); i++) {
-		StarsLMHardware hardware = inventories.getStarsLMHardware(i);
+		StarsLMHardware hw = inventories.getStarsLMHardware(i);
 		
-		String linkText = Mappings.getLMHardwareName( hardware.getLMDeviceType() );
+		String linkText = hw.getLMDeviceType();
 		
 		if (pageName.equalsIgnoreCase("Inventory.jsp?InvNo=" + i))
 			invLinks[i] = "<img src=\"Bullet.gif\" width=\"12\" height=\"12\"><span class=\"Nav\">" + linkText + "</span>";
