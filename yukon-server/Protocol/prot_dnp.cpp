@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2002/07/25 20:53:19 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2002/09/11 21:24:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,8 +67,7 @@ void CtiProtocolDNP::setCommand( DNPCommand command, dnp_output_point *points, i
     unsigned char *tmp;
     int tmplen;
 
-//    _appLayer.setAddresses(_slaveAddress, _masterAddress);
-    _appLayer.setAddresses(2, 20);
+    _appLayer.setAddresses(_slaveAddress, _masterAddress);
 
     switch( command )
     {
