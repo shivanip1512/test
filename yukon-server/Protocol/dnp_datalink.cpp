@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/03/10 21:26:04 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/03/17 05:25:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ void Datalink::resetLink( void )
 }
 
 
-void Datalink::setToOutput(unsigned char *buf, unsigned int len)
+void Datalink::setToOutput( unsigned char *buf, unsigned int len )
 {
     //  if it's too big or there's nothing to copy, set our buffer to zip
     if( len > Packet_MaxPayloadLen || buf == NULL )
@@ -138,7 +138,8 @@ int Datalink::generate( CtiXfer &xfer )
 
     if( isControlPending() )
     {
-        generateControl(xfer);
+        //  do we need to add error handling for control-level errors?
+        retVal = generateControl(xfer);
     }
     else
     {
@@ -172,10 +173,13 @@ int Datalink::generate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - unhandled state " << _io_state << " in Cti::Protocol::DNP::Datalink::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-
-                _io_state       = State_IO_Failed;
+                //  fall through
+            }
+            case State_IO_Failed:
+            {
+                retVal = NOTNORMAL;
 
                 xfer.setOutBuffer(NULL);
                 xfer.setOutCount(0);
@@ -196,29 +200,30 @@ int Datalink::decode( CtiXfer &xfer, int status )
     int toCopy, srcLen, packetSize;
     unsigned char *dst, *src;
 
-    if( status != NORMAL )
+    if( status )
     {
+        //  we need to be able to handle errors at the datalink control level, too - this is too simplistic
+
         switch( status )
         {
             case BADPORT:
             case PORTWRITE:
             case PORTREAD:
+                break;
+
             default:
             {
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - unexpected error " << status << " on port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
 
-        //if( ++_comm_errors >= CommRetryCount )
-        //{
-            _io_state       = State_IO_Failed;
-
-            retVal    = status;
-        //}
+        //  add retries
+        _io_state = State_IO_Failed;
+        retVal    = status;
     }
     else
     {
@@ -232,7 +237,8 @@ int Datalink::decode( CtiXfer &xfer, int status )
                 }
             }
 
-            decodeControl(xfer, status);
+            //  TODO:  since status should always be NORMAL here, should i remove it as a parameter to this function?
+            retVal = decodeControl(xfer, status);
         }
         else
         {
@@ -246,7 +252,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
                     //  ACH:  this is dumb...  i don't like this variable floating around...
                     //          we should only be dealing with whole packets
 
-                    //  THIS IS PATENTLY FALSE - THIS CANNOT BE SET UNTIL WE HAVE VERIFIED THE INPUT
+                    //  FIX:  THIS IS PATENTLY FALSE - THIS CANNOT BE SET UNTIL WE HAVE VERIFIED THE INPUT
                     _in_recv += _in_actual;
 
                     if( isEntirePacket(_packet, _in_recv) )
@@ -340,7 +346,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
     if( _protocol_errors > ProtocolRetryCount )
     {
         _io_state = State_IO_Failed;
-        //  ACH:  set retVal here
+        retVal = NOTNORMAL;
     }
 
     return retVal;
@@ -686,8 +692,10 @@ bool Datalink::processControl( const datalink_packet &packet )
 }
 
 
-void Datalink::generateControl( CtiXfer &xfer )
+int Datalink::generateControl( CtiXfer &xfer )
 {
+    int retVal = NoError;
+
     switch( _control_state )
     {
         case State_Control_Request_DLReset_Out:
@@ -759,19 +767,28 @@ void Datalink::generateControl( CtiXfer &xfer )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "unhandled state = " << _control_state << endl;
+                dout << RWTime() << " **** Checkpoint - unhandled state " << _control_state << " in Cti::Protocol::DNP::Datalink::generateControl() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+
+            retVal = NOTNORMAL;
 
             break;
         }
     }
+
+    return retVal;
 }
 
 
-void Datalink::decodeControl( CtiXfer &xfer, int status )
+int Datalink::decodeControl( CtiXfer &xfer, int status )
 {
-    if( !status )
+    int retVal = NoError;
+
+    if( status )
+    {
+        retVal = status;
+    }
+    else
     {
         switch( _control_state )
         {
@@ -897,6 +914,8 @@ void Datalink::decodeControl( CtiXfer &xfer, int status )
             }
         }
     }
+
+    return retVal;
 }
 
 
@@ -947,23 +966,22 @@ bool Datalink::isValidAckPacket( const datalink_packet &packet )
 
 bool Datalink::isTransactionComplete( void )
 {
-    bool retVal;
+    bool retVal = false;
 
-    if( (_io_state == State_IO_Complete) && !isControlPending() )
+    switch( _io_state )
     {
-        retVal = true;
-    }
-    else if( _io_state == State_IO_Uninitialized )
-    {
-        retVal = true;
-    }
-    else if( _io_state == State_IO_Failed )
-    {
-        retVal = true;
-    }
-    else
-    {
-        retVal = false;
+        case State_IO_Complete:
+        {
+            retVal = !isControlPending();
+            break;
+        }
+
+        case State_IO_Uninitialized:
+        case State_IO_Failed:
+        {
+            retVal = true;
+            break;
+        }
     }
 
     return retVal;
