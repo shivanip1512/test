@@ -76,17 +76,14 @@ void  CtiCommandParser::doParse(RWCString Cmd)
     RWCString       strnum;
     INT             _num = 0;
 
+    if(!CmdStr.match("^pil ").isNull() || !CmdStr.match("^command ").isNull())
+    {
+        CmdStr = CmdStr.replace("^pil ", "");
+        CmdStr = CmdStr.replace("^command ", "");
+    }
 
     RWCTokenizer    tok(CmdStr);
 
-    if(CmdStr.contains("pil "))
-    {
-        tok();  // Get past this so that pil can process this correctly!
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << CmdStr << endl;
-        }
-    }
 
     if(CmdStr.contains(" serial"))
     {
