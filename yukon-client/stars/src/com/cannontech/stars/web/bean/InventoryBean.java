@@ -503,7 +503,7 @@ public class InventoryBean {
 				liteInv = (LiteInventoryBase) ((Pair)hwList.get(i-1)).getFirst();
 				member = (LiteStarsEnergyCompany) ((Pair)hwList.get(i-1)).getSecond();
 				isManagable = AuthFuncs.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-						&& ECUtils.isDescendantOf( member, energyCompany );
+						&& ECUtils.isDescendantOf( member, getEnergyCompany() );
 			}
 			else {
 				liteInv = (LiteInventoryBase) hwList.get(i-1);
