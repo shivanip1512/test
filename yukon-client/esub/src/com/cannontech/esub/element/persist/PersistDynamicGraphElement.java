@@ -40,7 +40,7 @@ public class PersistDynamicGraphElement extends BasePersistElement  {
 				break;
 				
 				default: {
-					throw new IOException("Unknown version");
+					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}
 			}
 	}
@@ -50,22 +50,10 @@ public class PersistDynamicGraphElement extends BasePersistElement  {
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
-			
 			DynamicGraphElement elem = (DynamicGraphElement) drawingElem;
-			
-			switch(version) {
-				
-				case 1: {
-					LxSaveUtils.writeInt(out, elem.getGraphDefinitionID());
-                    LxSaveUtils.writeInt(out, elem.getTrendType());
-                	LxSaveUtils.writeString(out, elem.getDisplayPeriod());
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version");
-				}
-			}
+			LxSaveUtils.writeInt(out, elem.getGraphDefinitionID());
+            LxSaveUtils.writeInt(out, elem.getTrendType());
+           	LxSaveUtils.writeString(out, elem.getDisplayPeriod());
 	}
 
 }

@@ -42,24 +42,13 @@ public class PersistCurrentAlarmsTable extends BasePersistElement {
 	 			break;
 	 			
 	 			default: {
-	 				throw new IOException("Unknown version");
+	 				throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 	 			}
 	 		}	 		
 	 }	
 	 
 	 public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version) throws IOException {
-	 	
 	 		CurrentAlarmsTable elem = (CurrentAlarmsTable) drawingElem;
-	 		switch(version) {
-	 			
-	 		    case 1: {
-	 				LxSaveUtils.writeIntArray(out, elem.getDeviceIDs());
-	 			}
-	 			break;
-	 			
-	 			default: {
-	 				throw new IOException("Unknown version");
-	 			}
-	 		}
+			LxSaveUtils.writeIntArray(out, elem.getDeviceIDs());
 	 }
 }

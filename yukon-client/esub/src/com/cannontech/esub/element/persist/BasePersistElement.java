@@ -24,11 +24,10 @@ public abstract class BasePersistElement implements PersistElement {
 		throws IOException {
 			
 			int version = LxSaveUtils.readInt(in);
-			drawingElem.setVersion(version);
 			readFromJLX(drawingElem,in,version);
 			LxSaveUtils.readEndOfPart(in);
 	}
-
+ 
 	/**
 	 * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
 	 */
@@ -37,7 +36,7 @@ public abstract class BasePersistElement implements PersistElement {
 			
 			int version = drawingElem.getVersion();
 			LxSaveUtils.writeInt(out,version);
-			saveAsJLX(drawingElem,out,version);
+			saveAsJLX(drawingElem,out, version);
 			LxSaveUtils.writeEndOfPart(out);
 	}
 }	

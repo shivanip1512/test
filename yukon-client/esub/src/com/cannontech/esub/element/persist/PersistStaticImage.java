@@ -44,7 +44,7 @@ public class PersistStaticImage extends BasePersistElement {
 				break;
 				
 				default: {
-					throw new IOException("Unknown version");
+					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}
 			}
 	}
@@ -53,21 +53,10 @@ public class PersistStaticImage extends BasePersistElement {
 	 * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
-		throws IOException {
-			
+		throws IOException {	
 			StaticImage elem = (StaticImage) drawingElem;
 			
-			switch(version) {
-				
-				case 1: {
-					LxSaveUtils.writeInt(out, elem.getYukonImage().getImageID());
-        			LxSaveUtils.writeString(out, elem.getLinkTo());
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version");
-				}
-			}
+			LxSaveUtils.writeInt(out, elem.getYukonImage().getImageID());
+        	LxSaveUtils.writeString(out, elem.getLinkTo());
 		}	
 }

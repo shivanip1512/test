@@ -41,7 +41,7 @@ public class PersistDynamicText extends BasePersistElement {
 				break;
 				
 				default: {
-					throw new IOException("Unknown version");
+					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}
 			}
 	}
@@ -51,22 +51,10 @@ public class PersistDynamicText extends BasePersistElement {
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
-			
 			DynamicText elem = (DynamicText) drawingElem;
-			
-			switch(version) {
-				
-				case 1: {
-					LxSaveUtils.writeInt(out, elem.getPointID());
-        			LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
-        			LxSaveUtils.writeString(out, elem.getLinkTo());
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version");
-				}
-			}
+			LxSaveUtils.writeInt(out, elem.getPointID());
+  			LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
+   			LxSaveUtils.writeString(out, elem.getLinkTo());
 	}
 
 }

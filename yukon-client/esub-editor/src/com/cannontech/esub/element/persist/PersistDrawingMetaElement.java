@@ -41,7 +41,7 @@ public class PersistDrawingMetaElement extends BasePersistElement {
 				break;
 				
 				default: {
-					throw new IOException("Unknown version");
+					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}
 			}
 	}
@@ -51,22 +51,10 @@ public class PersistDrawingMetaElement extends BasePersistElement {
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
-			
 			DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
-			
-			switch(version) {
-				
-				case 1: {
-					LxSaveUtils.writeInt(out, elem.getDrawingWidth());
-					LxSaveUtils.writeInt(out, elem.getDrawingHeight());
-					LxSaveUtils.writeInt(out, elem.getRoleID());	
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version number");
-				}
-			}
+			LxSaveUtils.writeInt(out, elem.getDrawingWidth());
+			LxSaveUtils.writeInt(out, elem.getDrawingHeight());
+			LxSaveUtils.writeInt(out, elem.getRoleID());	
 		}
 
 }

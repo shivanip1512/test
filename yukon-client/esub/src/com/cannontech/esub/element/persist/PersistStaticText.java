@@ -54,7 +54,7 @@ public class PersistStaticText extends BasePersistElement {
 				break;
 				
 				default: {
-					throw new IOException("Unknown version");
+					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}
 			}
 	}
@@ -64,32 +64,19 @@ public class PersistStaticText extends BasePersistElement {
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
-			
 			StaticText elem = (StaticText) drawingElem;
-			
-			switch(version) {
-				
-				case 1: {
-					
-					//save font					
-					Font f = elem.getFont();
-              		LxSaveUtils.writeString(out, f.getFontName() );
-        			LxSaveUtils.writeInt(out, f.getSize() );
+			//save font					
+			Font f = elem.getFont();
+            LxSaveUtils.writeString(out, f.getFontName() );
+        	LxSaveUtils.writeInt(out, f.getSize() );
 
-			        //save color
-			        Color textColor = (Color) elem.getPaint();
-        			LxSaveUtils.writeInt(out, textColor.getRed());
-        			LxSaveUtils.writeInt(out, textColor.getGreen());
-        			LxSaveUtils.writeInt(out, textColor.getBlue());
+			//save color
+			Color textColor = (Color) elem.getPaint();
+        	LxSaveUtils.writeInt(out, textColor.getRed());
+        	LxSaveUtils.writeInt(out, textColor.getGreen());
+        	LxSaveUtils.writeInt(out, textColor.getBlue());
         
-                	LxSaveUtils.writeString(out, elem.getLinkTo() );
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version");
-				}
-			}
-	}
+            LxSaveUtils.writeString(out, elem.getLinkTo() );
+		}
 
 }

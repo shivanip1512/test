@@ -42,7 +42,7 @@ public class PersistStateImage extends BasePersistElement {
 				break;
 				
 				default: {
-					throw new IOException("Unknown version");
+					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
 				}
 			}
 	}
@@ -52,28 +52,16 @@ public class PersistStateImage extends BasePersistElement {
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
-			
 			StateImage elem = (StateImage) drawingElem;
-			
-			switch(version) {
-				
-				case 1: {
-					LitePoint lp = elem.getPoint();
-				     int pointID = -1;
+			LitePoint lp = elem.getPoint();
+		     int pointID = -1;
         
-        			if( lp != null ) {
-                		pointID = lp.getPointID();
-        			}        
+   			if( lp != null ) {
+              		pointID = lp.getPointID();
+   			}        
 
-        			LxSaveUtils.writeInt(out, pointID);
-                	LxSaveUtils.writeString(out, elem.getLinkTo());
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version");
-				}
-			}
+   			LxSaveUtils.writeInt(out, pointID);
+           	LxSaveUtils.writeString(out, elem.getLinkTo());
 	}
 
 }
