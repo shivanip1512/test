@@ -341,6 +341,7 @@ void CtiLoadManager::controlLoop()
 
 
 #ifdef _BUNG_
+#endif                        //This ends up refreshing any control necessary
                         if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                             currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState )
                         {
@@ -353,6 +354,7 @@ void CtiLoadManager::controlLoop()
                                     currentControlArea->setUpdatedFlag(TRUE);
                                 }
                             }
+#ifdef _bung_              //This lets off all control, we don't want that now that we have stop prioerites              
                             else if( examinedControlAreaForControlNeededFlag )
                             {
                                 if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, secondsFrom1901) )
@@ -362,7 +364,9 @@ void CtiLoadManager::controlLoop()
                                     currentControlArea->setUpdatedFlag(TRUE);
                                 }
                             }
+#endif                            
                         }
+#ifdef _bung_                        
 #endif                        
 
                         if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
