@@ -61,14 +61,14 @@
       </td>
     </tr>
   </table>
-  <p><font face="Arial, Helvetica, sans-serif" size="1">Copyright &copy; 2002, 
-    Cannon Technologies, Inc. All rights reserved. All text, images, graphics, 
-    code, and other materials on this website are subject to the copyrights and 
-    other intellectual property rights of Cannon Technologies, Inc. Cannon Technologies, 
-    Inc. owns the copyrights in the selection, coordination, and arrangement of 
-    the materials on this website. These materials may not be copied for commercial 
-    use or distribution, nor may these materials be modified or reposted to other 
-    sites. </font></p>
+  <p>
+  <table width="740" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center">
+        <% int crStartYear = 2002; %><%@ include file="../include/full_copyright.jsp" %>
+      </td>
+    </tr>
+  </table>
   </CENTER>
 
 </BODY>

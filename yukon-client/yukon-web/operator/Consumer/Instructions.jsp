@@ -98,15 +98,12 @@
               </table>
               <br>
 			  <input type="button" name="Back" value="Back" onclick="history.back()">
-              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
-                &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
-              </p>
+			  <p align="center" class="MainText">
+			    <% int crStartYear = 2003; %><%@ include file="../../include/copyright.jsp" %>
+			  </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
-			
           </td>
-		  
-		  
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>

@@ -83,9 +83,9 @@
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <%@ include file="../../include/therm_schedule2.jsp" %>
-              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
-                &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
-              </p>
+			  <p align="center" class="MainText">
+			    <% int crStartYear = 2003; %><%@ include file="../../include/copyright.jsp" %>
+			  </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
 			

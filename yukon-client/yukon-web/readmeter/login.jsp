@@ -174,9 +174,10 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
   </tr>
 </table>
 <div align="center">
-  <p><FONT COLOR="#ffffff" SIZE="-1" FACE="Times New Roman, Helvetica">&copy; 
-    2002 Cannon Technologies, Inc. All rights reserved.</FONT> </p>
-  </div>
+  <p><FONT COLOR="#ffffff">
+    <% int crStartYear = 2002; %><%@ include file="../include/copyright.jsp" %>
+  </FONT></p>
+</div>
 </body>
 
 </html>

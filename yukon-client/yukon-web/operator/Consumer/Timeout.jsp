@@ -34,10 +34,8 @@
             <div align="center"> 
               <% String header = "THERMOSTAT - SCHEDULE<BR>TIMEOUT WARNING"; %>
               <%@ include file="include/InfoSearchBar.jsp" %>
+              <p>
 			  <%@ include file="../../include/therm_timeout.jsp" %>
-              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
-                &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
-              </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
 			

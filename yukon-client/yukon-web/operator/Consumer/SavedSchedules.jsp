@@ -3,10 +3,22 @@
 <%
 	int thermNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory thermostat = inventories.getStarsInventory(thermNo);
+	StarsThermostatDynamicData curSettings = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData();
 	
 	int invID = thermostat.getInventoryID();
 	StarsThermostatTypes thermostatType = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 	String thermNoStr = "InvNo=" + thermNo;
+	
+	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
+		if (request.getParameter("OmitTimeout") != null)
+			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
+		
+		if (session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
+			session.setAttribute(ServletUtils.ATT_REFERRER, request.getRequestURI() + "?" + thermNoStr);
+			response.sendRedirect( "Timeout.jsp" );
+			return;
+		}
+	}
 %>
 <html>
 <head>
@@ -42,14 +54,11 @@
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"> 
-              <% String header = "THERMOSTAT - SAVED SCHEDULES"; %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_THERM_SAVED_SCHED, "THERMOSTAT - SAVED SCHEDULES"); %>
               <%@ include file="include/InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 			  <%@ include file="../../include/saved_schedules.jsp" %>
-              <p align="center" class="MainText"><font face="Arial, Helvetica, sans-serif" size="1">Copyright 
-                &copy; 2003, Cannon Technologies, Inc. All rights reserved.</font> 
-              </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>
           </td>

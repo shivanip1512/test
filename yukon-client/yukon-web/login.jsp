@@ -94,7 +94,12 @@ self.name = "mainWin";
   </tr>
 </table>
 <br>
-<div align="center" class="TableCell1"><img src="YukonLogo.gif" width="139" height="29"></div>
+<div align="center" class="TableCell1">
+  <img src="YukonLogo.gif" width="139" height="29">
+  <p><font color="#FFFFFF">
+	<% int crStartYear = 2002; %><%@ include file="include/copyright.jsp" %>
+  </font></p>
+</div>
 </body>
 
 </html>

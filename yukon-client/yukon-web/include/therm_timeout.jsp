@@ -4,12 +4,12 @@
                       
                     <table width="478" border="0">
                       <tr> 
-                        <td class = "MainText" width="100%" ><span class="ErrorMsg">Your 
-                          thermostat gateway has not reported back for more than 
-                          <%= ServletUtils.GATEWAY_TIMEOUT_HOURS %> hours. The 
-                          last thermostat settings received from the gateway may 
-                          not be current, and you probably will not be able to 
-                          send settings to gateway successfully.</span><br>
+                        
+          <td class = "MainText" width="100%" ><span class="ErrorMsg">Your thermostat 
+            gateway hasn't reported back for more than <%= ServletUtils.GATEWAY_TIMEOUT_HOURS %> 
+            hours. The last thermostat settings received from the gateway may 
+            not be up-to-date. And the gateway probably will not receive the settings 
+            you send.</span><br>
                           <br>
                           Please check the LEDs on your gateway to make sure it's 
                           working properly. If you find any problem, please contact 
