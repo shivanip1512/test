@@ -1055,7 +1055,6 @@ public Object getValue(Object val)
 					newCalcComponent.setComponentPointID(new Integer(((DevicePointOperandLite) operand).getLitePoint().getPointID()));
 
 				newCalcComponent.setFunctionName((String) operation);
-				newCalcComponent.setOperation((String) operation);
 				
 				if( ((String)getOperationFunctionComboBox().getSelectedItem()).equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) && currentlyMappedBaselineID != null )
 				{
@@ -1354,10 +1353,6 @@ public void setValue(Object val)
 										PAOFuncs.getLiteYukonPAO( litePoint.getPaobjectID() ), 
 										litePoint);
 
-					calcComponentEntry.addElement( operand );
-
-					calcComponentEntry.addElement( 
-							singleCalcComponent.getOperation() );
 				}
 				else
 				{
