@@ -340,33 +340,69 @@ private javax.swing.JLabel getUsedPointOffsetLabel() {
  */
 public Object getValue(Object val) 
 {
-	//Assuming val is a real status point
-	com.cannontech.database.data.point.StatusPoint point = (com.cannontech.database.data.point.StatusPoint) val;
-
+	//Assume val is of PointBase
+	com.cannontech.database.data.point.PointBase point = (com.cannontech.database.data.point.PointBase) val;
+	
 	Object pointOffsetSpinVal = getPointOffsetSpinner().getValue();
 	Integer pointOffset = new Integer( ((Number)pointOffsetSpinVal).intValue() );
 
-	Object controlOffsetSpinVal = getControlOffsetSpinner().getValue();
-	Integer controlOffset = new Integer( ((Number)controlOffsetSpinVal).intValue() );
+	int type = PointTypes.getType(point.getPoint().getPointType());
 	
-	String controlType = (String) getControlTypeComboBox().getSelectedItem();
-	point.getPointStatus().setControlType(controlType);
-
-	if ( (getUsedPointOffsetLabel().getText()) == "" )
-		point.getPoint().setPointOffset( pointOffset );
-	else
-		point.getPoint().setPointOffset( null );
-
-	if( PointTypes.hasControl(controlType) )
+	if(type == PointTypes.ANALOG_POINT)
 	{
-		point.getPointStatus().setControlOffset(controlOffset);
+		if ( (getUsedPointOffsetLabel().getText()) == "" )
+			((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPointOffset(pointOffset);
+		else
+			((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPointOffset(null);
+
+		if( ((com.cannontech.database.data.point.AnalogPoint) val).getPoint().getPseudoFlag().equals( com.cannontech.database.db.point.Point.PSEUDOFLAG_PSEUDO ) )
+		{
+			//((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPseudoFlag( new Character('P') );
+			((com.cannontech.database.data.point.AnalogPoint) val).getPointAnalog().setTransducerType("Pseudo");
+		}
+		else
+		{
+			//((com.cannontech.database.data.point.AnalogPoint) val).getPoint().setPseudoFlag( new Character('R') );
+			((com.cannontech.database.data.point.AnalogPoint) val).getPointAnalog().setTransducerType("None");
+		}	
+	}
+	if(type == PointTypes.DEMAND_ACCUMULATOR_POINT || type == PointTypes.PULSE_ACCUMULATOR_POINT)
+	{
+		if ( (getUsedPointOffsetLabel().getText()) == "" )
+			((com.cannontech.database.data.point.AccumulatorPoint) val).getPoint().setPointOffset(pointOffset);
+		else
+			((com.cannontech.database.data.point.AccumulatorPoint) val).getPoint().setPointOffset(null);
+		/*if (pointOffset.intValue() == 0)
+			((com.cannontech.database.data.point.AccumulatorPoint) val).getPoint().setPseudoFlag( new Character('P') );
+		else
+			((com.cannontech.database.data.point.AccumulatorPoint) val).getPoint().setPseudoFlag( new Character('R') );
+		*/
 	}
 
-/*	if (pointOffset.intValue() == 0)
-		point.getPoint().setPseudoFlag( new Character('P') );
-	else
-		point.getPoint().setPseudoFlag( new Character('R') );
-*/
+	if(type == PointTypes.STATUS_POINT)
+	{
+		Object controlOffsetSpinVal = getControlOffsetSpinner().getValue();
+		Integer controlOffset = new Integer( ((Number)controlOffsetSpinVal).intValue() );
+	
+		String controlType = (String) getControlTypeComboBox().getSelectedItem();
+		((com.cannontech.database.data.point.StatusPoint) val).getPointStatus().setControlType(controlType);
+
+		if ( (getUsedPointOffsetLabel().getText()) == "" )
+			point.getPoint().setPointOffset( pointOffset );
+		else
+			point.getPoint().setPointOffset( null );
+
+		if( PointTypes.hasControl(controlType) )
+		{
+			((com.cannontech.database.data.point.StatusPoint) val).getPointStatus().setControlOffset(controlOffset);
+		}
+
+		/*	if (pointOffset.intValue() == 0)
+			point.getPoint().setPseudoFlag( new Character('P') );
+		else
+			point.getPoint().setPseudoFlag( new Character('R') );
+		*/
+	}
 
 	return val;
 }
